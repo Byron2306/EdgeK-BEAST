@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BEAST Control Deck</title>
+  <style>
+    :root {
+      --bg: #08090b;
+      --panel: #12161a;
+      --panel-2: #171d21;
+      --line: #2d363d;
+      --text: #f4f0e8;
+      --muted: #aab1b6;
+      --hot: #ff4d2e;
+      --gold: #f6b73c;
+      --green: #4ade80;
+      --cyan: #39d8f2;
+      --red: #ef4444;
+      --ink: #050607;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(255,77,46,0.12), transparent 24rem),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 88px),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      min-height: 92vh;
+      display: grid;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(120deg, rgba(8,9,11,0.35), rgba(8,9,11,0.92)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Crect width='1600' height='900' fill='%2308090b'/%3E%3Cg fill='none' stroke='%23ff4d2e' stroke-opacity='.45'%3E%3Cpath d='M180 720 410 180 610 720 475 720 438 615 332 615 292 720Z' stroke-width='18'/%3E%3Cpath d='M760 720V185h260q95 0 148 43t53 119q0 47-24 82t-68 54q60 17 91 58t31 99q0 82-56 131t-154 49H760Z' stroke-width='18'/%3E%3Cpath d='M880 405h128q77 0 77-63 0-61-80-61H880Zm0 221h156q83 0 83-70 0-66-84-66H880Z' stroke-width='14'/%3E%3C/g%3E%3Cg stroke='%23f6b73c' stroke-opacity='.25'%3E%3Cpath d='M0 760h1600M0 690h1600M0 620h1600M0 550h1600'/%3E%3Cpath d='M120 0v900M300 0v900M480 0v900M660 0v900M840 0v900M1020 0v900M1200 0v900M1380 0v900'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem clamp(1rem, 3vw, 2rem);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8,9,11,0.76);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand { display: flex; align-items: center; gap: .75rem; font-weight: 900; }
+    .brand-mark {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: grid;
+      place-items: center;
+      background: var(--hot);
+      color: var(--ink);
+      font-weight: 950;
+      border: 1px solid #ff8a73;
+    }
+    .nav-actions { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    button {
+      min-height: 2.4rem;
+      border: 1px solid var(--line);
+      background: #1a2024;
+      color: var(--text);
+      padding: .55rem .8rem;
+      cursor: pointer;
+      font-weight: 800;
+      border-radius: 6px;
+    }
+    button:hover { border-color: var(--hot); color: #fff; }
+    button.primary { background: var(--hot); border-color: #ff8a73; color: var(--ink); }
+
+    .hero {
+      display: grid;
+      align-content: end;
+      gap: 1.25rem;
+      padding: clamp(1rem, 4vw, 3rem);
+      max-width: 1320px;
+      width: 100%;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(4rem, 13vw, 13rem);
+      line-height: .8;
+      letter-spacing: 0;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+    .hero-copy {
+      max-width: 58rem;
+      color: #f8e9db;
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      line-height: 1.45;
+      margin-bottom: 2rem;
+    }
+
+    main { padding: 1rem clamp(1rem, 3vw, 2rem) 3rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .panel h2 {
+      margin: 0;
+      padding: .85rem 1rem;
+      font-size: .82rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+    .content { padding: 1rem; }
+    .metric {
+      font-size: clamp(1.7rem, 4vw, 3.4rem);
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .label { color: var(--muted); font-size: .78rem; text-transform: uppercase; margin-top: .4rem; }
+    .ok { color: var(--green); }
+    .warn { color: var(--gold); }
+    .bad { color: var(--red); }
+    .hot { color: var(--hot); }
+    .cyan { color: var(--cyan); }
+    .row { display: flex; justify-content: space-between; gap: .8rem; padding: .45rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .row:last-child { border-bottom: 0; }
+    .row span:first-child { color: var(--muted); }
+    .tabs { display: flex; flex-wrap: wrap; gap: .4rem; padding: 1rem 0; max-width: 1500px; margin: 0 auto; }
+    .tab { background: #101316; }
+    .tab.active { border-color: var(--gold); color: var(--gold); }
+    pre, code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: .78rem;
+    }
+    pre {
+      max-height: 28rem;
+      overflow: auto;
+      margin: 0;
+      color: #dbe7eb;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    th, td { text-align: left; padding: .55rem; border-bottom: 1px solid rgba(255,255,255,0.08); vertical-align: top; }
+    th { color: var(--muted); font-size: .72rem; text-transform: uppercase; }
+    .bar {
+      height: .5rem;
+      background: #2a3136;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar > i { display: block; height: 100%; background: var(--hot); }
+    .toolbar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .status-line { color: var(--muted); font-size: .82rem; }
+
+    @media (max-width: 1050px) {
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      header { min-height: 86vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="brand"><div class="brand-mark">B</div><div>EdgeK BEAST</div></div>
+      <div class="nav-actions">
+        <button id="toggleLive">Pause Live</button>
+        <button id="refreshNow" class="primary">Refresh</button>
+      </div>
+    </nav>
+    <section class="hero">
+      <h1>BEAST</h1>
+      <div class="hero-copy">Live governed AI operations: budget, runtime, memory, forensics, MCP gates, skill growth, swarm value, enterprise controls, and gated versus non-gated call economics.</div>
+    </section>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab active" data-view="ops">Ops</button>
+      <button class="tab" data-view="bench">Benchmarks</button>
+      <button class="tab" data-view="forensics">Forensics</button>
+      <button class="tab" data-view="controls">Controls</button>
+    </div>
+
+    <section id="view-ops" class="grid view">
+      <article class="panel span-3"><h2>Requests</h2><div class="content"><div id="mRequests" class="metric">--</div><div class="label">Gateway total</div></div></article>
+      <article class="panel span-3"><h2>Daily Tokens</h2><div class="content"><div id="mTokens" class="metric cyan">--</div><div class="label">Session ledger</div></div></article>
+      <article class="panel span-3"><h2>Runtime</h2><div class="content"><div id="mRuntime" class="metric ok">--</div><div class="label">Succeeded attempts</div></div></article>
+      <article class="panel span-3"><h2>Integrity</h2><div class="content"><div id="mIntegrity" class="metric">--</div><div class="label">Runtime ledger</div></div></article>
+      <article class="panel span-5"><h2>Memory Graph</h2><div class="content" id="memoryGraph"></div></article>
+      <article class="panel span-7"><h2>Provider Circuits</h2><div class="content" id="circuits"></div></article>
+      <article class="panel span-6"><h2>Swarm Value</h2><div class="content" id="swarm"></div></article>
+      <article class="panel span-6"><h2>Skill Tree</h2><div class="content" id="skills"></div></article>
+    </section>
+
+    <section id="view-bench" class="grid view" hidden>
+      <article class="panel span-12">
+        <h2>Comparative Test Round</h2>
+        <div class="content">
+          <div class="toolbar">
+            <button id="runBenchmark" class="primary">Run Comparative Round</button>
+            <button id="runGauntlet">Run Mega Gauntlet</button>
+            <span id="benchStatus" class="status-line"></span>
+          </div>
+          <div id="benchSummary"></div>
+          <div id="benchTable"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="view-forensics" class="grid view" hidden>
+      <article class="panel span-6"><h2>MCP Audit</h2><div class="content"><pre id="mcpAudit">Loading...</pre></div></article>
+      <article class="panel span-6"><h2>Runtime Attempts</h2><div class="content"><pre id="attempts">Loading...</pre></div></article>
+      <article class="panel span-6"><h2>Enterprise Observability</h2><div class="content"><pre id="observability">Loading...</pre></div></article>
+      <article class="panel span-6"><h2>Raw State</h2><div class="content"><pre id="rawState">Loading...</pre></div></article>
+    </section>
+
+    <section id="view-controls" class="grid view" hidden>
+      <article class="panel span-12">
+        <h2>Control Surface</h2>
+        <div class="content">
+          <div class="toolbar">
+            <button id="indexWorkspace">Index Workspace</button>
+            <button id="mineSkills">Mine Skills</button>
+            <button id="generateCandidates">Generate Candidates</button>
+            <button id="sweepRuntime">Sweep Runtime</button>
+            <button id="resetOpenAI">Reset OpenAI Circuit</button>
+            <button id="resetAnthropic">Reset Anthropic Circuit</button>
+            <button id="runSwarm">Run Swarm Demo</button>
+          </div>
+          <pre id="controlOutput">Ready.</pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const state = { live: true, last: null, benchmark: null };
+    const $ = (id) => document.getElementById(id);
+
+    async function api(path, options) {
+      const res = await fetch(path, options);
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+      if (!res.ok) throw new Error(data.detail || data.error?.message || res.statusText);
+      return data;
+    }
+
+    function fmt(value) {
+      if (value === undefined || value === null) return "--";
+      if (typeof value === "number") return value.toLocaleString();
+      return String(value);
+    }
+
+    function rows(items) {
+      return items.map(([k, v]) => `<div class="row"><span>${k}</span><strong>${fmt(v)}</strong></div>`).join("");
+    }
+
+    async function refresh() {
+      try {
+        const [health, edge, runtime, mcp, swarm, skills, obs, attempts] = await Promise.all([
+          api("/health"),
+          api("/edgek/state"),
+          api("/edgek/runtime/state"),
+          api("/edgek/mcp/state"),
+          api("/edgek/swarm/state"),
+          api("/edgek/skills/state"),
+          api("/edgek/enterprise/observability?limit=12"),
+          api("/edgek/runtime/attempts?limit=12")
+        ]);
+        state.last = { health, edge, runtime, mcp, swarm, skills, obs, attempts };
+        render();
+      } catch (err) {
+        $("rawState").textContent = "Refresh failed: " + err.message;
+      }
+    }
+
+    function render() {
+      const { health, edge, runtime, mcp, swarm, skills, obs, attempts } = state.last;
+      $("mRequests").textContent = fmt(health.total_requests);
+      $("mTokens").textContent = fmt(edge.budget.daily.tokens);
+      $("mRuntime").textContent = fmt(runtime.attempts.succeeded || 0);
+      $("mIntegrity").textContent = runtime.integrity.ok ? "OK" : "CHECK";
+      $("mIntegrity").className = "metric " + (runtime.integrity.ok ? "ok" : "bad");
+      $("memoryGraph").innerHTML = rows([
+        ["Nodes", edge.workspace_graph.total_nodes],
+        ["Edges", edge.workspace_graph.total_edges],
+        ["Recent traces", edge.recent_process_state.traces],
+        ["Skill updates", edge.recent_process_state.skill_updates],
+        ["Workspace DB", edge.storage.workspace_graph_db]
+      ]);
+      $("circuits").innerHTML = Object.values(runtime.circuits).map(c => `
+        <div class="row"><span>${c.provider}</span><strong class="${c.state === "closed" ? "ok" : "warn"}">${c.state}</strong></div>
+        <div class="bar"><i style="width:${Math.min(100, (c.failure_count || 0) * 20)}%"></i></div>
+      `).join("");
+      $("swarm").innerHTML = rows([
+        ["Runs", swarm.runs || 0],
+        ["Value logs", Object.values(swarm.value || {}).reduce((sum, value) => sum + Number(value || 0), 0)],
+        ["DB", swarm.db || ""]
+      ]);
+      $("skills").innerHTML = rows([
+        ["Skills", skills.skills?.total_skills || 0],
+        ["Patterns", skills.patterns?.detected || 0],
+        ["Candidates", skills.candidates?.length || 0],
+        ["Promoted", skills.patterns?.promoted || 0]
+      ]);
+      $("mcpAudit").textContent = JSON.stringify(mcp.recent_audit_events, null, 2);
+      $("attempts").textContent = JSON.stringify(attempts.attempts, null, 2);
+      $("observability").textContent = JSON.stringify(obs.events, null, 2);
+      $("rawState").textContent = JSON.stringify(edge, null, 2);
+    }
+
+    function renderBenchmark(report) {
+      $("benchStatus").textContent = `${report.scenario_count} scenarios complete`;
+      $("benchSummary").innerHTML = `<div class="grid">
+        <article class="panel span-3"><div class="content"><div class="metric hot">${fmt(report.totals.token_delta)}</div><div class="label">Tokens saved</div></div></article>
+        <article class="panel span-3"><div class="content"><div class="metric warn">${fmt(report.totals.token_delta_percent)}%</div><div class="label">Token reduction</div></div></article>
+        <article class="panel span-3"><div class="content"><div class="metric ok">${fmt(report.totals.issues_prevented)}</div><div class="label">Issues prevented</div></div></article>
+        <article class="panel span-3"><div class="content"><div class="metric cyan">$${report.totals.estimated_cost_delta_usd}</div><div class="label">Estimated cost delta</div></div></article>
+      </div>`;
+      $("benchTable").innerHTML = `<table><thead><tr><th>Scenario</th><th>Raw Tokens</th><th>Gated Tokens</th><th>Decision</th><th>Raw Issues</th><th>Economy</th></tr></thead><tbody>
+        ${report.scenarios.map(s => `<tr>
+          <td><strong>${s.name}</strong><br><span class="status-line">${s.description}</span></td>
+          <td>${fmt(s.non_gated.estimated_total_tokens)}</td>
+          <td>${fmt(s.gated.estimated_total_tokens)}</td>
+          <td class="${s.gated.decision === "deny" ? "bad" : s.gated.decision === "modify" ? "warn" : "ok"}">${s.gated.decision}</td>
+          <td><pre>${JSON.stringify(s.non_gated.issues)}</pre></td>
+          <td>${s.gated.context_economy.changed ? "trimmed" : "unchanged"}<br><span class="status-line">${fmt(s.comparison.token_delta)} token delta</span></td>
+        </tr>`).join("")}
+      </tbody></table>`;
+    }
+
+    async function runBenchmark() {
+      $("benchStatus").textContent = "Running...";
+      const report = await api("/edgek/benchmarks/comparative");
+      state.benchmark = report;
+      renderBenchmark(report);
+    }
+
+    async function runGauntlet() {
+      $("benchStatus").textContent = "Running mega gauntlet...";
+      const report = await api("/edgek/benchmarks/gauntlet");
+      state.benchmark = report;
+      renderBenchmark({ scenario_count: report.coverage.total_cases, totals: report.totals, scenarios: report.cases });
+      const readiness = Object.entries(report.provider_profiles).map(([name, profile]) =>
+        `<div class="row"><span>${name} / ${profile.model}</span><strong class="${profile.key_present ? "ok" : "warn"}">${profile.key_present ? "key ready" : "simulated"}</strong></div>`
+      ).join("");
+      $("benchTable").insertAdjacentHTML("afterbegin", `<div class="panel"><h2>Provider Readiness</h2><div class="content">${readiness}</div></div>`);
+      $("benchStatus").textContent = `${report.coverage.total_cases} gauntlet cases complete`;
+    }
+
+    async function control(label, path, body) {
+      $("controlOutput").textContent = label + " running...";
+      try {
+        const result = await api(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body || {})
+        });
+        $("controlOutput").textContent = JSON.stringify(result, null, 2);
+        await refresh();
+      } catch (err) {
+        $("controlOutput").textContent = label + " failed: " + err.message;
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".view").forEach(view => view.hidden = true);
+      btn.classList.add("active");
+      $("view-" + btn.dataset.view).hidden = false;
+    }));
+    $("refreshNow").onclick = refresh;
+    $("runBenchmark").onclick = runBenchmark;
+    $("runGauntlet").onclick = runGauntlet;
+    $("toggleLive").onclick = () => {
+      state.live = !state.live;
+      $("toggleLive").textContent = state.live ? "Pause Live" : "Resume Live";
+    };
+    $("indexWorkspace").onclick = () => control("Index workspace", "/edgek/workspace/index", { max_files: 800 });
+    $("mineSkills").onclick = () => control("Mine skills", "/edgek/skills/mine", { min_frequency: 2 });
+    $("generateCandidates").onclick = () => control("Generate candidates", "/edgek/skills/candidates/generate", { min_frequency: 2, min_confidence: 0.4 });
+    $("sweepRuntime").onclick = () => control("Sweep runtime", "/edgek/runtime/sweep", {});
+    $("resetOpenAI").onclick = () => control("Reset OpenAI", "/edgek/runtime/circuit-breakers/openai/reset", {});
+    $("resetAnthropic").onclick = () => control("Reset Anthropic", "/edgek/runtime/circuit-breakers/anthropic/reset", {});
+    $("runSwarm").onclick = () => control("Run swarm", "/edgek/swarm/run", { objective: "Inspect gateway health and propose next action.", risk_level: "low" });
+
+    refresh();
+    runBenchmark();
+    setInterval(() => { if (state.live) refresh(); }, 5000);
+  </script>
+</body>
+</html>

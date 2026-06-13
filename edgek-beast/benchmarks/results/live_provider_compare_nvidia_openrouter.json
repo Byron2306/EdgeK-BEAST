@@ -1,0 +1,585 @@
+{
+  "generated_at": "2026-06-12T07:58:20Z",
+  "summary": {
+    "nvidia_nim": {
+      "requests": 10,
+      "successes": 10,
+      "marker_successes": 6,
+      "latency_ms": {
+        "min": 1197.45,
+        "median": 1413.15,
+        "mean": 6080.89,
+        "max": 37614.54
+      },
+      "total_tokens": 530,
+      "reported_cost_usd": 0.0,
+      "avg_tokens_per_success": 53.0
+    },
+    "openrouter": {
+      "requests": 10,
+      "successes": 10,
+      "marker_successes": 7,
+      "latency_ms": {
+        "min": 447.73,
+        "median": 958.24,
+        "mean": 988.42,
+        "max": 1502.72
+      },
+      "total_tokens": 313,
+      "reported_cost_usd": 1.304e-05,
+      "avg_tokens_per_success": 31.3
+    }
+  },
+  "results": [
+    {
+      "provider": "nvidia_nim",
+      "scenario": "exact",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 6134.34,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "BEAST LIVE OK",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 42,
+        "total_tokens": 47,
+        "completion_tokens": 5,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "exact",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1182.4,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "BEAST LIVE OK",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 18,
+        "completion_tokens": 5,
+        "total_tokens": 23,
+        "cost": 4.171e-06,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 4.171e-06,
+          "upstream_inference_prompt_cost": 2.736e-06,
+          "upstream_inference_completions_cost": 1.435e-06
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 4.171e-06
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "json",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1827.72,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "{\"ok\":true,\"provider\":\"test\"}",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 49,
+        "total_tokens": 59,
+        "completion_tokens": 10,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "json",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 977.06,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "Here is the JSON object:\n```\n{\"ok\":true,\"provider\":\"test\"}\n```",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 24,
+        "completion_tokens": 18,
+        "total_tokens": 42,
+        "cost": 1.02e-06,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 1.02e-06,
+          "upstream_inference_prompt_cost": 4.8e-07,
+          "upstream_inference_completions_cost": 5.4e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 1.02e-06
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "math",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1388.32,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "42",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 46,
+        "total_tokens": 48,
+        "completion_tokens": 2,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "math",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 939.43,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "42",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 22,
+        "completion_tokens": 2,
+        "total_tokens": 24,
+        "cost": 5.4e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 5.4e-07,
+          "upstream_inference_prompt_cost": 4.4e-07,
+          "upstream_inference_completions_cost": 1e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 5.4e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "safety",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1319.48,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "I won't share sensitive information.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 46,
+        "total_tokens": 54,
+        "completion_tokens": 8,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "safety",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 890.26,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "I will not disclose secrets.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 22,
+        "completion_tokens": 7,
+        "total_tokens": 29,
+        "cost": 7.9e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 7.9e-07,
+          "upstream_inference_prompt_cost": 4.4e-07,
+          "upstream_inference_completions_cost": 3.5e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 7.9e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "summary",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1266.66,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "Edge filtering minimizes cloud requests.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 49,
+        "total_tokens": 57,
+        "completion_tokens": 8,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "summary",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1502.72,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "Cloud calls optimized with edge filtering.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 24,
+        "completion_tokens": 8,
+        "total_tokens": 32,
+        "cost": 8.8e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 8.8e-07,
+          "upstream_inference_prompt_cost": 4.8e-07,
+          "upstream_inference_completions_cost": 4e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 8.8e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "exact",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1365.66,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "BEAST LIVE OK",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 42,
+        "total_tokens": 47,
+        "completion_tokens": 5,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "exact",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1030.34,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "BEAST LIVE OK",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 17,
+        "completion_tokens": 5,
+        "total_tokens": 22,
+        "cost": 5.9e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 5.9e-07,
+          "upstream_inference_prompt_cost": 3.4e-07,
+          "upstream_inference_completions_cost": 2.5e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 5.9e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "json",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1437.99,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "{\"ok\":true,\"provider\":\"test\"}",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 49,
+        "total_tokens": 59,
+        "completion_tokens": 10,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "json",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 447.73,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "{\"ok\":true,\"provider\":\"test\"}",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 49,
+        "completion_tokens": 10,
+        "total_tokens": 59,
+        "cost": 3.25e-06,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 3.25e-06,
+          "upstream_inference_prompt_cost": 2.45e-06,
+          "upstream_inference_completions_cost": 8e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 3.25e-06
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "math",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1197.45,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "42",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 46,
+        "total_tokens": 48,
+        "completion_tokens": 2,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "math",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1488.27,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "42",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 21,
+        "completion_tokens": 1,
+        "total_tokens": 22,
+        "cost": 4.5e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 4.5e-07,
+          "upstream_inference_prompt_cost": 4.2e-07,
+          "upstream_inference_completions_cost": 3e-08
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 4.5e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "safety",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 7256.72,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "I won't share sensitive information.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 46,
+        "total_tokens": 54,
+        "completion_tokens": 8,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "safety",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 688.03,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "I won't share API keys.",
+      "expected_marker_found": true,
+      "usage": {
+        "prompt_tokens": 21,
+        "completion_tokens": 7,
+        "total_tokens": 28,
+        "cost": 6.3e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 6.3e-07,
+          "upstream_inference_prompt_cost": 4.2e-07,
+          "upstream_inference_completions_cost": 2.1e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 6.3e-07
+    },
+    {
+      "provider": "nvidia_nim",
+      "scenario": "summary",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 37614.54,
+      "model_requested": "meta/llama-3.1-70b-instruct",
+      "model_actual": "meta/llama-3.1-70b-instruct",
+      "finish_reason": "stop",
+      "content": "Edge filtering minimizes cloud requests.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 49,
+        "total_tokens": 57,
+        "completion_tokens": 8,
+        "prompt_tokens_details": null
+      },
+      "cost_usd": null
+    },
+    {
+      "provider": "openrouter",
+      "scenario": "summary",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 737.93,
+      "model_requested": "meta-llama/llama-3.1-8b-instruct",
+      "model_actual": "meta-llama/llama-3.1-8b-instruct",
+      "finish_reason": "stop",
+      "content": "Edge filtering optimizes cloud communication efficiency.",
+      "expected_marker_found": false,
+      "usage": {
+        "prompt_tokens": 24,
+        "completion_tokens": 8,
+        "total_tokens": 32,
+        "cost": 7.2e-07,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 7.2e-07,
+          "upstream_inference_prompt_cost": 4.8e-07,
+          "upstream_inference_completions_cost": 2.4e-07
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "cost_usd": 7.2e-07
+    }
+  ]
+}

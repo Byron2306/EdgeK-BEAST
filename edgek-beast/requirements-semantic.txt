@@ -1,0 +1,10 @@
+# Optional semantic vector/RAG dependencies.
+#
+# WorkspaceGraph loads sentence-transformers lazily when installed. Keep this
+# out of the core requirements because PyTorch/CUDA wheels are very large and
+# are not needed for gateway routing, MCP governance, or Tree-sitter indexing.
+#
+# Recommended CPU-only install:
+#   pip install --index-url https://download.pytorch.org/whl/cpu 'torch>=2.6'
+#   pip install -r requirements-semantic.txt
+sentence-transformers>=2.2.0

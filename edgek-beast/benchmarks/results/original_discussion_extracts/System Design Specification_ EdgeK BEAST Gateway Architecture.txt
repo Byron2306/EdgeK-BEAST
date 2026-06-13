@@ -1,0 +1,116 @@
+System Design Specification: EdgeK BEAST Gateway Architecture
+1. Architectural Vision and Core Commitments
+EdgeK BEAST (Budgeted Execution and Agentic Systems Tunnel) is architected as a  governed agentic execution broker . As the industry matures, we are aggressively shifting away from "token bypass" mentalities—which prioritize circumventing provider limits through questionable hacks—toward a philosophy of  authorized cost and token optimization . For the CTO, this shift is not merely ethical; it is a prerequisite for enterprise-grade credibility and operational stability. By acting as the central control plane, EdgeK BEAST ensures that agentic workflows maximize useful work per token while remaining strictly compliant with provider terms and security boundaries.The reliability of agentic coding workflows depends on five core architectural commitments:
+Protocol Unification:  Normalizes disparate provider APIs (Anthropic, OpenAI, Gemini) into a Request Intermediate Representation (IR).
+Reliability Impact:  Eliminates client-side logic fragmentation and bugs caused by inconsistent provider handling of tool calls or streaming events.
+Context Economy:  Implements structural compression and retrieval-augmented generation (RAG) rather than blind context stuffing.
+Reliability Impact:  Reduces model hallucinations and "lost-in-the-middle" phenomena by ensuring the prompt contains only high-signal, relevant code slices.
+MCP Tool Governance:  Enforces a least-privilege model for Model Context Protocol (MCP) integrations.
+Reliability Impact:  Prevents supply-chain attacks and unauthorized destructive actions (e.g., recursive file deletions) by treating every tool as an untrusted boundary.
+Runtime Control:  Employs request pacing and loop detection to manage provider rate limits.
+Reliability Impact:  Eliminates "token bonfires" where agents enter infinite, expensive failure loops, ensuring cost-predictability.
+Forensic Observability:  Records exhaustive traces of every gateway decision, tool call, and compression event.
+Reliability Impact:  Transforms failures into structured data, allowing for continuous optimization of the system's reasoning via the "Skill Tree."These commitments are operationalized through a layered infrastructure that separates transport handling from agentic intelligence.
+2. The Layered Memory and Governance Model (L0–L4)
+A tiered memory stack is essential for decoupling immutable corporate policy from the transient state of a developer’s active session. The  EdgeK Kernel  manages these layers to ensure that execution never drifts from the developer’s intent or the organization’s safety requirements.
+The Five-Layer Memory Stack
+Layer,Name,Scope,Persistence Mechanism,Data Examples
+L0,Meta Rules,Immutable Governance,Config / Policy DB,"Spend caps, shell allowlists, blocked files (.env, .pem)"
+L1,Insight Index,Active Session State,In-Memory / Redis,"Cache handles, request hashes, loop signatures"
+L2,Workspace Graph,Project Facts,SQLite / Vector DB,"Symbol maps, dependency edges, git status, file trees"
+L3,Skill Tree,Reusable Recipes,SQLite / Postgres,"""Fix ESLint import loop,"" ""Optimized test summarization"""
+L4,Forensic Archive,Audit and Telemetry,Append-only Logs,"Request IR traces, tool results, circuit breaker triggers"
+L0: Meta Rules – The Primary Safety Boundary
+L0 represents the system's "hard-coded" safety parameters. These rules are enforced at the kernel level before a request is ever dispatched to a provider.
+Resource Governance:  Hard caps on maximum spend per day/project and requests per minute (RPM) per provider.
+File Access Control:  Strict blocklists for sensitive files (e.g., .env, .pem, credential stores).
+Soft-Gated Infrastructure:  Mandatory human approval for modifications to infrastructure files, such as  package manifests  (package.json, go.mod) and  database migration scripts .
+Command Allowlisting:  A rigorous denylist/allowlist for shell commands to prevent unauthorized system access or lateral movement.
+Destructive Action Gates:  Human-in-the-loop (HITL) requirements for any tool call classified as "destructive" (e.g., rm, git push --force).
+3. The PREC Runtime Cycle: Core Execution Logic
+The  PREC Cycle (Perceive, Reason, Execute, Crystallize)  serves as the deterministic heartbeat of the EdgeK gateway. It ensures that every request is vetted and optimized before reaching a provider, transforming raw model calls into governed actions.
+PREC Phase Breakdown
+Perceive:  The system ingests raw client payloads and merges them with environment metadata.
+Inputs:  Raw payload, L1 session state, project context.
+Outputs:  Normalized request envelope,  loop signature  (to detect repetition), and token estimate.
+Reason:  The kernel determines the optimal execution path.
+Decision Logic:  Selects model tier (Small/Medium/Large) based on task complexity. Checks the  Stasis Wall  for rate-limit pacing requirements and verifies if the current request mirrors a known failure loop.
+Execute:  The gateway applies structure-aware context compaction and retrieves relevant file slices from the L2 Workspace Graph. The optimized request is delivered via the provider-specific adapter.
+Crystallize:  Post-action cleanup and learning.
+Steps:  Updates the L1 active state, refines the L2 Workspace Graph if files were modified, and records a comprehensive L4 telemetry trace.This cycle maintains a consistent "Normal Form" for data, preventing logic fragmentation regardless of whether the inbound client uses Anthropic, OpenAI, or Gemini protocols.
+4. Protocol Adapter and the Request Intermediate Representation (IR)
+To prevent architectural decay, the EdgeK BEAST separates the  Ingress Layer  (Nginx) from the  Intelligence Layer  (EdgeK Kernel). Nginx handles transport, TLS, and buffering, while the Kernel performs protocol translation into a  Request Intermediate Representation (IR) .
+Protocol Adapter Mapping
+Inbound API Format,Endpoint,Transformation
+Anthropic Messages,/v1/messages,EdgeK Request IR
+OpenAI Chat,/v1/chat/completions,EdgeK Request IR
+Gemini Content,/v1/generateContent,EdgeK Request IR
+Request IR Schema
+The IR ensures that the Context Economizer and Policy Engine operate on a unified data structure that preserves agentic context.
+{
+"trace_id": "uuid-v4",
+"messages": [
+{ "role": "string", "content": "string" }
+],
+"tool_definitions": [
+{ "name": "string", "schema": "object" }
+],
+"tool_calls": [],
+"tool_results": [],
+"cache_handles": ["cache_id_1", "cache_id_2"],
+"budget_annotations": {
+"max_tokens": 4096,
+"spend_limit": 0.50
+},
+"provider_extras": {
+"temperature": 0.0,
+"top_p": 1.0
+}
+}
+5. The Context Economizer: Three-Tier Compression Pipeline
+Simple regex stripping of comments is a liability; it risks destroying essential semantics like type hints or linting directives. EdgeK BEAST employs a  three-tier, structure-aware pipeline  that prioritizes code integrity over aggressive token reduction.
+The Compression Pipeline
+Lossless Cleanup:  Removes non-essential data including ANSI log codes, trailing whitespace, and duplicate log lines.
+Structure-Aware Compression:  Uses AST (Tree-sitter) for symbol mapping and import graph extraction. Key technical levers include  folding repeated terminal lines by hash  and  diff hunk extraction  to provide the model with context surrounding changes without sending the entire file.
+Semantic Compression:  Employs RAG-based retrieval to include only the code slices relevant to the current task classification.
+Safe Compression Rules
+Preserve User Intent:  Never modify the verbatim user request.
+Active Target Protection:  Always preserve exact code for files identified as active edit targets.
+Logic Integrity:  Maintain failing assertions and error stack top/bottom frames exactly.
+Secret Avoidance:  Never summarize or transmit secrets; redact or block them entirely at the kernel level.
+Anchoring:  Preserve line numbers and file paths to ensure model-generated patches remain applicable.
+6. MCP Broker and Tool Governance
+Model Context Protocol (MCP) tools represent high-risk security boundaries. In this architecture, MCP tools are considered  security vulnerabilities by design  and are treated as "untrusted until verified."The  MCP Broker  manages a Tool Registry where every tool is assigned a trust level. To drive efficiency, the gateway employs  "Tool-Laziness" —tool definitions are loaded into the request IR dynamically based on the detected intent of the task, significantly reducing the "Tool Tax" on the context window.
+Tool Poisoning Defense
+Schema Pinning & Hashing:  Prevents unauthorized alterations to tool manifests.
+Manifest Hardening:  Strips hidden instructions or potential prompt-injection attempts from tool descriptions.
+Human-in-the-Loop (HITL):  Mandatory approval for destructive operations (file writes, shell execution, or database migrations).
+7. Runtime Governance: Stasis Wall and Circuit Breakers
+Proactive intervention is the only way to prevent "Agentic Thrashing" and the resulting "Token Bonfires."
+The Stasis Wall
+The Stasis Wall is a  leaky-bucket scheduler  that tracks provider-specific rate limits and exhaustion levels. It queues requests and paces them to ensure the system gracefully handles 429 (Too Many Requests) errors without crashing the agent workflow.
+Circuit Breaker Interventions
+Loop Type,Gateway Intervention
+Repeated Test Failure,"Block retry; require strategy change; inject ""Critic"" prompt to challenge the agent's logic."
+Tool Storm,Temporarily reduce tool budget; force a summary of current state before allowing new calls.
+Same File Read Loop,Serve a cached slice of the file from L1/L2 and warn the model regarding redundancy.
+Command Repetition,Block the command; request manual user diagnosis of the environment state.
+8. Forensic Observability and the L4 Ledger
+The  Forensic Ledger (L4)  transforms failures into optimization data. By recording the logic behind every compression and intervention, we enable the Meta-Tool Compiler to turn repeated successful tool chains into deterministic scripts.
+L4 Trace Event Fields
+Metadata:  Unique Trace IDs, User/Task IDs, and Provider/Model selection.
+Usage:  Token counts (estimated vs. actual), Cache hit rates, and Provider cost.
+Logic:  Compression ratios, Tool versions called, and Loop signatures triggered.
+Evaluation Plan and Benchmark Tasks
+Success is measured by a  Baseline Comparison  between direct provider access and the BEAST gateway using the following benchmark tasks:
+Fix one failing test:  Measure reduction in loops and total tokens to reach green.
+Refactor one module:  Measure the quality of context retrieval and input token savings.
+Debug dependency error:  Measure the efficiency of repeated log compression and diagnostic accuracy.
+Feature Implementation:  Measure the effectiveness of Tool-Laziness and MCP governance in high-complexity tasks.
+Implementation Roadmap
+The roadmap prioritizes  "Boring, Reliable Plumbing"  to ensure the foundation is stable before scaling.
+Phase 1:  Gateway Shell (FastAPI + LiteLLM) and Basic IR normalization.
+Phase 2:  Budgeting and Stasis Wall implementation.
+Phase 3:  Context Economizer and Workspace Graph.
+Phase 4:  MCP Broker and Runtime Circuit Breakers.
+Phase 5:  Skill Tree and Swarm-of-Functions orchestration.

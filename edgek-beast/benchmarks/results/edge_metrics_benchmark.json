@@ -1,0 +1,468 @@
+{
+  "bandwidth": {
+    "claim_scope": "Implemented ASTCompressor measured for lossless JSON schema-row telemetry and semantic Python AST compression.",
+    "complex_agentic_payload": {
+      "ast_compressed_bytes": 1368,
+      "ast_compressed_reduction_percent": 59.6579,
+      "ast_semantic_summary_bytes": 9118,
+      "ast_semantic_summary_reduction_percent": 83.4155,
+      "raw_bytes": 54979,
+      "raw_gzip_bytes": 3391
+    },
+    "industrial_telemetry": {
+      "compressed_bytes": 154674,
+      "raw_bytes": 2803883,
+      "raw_gzip_bytes": 191720,
+      "records": 12000,
+      "schema_rows_bytes": 1604004,
+      "schema_rows_gzip_bytes": 154674,
+      "schema_rows_gzip_reduction_percent": 19.323,
+      "schema_rows_reduction_percent": 42.7935
+    }
+  },
+  "cost_efficiency": {
+    "claim_scope": "ContextEconomizer, ASTCompressor, and IsolationForest are implemented and measured locally.",
+    "combined_filtered_estimated_tokens": 402636,
+    "combined_raw_estimated_tokens": 770241,
+    "combined_token_reduction_percent": 47.726,
+    "context_economizer": {
+      "chars_removed": 253160,
+      "final_tokens": 6013,
+      "original_tokens": 69271,
+      "token_reduction_percent": 91.3196
+    },
+    "estimated_transaction_fee_after_usd": 0.01066985,
+    "estimated_transaction_fee_before_usd": 0.02041139,
+    "estimated_transaction_fee_reduction_percent": 47.726,
+    "estimated_transaction_fee_reduction_usd": 0.00974153,
+    "isolation_forest": {
+      "contamination": 0.011,
+      "features": [
+        "temperature_c",
+        "vibration_mm_s",
+        "pressure_bar"
+      ],
+      "n_trees": 100,
+      "random_state": 19,
+      "sample_size": 256,
+      "threshold": 0.6059323554505449
+    },
+    "outlier_records_filtered": 132,
+    "pricing_basis": {
+      "nvidia_nim_smoke_observed_usd_per_1k_total_tokens": 0.0,
+      "openrouter_llama_3_1_8b_observed_usd_per_1k_total_tokens": 2.65e-05
+    },
+    "telemetry_records_after_outlier_filter": 11868,
+    "telemetry_records_raw": 12000
+  },
+  "generated_at": "2026-06-12T09:06:10Z",
+  "latency": {
+    "claim_scope": "Measured local Python read/copy versus mmap-backed read path. Native AF_PACKET mmap, DPDK, and AF_XDP capability probes are reported separately from packet-forwarding throughput.",
+    "host_capabilities": {
+      "af_packet_available": true,
+      "af_xdp": {
+        "available": true,
+        "libraries": {
+          "bpf": "libbpf.so.1",
+          "xdp": "libxdp.so.1"
+        },
+        "requires": [
+          "Linux AF_XDP support",
+          "CAP_NET_ADMIN/CAP_BPF or configured permissions",
+          "XDP-capable NIC/driver"
+        ]
+      },
+      "dpdk": {
+        "available": true,
+        "libraries": {
+          "rte_eal": "librte_eal.so.25",
+          "rte_ethdev": "librte_ethdev.so.25",
+          "rte_mempool": "librte_mempool.so.25"
+        },
+        "requires": [
+          "hugepages",
+          "vfio/uio-bound NIC",
+          "CAP_SYS_ADMIN or configured device permissions"
+        ]
+      },
+      "effective_uid": 1000,
+      "interfaces": [
+        {
+          "index": 433,
+          "name": "br-0ad501952043"
+        },
+        {
+          "index": 5,
+          "name": "br-38c6492cfa2a"
+        },
+        {
+          "index": 7,
+          "name": "docker0"
+        },
+        {
+          "index": 464,
+          "name": "enp3s0"
+        },
+        {
+          "index": 1,
+          "name": "lo"
+        },
+        {
+          "index": 70,
+          "name": "metatron-vpn"
+        },
+        {
+          "index": 6,
+          "name": "seraph-br0"
+        },
+        {
+          "index": 420,
+          "name": "veth1cd1bf9"
+        },
+        {
+          "index": 432,
+          "name": "veth3ada76e"
+        },
+        {
+          "index": 424,
+          "name": "veth499560c"
+        },
+        {
+          "index": 449,
+          "name": "veth5a3e28f"
+        },
+        {
+          "index": 392,
+          "name": "veth6383ba8"
+        },
+        {
+          "index": 428,
+          "name": "veth9125837"
+        },
+        {
+          "index": 457,
+          "name": "veth9519c01"
+        },
+        {
+          "index": 394,
+          "name": "vetha77a97e"
+        },
+        {
+          "index": 396,
+          "name": "vethaf0bcb1"
+        },
+        {
+          "index": 85,
+          "name": "vethaf847b0"
+        },
+        {
+          "index": 400,
+          "name": "vethc7d54ba"
+        },
+        {
+          "index": 422,
+          "name": "vethdbaee3f"
+        },
+        {
+          "index": 459,
+          "name": "vethf88e174"
+        },
+        {
+          "index": 4,
+          "name": "virbr0"
+        },
+        {
+          "index": 3,
+          "name": "wlp0s20f3"
+        },
+        {
+          "index": 73,
+          "name": "wt0"
+        }
+      ],
+      "likely_has_cap_net_raw": false,
+      "linux": true,
+      "notes": [
+        "AF_PACKET TPACKET_V3 mmap is implemented here and requires CAP_NET_RAW/root to open.",
+        "DPDK and AF_XDP native backends are dynamically bound when their userspace libraries are installed."
+      ],
+      "raw_socket_available": true,
+      "supported_modes": {
+        "af_packet_tpacket_v3_mmap": true,
+        "af_xdp": true,
+        "dpdk": true
+      }
+    },
+    "iterations": 80,
+    "median_latency_reduction_percent": 39.9571,
+    "mmap_zero_copy_like_ms": {
+      "max": 7.794333,
+      "mean": 4.562501,
+      "median": 4.379386,
+      "min": 2.196659,
+      "p95": 7.017947
+    },
+    "os_bypass_status": {
+      "af_packet_ready": true,
+      "af_xdp_ready": true,
+      "dpdk_ready": true,
+      "install_hint_debian": "sudo apt-get update && sudo apt-get install -y dpdk libdpdk-dev libxdp1 libxdp-dev libbpf-dev",
+      "missing_af_xdp_libraries": [],
+      "missing_dpdk_libraries": [],
+      "status": "native_backends_available"
+    },
+    "p95_latency_reduction_percent": 30.9996,
+    "payload_bytes": 8388608,
+    "traditional_application_proxy_ms": {
+      "max": 11.5482,
+      "mean": 7.144289,
+      "median": 7.29376,
+      "min": 3.539776,
+      "p95": 10.170886
+    }
+  },
+  "loop_protection": {
+    "accepted_failures_before_interrupt": 5,
+    "claim_scope": "Implemented RuntimeGovernor circuit breaker measured against an uncontrolled tight recursive loop baseline.",
+    "failure_threshold": 5,
+    "interruption_result": "blocked_by_circuit_breaker",
+    "time_to_interruption_ms": 6.414101,
+    "uncontrolled_iterations_during_protected_window_estimate": 79328.69,
+    "uncontrolled_iterations_per_second": 12367858.22
+  },
+  "swarm": {
+    "average_expected_value_score": 0.6175,
+    "avoided_model_calls": 4.0,
+    "blocked_risk_events": 4.0,
+    "claim_scope": "SwarmKernel is deterministic orchestration, not a multi-model call multiplier.",
+    "estimated_tokens_saved": 667200.0,
+    "role_event_counts": {
+      "archivist": 44,
+      "cartographer": 44,
+      "compressor": 44,
+      "conductor": 48,
+      "critic": 4,
+      "sentinel": 48,
+      "supervisor": 48
+    },
+    "runs": 48,
+    "state": {
+      "db": "/tmp/beast-swarm-owi6e40a/swarm.db",
+      "enabled": true,
+      "role_events": {
+        "archivist": 44,
+        "cartographer": 44,
+        "compressor": 44,
+        "conductor": 48,
+        "critic": 4,
+        "sentinel": 48,
+        "supervisor": 48
+      },
+      "runs": 48,
+      "statuses": {
+        "approval_required": 4,
+        "needs_revision": 4,
+        "succeeded": 40
+      },
+      "value": {
+        "avoided_model_calls": {
+          "actual_total": 0.0,
+          "count": 48,
+          "expected_total": 4.0
+        },
+        "blocked_risk_events": {
+          "actual_total": 0.0,
+          "count": 48,
+          "expected_total": 4.0
+        },
+        "estimated_tokens_saved": {
+          "actual_total": 0.0,
+          "count": 48,
+          "expected_total": 667200.0
+        },
+        "expected_value_score": {
+          "actual_total": 0.0,
+          "count": 48,
+          "expected_total": 29.64
+        },
+        "extra_model_calls": {
+          "actual_total": 0.0,
+          "count": 48,
+          "expected_total": 0.0
+        }
+      }
+    },
+    "status_counts": {
+      "approval_required": 4,
+      "needs_revision": 4,
+      "succeeded": 40
+    }
+  },
+  "tool_laziness": {
+    "critical_final_recommendation": {
+      "average_cost_usd": 0.000915,
+      "average_latency_ms": 1495.0,
+      "average_tokens_spent": 91.5,
+      "average_value_score": 0.25,
+      "calls": 4,
+      "decision": "call",
+      "expected_value_score": 0.25,
+      "max_success_value_score": 1.0,
+      "reason": "rare critical success observed",
+      "samples": 4,
+      "scenario": "rare_high_value_lookup_1781255176383",
+      "tool_name": "provider_call",
+      "total_cost_usd": 0.00366,
+      "total_tokens_spent": 366,
+      "useful": 1,
+      "usefulness_rate": 0.25
+    },
+    "critical_scenario": "rare_high_value_lookup_1781255176383",
+    "final_recommendation": {
+      "average_cost_usd": 0.000618,
+      "average_latency_ms": 1220.0,
+      "average_tokens_spent": 61.8,
+      "average_value_score": 0.04,
+      "calls": 5,
+      "decision": "skip",
+      "estimated_avoidance": {
+        "cost_usd": 0.000618,
+        "latency_ms": 1220.0,
+        "tokens": 61.8
+      },
+      "expected_value_score": 0.04,
+      "max_success_value_score": 0.2,
+      "reason": "low learned usefulness",
+      "samples": 5,
+      "scenario": "redundant_lookup_1781255176383",
+      "tool_name": "provider_call",
+      "total_cost_usd": 0.00309,
+      "total_tokens_spent": 309,
+      "useful": 1,
+      "usefulness_rate": 0.2
+    },
+    "high_token_schema_laziness": {
+      "called_calls": 30,
+      "estimated_cost_avoided_usd": 27.3087,
+      "latency_avoided_ms": 32980.0,
+      "lazy_call_tokens_total": 30915,
+      "lazy_schema_tokens_total": 179712,
+      "lazy_total_tokens": 210627,
+      "relevant_tools_per_turn": 6,
+      "sample_decisions": [
+        {
+          "decision": "learn_more",
+          "intent": "read",
+          "reason": "insufficient samples",
+          "tokens": 900,
+          "turn": 0,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "edit",
+          "reason": "insufficient samples",
+          "tokens": 945,
+          "turn": 1,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "test",
+          "reason": "insufficient samples",
+          "tokens": 990,
+          "turn": 2,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "search",
+          "reason": "insufficient samples",
+          "tokens": 1035,
+          "turn": 3,
+          "useful": true
+        },
+        {
+          "decision": "learn_more",
+          "intent": "git",
+          "reason": "insufficient samples",
+          "tokens": 1080,
+          "turn": 4,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "provider",
+          "reason": "insufficient samples",
+          "tokens": 1125,
+          "turn": 5,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "memory",
+          "reason": "insufficient samples",
+          "tokens": 1170,
+          "turn": 6,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "forensics",
+          "reason": "insufficient samples",
+          "tokens": 900,
+          "turn": 7,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "read",
+          "reason": "insufficient samples",
+          "tokens": 945,
+          "turn": 8,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "edit",
+          "reason": "insufficient samples",
+          "tokens": 990,
+          "turn": 9,
+          "useful": false
+        },
+        {
+          "decision": "learn_more",
+          "intent": "test",
+          "reason": "insufficient samples",
+          "tokens": 1035,
+          "turn": 10,
+          "useful": true
+        },
+        {
+          "decision": "learn_more",
+          "intent": "search",
+          "reason": "insufficient samples",
+          "tokens": 1080,
+          "turn": 11,
+          "useful": false
+        }
+      ],
+      "skipped_calls": 34,
+      "static_call_tokens_total": 66105,
+      "static_schema_tokens_per_turn": 44928,
+      "static_schema_tokens_total": 2875392,
+      "static_total_tokens": 2941497,
+      "token_reduction_percent": 92.8395,
+      "tokens_avoided": 2730870,
+      "tool_count": 96,
+      "turns": 64
+    },
+    "observations": 5,
+    "projected_100_redundant_calls": {
+      "cost_avoided_usd": 0.0618,
+      "latency_avoided_ms": 122000.0,
+      "tokens_avoided": 6180.0
+    },
+    "scenario": "redundant_lookup_1781255176383"
+  }
+}

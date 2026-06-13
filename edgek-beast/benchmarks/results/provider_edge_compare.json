@@ -1,0 +1,93 @@
+{
+  "claim_scope": "Cloud APIs and local NIM are compared as OpenAI-compatible inference endpoints; BEAST impact is measured as edge preprocessing/governance around those endpoints.",
+  "configured_providers": [],
+  "generated_at": "2026-06-12T08:44:38Z",
+  "scenarios": [
+    {
+      "beast_estimated_prompt_tokens": 21432,
+      "beast_metadata": {
+        "ast_compression": {
+          "algorithm": "edgek_ast_compressor_v1",
+          "compressed_bytes": 4222,
+          "metadata": {
+            "columns": [
+              "site",
+              "line",
+              "asset",
+              "ts",
+              "temperature_c",
+              "vibration_mm_s",
+              "pressure_bar",
+              "status",
+              "operator_note"
+            ],
+            "content_sha256": "a416860bf2866cedc2fe14d30cc6a65f9df53ac6008445c2b72f7d1418aacf76",
+            "record_count": 626
+          },
+          "mode": "lossless_json_schema_rows",
+          "original_bytes": 145107,
+          "payload": "<omitted>",
+          "reduction_percent": 97.0904
+        },
+        "governance": "edgek_beast_preprocessed",
+        "isolation_forest": {
+          "contamination": 0.02,
+          "features": [
+            "temperature_c",
+            "vibration_mm_s",
+            "pressure_bar"
+          ],
+          "n_trees": 80,
+          "random_state": 23,
+          "sample_size": 128,
+          "threshold": 0.5885272768739792
+        }
+      },
+      "estimated_prompt_token_reduction_percent": 42.2707,
+      "name": "industrial_telemetry_anomaly_triage",
+      "raw_estimated_prompt_tokens": 37125
+    },
+    {
+      "beast_estimated_prompt_tokens": 1772,
+      "beast_metadata": {
+        "context_economy": {
+          "changed": true,
+          "chars_removed": 90279,
+          "final_tokens": 1772,
+          "original_tokens": 24326,
+          "strategy": "deterministic_trim"
+        },
+        "governance": "edgek_beast_preprocessed"
+      },
+      "estimated_prompt_token_reduction_percent": 92.7165,
+      "name": "long_context_redundant_agent_state",
+      "raw_estimated_prompt_tokens": 24329
+    },
+    {
+      "beast_estimated_prompt_tokens": 747,
+      "beast_metadata": {
+        "ast_compression": {
+          "algorithm": "edgek_ast_compressor_v1",
+          "compressed_bytes": 492,
+          "metadata": {
+            "function_count": 180,
+            "node_count": 2161,
+            "reconstructive": false,
+            "source_sha256": "f47ef464ad1fbd18d065bf0edff3d0133a8e322ca5a4876d913a2bc61b9ef7ea"
+          },
+          "mode": "semantic_python_ast_summary",
+          "original_bytes": 14719,
+          "payload": "<omitted>",
+          "reduction_percent": 96.6574
+        },
+        "governance": "edgek_beast_preprocessed"
+      },
+      "estimated_prompt_token_reduction_percent": 79.8815,
+      "name": "agentic_tool_surface_summary",
+      "raw_estimated_prompt_tokens": 3713
+    }
+  ],
+  "summary": {
+    "note": "No provider calls executed. Set API env vars or remove --dry-run."
+  }
+}

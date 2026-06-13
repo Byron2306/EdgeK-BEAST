@@ -1,0 +1,24 @@
+# EdgeK BEAST Full Live Gauntlet
+
+Generated at: `2026-06-12T17:39:41Z`
+Mode: `full_gauntlet_dry_run`
+Live API calls: `False`
+
+## Executive Metrics
+
+- Providers: `none configured`
+- Edge latency reduction: `40.168%`
+- Edge bandwidth reduction: `42.7935%`
+- Edge cost/token reduction: `47.726%`
+- CIPC handoff token reduction: `99.58%`
+- CIPC Postgres circuit opened: `True`
+- Ollama scout used live model: `False`
+- Ollama scout prompt limits: `[7000, 7000]`
+- Enterprise budget within limit: `True`
+
+## Provider Summary
+
+- No provider calls executed. Set API env vars or remove --dry-run.
+## Artifacts
+
+- JSON includes full local edge metrics, CIPC/mega-gauntlet metrics, live provider records, enterprise sealed-trace status, and host telemetry.

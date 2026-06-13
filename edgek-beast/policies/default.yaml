@@ -1,0 +1,369 @@
+# EdgeK BEAST Gateway - Default Policy Configuration
+# Phase 6: Runtime Governance Foundation with MCP Broker
+
+# Meta Rules (L0 Layer)
+meta_rules:
+  # Core architectural commitments
+  protocol_unification: true
+  context_economy: true
+  mcp_tool_governance: true
+  runtime_control: true
+  forensic_observability: true
+  semantic_risk_governance_enabled: true
+  
+  # Safety thresholds
+  max_input_tokens_per_request: 8000
+  max_output_tokens_per_request: 2000
+  max_tool_calls_per_request: 10
+  
+  # Budget controls
+  daily_max_requests: 1000
+  daily_max_estimated_cost_usd: 10.0
+  
+  # Runtime governance settings
+  stasis_wall_enabled: true
+  stasis_wall_max_concurrent: 5
+  stasis_wall_max_concurrent_by_provider:
+    openai: 5
+    anthropic: 5
+    litellm: 10
+  circuit_breaker_enabled: true
+  circuit_breaker_failure_threshold: 5
+  circuit_breaker_timeout_seconds: 60
+  runtime_provider_timeout_seconds: 120
+  runtime_attempt_lease_ttl_seconds: 900
+  
+  # Context economizer settings
+  context_economizer_enabled: true
+  context_compression_ratio_target: 0.3
+  context_compression_trigger_ratio: 0.85
+  context_economizer_min_recent_messages: 4
+  context_economizer_max_message_chars: 12000
+  context_economizer_preserve_system: true
+
+  # Workspace graph settings
+  workspace_graph_enabled: true
+  workspace_graph_context_enabled: true
+  workspace_graph_context_max_nodes: 10
+  workspace_graph_repository_indexing_enabled: true
+  
+  # MCP governance
+  mcp_tool_governance_enabled: true
+  mcp_tool_budgeting_enabled: true
+  mcp_broker_enabled: true
+  mcp_schema_pinning_enabled: true
+  mcp_schema_trust_on_first_use: true
+  same_file_read_loop_cache_enabled: true
+  tool_call_interception_required: true
+  file_read_semantic_snippets_default: 3
+  token_pruning_required: true
+  ollama_scout_enabled: true
+  
+  # Observability
+  telemetry_enabled: true
+  metrics_collection_enabled: true
+  trace_collection_enabled: true
+
+# Provider configurations (will be expanded)
+providers:
+  openai:
+    enabled: true
+    base_url: "https://api.openai.com/v1"
+    default_model: "gpt-3.5-turbo"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 60
+    rate_limit_tpm: 90000
+    pricing:
+      input_cost_per_1k: 0.0015
+      output_cost_per_1k: 0.002
+    
+  anthropic:
+    enabled: true
+    base_url: "https://api.anthropic.com/v1"
+    default_model: "claude-3-haiku-20240307"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 50
+    rate_limit_tpm: 40000
+    pricing:
+      input_cost_per_1k: 0.00025
+      output_cost_per_1k: 0.00125
+
+  codex:
+    enabled: true
+    base_url: "https://api.openai.com/v1"
+    default_model: "gpt-5-codex"
+    runtime_max_concurrent: 3
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 30
+    rate_limit_tpm: 60000
+    pricing:
+      input_cost_per_1k: 0.0015
+      output_cost_per_1k: 0.006
+
+  google:
+    enabled: true
+    base_url: "https://generativelanguage.googleapis.com"
+    default_model: "gemini-2.5-flash"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 60
+    rate_limit_tpm: 100000
+    pricing:
+      input_cost_per_1k: 0.000075
+      output_cost_per_1k: 0.0003
+
+  nvidia_nim:
+    enabled: true
+    base_url: "https://integrate.api.nvidia.com/v1"
+    default_model: "meta/llama-3.1-70b-instruct"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 60
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.0
+      output_cost_per_1k: 0.0
+
+  openrouter:
+    enabled: true
+    base_url: "https://openrouter.ai/api/v1"
+    default_model: "openrouter/auto"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 80
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.001
+      output_cost_per_1k: 0.002
+
+  cerebras:
+    enabled: true
+    base_url: "https://api.cerebras.ai/v1"
+    default_model: "llama3.1-8b"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 120
+    rate_limit_rpm: 60
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.0001
+      output_cost_per_1k: 0.0001
+
+  huggingface:
+    enabled: true
+    base_url: "https://router.huggingface.co/v1"
+    default_model: "openai/gpt-oss-120b"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 60
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.0
+      output_cost_per_1k: 0.0
+
+  tgi:
+    enabled: true
+    base_url: "http://127.0.0.1:3000"
+    default_model: "Qwen/Qwen2.5-3B-Instruct"
+    backend: "llamacpp"
+    runtime_max_concurrent: 5
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 120
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.0
+      output_cost_per_1k: 0.0
+    
+  # Local/LiteLLM providers
+  litellm:
+    enabled: true
+    base_url: "http://localhost:4000"
+    default_model: "gpt-3.5-turbo"
+    runtime_max_concurrent: 10
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 120
+    rate_limit_tpm: 120000
+    pricing:
+      input_cost_per_1k: 0.0
+      output_cost_per_1k: 0.0
+
+# MCP Server Classes and Trust Levels
+mcp_server_classes:
+  local_read_only:
+    trust_level: "low"
+    requires_approval: false
+    budget_multiplier: 1.0
+    
+  local_write:
+    trust_level: "medium"
+    requires_approval: true
+    budget_multiplier: 2.0
+    
+  shell:
+    trust_level: "high"
+    requires_approval: true
+    budget_multiplier: 5.0
+    allowed_commands: ["git status", "git diff", "git log", "npm test", "pytest", "cargo test"]
+    denied_commands: ["rm -rf", "curl * | sh", "sudo", "chmod 777", "ssh *", "scp *"]
+    
+  network:
+    trust_level: "medium_high"
+    requires_approval: true
+    budget_multiplier: 3.0
+
+  github:
+    trust_level: "medium_high"
+    requires_approval: true
+    budget_multiplier: 2.5
+    required_env: "GITHUB_TOKEN"
+    
+  database:
+    trust_level: "high"
+    requires_approval: true
+    budget_multiplier: 4.0
+
+  postgres:
+    trust_level: "high"
+    requires_approval: true
+    budget_multiplier: 4.0
+    required_env: "POSTGRES_DSN"
+
+  token_compressor:
+    trust_level: "low"
+    requires_approval: false
+    budget_multiplier: 0.35
+    required_backends: ["rtk", "sqz", "longcodezip", "reporelay"]
+    
+  secrets:
+    trust_level: "critical"
+    requires_approval: true
+    budget_multiplier: 10.0
+    # Secrets policy: never send/log credentials
+    secrets_handling: "never_log_or_transmit"
+
+required_integrations:
+  semantic_tool_interceptor:
+    kind: "local"
+    required: true
+  github:
+    kind: "api"
+    required: true
+    env: "GITHUB_TOKEN"
+  postgres:
+    kind: "database"
+    required: true
+    env: "POSTGRES_DSN"
+  rtk:
+    kind: "compressor"
+    required: true
+    binary: "rtk"
+  sqz:
+    kind: "compressor"
+    required: true
+    binary: "sqz"
+  longcodezip:
+    kind: "compressor"
+    required: true
+    binary: "longcodezip"
+  reporelay:
+    kind: "repository"
+    required: true
+    binary: "reporelay"
+
+ollama_scout:
+  enabled: true
+  base_url: "http://127.0.0.1:11434"
+  default_model: "llama3.2:3b"
+  roles:
+    - classify_task
+    - decide_privacy_level
+    - generate_search_queries
+    - rank_retrieved_chunks
+    - summarize_file_chunk
+    - compress_error_log
+    - identify_needed_tools
+    - build_handoff_packet
+    - verify_big_model_output
+    - detect_loop_or_repeated_failure
+
+# File Operation Policies
+file_operations:
+  blocked_patterns:
+    - "**.env"
+    - "*.pem"
+    - "id_rsa"
+    - ".ssh/**"
+    
+  approval_required_patterns:
+    - "package.json"
+    - "package-lock.json"
+    - "yarn.lock"
+    - "Cargo.toml"
+    - "go.mod"
+    - "docker-compose.yml"
+    - "infra/**"
+    - "migrations/**"
+    
+  safe_read_patterns:
+    - "src/**"
+    - "tests/**"
+    - "docs/**"
+    - "README*"
+    - "LICENSE*"
+
+# Queue Policy Options (for when limits are hit)
+queue_policy:
+  # Options: wait/retry, fallback, downgrade, ask user, summarize and stop
+  default_behavior: "wait_retry"
+  emit_retry_after_header: true
+  max_wait_time_seconds: 30
+  max_retry_attempts: 3
+  
+# Swarm Design Configuration
+swarm:
+  enabled: true
+  max_role_events_per_run: 20
+  model_based_critic_default: false
+  roles:
+    conductor: true
+    supervisor: true
+    critic: true
+    archivist: true
+    sentinel: true
+    cartographer: true
+    compressor: true
+
+# Authorized provider prompt-cache keepalive policy. Network pings remain
+# opt-in per registration/tick; dry-run is the safe default.
+prompt_cache_keepalive:
+  enabled: true
+  default_dry_run: true
+  min_interval_seconds: 60
+  default_interval_seconds: 240
+  default_ttl_seconds: 1800
+
+# Team/Enterprise Mode
+enterprise:
+  enabled: true
+  auth_enabled: true
+  virtual_keys_enabled: true
+  default_daily_request_limit: 1000
+  default_daily_cost_limit_usd: 25.0
+  centralized_observability_enabled: true
+  otel_export_enabled: true
+  policy_packs_enabled: true
+  encrypted_trace_storage_enabled: true
+  trace_encryption_secret: "edgek-local-dev-secret"
+    
+# Skill Tree Configuration
+skill_tree:
+  enabled: true
+  storage_type: "sqlite"  # or postgresql
+  
+# Forensic Archive Configuration (L4 Layer)
+forensic_archive:
+  enabled: true
+  storage_type: "jsonl_plus_index"  # JSONL files + SQLite/Postgres index
+  retention_days: 30
+  compression_enabled: true

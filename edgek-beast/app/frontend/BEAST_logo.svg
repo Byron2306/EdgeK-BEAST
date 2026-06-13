@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <defs>
+    <style>
+      @keyframes pulse-glow { 0%,100% { opacity:.7; } 50% { opacity:1; } }
+      .glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+    </style>
+  </defs>
+  <!-- Background -->
+  <rect width="600" height="200" fill="#08090b" rx="8"/>
+  <!-- Beast mark - angular B shape -->
+  <g transform="translate(16,20)">
+    <!-- Shield/beast body shape -->
+    <path d="M0 8 L28 0 L60 8 L56 60 L28 90 L0 60 Z" fill="#ff4d2e" stroke="#000" stroke-width="3"/>
+    <!-- Inner B -->
+    <path d="M16 22 L20 14 L40 14 L44 22 L40 30 L24 30 L24 38 L38 38 L42 46 L38 54 L20 54 L16 46 L16 22Z" fill="#08090b" stroke="none"/>
+    <!-- Eye -->
+    <circle cx="36" cy="24" r="3" fill="#f6b73c"/>
+    <!-- Claw marks -->
+    <line x1="56" y1="20" x2="68" y2="14" stroke="#ff4d2e" stroke-width="4" stroke-linecap="round"/>
+    <line x1="58" y1="32" x2="70" y2="28" stroke="#ff4d2e" stroke-width="4" stroke-linecap="round"/>
+    <line x1="56" y1="44" x2="68" y2="42" stroke="#ff4d2e" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- BEAST text -->
+  <text x="100" y="90" font-family="'Impact','Arial Black',sans-serif" font-size="90" font-weight="900" letter-spacing="8" fill="#f4f0e8" stroke="#000" stroke-width="4">BEAST</text>
+  <!-- Subtitle -->
+  <text x="110" y="132" font-family="'Courier New',monospace" font-size="16" fill="#aab1b6" letter-spacing="3">BROKERED EXECUTION & AI SECURITY TERMINAL</text>
+  <!-- Decorative line -->
+  <line x1="110" y1="142" x2="490" y2="142" stroke="#2d363d" stroke-width="2"/>
+  <!-- Version badge -->
+  <rect x="470" y="76" width="78" height="26" rx="4" fill="#ff4d2e" stroke="#000" stroke-width="2"/>
+  <text x="509" y="94" font-family="'Courier New',monospace" font-size="13" font-weight="bold" fill="#08090b" text-anchor="middle">v0.1.0</text>
+  <!-- Bottom status bar -->
+  <rect x="16" y="162" width="568" height="24" rx="4" fill="#12161a" stroke="#2d363d" stroke-width="2"/>
+  <circle cx="34" cy="174" r="5" fill="#4ade80" class="glow"/>
+  <text x="48" y="179" font-family="'Courier New',monospace" font-size="12" fill="#aab1b6">SYSTEM OPERATIONAL — PHASE 9: TEAM & ENTERPRISE MODE</text>
+  <text x="560" y="179" font-family="'Courier New',monospace" font-size="12" fill="#4ade80" text-anchor="end">● LIVE</text>
+</svg>

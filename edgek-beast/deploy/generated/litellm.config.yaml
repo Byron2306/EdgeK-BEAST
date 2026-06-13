@@ -1,0 +1,88 @@
+model_list:
+- model_name: gpt-3.5-turbo
+  litellm_params:
+    model: gpt-3.5-turbo
+    api_key: os.environ/OPENAI_API_KEY
+  rpm: 60
+  tpm: 90000
+- model_name: claude-3-haiku-20240307
+  litellm_params:
+    model: anthropic/claude-3-haiku-20240307
+    api_key: os.environ/ANTHROPIC_API_KEY
+  rpm: 50
+  tpm: 40000
+- model_name: gpt-5-codex
+  litellm_params:
+    model: gpt-5-codex
+    api_key: os.environ/OPENAI_API_KEY
+  rpm: 30
+  tpm: 60000
+- model_name: gemini-flash
+  litellm_params:
+    model: gemini/gemini-2.5-flash
+    api_key: os.environ/GEMINI_API_KEY
+  rpm: 60
+  tpm: 100000
+- model_name: nvidia-nim
+  litellm_params:
+    model: openai/meta/llama-3.1-70b-instruct
+    api_key: os.environ/NVIDIA_API_KEY
+    api_base: https://integrate.api.nvidia.com/v1
+  rpm: 60
+  tpm: 120000
+- model_name: openrouter/auto
+  litellm_params:
+    model: openrouter/auto
+    api_key: os.environ/OPENROUTER_API_KEY
+    api_base: https://openrouter.ai/api/v1
+  rpm: 80
+  tpm: 120000
+- model_name: llama3.1-8b
+  litellm_params:
+    model: openai/llama3.1-8b
+    api_key: os.environ/CEREBRAS_API_KEY
+    api_base: https://api.cerebras.ai/v1
+  rpm: 60
+  tpm: 120000
+- model_name: huggingface
+  litellm_params:
+    model: huggingface/openai/gpt-oss-120b
+    api_key: os.environ/HF_TOKEN
+    api_base: https://router.huggingface.co/v1
+  rpm: 60
+  tpm: 120000
+- model_name: tgi-llamacpp
+  litellm_params:
+    model: openai/Qwen/Qwen2.5-3B-Instruct
+    api_key: os.environ/HF_TOKEN
+    api_base: http://127.0.0.1:3000
+  rpm: 120
+  tpm: 120000
+- model_name: litellm-gpt-3.5-turbo
+  litellm_params:
+    model: openai/gpt-3.5-turbo
+    api_key: os.environ/LITELLM_API_KEY
+    api_base: http://localhost:4000
+  rpm: 120
+  tpm: 120000
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  request_timeout: 120
+general_settings:
+  master_key: os.environ/EDGEK_LITELLM_MASTER_KEY
+  database_url: os.environ/EDGEK_LITELLM_DATABASE_URL
+edgek_beast:
+  gateway_base_url: http://127.0.0.1:8005
+  governance: BEAST remains the policy, compression, tool-laziness, and forensic layer.
+  tool_call_interception: http://127.0.0.1:8005/edgek/tools/intercept
+  required_integrations: http://127.0.0.1:8005/edgek/tools/integrations
+mcp_servers:
+  edgek_beast:
+    transport: http
+    url: http://127.0.0.1:8005/edgek/mcp
+    description: BEAST-governed MCP broker; individual tools remain policy gated.
+  edgek_tool_interceptor:
+    transport: http
+    url: http://127.0.0.1:8005/edgek/tools/intercept
+    description: Required BEAST semantic file-read and token-pruning interceptor.
