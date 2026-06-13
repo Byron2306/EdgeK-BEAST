@@ -1,3 +1,6 @@
+<img width="500" height="500" alt="logo-removebg-preview" src="https://github.com/user-attachments/assets/3a0fe407-cc9f-47ad-9545-085d4474bded" />
+
+
 # EdgeK BEAST: A Governed MCP and LLM Gateway Architecture for Token-Efficient Agentic Coding
 
 **Document type:** System architecture whitepaper  
