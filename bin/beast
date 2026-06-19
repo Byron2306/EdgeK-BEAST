@@ -40,6 +40,7 @@ COMMANDS = [
     "diagnose",
     "route",
     "verify",
+    "maintenance",
     "chronicle",
     "promote",
     "prec",
@@ -528,6 +529,26 @@ def command_verify(args: argparse.Namespace) -> Dict[str, Any]:
         return TaskEnvelopeBuilder().run_quality_cascade(payload, workspace_root=str(ROOT))
 
     return {"command": "verify", **_gateway_or_local(args, "POST", "/edgek/quality/run", payload, local)}
+
+
+def command_maintenance(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "workspace_root": str(ROOT),
+        "run_tests": bool(args.run_tests),
+        "pytest_args": args.pytest_arg or ["-q"],
+        "include_extension_checks": bool_value(args.include_extension_checks),
+        "include_markdown": bool_value(args.include_markdown),
+        "run_packaging": bool(args.run_packaging),
+        "python_versions": args.python_version or [],
+        "timeout_seconds": int(args.timeout_seconds),
+    }
+
+    def local(_exc):
+        from app.kernel.task_envelope import TaskEnvelopeBuilder
+
+        return TaskEnvelopeBuilder().quality_cascade.run_maintenance(**payload)
+
+    return {"command": "maintenance", **_gateway_or_local(args, "POST", "/edgek/maintenance/run", payload, local)}
 
 
 def command_chronicle(args: argparse.Namespace) -> Dict[str, Any]:
@@ -1024,6 +1045,17 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--objective", "--task", dest="objective", required=True)
     verify.add_argument("--task-class", default="general_software_task")
     verify.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
+
+    maintenance = subparsers.add_parser("maintenance", help="Run repo hygiene maintenance checks")
+    maintenance.set_defaults(handler=command_maintenance)
+    maintenance.add_argument("--run-tests", action="store_true", help="Run full pytest after collect-only checks")
+    maintenance.add_argument("--pytest-arg", action="append", help="Pytest argument to use when --run-tests is enabled")
+    maintenance.add_argument("--include-extension-checks", default="true", help="true/false")
+    maintenance.add_argument("--include-markdown", default="true", help="true/false")
+    maintenance.add_argument("--run-packaging", action="store_true", help="Run packaging/build checks such as Python build, Jekyll Docker, dotnet, and Java")
+    maintenance.add_argument("--python-version", action="append", help="Python executable to use for package build checks, repeatable")
+    maintenance.add_argument("--timeout-seconds", type=int, default=60)
+    maintenance.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
 
     chronicle = subparsers.add_parser("chronicle", help="List, inspect, or publish Chronicle projections")
     chronicle.set_defaults(handler=command_chronicle)

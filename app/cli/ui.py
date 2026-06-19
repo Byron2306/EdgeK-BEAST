@@ -473,7 +473,7 @@ class HelpScreen(ModalScreen):
         for key, desc in [
             ('t','Test selected'),('v','Verify plan / view selected'),('e','Edit/config selected'),
             ('a','Approve/promote'),('b','Block/reject'),('s','Start live session'),('n','Next provider'),('[ / ]','Previous / next provider'),('c','Context picker'),('o','Provider source patch plan'),('f','Preview/select hunks'),('u','Apply selected hunks'),('z','Rollback latest apply'),('l','Approval queue'),('y','Approve latest plan'),
-            ('w','Toggle streaming mode'),('k','Cancel current live turn'),('p','Prepare handoff'),('d','Run diagnostics refresh'),('ctrl+k','Command palette placeholder'),
+            ('w','Toggle streaming mode'),('k','Cancel current live turn'),('p','Prepare handoff'),('d','Run diagnostics refresh'),('ctrl+k','Command palette'),
         ]:
             right.add_row(Text(key, style=f'bold {BEAST_ACID}'), Text(desc, style=BEAST_TEXT))
         grid = Table.grid(expand=True); grid.add_column(ratio=1); grid.add_column(ratio=1)
@@ -500,6 +500,73 @@ class DetailScreen(ModalScreen):
         if len(body) > 9000:
             body = body[:9000] + '\n... truncated ...'
         yield Static(Panel(Group(Text(self.detail_title, style=f'bold {BEAST_ACID}'), Text('Esc/q/v closes this viewer.', style=BEAST_MUTED), Text(''), Text(body, style=BEAST_TEXT)), border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL), id='detail-panel')
+
+
+class CommandPaletteScreen(ModalScreen):
+    BINDINGS = [
+        Binding('escape','close_palette','Close'), Binding('q','close_palette','Close'),
+        Binding('up','move_up','Up'), Binding('down','move_down','Down'),
+        Binding('enter','choose','Run'),
+    ]
+
+    def __init__(self, commands: List[Dict[str, Any]]):
+        super().__init__()
+        self.commands = commands
+        self.index = 0
+
+    def compose(self) -> ComposeResult:
+        yield Static(self.render_palette(), id='command-palette')
+
+    def render_palette(self):
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        table.add_column('', width=2)
+        table.add_column('Command', ratio=2)
+        table.add_column('Scope', ratio=1)
+        table.add_column('Key', width=12)
+        for i, command in enumerate(self.commands):
+            table.add_row(
+                selected_marker(i == self.index),
+                selected_text(str(command.get('label') or ''), i == self.index),
+                Text(str(command.get('scope') or 'BEAST'), style=BEAST_MUTED),
+                Text(str(command.get('key') or ''), style=BEAST_ACID),
+            )
+        return Panel(
+            Group(
+                Text('BEAST COMMAND PALETTE', style=f'bold {BEAST_ACID}'),
+                Text('↑↓ select  Enter run  Esc close', style=BEAST_MUTED),
+                Text(''),
+                table,
+            ),
+            border_style=BEAST_ACID,
+            padding=(1, 2),
+            style=BEAST_PANEL,
+        )
+
+    def _refresh(self) -> None:
+        try:
+            self.query_one('#command-palette', Static).update(self.render_palette())
+        except Exception:
+            pass
+
+    def action_move_up(self):
+        self.index = clamp(self.index - 1, 0, max(0, len(self.commands) - 1))
+        self._refresh()
+
+    def action_move_down(self):
+        self.index = clamp(self.index + 1, 0, max(0, len(self.commands) - 1))
+        self._refresh()
+
+    def action_choose(self):
+        if self.commands:
+            command_id = str(self.commands[self.index].get('id') or '')
+            try:
+                self.app.execute_palette_command(command_id)
+            except Exception:
+                pass
+        self.dismiss()
+
+    def action_close_palette(self):
+        self.dismiss()
 
 
 class ContextPickerScreen(ModalScreen):
@@ -1882,8 +1949,48 @@ class BeastMissionConsole(App):
         self.action_refresh_backend()
         self.run_worker(self._run_selected_action('doctor'), exclusive=False)
 
+    def command_palette_items(self) -> List[Dict[str, Any]]:
+        return [
+            {'id': 'refresh', 'label': 'Refresh backend state', 'scope': 'Gateway', 'key': 'r'},
+            {'id': 'start_session', 'label': 'Start live coding session', 'scope': 'Session', 'key': 's'},
+            {'id': 'prepare_handoff', 'label': 'Prepare provider handoff', 'scope': 'Output governance', 'key': 'p'},
+            {'id': 'sourceplan', 'label': 'Build governed source patch plan', 'scope': 'SourcePlan', 'key': 'o'},
+            {'id': 'preview_diff', 'label': 'Preview/select patch hunks', 'scope': 'SourcePlan', 'key': 'f'},
+            {'id': 'apply_patch', 'label': 'Apply selected patch hunks', 'scope': 'SourcePlan', 'key': 'u'},
+            {'id': 'rollback', 'label': 'Rollback latest patch apply', 'scope': 'SourcePlan', 'key': 'z'},
+            {'id': 'context_picker', 'label': 'Open context picker', 'scope': 'Context', 'key': 'c'},
+            {'id': 'approvals', 'label': 'Open approval queue', 'scope': 'Governance', 'key': 'l'},
+            {'id': 'doctor', 'label': 'Run diagnostics refresh', 'scope': 'Diagnostics', 'key': 'd'},
+            {'id': 'providers', 'label': 'Go to provider fitness', 'scope': 'Routing', 'key': '5'},
+            {'id': 'chronicle', 'label': 'Go to Chronicle', 'scope': 'Memory', 'key': '7'},
+            {'id': 'settings', 'label': 'Go to settings', 'scope': 'Config', 'key': '0'},
+        ]
+
+    def execute_palette_command(self, command_id: str) -> None:
+        actions = {
+            'refresh': self.action_refresh_backend,
+            'start_session': self.action_start_session,
+            'prepare_handoff': self.action_prepare_handoff,
+            'sourceplan': self.action_build_patch_plan,
+            'preview_diff': self.action_preview_diff,
+            'apply_patch': self.action_apply_patch_plan,
+            'rollback': self.action_rollback_patch,
+            'context_picker': self.action_context_picker,
+            'approvals': self.action_approval_queue,
+            'doctor': self.action_doctor,
+            'providers': self.action_providers,
+            'chronicle': self.action_chronicle,
+            'settings': self.action_settings,
+        }
+        action = actions.get(command_id)
+        if not action:
+            self.notify(f'Unknown command: {command_id}', title='BEAST', severity='warning')
+            return
+        action()
+        self.notify(f'Command executed: {command_id}', title='BEAST')
+
     def action_command_palette(self):
-        self.notify('Command palette queued. Use /help inside Live Session for BEAST commands.', title='BEAST')
+        self.push_screen(CommandPaletteScreen(self.command_palette_items()))
 
     async def _start_live_session(self) -> None:
         objective = 'BEAST live coding session from CLI/TUI'

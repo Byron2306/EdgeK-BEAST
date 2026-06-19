@@ -55,6 +55,23 @@ TOOL_DEFINITIONS = [
         },
     },
     {
+        "name": "beast_run_maintenance_cascade",
+        "description": "Run repo hygiene checks: compile, pytest collection, dependency sanity, docs links, and extension syntax.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "workspace_root": {"type": "string"},
+                "run_tests": {"type": "boolean", "default": False},
+                "pytest_args": {"type": "array", "items": {"type": "string"}},
+                "include_extension_checks": {"type": "boolean", "default": True},
+                "include_markdown": {"type": "boolean", "default": True},
+                "run_packaging": {"type": "boolean", "default": False},
+                "python_versions": {"type": "array", "items": {"type": "string"}},
+                "timeout_seconds": {"type": "integer", "default": 60},
+            },
+        },
+    },
+    {
         "name": "beast_prepare_handoff",
         "description": "Build a bounded context packet for a cloud-model handoff.",
         "inputSchema": {
@@ -65,6 +82,57 @@ TOOL_DEFINITIONS = [
                 "max_tokens": {"type": "integer", "default": 8000},
             },
             "required": ["envelope", "provider"],
+        },
+    },
+    {
+        "name": "beast_sourceplan_prepare",
+        "description": "Prepare a governed SourcePlan with output governance, bounded context, and selected files.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "objective": {"type": "string"},
+                "files": {"type": "array", "items": {"type": "string"}},
+                "provider": {"type": "string", "default": "litellm"},
+                "provider_text": {"type": "string"},
+            },
+            "required": ["objective"],
+        },
+    },
+    {
+        "name": "beast_sourceplan_preview_hunks",
+        "description": "Render a unified diff preview for a BEAST SourcePlan without applying it.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"plan": {"type": "object"}},
+            "required": ["plan"],
+        },
+    },
+    {
+        "name": "beast_sourceplan_apply_selected",
+        "description": "Apply selected SourcePlan hunks with approval, verification, rollback, and Chronicle crystallization.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "plan": {"type": "object"},
+                "approved": {"type": "boolean", "default": False},
+            },
+            "required": ["plan", "approved"],
+        },
+    },
+    {
+        "name": "beast_sourceplan_rollback_latest",
+        "description": "Rollback the latest BEAST SourcePlan apply using the local rollback snapshot.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "beast_provider_fitness",
+        "description": "Summarize provider route fitness, Chronicle evidence, and recommended runtime role.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "provider": {"type": "string"},
+                "limit": {"type": "integer", "default": 50},
+            },
         },
     },
     {

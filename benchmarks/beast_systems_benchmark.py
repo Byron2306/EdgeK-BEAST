@@ -20,6 +20,11 @@ from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
+try:
+    import httpx
+except ImportError:  # pragma: no cover - optional live benchmark dependency
+    httpx = None
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -316,6 +321,20 @@ LIVE_PROVIDER_PRESETS: Dict[str, LiveProvider] = {
         api_key_env="GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
         timeout=180.0,
     ),
+    "xai": LiveProvider(
+        name="xai",
+        base_url="https://api.x.ai/v1",
+        model="grok-build-0.1",
+        api_key_env="XAI_API_KEY",
+        timeout=180.0,
+    ),
+    "replicate": LiveProvider(
+        name="replicate",
+        base_url="https://api.replicate.com/v1",
+        model="meta/meta-llama-3-70b-instruct",
+        api_key_env="REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+        timeout=180.0,
+    ),
 }
 
 
@@ -343,6 +362,72 @@ def _resolved_live_provider(provider: LiveProvider) -> LiveProvider:
         model=os.environ.get(f"{prefix}_MODEL", provider.model),
         api_key_env=_first_env_name(provider.api_key_env),
     )
+
+
+def call_replicate_prediction_agent(
+    prompt: str,
+    model: str,
+    api_key: str,
+    timeout: float = 180.0,
+    max_tokens: int = 1200,
+) -> Dict[str, Any]:
+    """Call Replicate's native prediction API and normalize output for BEAST."""
+    if httpx is None:
+        raise RuntimeError("httpx is not installed")
+    if not api_key:
+        raise RuntimeError("Replicate API token is missing")
+    model_path = str(model or "").strip().strip("/")
+    if not model_path or "/" not in model_path:
+        raise RuntimeError(f"Replicate model must be owner/name, got: {model}")
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Prefer": "wait",
+    }
+    system_prompt = (
+        "You are a precise coding agent behind BEAST output governance. "
+        "Return exactly one strict JSON object and no markdown."
+    )
+    payload = {
+        "input": {
+            "prompt": prompt,
+            "system_prompt": system_prompt,
+            "temperature": 0,
+            "max_new_tokens": max_tokens,
+            "max_tokens": max_tokens,
+        }
+    }
+    started = time.perf_counter()
+    url = f"https://api.replicate.com/v1/models/{model_path}/predictions"
+    response = httpx.post(url, headers=headers, json=payload, timeout=timeout)
+    response.raise_for_status()
+    body = response.json()
+    deadline = time.perf_counter() + timeout
+    while body.get("status") in {"starting", "processing"} and body.get("urls", {}).get("get") and time.perf_counter() < deadline:
+        time.sleep(1.0)
+        poll = httpx.get(body["urls"]["get"], headers=headers, timeout=timeout)
+        poll.raise_for_status()
+        body = poll.json()
+    latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
+    output = body.get("output", "")
+    if isinstance(output, list):
+        text = "".join(str(item) for item in output)
+    elif isinstance(output, dict):
+        text = json.dumps(output)
+    else:
+        text = str(output or "")
+    if body.get("error"):
+        raise RuntimeError(str(body.get("error")))
+    return {
+        "text": text,
+        "usage": {
+            "replicate_prediction_id": body.get("id"),
+            "status": body.get("status"),
+            "metrics": body.get("metrics") or {},
+        },
+        "latency_ms": latency_ms,
+        "response_id": body.get("id"),
+    }
 
 
 def provider_wiring_task() -> SuiteTask:
@@ -1857,15 +1942,24 @@ def run_live_tasks(
     base_url = os.path.expandvars(base_url)
     api_key = _first_env_value(api_key_env)
     if caller is None:
-        caller = lambda prompt: call_openai_compatible_agent(
-            prompt,
-            base_url,
-            model,
-            api_key,
-            timeout,
-            max_tokens=max_tokens,
-            json_mode=json_mode,
-        )
+        if str(provider_name).lower().replace("-", "_") == "replicate":
+            caller = lambda prompt: call_replicate_prediction_agent(
+                prompt,
+                model,
+                api_key,
+                timeout=timeout,
+                max_tokens=max_tokens,
+            )
+        else:
+            caller = lambda prompt: call_openai_compatible_agent(
+                prompt,
+                base_url,
+                model,
+                api_key,
+                timeout,
+                max_tokens=max_tokens,
+                json_mode=json_mode,
+            )
     results = []
     for task in tasks:
         for lane in lanes:
@@ -2530,7 +2624,7 @@ def main() -> int:
             "Comma-separated live provider presets: openrouter,nvidia_nim,huggingface,"
             "openrouter_gptoss,openrouter_qwen_coder,openrouter_deepseek,"
             "hyperbolic,novita,fal,nscale,ovhcloud,cohere,cerebras,deepinfra,featherless. "
-            "groq,gemini,sambanova,mistral,cloudflare,deepseek,puter_deepseek,llm7,aion_labs,github_models. "
+            "groq,gemini,sambanova,mistral,cloudflare,deepseek,puter_deepseek,llm7,aion_labs,github_models,xai,replicate. "
             "local_nim is intentionally excluded."
         ),
     )

@@ -36,7 +36,7 @@ from app.kernel.enterprise import enterprise_manager
 from app.kernel.benchmark import ComparativeBenchmark, MegaGauntlet
 from app.kernel.ast_compressor import ASTCompressor
 from app.kernel.isolation_forest import IsolationForest
-from app.kernel.os_bypass import capabilities as os_bypass_capabilities, open_ring_probe, dpdk_probe, af_xdp_probe
+from app.kernel.os_bypass import af_packet_capture_probe, capabilities as os_bypass_capabilities, open_ring_probe, dpdk_probe, af_xdp_probe
 from app.kernel.tool_laziness import ToolLazinessLearner
 from app.kernel.deployment import DeploymentManager
 from app.kernel.tool_integrations import RequiredIntegrationRegistry, ToolCallInterceptor
@@ -254,6 +254,7 @@ async def root():
             "edgek_task_provider_diagnostic": "/edgek/task/provider-diagnostic",
             "edgek_task_quality_cascade": "/edgek/task/quality-cascade",
             "edgek_quality_run": "/edgek/quality/run",
+            "edgek_maintenance_run": "/edgek/maintenance/run",
             "edgek_context_packet": "/edgek/context/packet",
             "edgek_forge_scorecard": "/edgek/forge/scorecard",
             "edgek_forge_decision": "/edgek/forge/decision",
@@ -545,6 +546,26 @@ async def edgek_os_bypass_af_packet_probe(payload: Dict[str, Any] = None):
             "error": str(exc),
         }
 
+@app.post("/edgek/os-bypass/af-packet/capture-probe")
+async def edgek_os_bypass_af_packet_capture_probe(payload: Dict[str, Any] = None):
+    """Emit a marked loopback UDP datagram and verify AF_PACKET observes it."""
+    payload = payload or {}
+    try:
+        return af_packet_capture_probe(
+            interface=payload.get("interface", "lo"),
+            marker=payload.get("marker", "BEAST_OS_BYPASS_PROBE"),
+            port=int(payload.get("port", 45555)),
+            timeout_ms=int(payload.get("timeout_ms", 1000)),
+            max_packets=int(payload.get("max_packets", 64)),
+        )
+    except Exception as exc:
+        return {
+            "opened": False,
+            "mode": "af_packet_raw_capture",
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+        }
+
 @app.post("/edgek/os-bypass/dpdk/probe")
 async def edgek_os_bypass_dpdk_probe(payload: Dict[str, Any] = None):
     """Try to initialize DPDK EAL and report available ethdev ports."""
@@ -828,6 +849,29 @@ async def edgek_task_quality_cascade(payload: Dict[str, Any]):
 async def edgek_quality_run(payload: Dict[str, Any]):
     """Compatibility alias for the Quality Cascade route."""
     return await edgek_task_quality_cascade(payload)
+
+@app.post("/edgek/maintenance/run")
+async def edgek_maintenance_run(payload: Dict[str, Any]):
+    """Run repo hygiene checks after BEAST or agent-driven edits."""
+    payload = payload or {}
+    workspace_root = payload.get("workspace_root") or str(Path(__file__).resolve().parents[1])
+    report = task_envelope_builder.quality_cascade.run_maintenance(
+        workspace_root=str(workspace_root),
+        run_tests=bool(payload.get("run_tests", False)),
+        pytest_args=[str(item) for item in payload.get("pytest_args", [])],
+        include_extension_checks=bool(payload.get("include_extension_checks", True)),
+        include_markdown=bool(payload.get("include_markdown", True)),
+        run_packaging=bool(payload.get("run_packaging", False)),
+        python_versions=[str(item) for item in payload.get("python_versions", [])],
+        timeout_seconds=int(payload.get("timeout_seconds", 60)),
+    )
+    lifecycle = prec_lifecycle.record_artifact_lifecycle(
+        kind="maintenance_cascade",
+        payload=payload,
+        artifacts={"maintenance_report": report},
+    )
+    report["prec_lifecycle"] = _prec_summary(lifecycle)
+    return report
 
 @app.post("/edgek/context/packet")
 async def edgek_context_packet(payload: Dict[str, Any]):

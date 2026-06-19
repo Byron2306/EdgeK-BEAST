@@ -77,6 +77,15 @@ class NativeHuggingFaceAdapter(ProviderAdapter):
         return plan
 
 
+class NativeReplicateAdapter(ProviderAdapter):
+    adapter_class = "native_replicate"
+
+    def plan_chat(self, requested_model: str = "") -> ProviderAdapterPlan:
+        plan = super().plan_chat(requested_model)
+        plan.route_provider = "replicate_prediction"
+        return plan
+
+
 class OpenAICompatibleAdapter(ProviderAdapter):
     adapter_class = "openai_compatible"
 
@@ -118,6 +127,7 @@ class ProviderAdapterRegistry:
         "native_anthropic": NativeAnthropicAdapter,
         "native_gemini": NativeGeminiAdapter,
         "native_huggingface": NativeHuggingFaceAdapter,
+        "native_replicate": NativeReplicateAdapter,
         "openai_compatible": OpenAICompatibleAdapter,
         "litellm": LiteLLMAdapter,
         "ollama": OllamaAdapter,

@@ -16,7 +16,7 @@ import ctypes.util
 import time
 from pathlib import Path
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 SOL_PACKET = 263
@@ -25,6 +25,8 @@ PACKET_STATISTICS = 6
 PACKET_VERSION = 10
 TPACKET_V3 = 2
 ETH_P_ALL = 0x0003
+DEFAULT_PACKET_MARKER = "BEAST_OS_BYPASS_PROBE"
+DEFAULT_PACKET_PROBE_PORT = 45555
 
 
 @dataclass
@@ -54,6 +56,27 @@ class PacketRingConfig:
             raise ValueError("block_size must be >= frame_size")
 
 
+@dataclass
+class PacketCaptureConfig:
+    interface: str = "lo"
+    marker: str = DEFAULT_PACKET_MARKER
+    port: int = DEFAULT_PACKET_PROBE_PORT
+    timeout_ms: int = 1000
+    max_packets: int = 64
+
+    def validate(self) -> None:
+        if not self.interface:
+            raise ValueError("interface is required")
+        if not self.marker:
+            raise ValueError("marker is required")
+        if self.port <= 0 or self.port > 65535:
+            raise ValueError("port must be in the range 1..65535")
+        if self.timeout_ms <= 0:
+            raise ValueError("timeout_ms must be positive")
+        if self.max_packets <= 0:
+            raise ValueError("max_packets must be positive")
+
+
 def capabilities() -> Dict[str, Any]:
     is_linux = platform.system().lower() == "linux"
     has_af_packet = hasattr(socket, "AF_PACKET")
@@ -78,9 +101,68 @@ def capabilities() -> Dict[str, Any]:
         "af_xdp": af_xdp,
         "notes": [
             "AF_PACKET TPACKET_V3 mmap is implemented here and requires CAP_NET_RAW/root to open.",
+            "AF_PACKET capture probes emit a marked loopback UDP datagram and verify that the raw packet path sees it.",
             "DPDK and AF_XDP native backends are dynamically bound when their userspace libraries are installed.",
         ],
     }
+
+
+def build_udp_probe_payload(marker: str = DEFAULT_PACKET_MARKER) -> bytes:
+    """Build a compact marker payload for live AF_PACKET capture experiments."""
+    return f"{marker}:{time.time_ns()}".encode("utf-8")
+
+
+def parse_packet_frame(frame: bytes, marker: bytes = b"") -> Dict[str, Any]:
+    """Return a small, stable summary for Ethernet/IPv4/UDP packet frames."""
+    sample: Dict[str, Any] = {
+        "length": len(frame),
+        "marker_found": bool(marker and marker in frame),
+        "frame_preview_hex": frame[:32].hex(),
+    }
+    if len(frame) < 14:
+        return sample
+
+    ethertype = struct.unpack("!H", frame[12:14])[0]
+    sample["ethertype"] = f"0x{ethertype:04x}"
+    if ethertype != 0x0800 or len(frame) < 34:
+        return sample
+
+    ip_offset = 14
+    version_ihl = frame[ip_offset]
+    version = version_ihl >> 4
+    ihl = (version_ihl & 0x0F) * 4
+    if version != 4 or ihl < 20 or len(frame) < ip_offset + ihl:
+        return sample
+
+    protocol = frame[ip_offset + 9]
+    sample.update({
+        "ip_version": version,
+        "ip_header_bytes": ihl,
+        "ip_protocol": protocol,
+        "src_ip": socket.inet_ntoa(frame[ip_offset + 12:ip_offset + 16]),
+        "dst_ip": socket.inet_ntoa(frame[ip_offset + 16:ip_offset + 20]),
+    })
+    if protocol != 17:
+        return sample
+
+    udp_offset = ip_offset + ihl
+    if len(frame) < udp_offset + 8:
+        return sample
+    src_port, dst_port, udp_length, _checksum = struct.unpack("!HHHH", frame[udp_offset:udp_offset + 8])
+    payload = frame[udp_offset + 8:udp_offset + max(8, udp_length)]
+    sample.update({
+        "ip_protocol_name": "udp",
+        "src_port": src_port,
+        "dst_port": dst_port,
+        "udp_length": udp_length,
+        "payload_preview_hex": payload[:48].hex(),
+    })
+    return sample
+
+
+def _send_loopback_udp_probe(port: int, payload: bytes) -> None:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
+        sender.sendto(payload, ("127.0.0.1", port))
 
 
 class DpdkBackend:
@@ -280,6 +362,87 @@ class AfPacketMmapRing:
         self.close()
 
 
+class AfPacketSocketSniffer:
+    """Small AF_PACKET raw-socket sniffer for packet-path experiments."""
+
+    def __init__(self, config: PacketCaptureConfig):
+        self.config = config
+        self.config.validate()
+        self.sock: Optional[socket.socket] = None
+
+    def open(self) -> Dict[str, Any]:
+        caps = capabilities()
+        if not caps["supported_modes"]["af_packet_tpacket_v3_mmap"]:
+            raise RuntimeError("AF_PACKET raw sockets are unavailable on this host")
+
+        sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(ETH_P_ALL))
+        try:
+            sock.bind((self.config.interface, 0))
+            sock.settimeout(self.config.timeout_ms / 1000.0)
+            self.sock = sock
+        except Exception:
+            sock.close()
+            raise
+        return {
+            "opened": True,
+            "mode": "af_packet_raw_capture",
+            "config": asdict(self.config),
+            "ifindex": socket.if_nametoindex(self.config.interface),
+        }
+
+    def capture_after_probe(self) -> Dict[str, Any]:
+        if not self.sock:
+            self.open()
+
+        assert self.sock is not None
+        marker = self.config.marker.encode("utf-8")
+        payload = build_udp_probe_payload(self.config.marker)
+        started = time.monotonic()
+        deadline = started + (self.config.timeout_ms / 1000.0)
+        samples: List[Dict[str, Any]] = []
+        matched = False
+
+        _send_loopback_udp_probe(self.config.port, payload)
+        while time.monotonic() < deadline and len(samples) < self.config.max_packets:
+            try:
+                frame, address = self.sock.recvfrom(65535)
+            except socket.timeout:
+                break
+            sample = parse_packet_frame(frame, marker=marker)
+            if address:
+                sample["interface"] = address[0]
+                sample["packet_type"] = address[2] if len(address) > 2 else None
+            samples.append(sample)
+            matched = matched or bool(sample.get("marker_found"))
+            if matched:
+                break
+
+        return {
+            "opened": True,
+            "mode": "af_packet_raw_capture",
+            "interface": self.config.interface,
+            "sent_udp_probe": True,
+            "probe_port": self.config.port,
+            "marker": self.config.marker,
+            "captured_packets": len(samples),
+            "matched_marker": matched,
+            "elapsed_ms": round((time.monotonic() - started) * 1000, 3),
+            "samples": samples,
+        }
+
+    def close(self) -> None:
+        if self.sock is not None:
+            self.sock.close()
+            self.sock = None
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+
+
 def open_ring_probe(interface: str = "lo") -> Dict[str, Any]:
     """Attempt to open and close a minimal packet mmap ring."""
     ring = AfPacketMmapRing(PacketRingConfig(interface=interface, block_size=1 << 20, block_count=1))
@@ -289,6 +452,29 @@ def open_ring_probe(interface: str = "lo") -> Dict[str, Any]:
         return result
     finally:
         ring.close()
+
+
+def af_packet_capture_probe(
+    interface: str = "lo",
+    marker: str = DEFAULT_PACKET_MARKER,
+    port: int = DEFAULT_PACKET_PROBE_PORT,
+    timeout_ms: int = 1000,
+    max_packets: int = 64,
+) -> Dict[str, Any]:
+    """Emit a marked UDP datagram and verify AF_PACKET can observe it."""
+    config = PacketCaptureConfig(
+        interface=interface,
+        marker=marker,
+        port=port,
+        timeout_ms=timeout_ms,
+        max_packets=max_packets,
+    )
+    sniffer = AfPacketSocketSniffer(config)
+    try:
+        sniffer.open()
+        return sniffer.capture_after_probe()
+    finally:
+        sniffer.close()
 
 
 def dpdk_probe(argv: Optional[list[str]] = None) -> Dict[str, Any]:

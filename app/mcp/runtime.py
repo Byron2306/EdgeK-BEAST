@@ -22,6 +22,7 @@ from app.kernel.ollama_scout import OllamaScout
 from app.kernel.swarm import swarm_kernel
 from app.kernel.skill_tree import skill_tree
 from app.kernel.tool_laziness import ToolLazinessLearner
+from app.cli.api import BeastApiClient
 from app.mcp.broker import MCPBroker
 
 logger = logging.getLogger(__name__)
@@ -57,6 +58,7 @@ class BeastToolRuntime:
             tool_laziness_learner=self.tool_laziness_learner,
             skill_registry=skill_tree.skill_registry,
         )
+        self.beast_api = BeastApiClient()
 
     def _workspace_root(self, override: Optional[str] = None) -> str:
         value = override or self.workspace_root or "."
@@ -93,6 +95,23 @@ class BeastToolRuntime:
                 },
             },
             {
+                "name": "beast_run_maintenance_cascade",
+                "description": "Run repo hygiene checks: compile, pytest collection, dependency sanity, docs links, and extension syntax.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "run_tests": {"type": "boolean", "default": False},
+                        "pytest_args": {"type": "array", "items": {"type": "string"}},
+                        "include_extension_checks": {"type": "boolean", "default": True},
+                        "include_markdown": {"type": "boolean", "default": True},
+                        "run_packaging": {"type": "boolean", "default": False},
+                        "python_versions": {"type": "array", "items": {"type": "string"}},
+                        "timeout_seconds": {"type": "integer", "default": 60},
+                    },
+                },
+            },
+            {
                 "name": "beast_prepare_handoff",
                 "description": "Build a bounded context packet for a cloud-model handoff.",
                 "inputSchema": {
@@ -103,6 +122,57 @@ class BeastToolRuntime:
                         "max_tokens": {"type": "integer", "default": 8000},
                     },
                     "required": ["envelope", "provider"],
+                },
+            },
+            {
+                "name": "beast_sourceplan_prepare",
+                "description": "Prepare a governed SourcePlan with output governance, bounded context, and selected files.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "objective": {"type": "string"},
+                        "files": {"type": "array", "items": {"type": "string"}},
+                        "provider": {"type": "string", "default": "litellm"},
+                        "provider_text": {"type": "string"},
+                    },
+                    "required": ["objective"],
+                },
+            },
+            {
+                "name": "beast_sourceplan_preview_hunks",
+                "description": "Render a unified diff preview for a BEAST SourcePlan without applying it.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"plan": {"type": "object"}},
+                    "required": ["plan"],
+                },
+            },
+            {
+                "name": "beast_sourceplan_apply_selected",
+                "description": "Apply selected SourcePlan hunks with approval, verification, rollback, and Chronicle crystallization.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "plan": {"type": "object"},
+                        "approved": {"type": "boolean", "default": False},
+                    },
+                    "required": ["plan", "approved"],
+                },
+            },
+            {
+                "name": "beast_sourceplan_rollback_latest",
+                "description": "Rollback the latest BEAST SourcePlan apply using the local rollback snapshot.",
+                "inputSchema": {"type": "object", "properties": {}},
+            },
+            {
+                "name": "beast_provider_fitness",
+                "description": "Summarize provider route fitness, Chronicle evidence, and recommended runtime role.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "provider": {"type": "string"},
+                        "limit": {"type": "integer", "default": 50},
+                    },
                 },
             },
             {
@@ -388,6 +458,17 @@ class BeastToolRuntime:
             workspace_root = self._workspace_root(arguments.get("workspace_root"))
             route_card = self.task_envelope_builder.provider_diagnostic_route_card(provider, envelope)
             result = self.task_envelope_builder.quality_cascade.run(envelope, route_card, workspace_root)
+        elif name == "beast_run_maintenance_cascade":
+            result = self.task_envelope_builder.quality_cascade.run_maintenance(
+                workspace_root=self._workspace_root(arguments.get("workspace_root")),
+                run_tests=bool(arguments.get("run_tests", False)),
+                pytest_args=[str(item) for item in arguments.get("pytest_args", [])],
+                include_extension_checks=bool(arguments.get("include_extension_checks", True)),
+                include_markdown=bool(arguments.get("include_markdown", True)),
+                run_packaging=bool(arguments.get("run_packaging", False)),
+                python_versions=[str(item) for item in arguments.get("python_versions", [])],
+                timeout_seconds=int(arguments.get("timeout_seconds", 60)),
+            )
         elif name == "beast_prepare_handoff":
             envelope = arguments["envelope"]
             envelope = dict(envelope)
@@ -398,6 +479,31 @@ class BeastToolRuntime:
             result = self.context_packet_builder.build(
                 envelope=envelope,
                 workspace_root=self._workspace_root(arguments.get("workspace_root")),
+            )
+        elif name == "beast_sourceplan_prepare":
+            action = self.beast_api.build_source_patch_plan(
+                str(arguments.get("objective") or ""),
+                [str(item) for item in (arguments.get("files") or [])],
+                provider=str(arguments.get("provider") or "litellm"),
+                provider_text=str(arguments.get("provider_text") or ""),
+            )
+            result = self._action_result(action)
+        elif name == "beast_sourceplan_preview_hunks":
+            action = self.beast_api.render_patch_diff(arguments.get("plan") or {})
+            result = self._action_result(action)
+        elif name == "beast_sourceplan_apply_selected":
+            action = self.beast_api.apply_patch_plan(
+                arguments.get("plan") or {},
+                approved=bool(arguments.get("approved", False)),
+            )
+            result = self._action_result(action)
+        elif name == "beast_sourceplan_rollback_latest":
+            action = self.beast_api.rollback_last_patch()
+            result = self._action_result(action)
+        elif name == "beast_provider_fitness":
+            result = self._provider_fitness(
+                provider=str(arguments.get("provider") or ""),
+                limit=int(arguments.get("limit", 50)),
             )
         elif name == "beast_check_policy":
             action = arguments["action"]
@@ -499,6 +605,73 @@ class BeastToolRuntime:
             raise ValueError(f"Unknown MCP tool: {name}")
         return result
 
+    def _action_result(self, action: Any) -> Dict[str, Any]:
+        return {
+            "ok": bool(getattr(action, "ok", False)),
+            "title": str(getattr(action, "title", "")),
+            "summary": str(getattr(action, "summary", "")),
+            "data": getattr(action, "data", {}) or {},
+            "error": str(getattr(action, "error", "")),
+        }
+
+    def _provider_fitness(self, provider: str = "", limit: int = 50) -> Dict[str, Any]:
+        chronicles = self.task_envelope_builder.list_chronicles(limit=max(1, min(limit, 200))).get("chronicles", [])
+        if provider:
+            chronicles = [
+                item for item in chronicles
+                if str(item.get("provider") or "").lower() == provider.lower()
+            ]
+        route_cards = self.task_envelope_builder.list_route_cards(limit=max(1, min(limit, 200))).get("route_cards", [])
+        providers: Dict[str, Dict[str, Any]] = {}
+        for item in chronicles:
+            pid = str(item.get("provider") or provider or "local")
+            bucket = providers.setdefault(pid, {
+                "provider": pid,
+                "chronicles": 0,
+                "verified": 0,
+                "failed": 0,
+                "canonicalized": 0,
+            })
+            bucket["chronicles"] += 1
+            status = str(item.get("status") or item.get("category") or "").lower()
+            if any(term in status for term in ("passed", "success", "verified", "completed")):
+                bucket["verified"] += 1
+            if any(term in status for term in ("failed", "error", "denied")):
+                bucket["failed"] += 1
+            if bool(item.get("canonicalized")):
+                bucket["canonicalized"] += 1
+        for bucket in providers.values():
+            total = max(1, int(bucket["chronicles"]))
+            verified_rate = float(bucket["verified"]) / total
+            rescue_rate = float(bucket["canonicalized"]) / total
+            bucket["provider_fitness_score"] = round((0.7 * verified_rate + 0.3 * (1.0 - rescue_rate)) * 100, 2)
+            bucket["beast_rescue_score"] = round(rescue_rate * 100, 2)
+            bucket["recommended_role"] = self._recommended_provider_role(bucket)
+        ranked = sorted(providers.values(), key=lambda item: item["provider_fitness_score"], reverse=True)
+        return {
+            "beast_object_type": "provider_fitness_snapshot",
+            "provider": provider or "all",
+            "providers": ranked,
+            "route_card_count": len(route_cards),
+            "chronicle_count": len(chronicles),
+        }
+
+    def _recommended_provider_role(self, bucket: Dict[str, Any]) -> str:
+        provider = str(bucket.get("provider") or "").lower()
+        fitness = float(bucket.get("provider_fitness_score") or 0)
+        rescue = float(bucket.get("beast_rescue_score") or 0)
+        if provider in {"fal", "hyperbolic"} and int(bucket.get("verified") or 0) == 0:
+            return "do_not_use_until_auth_fixed"
+        if "nim" in provider or "nvidia" in provider:
+            return "refs_only_action_ir_generator"
+        if fitness >= 75:
+            return "primary_patch_provider"
+        if fitness >= 45 and rescue >= 30:
+            return "rescued_patch_provider"
+        if rescue >= 60:
+            return "semantic_transform_selector"
+        return "scout_only"
+
     def _mcp_status(self) -> Dict[str, Any]:
         """Metatron-inspired MCP status without importing domain-specific services."""
         tool_catalog = self._tool_catalog()
@@ -533,7 +706,7 @@ class BeastToolRuntime:
                 "risk": self._risk_level(name),
                 "rate_limit_per_hour": self._rate_limit(name),
                 "audit_level": "full" if category in {"execution", "governance", "promotion"} else "basic",
-                "idempotent": name not in {"beast_publish_chronicle", "beast_check_promotion", "beast_openclaw_execute"},
+                "idempotent": name not in {"beast_publish_chronicle", "beast_check_promotion", "beast_openclaw_execute", "beast_sourceplan_apply_selected", "beast_sourceplan_rollback_latest"},
                 "async_capable": False,
                 "inputSchema": definition.get("inputSchema", {}),
                 "redact_fields": ["*.credentials", "*.api_key", "*.token", "*.secret"],
@@ -543,11 +716,13 @@ class BeastToolRuntime:
     def _tool_category(self, name: str) -> str:
         if "openclaw" in name:
             return "execution"
+        if "sourceplan" in name:
+            return "sourceplan"
         if "policy" in name or "canon" in name or "promotion" in name:
             return "governance"
         if "context" in name or "handoff" in name or "workspace" in name:
             return "context"
-        if "forge" in name or "workflow" in name or "quality" in name:
+        if "forge" in name or "workflow" in name or "quality" in name or "maintenance" in name:
             return "planning"
         if "chronicle" in name or "status" in name or "catalog" in name:
             return "audit"
@@ -556,6 +731,8 @@ class BeastToolRuntime:
     def _trust_state(self, name: str) -> str:
         if name == "beast_openclaw_execute":
             return "trusted_with_approval_for_non_read_only"
+        if name == "beast_sourceplan_apply_selected":
+            return "trusted_with_explicit_hunk_approval"
         if name in {"beast_publish_chronicle", "beast_check_promotion"}:
             return "trusted"
         return "degraded"
@@ -563,6 +740,10 @@ class BeastToolRuntime:
     def _risk_level(self, name: str) -> str:
         if name == "beast_openclaw_execute":
             return "gated_execution"
+        if name == "beast_sourceplan_apply_selected":
+            return "gated_source_write"
+        if name == "beast_sourceplan_rollback_latest":
+            return "rollback_write"
         if name in {"beast_publish_chronicle", "beast_check_promotion"}:
             return "persistent_write"
         return "read_or_plan"
@@ -570,7 +751,7 @@ class BeastToolRuntime:
     def _rate_limit(self, name: str) -> int:
         if name == "beast_openclaw_execute":
             return 60
-        if name in {"beast_run_quality_cascade", "beast_build_context_packet", "beast_openclaw_plan"}:
+        if name in {"beast_run_quality_cascade", "beast_run_maintenance_cascade", "beast_build_context_packet", "beast_openclaw_plan"}:
             return 240
         return 500
 

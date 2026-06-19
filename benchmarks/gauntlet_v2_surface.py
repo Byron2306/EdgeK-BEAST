@@ -82,6 +82,69 @@ TASK_CLASSES = [
     "async_timeout_fallback",
 ]
 
+TASK_FIXTURE_PROFILES = {
+    "provider_registry_model_mapping": {
+        "repo_fixture": "edgek-beast-provider-routing",
+        "allowed_files": ["app/kernel/provider_registry.py", "app/kernel/provider_adapters.py", "app/cli/api.py"],
+        "visible_tests": ["tests/test_provider_registry.py"],
+        "hidden_tests": ["hidden/provider_route_resolution.py", "hidden/beast_auto_model_contract.py"],
+    },
+    "config_generator_cleanup": {
+        "repo_fixture": "edgek-beast-config-fixture",
+        "allowed_files": ["app/kernel/config_generator.py", "app/cli/api.py", "docs/api.md"],
+        "visible_tests": ["tests/test_config_generator.py"],
+        "hidden_tests": ["hidden/config_roundtrip_contract.py"],
+    },
+    "fastapi_endpoint_behavior": {
+        "repo_fixture": "edgek-beast-api-fixture",
+        "allowed_files": ["app/main.py", "app/cli/api.py", "app/kernel/runtime.py"],
+        "visible_tests": ["tests/test_api_endpoints.py"],
+        "hidden_tests": ["hidden/http_contract_regression.py"],
+    },
+    "textual_ui_key_handling": {
+        "repo_fixture": "edgek-beast-tui-fixture",
+        "allowed_files": ["app/cli/ui.py", "app/cli/assets/**"],
+        "visible_tests": ["tests/test_tui_behavior.py"],
+        "hidden_tests": ["hidden/tui_resize_keymap.py"],
+    },
+    "streaming_response_plumbing": {
+        "repo_fixture": "edgek-beast-streaming-fixture",
+        "allowed_files": ["app/kernel/provider_adapters.py", "app/main.py", "app/mcp/runtime.py"],
+        "visible_tests": ["tests/test_streaming.py"],
+        "hidden_tests": ["hidden/streaming_backpressure.py", "hidden/partial_json_recovery.py"],
+    },
+    "json_yaml_parser_bug": {
+        "repo_fixture": "edgek-beast-parser-fixture",
+        "allowed_files": ["app/kernel/output_governor.py", "app/kernel/action_ir.py", "app/kernel/local_patch_compiler.py"],
+        "visible_tests": ["tests/test_output_governor.py"],
+        "hidden_tests": ["hidden/yaml_json_edge_cases.py"],
+    },
+    "cli_argument_bug": {
+        "repo_fixture": "edgek-beast-cli-fixture",
+        "allowed_files": ["bin/beast", "app/cli/api.py"],
+        "visible_tests": ["tests/test_cli_commands.py"],
+        "hidden_tests": ["hidden/cli_argument_matrix.py"],
+    },
+    "regression_test_creation": {
+        "repo_fixture": "edgek-beast-test-authoring-fixture",
+        "allowed_files": ["tests/**", "app/kernel/**"],
+        "visible_tests": ["tests/test_quality_cascade.py"],
+        "hidden_tests": ["hidden/regression_test_detects_bug.py"],
+    },
+    "multi_file_import_refactor": {
+        "repo_fixture": "edgek-beast-import-refactor-fixture",
+        "allowed_files": ["app/kernel/**", "app/mcp/**", "tests/**"],
+        "visible_tests": ["tests/test_workspace_graph.py"],
+        "hidden_tests": ["hidden/import_cycle_scan.py", "hidden/public_api_compat.py"],
+    },
+    "async_timeout_fallback": {
+        "repo_fixture": "edgek-beast-async-fixture",
+        "allowed_files": ["app/kernel/provider_adapters.py", "app/mcp/runtime.py", "app/main.py"],
+        "visible_tests": ["tests/test_mcp_runtime_v2.py"],
+        "hidden_tests": ["hidden/timeout_fallback_contract.py"],
+    },
+}
+
 NIM_FAILURE_BUCKETS = {
     "auth": "nim_infra_auth_failure",
     "unauthorized": "nim_infra_auth_failure",
@@ -179,15 +242,16 @@ def build_task_specs(task_count: int = 30) -> List[Dict[str, Any]]:
     tasks = []
     for index in range(max(1, task_count)):
         task_class = TASK_CLASSES[index % len(TASK_CLASSES)]
+        fixture = TASK_FIXTURE_PROFILES[task_class]
         tasks.append({
             "task_id": f"gv2-{index + 1:03d}",
-            "repo_fixture": "edgek-beast-mini" if index < 10 else "external-fixture-placeholder",
+            "repo_fixture": fixture["repo_fixture"],
             "task_class": task_class,
             "bug_description": f"Deterministic {task_class.replace('_', ' ')} task.",
-            "allowed_files": [],
+            "allowed_files": fixture["allowed_files"],
             "forbidden_files": ["tests/**"] if task_class != "regression_test_creation" else [],
-            "visible_tests": [],
-            "hidden_tests": [],
+            "visible_tests": fixture["visible_tests"],
+            "hidden_tests": fixture["hidden_tests"],
             "success_criteria": ["patch applies", "visible tests pass", "hidden tests pass when present"],
             "expected_blast_radius": "single-file" if index % 3 else "multi-file",
         })

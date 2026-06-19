@@ -116,6 +116,23 @@ def test_workspace_graph_indexes_javascript_symbols_with_multilanguage_parser(tm
     assert "tree_sitter" in graph.stats()
 
 
+def test_workspace_graph_tree_sitter_helper_extracts_symbols_or_falls_back(tmp_path):
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    symbols = graph._extract_symbols_tree_sitter(
+        "class Helper:\n"
+        "    def run(self):\n"
+        "        return True\n\n"
+        "def build_helper():\n"
+        "    return Helper()\n",
+        "python",
+        "helpers.py",
+    )
+
+    names = {symbol["name"] for symbol in symbols}
+    assert {"Helper", "run", "build_helper"}.issubset(names)
+    assert all(symbol["file"] == "helpers.py" for symbol in symbols)
+
+
 def test_workspace_graph_semantic_index_context_and_dedupe(tmp_path):
     pytest.importorskip("sentence_transformers")
     repo = tmp_path / "repo"

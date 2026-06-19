@@ -962,97 +962,21 @@ class WorkspaceGraph:
         # Use Tree-sitter if available for this language
         if language in _PARSERS and _PARSERS[language] is not None:
             try:
-                parser = _PARSERS[language]
-                tree = parser.parse(bytes(content, "utf8"))
-                root_node = tree.root_node
-
                 count = 0
-                # Define capture queries for different languages
-                # This is a simplified version - in production we'd use proper Tree-sitter queries
-                query_string = self.TS_SYMBOL_QUERIES.get(language, "")
-                if query_string:
-                    # For simplicity, we're extracting all nodes and filtering by type
-                    # A real implementation would use Tree-sitter query API
-                    def walk_tree(node):
-                        nonlocal count
-                        if node.type in ['function_definition', 'class_definition', 'method_definition',
-                                       'function_declaration', 'class_declaration', 'interface_declaration',
-                                       'struct_specification', 'class_specifier']:
-                            # Extract symbol name based on node type and language
-                            symbol_name = None
-                            if language == 'python':
-                                if node.type == 'function_definition':
-                                    # Look for identifier child
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                                elif node.type == 'class_definition':
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                            elif language in ['javascript', 'typescript']:
-                                if node.type in ['function_declaration', 'class_declaration', 'method_definition']:
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                                elif node.type == 'interface_declaration':
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                            elif language == 'java':
-                                if node.type in ['method_declaration', 'class_declaration', 'interface_declaration']:
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                            elif language == 'c':
-                                if node.type == 'function_definition':
-                                    for child in node.children:
-                                        if child.type == 'function_declarator':
-                                            for grandchild in child.children:
-                                                if grandchild.type == 'identifier':
-                                                    symbol_name = grandchild.text.decode('utf8')
-                                                    break
-                                            break
-                                elif node.type == 'struct_specification':
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-                            elif language == 'cpp':
-                                if node.type == 'function_definition':
-                                    for child in node.children:
-                                        if child.type == 'function_declarator':
-                                            for grandchild in child.children:
-                                                if grandchild.type == 'identifier':
-                                                    symbol_name = grandchild.text.decode('utf8')
-                                                    break
-                                            break
-                                elif node.type in ['class_specifier', 'struct_specifier']:
-                                    for child in node.children:
-                                        if child.type == 'identifier':
-                                            symbol_name = child.text.decode('utf8')
-                                            break
-
-                            if symbol_name:
-                                line_number = content.count("\n", 0, node.start_byte) + 1
-                                symbol_id = f"symbol:{rel_path}:{symbol_name}:{line_number}"
-                                self.upsert_node(symbol_id, "symbol", symbol_name, {
-                                    "file": rel_path,
-                                    "line": line_number,
-                                    "language": language
-                                }, timestamp)
-                                self.upsert_edge(file_id, symbol_id, "defines_symbol", {}, timestamp)
-                                count += 1
-
-                        for child in node.children:
-                            walk_tree(child)
-
-                    walk_tree(root_node)
+                for symbol in self._extract_symbols_tree_sitter(content, language, rel_path):
+                    symbol_name = str(symbol.get("name") or "")
+                    line_number = int(symbol.get("line") or 1)
+                    symbol_id = f"symbol:{rel_path}:{symbol_name}:{line_number}"
+                    self.upsert_node(symbol_id, "symbol", symbol_name, {
+                        "file": rel_path,
+                        "line": line_number,
+                        "language": language,
+                        "symbol_type": symbol.get("type", "symbol"),
+                        "extractor": symbol.get("extractor", "tree_sitter"),
+                    }, timestamp)
+                    self.upsert_edge(file_id, symbol_id, "defines_symbol", {}, timestamp)
+                    count += 1
+                if count:
                     return count
             except Exception:
                 # Fall back to regex-based extraction on any Tree-sitter error
@@ -1251,21 +1175,55 @@ class WorkspaceGraph:
     def _extract_symbols_tree_sitter(self, content: str, language: str, file_path: str) -> List[Dict[str, Any]]:
         """Extract symbols using Tree-sitter parser for supported languages."""
         if language not in _PARSERS or not _PARSERS[language]:
-            return []
+            return self._extract_symbols_regex_fallback(content, language, file_path)
 
         try:
             parser = _PARSERS[language]
             tree = parser.parse(bytes(content, "utf8"))
             root_node = tree.root_node
+            target_node_types = {
+                "python": {"function_definition": "function", "class_definition": "class"},
+                "javascript": {"function_declaration": "function", "class_declaration": "class", "method_definition": "method"},
+                "typescript": {"function_declaration": "function", "class_declaration": "class", "method_definition": "method", "interface_declaration": "interface"},
+                "java": {"method_declaration": "method", "class_declaration": "class", "interface_declaration": "interface"},
+                "c": {"function_definition": "function", "struct_specification": "struct"},
+                "cpp": {"function_definition": "function", "class_specifier": "class", "struct_specifier": "struct"},
+            }.get(language, {})
 
-            symbols = []
-            query_string = self.TS_SYMBOL_QUERIES.get(language, "")
-            if not query_string:
+            symbols: List[Dict[str, Any]] = []
+
+            def identifier_text(node: Any) -> Optional[str]:
+                if node.type == "identifier":
+                    return node.text.decode("utf-8", errors="ignore")
+                if node.type in {"function_declarator", "pointer_declarator", "reference_declarator"}:
+                    for child in node.children:
+                        found = identifier_text(child)
+                        if found:
+                            return found
+                for child in node.children:
+                    if child.type == "identifier":
+                        return child.text.decode("utf-8", errors="ignore")
+                return None
+
+            def walk(node: Any) -> None:
+                symbol_type = target_node_types.get(node.type)
+                if symbol_type:
+                    name = identifier_text(node)
+                    if name:
+                        symbols.append({
+                            "name": name,
+                            "type": symbol_type,
+                            "line": content.count("\n", 0, node.start_byte) + 1,
+                            "file": file_path,
+                            "extractor": "tree_sitter",
+                            "node_type": node.type,
+                        })
+                for child in node.children:
+                    walk(child)
+
+            walk(root_node)
+            if symbols:
                 return symbols
-
-            # Note: In a real implementation, we'd use the tree_sitter Language API for queries
-            # For now, we'll fall back to regex-based extraction for simplicity
-            # This is a placeholder that demonstrates the integration point
             return self._extract_symbols_regex_fallback(content, language, file_path)
         except Exception:
             # Fall back to regex-based extraction on any error

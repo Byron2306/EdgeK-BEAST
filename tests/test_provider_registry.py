@@ -13,6 +13,7 @@ def test_provider_registry_inventory_defines_gateway_lanes():
     assert inventory["beast_object_type"] == "provider_registry"
     assert inventory["governance"]["beast_in_front_of_litellm"] is True
     assert "native_anthropic" in inventory["backend_classes"]
+    assert "native_replicate" in inventory["backend_classes"]
     assert "openai_compatible" in inventory["backend_classes"]
     assert "litellm" in inventory["backend_classes"]
     assert "ollama" in inventory["backend_classes"]
@@ -92,6 +93,23 @@ def test_provider_adapter_registry_assigns_dedicated_adapter_classes():
         }
     }).adapter_for("nvidia_nim").plan_chat("beast-auto").model == "nvidia/nemotron-3-super-120b-a12b"
     assert adapters["ollama"]["adapter_class"] == "ollama"
+
+
+def test_xai_and_replicate_have_distinct_route_contracts():
+    records = {record.provider_id: record for record in ProviderRegistry().records()}
+
+    assert records["xai"].backend == "openai_compatible"
+    assert records["xai"].base_url == "https://api.x.ai/v1"
+    assert records["xai"].default_model == "grok-build-0.1"
+    assert records["replicate"].backend == "native_replicate"
+    assert records["replicate"].openai_compatible is False
+
+    adapters = ProviderAdapterRegistry()
+    xai = adapters.adapter_for("xai").plan_chat("beast-auto")
+    replicate = adapters.adapter_for("replicate").plan_chat("beast-auto")
+    assert xai.route_provider == "openai_compatible"
+    assert replicate.adapter_class == "native_replicate"
+    assert replicate.route_provider == "replicate_prediction"
 
 
 def test_codex_and_beast_auto_have_concrete_provider_contracts():

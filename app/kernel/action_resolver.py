@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import ast
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
@@ -138,6 +139,48 @@ def _defaults_block(text: str) -> tuple[int, int, List[str]]:
     raise ValueError("ProviderRegistry.DEFAULTS block was not closed")
 
 
+def _defaults_mapping(text: str) -> Dict[str, object]:
+    tree = ast.parse(text)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "DEFAULTS":
+                    value = ast.literal_eval(node.value)
+                    return value if isinstance(value, dict) else {}
+                if isinstance(target, ast.Attribute) and target.attr == "DEFAULTS":
+                    value = ast.literal_eval(node.value)
+                    return value if isinstance(value, dict) else {}
+        if isinstance(node, ast.AnnAssign):
+            target = node.target
+            if isinstance(target, ast.Name) and target.id == "DEFAULTS":
+                value = ast.literal_eval(node.value)
+                return value if isinstance(value, dict) else {}
+            if isinstance(target, ast.Attribute) and target.attr == "DEFAULTS":
+                value = ast.literal_eval(node.value)
+                return value if isinstance(value, dict) else {}
+    return {}
+
+
+def _python_dict_literal(value: object, indent: str = "        ") -> str:
+    if isinstance(value, dict):
+        if not value:
+            return "{}"
+        inner = []
+        child_indent = indent + "    "
+        for key, item in value.items():
+            inner.append(f"{child_indent}{json.dumps(str(key))}: {_python_dict_literal(item, child_indent)},")
+        return "{\n" + "\n".join(inner) + f"\n{indent}" + "}"
+    if isinstance(value, list):
+        return "[" + ", ".join(_python_dict_literal(item, indent) for item in value) + "]"
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, bool):
+        return "True" if value else "False"
+    if value is None:
+        return "None"
+    return repr(value)
+
+
 def _resolve_add_provider_record(action: ActionIntent, path: str, current: str) -> ResolvedAction:
     params = action.parameters or {}
     provider_id = str(params.get("provider_id") or params.get("id") or params.get("name") or "").replace("-", "_")
@@ -191,6 +234,53 @@ def _resolve_set_default_model(action: ActionIntent, path: str, current: str) ->
     indent = backend_line[: len(backend_line) - len(backend_line.lstrip())]
     updated_block = block.replace(backend_line, backend_line + f'{indent}"default_model": {json.dumps(str(default_model))},\n', 1)
     return ResolvedAction(action=action, path=path, old=block, new=updated_block, expected_sha256=_sha256_text(current), semantic=True)
+
+
+def _resolve_add_provider_alias(action: ActionIntent, path: str, current: str) -> ResolvedAction:
+    params = action.parameters or {}
+    alias_id = str(params.get("alias") or params.get("alias_id") or params.get("provider_id") or params.get("id") or params.get("name") or "").replace("-", "_")
+    target_id = str(params.get("target_provider") or params.get("alias_of") or params.get("base_provider") or params.get("provider_alias_of") or "").replace("-", "_")
+    if not alias_id or not target_id:
+        raise ValueError(f"action {action.id} missing alias/target provider")
+    defaults = _defaults_mapping(current)
+    if alias_id in defaults or f'"{alias_id}"' in current:
+        return ResolvedAction(action=action, path=path, old=current, new=current, expected_sha256=_sha256_text(current), semantic=True)
+    target = defaults.get(target_id)
+    if not isinstance(target, dict):
+        raise ValueError(f"action {action.id} alias target provider was not found: {target_id}")
+
+    alias_record = {
+        "backend": params.get("backend") or target.get("backend") or "openai_compatible",
+        "env": params.get("env") or params.get("env_vars") or target.get("env") or [],
+        "proxy_path": params.get("proxy_path") or f"/proxy/{alias_id.replace('_', '-')}",
+        "litellm_model_prefix": params.get("litellm_model_prefix") if "litellm_model_prefix" in params else target.get("litellm_model_prefix", ""),
+        "default_model": params.get("default_model") or params.get("model") or target.get("default_model"),
+        "openai_compatible": params.get("openai_compatible") if "openai_compatible" in params else target.get("openai_compatible", False),
+        "metadata": {
+            **(target.get("metadata") if isinstance(target.get("metadata"), dict) else {}),
+            "provider_alias_of": target_id,
+        },
+    }
+    for key in ("base_url", "native_adapter", "risk_level", "requires_approval", "gateway_lane", "managed_by"):
+        if key in params:
+            alias_record[key] = params[key]
+        elif key in target:
+            alias_record[key] = target[key]
+
+    start, end, lines = _defaults_block(current)
+    old_block = "".join(lines[start:end + 1])
+    closing = lines[end]
+    indent = closing[: len(closing) - len(closing.lstrip())] + "    "
+    snippet = f"{indent}{json.dumps(alias_id)}: {_python_dict_literal(alias_record, indent)},\n"
+    new_block = "".join(lines[start:end]) + snippet + closing
+    return ResolvedAction(
+        action=action,
+        path=path,
+        old=old_block,
+        new=new_block,
+        expected_sha256=_sha256_text(current),
+        semantic=True,
+    )
 
 
 def _resolve_provider_registry_model_resolver(action: ActionIntent, path: str, current: str) -> ResolvedAction:
@@ -289,7 +379,12 @@ def resolve_action_ir(
                 if current.count(item.old) == 1:
                     semantic_staged[path] = current.replace(item.old, item.new, 1)
                 continue
-            raise ValueError(f"action {action.id} add_provider_alias is not yet resolvable for {path}")
+            if action.type == "add_provider_alias":
+                item = _resolve_add_provider_alias(action, path, current)
+                resolved.append(item)
+                if current.count(item.old) == 1:
+                    semantic_staged[path] = current.replace(item.old, item.new, 1)
+                continue
         old = action.old
         new = action.new
         if action.target.anchor_ref and not old:

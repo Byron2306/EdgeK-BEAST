@@ -1,0 +1,790 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-19T18:04:44Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_replicate_full_beast": {
+      "average_latency_ms": null,
+      "average_provider_tokens": null,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 1,
+      "tasks": 1
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 0,
+    "excluded_infra_failure": 0,
+    "infra_failure": 1,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 0,
+    "nim_tests_failed": 0,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_systems_benchmark_live_replicate_native_smoke_gauntlet",
+    "result_count": 1
+  },
+  "live_provider_fitness": {
+    "replicate": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 1,
+      "beast_completion_rate": 1.0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 1,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.0,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.0,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.0,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "route_degraded_exclude_cost_rank",
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "degraded",
+      "sample_size": 1,
+      "score": 0.25,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 1
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:ovhcloud",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "live_replicate_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '402 Payment Required' for url 'https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/cli/api.py",
+          "app/kernel/provider_registry.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '402 Payment Required' for url 'https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402"
+      },
+      "prompt_tokens": 4280,
+      "provider": "replicate",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '402 Payment Required' for url 'https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n",
+      "task": "provider_model_wiring",
+      "usage": {}
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-19T18:04:44Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "full_beast"
+    ],
+    "planned_run_count": 1,
+    "providers": [
+      {
+        "api_key_env": "REPLICATE_API_TOKEN",
+        "api_key_present": true,
+        "base_url": "https://api.replicate.com/v1",
+        "model": "meta/meta-llama-3-70b-instruct",
+        "provider": "replicate",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 120.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/kernel/provider_registry.py",
+          "app/cli/api.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_contracts_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_model_wiring",
+        "task_id": "provider_model_wiring",
+        "visible_tests": [
+          "tests/test_provider_contracts.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "full_beast"
+    ],
+    "live_only": true,
+    "max_tasks": 1,
+    "max_tokens": 900,
+    "prompt_mode": "compact",
+    "timeout_seconds": 120.0
+  },
+  "live_summary": {
+    "replicate": {
+      "average_latency_ms": null,
+      "average_provider_prompt_tokens": null,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "failures": [],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 1,
+      "latency_ms_per_verified_fix": null,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": null,
+      "recommended_role": "route_degraded_exclude_cost_rank",
+      "repair_attempted": 0,
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "degraded",
+      "tasks": 1,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 1
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "failing_assertions": [
+        "records[\"codex\"].backend == \"openai_compatible\"",
+        "records[\"codex\"].default_model == \"gpt-5-codex\"",
+        "records[\"local_nim\"].default_model == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"",
+        "api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"",
+        "api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"",
+        "api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\""
+      ],
+      "files": {
+        "app/cli/api.py": "\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n            return \"ollama\"\n        if provider_id == \"ollama\":\n            return \"llama3.2:3b\"\n        return \"\" if model == \"beast-auto\" else model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "fixed_files": {
+        "app/cli/api.py": "\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"auto\", \"beast_auto\"}:\n            provider_id = \"litellm\"\n        record = ProviderAdapterRegistry().adapter_for(provider_id)\n        if provider_id == \"litellm\":\n            return \"litellm/\" + record.default_model\n        return record.default_model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"codex\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-5-codex\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-4o-mini\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n        \"local_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"local-nim-model\",\n            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n        },\n        \"ollama\": {\n            \"backend\": \"ollama\",\n            \"default_model\": \"llama3.2:3b\",\n            \"env\": [\"OLLAMA_BASE_URL\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        provider_id = str(provider_id).replace(\"-\", \"_\")\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_contracts_hidden.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\ndef test_hidden_provider_aliases_resolve_to_same_defaults():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"nvidia_nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"beast_auto\", \"beast-auto\").startswith(\"litellm/\")\n    assert ProviderAdapterRegistry().adapter_for(\"nvidia-nim\").provider_id == \"nvidia_nim\"\n"
+      },
+      "name": "provider_model_wiring",
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "relevant_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py"
+      ],
+      "tests": {
+        "tests/test_provider_contracts.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry\n\n\ndef test_codex_and_local_nim_are_routable():\n    records = {record.provider_id: record for record in ProviderRegistry().records()}\n\n    assert records[\"codex\"].backend == \"openai_compatible\"\n    assert records[\"codex\"].default_model == \"gpt-5-codex\"\n    assert records[\"local_nim\"].default_model == \"local-nim-model\"\n\n\ndef test_beast_auto_resolves_concrete_models():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\n    assert api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"\n    assert api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"\n    assert api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\"\n\n\ndef test_unknown_provider_fails_closed():\n    try:\n        ProviderAdapterRegistry().adapter_for(\"not_a_provider\")\n    except KeyError:\n        return\n    raise AssertionError(\"unknown provider should fail closed\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {
+        "tests/test_config_hidden.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_hidden_empty_and_on_values_are_normalized():\n    assert parse_bool(\"\") is False\n    assert parse_bool(\" on \") is True\n    assert gateway_config({\"BEAST_TIMEOUT\": \"30\"})[\"provider\"] == \"openrouter\"\n"
+      },
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_parser.py"
+      ],
+      "failing_assertions": [
+        "normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"",
+        "route_for(\"LOCAL NIM\") == \"/proxy/local-nim\""
+      ],
+      "files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with incomplete normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").lower()\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "fixed_files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_parser_hidden.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_hidden_tabs_and_mixed_separator_variants():\n    assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\n    assert normalize_provider_id(\"NVIDIA NIM\") == \"nvidia_nim\"\n    assert route_for(\"local-nim\") == \"/proxy/local-nim\"\n"
+      },
+      "name": "provider_id_parser",
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "relevant_files": [
+        "app/provider_parser.py",
+        "tests/test_provider_parser.py"
+      ],
+      "tests": {
+        "tests/test_provider_parser.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_normalize_provider_id_accepts_hyphen_and_space_variants():\n    assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\n    assert normalize_provider_id(\"local nim\") == \"local_nim\"\n\n\ndef test_route_for_uses_normalized_provider_id():\n    assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n    assert route_for(\"LOCAL NIM\") == \"/proxy/local-nim\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "failing_assertions": [
+        "invoice_total string amounts produce Decimal total",
+        "hidden half-up rounding passes"
+      ],
+      "files": {
+        "app/math_ops.py": "def normalize_amount(value):\n    return int(value)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "fixed_files": {
+        "app/math_ops.py": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef normalize_amount(value):\n    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "hidden_tests": {
+        "tests/test_invoice_hidden.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_rounds_half_up_hidden():\n    assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\n"
+      },
+      "name": "multi_file_hidden_decimal_fix",
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "relevant_files": [
+        "app/service.py",
+        "app/math_ops.py",
+        "tests/test_invoice_public.py"
+      ],
+      "tests": {
+        "tests/test_invoice_public.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_accepts_string_amounts():\n    assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/tui_state.py"
+      ],
+      "failing_assertions": [
+        "selection persists across collapse",
+        "hidden collapsed move does not reset"
+      ],
+      "files": {
+        "app/tui_state.py": "class PanelState:\n    def __init__(self):\n        self.collapsed = False\n        self.selected = 0\n\n    def move(self, delta):\n        if self.collapsed:\n            self.selected = 0\n            return\n        self.selected += delta\n\n    def toggle(self):\n        self.collapsed = not self.collapsed\n        self.selected = 0\n"
+      },
+      "fixed_files": {
+        "app/tui_state.py": "class PanelState:\n    def __init__(self):\n        self.collapsed = False\n        self.selected = 0\n\n    def move(self, delta):\n        if self.collapsed:\n            return\n        self.selected = max(0, self.selected + delta)\n\n    def toggle(self):\n        self.collapsed = not self.collapsed\n"
+      },
+      "hidden_tests": {
+        "tests/test_tui_state_hidden.py": "from app.tui_state import PanelState\n\n\ndef test_hidden_collapsed_move_does_not_reset_selection():\n    state = PanelState()\n    state.move(2)\n    state.toggle()\n    state.move(5)\n    state.toggle()\n    assert state.selected == 2\n"
+      },
+      "name": "ui_state_collapse_selection",
+      "objective": "Fix TUI collapse/expand state so selection survives hidden collapsed-move cases.",
+      "relevant_files": [
+        "app/tui_state.py",
+        "tests/test_tui_state_public.py"
+      ],
+      "tests": {
+        "tests/test_tui_state_public.py": "from app.tui_state import PanelState\n\n\ndef test_collapse_preserves_selection():\n    state = PanelState()\n    state.move(3)\n    state.toggle()\n    state.toggle()\n    assert state.selected == 3\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/streaming.py"
+      ],
+      "failing_assertions": [
+        "empty string chunks are preserved",
+        "None terminates stream"
+      ],
+      "files": {
+        "app/streaming.py": "async def collect_stream(chunks):\n    output = \"\"\n    async for chunk in chunks:\n        if not chunk:\n            break\n        output += chunk\n    return output\n"
+      },
+      "fixed_files": {
+        "app/streaming.py": "async def collect_stream(chunks):\n    output = \"\"\n    async for chunk in chunks:\n        if chunk is None:\n            break\n        output += chunk\n    return output\n"
+      },
+      "hidden_tests": {
+        "tests/test_streaming_hidden.py": "import asyncio\n\nfrom app.streaming import collect_stream\n\n\nasync def gen_hidden():\n    for item in [\"\", \"x\", \"\", \"y\", None, \"z\"]:\n        yield item\n\n\ndef test_hidden_stream_only_none_terminates():\n    assert asyncio.run(collect_stream(gen_hidden())) == \"xy\"\n"
+      },
+      "name": "async_streaming_empty_chunk",
+      "objective": "Fix async streaming collection so empty chunks do not terminate the stream.",
+      "relevant_files": [
+        "app/streaming.py",
+        "tests/test_streaming.py"
+      ],
+      "tests": {
+        "tests/test_streaming.py": "import asyncio\n\nfrom app.streaming import collect_stream\n\n\nasync def gen():\n    for item in [\"a\", \"\", \"b\", None]:\n        yield item\n\n\ndef test_stream_preserves_empty_chunks():\n    assert asyncio.run(collect_stream(gen())) == \"ab\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_config.py"
+      ],
+      "failing_assertions": [
+        "hyphen providers normalize to env names",
+        "raw API keys are redacted"
+      ],
+      "files": {
+        "app/provider_config.py": "def provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n"
+      },
+      "fixed_files": {
+        "app/provider_config.py": "def normalize_provider_id(provider_id):\n    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n\n\ndef provider_env(provider_id, env):\n    normalized = normalize_provider_id(provider_id)\n    key = normalized.upper() + \"_API_KEY\"\n    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_config_hidden.py": "from app.provider_config import provider_env\n\n\ndef test_hidden_missing_key_is_false_and_secret_never_leaks():\n    result = provider_env(\"openrouter\", {})\n    assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\n    assert \"api_key\" not in result\n"
+      },
+      "name": "provider_config_secret_redaction",
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "relevant_files": [
+        "app/provider_config.py",
+        "tests/test_provider_config.py"
+      ],
+      "tests": {
+        "tests/test_provider_config.py": "from app.provider_config import provider_env\n\n\ndef test_provider_config_normalizes_and_redacts_secret():\n    result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n    assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/rollback.py"
+      ],
+      "failing_assertions": [
+        "modified files restored",
+        "hidden created files deleted"
+      ],
+      "files": {
+        "app/rollback.py": "def rollback(files, snapshot):\n    for path, content in snapshot.items():\n        files[path] = content\n    return files\n"
+      },
+      "fixed_files": {
+        "app/rollback.py": "_MISSING = object()\n\n\ndef rollback(files, snapshot):\n    for path, content in snapshot.items():\n        if content is _MISSING or content == \"<missing>\":\n            files.pop(path, None)\n        else:\n            files[path] = content\n    return files\n"
+      },
+      "hidden_tests": {
+        "tests/test_rollback_hidden.py": "from app.rollback import rollback\n\n\ndef test_hidden_rollback_deletes_created_files():\n    assert rollback({\"a.py\": \"old\", \"new.py\": \"created\"}, {\"new.py\": \"<missing>\"}) == {\"a.py\": \"old\"}\n"
+      },
+      "name": "patch_rollback_created_file",
+      "objective": "Fix rollback so created files are deleted and modified files are restored.",
+      "relevant_files": [
+        "app/rollback.py",
+        "tests/test_rollback_public.py"
+      ],
+      "tests": {
+        "tests/test_rollback_public.py": "from app.rollback import rollback\n\n\ndef test_rollback_restores_modified_files():\n    assert rollback({\"a.py\": \"new\"}, {\"a.py\": \"old\"}) == {\"a.py\": \"old\"}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

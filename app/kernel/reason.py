@@ -272,6 +272,15 @@ class Reasoner:
             modified_ir, workspace_policy = self._attach_workspace_graph_context(modified_ir)
             if workspace_policy:
                 policies_applied.append(workspace_policy)
+
+        if decision in (GovernanceDecision.ALLOW, GovernanceDecision.MODIFY):
+            memory_result = self._apply_l1_l4_semantic_policies(modified_ir, session_id)
+            policies_applied.extend(memory_result.policies_applied)
+            if memory_result.decision != GovernanceDecision.ALLOW:
+                decision = memory_result.decision
+                reason_parts.append(memory_result.reason)
+            if memory_result.modified_ir:
+                modified_ir = memory_result.modified_ir
         
         budget_impact = self._calculate_budget_impact(modified_ir, session_id)
         if decision in (GovernanceDecision.ALLOW, GovernanceDecision.MODIFY):
@@ -283,8 +292,6 @@ class Reasoner:
                 retry_after_seconds = budget_result.retry_after_seconds
                 reset_at = budget_result.reset_at
 
-        # TODO: Apply deeper L1-L4 semantic policies as their stores mature.
-        
         final_reason = "; ".join(reason_parts) if reason_parts else "No policy violations"
         policies_applied = list(dict.fromkeys(policies_applied))
         
@@ -454,6 +461,130 @@ class Reasoner:
             decision=GovernanceDecision.ALLOW,
             reason="Semantic risk rules passed",
             policies_applied=policies_applied
+        )
+
+    def _apply_l1_l4_semantic_policies(self, ir: EdgeKIR, session_id: str) -> GovernanceResult:
+        """Attach mature memory-layer policy signals and enforce governed tool routing."""
+        meta_rules = self.policies.get("meta_rules", {})
+        if not meta_rules.get("l1_l4_semantic_policies_enabled", True):
+            return GovernanceResult(
+                decision=GovernanceDecision.ALLOW,
+                reason="L1-L4 semantic policies disabled",
+                policies_applied=["l1_l4_semantic_policies_disabled"],
+            )
+
+        content = " ".join(str(message.get("content", "")) for message in (ir.messages or [])).lower()
+        metadata = copy.deepcopy(ir.metadata or {})
+        policies_applied = [
+            "l1_runtime_memory_signals",
+            "l2_workspace_target_signals",
+            "l3_skill_promotion_signals",
+            "l4_forensic_chronicle_signals",
+        ]
+        signals: List[Dict[str, Any]] = []
+
+        graph_context = metadata.get("workspace_graph_context")
+        if not graph_context:
+            graph_context = self.workspace_graph.context_for_ir({
+                "model": ir.model,
+                "messages": ir.messages,
+                "metadata": ir.metadata,
+            })
+        stats = self.workspace_graph.stats()
+        mentioned_files = graph_context.get("mentioned_files", []) if isinstance(graph_context, dict) else []
+        matched_nodes = int(graph_context.get("matched_node_count", 0)) if isinstance(graph_context, dict) else 0
+
+        source_intent_terms = ("fix", "patch", "edit", "modify", "refactor", "sourceplan", "apply", "rollback")
+        if any(term in content for term in source_intent_terms):
+            if mentioned_files or matched_nodes:
+                signals.append({
+                    "layer": "L2",
+                    "signal": "workspace_target_grounded",
+                    "confidence": "high",
+                    "matched_node_count": matched_nodes,
+                    "mentioned_files": mentioned_files[:8],
+                })
+            else:
+                signals.append({
+                    "layer": "L2",
+                    "signal": "workspace_target_missing",
+                    "confidence": "medium",
+                    "recommendation": "build a context packet or request explicit target files before cloud escalation",
+                })
+
+        if any(term in content for term in ("pytest", "test failure", "failing test", "hidden test", "verify")):
+            signals.append({
+                "layer": "L3",
+                "signal": "quality_cascade_candidate",
+                "confidence": "high",
+                "recommended_route": "test_failure",
+            })
+
+        if any(term in content for term in ("provider", "route", "model", "api key", "429", "rate limit", "unauthorized")):
+            signals.append({
+                "layer": "L3",
+                "signal": "provider_diagnostic_route_candidate",
+                "confidence": "high",
+                "recommended_route": "provider_diagnostic",
+            })
+
+        if any(term in content for term in ("delete", "destructive", "production", "deploy", "chmod", "rollback")):
+            metadata["approval_gate"] = metadata.get("approval_gate") or "human_approval_recommended"
+            signals.append({
+                "layer": "L0",
+                "signal": "approval_gate_recommended",
+                "confidence": "medium",
+            })
+
+        tool_names = []
+        for tool in ir.tools or []:
+            if isinstance(tool, dict):
+                fn = tool.get("function") or {}
+                tool_names.append(str(tool.get("name") or fn.get("name") or tool.get("type") or "tool"))
+            else:
+                tool_names.append(str(tool))
+        risky_tool_terms = ("shell", "exec", "write", "delete", "patch", "filesystem", "git")
+        risky_tools = [name for name in tool_names if any(term in name.lower() for term in risky_tool_terms)]
+        if risky_tools:
+            policies_applied.append("mcp_tool_governance_required")
+            if meta_rules.get("tool_call_interception_required", True) and not metadata.get("mcp_evaluated"):
+                return GovernanceResult(
+                    decision=GovernanceDecision.DENY,
+                    reason="Risky tool calls must route through MCP evaluation before execution",
+                    policies_applied=policies_applied,
+                )
+            signals.append({
+                "layer": "L2",
+                "signal": "risky_tools_governed",
+                "tools": risky_tools[:8],
+            })
+
+        metadata["l1_l4_semantic_policy_context"] = {
+            "session_id": session_id,
+            "workspace_indexed": bool((stats.get("node_types") or {}).get("file")),
+            "workspace_node_count": stats.get("total_nodes", 0),
+            "signals": signals,
+            "chronicle_required": bool(signals),
+        }
+        if signals:
+            metadata["chronicle_required"] = True
+
+        return GovernanceResult(
+            decision=GovernanceDecision.MODIFY if signals else GovernanceDecision.ALLOW,
+            modified_ir=EdgeKIR(
+                messages=ir.messages,
+                model=ir.model,
+                max_tokens=ir.max_tokens,
+                temperature=ir.temperature,
+                top_p=ir.top_p,
+                stream=ir.stream,
+                tools=ir.tools,
+                tool_choice=ir.tool_choice,
+                stop=ir.stop,
+                metadata=metadata,
+            ) if signals else None,
+            reason="L1-L4 semantic policy context attached" if signals else "L1-L4 semantic policies passed",
+            policies_applied=policies_applied,
         )
 
     def _apply_budget_rules(

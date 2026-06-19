@@ -21,6 +21,15 @@ import httpx
 
 from app.kernel.tool_integrations import ToolCallInterceptor
 
+EXECUTABLE_SERVER_CLASSES = {
+    "github",
+    "local_read_only",
+    "local_write",
+    "postgres",
+    "shell",
+    "token_compressor",
+}
+
 
 class MCPDecision(Enum):
     ALLOW = "allow"
@@ -371,7 +380,10 @@ class MCPBroker:
             "request_id": result.request_id,
             "executed": False,
             "decision": result.decision.value,
-            "reason": f"Execution not implemented for MCP server class {server_class}",
+            "reason": (
+                f"No executor is registered for MCP server class {server_class}. "
+                f"Registered executors: {', '.join(sorted(EXECUTABLE_SERVER_CLASSES))}."
+            ),
         })
 
     def stats(self) -> Dict[str, Any]:

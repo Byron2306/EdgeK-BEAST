@@ -605,7 +605,7 @@ class BeastApiClient:
             "context_files": file_notes,
             "risk_level": "medium" if touched else "low",
             "approval_required": True,
-            "write_policy": "Patch 4 supports guarded diff preview, verified apply, and rollback. Default generated operations write only under .beast/ unless a future provider supplies explicit approved source-file operations.",
+            "write_policy": "Patch 4 supports guarded diff preview, verified apply, and rollback. Default generated operations write only under .beast/ unless output governance approves scoped source-file operations.",
             "prec_mapping": {
                 "perceive": "Selected context files inspected locally.",
                 "reason": "Plan proposes safe edits before provider or file writes.",

@@ -227,6 +227,12 @@ def test_provider_matrix_labels_live_results_and_excludes_local_nim():
     else:
         raise AssertionError("local_nim should not be part of the live preset matrix")
 
+    xai = provider_from_preset("xai")
+    replicate = provider_from_preset("replicate")
+    assert xai.base_url == "https://api.x.ai/v1"
+    assert xai.api_key_env == "XAI_API_KEY"
+    assert replicate.api_key_env == "REPLICATE_API_TOKEN,REPLICATE_API_KEY"
+
 
 def test_live_raw_lane_is_non_beast_source_patch_baseline():
     calls = []

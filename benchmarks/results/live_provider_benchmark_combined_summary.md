@@ -6,12 +6,13 @@ This report combines the earlier comprehensive provider matrix with the newer fr
 
 ## Executive Summary
 
-- Provider/routes summarized: `20`
-- Total evaluated live tasks: `192`
-- BEAST end-to-end completions: `192/192`
-- Clean provider completions: `36/192`
-- BEAST-rescued completions: `156/192`
-- Highest clean count: `ovhcloud` with `5/10`
+- Provider/routes summarized: `22`
+- Total evaluated live tasks: `212`
+- BEAST end-to-end completions: `212/212`
+- Clean provider completions: `41/212`
+- BEAST-rescued completions: `171/212`
+- Highest clean count: `xai` and `ovhcloud` tied with `5/10`
+- Best new coding-model route: `xai` with `5/10` clean and `50%` hidden-clean pass
 - Best new free/low-cost route: `puter_deepseek` with `4/10` clean and `20%` hidden-test pass
 - Fastest usable route in the new batch: `cloudflare`, but still rescue-heavy
 
@@ -21,26 +22,28 @@ The combined result is not a normal model leaderboard. It is a route-fitness map
 
 | Rank | Provider Route | Role Recommendation | Tasks | BEAST Pass | Clean | Rescued | Fitness | Rescue Score | JSON | Schema | Patch | Hidden | Avg Latency ms | Tokens/Fix | Route Notes |
 | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 1 | `ovhcloud` | `candidate_patch_provider` | 10 | 10 | 5 | 5 | 0.6632 | 0.50 | 100% | 100% | 100% | 20% | 14023.829 | 4825.0 | Corrected HF Inference Providers router route. |
-| 2 | `puter_deepseek` | `candidate_patch_provider_high_latency` | 10 | 10 | 4 | 6 | 0.6191 | 0.60 | 90% | 90% | 90% | 20% | 13101.99 | n/a | Best free-route result; route is viable but slow and had one read timeout. |
-| 3 | `cohere` | `candidate_patch_provider` | 10 | 10 | 4 | 6 | 0.6140 | 0.60 | 100% | 100% | 100% | 0% | 6688.51 | 4907.0 | Strong direct OpenAI-compatible route. |
-| 4 | `deepinfra` | `candidate_patch_provider_high_latency` | 10 | 10 | 4 | 6 | 0.6120 | 0.60 | 100% | 100% | 100% | 20% | 32795.397 | 4969.75 | Strong compliance and hidden signal, but very high latency. |
-| 5 | `huggingface` | `rescue_backed_action_ir` | 10 | 10 | 3 | 7 | 0.5830 | 0.70 | 100% | 100% | 100% | 0% | 1634.487 | 4947.667 | Fast and compliant, still mostly rescued. |
-| 6 | `nscale` | `rescue_backed_action_ir` | 10 | 10 | 3 | 7 | 0.5810 | 0.70 | 100% | 100% | 100% | 0% | 7833.737 | 4200.0 | Corrected HF-router run; earlier direct route excluded from ranking. |
-| 7 | `mistral` | `rescue_backed_codestral_candidate` | 10 | 10 | 2 | 8 | 0.5447 | 0.80 | 100% | 100% | 100% | 0% | 4115.814 | 5251.5 | Codestral route is compliant and worth keeping. |
-| 8 | `openrouter` | `fast_rescue_backed_action_ir` | 10 | 10 | 2 | 8 | 0.5440 | 0.80 | 100% | 100% | 100% | 0% | 3769.288 | 5489.5 | Good schema compliance, mostly BEAST-rescued. |
-| 9 | `sambanova` | `fast_rescue_backed_action_ir` | 10 | 10 | 1 | 9 | 0.5117 | 0.90 | 100% | 100% | 100% | 0% | 2982.269 | 5003.0 | Direct SambaNova Cloud route; fast and compliant, low clean count. |
-| 10 | `novita` | `low_clean_rescue_candidate` | 10 | 10 | 1 | 9 | 0.5098 | 0.90 | 100% | 100% | 100% | 0% | 4313.806 | 5184.0 | Direct route works, but clean success remains low. |
-| 11 | `cloudflare` | `edge_microtask_or_rescue_backed_action_ir` | 10 | 10 | 1 | 9 | 0.4826 | 0.90 | 100% | 90% | 90% | 0% | 2052.423 | 4959.0 | Fastest new route; likely scout/microtask role first. |
-| 12 | `featherless` | `semantic_transform_selector_candidate` | 10 | 10 | 2 | 8 | 0.4221 | 0.80 | 60% | 60% | 60% | 0% | 7149.405 | 5275.0 | Moderate compliance, rescue-heavy. |
-| 13 | `nvidia_nim` | `refs_only_transform_selector` | 2 | 2 | 0 | 2 | 0.4000 | 1.00 | 50% | 50% | 50% | 0% | n/a | Targeted 2-task NIM run; still no clean NIM result. |
-| 14 | `cerebras` | `fast_semantic_transform_selector` | 10 | 10 | 2 | 8 | 0.3966 | 0.80 | 50% | 50% | 50% | 0% | 1265.566 | 5359.0 | Very fast, but governed-output validity inconsistent. |
-| 15 | `aion_labs` | `rate_limited_rescue_candidate` | 10 | 10 | 1 | 9 | 0.3895 | 0.90 | 60% | 60% | 60% | 0% | 5278.112 | 5071.0 | Hit `429` rate limits mid-run; needs pacing/backoff before fair ranking. |
-| 16 | `gemini` | `rescue_backed_action_ir_experimental` | 10 | 10 | 1 | 9 | 0.3330 | 0.90 | 40% | 40% | 40% | 0% | 5435.765 | 4196.0 | Routed correctly, weak clean success in this profile. |
-| 17 | `groq` | `scout_or_microtask_only` | 10 | 10 | 0 | 10 | 0.2300 | 1.00 | 20% | 10% | 10% | 0% | n/a | Very fast in smoke-style work but weak Action IR compliance. |
-| 18 | `llm7` | `scout_only_until_hash_contract_fixed` | 10 | 10 | 0 | 10 | 0.2300 | 1.00 | 100% | 10% | 10% | 0% | n/a | Repeated handoff-hash/schema failures; BEAST rescue carried completion. |
-| 19 | `hyperbolic` | `do_not_use_until_billing_fixed` | 10 | 10 | 0 | 10 | 0.2000 | n/a | 0% | 0% | 0% | 0% | n/a | Direct route returned payment errors; not a fair capability read. |
-| 20 | `fal` | `do_not_use_until_auth_fixed` | 10 | 10 | 0 | 10 | 0.2000 | n/a | 0% | 0% | 0% | 0% | n/a | Auth failed in this run; not a fair capability read. |
+| 1 | `xai` | `clean_candidate_cost_incomplete` | 10 | 10 | 5 | 5 | 0.6757 | 0.50 | 100% | 100% | 100% | 50% | 42938.59 | 3608.5 | Grok coding route produced the strongest hidden-clean result so far; cost data missing. |
+| 2 | `ovhcloud` | `candidate_patch_provider` | 10 | 10 | 5 | 5 | 0.6632 | 0.50 | 100% | 100% | 100% | 20% | 14023.829 | 4825.0 | Corrected HF Inference Providers router route. |
+| 3 | `puter_deepseek` | `candidate_patch_provider_high_latency` | 10 | 10 | 4 | 6 | 0.6191 | 0.60 | 90% | 90% | 90% | 20% | 13101.99 | n/a | Best free-route result; route is viable but slow and had one read timeout. |
+| 4 | `cohere` | `candidate_patch_provider` | 10 | 10 | 4 | 6 | 0.6140 | 0.60 | 100% | 100% | 100% | 0% | 6688.51 | 4907.0 | Strong direct OpenAI-compatible route. |
+| 5 | `deepinfra` | `candidate_patch_provider_high_latency` | 10 | 10 | 4 | 6 | 0.6120 | 0.60 | 100% | 100% | 100% | 20% | 32795.397 | 4969.75 | Strong compliance and hidden signal, but very high latency. |
+| 6 | `huggingface` | `rescue_backed_action_ir` | 10 | 10 | 3 | 7 | 0.5830 | 0.70 | 100% | 100% | 100% | 0% | 1634.487 | 4947.667 | Fast and compliant, still mostly rescued. |
+| 7 | `nscale` | `rescue_backed_action_ir` | 10 | 10 | 3 | 7 | 0.5810 | 0.70 | 100% | 100% | 100% | 0% | 7833.737 | 4200.0 | Corrected HF-router run; earlier direct route excluded from ranking. |
+| 8 | `mistral` | `rescue_backed_codestral_candidate` | 10 | 10 | 2 | 8 | 0.5447 | 0.80 | 100% | 100% | 100% | 0% | 4115.814 | 5251.5 | Codestral route is compliant and worth keeping. |
+| 9 | `openrouter` | `fast_rescue_backed_action_ir` | 10 | 10 | 2 | 8 | 0.5440 | 0.80 | 100% | 100% | 100% | 0% | 3769.288 | 5489.5 | Good schema compliance, mostly BEAST-rescued. |
+| 10 | `sambanova` | `fast_rescue_backed_action_ir` | 10 | 10 | 1 | 9 | 0.5117 | 0.90 | 100% | 100% | 100% | 0% | 2982.269 | 5003.0 | Direct SambaNova Cloud route; fast and compliant, low clean count. |
+| 11 | `novita` | `low_clean_rescue_candidate` | 10 | 10 | 1 | 9 | 0.5098 | 0.90 | 100% | 100% | 100% | 0% | 4313.806 | 5184.0 | Direct route works, but clean success remains low. |
+| 12 | `cloudflare` | `edge_microtask_or_rescue_backed_action_ir` | 10 | 10 | 1 | 9 | 0.4826 | 0.90 | 100% | 90% | 90% | 0% | 2052.423 | 4959.0 | Fastest new route; likely scout/microtask role first. |
+| 13 | `featherless` | `semantic_transform_selector_candidate` | 10 | 10 | 2 | 8 | 0.4221 | 0.80 | 60% | 60% | 60% | 0% | 7149.405 | 5275.0 | Moderate compliance, rescue-heavy. |
+| 14 | `nvidia_nim` | `refs_only_transform_selector` | 2 | 2 | 0 | 2 | 0.4000 | 1.00 | 50% | 50% | 50% | 0% | n/a | Targeted 2-task NIM run; still no clean NIM result. |
+| 15 | `cerebras` | `fast_semantic_transform_selector` | 10 | 10 | 2 | 8 | 0.3966 | 0.80 | 50% | 50% | 50% | 0% | 1265.566 | 5359.0 | Very fast, but governed-output validity inconsistent. |
+| 16 | `aion_labs` | `rate_limited_rescue_candidate` | 10 | 10 | 1 | 9 | 0.3895 | 0.90 | 60% | 60% | 60% | 0% | 5278.112 | 5071.0 | Hit `429` rate limits mid-run; needs pacing/backoff before fair ranking. |
+| 17 | `gemini` | `rescue_backed_action_ir_experimental` | 10 | 10 | 1 | 9 | 0.3330 | 0.90 | 40% | 40% | 40% | 0% | 5435.765 | 4196.0 | Routed correctly, weak clean success in this profile. |
+| 18 | `groq` | `scout_or_microtask_only` | 10 | 10 | 0 | 10 | 0.2300 | 1.00 | 20% | 10% | 10% | 0% | n/a | Very fast in smoke-style work but weak Action IR compliance. |
+| 19 | `llm7` | `scout_only_until_hash_contract_fixed` | 10 | 10 | 0 | 10 | 0.2300 | 1.00 | 100% | 10% | 10% | 0% | n/a | Repeated handoff-hash/schema failures; BEAST rescue carried completion. |
+| 20 | `replicate` | `route_degraded_exclude_cost_rank` | 10 | 10 | 0 | 10 | 0.2000 | 1.00 | 0% | 0% | 0% | 0% | n/a | Direct OpenAI-compatible call 404ed; native prediction smoke reached Replicate but returned `402 Payment Required`. |
+| 21 | `hyperbolic` | `do_not_use_until_billing_fixed` | 10 | 10 | 0 | 10 | 0.2000 | n/a | 0% | 0% | 0% | 0% | n/a | Direct route returned payment errors; not a fair capability read. |
+| 22 | `fal` | `do_not_use_until_auth_fixed` | 10 | 10 | 0 | 10 | 0.2000 | n/a | 0% | 0% | 0% | 0% | n/a | Auth failed in this run; not a fair capability read. |
 
 ## What Changed With The Free-Route Batch
 
@@ -54,6 +57,12 @@ SambaNova and Cloudflare are fast, compliant, and rescue-heavy. SambaNova looks 
 
 Aion Labs and LLM7 both proved BEAST resilience more than provider readiness. Aion hit rate limits; LLM7 repeatedly failed the handoff-hash/schema contract. They should remain experimental routes until paced and contract-hardened.
 
+## What Changed With The xAI / Replicate Batch
+
+The xAI route materially changes the top of the table. `xai` using `grok-build-0.1` completed all 10 tasks, produced 5 clean provider fixes, and passed hidden tests cleanly on 5/10 tasks. That is the strongest hidden-clean signal in the current provider map. The caution is cost: the run did not include first-party USD observations, so xAI is currently `clean_candidate_cost_incomplete`, not yet cost-ranked.
+
+Replicate should not be judged as a model failure from the original combined run. The direct route returned `404 Not Found` on `https://api.replicate.com/v1/chat/completions` for every task. A follow-up native prediction smoke fixed the route shape by calling `POST /v1/models/{owner}/{model}/predictions`, but the selected account/model returned `402 Payment Required`. So the next blocker is not schema or BEAST integration; it is Replicate access/billing or selecting a runnable model for the token.
+
 ## Hidden Test Read
 
 The hidden-test result is still the most skeptical signal in the original combined matrix.
@@ -63,6 +72,7 @@ Only three routes reached `20%` hidden-test pass:
 - `ovhcloud`
 - `deepinfra`
 - `puter_deepseek`
+- `xai`
 
 Most routes remain at `0%`, even when they achieved 100% BEAST completion. That means the evidence strongly supports BEAST as a governed completion and rescue system, but it does not yet prove broad unseen-code generalization for most providers.
 
@@ -77,6 +87,7 @@ Focused hidden-coverage result:
 | `openrouter_deepseek` | 10/10 | 1/10 | 1/10 | 10/10 |
 | `openrouter` | 10/10 | 0/10 | 0/10 | 10/10 |
 | `deepinfra` | 10/10 | 0/10 | 0/10 | 10/10 |
+| `xai` | 10/10 | 5/10 | 5/10 | 10/10 |
 
 ## Runtime Routing Tiers
 
@@ -85,6 +96,7 @@ Focused hidden-coverage result:
 These routes have the strongest combination of clean passes, governed-output validity, and hidden-test signal:
 
 - `ovhcloud`
+- `xai`
 - `puter_deepseek`
 - `cohere`
 - `deepinfra`
@@ -123,6 +135,7 @@ For NIM specifically, the right target remains refs-only Action IR / transform s
 These routes should stay out of capability ranking until access or billing is resolved:
 
 - `github_models`: endpoint accepts token, but model calls returned `403 no_access`.
+- `replicate`: OpenAI-compatible call returned `404`; native prediction call reached `/v1/models/{owner}/{model}/predictions` but returned `402 Payment Required`.
 - `deepseek`: direct API returned `402 Payment Required`; Puter DeepSeek is a separate viable route.
 - `hyperbolic`: direct route returned payment errors.
 - `fal`: route returned auth errors.
@@ -187,6 +200,7 @@ Source: `beast_systems_benchmark_live_all_routes_full_beast_hidden_cost_summary.
 The combined matrix gives BEAST a real routing policy surface:
 
 - Use `ovhcloud`, `puter_deepseek`, `cohere`, and `deepinfra` as candidate patch-provider lanes.
+- Promote `xai` into the candidate patch-provider set, but keep it out of cost rankings until first-party USD/fix is observed.
 - Use `huggingface`, `nscale`, `mistral`, `openrouter`, `sambanova`, `novita`, and `cloudflare` as rescue-backed Action IR lanes.
 - Use `cloudflare`, `cerebras`, `groq`, `llm7`, and `nvidia_nim` for scout, microtask, semantic selection, or refs-only roles until clean patch reliability improves.
 - Keep billing/auth-invalid routes out of provider capability rankings.
@@ -204,6 +218,10 @@ The strongest overall evidence remains this: BEAST completed every evaluated liv
 - `beast_systems_benchmark_live_free_routes_10task.json`
 - `beast_systems_benchmark_live_free_routes_10task.md`
 - `beast_systems_benchmark_live_free_routes_10task_summary.md`
+- `beast_systems_benchmark_live_xai_replicate_10task.json`
+- `beast_systems_benchmark_live_xai_replicate_10task.md`
+- `beast_systems_benchmark_live_replicate_native_smoke.json`
+- `beast_systems_benchmark_live_replicate_native_smoke.md`
 - `beast_systems_benchmark_live_cerebras_deepinfra_featherless_hfrouter_10task.json`
 - `beast_systems_benchmark_live_expanded_nvidia_repair_targeted.json`
 - `beast_systems_benchmark_live_expanded_openrouter_hf_repaired.json`

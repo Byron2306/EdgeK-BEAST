@@ -41,6 +41,7 @@ http://localhost:8005
 | `GET` | `/edgek/canon/schemas` | List canonical output schemas |
 | `POST` | `/edgek/canon/validate` | Validate canonical Action IR / output payloads |
 | `GET` | `/edgek/canon/metrics` | Output-governance metrics |
+| `POST` | `/edgek/maintenance/run` | Run repo hygiene checks: language inventory, Python compile, pytest collection, dependency sanity, HTML/JS syntax, docs links, extension syntax, optional pytest and packaging/build checks |
 | `GET` | `/edgek/chronicle` | Chronicle event list |
 | `POST` | `/edgek/chronicle/publish` | Publish Chronicle evidence |
 
@@ -76,6 +77,18 @@ http://localhost:8005
 | `GET` | `/edgek/runtime/metrics` | Runtime metrics |
 | `GET` | `/edgek/runtime/attempts` | Recent attempts |
 | `POST` | `/edgek/runtime/circuit-breakers/{provider}/reset` | Reset a provider circuit breaker |
+
+## OS Bypass And Packet Experiments
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/edgek/os-bypass/capabilities` | Report AF_PACKET, DPDK, AF_XDP, interface, and privilege readiness |
+| `POST` | `/edgek/os-bypass/af-packet/probe` | Open and close an AF_PACKET TPACKET_V3 mmap ring |
+| `POST` | `/edgek/os-bypass/af-packet/capture-probe` | Emit a marked loopback UDP datagram and verify AF_PACKET sees it |
+| `POST` | `/edgek/os-bypass/dpdk/probe` | Initialize DPDK EAL and report available ethdev ports |
+| `POST` | `/edgek/os-bypass/af-xdp/probe` | Load AF_XDP/libxdp and report socket-create readiness |
+
+The AF_PACKET capture probe requires Linux packet sockets and `CAP_NET_RAW` or root. It is intended as a live host experiment: BEAST sends a small marked UDP packet to loopback, sniffs the raw packet path, parses captured frames, and reports whether the marker was observed.
 
 ## MCP Broker
 

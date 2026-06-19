@@ -1,8 +1,8 @@
 {
   "name": "edgek-beast",
   "displayName": "EdgeK BEAST",
-  "description": "EdgeK BEAST VS Code integration for MCP + proxy lanes",
-  "version": "1.1.0",
+  "description": "EdgeK BEAST VS Code integration for SourcePlan, MCP governance, Chronicle, and provider fitness",
+  "version": "1.2.0",
   "publisher": "edgek",
   "icon": "media/beast-icon-source.png",
   "engines": {
@@ -20,6 +20,14 @@
     ],
     "commands": [
       { "command": "edgekBeast.start", "title": "BEAST: Start Local Governor" },
+      { "command": "edgekBeast.sourcePlan", "title": "BEAST: SourcePlan Current File" },
+      { "command": "edgekBeast.previewHunks", "title": "BEAST: Preview Hunks" },
+      { "command": "edgekBeast.applySelectedHunks", "title": "BEAST: Apply Selected Hunks" },
+      { "command": "edgekBeast.selectProviderRole", "title": "BEAST: Select Provider Role" },
+      { "command": "edgekBeast.refreshChronicle", "title": "BEAST: Refresh Chronicle" },
+      { "command": "edgekBeast.refreshRouteFitness", "title": "BEAST: Refresh Route Fitness" },
+      { "command": "edgekBeast.runMaintenance", "title": "BEAST: Run Maintenance Cascade" },
+      { "command": "edgekBeast.openMaintenanceReport", "title": "BEAST: Open Maintenance Report" },
       { "command": "edgekBeast.prepareHandoff", "title": "BEAST: Prepare Handoff Packet" },
       { "command": "edgekBeast.openDashboard", "title": "BEAST: Open Mission Control" },
       { "command": "edgekBeast.configureGateway", "title": "BEAST: Configure Integrated Terminal Gateway" },
@@ -43,6 +51,14 @@
         {
           "id": "beastDashboard",
           "name": "BEAST Dashboard"
+        },
+        {
+          "id": "beastChronicle",
+          "name": "Chronicle"
+        },
+        {
+          "id": "beastRouteFitness",
+          "name": "Route Fitness"
         }
       ]
     },
@@ -64,6 +80,23 @@
           "type": "string",
           "default": "http://127.0.0.1:8000",
           "description": "Base URL for the BEAST gateway/proxy"
+        },
+        "edgekBeast.provider": {
+          "type": "string",
+          "default": "litellm",
+          "description": "Default provider used for BEAST SourcePlan requests"
+        },
+        "edgekBeast.providerRole": {
+          "type": "string",
+          "default": "rescued_patch_provider",
+          "enum": [
+            "primary_patch_provider",
+            "rescued_patch_provider",
+            "refs_only_action_ir_generator",
+            "semantic_transform_selector",
+            "scout_only"
+          ],
+          "description": "Runtime role hint for provider selection and BEAST routing"
         }
       }
     }

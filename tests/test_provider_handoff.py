@@ -179,6 +179,44 @@ def test_resolver_rejects_stale_file_ref_hash(tmp_path: Path):
         raise AssertionError("stale file ref hash should fail")
 
 
+def test_resolver_compiles_provider_alias_transform(tmp_path: Path):
+    registry = tmp_path / "app" / "kernel" / "provider_registry.py"
+    registry.parent.mkdir(parents=True)
+    registry.write_text(
+        "class ProviderRegistry:\n"
+        "    DEFAULTS = {\n"
+        "        \"openai\": {\n"
+        "            \"backend\": \"openai_compatible\",\n"
+        "            \"env\": [\"OPENAI_API_KEY\"],\n"
+        "            \"proxy_path\": \"/proxy/openai\",\n"
+        "            \"litellm_model_prefix\": \"openai/\",\n"
+        "            \"default_model\": \"gpt-4o-mini\",\n"
+        "            \"openai_compatible\": True,\n"
+        "        },\n"
+        "    }\n",
+        encoding="utf-8",
+    )
+    action_ir = ActionIR.from_dict({
+        "kind": "beast.action_intent.v1",
+        "provider_handoff_hash": "sha256:test",
+        "actions": [
+            {
+                "id": "a1",
+                "type": "add_provider_alias",
+                "target": {"path": "app/kernel/provider_registry.py"},
+                "parameters": {"alias": "github_models", "target_provider": "openai", "default_model": "gpt-4o"},
+            }
+        ],
+    })
+
+    resolved = resolve_actions(tmp_path, action_ir, [], ["app/kernel/provider_registry.py"])
+
+    assert len(resolved) == 1
+    assert '"github_models"' in resolved[0].new
+    assert '"provider_alias_of": "openai"' in resolved[0].new
+    assert '"default_model": "gpt-4o"' in resolved[0].new
+
+
 def test_resolver_rejects_stale_direct_path_hash(tmp_path: Path):
     target = tmp_path / "app.py"
     target.write_text("value = 'old'\n", encoding="utf-8")
