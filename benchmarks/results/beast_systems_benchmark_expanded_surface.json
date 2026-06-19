@@ -1,0 +1,1439 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48312,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 909,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 947,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1145,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47725,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "__________________ test_provider_has_openrouter_default _____________________\n\n    def test_provider_has_openrouter_default():\n>       assert gateway_config({})[\"provider\"] == \"openrouter\"\nE       AssertionError: assert None == 'openrouter'\n\ntests/test_config.py:5: AssertionError\n______________ test_boolean_parser_normalizes_common_shell_values ______________\n\n    def test_boolean_parser_normalizes_common_shell_values():\n>       assert parse_bool(\" TRUE \") is True\n               ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_config.py:9: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ' TRUE '\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\n2 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 38,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "__________________ test_provider_has_openrouter_default _____________________\n\n    def test_provider_has_openrouter_default():\n>       assert gateway_config({})[\"provider\"] == \"openrouter\"\nE       AssertionError: assert None == 'openrouter'\n\ntests/test_config.py:5: AssertionError\n______________ test_boolean_parser_normalizes_common_shell_values ______________\n\n    def test_boolean_parser_normalizes_common_shell_values():\n>       assert parse_bool(\" TRUE \") is True\n               ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_config.py:9: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ' TRUE '\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\n2 failed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 312,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 340,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 401,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47706,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\nE         \nE         - nvidia_nim\nE         ?       ^\nE         +  nvidia-nim \nE         ? +      ^   +\n\ntests/test_provider_parser.py:5: AssertionError\n__________________ test_route_for_uses_normalized_provider_id __________________\n\n    def test_route_for_uses_normalized_provider_id():\n>       assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n               ^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_provider_parser.py:10: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\n2 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 41,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\nE         \nE         - nvidia_nim\nE         ?       ^\nE         +  nvidia-nim \nE         ? +      ^   +\n\ntests/test_provider_parser.py:5: AssertionError\n__________________ test_route_for_uses_normalized_provider_id __________________\n\n    def test_route_for_uses_normalized_provider_id():\n>       assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n               ^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_provider_parser.py:10: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\n2 failed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 297,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 327,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 397,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47671,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 270,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 304,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 369,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47698,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "============== FAILURES ===================================\n_____________ test_hidden_collapsed_move_does_not_reset_selection ______________\n\n    def test_hidden_collapsed_move_does_not_reset_selection():\n        state = PanelState()\n        state.move(2)\n        state.toggle()\n        state.move(5)\n        state.toggle()\n>       assert state.selected == 2\nE       assert 0 == 2\nE        +  where 0 = <app.tui_state.PanelState object at 0x7f0e78e9f4d0>.selected\n\ntests/test_tui_state_hidden.py:10: AssertionError\n______________________ test_collapse_preserves_selection _______________________\n\n    def test_collapse_preserves_selection():\n        state = PanelState()\n        state.move(3)\n        state.toggle()\n        state.toggle()\n>       assert state.selected == 3\nE       assert 0 == 3\nE        +  where 0 = <app.tui_state.PanelState object at 0x7f0e78ef8f50>.selected\n\ntests/test_tui_state_public.py:9: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_tui_state_hidden.py::test_hidden_collapsed_move_does_not_reset_selection\nFAILED tests/test_tui_state_public.py::test_collapse_preserves_selection - as...\n2 failed in 0.01s\n",
+      "task": "ui_state_collapse_selection",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 45,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "============== FAILURES ===================================\n_____________ test_hidden_collapsed_move_does_not_reset_selection ______________\n\n    def test_hidden_collapsed_move_does_not_reset_selection():\n        state = PanelState()\n        state.move(2)\n        state.toggle()\n        state.move(5)\n        state.toggle()\n>       assert state.selected == 2\nE       assert 0 == 2\nE        +  where 0 = <app.tui_state.PanelState object at 0x7ffb8449f4d0>.selected\n\ntests/test_tui_state_hidden.py:10: AssertionError\n______________________ test_collapse_preserves_selection _______________________\n\n    def test_collapse_preserves_selection():\n        state = PanelState()\n        state.move(3)\n        state.toggle()\n        state.toggle()\n>       assert state.selected == 3\nE       assert 0 == 3\nE        +  where 0 = <app.tui_state.PanelState object at 0x7ffb844fcf50>.selected\n\ntests/test_tui_state_public.py:9: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_tui_state_hidden.py::test_hidden_collapsed_move_does_not_reset_selection\nFAILED tests/test_tui_state_public.py::test_collapse_preserves_selection - as...\n2 failed in 0.02s\n",
+      "task": "ui_state_collapse_selection",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/tui_state.py\n+++ b/app/tui_state.py\n@@ -5,10 +5,8 @@\n \n     def move(self, delta):\n         if self.collapsed:\n-            self.selected = 0\n             return\n-        self.selected += delta\n+        self.selected = max(0, self.selected + delta)\n \n     def toggle(self):\n         self.collapsed = not self.collapsed\n-        self.selected = 0\n",
+      "files_changed": [
+        "app/tui_state.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 295,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "ui_state_collapse_selection",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/tui_state.py\n+++ b/app/tui_state.py\n@@ -5,10 +5,8 @@\n \n     def move(self, delta):\n         if self.collapsed:\n-            self.selected = 0\n             return\n-        self.selected += delta\n+        self.selected = max(0, self.selected + delta)\n \n     def toggle(self):\n         self.collapsed = not self.collapsed\n-        self.selected = 0\n",
+      "files_changed": [
+        "app/tui_state.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 324,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "ui_state_collapse_selection",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/tui_state.py\n+++ b/app/tui_state.py\n@@ -5,10 +5,8 @@\n \n     def move(self, delta):\n         if self.collapsed:\n-            self.selected = 0\n             return\n-        self.selected += delta\n+        self.selected = max(0, self.selected + delta)\n \n     def toggle(self):\n         self.collapsed = not self.collapsed\n-        self.selected = 0\n",
+      "files_changed": [
+        "app/tui_state.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 383,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "ui_state_collapse_selection",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47595,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________________ test_stream_preserves_empty_chunks ______________________\n\n    def test_stream_preserves_empty_chunks():\n>       assert asyncio.run(collect_stream(gen())) == \"ab\"\nE       AssertionError: assert 'a' == 'ab'\nE         \nE         - ab\nE         + a\n\ntests/test_streaming.py:12: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_streaming.py::test_stream_preserves_empty_chunks - Assertio...\n1 failed in 0.02s\n",
+      "task": "async_streaming_empty_chunk",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 42,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________________ test_stream_preserves_empty_chunks ______________________\n\n    def test_stream_preserves_empty_chunks():\n>       assert asyncio.run(collect_stream(gen())) == \"ab\"\nE       AssertionError: assert 'a' == 'ab'\nE         \nE         - ab\nE         + a\n\ntests/test_streaming.py:12: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_streaming.py::test_stream_preserves_empty_chunks - Assertio...\n1 failed in 0.01s\n",
+      "task": "async_streaming_empty_chunk",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/streaming.py\n+++ b/app/streaming.py\n@@ -1,7 +1,7 @@\n async def collect_stream(chunks):\n     output = \"\"\n     async for chunk in chunks:\n-        if not chunk:\n+        if chunk is None:\n             break\n         output += chunk\n     return output\n",
+      "files_changed": [
+        "app/streaming.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 183,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "async_streaming_empty_chunk",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/streaming.py\n+++ b/app/streaming.py\n@@ -1,7 +1,7 @@\n async def collect_stream(chunks):\n     output = \"\"\n     async for chunk in chunks:\n-        if not chunk:\n+        if chunk is None:\n             break\n         output += chunk\n     return output\n",
+      "files_changed": [
+        "app/streaming.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 212,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "async_streaming_empty_chunk",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/streaming.py\n+++ b/app/streaming.py\n@@ -1,7 +1,7 @@\n async def collect_stream(chunks):\n     output = \"\"\n     async for chunk in chunks:\n-        if not chunk:\n+        if chunk is None:\n             break\n         output += chunk\n     return output\n",
+      "files_changed": [
+        "app/streaming.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 267,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "async_streaming_empty_chunk",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47596,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key': '... 'nvidia-nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Differing items:\nE         {'provider': 'nvidia-nim'} != {'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 42,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key': '... 'nvidia-nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Differing items:\nE         {'provider': 'nvidia-nim'} != {'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1560,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1591,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1650,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".                                                                        [100%]\n1 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47627,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________________ test_hidden_rollback_deletes_created_files __________________\n\n    def test_hidden_rollback_deletes_created_files():\n>       assert rollback({\"a.py\": \"old\", \"new.py\": \"created\"}, {\"new.py\": \"<missing>\"}) == {\"a.py\": \"old\"}\nE       AssertionError: assert {'a.py': 'old...: '<missing>'} == {'a.py': 'old'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'new.py': '<missing>'}\nE         Use -v to get more diff\n\ntests/test_rollback_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_rollback_hidden.py::test_hidden_rollback_deletes_created_files\n1 failed, 1 passed in 0.01s\n",
+      "task": "patch_rollback_created_file",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 43,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________________ test_hidden_rollback_deletes_created_files __________________\n\n    def test_hidden_rollback_deletes_created_files():\n>       assert rollback({\"a.py\": \"old\", \"new.py\": \"created\"}, {\"new.py\": \"<missing>\"}) == {\"a.py\": \"old\"}\nE       AssertionError: assert {'a.py': 'old...: '<missing>'} == {'a.py': 'old'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'new.py': '<missing>'}\nE         Use -v to get more diff\n\ntests/test_rollback_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_rollback_hidden.py::test_hidden_rollback_deletes_created_files\n1 failed, 1 passed in 0.02s\n",
+      "task": "patch_rollback_created_file",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/rollback.py\n+++ b/app/rollback.py\n@@ -1,4 +1,10 @@\n+_MISSING = object()\n+\n+\n def rollback(files, snapshot):\n     for path, content in snapshot.items():\n-        files[path] = content\n+        if content is _MISSING or content == \"<missing>\":\n+            files.pop(path, None)\n+        else:\n+            files[path] = content\n     return files\n",
+      "files_changed": [
+        "app/rollback.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1596,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "patch_rollback_created_file",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/rollback.py\n+++ b/app/rollback.py\n@@ -1,4 +1,10 @@\n+_MISSING = object()\n+\n+\n def rollback(files, snapshot):\n     for path, content in snapshot.items():\n-        files[path] = content\n+        if content is _MISSING or content == \"<missing>\":\n+            files.pop(path, None)\n+        else:\n+            files[path] = content\n     return files\n",
+      "files_changed": [
+        "app/rollback.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1625,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "patch_rollback_created_file",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/rollback.py\n+++ b/app/rollback.py\n@@ -1,4 +1,10 @@\n+_MISSING = object()\n+\n+\n def rollback(files, snapshot):\n     for path, content in snapshot.items():\n-        files[path] = content\n+        if content is _MISSING or content == \"<missing>\":\n+            files.pop(path, None)\n+        else:\n+            files[path] = content\n     return files\n",
+      "files_changed": [
+        "app/rollback.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1679,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "patch_rollback_created_file",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47619,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f1276fa70e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 44,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f0021c730e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 219,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 249,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 304,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47651,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 250,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 280,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 340,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    }
+  ],
+  "generated_at": "2026-06-18T14:55:02Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 43.5,
+      "median_reduction_vs_raw_percent": 99.9087,
+      "tasks": 10
+    },
+    "full_beast": {
+      "completed": 10,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 390.0,
+      "median_reduction_vs_raw_percent": 99.1817,
+      "tasks": 10
+    },
+    "rag": {
+      "completed": 8,
+      "completion_rate": 0.8,
+      "median_prompt_tokens": 296.0,
+      "median_reduction_vs_raw_percent": 99.3789,
+      "tasks": 10
+    },
+    "rag_tools": {
+      "completed": 10,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 325.5,
+      "median_reduction_vs_raw_percent": 99.3171,
+      "tasks": 10
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 47661.0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 10
+    }
+  },
+  "live_efficiency_summary": {},
+  "live_provider_presets": {
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    }
+  },
+  "live_results": [],
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw",
+      "full_beast"
+    ],
+    "max_tasks": 1,
+    "max_tokens": 1200,
+    "prompt_mode": "full",
+    "timeout_seconds": 120.0
+  },
+  "live_summary": {},
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {
+    "agent_loop": {
+      "actions": [
+        {
+          "action": "retrieve_context",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py",
+            "tests/test_provider_contracts.py"
+          ],
+          "turn": 1
+        },
+        {
+          "action": "apply_patch",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py"
+          ],
+          "turn": 2
+        },
+        {
+          "action": "run_tests",
+          "returncode": 0,
+          "turn": 3
+        }
+      ],
+      "ok": true,
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "turns": 3
+    },
+    "compression_and_economizer": {
+      "economizer_changed": true,
+      "economizer_final_tokens": 25,
+      "economizer_original_tokens": 54455,
+      "json_reduction_percent": 96.5896,
+      "ok": true,
+      "python_reduction_percent": 93.0394
+    },
+    "mcp_governance": {
+      "dangerous_shell_decision": "deny",
+      "ok": true,
+      "read_decision": "allow",
+      "safe_shell_decision": "require_approval",
+      "token_compressor_decision": "allow"
+    },
+    "provider_contracts": {
+      "checked_providers": {
+        "codex": {
+          "backend": "openai_compatible",
+          "model": "gpt-5-codex",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "litellm": {
+          "backend": "litellm",
+          "model": "litellm/ollama",
+          "ok": true,
+          "route_provider": "litellm"
+        },
+        "nvidia_nim": {
+          "backend": "openai_compatible",
+          "model": "nvidia/nemotron-3-super-120b-a12b",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "ollama": {
+          "backend": "ollama",
+          "model": "llama3.2:3b",
+          "ok": true,
+          "route_provider": "ollama"
+        },
+        "openai": {
+          "backend": "openai_compatible",
+          "model": "gpt-4o-mini",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "openrouter": {
+          "backend": "litellm",
+          "model": "litellm/openrouter/auto",
+          "ok": true,
+          "route_provider": "litellm"
+        }
+      },
+      "excluded_from_live_default": [
+        "local_nim"
+      ],
+      "ok": true
+    },
+    "rag_vector_retrieval": {
+      "indexed_chunks": 87,
+      "indexed_files": 14,
+      "ok": true,
+      "retrieval_mode": "dense_vector",
+      "semantic_available": true,
+      "top_files": [
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py",
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py"
+      ]
+    },
+    "tool_interception": {
+      "backend": "basic_semantic_grep",
+      "bytes_returned": 349,
+      "ok": true,
+      "raw_bytes": 3536,
+      "reduction_percent": 90.1301
+    },
+    "tool_laziness": {
+      "critical_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1383.3333333333333,
+        "average_tokens_spent": 940.0,
+        "average_value_score": 0.3333,
+        "calls": 3,
+        "decision": "call",
+        "expected_value_score": 0.3333,
+        "max_success_value_score": 1.0,
+        "reason": "rare critical success observed",
+        "samples": 3,
+        "scenario": "rare_critical_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.03,
+        "total_tokens_spent": 2820,
+        "useful": 1,
+        "usefulness_rate": 0.3333
+      },
+      "ok": true,
+      "redundant_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1400.0,
+        "average_tokens_spent": 1000.0,
+        "average_value_score": 0.0,
+        "calls": 5,
+        "decision": "skip",
+        "estimated_avoidance": {
+          "cost_usd": 0.01,
+          "latency_ms": 1400.0,
+          "tokens": 1000.0
+        },
+        "expected_value_score": 0.0,
+        "max_success_value_score": 0.0,
+        "reason": "low learned usefulness",
+        "samples": 5,
+        "scenario": "redundant_context_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.05,
+        "total_tokens_spent": 5000,
+        "useful": 0,
+        "usefulness_rate": 0.0
+      }
+    },
+    "vector_adapter_inventory": {
+      "active_adapter": "sqlite_local_embeddings",
+      "adapter_count": 5,
+      "ok": true,
+      "rules": [
+        "lexical_fallback_must_work_without_embeddings",
+        "metadata_filters_before_scoring",
+        "dense_vectors_optional",
+        "append_only_truth_before_retrieval_views"
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "failing_assertions": [
+        "records[\"codex\"].backend == \"openai_compatible\"",
+        "records[\"codex\"].default_model == \"gpt-5-codex\"",
+        "records[\"local_nim\"].default_model == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"",
+        "api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"",
+        "api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"",
+        "api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\""
+      ],
+      "files": {
+        "app/cli/api.py": "\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n            return \"ollama\"\n        if provider_id == \"ollama\":\n            return \"llama3.2:3b\"\n        return \"\" if model == \"beast-auto\" else model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "fixed_files": {
+        "app/cli/api.py": "\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"auto\", \"beast_auto\"}:\n            provider_id = \"litellm\"\n        record = ProviderAdapterRegistry().adapter_for(provider_id)\n        if provider_id == \"litellm\":\n            return \"litellm/\" + record.default_model\n        return record.default_model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"codex\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-5-codex\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-4o-mini\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n        \"local_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"local-nim-model\",\n            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n        },\n        \"ollama\": {\n            \"backend\": \"ollama\",\n            \"default_model\": \"llama3.2:3b\",\n            \"env\": [\"OLLAMA_BASE_URL\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        provider_id = str(provider_id).replace(\"-\", \"_\")\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "hidden_tests": {},
+      "name": "provider_model_wiring",
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "relevant_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py"
+      ],
+      "tests": {
+        "tests/test_provider_contracts.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry\n\n\ndef test_codex_and_local_nim_are_routable():\n    records = {record.provider_id: record for record in ProviderRegistry().records()}\n\n    assert records[\"codex\"].backend == \"openai_compatible\"\n    assert records[\"codex\"].default_model == \"gpt-5-codex\"\n    assert records[\"local_nim\"].default_model == \"local-nim-model\"\n\n\ndef test_beast_auto_resolves_concrete_models():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\n    assert api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"\n    assert api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"\n    assert api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\"\n\n\ndef test_unknown_provider_fails_closed():\n    try:\n        ProviderAdapterRegistry().adapter_for(\"not_a_provider\")\n    except KeyError:\n        return\n    raise AssertionError(\"unknown provider should fail closed\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {},
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_parser.py"
+      ],
+      "failing_assertions": [
+        "normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"",
+        "route_for(\"LOCAL NIM\") == \"/proxy/local-nim\""
+      ],
+      "files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with incomplete normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").lower()\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "fixed_files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "hidden_tests": {},
+      "name": "provider_id_parser",
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "relevant_files": [
+        "app/provider_parser.py",
+        "tests/test_provider_parser.py"
+      ],
+      "tests": {
+        "tests/test_provider_parser.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_normalize_provider_id_accepts_hyphen_and_space_variants():\n    assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\n    assert normalize_provider_id(\"local nim\") == \"local_nim\"\n\n\ndef test_route_for_uses_normalized_provider_id():\n    assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n    assert route_for(\"LOCAL NIM\") == \"/proxy/local-nim\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "failing_assertions": [
+        "invoice_total string amounts produce Decimal total",
+        "hidden half-up rounding passes"
+      ],
+      "files": {
+        "app/math_ops.py": "def normalize_amount(value):\n    return int(value)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "fixed_files": {
+        "app/math_ops.py": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef normalize_amount(value):\n    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "hidden_tests": {
+        "tests/test_invoice_hidden.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_rounds_half_up_hidden():\n    assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\n"
+      },
+      "name": "multi_file_hidden_decimal_fix",
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "relevant_files": [
+        "app/service.py",
+        "app/math_ops.py",
+        "tests/test_invoice_public.py"
+      ],
+      "tests": {
+        "tests/test_invoice_public.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_accepts_string_amounts():\n    assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/tui_state.py"
+      ],
+      "failing_assertions": [
+        "selection persists across collapse",
+        "hidden collapsed move does not reset"
+      ],
+      "files": {
+        "app/tui_state.py": "class PanelState:\n    def __init__(self):\n        self.collapsed = False\n        self.selected = 0\n\n    def move(self, delta):\n        if self.collapsed:\n            self.selected = 0\n            return\n        self.selected += delta\n\n    def toggle(self):\n        self.collapsed = not self.collapsed\n        self.selected = 0\n"
+      },
+      "fixed_files": {
+        "app/tui_state.py": "class PanelState:\n    def __init__(self):\n        self.collapsed = False\n        self.selected = 0\n\n    def move(self, delta):\n        if self.collapsed:\n            return\n        self.selected = max(0, self.selected + delta)\n\n    def toggle(self):\n        self.collapsed = not self.collapsed\n"
+      },
+      "hidden_tests": {
+        "tests/test_tui_state_hidden.py": "from app.tui_state import PanelState\n\n\ndef test_hidden_collapsed_move_does_not_reset_selection():\n    state = PanelState()\n    state.move(2)\n    state.toggle()\n    state.move(5)\n    state.toggle()\n    assert state.selected == 2\n"
+      },
+      "name": "ui_state_collapse_selection",
+      "objective": "Fix TUI collapse/expand state so selection survives hidden collapsed-move cases.",
+      "relevant_files": [
+        "app/tui_state.py",
+        "tests/test_tui_state_public.py"
+      ],
+      "tests": {
+        "tests/test_tui_state_public.py": "from app.tui_state import PanelState\n\n\ndef test_collapse_preserves_selection():\n    state = PanelState()\n    state.move(3)\n    state.toggle()\n    state.toggle()\n    assert state.selected == 3\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/streaming.py"
+      ],
+      "failing_assertions": [
+        "empty string chunks are preserved",
+        "None terminates stream"
+      ],
+      "files": {
+        "app/streaming.py": "async def collect_stream(chunks):\n    output = \"\"\n    async for chunk in chunks:\n        if not chunk:\n            break\n        output += chunk\n    return output\n"
+      },
+      "fixed_files": {
+        "app/streaming.py": "async def collect_stream(chunks):\n    output = \"\"\n    async for chunk in chunks:\n        if chunk is None:\n            break\n        output += chunk\n    return output\n"
+      },
+      "hidden_tests": {},
+      "name": "async_streaming_empty_chunk",
+      "objective": "Fix async streaming collection so empty chunks do not terminate the stream.",
+      "relevant_files": [
+        "app/streaming.py",
+        "tests/test_streaming.py"
+      ],
+      "tests": {
+        "tests/test_streaming.py": "import asyncio\n\nfrom app.streaming import collect_stream\n\n\nasync def gen():\n    for item in [\"a\", \"\", \"b\", None]:\n        yield item\n\n\ndef test_stream_preserves_empty_chunks():\n    assert asyncio.run(collect_stream(gen())) == \"ab\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_config.py"
+      ],
+      "failing_assertions": [
+        "hyphen providers normalize to env names",
+        "raw API keys are redacted"
+      ],
+      "files": {
+        "app/provider_config.py": "def provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n"
+      },
+      "fixed_files": {
+        "app/provider_config.py": "def normalize_provider_id(provider_id):\n    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n\n\ndef provider_env(provider_id, env):\n    normalized = normalize_provider_id(provider_id)\n    key = normalized.upper() + \"_API_KEY\"\n    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n"
+      },
+      "hidden_tests": {},
+      "name": "provider_config_secret_redaction",
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "relevant_files": [
+        "app/provider_config.py",
+        "tests/test_provider_config.py"
+      ],
+      "tests": {
+        "tests/test_provider_config.py": "from app.provider_config import provider_env\n\n\ndef test_provider_config_normalizes_and_redacts_secret():\n    result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n    assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/rollback.py"
+      ],
+      "failing_assertions": [
+        "modified files restored",
+        "hidden created files deleted"
+      ],
+      "files": {
+        "app/rollback.py": "def rollback(files, snapshot):\n    for path, content in snapshot.items():\n        files[path] = content\n    return files\n"
+      },
+      "fixed_files": {
+        "app/rollback.py": "_MISSING = object()\n\n\ndef rollback(files, snapshot):\n    for path, content in snapshot.items():\n        if content is _MISSING or content == \"<missing>\":\n            files.pop(path, None)\n        else:\n            files[path] = content\n    return files\n"
+      },
+      "hidden_tests": {
+        "tests/test_rollback_hidden.py": "from app.rollback import rollback\n\n\ndef test_hidden_rollback_deletes_created_files():\n    assert rollback({\"a.py\": \"old\", \"new.py\": \"created\"}, {\"new.py\": \"<missing>\"}) == {\"a.py\": \"old\"}\n"
+      },
+      "name": "patch_rollback_created_file",
+      "objective": "Fix rollback so created files are deleted and modified files are restored.",
+      "relevant_files": [
+        "app/rollback.py",
+        "tests/test_rollback_public.py"
+      ],
+      "tests": {
+        "tests/test_rollback_public.py": "from app.rollback import rollback\n\n\ndef test_rollback_restores_modified_files():\n    assert rollback({\"a.py\": \"new\"}, {\"a.py\": \"old\"}) == {\"a.py\": \"old\"}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

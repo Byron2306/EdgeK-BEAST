@@ -1,0 +1,108 @@
+Screen {
+    background: #070B0A;
+    color: #E8F2ED;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+    background: #070B0A;
+}
+
+#beast-header {
+    height: auto;
+    max-height: 12;
+    padding: 0 1;
+    background: #070B0A;
+    border-bottom: solid #1E2925;
+}
+
+#body {
+    height: 1fr;
+    background: #070B0A;
+}
+
+#activity-rail {
+    width: 3;
+    content-align: center top;
+    padding-top: 1;
+    background: #080D0C;
+    border-right: solid #1E2925;
+    color: #AAB8B2;
+}
+
+#sidebar {
+    width: 24;
+    min-width: 18;
+    padding: 0;
+    background: #070B0A;
+}
+
+#content {
+    width: 1fr;
+    height: 100%;
+    padding: 0 1 0 1;
+    background: #070B0A;
+}
+
+#page-scroll {
+    width: 100%;
+    height: 1fr;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+#page-host {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+}
+
+#terminal-strip {
+    height: 1;
+    dock: bottom;
+    background: #080D0C;
+    color: #5CFF95;
+    padding-left: 2;
+    border-top: solid #1E2925;
+}
+
+#help-panel {
+    width: 86%;
+    height: auto;
+    margin: 4 8;
+    content-align: center middle;
+    background: #070B0A;
+}
+
+
+#chat-input {
+    height: 3;
+    width: 100%;
+    margin: 0 0 1 0;
+    background: #121917;
+    color: #E8F2ED;
+    border: solid #3A4641;
+}
+
+#chat-input:focus {
+    border: solid #5CFF95;
+}
+
+#detail-panel {
+    width: 90%;
+    max-height: 90%;
+    margin: 3 6;
+    background: #070B0A;
+    overflow-y: auto;
+}
+
+
+#context-picker, #patch-plan-viewer, #approval-queue, #diff-preview {
+    width: 94%;
+    max-height: 90%;
+    margin: 2 4;
+    content-align: center middle;
+    background: #070B0A;
+    overflow-y: auto;
+}

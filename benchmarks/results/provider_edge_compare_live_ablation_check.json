@@ -1,0 +1,359 @@
+{
+  "claim_scope": "Cloud APIs and local NIM are compared as OpenAI-compatible inference endpoints; BEAST impact is measured as edge preprocessing/governance around those endpoints.",
+  "configured_providers": [
+    "nvidia_cloud_nim",
+    "openrouter"
+  ],
+  "generated_at": "2026-06-18T10:54:41Z",
+  "runs": [
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 5603,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 8154.41,
+      "mode": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-938934585c434536",
+      "scenario": "industrial_telemetry_anomaly_triage",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 7711,
+        "total_tokens": 7831
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 3325,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 1911.559,
+      "mode": "beast",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-b1a40f6a59c7fa0a",
+      "scenario": "industrial_telemetry_anomaly_triage",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 5532,
+        "total_tokens": 5652
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 3809,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 2565.545,
+      "mode": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-9062ffab648914a8",
+      "scenario": "long_context_redundant_agent_state",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 2002,
+        "total_tokens": 2122
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 45,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 1876.702,
+      "mode": "beast",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-a87d7cf08b8e3bb9",
+      "scenario": "long_context_redundant_agent_state",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 63,
+        "total_tokens": 183
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 1000,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 2951.35,
+      "mode": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-8266546276356e43",
+      "scenario": "agentic_tool_surface_summary",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 1317,
+        "total_tokens": 1437
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0,
+      "estimated_prompt_tokens": 262,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 6252.1,
+      "mode": "beast",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ok": true,
+      "provider": "nvidia_cloud_nim",
+      "response_id": "chatcmpl-a9915ecd8f0433f0",
+      "scenario": "agentic_tool_surface_summary",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 559,
+        "total_tokens": 679
+      }
+    },
+    {
+      "estimated_cost_usd": 0.0002147,
+      "estimated_prompt_tokens": 5603,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 8561.774,
+      "mode": "raw",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780105-Y1QCsCU1Cjxwe6f8Djfe",
+      "scenario": "industrial_telemetry_anomaly_triage",
+      "usage": {
+        "completion_tokens": 116,
+        "prompt_tokens": 7986,
+        "total_tokens": 8102
+      }
+    },
+    {
+      "estimated_cost_usd": 0.00011665,
+      "estimated_prompt_tokens": 3325,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 6221.75,
+      "mode": "beast",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780114-BTpr3nK0HTVSaLLjRWFK",
+      "scenario": "industrial_telemetry_anomaly_triage",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 4282,
+        "total_tokens": 4402
+      }
+    },
+    {
+      "estimated_cost_usd": 5.607e-05,
+      "estimated_prompt_tokens": 3809,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 5113.623,
+      "mode": "raw",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780120-HQV1V7mengVBJnoEUwIA",
+      "scenario": "long_context_redundant_agent_state",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 1996,
+        "total_tokens": 2116
+      }
+    },
+    {
+      "estimated_cost_usd": 4.64e-06,
+      "estimated_prompt_tokens": 45,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 5022.56,
+      "mode": "beast",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780125-ogQemS4nnnpaYhNTfCNN",
+      "scenario": "long_context_redundant_agent_state",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 55,
+        "total_tokens": 175
+      }
+    },
+    {
+      "estimated_cost_usd": 3.591e-05,
+      "estimated_prompt_tokens": 1000,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 4382.561,
+      "mode": "raw",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780130-T4sQe4zxRud2TCksSN0S",
+      "scenario": "agentic_tool_surface_summary",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 1235,
+        "total_tokens": 1355
+      }
+    },
+    {
+      "estimated_cost_usd": 1.638e-05,
+      "estimated_prompt_tokens": 262,
+      "finish_reason": "length",
+      "iteration": 0,
+      "latency_ms": 4015.838,
+      "mode": "beast",
+      "model": "openrouter/auto",
+      "ok": true,
+      "provider": "openrouter",
+      "response_id": "gen-1781780134-dGKJzweUAehhiDH1F7lA",
+      "scenario": "agentic_tool_surface_summary",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 498,
+        "total_tokens": 618
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "beast_estimated_prompt_tokens": 3325,
+      "beast_metadata": {
+        "ast_compression": {
+          "algorithm": "edgek_ast_compressor_v1",
+          "compressed_bytes": 1054,
+          "metadata": {
+            "columns": [
+              "site",
+              "line",
+              "asset",
+              "ts",
+              "temperature_c",
+              "vibration_mm_s",
+              "pressure_bar",
+              "status",
+              "operator_note"
+            ],
+            "content_sha256": "fa972954e693a710682f66105850be25b1224b70e3d4d322770899235341f898",
+            "record_count": 94
+          },
+          "mode": "lossless_json_schema_rows",
+          "original_bytes": 21790,
+          "payload": "<omitted>",
+          "reduction_percent": 95.1629
+        },
+        "governance": "edgek_beast_preprocessed",
+        "isolation_forest": {
+          "contamination": 0.02,
+          "features": [
+            "temperature_c",
+            "vibration_mm_s",
+            "pressure_bar"
+          ],
+          "n_trees": 80,
+          "random_state": 23,
+          "sample_size": 128,
+          "threshold": 0.8309809045098744
+        }
+      },
+      "estimated_prompt_token_reduction_percent": 40.6568,
+      "name": "industrial_telemetry_anomaly_triage",
+      "raw_estimated_prompt_tokens": 5603
+    },
+    {
+      "beast_estimated_prompt_tokens": 45,
+      "beast_metadata": {
+        "context_economy": {
+          "changed": true,
+          "chars_removed": 15183,
+          "final_tokens": 45,
+          "original_tokens": 3806,
+          "strategy": "deterministic_trim"
+        },
+        "governance": "edgek_beast_preprocessed"
+      },
+      "estimated_prompt_token_reduction_percent": 98.8186,
+      "name": "long_context_redundant_agent_state",
+      "raw_estimated_prompt_tokens": 3809
+    },
+    {
+      "beast_estimated_prompt_tokens": 262,
+      "beast_metadata": {
+        "ast_compression": {
+          "algorithm": "edgek_ast_compressor_v1",
+          "compressed_bytes": 253,
+          "metadata": {
+            "function_count": 48,
+            "node_count": 577,
+            "reconstructive": false,
+            "source_sha256": "ab0e4fde57941c819d4f16dc35dc25289769cbe50e57462cbbcd2ac6292a804f"
+          },
+          "mode": "semantic_python_ast_summary",
+          "original_bytes": 3867,
+          "payload": "<omitted>",
+          "reduction_percent": 93.4575
+        },
+        "governance": "edgek_beast_preprocessed"
+      },
+      "estimated_prompt_token_reduction_percent": 73.8,
+      "name": "agentic_tool_surface_summary",
+      "raw_estimated_prompt_tokens": 1000
+    }
+  ],
+  "summary": {
+    "nvidia_cloud_nim": {
+      "beast": {
+        "attempts": 3,
+        "estimated_cost_usd": 0.0,
+        "failures": 0,
+        "mean_latency_ms": 3346.787,
+        "median_latency_ms": 1911.559,
+        "successes": 3,
+        "total_tokens": 6514
+      },
+      "observed_cost_reduction_percent": 0.0,
+      "observed_median_latency_delta_ms": -1039.791,
+      "observed_total_token_reduction_percent": 42.8095,
+      "raw": {
+        "attempts": 3,
+        "estimated_cost_usd": 0.0,
+        "failures": 0,
+        "mean_latency_ms": 4557.102,
+        "median_latency_ms": 2951.35,
+        "successes": 3,
+        "total_tokens": 11390
+      }
+    },
+    "openrouter": {
+      "beast": {
+        "attempts": 3,
+        "estimated_cost_usd": 0.00013767,
+        "failures": 0,
+        "mean_latency_ms": 5086.716,
+        "median_latency_ms": 5022.56,
+        "successes": 3,
+        "total_tokens": 5195
+      },
+      "observed_cost_reduction_percent": 55.1096,
+      "observed_median_latency_delta_ms": -91.063,
+      "observed_total_token_reduction_percent": 55.111,
+      "raw": {
+        "attempts": 3,
+        "estimated_cost_usd": 0.00030668,
+        "failures": 0,
+        "mean_latency_ms": 6019.319,
+        "median_latency_ms": 5113.623,
+        "successes": 3,
+        "total_tokens": 11573
+      }
+    }
+  }
+}

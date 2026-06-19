@@ -1,0 +1,432 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48312,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 909,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 947,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 1145,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_model_wiring",
+      "usage": null
+    }
+  ],
+  "generated_at": "2026-06-17T17:53:16Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 48,
+      "median_reduction_vs_raw_percent": 99.9006,
+      "tasks": 1
+    },
+    "full_beast": {
+      "completed": 1,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 1145,
+      "median_reduction_vs_raw_percent": 97.63,
+      "tasks": 1
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 909,
+      "median_reduction_vs_raw_percent": 98.1185,
+      "tasks": 1
+    },
+    "rag_tools": {
+      "completed": 1,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 947,
+      "median_reduction_vs_raw_percent": 98.0398,
+      "tasks": 1
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 48312,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 1
+    }
+  },
+  "live_provider_presets": {
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 13977.409,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "json_parse_ok": false,
+        "latency_ms": 13977.409,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 882,
+        "recommended_future_role": "patch_intent_generator",
+        "repair_attempts": 0,
+        "role": "patch_intent_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 600,
+          "prompt_tokens": 1510,
+          "prompt_tokens_details": null,
+          "total_tokens": 2110
+        }
+      },
+      "prompt_tokens": 1365,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "{\n    \"actions\": [\n        {\n            \"id\": \"a1\",\n            \"intent\": \"Add codex and local_nim entries to ProviderRegistry.DEFAULTS\",\n            \"target\": {\n                \"file_ref\": \"F1\",\n                \"path\": \"app/kernel/provider_registry.py\"\n            },\n            \"type\": \"replace_anchor\",\n            \"old\": \"    DEFAULTS = {\\n        \\\"openai\\\": {\\n            \\\"backend\\\": \\\"openai_compatible\\\",\\n            \\\"env\\\": [\\\"OPENAI_API_KEY\\\"],\\n        },\\n        \\\"litellm\\\": {\\n            \\\"backend\\\": \\\"litellm\\\",\\n            \\\"default_model\\\": \\\"ollama\\\",\\n            \\\"env\\\": [\\\"LITELLM_BASE_URL\\\"],\\n        },\\n        \\\"nvidia_nim\\\": {\\n            \\\"backend\\\": \\\"openai_compatible\\\",\\n            \\\"default_model\\\": \\\"nvidia/nemotron-3-super-120b-a12b\\\",\\n            \\\"env\\\": [\\\"NVIDIA_API_KEY\\\"],\\n        },\\n    }\",\n            \"new\": \"    DEFAULTS",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                        [100%]\n=================================== FAILURES ===================================\n____________________ test_codex_and_local_nim_are_routable _____________________\n\n    def test_codex_and_local_nim_are_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_model_wiring",
+      "usage": {
+        "completion_tokens": 600,
+        "prompt_tokens": 1510,
+        "prompt_tokens_details": null,
+        "total_tokens": 2110
+      }
+    }
+  ],
+  "live_settings": {
+    "json_mode": true,
+    "lanes": [
+      "full_beast"
+    ],
+    "max_tasks": 1,
+    "max_tokens": 600,
+    "prompt_mode": "compact",
+    "timeout_seconds": 45.0
+  },
+  "live_summary": {
+    "nvidia_nim": {
+      "average_latency_ms": 13977.409,
+      "average_provider_prompt_tokens": 1510.0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "failures": [
+        {
+          "lane": "live_nvidia_nim_full_beast",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "provider_model_wiring"
+        }
+      ],
+      "tasks": 1
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {
+    "agent_loop": {
+      "actions": [
+        {
+          "action": "retrieve_context",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py",
+            "tests/test_provider_contracts.py"
+          ],
+          "turn": 1
+        },
+        {
+          "action": "apply_patch",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py"
+          ],
+          "turn": 2
+        },
+        {
+          "action": "run_tests",
+          "returncode": 0,
+          "turn": 3
+        }
+      ],
+      "ok": true,
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "turns": 3
+    },
+    "compression_and_economizer": {
+      "economizer_changed": true,
+      "economizer_final_tokens": 25,
+      "economizer_original_tokens": 54455,
+      "json_reduction_percent": 96.5896,
+      "ok": true,
+      "python_reduction_percent": 93.0394
+    },
+    "mcp_governance": {
+      "dangerous_shell_decision": "deny",
+      "ok": true,
+      "read_decision": "allow",
+      "safe_shell_decision": "require_approval",
+      "token_compressor_decision": "allow"
+    },
+    "provider_contracts": {
+      "checked_providers": {
+        "codex": {
+          "backend": "openai_compatible",
+          "model": "gpt-5-codex",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "litellm": {
+          "backend": "litellm",
+          "model": "litellm/ollama",
+          "ok": true,
+          "route_provider": "litellm"
+        },
+        "nvidia_nim": {
+          "backend": "openai_compatible",
+          "model": "nvidia/nemotron-3-super-120b-a12b",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "ollama": {
+          "backend": "ollama",
+          "model": "llama3.2:3b",
+          "ok": true,
+          "route_provider": "ollama"
+        },
+        "openai": {
+          "backend": "openai_compatible",
+          "model": "gpt-4o-mini",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "openrouter": {
+          "backend": "litellm",
+          "model": "litellm/openrouter/auto",
+          "ok": true,
+          "route_provider": "litellm"
+        }
+      },
+      "excluded_from_live_default": [
+        "local_nim"
+      ],
+      "ok": true
+    },
+    "rag_vector_retrieval": {
+      "indexed_chunks": 87,
+      "indexed_files": 14,
+      "ok": true,
+      "retrieval_mode": "dense_vector",
+      "semantic_available": true,
+      "top_files": [
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py",
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py"
+      ]
+    },
+    "tool_interception": {
+      "backend": "basic_semantic_grep",
+      "bytes_returned": 349,
+      "ok": true,
+      "raw_bytes": 3536,
+      "reduction_percent": 90.1301
+    },
+    "tool_laziness": {
+      "critical_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1383.3333333333333,
+        "average_tokens_spent": 940.0,
+        "average_value_score": 0.3333,
+        "calls": 3,
+        "decision": "call",
+        "expected_value_score": 0.3333,
+        "max_success_value_score": 1.0,
+        "reason": "rare critical success observed",
+        "samples": 3,
+        "scenario": "rare_critical_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.03,
+        "total_tokens_spent": 2820,
+        "useful": 1,
+        "usefulness_rate": 0.3333
+      },
+      "ok": true,
+      "redundant_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1400.0,
+        "average_tokens_spent": 1000.0,
+        "average_value_score": 0.0,
+        "calls": 5,
+        "decision": "skip",
+        "estimated_avoidance": {
+          "cost_usd": 0.01,
+          "latency_ms": 1400.0,
+          "tokens": 1000.0
+        },
+        "expected_value_score": 0.0,
+        "max_success_value_score": 0.0,
+        "reason": "low learned usefulness",
+        "samples": 5,
+        "scenario": "redundant_context_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.05,
+        "total_tokens_spent": 5000,
+        "useful": 0,
+        "usefulness_rate": 0.0
+      }
+    },
+    "vector_adapter_inventory": {
+      "active_adapter": "sqlite_local_embeddings",
+      "adapter_count": 5,
+      "ok": true,
+      "rules": [
+        "lexical_fallback_must_work_without_embeddings",
+        "metadata_filters_before_scoring",
+        "dense_vectors_optional",
+        "append_only_truth_before_retrieval_views"
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "failing_assertions": [
+        "records[\"codex\"].backend == \"openai_compatible\"",
+        "records[\"codex\"].default_model == \"gpt-5-codex\"",
+        "records[\"local_nim\"].default_model == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"",
+        "api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"",
+        "api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"",
+        "api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"",
+        "api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\""
+      ],
+      "files": {
+        "app/cli/api.py": "\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n            return \"ollama\"\n        if provider_id == \"ollama\":\n            return \"llama3.2:3b\"\n        return \"\" if model == \"beast-auto\" else model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "fixed_files": {
+        "app/cli/api.py": "\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"auto\", \"beast_auto\"}:\n            provider_id = \"litellm\"\n        record = ProviderAdapterRegistry().adapter_for(provider_id)\n        if provider_id == \"litellm\":\n            return \"litellm/\" + record.default_model\n        return record.default_model\n",
+        "app/kernel/provider_registry.py": "\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"codex\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-5-codex\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-4o-mini\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n        \"local_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"local-nim-model\",\n            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n        },\n        \"ollama\": {\n            \"backend\": \"ollama\",\n            \"default_model\": \"llama3.2:3b\",\n            \"env\": [\"OLLAMA_BASE_URL\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        provider_id = str(provider_id).replace(\"-\", \"_\")\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
+      },
+      "name": "provider_model_wiring",
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "relevant_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py"
+      ],
+      "tests": {
+        "tests/test_provider_contracts.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry\n\n\ndef test_codex_and_local_nim_are_routable():\n    records = {record.provider_id: record for record in ProviderRegistry().records()}\n\n    assert records[\"codex\"].backend == \"openai_compatible\"\n    assert records[\"codex\"].default_model == \"gpt-5-codex\"\n    assert records[\"local_nim\"].default_model == \"local-nim-model\"\n\n\ndef test_beast_auto_resolves_concrete_models():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\n    assert api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"\n    assert api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"\n    assert api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\"\n\n\ndef test_unknown_provider_fails_closed():\n    try:\n        ProviderAdapterRegistry().adapter_for(\"not_a_provider\")\n    except KeyError:\n        return\n    raise AssertionError(\"unknown provider should fail closed\")\n"
+      }
+    }
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "claim_scope": "Synthetic, intentionally overloaded prompt-surface benchmark. It measures pre-invocation context/tool reduction, not verified task completion.",
+  "generated_at": "2026-06-17T10:02:36Z",
+  "provider_contracts": {
+    "codex": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-5-codex",
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-5-codex",
+        "enabled": true,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "https://api.openai.com/v1",
+            "default_model": "gpt-5-codex",
+            "litellm_model_prefix": "openai/",
+            "metadata": {
+              "coding_agent": true,
+              "provider_alias_of": "openai"
+            },
+            "openai_compatible": true,
+            "proxy_path": "/proxy/codex",
+            "risk_level": "high"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "requires_approval": false,
+        "risk_level": "high"
+      }
+    },
+    "litellm": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ollama",
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "route_provider": "litellm"
+      },
+      "record": {
+        "backend": "litellm",
+        "base_url": null,
+        "default_model": "ollama",
+        "enabled": true,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "",
+        "managed_by": "beast_managed_backend_lane",
+        "metadata": {
+          "policy": {
+            "backend": "litellm",
+            "default_model": "ollama",
+            "litellm_model_prefix": "",
+            "managed_by": "beast_managed_backend_lane",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/huggingface/litellm"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "local_nim": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "local-nim-model",
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "default_model": "local-nim-model",
+        "enabled": true,
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "http://127.0.0.1:8000/v1",
+            "default_model": "local-nim-model",
+            "litellm_model_prefix": "openai/",
+            "metadata": {
+              "local_endpoint_env": "LOCAL_NIM_BASE_URL",
+              "nim": true
+            },
+            "openai_compatible": true,
+            "proxy_path": "/proxy/local-nim",
+            "requires_approval": false,
+            "risk_level": "local"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "requires_approval": false,
+        "risk_level": "local"
+      }
+    },
+    "nvidia_nim": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "meta/llama-3.1-70b-instruct",
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "default_model": "meta/llama-3.1-70b-instruct",
+        "enabled": true,
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "https://integrate.api.nvidia.com/v1",
+            "default_model": "meta/llama-3.1-70b-instruct",
+            "litellm_model_prefix": "openai/",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/nvidia-nim"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "ollama": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "ollama",
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama3.2:3b",
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "route_provider": "ollama"
+      },
+      "record": {
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "default_model": "llama3.2:3b",
+        "enabled": true,
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "ollama",
+            "base_url": "http://127.0.0.1:11434/v1",
+            "default_model": "llama3.2:3b",
+            "proxy_path": "/proxy/ollama",
+            "requires_approval": false,
+            "risk_level": "local"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": false,
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "requires_approval": false,
+        "risk_level": "local"
+      }
+    },
+    "openai": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-4o-mini",
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": null,
+        "default_model": "gpt-4o-mini",
+        "enabled": true,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "default_model": "gpt-4o-mini",
+            "litellm_model_prefix": "openai/",
+            "native_adapter": true,
+            "openai_compatible": true,
+            "proxy_path": "/proxy/openai"
+          }
+        },
+        "native_adapter": true,
+        "openai_compatible": true,
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "openrouter": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/openrouter/auto",
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "route_provider": "litellm"
+      },
+      "record": {
+        "backend": "litellm",
+        "base_url": null,
+        "default_model": "openrouter/auto",
+        "enabled": true,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openrouter/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "litellm",
+            "default_model": "openrouter/auto",
+            "litellm_model_prefix": "openrouter/",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/openrouter"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    }
+  },
+  "provider_contracts_ok": true,
+  "scenarios": [
+    {
+      "beast": {
+        "estimated_orientation_steps": 1,
+        "estimated_success_score": 1.0,
+        "evidence_recall": 1.0,
+        "file_count": 3,
+        "prompt_tokens": 486,
+        "tool_count": 4
+      },
+      "beast_metadata": {
+        "context_economy": {
+          "changed": false,
+          "chars_removed": 0,
+          "final_tokens": 430,
+          "original_tokens": 430,
+          "strategy": "within_budget"
+        },
+        "raw_file_count": 4,
+        "raw_tool_count": 76,
+        "selected_file_count": 3,
+        "selected_tool_count": 4
+      },
+      "name": "provider_model_wiring",
+      "objective": "Fix BEAST TUI provider/model wiring so codex and beast-auto route to concrete models.",
+      "orientation_step_reduction": 15,
+      "prompt_token_reduction_percent": 98.7992,
+      "raw": {
+        "estimated_orientation_steps": 16,
+        "estimated_success_score": 0.735,
+        "evidence_recall": 0.75,
+        "file_count": 4,
+        "prompt_tokens": 40474,
+        "tool_count": 76
+      },
+      "success_score_delta": 0.265
+    },
+    {
+      "beast": {
+        "estimated_orientation_steps": 1,
+        "estimated_success_score": 1.0,
+        "evidence_recall": 1.0,
+        "file_count": 2,
+        "prompt_tokens": 396,
+        "tool_count": 3
+      },
+      "beast_metadata": {
+        "context_economy": {
+          "changed": false,
+          "chars_removed": 0,
+          "final_tokens": 349,
+          "original_tokens": 349,
+          "strategy": "within_budget"
+        },
+        "raw_file_count": 4,
+        "raw_tool_count": 76,
+        "selected_file_count": 2,
+        "selected_tool_count": 3
+      },
+      "name": "context_economy_regression",
+      "objective": "Prove oversized coding context is compacted while preserving system instructions, recent turns, and relevant files.",
+      "orientation_step_reduction": 18,
+      "prompt_token_reduction_percent": 99.3336,
+      "raw": {
+        "estimated_orientation_steps": 19,
+        "estimated_success_score": 0.7067,
+        "evidence_recall": 0.6667,
+        "file_count": 4,
+        "prompt_tokens": 59426,
+        "tool_count": 76
+      },
+      "success_score_delta": 0.2933
+    },
+    {
+      "beast": {
+        "estimated_orientation_steps": 1,
+        "estimated_success_score": 1.0,
+        "evidence_recall": 1.0,
+        "file_count": 3,
+        "prompt_tokens": 476,
+        "tool_count": 4
+      },
+      "beast_metadata": {
+        "context_economy": {
+          "changed": false,
+          "chars_removed": 0,
+          "final_tokens": 420,
+          "original_tokens": 420,
+          "strategy": "within_budget"
+        },
+        "raw_file_count": 4,
+        "raw_tool_count": 76,
+        "selected_file_count": 3,
+        "selected_tool_count": 4
+      },
+      "name": "approval_gated_patch_flow",
+      "objective": "Design a source patch flow that previews hunks, requires approval, verifies, and writes rollback metadata.",
+      "orientation_step_reduction": 14,
+      "prompt_token_reduction_percent": 98.4524,
+      "raw": {
+        "estimated_orientation_steps": 15,
+        "estimated_success_score": 0.735,
+        "evidence_recall": 0.75,
+        "file_count": 4,
+        "prompt_tokens": 30757,
+        "tool_count": 76
+      },
+      "success_score_delta": 0.265
+    }
+  ],
+  "summary": {
+    "mean_success_score_delta": 0.2744,
+    "median_beast_prompt_tokens": 476,
+    "median_orientation_step_reduction": 15,
+    "median_prompt_token_reduction_percent": 98.8239,
+    "median_raw_prompt_tokens": 40474,
+    "scenario_count": 3,
+    "total_prompt_token_reduction_percent": 98.9606
+  }
+}

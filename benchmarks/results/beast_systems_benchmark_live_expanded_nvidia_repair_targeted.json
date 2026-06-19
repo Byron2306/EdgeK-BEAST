@@ -1,0 +1,813 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47725,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "__________________ test_provider_has_openrouter_default _____________________\n\n    def test_provider_has_openrouter_default():\n>       assert gateway_config({})[\"provider\"] == \"openrouter\"\nE       AssertionError: assert None == 'openrouter'\n\ntests/test_config.py:5: AssertionError\n______________ test_boolean_parser_normalizes_common_shell_values ______________\n\n    def test_boolean_parser_normalizes_common_shell_values():\n>       assert parse_bool(\" TRUE \") is True\n               ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_config.py:9: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ' TRUE '\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\n2 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 38,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "__________________ test_provider_has_openrouter_default _____________________\n\n    def test_provider_has_openrouter_default():\n>       assert gateway_config({})[\"provider\"] == \"openrouter\"\nE       AssertionError: assert None == 'openrouter'\n\ntests/test_config.py:5: AssertionError\n______________ test_boolean_parser_normalizes_common_shell_values ______________\n\n    def test_boolean_parser_normalizes_common_shell_values():\n>       assert parse_bool(\" TRUE \") is True\n               ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_config.py:9: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ' TRUE '\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\n2 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 312,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 340,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 401,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "raw",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 47651,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "context_only",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 48,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane lacked enough scoped evidence or exceeded useful raw-context budget",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "rag",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 250,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "rag_tools",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 280,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "full_beast",
+      "latency_ms": null,
+      "output_evidence": null,
+      "prompt_tokens": 340,
+      "provider": "",
+      "provider_text_excerpt": "",
+      "reason": "lane had enough scoped context to apply known-good patch",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": null
+    }
+  ],
+  "generated_at": "2026-06-18T15:52:48Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 43.0,
+      "median_reduction_vs_raw_percent": 99.9098,
+      "tasks": 2
+    },
+    "full_beast": {
+      "completed": 2,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 370.5,
+      "median_reduction_vs_raw_percent": 99.2231,
+      "tasks": 2
+    },
+    "rag": {
+      "completed": 2,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 281.0,
+      "median_reduction_vs_raw_percent": 99.4108,
+      "tasks": 2
+    },
+    "rag_tools": {
+      "completed": 2,
+      "completion_rate": 1.0,
+      "median_prompt_tokens": 310.0,
+      "median_reduction_vs_raw_percent": 99.3499,
+      "tasks": 2
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 47688.0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 2
+    }
+  },
+  "live_efficiency_summary": {
+    "live_nvidia_nim_full_beast": {
+      "average_latency_ms": 66795.641,
+      "average_provider_tokens": 5350.5,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 2,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 2,
+      "provider_tokens_per_verified_fix": 5350.5,
+      "repair_attempted": 2,
+      "rescued_completed": 2,
+      "tasks": 2
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 0,
+    "excluded_infra_failure": 0,
+    "infra_failure": 0,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 2,
+    "nim_tests_failed": 0,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "benchmarks/results/beast_systems_benchmark_live_expanded_nvidia_repair_targeted_gauntlet",
+    "result_count": 2
+  },
+  "live_provider_fitness": {
+    "nvidia_nim": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 2,
+      "beast_completion_rate": 1.0,
+      "clean_completed": 0,
+      "eligible_for_source_patching": false,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.5,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.5,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.5,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "rescued_completed": 2,
+      "sample_size": 2,
+      "score": 0.4
+    }
+  },
+  "live_provider_presets": {
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 41124.354,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 41124.354,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 765,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1600,
+          "prompt_tokens": 5069,
+          "prompt_tokens_details": null,
+          "total_tokens": 6669
+        }
+      },
+      "prompt_tokens": 3551,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "{\"actions\":[{\"id\":\"a1\",\"intent\":\"Fix provider default to openrouter\",\"new\":\"\\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\", \\\"openrouter\\\"),\",\"target\":{\"anchor_ref\":\"A12\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"},{\"id\":\"a2\",\"intent\":\"Normalize boolean parsing to handle case and whitespace\",\"new\":\"def parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if isinstance(value, str):\\n        value = value.strip().lower()\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\"}:\\n        return False\\n    raise ValueError(value)\",\"target\":{\"anchor_ref\":\"A2\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}],\"fallback\":\"\",\"handoff_hash\":\"sha256:eb74d11d9f2724f73febc76b2b8108214badc32e13e91b5529a41",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 1600,
+        "prompt_tokens": 5069,
+        "prompt_tokens_details": null,
+        "total_tokens": 6669
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 92466.928,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "initial_validation_error": "Action IR missing provider_handoff_hash",
+        "json_parse_ok": true,
+        "latency_ms": 92466.928,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "nvidia_nim",
+        "raw_chars": 625,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 1593,
+          "prompt_tokens": 2439,
+          "prompt_tokens_details": null,
+          "total_tokens": 4032
+        }
+      },
+      "prompt_tokens": 3113,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "{\"actions\":[{\"id\":\"a1\",\"intent\":\"Replace validation logic to require anchor_ref and omit old snippet\",\"new\":\"if not action.get('target', {}).get('anchor_ref'):\\n    return False\",\"target\":{\"anchor_ref\":\"A1\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}],\"fallback\":\"\",\"handoff_hash\":\"sha256:9398d1cde0334c87fbab7a3ea45b0e66c00adec39428fa64316ff616a15fab90\",\"kind\":\"beast.action_intent.v1\",\"objective\":\"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\"provider_handoff_hash\":\"sha256:9398d1cde0334c87fbab7a3ea45b0e66c00adec39428fa64316ff616a15fab90\",\"verify\":[\"python -m pytest tests -q\"]}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 1593,
+        "prompt_tokens": 2439,
+        "prompt_tokens_details": null,
+        "total_tokens": 4032
+      }
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-18T16:16:44Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "full_beast"
+    ],
+    "planned_run_count": 2,
+    "providers": [
+      {
+        "api_key_env": "NVIDIA_API_KEY",
+        "api_key_present": false,
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider": "nvidia_nim",
+        "stage0_route_gates": {
+          "api_key_present": false,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 180.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/config.py"
+        ],
+        "hidden_tests": [],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "config_validation_edge_case",
+        "task_id": "config_validation_edge_case",
+        "visible_tests": [
+          "tests/test_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/nim_contract.py"
+        ],
+        "hidden_tests": [
+          "tests/test_nim_contract_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "nim_refs_only_contract",
+        "task_id": "nim_refs_only_contract",
+        "visible_tests": [
+          "tests/test_nim_contract_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": true,
+    "lanes": [
+      "full_beast"
+    ],
+    "max_tasks": 2,
+    "max_tokens": 1600,
+    "prompt_mode": "compact",
+    "timeout_seconds": 120.0
+  },
+  "live_summary": {
+    "nvidia_nim": {
+      "average_latency_ms": 66795.641,
+      "average_provider_prompt_tokens": 3754.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 2,
+      "completion_rate": 1.0,
+      "failures": [],
+      "latency_ms_per_verified_fix": 66795.641,
+      "local_verifier_repaired": 2,
+      "provider_tokens_per_verified_fix": 5350.5,
+      "repair_attempted": 2,
+      "rescued_completed": 2,
+      "tasks": 2
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {
+    "agent_loop": {
+      "actions": [
+        {
+          "action": "retrieve_context",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py",
+            "tests/test_provider_contracts.py"
+          ],
+          "turn": 1
+        },
+        {
+          "action": "apply_patch",
+          "files": [
+            "app/kernel/provider_registry.py",
+            "app/cli/api.py"
+          ],
+          "turn": 2
+        },
+        {
+          "action": "run_tests",
+          "returncode": 0,
+          "turn": 3
+        }
+      ],
+      "ok": true,
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "turns": 3
+    },
+    "compression_and_economizer": {
+      "economizer_changed": true,
+      "economizer_final_tokens": 25,
+      "economizer_original_tokens": 54455,
+      "json_reduction_percent": 96.5896,
+      "ok": true,
+      "python_reduction_percent": 93.0394
+    },
+    "mcp_governance": {
+      "dangerous_shell_decision": "deny",
+      "ok": true,
+      "read_decision": "allow",
+      "safe_shell_decision": "require_approval",
+      "token_compressor_decision": "allow"
+    },
+    "provider_contracts": {
+      "checked_providers": {
+        "codex": {
+          "backend": "openai_compatible",
+          "model": "gpt-5-codex",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "litellm": {
+          "backend": "litellm",
+          "model": "litellm/ollama",
+          "ok": true,
+          "route_provider": "litellm"
+        },
+        "nvidia_nim": {
+          "backend": "openai_compatible",
+          "model": "nvidia/nemotron-3-super-120b-a12b",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "ollama": {
+          "backend": "ollama",
+          "model": "llama3.2:3b",
+          "ok": true,
+          "route_provider": "ollama"
+        },
+        "openai": {
+          "backend": "openai_compatible",
+          "model": "gpt-4o-mini",
+          "ok": true,
+          "route_provider": "openai_compatible"
+        },
+        "openrouter": {
+          "backend": "litellm",
+          "model": "litellm/openrouter/auto",
+          "ok": true,
+          "route_provider": "litellm"
+        }
+      },
+      "excluded_from_live_default": [
+        "local_nim"
+      ],
+      "ok": true
+    },
+    "rag_vector_retrieval": {
+      "indexed_chunks": 87,
+      "indexed_files": 14,
+      "ok": true,
+      "retrieval_mode": "dense_vector",
+      "semantic_available": true,
+      "top_files": [
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py",
+        "tests/test_provider_contracts.py",
+        "tests/test_provider_contracts.py",
+        "app/cli/api.py"
+      ]
+    },
+    "tool_interception": {
+      "backend": "basic_semantic_grep",
+      "bytes_returned": 349,
+      "ok": true,
+      "raw_bytes": 3536,
+      "reduction_percent": 90.1301
+    },
+    "tool_laziness": {
+      "critical_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1383.3333333333333,
+        "average_tokens_spent": 940.0,
+        "average_value_score": 0.3333,
+        "calls": 3,
+        "decision": "call",
+        "expected_value_score": 0.3333,
+        "max_success_value_score": 1.0,
+        "reason": "rare critical success observed",
+        "samples": 3,
+        "scenario": "rare_critical_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.03,
+        "total_tokens_spent": 2820,
+        "useful": 1,
+        "usefulness_rate": 0.3333
+      },
+      "ok": true,
+      "redundant_decision": {
+        "average_cost_usd": 0.01,
+        "average_latency_ms": 1400.0,
+        "average_tokens_spent": 1000.0,
+        "average_value_score": 0.0,
+        "calls": 5,
+        "decision": "skip",
+        "estimated_avoidance": {
+          "cost_usd": 0.01,
+          "latency_ms": 1400.0,
+          "tokens": 1000.0
+        },
+        "expected_value_score": 0.0,
+        "max_success_value_score": 0.0,
+        "reason": "low learned usefulness",
+        "samples": 5,
+        "scenario": "redundant_context_lookup",
+        "tool_name": "provider_call",
+        "total_cost_usd": 0.05,
+        "total_tokens_spent": 5000,
+        "useful": 0,
+        "usefulness_rate": 0.0
+      }
+    },
+    "vector_adapter_inventory": {
+      "active_adapter": "sqlite_local_embeddings",
+      "adapter_count": 5,
+      "ok": true,
+      "rules": [
+        "lexical_fallback_must_work_without_embeddings",
+        "metadata_filters_before_scoring",
+        "dense_vectors_optional",
+        "append_only_truth_before_retrieval_views"
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {},
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

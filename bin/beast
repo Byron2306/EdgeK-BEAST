@@ -1,0 +1,1150 @@
+#!/usr/bin/env python3
+"""EdgeK BEAST command hub."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import logging
+import os
+import signal
+import sys
+import subprocess
+import time
+import urllib.error
+import urllib.request
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("TQDM_DISABLE", "1")
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
+
+ROOT = Path(__file__).resolve().parent.parent
+BEAST = Path(__file__).resolve()
+DEFAULT_GATEWAY = "http://127.0.0.1:8000"
+
+COMMANDS = [
+    "doctor",
+    "providers",
+    "integrations",
+    "compressors",
+    "compress",
+    "scout",
+    "diagnose",
+    "route",
+    "verify",
+    "chronicle",
+    "promote",
+    "prec",
+    "handoff-prepare",
+    "mcp-config",
+    "mcp-install",
+    "openclaw-plan",
+    "openclaw-execute",
+    "nemoclaw-plan",
+    "nemoclaw-execute",
+    "zeroclaw-plan",
+    "hermes-plan",
+    "hermes-execute",
+    "ui",
+    "up",
+    "gateway",
+    "mcp",
+    "mcp-http",
+]
+
+
+def start_mcp_http_server(host: str = "127.0.0.1", port: int = 8001) -> None:
+    import uvicorn
+    from fastapi import FastAPI
+    from app.mcp.server import mcp_router
+
+    app = FastAPI(title="EdgeK BEAST MCP HTTP")
+    app.include_router(mcp_router)
+    logger.info("Starting EdgeK BEAST MCP HTTP server on %s:%s", host, port)
+    uvicorn.run(app, host=host, port=port, log_level="info")
+
+
+def start_gateway(host: str = "127.0.0.1", port: int = 8000, reload: bool = False) -> None:
+    import uvicorn
+
+    uvicorn.run("app.main:app", host=host, port=port, reload=reload, log_level="warning")
+
+
+def run_dir() -> Path:
+    path = ROOT / "deploy" / "run"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def generated_dir() -> Path:
+    path = ROOT / "deploy" / "generated"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def beast_python() -> str:
+    for candidate in (ROOT / "venv" / "bin" / "python", ROOT / ".venv" / "bin" / "python"):
+        if candidate.exists():
+            return str(candidate)
+    return sys.executable
+
+
+def pid_running(pid_file: Path) -> tuple[bool, Optional[int]]:
+    if not pid_file.exists():
+        return False, None
+    try:
+        pid = int(pid_file.read_text(encoding="utf-8").strip())
+        os.kill(pid, 0)
+        return True, pid
+    except (OSError, ValueError):
+        return False, None
+
+
+def url_ready(url: str, timeout: float = 1.0) -> bool:
+    try:
+        urllib.request.urlopen(url, timeout=timeout).read(128)
+        return True
+    except Exception:
+        return False
+
+
+def wait_url(url: str, timeout_seconds: float = 20.0) -> bool:
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        if url_ready(url, timeout=1.0):
+            return True
+        time.sleep(0.35)
+    return url_ready(url, timeout=1.0)
+
+
+def spawn_daemon(name: str, command: list[str], pid_file: Path, log_file: Path, cwd: Path = ROOT, env: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    running, pid = pid_running(pid_file)
+    if running:
+        return {"service": name, "status": "already_running", "pid": pid, "pid_file": str(pid_file), "log_file": str(log_file), "command": " ".join(command)}
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+    log = log_file.open("ab")
+    process = subprocess.Popen(
+        command,
+        cwd=str(cwd),
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        stdin=subprocess.DEVNULL,
+        start_new_session=True,
+        env=env or os.environ.copy(),
+    )
+    pid_file.write_text(str(process.pid), encoding="utf-8")
+    return {"service": name, "status": "started", "pid": process.pid, "pid_file": str(pid_file), "log_file": str(log_file), "command": " ".join(command)}
+
+
+def start_ollama_daemon(host: str = "127.0.0.1:11434") -> Dict[str, Any]:
+    if url_ready(f"http://{host}/api/tags"):
+        return {"service": "ollama", "status": "already_running", "base_url": f"http://{host}"}
+    command = ["ollama", "serve"]
+    env = os.environ.copy()
+    env.setdefault("OLLAMA_HOST", host)
+    result = spawn_daemon("ollama", command, run_dir() / "ollama.pid", run_dir() / "ollama.log", env=env)
+    result["ready"] = wait_url(f"http://{host}/api/tags", timeout_seconds=25.0)
+    result["base_url"] = f"http://{host}"
+    return result
+
+
+def start_gateway_daemon(host: str, port: int) -> Dict[str, Any]:
+    url = f"http://{host}:{port}/health"
+    if url_ready(url):
+        return {"service": "gateway", "status": "already_running", "base_url": f"http://{host}:{port}", "ready": True}
+    command = [beast_python(), str(BEAST), "gateway", "--host", host, "--port", str(port)]
+    result = spawn_daemon("gateway", command, run_dir() / "gateway.pid", run_dir() / "gateway.log")
+    result["ready"] = wait_url(url, timeout_seconds=35.0)
+    result["base_url"] = f"http://{host}:{port}"
+    return result
+
+
+def start_mcp_http_daemon(host: str, port: int) -> Dict[str, Any]:
+    url = f"http://{host}:{port}/mcp/health"
+    if url_ready(url):
+        return {"service": "mcp_http", "status": "already_running", "base_url": f"http://{host}:{port}", "ready": True}
+    command = [beast_python(), str(BEAST), "mcp-http", "--host", host, "--port", str(port)]
+    result = spawn_daemon("mcp_http", command, run_dir() / "mcp-http.pid", run_dir() / "mcp-http.log")
+    result["ready"] = wait_url(url, timeout_seconds=25.0)
+    result["base_url"] = f"http://{host}:{port}"
+    return result
+
+
+def start_litellm_daemon(port: int = 4000) -> Dict[str, Any]:
+    from app.kernel.reason import reasoner
+    from app.kernel.deployment import DeploymentManager
+
+    manager = DeploymentManager(reasoner.policies)
+    manager.write_generated_files(generated_dir())
+    state = manager.litellm_sidecar_status(pid_file=run_dir() / "litellm.pid", port=port)
+    if state.get("running"):
+        return {"service": "litellm", "status": "already_running", "ready": True, **state}
+    result = manager.start_litellm_sidecar(
+        config_path=generated_dir() / "litellm.config.yaml",
+        pid_file=run_dir() / "litellm.pid",
+        port=port,
+        dry_run=False,
+        approved=True,
+    )
+    result["service"] = "litellm"
+    result["ready"] = wait_url(f"http://127.0.0.1:{port}/v1/models", timeout_seconds=35.0)
+    return result
+
+
+def ensure_nginx(listen_port: int = 8080, apply: bool = True) -> Dict[str, Any]:
+    from app.kernel.reason import reasoner
+    from app.kernel.deployment import DeploymentManager
+
+    manager = DeploymentManager(reasoner.policies)
+    manager.write_generated_files(generated_dir())
+    result: Dict[str, Any] = {"service": "nginx", "generated_config": str(generated_dir() / "nginx.edgek.conf")}
+    if not apply:
+        return {**result, "status": "generated_only", "ready": url_ready(f"http://127.0.0.1:{listen_port}/health")}
+    nginx = shutil_which("nginx")
+    if not nginx:
+        return {**result, "status": "missing", "ready": False, "error": "nginx executable not found"}
+    if pgrep("nginx") and os.geteuid() != 0:
+        return {
+            **result,
+            "status": "already_running_unmanaged",
+            "ready": True,
+            "warning": "nginx is already running; run with elevated privileges to test/reload the system nginx config",
+        }
+    test = subprocess.run([nginx, "-t"], capture_output=True, text=True, timeout=15, check=False)
+    result["test_returncode"] = test.returncode
+    result["test_stderr"] = test.stderr[-1000:]
+    if test.returncode != 0:
+        if pgrep("nginx"):
+            return {
+                **result,
+                "status": "already_running_unmanaged",
+                "ready": True,
+                "warning": "nginx is running, but this user could not test/reload the system nginx config",
+            }
+        return {**result, "status": "config_test_failed", "ready": False}
+    if not pgrep("nginx"):
+        start = subprocess.run([nginx], capture_output=True, text=True, timeout=15, check=False)
+        result["start_returncode"] = start.returncode
+        result["start_stderr"] = start.stderr[-1000:]
+        status = "started" if start.returncode == 0 else "start_failed"
+    else:
+        reload_result = subprocess.run([nginx, "-s", "reload"], capture_output=True, text=True, timeout=15, check=False)
+        result["reload_returncode"] = reload_result.returncode
+        result["reload_stderr"] = reload_result.stderr[-1000:]
+        status = "reloaded" if reload_result.returncode == 0 else "reload_failed"
+    return {**result, "status": status, "ready": bool(pgrep("nginx"))}
+
+
+def shutil_which(name: str) -> Optional[str]:
+    search_path = os.environ.get("PATH", "")
+    for extra in ("/usr/sbin", "/sbin", "/usr/local/sbin"):
+        if extra not in search_path.split(os.pathsep):
+            search_path += os.pathsep + extra
+    for folder in search_path.split(os.pathsep):
+        candidate = Path(folder) / name
+        if candidate.exists() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
+def pgrep(pattern: str) -> list[int]:
+    completed = subprocess.run(["pgrep", "-f", pattern], capture_output=True, text=True, check=False)
+    pids = []
+    for line in completed.stdout.splitlines():
+        try:
+            pid = int(line.strip())
+            if pid != os.getpid():
+                pids.append(pid)
+        except ValueError:
+            pass
+    return pids
+
+
+def http_json(method: str, gateway: str, path: str, payload: Optional[Dict[str, Any]] = None, timeout: float = 2.0) -> Dict[str, Any]:
+    url = gateway.rstrip("/") + path
+    data = None
+    headers = {"Accept": "application/json"}
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    request = urllib.request.Request(url, data=data, headers=headers, method=method.upper())
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        body = response.read().decode("utf-8")
+        return json.loads(body) if body else {}
+
+
+def gateway_probe(gateway: str, path: str, timeout: float = 1.0) -> Dict[str, Any]:
+    try:
+        return {"ok": True, "path": path, "payload": http_json("GET", gateway, path, timeout=timeout)}
+    except Exception as exc:
+        return {"ok": False, "path": path, "error": str(exc)}
+
+
+def emit(payload: Dict[str, Any], agent: bool, human: Optional[str] = None) -> None:
+    if agent:
+        print(json.dumps(payload, sort_keys=True))
+    else:
+        print(human or json.dumps(payload, indent=2, sort_keys=True))
+
+
+def bool_value(value: str) -> bool:
+    return str(value).strip().lower() not in {"0", "false", "no", "off"}
+
+
+def read_json_file(path: Optional[str]) -> Dict[str, Any]:
+    if not path:
+        return {}
+    with open(path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def split_items(values: Optional[list[str]]) -> list[str]:
+    items: list[str] = []
+    for value in values or []:
+        for part in str(value).split(","):
+            cleaned = part.strip()
+            if cleaned:
+                items.append(cleaned)
+    return items
+
+
+def forensic_payload_from_args(args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "include_forensic_context": bool_value(getattr(args, "include_forensic_context", "true")),
+        "forensic_limit": int(getattr(args, "forensic_limit", 8)),
+        "forensic_layer": getattr(args, "forensic_layer", None),
+        "forensic_event_kind": getattr(args, "forensic_event_kind", None),
+        "forensic_provider": getattr(args, "forensic_provider", None),
+        "forensic_status": getattr(args, "forensic_status", None),
+    }
+
+
+def scout_options_from_args(args: argparse.Namespace) -> Dict[str, Any]:
+    options = {
+        "context_limit": int(getattr(args, "context_limit", 6)),
+        "tool_limit": int(getattr(args, "tool_limit", 6)),
+        "include_postgres_schema": bool_value(getattr(args, "include_postgres_schema", "false")),
+        "include_github_context": bool_value(getattr(args, "include_github_context", "false")),
+    }
+    options.update(forensic_payload_from_args(args))
+    return options
+
+
+def add_forensic_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--include-forensic-context", default="true", help="true/false")
+    parser.add_argument("--forensic-limit", type=int, default=8, help="Bounded L4 forensic result limit")
+    parser.add_argument("--forensic-layer", choices=["L1", "L2", "L3", "L4"], help="Filter forensic context by interception layer")
+    parser.add_argument("--forensic-event-kind", help="Filter forensic context by event kind")
+    parser.add_argument("--forensic-provider", help="Filter forensic context by provider")
+    parser.add_argument("--forensic-status", help="Filter forensic context by status")
+
+
+def welcome(args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "service": "EdgeK BEAST CLI",
+        "role": "primary_operator_surface",
+        "gateway": args.gateway,
+        "workspace": str(Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()),
+        "commands": COMMANDS,
+    }
+
+
+def provider_exports(gateway: str) -> Dict[str, str]:
+    base = gateway.rstrip("/")
+    return {
+        "OPENAI_BASE_URL": f"{base}/proxy/openai/v1",
+        "ANTHROPIC_BASE_URL": f"{base}/proxy/anthropic",
+        "GEMINI_BASE_URL": f"{base}/proxy/gemini/v1beta/openai",
+        "HF_INFERENCE_BASE_URL": f"{base}/proxy/huggingface",
+        "NVIDIA_NIM_BASE_URL": f"{base}/proxy/nvidia/v1",
+        "OPENROUTER_BASE_URL": f"{base}/proxy/openrouter/v1",
+        "CEREBRAS_BASE_URL": f"{base}/proxy/cerebras/v1",
+        "GROQ_BASE_URL": f"{base}/proxy/groq/openai/v1",
+        "COHERE_BASE_URL": f"{base}/proxy/cohere/v2",
+        "DEEPINFRA_BASE_URL": f"{base}/proxy/deepinfra/v1/openai",
+        "FEATHERLESS_BASE_URL": f"{base}/proxy/featherless/v1",
+        "NOVITA_BASE_URL": f"{base}/proxy/novita/openai",
+    }
+
+
+def command_doctor(args: argparse.Namespace) -> Dict[str, Any]:
+    gateway = gateway_probe(args.gateway, "/health")
+    ollama = gateway_probe(args.gateway, "/edgek/ollama/status")
+    integrations = gateway_probe(args.gateway, "/edgek/tools/integrations")
+    secrets = gateway_probe(args.gateway, "/edgek/providers/secrets")
+    ok = gateway["ok"] and integrations["ok"]
+    return {
+        "command": "doctor",
+        "status": "ok" if ok else "attention",
+        "gateway": gateway,
+        "ollama": ollama,
+        "integrations": integrations,
+        "secrets": secrets,
+        "recommendation": "Start `beast gateway` or inspect integration readiness." if not ok else "Operator surface ready.",
+    }
+
+
+def local_integrations() -> Dict[str, Any]:
+    from app.kernel.tool_integrations import RequiredIntegrationRegistry
+
+    return RequiredIntegrationRegistry().status()
+
+
+def command_integrations(args: argparse.Namespace) -> Dict[str, Any]:
+    try:
+        payload = http_json("GET", args.gateway, "/edgek/tools/integrations")
+        return {"command": "integrations", "source": "gateway", **payload}
+    except Exception as exc:
+        payload = local_integrations()
+        return {"command": "integrations", "source": "local", "gateway_error": str(exc), **payload}
+
+
+def command_up(args: argparse.Namespace) -> Dict[str, Any]:
+    """Start the local BEAST stack as background services."""
+    results: list[Dict[str, Any]] = []
+    host = str(args.host)
+    gateway_port = int(args.gateway_port)
+    mcp_port = int(args.mcp_port)
+    litellm_port = int(args.litellm_port)
+    nginx_port = int(args.nginx_port)
+
+    results.append(start_ollama_daemon(host=str(args.ollama_host)))
+    results.append(start_litellm_daemon(port=litellm_port))
+    results.append(start_gateway_daemon(host=host, port=gateway_port))
+    results.append(start_mcp_http_daemon(host=host, port=mcp_port))
+    results.append(ensure_nginx(listen_port=nginx_port, apply=bool_value(args.nginx)))
+
+    gateway_base = f"http://{host}:{gateway_port}"
+    checks = {
+        "gateway": gateway_probe(gateway_base, "/health", timeout=2.0),
+        "proxy": gateway_probe(gateway_base, "/proxy/health", timeout=2.0),
+        "mcp_gateway": gateway_probe(gateway_base, "/mcp/health", timeout=2.0),
+        "mcp_http": {"ok": url_ready(f"http://{host}:{mcp_port}/mcp/health", timeout=2.0), "path": f"http://{host}:{mcp_port}/mcp/health"},
+        "litellm": {"ok": url_ready(f"http://127.0.0.1:{litellm_port}/v1/models", timeout=2.0), "path": f"http://127.0.0.1:{litellm_port}/v1/models"},
+        "ollama": {"ok": url_ready(f"http://{args.ollama_host}/api/tags", timeout=2.0), "path": f"http://{args.ollama_host}/api/tags"},
+        "nginx": {"ok": bool(pgrep("nginx")), "path": f"http://127.0.0.1:{nginx_port}"},
+    }
+    ready = all(check.get("ok") for check in checks.values() if isinstance(check, dict))
+    return {
+        "command": "up",
+        "status": "ready" if ready else "attention",
+        "gateway": gateway_base,
+        "proxy": f"{gateway_base}/proxy",
+        "mcp_http": f"http://{host}:{mcp_port}/mcp",
+        "litellm": f"http://127.0.0.1:{litellm_port}/v1",
+        "ollama": f"http://{args.ollama_host}",
+        "nginx": f"http://127.0.0.1:{nginx_port}",
+        "services": results,
+        "checks": checks,
+        "next": "Run `./bin/beast ui` for the TUI or use provider exports from `./bin/beast providers`.",
+    }
+
+
+def command_compressors(args: argparse.Namespace) -> Dict[str, Any]:
+    status = command_integrations(args)
+    compressors = status.get("compressors")
+    if not isinstance(compressors, dict) or "backends" not in compressors:
+        compressors = local_integrations().get("compressors", {})
+    return {
+        "command": "compressors",
+        "source": status.get("source"),
+        "compressors": compressors,
+        "gateway_error": status.get("gateway_error"),
+    }
+
+
+def command_compress(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.tool_integrations import ToolCallInterceptor
+
+    text = args.text
+    if args.file:
+        text = Path(args.file).read_text(encoding="utf-8", errors="replace")
+    if text is None:
+        text = sys.stdin.read()
+    result = ToolCallInterceptor().compress_text(text or "", algorithm=args.algorithm)
+    return {"command": "compress", **result}
+
+
+def _gateway_or_local(args: argparse.Namespace, method: str, path: str, payload: Optional[Dict[str, Any]], local_fn, timeout: float = 8.0) -> Dict[str, Any]:
+    if not getattr(args, "local_only", False):
+        try:
+            result = http_json(method, args.gateway, path, payload, timeout=timeout)
+            return {"source": "gateway", **result}
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+            local = local_fn(exc)
+            return {**local, "source": "local_fallback", "gateway_error": str(exc)}
+    return {**local_fn(None), "source": "local"}
+
+
+def command_diagnose(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "provider": args.provider,
+        "user_request": args.objective or f"Diagnose {args.provider} provider route",
+        "chronicle": bool_value(args.chronicle),
+    }
+
+    def local(_exc):
+        from app.kernel.task_envelope import TaskEnvelopeBuilder
+
+        return TaskEnvelopeBuilder().diagnose_provider(payload, workspace_root=str(ROOT), write_chronicle=bool_value(args.chronicle))
+
+    return {"command": "diagnose", **_gateway_or_local(args, "POST", "/edgek/task/provider-diagnostic", payload, local)}
+
+
+def command_route(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "provider": args.provider,
+        "user_request": args.objective or f"Build route card for {args.provider}",
+        "persist": bool_value(args.persist),
+    }
+
+    def local(_exc):
+        from app.kernel.task_envelope import TaskEnvelopeBuilder
+
+        envelope = TaskEnvelopeBuilder().build(payload, dry_run=True)
+        return TaskEnvelopeBuilder().provider_diagnostic_route_card(args.provider, envelope=envelope, persist=bool_value(args.persist))
+
+    return {"command": "route", **_gateway_or_local(args, "POST", "/edgek/pathfinder/route-card", payload, local)}
+
+
+def command_verify(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "provider": args.provider,
+        "user_request": args.objective or "Run local quality cascade",
+        "task_class": args.task_class,
+    }
+
+    def local(_exc):
+        from app.kernel.task_envelope import TaskEnvelopeBuilder
+
+        return TaskEnvelopeBuilder().run_quality_cascade(payload, workspace_root=str(ROOT))
+
+    return {"command": "verify", **_gateway_or_local(args, "POST", "/edgek/quality/run", payload, local)}
+
+
+def command_chronicle(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.chronicle_projection import ChronicleProjectionPublisher
+    from app.kernel.task_envelope import TaskEnvelopeBuilder
+
+    builder = TaskEnvelopeBuilder()
+    if args.publish:
+        payload = {
+            "task_id": args.task_id,
+            "targets": split_items(args.target),
+            "approved": bool_value(args.approved),
+            "dry_run": bool_value(args.dry_run),
+        }
+
+        def local(_exc):
+            chronicle = builder.get_chronicle(args.task_id)
+            return ChronicleProjectionPublisher().publish(
+                chronicle,
+                targets=payload["targets"],
+                approved=payload["approved"],
+                dry_run=payload["dry_run"],
+            )
+
+        return {"command": "chronicle", **_gateway_or_local(args, "POST", "/edgek/chronicle/publish", payload, local)}
+    if args.task_id:
+        def local_detail(_exc):
+            return builder.get_chronicle(args.task_id)
+
+        return {"command": "chronicle", **_gateway_or_local(args, "GET", f"/edgek/chronicle/{args.task_id}", None, local_detail)}
+
+    def local_list(_exc):
+        return builder.list_chronicles(provider=args.provider, task_class=args.task_class, category=args.category, limit=int(args.limit))
+
+    query = f"/edgek/chronicle?limit={int(args.limit)}"
+    if args.provider:
+        query += f"&provider={args.provider}"
+    if args.task_class:
+        query += f"&task_class={args.task_class}"
+    if args.category:
+        query += f"&category={args.category}"
+    return {"command": "chronicle", **_gateway_or_local(args, "GET", query, None, local_list)}
+
+
+def command_promote(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "candidate_id": args.candidate_id,
+        "approved": bool_value(args.approved),
+        "insight_packet": read_json_file(args.insight_packet),
+    }
+    path = "/edgek/skills/promote" if args.candidate_id else "/edgek/skills/promotion-check"
+
+    def local(exc):
+        return {
+            "beast_object_type": "promotion_cli_result",
+            "ready": False,
+            "reason": "gateway_required_for_promotion_kernel" if exc else "local_promotion_not_bound",
+            "candidate_id": args.candidate_id,
+        }
+
+    return {"command": "promote", **_gateway_or_local(args, "POST", path, payload, local)}
+
+
+def command_prec(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.prec_lifecycle import PRECLifecycleStore
+
+    store = PRECLifecycleStore()
+    action = args.prec_action
+
+    if action == "status":
+        def local_status(_exc):
+            return store.state()
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "GET", "/edgek/prec/state", None, local_status)}
+
+    if action == "list":
+        query = f"/edgek/prec/lifecycle?limit={int(args.limit)}"
+        if args.kind:
+            query += f"&kind={args.kind}"
+        if args.status:
+            query += f"&status={args.status}"
+
+        def local_list(_exc):
+            return store.list(kind=args.kind, status=args.status, limit=int(args.limit))
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "GET", query, None, local_list)}
+
+    if action == "trace":
+        def local_trace(_exc):
+            detail = store.get(args.lifecycle_id)
+            return detail or {"found": False, "reason": "prec_lifecycle_not_found", "lifecycle_id": args.lifecycle_id}
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "GET", f"/edgek/prec/lifecycle/{args.lifecycle_id}", None, local_trace)}
+
+    if action == "snapshot":
+        path = f"/edgek/prec/lifecycle/{args.lifecycle_id}/snapshot?max_chars={int(args.max_chars)}&persist={str(bool_value(args.persist)).lower()}"
+
+        def local_snapshot(_exc):
+            try:
+                return store.compact_snapshot(
+                    args.lifecycle_id,
+                    max_chars=int(args.max_chars),
+                    persist=bool_value(args.persist),
+                )
+            except ValueError as exc:
+                return {"found": False, "reason": str(exc), "lifecycle_id": args.lifecycle_id}
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "GET", path, None, local_snapshot)}
+
+    if action == "start":
+        payload = {
+            "kind": args.kind or "operator_session",
+            "objective": args.objective,
+            "scope": args.scope or "",
+            "task_id": args.task_id,
+            "provider": args.provider,
+        }
+
+        def local_start(_exc):
+            return store.start(
+                kind=payload["kind"],
+                objective=payload["objective"],
+                scope=payload["scope"],
+                task_id=payload["task_id"],
+                provider=payload["provider"],
+            )
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "POST", "/edgek/prec/start", payload, local_start)}
+
+    if action == "advance":
+        payload = {
+            "lifecycle_id": args.lifecycle_id,
+            "phase": args.phase,
+            "status": args.status or "completed",
+            "summary": args.summary or "",
+            "artifacts": read_json_file(args.artifacts),
+            "signals": split_items(args.signal),
+        }
+
+        def local_advance(_exc):
+            return store.record_phase(
+                payload["lifecycle_id"],
+                payload["phase"],
+                status=payload["status"],
+                summary=payload["summary"],
+                artifacts=payload["artifacts"],
+                signals=payload["signals"],
+            )
+
+        return {"command": "prec", "action": action, **_gateway_or_local(args, "POST", "/edgek/prec/update", payload, local_advance)}
+
+    return {"command": "prec", "action": action, "error": "unsupported_prec_action"}
+
+
+def current_task_from_args(args: argparse.Namespace) -> Dict[str, Any]:
+    current_task = read_json_file(getattr(args, "current_task", None))
+    if getattr(args, "objective", None):
+        current_task.setdefault("objective", args.objective)
+    if getattr(args, "scope", None):
+        current_task["scope"] = args.scope
+    constraints = split_items(getattr(args, "constraint", None))
+    if constraints:
+        current_task["constraints"] = constraints
+    success = split_items(getattr(args, "success_criteria", None))
+    if success:
+        current_task["success_criteria"] = success
+    return current_task
+
+
+def local_handoff_prepare(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.insight_compiler import InsightCompiler
+    from app.kernel.forensic_memory import ForensicMemory
+
+    return InsightCompiler(forensic_memory=ForensicMemory()).prepare_handoff(
+        current_task=current_task_from_args(args),
+        objective=getattr(args, "objective", "") or "",
+        provider=getattr(args, "provider", None),
+        task_class=getattr(args, "task_class", None),
+        limit=int(getattr(args, "limit", 8)),
+        persist_task=bool_value(getattr(args, "persist_task", "true")),
+        **forensic_payload_from_args(args),
+    )
+
+
+def command_handoff_prepare(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "current_task": current_task_from_args(args),
+        "objective": args.objective or "",
+        "provider": args.provider,
+        "task_class": args.task_class,
+        "limit": int(args.limit),
+        "persist_task": bool_value(args.persist_task),
+        **forensic_payload_from_args(args),
+    }
+    if not args.local_only:
+        try:
+            return http_json("POST", args.gateway, "/edgek/handoff/prepare", payload, timeout=8.0)
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+            local = local_handoff_prepare(args)
+            return {**local, "source": "local_fallback", "gateway_error": str(exc)}
+    return {**local_handoff_prepare(args), "source": "local"}
+
+
+def local_scout(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.forensic_memory import ForensicMemory
+    from app.kernel.ollama_scout import OllamaScout
+
+    workspace = str(Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve())
+    scout = OllamaScout(forensic_memory=ForensicMemory())
+    return scout.scout({
+        "task": args.objective or "",
+        "use_ollama": bool_value(args.use_ollama),
+        "context_limit": int(args.context_limit),
+        "tool_limit": int(args.tool_limit),
+        "include_postgres_schema": bool_value(args.include_postgres_schema),
+        "include_github_context": bool_value(args.include_github_context),
+        **forensic_payload_from_args(args),
+    }, workspace_root=workspace)
+
+
+def command_scout(args: argparse.Namespace) -> Dict[str, Any]:
+    payload = {
+        "task": args.objective or "",
+        "use_ollama": bool_value(args.use_ollama),
+        "context_limit": int(args.context_limit),
+        "tool_limit": int(args.tool_limit),
+        "include_postgres_schema": bool_value(args.include_postgres_schema),
+        "include_github_context": bool_value(args.include_github_context),
+        **forensic_payload_from_args(args),
+    }
+    if not args.local_only:
+        try:
+            result = http_json("POST", args.gateway, "/edgek/ollama/scout", payload, timeout=8.0)
+            return {"command": "scout", "source": "gateway", **result}
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+            local = local_scout(args)
+            return {"command": "scout", "source": "local_fallback", "gateway_error": str(exc), **local}
+    return {"command": "scout", "source": "local", **local_scout(args)}
+
+
+def command_mcp_config(args: argparse.Namespace) -> Dict[str, Any]:
+    workspace = str(Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve())
+    config = {
+        "servers": {
+            "edgek-beast": {
+                "type": "stdio",
+                "command": str(BEAST),
+                "args": ["mcp", "--workspace", workspace],
+                "env": {"BEAST_WORKSPACE": workspace},
+            }
+        }
+    }
+    return {"command": "mcp-config", "config": config}
+
+
+def command_mcp_install(args: argparse.Namespace) -> Dict[str, Any]:
+    workspace = Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()
+    config = command_mcp_config(args)["config"]
+    target = workspace / ".vscode" / "mcp.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    existing: Dict[str, Any] = {}
+    if target.exists():
+        existing = json.loads(target.read_text(encoding="utf-8"))
+    existing.setdefault("servers", {}).update(config["servers"])
+    target.write_text(json.dumps(existing, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {"command": "mcp-install", "installed": True, "path": str(target), "config": existing}
+
+
+def default_workflow(mode: str) -> Dict[str, Any]:
+    digest = hashlib.sha256(f"{mode}_cli_harness".encode("utf-8")).hexdigest()
+    workflow: Dict[str, Any] = {
+        "beast_object_type": "conductor_workflow_card",
+        "version": "1.0",
+        "workflow_id": f"wf_{digest[:16]}",
+        "task_id": f"tsk_{digest[16:32]}",
+        "task_class": f"{mode}_cli_harness",
+        "execution_mode": "advisory_plan",
+        "executor_binding": {
+            "available": True,
+            "binding": mode,
+            "default": "dry_run" if mode != "zeroclaw" else "planning_only",
+        },
+        "decision": "ready",
+        "steps": [
+            {"step_id": "prepare_task", "role": "openclaw", "action": "Build task envelope and gather local context."},
+            {"step_id": "pack_context", "role": "cartographer", "action": "Pack memory, route-card, and file evidence."},
+            {"step_id": "apply_governance_gates", "role": "sentinel", "action": "Check policy, credentials, circuit, attempts, and logs."},
+            {"step_id": "publish_chronicle", "role": "scribe", "action": "Write Chronicle after outcome classification."},
+        ],
+        "required_gates": [],
+        "verification_plan": {
+            "required": True,
+            "commands": ["pytest -q test_beast_cli_script.py test_beast_cli_executor.py"],
+        },
+        "chronicle_plan": {
+            "required": True,
+            "record_type": "cli_harness_outcome",
+            "include": ["task_envelope", "provider_diagnostic", "workflow", "verification"],
+        },
+        "workflow_hash": "sha256:" + digest,
+    }
+    if mode == "hermes":
+        workflow["swarm"] = {
+            "used": True,
+            "status": "bound",
+            "execution_capability": "advisory_read_only",
+            "roles": ["planner", "cartographer", "sentinel", "scribe", "verifier"],
+        }
+    return workflow
+
+
+def local_executor_result(args: argparse.Namespace, mode: str, execute: bool) -> Dict[str, Any]:
+    from app.kernel.beast_cli_executor import BeastCLIExecutor
+    from app.kernel.canon_registry import CanonRegistry
+    from app.kernel.forensic_memory import ForensicMemory
+    from app.kernel.ollama_scout import OllamaScout
+
+    workspace = str(Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve())
+    workflow = read_json_file(args.workflow) or default_workflow(mode)
+    context_packet = read_json_file(args.context)
+    insight_packet = getattr(args, "_insight_packet", None)
+    executor = BeastCLIExecutor(ollama_scout=OllamaScout(forensic_memory=ForensicMemory()), canon_registry=CanonRegistry())
+    objective = args.objective or f"{mode} CLI harness"
+    use_ollama = bool_value(args.use_ollama)
+    scout_options = scout_options_from_args(args)
+    if execute:
+        return executor.execute(
+            objective=objective,
+            workflow=workflow,
+            context_packet=context_packet,
+            insight_packet=insight_packet,
+            mode=mode,
+            workspace_root=workspace,
+            dry_run=bool_value(args.dry_run),
+            approved=bool_value(args.approved),
+            use_ollama=use_ollama,
+            scout_options=scout_options,
+        )
+    return executor.plan(
+        objective=objective,
+        workflow=workflow,
+        context_packet=context_packet,
+        insight_packet=insight_packet,
+        mode=mode,
+        workspace_root=workspace,
+        use_ollama=use_ollama,
+        scout_options=scout_options,
+    )
+
+
+def command_profile(args: argparse.Namespace, mode: str, execute: bool) -> Dict[str, Any]:
+    handoff_requested = bool(getattr(args, "handoff", False) or getattr(args, "scope", None) or getattr(args, "success_criteria", None))
+    handoff_precheck = None
+    if handoff_requested and mode in {"openclaw", "hermes"}:
+        handoff_precheck = command_handoff_prepare(args)
+        if handoff_precheck.get("ready"):
+            setattr(args, "_insight_packet", handoff_precheck.get("insight_packet"))
+    payload = {
+        "objective": args.objective or f"{mode} CLI harness",
+        "mode": mode,
+        "workflow": read_json_file(args.workflow) or default_workflow(mode),
+        "context_packet": read_json_file(args.context),
+        "use_ollama": bool_value(args.use_ollama),
+        "scout_options": scout_options_from_args(args),
+    }
+    if handoff_precheck:
+        payload["handoff_precheck"] = handoff_precheck
+        if handoff_precheck.get("insight_packet"):
+            payload["insight_packet"] = handoff_precheck["insight_packet"]
+    if execute:
+        payload["dry_run"] = bool_value(args.dry_run)
+        payload["approved"] = bool_value(args.approved)
+    result: Dict[str, Any]
+    if not args.local_only:
+        try:
+            path = "/edgek/beast-cli/execute" if execute else "/edgek/beast-cli/plan"
+            result = http_json("POST", args.gateway, path, payload, timeout=8.0)
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+            local = local_executor_result(args, mode, execute)
+            result = {**local, "source": "local_fallback", "gateway_error": str(exc)}
+    else:
+        result = {**local_executor_result(args, mode, execute), "source": "local"}
+
+    if handoff_precheck:
+        result["handoff_precheck"] = handoff_precheck
+    return result
+
+
+def add_profile_parser(subparsers: argparse._SubParsersAction, command: str, mode: str, execute: bool) -> None:
+    parser = subparsers.add_parser(command, help=f"{'Execute' if execute else 'Plan'} with {mode}")
+    parser.set_defaults(handler=lambda args, m=mode, e=execute: command_profile(args, m, e))
+    parser.add_argument("--objective", "--task", dest="objective", help="Task objective")
+    parser.add_argument("--workflow", help="Path to workflow JSON")
+    parser.add_argument("--context", help="Path to context packet JSON")
+    parser.add_argument("--use-ollama", default="true", help="true/false")
+    parser.add_argument("--context-limit", type=int, default=6)
+    parser.add_argument("--tool-limit", type=int, default=6)
+    parser.add_argument("--include-postgres-schema", default="false", help="true/false")
+    parser.add_argument("--include-github-context", default="false", help="true/false")
+    parser.add_argument("--dry-run", default="true", help="true/false")
+    parser.add_argument("--approved", default="false", help="true/false")
+    parser.add_argument("--local-only", action="store_true", help="Skip gateway and use local executor")
+    parser.add_argument("--handoff", action="store_true", help="Attach cloud handoff precheck")
+    parser.add_argument("--current-task", help="Path to current task markup JSON")
+    parser.add_argument("--scope", help="Required cloud handoff task scope")
+    parser.add_argument("--constraint", action="append", help="Current task constraint; repeat or comma-separate")
+    parser.add_argument("--success-criteria", action="append", help="Required success criterion; repeat or comma-separate")
+    parser.add_argument("--provider", help="Provider filter for local insights")
+    parser.add_argument("--task-class", help="Task class filter for local insights")
+    parser.add_argument("--limit", type=int, default=8, help="Ranked insight evidence limit")
+    parser.add_argument("--persist-task", default="true", help="true/false")
+    add_forensic_args(parser)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="EdgeK BEAST Local Governor")
+    parser.add_argument("--agent", action="store_true", help="Emit machine-readable JSON")
+    parser.add_argument("--gateway", default=DEFAULT_GATEWAY, help="BEAST gateway URL")
+    parser.add_argument("--workspace", help="Workspace folder path")
+    subparsers = parser.add_subparsers(dest="command")
+
+    ui_parser = subparsers.add_parser("ui", help="Launch the BEAST Mission Console TUI")
+    ui_parser.add_argument("--workspace", help="Workspace folder path")
+    ui_parser.add_argument("--gateway-url", default=DEFAULT_GATEWAY, help="BEAST gateway URL")
+
+    up_parser = subparsers.add_parser("up", help="Start BEAST gateway, MCP HTTP, proxy lane, Nginx, LiteLLM, and Ollama")
+    up_parser.set_defaults(handler=command_up)
+    up_parser.add_argument("--host", default="127.0.0.1")
+    up_parser.add_argument("--gateway-port", type=int, default=8000)
+    up_parser.add_argument("--mcp-port", type=int, default=8001)
+    up_parser.add_argument("--litellm-port", type=int, default=4000)
+    up_parser.add_argument("--nginx-port", type=int, default=8080)
+    up_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
+    up_parser.add_argument("--nginx", default="true", help="true/false; test and start/reload installed nginx")
+
+    gateway_parser = subparsers.add_parser("gateway", help="Start the BEAST FastAPI gateway")
+    gateway_parser.add_argument("--host", default="127.0.0.1")
+    gateway_parser.add_argument("--port", type=int, default=8000)
+    gateway_parser.add_argument("--reload", action="store_true")
+
+    mcp_parser = subparsers.add_parser("mcp", help="Start the stdio MCP server")
+    mcp_parser.add_argument("--workspace", help="Workspace folder path")
+
+    mcp_http_parser = subparsers.add_parser("mcp-http", help="Start the HTTP MCP facade")
+    mcp_http_parser.add_argument("--host", default="127.0.0.1")
+    mcp_http_parser.add_argument("--port", type=int, default=8001)
+    mcp_http_parser.add_argument("--workspace", help="Workspace folder path")
+
+    for name, handler, help_text in [
+        ("doctor", command_doctor, "Check gateway, Ollama, secrets, and integrations"),
+        ("providers", lambda args: {"command": "providers", "gateway": args.gateway, "exports": provider_exports(args.gateway)}, "Print provider proxy exports"),
+        ("integrations", command_integrations, "Report required tool integration readiness"),
+        ("compressors", command_compressors, "Report compressor backend readiness"),
+        ("mcp-config", command_mcp_config, "Print MCP stdio config"),
+        ("mcp-install", command_mcp_install, "Install MCP stdio config into .vscode/mcp.json"),
+    ]:
+        item = subparsers.add_parser(name, help=help_text)
+        item.set_defaults(handler=handler)
+
+    compress = subparsers.add_parser("compress", help="Run token pruning/compression")
+    compress.set_defaults(handler=command_compress)
+    compress.add_argument("--algorithm", default="edgek_prune")
+    compress.add_argument("--text")
+    compress.add_argument("--file")
+
+    scout = subparsers.add_parser("scout", help="Build local scout packet with ranked chunks, Chronicle memory, L4 context, and fallback recommendations")
+    scout.set_defaults(handler=command_scout)
+    scout.add_argument("--objective", "--task", dest="objective", required=True, help="Task objective")
+    scout.add_argument("--use-ollama", default="false", help="true/false")
+    scout.add_argument("--context-limit", type=int, default=6)
+    scout.add_argument("--tool-limit", type=int, default=6)
+    scout.add_argument("--include-postgres-schema", default="false", help="true/false")
+    scout.add_argument("--include-github-context", default="false", help="true/false")
+    scout.add_argument("--local-only", action="store_true", help="Skip gateway and use local scout")
+    add_forensic_args(scout)
+
+    diagnose = subparsers.add_parser("diagnose", help="Run provider diagnostics")
+    diagnose.set_defaults(handler=command_diagnose)
+    diagnose.add_argument("--provider", required=True)
+    diagnose.add_argument("--objective", "--task", dest="objective")
+    diagnose.add_argument("--chronicle", default="true", help="true/false")
+    diagnose.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
+
+    route = subparsers.add_parser("route", help="Create or refresh a Pathfinder route card")
+    route.set_defaults(handler=command_route)
+    route.add_argument("--provider", required=True)
+    route.add_argument("--objective", "--task", dest="objective")
+    route.add_argument("--persist", default="true", help="true/false")
+    route.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
+
+    verify = subparsers.add_parser("verify", help="Run Quality Cascade checks")
+    verify.set_defaults(handler=command_verify)
+    verify.add_argument("--provider")
+    verify.add_argument("--objective", "--task", dest="objective", required=True)
+    verify.add_argument("--task-class", default="general_software_task")
+    verify.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
+
+    chronicle = subparsers.add_parser("chronicle", help="List, inspect, or publish Chronicle projections")
+    chronicle.set_defaults(handler=command_chronicle)
+    chronicle.add_argument("--task-id")
+    chronicle.add_argument("--provider")
+    chronicle.add_argument("--task-class")
+    chronicle.add_argument("--category")
+    chronicle.add_argument("--limit", type=int, default=20)
+    chronicle.add_argument("--publish", action="store_true")
+    chronicle.add_argument("--target", action="append", help="Projection target; repeat or comma-separate")
+    chronicle.add_argument("--approved", default="false", help="true/false")
+    chronicle.add_argument("--dry-run", default="true", help="true/false")
+    chronicle.add_argument("--local-only", action="store_true", help="Skip gateway and use local Chronicle store")
+
+    promote = subparsers.add_parser("promote", help="Check or promote BEAST skill candidates")
+    promote.set_defaults(handler=command_promote)
+    promote.add_argument("--candidate-id")
+    promote.add_argument("--insight-packet", help="Path to insight packet JSON")
+    promote.add_argument("--approved", default="false", help="true/false")
+    promote.add_argument("--local-only", action="store_true", help="Return local promotion readiness only")
+
+    prec = subparsers.add_parser("prec", help="Inspect or advance PREC lifecycle state")
+    prec_sub = prec.add_subparsers(dest="prec_action", required=True)
+    prec_status = prec_sub.add_parser("status", help="Show PREC lifecycle state")
+    prec_status.set_defaults(handler=command_prec)
+    prec_status.add_argument("--local-only", action="store_true")
+    prec_list = prec_sub.add_parser("list", help="List PREC lifecycle records")
+    prec_list.set_defaults(handler=command_prec)
+    prec_list.add_argument("--kind")
+    prec_list.add_argument("--status")
+    prec_list.add_argument("--limit", type=int, default=20)
+    prec_list.add_argument("--local-only", action="store_true")
+    prec_trace = prec_sub.add_parser("trace", help="Show one PREC lifecycle by lifecycle id")
+    prec_trace.set_defaults(handler=command_prec)
+    prec_trace.add_argument("lifecycle_id")
+    prec_trace.add_argument("--local-only", action="store_true")
+    prec_snapshot = prec_sub.add_parser("snapshot", help="Build a compact PREC snapshot for handoff/operator review")
+    prec_snapshot.set_defaults(handler=command_prec)
+    prec_snapshot.add_argument("lifecycle_id")
+    prec_snapshot.add_argument("--max-chars", type=int, default=6000)
+    prec_snapshot.add_argument("--persist", default="true", help="true/false")
+    prec_snapshot.add_argument("--local-only", action="store_true")
+    prec_start = prec_sub.add_parser("start", help="Start a PREC lifecycle")
+    prec_start.set_defaults(handler=command_prec)
+    prec_start.add_argument("--objective", "--task", dest="objective", required=True)
+    prec_start.add_argument("--kind", default="operator_session")
+    prec_start.add_argument("--scope")
+    prec_start.add_argument("--task-id")
+    prec_start.add_argument("--provider")
+    prec_start.add_argument("--local-only", action="store_true")
+    prec_advance = prec_sub.add_parser("advance", help="Append a PREC phase event")
+    prec_advance.set_defaults(handler=command_prec)
+    prec_advance.add_argument("lifecycle_id")
+    prec_advance.add_argument("--phase", required=True, choices=["perceive", "reason", "economize", "crystallize"])
+    prec_advance.add_argument("--status", default="completed")
+    prec_advance.add_argument("--summary")
+    prec_advance.add_argument("--artifacts", help="Path to phase artifact JSON")
+    prec_advance.add_argument("--signal", action="append", help="Phase signal; repeat or comma-separate")
+    prec_advance.add_argument("--local-only", action="store_true")
+
+    handoff = subparsers.add_parser("handoff-prepare", help="Prepare ranked cloud handoff after current task markup")
+    handoff.set_defaults(handler=command_handoff_prepare)
+    handoff.add_argument("--objective", "--task", dest="objective", help="Current task objective")
+    handoff.add_argument("--current-task", help="Path to current task markup JSON")
+    handoff.add_argument("--scope", help="Required cloud handoff task scope")
+    handoff.add_argument("--constraint", action="append", help="Current task constraint; repeat or comma-separate")
+    handoff.add_argument("--success-criteria", action="append", help="Required success criterion; repeat or comma-separate")
+    handoff.add_argument("--provider", help="Provider filter for local insights")
+    handoff.add_argument("--task-class", help="Task class filter for local insights")
+    handoff.add_argument("--limit", type=int, default=8, help="Ranked insight evidence limit")
+    handoff.add_argument("--persist-task", default="true", help="true/false")
+    handoff.add_argument("--local-only", action="store_true", help="Skip gateway and use local compiler")
+    add_forensic_args(handoff)
+
+    add_profile_parser(subparsers, "openclaw-plan", "openclaw", False)
+    add_profile_parser(subparsers, "openclaw-execute", "openclaw", True)
+    add_profile_parser(subparsers, "nemoclaw-plan", "nemoclaw", False)
+    add_profile_parser(subparsers, "nemoclaw-execute", "nemoclaw", True)
+    add_profile_parser(subparsers, "zeroclaw-plan", "zeroclaw", False)
+    add_profile_parser(subparsers, "hermes-plan", "hermes", False)
+    add_profile_parser(subparsers, "hermes-execute", "hermes", True)
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    if args.workspace:
+        os.environ["BEAST_WORKSPACE"] = args.workspace
+
+    if args.command == "ui":
+        os.environ["BEAST_GATEWAY_URL"] = args.gateway_url
+        from app.cli.ui import run
+
+        run()
+        return
+    if args.command == "gateway":
+        start_gateway(args.host, args.port, args.reload)
+        return
+    if args.command == "mcp":
+        from app.mcp.stdio_server import serve_stdio
+
+        serve_stdio()
+        return
+    if args.command == "mcp-http":
+        start_mcp_http_server(args.host, args.port)
+        return
+
+    if not args.command:
+        payload = welcome(args)
+        emit(payload, args.agent, "EdgeK BEAST CLI\nCommands: " + ", ".join(COMMANDS))
+        return
+
+    handler = getattr(args, "handler", None)
+    if not handler:
+        parser.print_help()
+        return
+    payload = handler(args)
+    emit(payload, args.agent)
+
+
+if __name__ == "__main__":
+    main()

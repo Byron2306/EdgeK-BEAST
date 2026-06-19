@@ -1,0 +1,377 @@
+{
+  "claim_scope": "Live OpenAI-compatible provider task-completion A/B. Each lane receives a prompt, provider returns JSON operations, pytest determines completion.",
+  "generated_at": "2026-06-17T10:15:54Z",
+  "lanes": {
+    "beast_live": {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "beast_live",
+      "prompt_tokens": 998,
+      "provider_text_excerpt": "",
+      "reason": "live provider lane failed safely: The read operation timed out",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "                                                                     [100%]\n=================================== FAILURES ===================================\n____________________________ test_codex_is_routable ____________________________\n\n    def test_codex_is_routable():\n        records = {record.provider_id: record for record in ProviderRegistry().records()}\n    \n>       assert records[\"codex\"].backend == \"openai_compatible\"\n               ^^^^^^^^^^^^^^^^\nE       KeyError: 'codex'\n\ntests/test_provider_contracts.py:8: KeyError\n___________________ test_beast_auto_resolves_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_is_routable - KeyError: '...\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\n2 failed, 1 passed in 0.02s\n",
+      "usage": {}
+    },
+    "raw_live": {
+      "completed": false,
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -2,12 +2,20 @@\n \n \n class BeastApiClient:\n-    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n-        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n-        if model and model != \"beast-auto\":\n-            return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+ def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n+ provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n+ if model and model != \"beast-auto\":\n+ return model\n+ if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n+ return \"ollama\"\n+ if provider_id == \"ollama\":\n+ return \"llama3.2:3b\"\n+ if provider_id == \"codex\":\n+ return \"gpt-5-codex\"\n+ if provider_id == \"openai\":\n+ return \"gpt-4o-mini\"\n+ if provider_id == \"nvidia-nim\":\n+ return \"meta/llama-3.1-70b-instruct\"\n+ if provider_id == \"local-nim\":\n+ return \"local-nim-model\"\n+ return \"\" if model == \"beast-auto\" else model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -5,45 +5,56 @@\n \n @dataclass\n class ProviderRecord:\n-    provider_id: str\n-    backend: str\n-    default_model: str\n-    env: list[str]\n+ provider_id: str\n+ backend: str\n+ default_model: str\n+ env: list[str]\n \n \n class ProviderRegistry:\n-    DEFAULTS = {\n-        \"openai\": {\n-            \"backend\": \"openai_compatible\",\n-            \"env\": [\"OPENAI_API_KEY\"],\n-        },\n-        \"litellm\": {\n-            \"backend\": \"litellm\",\n-            \"default_model\": \"ollama\",\n-            \"env\": [\"LITELLM_BASE_URL\"],\n-        },\n-        \"nvidia_nim\": {\n-            \"backend\": \"openai_compatible\",\n-            \"default_model\": \"meta/llama-3.1-70b-instruct\",\n-            \"env\": [\"NVIDIA_API_KEY\"],\n-        },\n-    }\n+ DEFAULTS = {\n+ \"openai\": {\n+ \"backend\": \"openai_compatible\",\n+ \"default_model\": \"gpt-4o-mini\",\n+ \"env\": [\"OPENAI_API_KEY\"],\n+ },\n+ \"litellm\": {\n+ \"backend\": \"litellm\",\n+ \"default_model\": \"ollama\",\n+ \"env\": [\"LITELLM_BASE_URL\"],\n+ },\n+ \"nvidia_nim\": {\n+ \"backend\": \"openai_compatible\",\n+ \"default_model\": \"meta/llama-3.1-70b-instruct\",\n+ \"env\": [\"NVIDIA_API_KEY\"],\n+ },\n+ \"codex\": {\n+ \"backend\": \"openai_compatible\",\n+ \"default_model\": \"gpt-5-codex\",\n+ \"env\": [\"OPENAI_API_KEY\"],\n+ },\n+ \"local_nim\": {\n+ \"backend\": \"litellm\",\n+ \"default_model\": \"local-nim-model\",\n+ \"env\": [\"LITELLM_BASE_URL\"],\n+ },\n+ }\n \n-    def records(self):\n-        return [\n-            ProviderRecord(\n-                provider_id=name,\n-                backend=config.get(\"backend\", \"litellm\"),\n-                default_model=config.get(\"default_model\", name),\n-                env=list(config.get(\"env\", [])),\n-            )\n-            for name, config in sorted(self.DEFAULTS.items())\n-        ]\n+ def records(self):\n+ return [\n+ ProviderRecord(\n+ provider_id=name,\n+ backend=config.get(\"backend\", \"litellm\"),\n+ default_model=config.get(\"default_model\", name),\n+ env=list(config.get(\"env\", [])),\n+ )\n+ for name, config in sorted(self.DEFAULTS.items())\n+ ]\n \n \n class ProviderAdapterRegistry:\n-    def adapter_for(self, provider_id):\n-        for record in ProviderRegistry().records():\n-            if record.provider_id == provider_id:\n-                return record\n-        raise KeyError(provider_id)\n+ def adapter_for(self, provider_id):\n+ for record in ProviderRegistry().records():\n+ if record.provider_id == provider_id:\n+ return record\n+ raise KeyError(provider_id)\n",
+      "files_changed": [
+        "app/cli/api.py",
+        "app/kernel/provider_registry.py"
+      ],
+      "lane": "raw_live",
+      "prompt_tokens": 34723,
+      "provider_text_excerpt": "{\"operations\": [{\"path\": \"app/kernel/provider_registry.py\", \"content\": \"\\\"\\\"\\\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\\\"\\\"\\\"\\n\\nfrom dataclasses import dataclass\\n\\n\\n@dataclass\\nclass ProviderRecord:\\n provider_id: str\\n backend: str\\n default_model: str\\n env: list[str]\\n\\n\\nclass ProviderRegistry:\\n DEFAULTS = {\\n \\\"openai\\\": {\\n \\\"backend\\\": \\\"openai_compatible\\\",\\n \\\"default_model\\\": \\\"gpt-4o-mini\\\",\\n \\\"env\\\": [\\\"OPENAI_API_KEY\\\"],\\n },\\n \\\"litellm\\\": {\\n \\\"backend\\\": \\\"litellm\\\",\\n \\\"default_model\\\": \\\"ollama\\\",\\n \\\"env\\\": [\\\"LITELLM_BASE_URL\\\"],\\n },\\n \\\"nvidia_nim\\\": {\\n \\\"backend\\\": \\\"openai_compatible\\\",\\n \\\"default_model\\\": \\\"meta/llama-3.1-70b-instruct\\\",\\n \\\"env\\\": [\\\"NVIDIA_API_KEY\\\"],\\n },\\n \\\"codex\\\": {\\n \\\"backend\\\": \\\"openai_compatible\\\",\\n \\\"default_model\\\": \\\"gpt-5-codex\\\",\\n \\\"env\\\": [\\\"OPENAI_API_KEY\\\"],\\n },\\n \\\"local_nim\\\": {\\n \\\"backend\\\": \\\"litellm\\\",\\n \\\"default_model\\\": \\\"local-nim-model\\\",\\n \\\"env\\\": [\\\"LITELLM_BASE_URL\\\"],\\n },\\n }\\n\\n def records(self):\\n return [\\n ProviderRecord(\\n provider_id=name,\\n backend=config.get(\\\"backend\\\", \\\"litellm\\\"),\\n default_model=config.get(\\\"default_model\\\", name),\\n env=list(co",
+      "reason": "live provider operations applied but pytest failed",
+      "returncode": 2,
+      "stderr_tail": "",
+      "stdout_tail": "587: in import_path\n    importlib.import_module(module_name)\n/usr/lib/python3.13/importlib/__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/home/byron/.local/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:197: in exec_module\n    exec(co, module.__dict__)\ntests/test_provider_contracts.py:1: in <module>\n    from app.cli.api import BeastApiClient\nE     File \"/tmp/beast_live_task_completion_xi_pbb2l/raw_live/app/cli/api.py\", line 6\nE       provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\nE       ^^^^^^^^^^^\nE   IndentationError: expected an indented block after function definition on line 5\n=========================== short test summary info ============================\nERROR tests/test_provider_contracts.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.09s\n",
+      "usage": {
+        "completion_tokens": 727,
+        "prompt_tokens": 30305,
+        "prompt_tokens_details": null,
+        "total_tokens": 31032
+      }
+    }
+  },
+  "live_endpoint": "https://integrate.api.nvidia.com/v1",
+  "live_model": "meta/llama-3.1-70b-instruct",
+  "provider_contracts": {
+    "codex": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-5-codex",
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-5-codex",
+        "enabled": true,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "https://api.openai.com/v1",
+            "default_model": "gpt-5-codex",
+            "litellm_model_prefix": "openai/",
+            "metadata": {
+              "coding_agent": true,
+              "provider_alias_of": "openai"
+            },
+            "openai_compatible": true,
+            "proxy_path": "/proxy/codex",
+            "risk_level": "high"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "requires_approval": false,
+        "risk_level": "high"
+      }
+    },
+    "litellm": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ollama",
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "route_provider": "litellm"
+      },
+      "record": {
+        "backend": "litellm",
+        "base_url": null,
+        "default_model": "ollama",
+        "enabled": true,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "",
+        "managed_by": "beast_managed_backend_lane",
+        "metadata": {
+          "policy": {
+            "backend": "litellm",
+            "default_model": "ollama",
+            "litellm_model_prefix": "",
+            "managed_by": "beast_managed_backend_lane",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/huggingface/litellm"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "local_nim": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "local-nim-model",
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "default_model": "local-nim-model",
+        "enabled": true,
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "http://127.0.0.1:8000/v1",
+            "default_model": "local-nim-model",
+            "litellm_model_prefix": "openai/",
+            "metadata": {
+              "local_endpoint_env": "LOCAL_NIM_BASE_URL",
+              "nim": true
+            },
+            "openai_compatible": true,
+            "proxy_path": "/proxy/local-nim",
+            "requires_approval": false,
+            "risk_level": "local"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "requires_approval": false,
+        "risk_level": "local"
+      }
+    },
+    "nvidia_nim": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "meta/llama-3.1-70b-instruct",
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "default_model": "meta/llama-3.1-70b-instruct",
+        "enabled": true,
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "base_url": "https://integrate.api.nvidia.com/v1",
+            "default_model": "meta/llama-3.1-70b-instruct",
+            "litellm_model_prefix": "openai/",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/nvidia-nim"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "ollama": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "ollama",
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama3.2:3b",
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "route_provider": "ollama"
+      },
+      "record": {
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "default_model": "llama3.2:3b",
+        "enabled": true,
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "ollama",
+            "base_url": "http://127.0.0.1:11434/v1",
+            "default_model": "llama3.2:3b",
+            "proxy_path": "/proxy/ollama",
+            "requires_approval": false,
+            "risk_level": "local"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": false,
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "requires_approval": false,
+        "risk_level": "local"
+      }
+    },
+    "openai": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-4o-mini",
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "route_provider": "openai_compatible"
+      },
+      "record": {
+        "backend": "openai_compatible",
+        "base_url": null,
+        "default_model": "gpt-4o-mini",
+        "enabled": true,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openai/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "openai_compatible",
+            "default_model": "gpt-4o-mini",
+            "litellm_model_prefix": "openai/",
+            "native_adapter": true,
+            "openai_compatible": true,
+            "proxy_path": "/proxy/openai"
+          }
+        },
+        "native_adapter": true,
+        "openai_compatible": true,
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    },
+    "openrouter": {
+      "ok": true,
+      "plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/openrouter/auto",
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "route_provider": "litellm"
+      },
+      "record": {
+        "backend": "litellm",
+        "base_url": null,
+        "default_model": "openrouter/auto",
+        "enabled": true,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "gateway_lane": "provider_explicit",
+        "litellm_model_prefix": "openrouter/",
+        "managed_by": "beast",
+        "metadata": {
+          "policy": {
+            "backend": "litellm",
+            "default_model": "openrouter/auto",
+            "litellm_model_prefix": "openrouter/",
+            "openai_compatible": true,
+            "proxy_path": "/proxy/openrouter"
+          }
+        },
+        "native_adapter": false,
+        "openai_compatible": true,
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "requires_approval": false,
+        "risk_level": "medium"
+      }
+    }
+  },
+  "provider_contracts_ok": true,
+  "skipped": false,
+  "summary": {
+    "beast_completed": false,
+    "beast_prompt_tokens": 998,
+    "beast_won": false,
+    "both_completed": false,
+    "prompt_token_reduction_percent": 97.1258,
+    "raw_completed": false,
+    "raw_prompt_tokens": 34723
+  }
+}

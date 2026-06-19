@@ -1,0 +1,147 @@
+model_list:
+- model_name: claude-3-haiku-20240307
+  litellm_params:
+    model: anthropic/claude-3-haiku-20240307
+    api_key: os.environ/ANTHROPIC_API_KEY
+  rpm: 50
+  tpm: 40000
+- model_name: llama3.1-8b
+  litellm_params:
+    model: cerebras/llama3.1-8b
+    api_key: os.environ/CEREBRAS_API_KEY
+    api_base: https://api.cerebras.ai/v1
+  rpm: 60
+  tpm: 120000
+- model_name: gpt-5-codex
+  litellm_params:
+    model: openai/gpt-5-codex
+    api_key: os.environ/OPENAI_API_KEY
+    api_base: https://api.openai.com/v1
+  rpm: 30
+  tpm: 60000
+- model_name: command-a-03-2025
+  litellm_params:
+    model: cohere/command-a-03-2025
+    api_key: os.environ/COHERE_API_KEY
+    api_base: https://api.cohere.com/v2
+  rpm: 60
+  tpm: 120000
+- model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  litellm_params:
+    model: deepinfra/meta-llama/Meta-Llama-3.1-8B-Instruct
+    api_key: os.environ/DEEPINFRA_API_KEY
+    api_base: https://api.deepinfra.com/v1/openai
+  rpm: 60
+  tpm: 120000
+- model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  litellm_params:
+    model: featherless_ai/meta-llama/Meta-Llama-3.1-8B-Instruct
+    api_key: os.environ/FEATHERLESS_API_KEY
+    api_base: https://api.featherless.ai/v1
+  rpm: 60
+  tpm: 120000
+- model_name: gemini-flash
+  litellm_params:
+    model: gemini/gemini-2.5-flash
+    api_key: os.environ/GEMINI_API_KEY
+  rpm: 60
+  tpm: 100000
+- model_name: llama-3.1-8b-instant
+  litellm_params:
+    model: groq/llama-3.1-8b-instant
+    api_key: os.environ/GROQ_API_KEY
+    api_base: https://api.groq.com/openai/v1
+  rpm: 60
+  tpm: 120000
+- model_name: huggingface
+  litellm_params:
+    model: huggingface/openai/gpt-oss-120b
+    api_key: os.environ/HF_TOKEN
+    api_base: https://router.huggingface.co/v1
+  rpm: 60
+  tpm: 120000
+- model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  litellm_params:
+    model: hyperbolic/meta-llama/Meta-Llama-3.1-8B-Instruct
+    api_key: os.environ/HYPERBOLIC_API_KEY
+    api_base: https://api.hyperbolic.xyz/v1
+  rpm: 60
+  tpm: 120000
+- model_name: litellm-gpt-3.5-turbo
+  litellm_params:
+    model: openai/gpt-3.5-turbo
+    api_key: os.environ/LITELLM_API_KEY
+    api_base: http://localhost:4000
+  rpm: 120
+  tpm: 120000
+- model_name: local-nim-model
+  litellm_params:
+    model: openai/local-nim-model
+    api_key: os.environ/LOCAL_NIM_BASE_URL
+    api_base: http://127.0.0.1:8000/v1
+- model_name: meta-llama/llama-3.1-8b-instruct
+  litellm_params:
+    model: novita/meta-llama/llama-3.1-8b-instruct
+    api_key: os.environ/NOVITA_API_KEY
+    api_base: https://api.novita.ai/openai
+  rpm: 60
+  tpm: 120000
+- model_name: meta-llama/Llama-3.1-8B-Instruct
+  litellm_params:
+    model: nscale/meta-llama/Llama-3.1-8B-Instruct
+    api_key: os.environ/NSCALE_API_KEY
+    api_base: https://inference.api.nscale.com/v1
+  rpm: 60
+  tpm: 120000
+- model_name: nvidia-nim
+  litellm_params:
+    model: openai/meta/llama-3.1-70b-instruct
+    api_key: os.environ/NVIDIA_API_KEY
+    api_base: https://integrate.api.nvidia.com/v1
+  rpm: 60
+  tpm: 120000
+- model_name: llama3.2:3b
+  litellm_params:
+    model: ollama/llama3.2:3b
+    api_base: http://127.0.0.1:11434/v1
+- model_name: gpt-3.5-turbo
+  litellm_params:
+    model: openai/gpt-3.5-turbo
+    api_key: os.environ/OPENAI_API_KEY
+    api_base: https://api.openai.com/v1
+  rpm: 60
+  tpm: 90000
+- model_name: openrouter/auto
+  litellm_params:
+    model: openrouter/auto
+    api_key: os.environ/OPENROUTER_API_KEY
+    api_base: https://openrouter.ai/api/v1
+  rpm: 80
+  tpm: 120000
+- model_name: ovhcloud/ai-endpoints
+  litellm_params:
+    model: ovhcloud/ai-endpoints
+    api_key: os.environ/OVHCLOUD_APP_KEY
+    api_base: https://api.ovh.com/1.0
+  rpm: 60
+  tpm: 120000
+- model_name: tgi-llamacpp
+  litellm_params:
+    model: openai/Qwen/Qwen2.5-3B-Instruct
+    api_key: os.environ/TGI_BASE_URL
+    api_base: http://127.0.0.1:3000
+  rpm: 120
+  tpm: 120000
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  request_timeout: 120
+general_settings:
+  master_key: os.environ/EDGEK_LITELLM_MASTER_KEY
+  database_url: os.environ/EDGEK_LITELLM_DATABASE_URL
+edgek_beast:
+  gateway_base_url: http://127.0.0.1:8000
+  governance: BEAST remains the policy, compression, tool-laziness, and forensic layer.
+  provider_registry: http://127.0.0.1:8000/edgek/providers/registry
+  tool_call_interception: http://127.0.0.1:8000/edgek/tools/intercept
+  required_integrations: http://127.0.0.1:8000/edgek/tools/integrations

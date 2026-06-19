@@ -1,0 +1,184 @@
+/* BEAST Mission Console Theme */
+
+/* Colors */
+$beast-green: #5CFF95;
+$beast-acid: #7CFF4F;
+$beast-panel: #0D1110;
+$beast-raised: #121917;
+$beast-border: #3A4641;
+$beast-muted: #66746E;
+$beast-text: #E8F2ED;
+$beast-warn: #FFBD4A;
+$beast-danger: #FF5F56;
+$beast-info: #5CE1FF;
+
+/* Screen */
+Screen {
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+/* Header */
+BeastHeader {
+    dock: top;
+    height: 12;
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+/* Body layout */
+#body {
+    layout: horizontal;
+    height: 1fr;
+}
+
+/* Sidebar */
+Sidebar {
+    width: 20;
+    background: $beast-panel;
+    border-right: thick $beast-border;
+}
+
+Sidebar Static {
+    padding: 1 2;
+}
+
+Sidebar .selected {
+    color: $beast-acid;
+    text-style: bold;
+}
+
+/* Activity Rail */
+ActivityRail {
+    width: 2;
+    background: $beast-panel;
+    border-right: thick $beast-border;
+    color: #AAB8B2;
+}
+
+/* Content */
+#content {
+    width: 1fr;
+    background: $beast-panel;
+    padding: 1 2;
+}
+
+/* PageHost */
+PageHost {
+    height: 1fr;
+}
+
+/* Terminal strip */
+#terminal-strip {
+    dock: bottom;
+    height: 3;
+    background: $beast-panel;
+    color: $beast-muted;
+    text-align: center;
+}
+
+/* Panels */
+Panel {
+    border: tall $beast-border;
+    background: $beast-raised;
+    color: $beast-text;
+    padding: 1 2;
+}
+
+Panel.-title {
+    text-style: bold;
+    color: $beast-acid;
+}
+
+/* Buttons (in Static widgets) */
+Static Panel {
+    background: $beast-raised;
+}
+
+Static Panel.-acid {
+    border: tall $beast-acid;
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+Static Panel.-green {
+    border: tall $beast-green;
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+Static Panel.-warn {
+    border: tall $beast-warn;
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+Static Panel.-danger {
+    border: tall $beast-danger;
+    background: $beast-panel;
+    color: $beast-text;
+}
+
+/* Tables */
+Table {
+    color: $beast-text;
+}
+
+Table .label {
+    color: $beast-muted;
+}
+
+Table .value {
+    color: $beast-green;
+}
+
+Table .value.-warn {
+    color: $beast-warn;
+}
+
+Table .value.-danger {
+    color: $beast-danger;
+}
+
+Table .value.-info {
+    color: $beast-info;
+}
+
+/* Help screen */
+HelpScreen {
+    align: center middle;
+}
+
+#help-panel {
+    width: 60;
+    height: 20;
+    background: $beast-panel;
+    border: tall $beast-acid;
+    color: $beast-text;
+    padding: 2 4;
+}
+
+#help-panel .title {
+    text-style: bold;
+    color: $beast-acid;
+}
+
+#help-panel .section-title {
+    text-style: bold;
+    color: $beast-acid;
+}
+
+/* Modal screens */
+ModalScreen {
+    background: $beast-panel 80%;
+}
+
+/* Bindings */
+Binding {
+    color: $beast-muted;
+}
+
+Binding.-key {
+    color: $beast-acid;
+    text-style: bold;
+}

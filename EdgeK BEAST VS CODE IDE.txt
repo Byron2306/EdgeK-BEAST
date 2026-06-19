@@ -1,0 +1,209 @@
+﻿EDGEK BEAST VS CODE IDE INTEGRATION
+
+The winning pattern is not one integration. It is a three-lane IDE integration:
+1. BEAST MCP Server
+   Lets VS Code agents call BEAST tools.
+2. BEAST API Gateway / Proxy
+   Forces Claude Code, Codex-like CLIs, and API traffic through BEAST.
+3. BEAST VS Code Extension
+   Controls workspace lifecycle, status, panels, settings, environment injection, and visibility.
+That avoids the split-brain problem. The extension becomes the governed IDE shell, while the BEAST daemon stays reusable by VS Code, Claude Code, terminal agents, external CLIs, and later maybe JetBrains or web dashboards.
+Why your VS Code MCP idea is valid
+VS Code now treats MCP as a first-class way to expose tools, prompts, and resources to agents. Its MCP developer guide says MCP servers can provide tools, prompts, resources, elicitation, sampling, authentication, and server instructions, and VS Code supports local stdio, HTTP, and legacy SSE transports. 
+Your idea of registering BEAST through the extension is also technically aligned with the official API. VS Code extensions can contribute contributes.mcpServerDefinitionProviders in package.json, then implement the provider with vscode.lm.registerMcpServerDefinitionProvider; the provider can return either McpStdioServerDefinition or McpHttpServerDefinition. 
+That means your extension can say:
+“Hello VS Code. This workspace has a BEAST MCP server. Here are the tools. Here are the resources. Here is the local transport. Here is the version.”
+That is very clean.
+But here is the important correction
+MCP is clean, but it is not enough for strict governance.
+Why? Because MCP tools are available to the IDE agent, but the model or agent loop may choose when to call them. VS Code docs frame MCP tools as tools that agent mode can invoke as needed, with user-visible tool descriptions and confirmation flows. 
+So this is good:
+Agent may call beast_prepare_handoff.
+Agent may call beast_run_scout.
+Agent may call beast_check_policy.
+But for guaranteed preflight, you still need the proxy/gateway lane:
+All outgoing model calls → BEAST gateway → policy/context/quality cascade → provider
+That is the true Gatekeeper.
+The Claude Code proxy lane is also valid
+Your “base URL hijack” is real and very BEAST-shaped. Claude Code’s official environment variable documentation says ANTHROPIC_BASE_URL can override the API endpoint to route requests through a proxy or gateway. It also notes that when using a non-first-party host, MCP tool search is disabled by default unless ENABLE_TOOL_SEARCH=true is set and the proxy forwards tool_reference blocks. 
+So your Claude Code setup could look like:
+export ANTHROPIC_BASE_URL="http://127.0.0.1:8080/proxy/anthropic"
+export ENABLE_TOOL_SEARCH=true
+claude
+That is not a hack in spirit. That is exactly the enterprise gateway pattern, but locally governed.
+The architecture I would use
+I would draw it like this:
+VS Code Workspace
+│
+├── EdgeK BEAST Extension
+│   ├── status bar
+│   ├── dashboard webview
+│   ├── command palette actions
+│   ├── workspace trust / policy UI
+│   ├── terminal environment setup
+│   └── MCP server registration
+│
+├── BEAST Local Daemon
+│   ├── Anthropic-compatible proxy
+│   ├── OpenAI-compatible proxy
+│   ├── MCP server
+│   ├── Quality Cascade
+│   ├── Canon Engine
+│   ├── Forge Engine
+│   ├── Pathfinder Engine
+│   ├── Chronicle Engine
+│   ├── Conductor Engine
+│   └── Skill Promotion Memory
+│
+├── Local Compute
+│   ├── Ollama Scout
+│   ├── ruff / eslint / mypy / pytest
+│   ├── tree-sitter
+│   ├── vector index
+│   └── RepoRelay workspace graph
+│
+└── External Providers
+    ├── Anthropic / Claude
+    ├── OpenAI
+    ├── Gemini
+    ├── NVIDIA NIM
+    └── OpenRouter / others
+The daemon is the truth machine. The extension is the IDE crown.
+BEAST MCP tools
+I would expose the engines as focused, atomic MCP tools. VS Code’s MCP best-practice section recommends focused operations, clear descriptions, validation, caching, and snake_case tool naming. 
+Recommended MCP tools:
+beast_prepare_task
+beast_prepare_handoff
+beast_run_quality_cascade
+beast_run_scout
+beast_check_policy
+beast_build_route_card
+beast_build_workflow_card
+beast_build_refactor_card
+beast_validate_canon_object
+beast_publish_chronicle
+beast_check_promotion_candidate
+beast_get_workspace_graph
+beast_get_relevant_context
+Example tool call flow:
+User asks VS Code agent:
+“Fix this provider error.”
+VS Code agent sees BEAST tools.
+        ↓
+Calls beast_prepare_task.
+        ↓
+BEAST classifies:
+provider_debugging, medium risk, local-first.
+        ↓
+Calls beast_run_quality_cascade.
+        ↓
+BEAST runs logs, tests, lint, route diagnostics.
+        ↓
+Calls beast_prepare_handoff.
+        ↓
+BEAST returns compact packet:
+files, line ranges, error signature, likely cause, policy.
+        ↓
+Cloud model receives a clean surgical packet, not a garbage skip full of logs.
+That is the “power without waste” ritual.
+BEAST proxy endpoints
+I would make the local daemon expose these:
+POST /proxy/anthropic/v1/messages
+POST /proxy/openai/v1/chat/completions
+POST /beast/task/prepare
+POST /beast/quality/run
+POST /beast/handoff/build
+POST /beast/policy/check
+POST /beast/chronicle/publish
+GET  /beast/state
+GET  /beast/workspace
+GET  /health
+Then different clients can connect however they want:
+Claude Code:
+  ANTHROPIC_BASE_URL=http://127.0.0.1:8080/proxy/anthropic
+OpenAI-compatible clients:
+  OPENAI_BASE_URL=http://127.0.0.1:8080/proxy/openai
+VS Code agent:
+  MCP tools registered by extension
+Custom CLI:
+  beast ask / beast run / beast diagnose
+That gives you maximum leverage.
+VS Code extension responsibilities
+The extension should do five things.
+1. Lifecycle management
+On workspace open:
+check BEAST daemon
+start if missing
+check Ollama scout
+check workspace config
+index repo lightly
+display status
+2. MCP registration
+Use contributes.mcpServerDefinitionProviders and vscode.lm.registerMcpServerDefinitionProvider to programmatically expose the BEAST MCP server. VS Code’s official docs show this exact extension contribution and provider pattern. 
+Conceptual package.json:
+{
+  "contributes": {
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "edgekBeast",
+        "label": "EdgeK BEAST MCP Provider"
+      }
+    ],
+    "commands": [
+      {
+        "command": "edgekBeast.start",
+        "title": "BEAST: Start Local Governor"
+      },
+      {
+        "command": "edgekBeast.prepareHandoff",
+        "title": "BEAST: Prepare Handoff Packet"
+      },
+      {
+        "command": "edgekBeast.openDashboard",
+        "title": "BEAST: Open Mission Control"
+      }
+    ]
+  }
+}
+3. Workspace configuration
+Generate:
+.beast/beast.yaml
+.beast/policy.yaml
+.beast/chronicle/
+.beast/skills/
+.vscode/mcp.json
+VS Code also supports MCP configuration in .vscode/mcp.json or user profile configuration, with servers, optional inputs, and optional sandbox rules on macOS/Linux. 
+Example:
+{
+  "servers": {
+    "edgekBeast": {
+      "type": "stdio",
+      "command": "beast",
+      "args": ["mcp", "--workspace", "${workspaceFolder}"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "BEAST_WORKSPACE": "${workspaceFolder}"
+      }
+    }
+  }
+}
+4. Terminal gateway setup
+The extension should offer a command:
+BEAST: Configure Integrated Terminal Gateway
+It would set or guide:
+ANTHROPIC_BASE_URL=http://127.0.0.1:8080/proxy/anthropic
+ENABLE_TOOL_SEARCH=true
+OPENAI_BASE_URL=http://127.0.0.1:8080/proxy/openai
+BEAST_WORKSPACE=/path/to/workspace
+I would not rely only on silently mutating terminals. Make it visible, reversible, and logged. That fits your Canon/assurance philosophy.
+5. UI visibility
+The extension should have a side panel:
+BEAST Status
+Context Budget
+Quality Cascade
+Active Route Card
+Active Workflow Card
+Risk Policy
+Provider Health
+Chronicle Output
+Skill Promotion Candidates

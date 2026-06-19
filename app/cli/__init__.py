@@ -1,0 +1,1 @@
+"""BEAST terminal mission console."""
