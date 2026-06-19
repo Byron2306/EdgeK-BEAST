@@ -2,7 +2,7 @@
   <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="420" style="max-width: 90%; height: auto;">
 </p>
 
-# EdgeK BEAST
+# BEAST - Broker for Efficient Agentic Systems and Tooling
 
 **Governed output gateway for agentic coding tools.**
 
