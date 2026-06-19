@@ -126,8 +126,8 @@ Provider-specific output profiles handle model quirks: NVIDIA NIM gets `refs_onl
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/edgek-beast
-cd edgek-beast
+git clone https://github.com/Byron2306/EdgeK-BEAST
+cd EdgeK-BEAST
 pip install -r requirements.txt
 ```
 
