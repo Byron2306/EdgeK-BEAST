@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="BEAST%20mascot.png" alt="BEAST mascot" width="240">
+  <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="420" style="max-width: 90%; height: auto;">
 </p>
 
 # EdgeK BEAST
