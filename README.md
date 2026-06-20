@@ -2,29 +2,75 @@
   <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="420" style="max-width: 90%; height: auto;">
 </p>
 
-# BEAST - Broker for Efficient Agentic Systems and Tooling
-
-**Governed output gateway for agentic coding tools.**
-
-BEAST sits between your AI coding agent (Cursor, Claude Code, VS Code Copilot) and any LLM provider. It governs what goes *in* and what comes *out* — enforcing output contracts, repairing non-compliant patches before they touch your filesystem, and learning which tool calls are worth making.
-
+# BEAST — Governed Execution for Coding Agents
+ 
+**Make coding agents safer, more efficient, and far harder to fool.**
+ 
+BEAST sits between your coding agent, local tools, and model providers. It gives models a small, meaningful view of the repository, requires them to return bounded actions instead of uncontrolled file rewrites, compiles those actions locally, verifies the result, and records what actually worked.
+ 
+Use it with VS Code, Cursor, Claude Code, MCP clients, OpenAI-compatible agents, local Ollama models, or your own orchestration layer.
+ 
+> **Models propose. BEAST resolves, compiles, verifies, routes, remembers, and rolls back.**
+ 
 ---
-
-## Why this exists
-
-AI coding agents are not careful. They read entire files when they need three lines. They write to paths they shouldn't. They spend your token budget on redundant lookups. When a provider returns malformed JSON, they fail silently or corrupt your code.
-
-BEAST intercepts both sides:
-
-- **Input governance** — context compression, tool laziness learning, budget enforcement, circuit breakers
-- **Output governance** — every model response is parsed against a typed output contract (`beast.action_intent.v1`) before anything touches disk. Non-compliant patches are repaired locally and verified. If verification fails, nothing is written.
-
+ 
+## Why Coding Agents Need BEAST
+ 
+Coding agents often fail for reasons that have little to do with raw model intelligence:
+ 
+- They reread entire repositories to answer narrow questions
+- They call every available tool because the tools exist
+- They confuse provider, router, model, and authentication failures
+- They return plausible JSON that violates the required schema
+- They rewrite full files when a three-line anchored change would do
+- They pass visible tests but fail behaviour they were not shown
+- They keep moving after an unsafe patch instead of failing closed
+- They treat every model as equally suitable for every role
+BEAST changes the execution contract. The cloud model does not need to see everything or write everything. It needs to identify the right next action inside a governed local system.
+ 
 ---
-
-## Benchmark results
-
-### Deterministic — 10 tasks, 5 lanes
-
+ 
+## Evidence
+ 
+### xAI Omni-Gauntlet — 24 live governed tasks
+ 
+| Result | Outcome |
+|---|---:|
+| Full-BEAST verified completion | **24 / 24** |
+| Provider-clean hidden-passing fixes | **13 / 24** |
+| BEAST-rescued verified fixes | **11 / 24** |
+| Matched raw Grok completion | **1 / 4** |
+| JSON validity | **100%** |
+| Schema validity | **100%** |
+| Patch application | **100%** |
+| Out-of-scope edits | **0%** |
+| Architecture layers covered | **13 / 13** |
+ 
+On the matched controls, BEAST raised verified completion from **25% to 100%**. Eleven governed fixes required local verifier rescue — those count as BEAST-rescued, never as clean provider success.
+ 
+### Live provider benchmark — 216+ tasks across 21 provider routes
+ 
+| Result | Count |
+|---|---:|
+| BEAST end-to-end completions | **216 / 216** |
+| Clean provider completions | 41 / 216 |
+| BEAST-rescued completions | 175 / 216 |
+ 
+81% of raw provider outputs were non-compliant, malformed, or incomplete. BEAST rescued every one. Without output governance, those tasks would have silently failed or written corrupted patches.
+ 
+Top provider fitness scores (hidden-clean rate / fitness):
+ 
+| Provider | Hidden Clean | Fitness | Role |
+|---|---|---|---|
+| `xai_grok` | 54% | 0.702 | clean candidate |
+| `ovhcloud` | 20% | 0.663 | candidate patch |
+| `puter_deepseek` | 20% | 0.619 | candidate patch (free route) |
+| `cohere` | 0% | 0.614 | candidate patch |
+| `huggingface` | 0% | 0.583 | rescue-backed |
+| `mistral_codestral` | 0% | 0.545 | rescue-backed |
+ 
+### Deterministic benchmark — 10 tasks, 5 lanes
+ 
 | Lane | Completed | Median tokens | vs raw |
 |---|---|---|---|
 | Raw (no BEAST) | 0 / 10 | 47,661 | — |
@@ -32,257 +78,272 @@ BEAST intercepts both sides:
 | RAG | 8 / 10 | 296 | −99.4% |
 | RAG + Tools | 10 / 10 | 326 | −99.3% |
 | **Full BEAST** | **10 / 10** | **390** | **−99.2%** |
-
-Raw context hits the token budget before the model can reason about the scoped problem. BEAST completes 100% of tasks at under 400 tokens, verified by passing pytest suites.
-
-### Live providers — 192 tasks across 20 provider routes
-
-| Result | Count |
-|---|---|
-| BEAST end-to-end completions | **192 / 192** |
-| Clean provider completions | 36 / 192 |
-| BEAST-rescued completions | 156 / 192 |
-
-79% of raw provider outputs were non-compliant, malformed, or incomplete. BEAST rescued every one of them. Without output governance, those 156 tasks would have silently failed or written corrupted patches.
-
-### Provider fitness ranking
-
-| Rank | Provider | Role | Clean | Fitness | Latency |
-|---|---|---|---|---|---|
-| 1 | `ovhcloud` | candidate patch provider | 5/10 | 0.663 | 14s |
-| 2 | `puter_deepseek` | candidate patch (high latency) | 4/10 | 0.619 | 13s |
-| 3 | `cohere` | candidate patch provider | 4/10 | 0.614 | 6.7s |
-| 4 | `deepinfra` | candidate patch (high latency) | 4/10 | 0.612 | 32s |
-| 5 | `huggingface` | rescue-backed action IR | 3/10 | 0.583 | 1.6s |
-| 6 | `nscale` | rescue-backed action IR | 3/10 | 0.581 | 7.8s |
-| 7 | `mistral` | rescue-backed (Codestral) | 2/10 | 0.545 | 4.1s |
-| 8 | `openrouter` | fast rescue-backed action IR | 2/10 | 0.544 | 3.8s |
-| 9 | `sambanova` | fast rescue-backed action IR | 1/10 | 0.512 | 3.0s |
-| 10 | `cloudflare` | edge / microtask | 1/10 | 0.483 | 2.1s |
-| 11–14 | `cerebras`, `featherless`, `nvidia_nim`, `gemini` | scout / selector | 0–2/10 | 0.33–0.42 | varies |
-| 15–16 | `groq`, `llm7` | scout only | 0/10 | 0.23 | fast |
-| 17–18 | `aion_labs`, `novita` | rate-limited / rescue | 1/10 | 0.39–0.51 | varies |
-| 19–20 | `hyperbolic`, `fal` | do not use (auth/billing) | 0/10 | — | — |
-
-**Notable findings:**
-- **Puter-routed DeepSeek** achieved 4 clean passes on a free proxied route — matching paid providers. BEAST can make unconventional free routes production-viable through governance.
-- **LLM7** returned valid JSON on 100% of tasks but passed the output schema on only 10%. Without an output governor, it looks like it's working. It isn't.
-- **NVIDIA NIM** failed the output contract on every task. BEAST repaired and rescued both targeted tasks. Zero silent failures.
-- **DeepInfra** observed cost: ~$0.000332 per verified, governed code fix.
-
----
-
-## Architecture
-
-```
-Coding agent (Cursor / Claude Code / VS Code)
-        │
-        ▼
-┌─────────────────────────────────────────┐
-│              BEAST Gateway              │
-│                                         │
-│  Input side          Output side        │
-│  ─────────           ───────────        │
-│  Context economy     Output contract    │
-│  Tool laziness       Local verifier     │
-│  Budget ledger       Patch compiler     │
-│  Circuit breakers    Anchor resolver    │
-│  Workspace graph     Repair engine      │
-│  MCP broker          Sandbox validator  │
-│                                         │
-│  Memory: L0 policy → L4 forensic archive│
-└─────────────────────────────────────────┘
-        │
-        ▼
-  Any LLM provider (20+ tested)
-```
-
-### The output governance loop
-
-Every model response passes through:
-
-1. **Contract parse** — response must conform to `beast.action_intent.v1`
-2. **Anchor resolution** — `anchor_ref` fields resolve to exact code locations; no copy-paste writes
-3. **Path validation** — writes outside allowed paths are rejected before compilation
-4. **Local patch compile** — `ActionIR` → `ResolvedAction` → staged file writes
-5. **Sandbox verification** — compiled patches run against pytest before disk commit
-6. **Repair** — if verification fails, the local verifier attempts repair before giving up
-7. **Forensic record** — every outcome (clean, repaired, rejected) is written to the Chronicle
-
-Provider-specific output profiles handle model quirks: NVIDIA NIM gets `refs_only=True`; HuggingFace gets `repair_attempts=2`.
-
-### Memory layers
-
-| Layer | Name | Contents |
+ 
+Raw context hits the token budget before the model can reason about the scoped problem.
+ 
+### Inference Compute Governor — 7-phase benchmark
+ 
+The Compute Governor asks one question before every provider call: *what unresolved semantic work still requires probabilistic computation?*
+ 
+All 7 phases passed on the same day:
+ 
+| Phase | What was proved | Result |
 |---|---|---|
-| L0 | Meta Rules | Spend caps, shell allowlists, blocked paths — immutable |
-| L1 | Insight Index | Session state, cache handles, circuit state |
-| L2 | Workspace Graph | Symbol maps, dependency edges, semantic chunks |
-| L3 | Skill Tree | Promoted, verified workflows and route cards |
-| L4 | Forensic Archive | Append-only Chronicle — every request, every outcome |
-
+| 1 — Shadow accounting | Receipt coverage, zero behavior change, MAE = 0.0 on token estimates | ✓ 120 paired attempts |
+| 1 — Free live | Shadow agreement across Groq, Gemini, OpenRouter simultaneously | ✓ 9/9 live calls |
+| 2 — Deterministic displacement | One live Groq schema\_validation call displaced by promoted transform | ✓ 131 tokens not spent |
+| 3 — False reuse detection | Adversarial stale capability correctly detected and blocked | ✓ Safety rule held |
+| 4 — Adaptive routing | All three rungs demonstrated: local inference, approval pause, cloud inference | ✓ Audit trail persisted |
+| 5 — Streaming interception | Live Groq stream cancelled on contract completion — 80 tokens saved on one call | ✓ Repair path also proven |
+| 6 — Lifecycle / confidence decay | Repository semantic change dropped confidence 0.97 → 0.485, auto-demoted in 2ms | ✓ Safety hole closed |
+| 7 — Runtime reuse | Two provider calls displaced by durable replay — 140 tokens saved | ✓ KV adapter round-tripped |
+ 
+Every phase carries an explicit `claim_boundary`. Counterfactual estimates are labelled as hypotheses until verified by controlled ablations.
+ 
+Benchmark source files: [`benchmarks/results/`](benchmarks/results/)
+ 
 ---
-
-## Installation
-
+ 
+## What BEAST Does
+ 
+### Give agents the right context
+ 
+BEAST builds bounded task envelopes from workspace structure, symbols, dependencies, Chronicle memory, route state, and current failures. Its workspace graph, context economiser, semantic retrieval, compression pipeline, and Ollama scout reduce duplicate reading before cloud escalation.
+ 
+### Turn model output into safe local actions
+ 
+Providers return typed Action IR under an output contract (`beast.action_intent.v1`). BEAST then:
+ 
+1. validates the handoff and schema
+2. rejects stale file hashes and unauthorised paths
+3. resolves file and anchor references locally
+4. compiles deterministic patches
+5. previews selectable hunks
+6. runs visible and hidden verification
+7. applies only approved changes
+8. preserves rollback and Chronicle evidence
+Malformed, incomplete, or incorrect output is classified honestly. A locally repaired result counts as **BEAST-rescued**, never as a clean provider success.
+ 
+### Choose providers by job, not hype
+ 
+The Provider Economist routes by requested role, task class, output contract, hidden-clean performance, rescue rate, latency, token use, observed USD cost, and route confidence. A provider can be a patch candidate, rescue-backed Action IR generator, refs-only transform selector, scout, microtask worker, or invalid route.
+ 
+### Stop calling tools that do not help
+ 
+Tool Laziness learns which calls produced useful evidence in a specific scenario. Workflow-required tools always override learned skips.
+ 
+### Make agents aware they are inside BEAST
+ 
+Every attached agent can receive a Session Handshake containing available local help, tool-value decisions, Provider Economist selection, preflight budgets, cloud-escalation rules, and output-governance requirements. This prevents an agent from duplicating work BEAST already completed.
+ 
+### Govern inference compute
+ 
+The Inference Compute Governor shadows every provider call with a privacy-safe Compute Plan and Compute Receipt. It identifies deterministic and reusable work, and in later phases displaces calls that do not need probabilistic computation. Ambiguous decisions escalate — they never suppress silently.
+ 
+### Learn without surrendering local control
+ 
+The opt-in Meta Tool Commons exchanges privacy-safe capability evidence, not prompts or source code. Rankings remain contextual to capability version, schema hash, task class, and role. Shared candidates are advisory; local policy and explicit approval decide adoption.
+ 
+---
+ 
+## Capabilities
+ 
+| Capability | What it gives a coding agent |
+|---|---|
+| Mirrored input/output governance | Bounded context entering the model and bounded actions leaving it |
+| Action IR and local patch compiler | Small semantic intent becomes deterministic local edits |
+| Provider-specific output profiles | NIM uses refs-only actions; other providers use richer contracts |
+| Hidden-test-aware fitness | Distinguishes plausible patches from behaviourally correct patches |
+| Clean versus rescued accounting | Measures provider capability separately from BEAST system reliability |
+| Provider Economist | Selects routes by role, cost envelope, latency, rescue fit, and trust |
+| Tool Laziness | Suppresses historically low-value calls without blocking required tools |
+| Session Handshake | Tells external agents what BEAST already knows and enforces |
+| Inference Compute Governor | Seven-phase shadow and enforcement layer over probabilistic work |
+| Streaming interception | Stops generation when a complete governed object has arrived |
+| Durable inference storage | Verified artifacts become reusable Semantic Compute Credits |
+| Compute Forge Node | Idle machines build fingerprints and prepare handoff packets locally |
+| Confidence decay | Repository change automatically demotes promoted capabilities |
+| Chronicle and PREC lifecycle | Records perception, reasoning, economy, crystallisation, and outcomes |
+| Meta Tool Commons | Shares schema-pinned capability priors without automatic adoption |
+| GitHub PR Connector | Converts PR diffs and failed checks into governed task envelopes |
+| OpenTelemetry Connector | Projects Chronicle and fitness evidence into OTLP traces |
+| Plugin Marketplace | Validates risk, permissions, budgets, and tool-schema hashes |
+| Quality Cascade and Forge | Language-aware syntax, test, dependency, and packaging checks |
+| Responsive TUI | Live routes, fitness, plans, hunks, approvals, Chronicle, and agent state |
+ 
+---
+ 
+## Quick Start
+ 
 ```bash
-git clone https://github.com/Byron2306/EdgeK-BEAST
+git clone https://github.com/Byron2306/EdgeK-BEAST.git
 cd EdgeK-BEAST
+ 
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+ 
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-
-Optional (semantic RAG, large ML wheels):
+ 
+Check the gateway:
+ 
 ```bash
-pip install -r requirements-semantic.txt
+curl http://127.0.0.1:8000/health
 ```
-
-Optional (LiteLLM proxy support):
+ 
+Point an OpenAI-compatible client at BEAST:
+ 
 ```bash
-pip install -r requirements-litellm.txt
+export OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+export OPENAI_API_KEY=your-provider-key
 ```
-
-Start the gateway:
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8005
-```
-
-Point your coding agent at BEAST instead of your provider directly:
-```bash
-# OpenAI-compatible (Cursor, Claude Code, etc.)
-export OPENAI_BASE_URL=http://localhost:8005/v1
-
-# Anthropic-compatible
-export ANTHROPIC_BASE_URL=http://localhost:8005
-```
-
+ 
+Provider secrets can also be kept in `.beast/provider_secrets.env`; the Secret Vault exposes only presence and fingerprints to diagnostics.
+ 
 ---
-
-## Provider setup
-
-Set whichever providers you use:
-
+ 
+## Use It With Your Coding Agent
+ 
+### VS Code
+ 
 ```bash
-export HF_TOKEN='...'
-export HF_INFERENCE_BASE_URL='https://router.huggingface.co/v1'
+code --install-extension vscode-extension/edgek-beast-1.2.0.vsix
+```
+ 
+Provides `/sourceplan`, governed hunk preview and apply, rollback, maintenance cascades, provider role selection, Chronicle, route fitness, and live BEAST status. See [VS Code extension setup](vscode-extension/README.md).
+ 
+### Cursor and Claude Code
+ 
+Route MCP tool calls through BEAST for schema pinning, policy checks, Action IR, SourcePlan, Provider Economist, Tool Laziness, Chronicle, and Commons access. See the [Cursor and Claude Code MCP pack](integrations/mcp-clients/README.md).
+ 
+### HTTP and custom agents
+ 
+BEAST exposes OpenAI- and Anthropic-compatible inference alongside its governance APIs. Full endpoint reference: [docs/api.md](docs/api.md).
+ 
+---
+ 
+## Provider Setup
+ 
+Configure only the routes you want:
+ 
+```bash
+export XAI_API_KEY='...'
 export OPENROUTER_API_KEY='...'
-export GEMINI_API_KEY='...'
+export HF_TOKEN='...'
 export NVIDIA_API_KEY='...'
-export COHERE_API_KEY='...'
 export MISTRAL_API_KEY='...'
-# Local
-export LOCAL_NIM_BASE_URL='http://localhost:8000/v1'
+export COHERE_API_KEY='...'
+export GEMINI_API_KEY='...'
 ```
-
-BEAST will route, govern, and fall back across providers according to the fitness map. Providers you haven't configured are skipped cleanly.
-
----
-
-## Key endpoints
-
-```
-# Gateway health
-GET  /health
-GET  /edgek/state
-
-# BEAST Cockpit (live ops dashboard)
-GET  /ui
-
-# Inference (drop-in replacements)
-POST /v1/chat/completions          # OpenAI-compatible
-POST /v1/messages                  # Anthropic-compatible
-POST /hf/v1/chat/completions       # HuggingFace router
-POST /litellm/v1/chat/completions  # LiteLLM proxy
-
-# Context and workspace
-POST /edgek/tools/intercept        # Semantic tool-call interception
-GET  /edgek/workspace              # Workspace graph state
-POST /edgek/workspace/index        # Index a repository
-
-# Budget and runtime
-GET  /edgek/runtime/state
-GET  /edgek/runtime/attempts
-POST /edgek/runtime/circuit-breakers/{provider}/reset
-
-# MCP broker
-POST /edgek/mcp/evaluate
-POST /edgek/mcp/execute
-GET  /edgek/mcp/audit
-
-# Skills and promotion
-GET  /edgek/skills/promotion-candidates
-POST /edgek/skills/promote
-
-# Enterprise
-POST /edgek/enterprise/teams
-POST /edgek/enterprise/virtual-keys
-GET  /edgek/enterprise/observability
-```
-
-Full endpoint reference in the [API docs](docs/api.md).
-
----
-
-## Configuration
-
-`policies/default.yaml` controls everything:
-
-- Spend caps and token budgets per provider and per team
-- Shell command allowlists and blocklists
-- File path write restrictions
-- MCP server trust levels
-- Circuit breaker thresholds
-- Tool laziness learning parameters
-
----
-
-## Running the benchmark yourself
-
+ 
+Local scouting via Ollama without sending repository context to a cloud provider:
+ 
 ```bash
-# Deterministic benchmark (no API calls needed)
-PYTHONPATH=. python3 benchmarks/run_benchmark.py --lanes all --tasks 10
-
-# Live provider benchmark
-PYTHONPATH=. python3 benchmarks/run_live_benchmark.py --providers hf,openrouter,cohere
-
-# Provider edge compare (cloud vs local NIM)
-PYTHONPATH=. python3 benchmarks/provider_edge_compare.py --repeats 3
+export OLLAMA_HOST=http://127.0.0.1:11434
+export OLLAMA_SCOUT_MODEL=qwen2.5:0.5b
 ```
-
-Results are written to `benchmarks/results/`.
-
+ 
 ---
-
-## Deployment integrations
-
-BEAST generates LiteLLM and Nginx configs directly from your active policy:
-
+ 
+## Run the Evidence Suite
+ 
+Local preflight (no provider calls needed):
+ 
 ```bash
-PYTHONPATH=. python3 scripts/generate_deploy_configs.py --out deploy/generated
+.venv/bin/python benchmarks/beast_xai_omni_gauntlet.py \
+  --output beast_xai_omni_gauntlet_preflight
 ```
-
-Nginx routes `/tool-calls/*` into BEAST's semantic interceptor — file read requests return the top 3 relevant snippets instead of full source files.
-
-See [deployment_integrations.md](docs/deployment_integrations.md) for the full runbook including GitHub tool calls, Postgres integration, and prompt-cache keepalive setup.
-
+ 
+Live xAI Omni-Gauntlet:
+ 
+```bash
+.venv/bin/python benchmarks/beast_xai_omni_gauntlet.py \
+  --live \
+  --output beast_xai_omni_gauntlet_live \
+  --max-tokens 1400 \
+  --timeout 240
+```
+ 
+Compute Governor phase benchmarks:
+ 
+```bash
+.venv/bin/python benchmarks/compute_governor_phase1_shadow.py
+.venv/bin/python benchmarks/compute_governor_phase2_live_displacement.py
+# ... through phase 7
+```
+ 
+Evidence package:
+ 
+```bash
+.venv/bin/python benchmarks/package_xai_omni_evidence.py --run-tests
+```
+ 
 ---
-
-## What BEAST does not do
-
-- It does not replace your LLM provider. It governs the traffic between your agent and your provider.
-- It does not add latency you'll notice for most tasks. Output governance adds microseconds locally; provider latency dominates.
-- It does not require a GPU. The entire governance and compilation pipeline runs on CPU.
-- It does not phone home. Everything — workspace graph, budget ledger, forensic archive, skill tree — is local SQLite and append-only files.
-
+ 
+## Core API Surface
+ 
+```
+POST /v1/chat/completions
+POST /v1/messages
+ 
+POST /edgek/session/handshake
+POST /edgek/handoff/prepare
+POST /edgek/beast-cli/plan
+POST /edgek/beast-cli/execute
+ 
+POST /edgek/provider-economist/select
+POST /edgek/tool-laziness/recommend-tools
+ 
+GET  /edgek/meta-tool-commons
+POST /edgek/meta-tool-commons/rank
+POST /edgek/meta-tool-commons/adopt
+ 
+POST /edgek/connectors/github/pr/ingest
+POST /edgek/connectors/otel/export
+POST /edgek/plugins/install
+```
+ 
 ---
-
+ 
+## Security Model
+ 
+- Output is validated before source mutation
+- Allowed edit paths are explicit
+- File hashes reject stale Action IR
+- Shared capability evidence excludes prompts, source code, paths, and secrets
+- Plugin side effects require declared permissions and approval
+- OTEL, GitHub writes, plugin installation, Commons contribution, and Commons adoption are approval-gated
+- Chronicle preserves clean, repaired, rejected, and failed outcomes
+- Provider credentials stay in environment variables or the local Secret Vault
+- The Capability Exchange is disabled by default
+---
+ 
+## Honest Boundaries
+ 
+- BEAST does not make weak providers independently strong. It constrains, repairs, verifies, and assigns them narrower roles.
+- A BEAST-rescued fix is system success, not provider-clean success.
+- Hidden-clean performance is still modest across most current providers.
+- Local governance cannot remove provider network latency.
+- Cost rankings require first-party billing observations; token counts are not treated as dollars.
+- Compute Governor counterfactual savings are hypotheses until verified by controlled ablations.
+- The current xAI run did not pass the provider-clean rollback hard gate.
+---
+ 
+## Project Status
+ 
+Active development. The governed coding flow, provider handoff, Action IR, local patch compiler, verification, rollback, Chronicle, Provider Economist, Tool Laziness, Agent Awareness, Meta Tool Commons, Inference Compute Governor (7 phases), connectors, plugin manifests, MCP pack, VS Code extension, and TUI are implemented and benchmarked.
+ 
+APIs and evidence schemas may still evolve. Contributions, provider reruns, adversarial tasks, connector implementations, and independent reproduction are welcome.
+ 
+- [xAI Omni comprehensive summary](benchmarks/results/beast_xai_omni_comprehensive_summary.md)
+- [Complete evidence package](benchmarks/results/beast_xai_omni_evidence_package.zip)
+- [Combined provider research](benchmarks/results/live_provider_benchmark_combined_summary.md)
+- [Inference Compute Governor](docs/compute-governor.md)
+- [Compute Governor roadmap](docs/compute-governor-roadmap.md)
+- [Methodology and reproduction](docs/xai-omni-gauntlet.md)
+---
+ 
 ## License
-
+ 
 MIT — see [LICENSE](LICENSE).
-
----
-
-## Status
-
-Active development. Core governance pipeline (input economy + output contracts + local verification) is stable and benchmarked. V2 roadmap focuses on the Chronicle engine, route cards, and skill promotion loop. See [BEAST_V2_ROADMAP.md](docs/BEAST_V2_ROADMAP.md).
-
-Contributions, issues, and provider benchmark results welcome.
