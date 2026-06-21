@@ -1,0 +1,598 @@
+# BEAST Definitive Ablation and Mutation Test Design
+
+**Version:** 0.2  
+**Status:** Pre-execution, reviewer-hardened  
+**Purpose:** Answer all remaining limitations in Working Paper v0.3 through a single coherent natural experiment  
+**Author:** Byron Bunt  
+**Date:** 2026-06-21  
+**Changes from v0.1:** Observation count reconciled; Lane A isolation requirement added; commit pinning and drift metadata added; QPCCD metric defined; crystallization durability metric added; seven reviewer-armor controls added; Figure 2 specification added.
+
+---
+
+## 1. What This Experiment Answers
+
+The working paper v0.3 states six open limitations. This design closes all six in one experiment.
+
+| Limitation | How this design answers it |
+|---|---|
+| Phase 1 xAI is single-model | Multi-model layer runs identical families across 5 providers |
+| Phase 2 displacement is one transform | Repeated family structure runs each transform to occurrence 10 |
+| Phase 3 is negative evidence only | Mutation layer proves safe reuse across controlled repository changes |
+| Phases 4-7 are bounded harness demonstrations | Natural no-harness condition uses real agent on real repository |
+| Provider drift is uncontrolled | All lanes pinned to same commit and run window; drift is recorded, not ignored |
+| No large-scale benchmark yet | Controlled matrix produces 450 lane-level observations; full package exceeds 500 |
+
+---
+
+## 2. Observation Count
+
+The controlled three-lane matrix produces exactly **450 lane-level observations:**
+
+```
+6 task families
+× 5 providers
+× 5 occurrence points (1, 2, 3, 5, 10)
+× 3 lanes (A, B, C)
+= 450 lane-level controlled observations
+```
+
+Lane C alone produces **150 Compute Governor observations.**
+
+The mutation layer, recovery tests, cross-provider reuse tests, and natural no-harness sessions expand the total evidence package beyond **500 observations.**
+
+All references to observation count in this document use these definitions. "300 controlled observations" does not appear; "450 lane-level" is the correct term.
+
+---
+
+## 3. Core Design Principle
+
+**Natural before synthetic. Real before simulated.**
+
+The experiment runs in two modes in sequence:
+
+**Mode A — Natural no-harness:** A real coding agent (Cursor or Claude Code) works on the EdgeK-BEAST repository using tasks drawn from the actual development backlog. BEAST intercepts live traffic. No task is pre-written for the benchmark. Chronicle records everything. Analysis happens after. This answers the "you only proved your toy harness" criticism before the controlled ablation begins.
+
+**Mode B — Controlled ablation:** The task families discovered or confirmed in Mode A are run as a controlled three-lane ablation across five providers at occurrence counts 1, 2, 3, 5, and 10. Mutations are introduced after crystallization is observed.
+
+Mode A validates that BEAST works in the wild. Mode B produces the quantitative evidence that answers the paper's limitations. Sequencing Mode A first means the controlled ablation is grounded in observed natural behaviour, not invented scenarios.
+
+---
+
+## 4. Three-Lane Structure
+
+Every task family runs in three lanes. The lanes are identical in task, repository state, and provider. The only variable is what BEAST does.
+
+```
+Lane A: Raw provider
+  Agent → Provider → Raw response → Filesystem write (isolated)
+  No BEAST interception. Pure provider baseline.
+  SAFETY: Runs only in a disposable worktree or container.
+          Never writes to the experiment controller repository.
+          Each run starts from the same clean commit hash
+          and is destroyed or reset after verification.
+
+Lane B: BEAST without Compute Governor
+  Agent → BEAST input governance → Provider →
+  BEAST output governance → Verified write
+  Current production system. No compute receipts,
+  no displacement, no reuse.
+
+Lane C: BEAST with full Compute Governor
+  Agent → BEAST input governance → Compute Governor →
+  Provider/local/reuse → BEAST output governance →
+  Verified write → Receipt → Fitness update →
+  Crystallization check
+  Full architecture including all 7 phases.
+```
+
+**Lane order randomisation:** For each task-family × provider × occurrence tuple, randomise the execution order of lanes A, B, C where operationally safe. Record the execution order in every artifact. This avoids systematic order effects that a reviewer could use to challenge the comparison.
+
+**The comparison that matters:**
+
+Lane A: what does the raw provider produce without governance?  
+Lane B: what does BEAST governance add over raw?  
+Lane C: what does the Compute Governor add over BEAST baseline?
+
+A result is only credited to the Compute Governor when Lane C outperforms or equals Lane B on verified quality **and** uses fewer cloud calls. Both conditions must hold simultaneously.
+
+---
+
+## 5. Operational Controls
+
+These controls are not optional. They are reviewer armour. Every artifact must record them.
+
+**1. Commit pinning**  
+All lanes for a given family-occurrence-provider tuple start from the same repository commit hash. The commit hash is recorded in every artifact under `repo_commit_hash`.
+
+**2. Worktree isolation**  
+Each lane runs in a separate clean worktree or container initialised from the pinned commit. Lane A worktrees are destroyed after the run. Lane B and C worktrees are preserved for diff audit.
+
+**3. Randomised lane order**  
+Execution order for A/B/C is randomised per tuple where safe. Order is recorded in `lane_execution_order`.
+
+**4. Provider response archival**  
+For every provider call, store separately: raw HTTP response, parsed Action IR, compiled diff, test results, and compute receipt. These are stored in `artifacts/raw/` alongside the summary JSON.
+
+**5. Token and cost normalisation**  
+Separate provider-reported token usage from BEAST-estimated token usage. Fields `provider_reported_tokens` and `beast_estimated_tokens` are distinct in every receipt. Never substitute one for the other.
+
+**6. Determinism controls**  
+Record in every artifact: temperature, max\_tokens, model ID, route ID, provider timestamp, response ID where available. These are the drift metadata that make provider variance measurable rather than confounding.
+
+**7. Human intervention policy**  
+If a human intervenes in a run (restarts a hung process, manually resets a container, edits a config), that run is annotated `human_intervention: true` and excluded from primary metric calculations. It may appear in a separate anomaly log. Intervention must never be silently absorbed into a passing result.
+
+---
+
+## 6. Task Family Structure
+
+### 6.1 What a task family is
+
+A task family is a repeating class of semantic work. Instances within a family share the same underlying reasoning requirement but differ in surface details — different files, values, edge cases, providers, error types. The agent must reason, not pattern-match on text.
+
+A task family is **not** a repeated identical prompt. Identical prompts test caching. Different instances test capability generalisation.
+
+### 6.2 Seed families
+
+Six families, chosen because they showed the strongest deterministic shadow agreement in the Phase 1-7 benchmarks.
+
+**Family 1: `schema_validation`**  
+Validate that a provider handoff packet conforms to a declared schema. Instances vary the schema, the violation type, and the provider context.  
+*Expected crystallisation: occurrence 3–4.*  
+*Rationale: 100% deterministic shadow agreement in Phase 1 free-live run. Lowest complexity semantic work in the set.*
+
+**Family 2: `provider_alias_normalization`**  
+Resolve a provider alias string to a canonical route, model, and adapter. Instances vary the alias format, the provider, and the presence of fallback routes.  
+*Expected crystallisation: occurrence 4–5.*  
+*Rationale: purely structural, no semantic ambiguity once the alias map is learned.*
+
+**Family 3: `patch_compilation`**  
+Compile an Action IR object into a deterministic file patch. Instances vary the anchor ref, the file, the operation type, and the diff size.  
+*Expected crystallisation: occurrence 5–7.*  
+*Rationale: requires anchor resolution which varies by file state; more complex than schema validation.*
+
+**Family 4: `syntax_check`**  
+Run language-appropriate syntax validation on a candidate file change. Instances vary the language, the error type, and the file scope.  
+*Expected crystallisation: occurrence 2–3.*  
+*Rationale: fully deterministic locally; the model is unnecessary once the local verifier is trusted. Likely earliest crystallisation in the set.*
+
+**Family 5: `route_diagnostics`**  
+Classify a provider failure into a canonical failure category. Instances vary the provider, the error code, the circuit state, and the credential environment.  
+*Expected crystallisation: occurrence 5–8.*  
+*Rationale: classification logic is learnable but failure modes vary; higher semantic complexity.*
+
+**Family 6: `secret_redaction`**  
+Identify and redact credential-adjacent values from a diagnostic payload. Instances vary the secret type, the payload structure, and the redaction depth.  
+*Expected crystallisation: occurrence 4–6.*  
+*Rationale: pattern-based but sensitive; safety gates must remain active post-crystallisation. This family tests whether security-relevant capabilities are promoted conservatively.*
+
+### 6.3 Occurrence schedule
+
+Each family runs at occurrence counts 1, 2, 3, 5, and 10 per provider per lane.
+
+```
+Occurrence:  1    2    3    5    10
+             │    │    │    │    │
+             ▼    ▼    ▼    ▼    ▼
+Measure:   cloud cloud cloud cloud deterministic?
+           call  call  call  call  or reuse?
+```
+
+The transition occurrence — the first time Lane C routes to `deterministic` or `reuse` instead of `cloud_inference` — is the primary crystallisation signal. It must be recorded per family per provider.
+
+---
+
+## 7. Multi-Model Layer
+
+### 7.1 Provider selection
+
+| Provider | Role | Rationale |
+|---|---|---|
+| `xai_grok` | Primary | Highest fitness (0.702), 54% hidden clean — strongest baseline |
+| `ovhcloud` | Comparison | Highest clean count (5/10), different model family |
+| `cohere` | Comparison | Strong direct route, different architecture |
+| `puter_deepseek` | Free route | Proves crystallisation works on free/proxied routes |
+| `huggingface` | Rescue-heavy | Tests whether crystallisation improves a rescue-dependent provider |
+
+### 7.2 What multi-model proves
+
+If crystallisation occurs at a similar occurrence count across providers, the promoted capability is provider-independent. The transform was learned from one provider's output but trusted regardless of which provider is currently active. That is the stronger result.
+
+If crystallisation occurs earlier for xAI than HuggingFace, that is also a result — provider fitness has predictive value for the crystallisation trajectory.
+
+### 7.3 Cross-provider reuse test
+
+After a capability crystallises from xAI output, run the same family instance with HuggingFace as the active provider, with Lane C routing to `reuse` instead of calling HuggingFace.
+
+Measure:
+- Does the reused capability produce a verified result?
+- Does the hidden test pass rate match the provider-specific baseline?
+- Does the receipt correctly record `provider_execution_requested: false`?
+- Does `behavior_preserved: true`?
+
+This is the cross-provider reuse proof. If it passes, the capability treasury is provider-independent — the most significant claim the experiment can support.
+
+---
+
+## 8. Metrics
+
+### 8.1 Primary metrics per family per occurrence
+
+| Metric | Definition | Answers |
+|---|---|---|
+| Verified completion rate | Visible + hidden tests pass | Core quality signal |
+| Hidden clean rate | Hidden tests pass on first attempt without repair | Generalisation signal |
+| Gate decision distribution | Fraction of calls per gate type | Crystallisation trajectory |
+| Cloud calls per fix | Provider calls required per verified fix | Economy signal |
+| Deterministic conversion rate | Fraction of calls routed to `deterministic` | LessonCrystallizer proof |
+| Incorrect reuse rate | Reuse decisions where behaviour not preserved | Safety redline |
+| False suppression rate | Suppressions where verified completion would have occurred | Safety redline |
+| USD per fix | First-party cost per verified fix | Economic argument |
+| Crystallisation occurrence | Occurrence N where first `deterministic` gate fires | Headline finding |
+| Crystallisation durability | Subsequent instances where capability remains active and verified before demotion | Stability signal |
+| Re-crystallisation occurrence | Occurrence N after breaking mutation | Accelerated learning signal |
+
+### 8.2 Crystallisation durability
+
+**Definition:** The number of subsequent eligible instances where a promoted capability remains active and verified before demotion or shadow revalidation is triggered.
+
+Crystallisation occurrence tells you when the system first learns. Crystallisation durability tells you how long it stays useful. Both are required for the capability treasury claim.
+
+Example target sentence: *"schema\_validation crystallised at occurrence 3 for xAI and remained active for 7 subsequent instances across 4 providers before semantic mutation triggered shadow revalidation."*
+
+### 8.3 Quality-Preserving Cloud-Call Displacement (QPCCD)
+
+The primary Compute Governor metric. Named explicitly so the paper has a citable term.
+
+**Definition:** A case where all three conditions hold simultaneously:
+
+```
+Lane C verified completion  ≥  Lane B verified completion
+Lane C hidden pass rate     ≥  Lane B hidden pass rate
+Lane C cloud calls          <   Lane B cloud calls
+```
+
+**Formula:** QPCCD rate = (QPCCD cases) / (Lane C observations where Lane B cloud call > 0)
+
+This is the number that appears in the paper's abstract for v0.4. It is the Compute Governor's primary empirical measure. Efficiency without quality does not count. Cost without verified displacement does not count. Only cases where all three conditions hold simultaneously count.
+
+### 8.4 Comparative lane deltas
+
+For each family at each occurrence:
+
+```
+Δ(C vs A) = Lane C metric − Lane A metric
+Δ(C vs B) = Lane C metric − Lane B metric
+```
+
+Report both. Δ(C vs A) shows total system value. Δ(C vs B) shows Compute Governor marginal contribution.
+
+### 8.5 Redline metrics
+
+These must remain zero across the entire experiment. A single violation triggers an investigation pause before the next stage begins.
+
+| Redline | Threshold | Action on violation |
+|---|---|---|
+| False suppression count | 0 | Pause. Investigate. Do not proceed to next stage. |
+| Incorrect reuse count post-approval | 0 | Pause. Demote affected capability. Root cause required. |
+| Out-of-scope writes | 0 | Pause. Audit all Lane C worktrees from the run window. |
+| Rollback failures | 0 | Pause. Chronicle must record the failure before proceeding. |
+
+---
+
+## 9. Mutation Layer
+
+### 9.1 Purpose
+
+The mutation layer directly answers the confidence decay limitation. It proves the fingerprint mechanism responds correctly to real repository changes, not just the synthetic file swap used in Phase 6.
+
+### 9.2 Mutation schedule
+
+Mutations are introduced after a capability reaches `approved` state. The sequence is fixed:
+
+```
+Crystallisation confirmed (approved state)
+        │
+        ▼
+Mutation A: Cosmetic
+        │
+        ▼
+Mutation B: Semantic adjacent
+        │
+        ▼
+Mutation C: Structural
+        │
+        ▼
+Mutation D: Breaking
+        │
+        ▼
+Recovery: 3 subsequent instances
+```
+
+Each mutation is applied to the repository from the same pinned commit as the crystallisation run, plus the mutation delta. Mutation commits are tagged in git for audit.
+
+### 9.3 Expected responses
+
+**Mutation A — Cosmetic**  
+Change: rename a variable in a non-target file, reformat whitespace, update a comment.  
+Expected: `confidence` unchanged or negligible decay. `reusable: true`. `state: active`.  
+Pass: capability remains approved. No shadow revalidation triggered.
+
+**Mutation B — Semantic adjacent**  
+Change: modify logic in a function related to but not directly targeted by the capability.  
+Expected: `confidence` decays to shadow revalidation threshold. `state: shadow_revalidation`. `reusable: false` until revalidation passes.  
+Pass: automatic demotion triggered. Shadow revalidation runs. If behaviour preserved, re-promotes. If not, demotes. Zero incorrect reuse during shadow window.
+
+**Mutation C — Structural**  
+Change: add a new dependency the target module imports. Change a helper function signature.  
+Expected: `confidence` drops materially. `critical_changes` non-empty. `state: shadow_revalidation` or `demoted`.  
+Pass: BEAST does not reuse the capability until revalidation confirms equivalence.
+
+**Mutation D — Breaking**  
+Change: directly modify the target file or the test that validates the capability. Introduce a semantic change that makes the prior promoted transform incorrect.  
+Expected: `confidence` below reuse threshold. `state: demoted`. `reusable: false`. Cloud inference reinstated.  
+Pass: zero incorrect reuse events. Lane C routes to `cloud_inference` or `escalate`. Demotion occurs within 3ms (matching Phase 6 result of 2.171ms).
+
+### 9.4 Recovery test
+
+After Mutation D, run three more instances of the affected family through Lane C. The system should:
+
+1. Route to `cloud_inference` (zero stale reuse)
+2. Accumulate new observations
+3. Begin a new crystallisation trajectory
+
+Measure the **re-crystallisation occurrence count.** Compare to the original crystallisation occurrence. If re-crystallisation is consistently faster, this supports the accelerated learning hypothesis: BEAST gets smarter about a task class over time, even across disruptions, because the Chronicle retains structural priors.
+
+---
+
+## 10. Natural No-Harness Condition
+
+### 10.1 Setup
+
+Repository: `EdgeK-BEAST` (the system's own codebase — eating its own cooking).  
+Agent: Claude Code or Cursor, configured to use BEAST as provider proxy.  
+Task source: real open issues and development backlog — not written for this experiment.  
+BEAST config: full production config, all phases active, Chronicle enabled, all receipts recorded.
+
+The agent works normally. BEAST intercepts, governs, and records. No task is engineered for the benchmark.
+
+### 10.2 What to record
+
+After each session, extract from the Chronicle:
+
+- All task envelopes created
+- All provider calls made
+- Gate decisions per call
+- Receipts per call
+- Families identified by task class
+- Occurrence counts per family
+- Any crystallisation events
+- Any suppression events
+- Any false reuse events
+- Any rollback events
+- Human intervention annotations
+
+### 10.3 Analysis
+
+The natural session produces a raw evidence log. From this log, identify:
+
+**Naturally occurring families** — task classes that appear multiple times without being engineered. These are the most valuable for the paper because they are unbiased by experimental design.
+
+**Organic crystallisation events** — cases where the Compute Governor moved to `deterministic` or `reuse` without a test harness. These are the strongest possible evidence of inference economy inversion in practice.
+
+**Failure modes** — escalations when displacement would have been safe, incomplete receipts, triggered rollbacks. Report these honestly. They define the correct empirical frontier, not a weakness.
+
+### 10.4 Session length and inter-session persistence
+
+Minimum: one full working session of 2–3 hours.  
+Target: three sessions across different days.
+
+The inter-session Chronicle persistence test is implicit: if a capability crystallises in session 1, does it remain active in session 2 after an agent restart? That claim is worth a sentence in the paper if it holds.
+
+---
+
+## 11. Figure 2 Specification
+
+Figure 2 is the crystallisation trajectory chart. It is the most important figure in the paper after the governance stack. It must be produced from real experimental data, not hypothetical values.
+
+**X-axis:** Occurrence count (1, 2, 3, 5, 10)  
+**Y-axis:** Gate decision in Lane C (cloud\_inference / deterministic / reuse)  
+**Series:** One line per provider per family
+
+Target appearance based on expected results:
+
+```
+Occurrence:   1      2      3      5      10
+              │      │      │      │      │
+xAI:        cloud  cloud  determ determ  reuse
+OVHCloud:   cloud  cloud  cloud  determ  reuse
+Cohere:     cloud  cloud  determ determ  reuse
+Puter/DS:   cloud  cloud  cloud  determ  determ
+HF:         cloud  cloud  cloud  cloud   cloud*
+
+* HF never crystallises = rescue-heavy providers need more evidence
+  OR task class has genuine semantic variability.
+  Either result is scientifically valid.
+```
+
+This chart makes the inference economy inversion immediately visual: the system starts paying for cloud inference, accumulates evidence, and stops paying when proof allows. That is the whole paper in one figure.
+
+---
+
+## 12. Crystallisation Trajectory Interpretation
+
+### 12.1 If crystallisation occurs at similar occurrences across providers
+
+The promoted capability is provider-independent. The transform was learned from one provider's verified output and is trusted regardless of which provider is currently active. This is the stronger result: the capability treasury transcends individual model behaviour.
+
+### 12.2 If crystallisation occurs earlier for high-fitness providers
+
+Provider fitness has predictive value for crystallisation trajectory. High-fitness providers produce more consistent Action IR, which accumulates evidence faster. This enriches the provider fitness framing.
+
+### 12.3 If a family never crystallises across 10 occurrences
+
+That is a result. It means one of three things:
+- The provider's output is too variable for a stable promoted transform
+- The task class has genuine semantic variability requiring cloud reasoning
+- The hidden test pass rate is too low to meet the promotion gate
+
+All three are scientifically valuable. Report them without softening.
+
+### 12.4 The acceleration hypothesis
+
+If re-crystallisation occurrence after a breaking mutation is consistently lower than original crystallisation occurrence, BEAST learns faster on second contact with a task family. The Chronicle retains structural priors that accelerate convergence. This is a distinct finding worth a dedicated paragraph in v0.4.
+
+---
+
+## 13. Evidence Package Structure
+
+```
+benchmarks/results/ablation_v1/
+├── natural_session/
+│   ├── chronicle_session_1.json
+│   ├── chronicle_session_2.json
+│   ├── chronicle_session_3.json
+│   └── natural_session_analysis.md
+├── controlled/
+│   ├── family_{name}/
+│   │   ├── lane_a_raw/
+│   │   │   └── occ_{N}_provider_{name}.json
+│   │   ├── lane_b_beast/
+│   │   │   └── occ_{N}_provider_{name}.json
+│   │   └── lane_c_governor/
+│   │       └── occ_{N}_provider_{name}.json
+│   └── [× 6 families]
+├── mutations/
+│   ├── mutation_a_cosmetic/
+│   ├── mutation_b_semantic/
+│   ├── mutation_c_structural/
+│   └── mutation_d_breaking/
+├── cross_provider_reuse/
+│   └── xai_crystallized_{family}_hf_reused.json
+├── recovery/
+│   └── post_mutation_d_{family}_occ_{1,2,3}.json
+└── ablation_summary.md
+```
+
+Every JSON artifact carries:
+
+```json
+{
+  "beast_object_type": "ablation_observation",
+  "version": "1.0",
+  "lane": "a|b|c",
+  "family": "schema_validation|...",
+  "occurrence": 1,
+  "provider": "xai_grok|...",
+  "mutation_type": "none|cosmetic|semantic|structural|breaking",
+  "repo_commit_hash": "sha256:...",
+  "lane_execution_order": ["b", "a", "c"],
+  "provider_model_id": "...",
+  "provider_route_id": "...",
+  "provider_timestamp": "...",
+  "temperature": 0.0,
+  "max_tokens": 1400,
+  "human_intervention": false,
+  "claim_boundary": "..."
+}
+```
+
+---
+
+## 14. Go/No-Go Gates
+
+Run in strict sequence. Do not advance to the next stage if any gate fails.
+
+**Stage 1: Single family, single provider (target: 1 week)**  
+Family: `schema_validation`. Provider: `xai_grok`. All three lanes. Occurrences 1–10.  
+Gate:
+- Verified completion in Lane C ≥ Lane B at all occurrences
+- False suppression = 0
+- Incorrect reuse = 0
+- At least one `deterministic` gate fires by occurrence 5
+
+**Stage 2: Single family, all five providers (target: 1 week)**  
+Same family. All five providers. Compare crystallisation occurrence.  
+Gate:
+- Cross-provider reuse test passes for at least one provider pair
+- QPCCD ≥ 1 case observed
+
+**Stage 3: All six families, all five providers (target: 2 weeks)**  
+Full occurrence schedule. Record all crystallisation trajectories.  
+Gate:
+- At least 4 of 6 families crystallise in at least one provider
+- Incorrect reuse = 0 across all families
+- QPCCD rate calculable from Lane C data
+
+**Stage 4: Mutation layer (target: 1 week)**  
+All four mutation types applied to crystallised capabilities from Stage 3.  
+Gate:
+- Mutation A leaves at least one capability active
+- Mutation D triggers demotion within 3ms in all families where capability was active
+- Zero incorrect reuse under any mutation type
+- Recovery test: Lane C routes to `cloud_inference` on first post-mutation instance in all families
+
+**Stage 5: Natural no-harness sessions (target: ongoing across 3 sessions)**  
+Three sessions on real backlog. Chronicle analysis.  
+Gate:
+- Receipt coverage = 100%
+- At least one organic crystallisation event observed
+- No human intervention events in primary sessions
+
+**Stage 6: Evidence package and paper v0.4**  
+Compile all results. Produce Figure 2 from real data. Update working paper.  
+Gate:
+- ablation\_summary.md produced with full observation count reconciliation
+- All redline metrics = 0 across entire experiment
+- QPCCD defined and calculable in the paper
+
+---
+
+## 15. Claim Boundaries for This Experiment
+
+### What this experiment will support if results hold
+
+- BEAST Compute Governor produces Quality-Preserving Cloud-Call Displacement (QPCCD) for identified deterministic task families, verified across multiple providers and occurrence counts
+- Crystallisation trajectories differ by provider fitness, with higher-fitness providers crystallising at lower occurrence counts
+- Promoted capabilities survive cosmetic repository mutations and correctly demote under semantic and breaking mutations within milliseconds
+- Cross-provider reuse of a crystallised capability produces verified results without a provider call, demonstrating a provider-independent capability treasury
+- Natural agent sessions on a real repository produce organic crystallisation events without experimental engineering, confirming inference economy inversion under real working conditions
+- Re-crystallisation after a breaking mutation occurs faster than original crystallisation, supporting the accelerated learning hypothesis
+
+### What this experiment will not support even if results hold
+
+- General crystallisation across all possible task families in all repositories
+- Crystallisation timelines in repositories significantly different from EdgeK-BEAST
+- Safe KV-cache transport across heterogeneous production engines
+- Broad production savings without extended natural session evidence
+- Stable provider fitness independent of model updates, billing changes, or rate limit drift
+- Claims about repositories the natural session did not touch
+
+---
+
+## 16. Sacred Safety Rule
+
+Restated as a design constraint, not a reminder.
+
+**No compute saving counts unless verification quality remains equal or improves.**
+
+QPCCD requires all three conditions simultaneously. Every go/no-go gate enforces the quality condition before the displacement condition. If hidden-test pass rate in Lane C drops below Lane B at any occurrence, that stage fails regardless of how many cloud calls were displaced.
+
+Efficiency without quality is not a result. It is a failure mode wearing a result's clothing.
+
+---
+
+## 17. The Headline Result This Experiment Produces
+
+If the design holds and stages pass, the paper v0.4 gains this paragraph:
+
+*"Across six task families, five providers, and 450 lane-level controlled observations, BEAST demonstrated Quality-Preserving Cloud-Call Displacement for four families by occurrence 5, with zero false suppressions, zero incorrect reuse events, and hidden-test pass rates equal to or exceeding the Lane B BEAST baseline. Crystallisation durability averaged N subsequent instances before mutation-triggered revalidation. Promoted capabilities survived cosmetic repository mutations and correctly demoted under semantic and breaking mutations within 3 milliseconds. Cross-provider reuse of an xAI-crystallised capability produced verified results when routed through HuggingFace without a provider call. Natural coding sessions on the EdgeK-BEAST repository produced organic crystallisation events without experimental engineering, confirming inference economy inversion under real working conditions."*
+
+Every sentence in that paragraph maps to a specific stage in this design. Every number in it comes from a real measurement. Every claim is bounded by a redline that was either zero or produced a pause.
+
+That is what v0.4 needs.
+
+---
+
+*Document status: design complete and reviewer-hardened. Awaiting Stage 1 execution.*  
+*Next action: configure Lane A/B/C harness for `schema_validation` family, `xai_grok` provider, pinned to current HEAD commi
