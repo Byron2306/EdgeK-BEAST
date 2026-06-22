@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgek.local/schemas/beast_space.schema.json",
+  "title": "BEAST Compute Space",
+  "type": "object",
+  "required": [
+    "beast_object_type",
+    "version",
+    "space_id",
+    "name",
+    "task_class",
+    "artifacts",
+    "hardware_profile",
+    "verifier_bundles",
+    "reduction_claims",
+    "safety",
+    "privacy",
+    "manifest_hash"
+  ],
+  "properties": {
+    "beast_object_type": {"const": "beast_compute_space"},
+    "version": {"const": "1.0"},
+    "space_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]+$"},
+    "name": {"type": "string", "minLength": 1},
+    "task_class": {"type": "string", "minLength": 1},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "artifact_type", "sha256", "bytes"],
+        "properties": {
+          "path": {"type": "string"},
+          "artifact_type": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "hardware_profile": {"type": "object"},
+    "verifier_bundles": {"type": "array", "items": {"type": "object"}},
+    "reduction_claims": {"type": "object"},
+    "safety": {"type": "object"},
+    "privacy": {
+      "type": "object",
+      "required": ["local_only", "contains_raw_prompts", "contains_secrets", "contains_private_paths", "contains_source_code"],
+      "properties": {
+        "local_only": {"const": true},
+        "contains_raw_prompts": {"const": false},
+        "contains_secrets": {"const": false},
+        "contains_private_paths": {"const": false},
+        "contains_source_code": {"const": false}
+      }
+    },
+    "manifest_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

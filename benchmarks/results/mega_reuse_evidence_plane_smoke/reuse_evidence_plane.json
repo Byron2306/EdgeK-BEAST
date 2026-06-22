@@ -1,0 +1,105 @@
+{
+  "assertions": {
+    "absent_channels_are_explicit": true,
+    "active_channel_count": 0,
+    "channels_classified": true,
+    "plane_exported": true,
+    "plane_hash_present": true,
+    "privacy_scan_passed": true
+  },
+  "beast_object_type": "mega_reuse_evidence_plane_certification",
+  "certification_hash": "sha256:2f0dd20d9c906bb9183e0638bf3d61cd1d6fbc99e2ad05dd3ccc9fae24f47571",
+  "channels": [
+    {
+      "channel": "swarm",
+      "evidence_count": 0,
+      "label": "Swarm role evidence",
+      "reason": "dry-run does not execute this channel; absence is recorded explicitly",
+      "safe_rate": 0.0,
+      "status": "absent_expected",
+      "useful_rate": 0.0,
+      "verified_rate": 0.0
+    },
+    {
+      "channel": "cli",
+      "evidence_count": 0,
+      "label": "OpenClaw/CLI execution evidence",
+      "reason": "dry-run does not execute this channel; absence is recorded explicitly",
+      "safe_rate": 0.0,
+      "status": "absent_expected",
+      "useful_rate": 0.0,
+      "verified_rate": 0.0
+    },
+    {
+      "channel": "ollama",
+      "evidence_count": 0,
+      "label": "Ollama scout calibration evidence",
+      "reason": "dry-run does not execute this channel; absence is recorded explicitly",
+      "safe_rate": 0.0,
+      "status": "absent_expected",
+      "useful_rate": 0.0,
+      "verified_rate": 0.0
+    },
+    {
+      "channel": "kv_cache",
+      "evidence_count": 0,
+      "label": "KV/cache transport evidence",
+      "reason": "dry-run does not execute this channel; absence is recorded explicitly",
+      "safe_rate": 0.0,
+      "status": "absent_expected",
+      "useful_rate": 0.0,
+      "verified_rate": 0.0
+    }
+  ],
+  "claim_boundary": "This certifies the presence, absence classification, integrity hash, and privacy shape of the local reuse evidence plane. It does not fabricate evidence for channels not invoked by the run.",
+  "generated_at": "2026-06-21T20:00:47Z",
+  "live": false,
+  "mode": "controlled",
+  "passed": true,
+  "plane": {
+    "adoption_summary": {},
+    "authority": "advisory_local_policy_decides",
+    "beast_object_type": "meta_tool_commons_evidence_plane",
+    "candidate_summary": {},
+    "evidence_count": 18,
+    "latest_at": "2026-06-21T15:20:47.050749+00:00",
+    "plane_count": 1,
+    "plane_hash": "sha256:e1f074926cca842aec4d882a5976f928c84883eab26f3403069c3da7379ee138",
+    "planes": [
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 18,
+        "hidden_clean_count": 18,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-06-21T15:20:47.050749+00:00",
+        "local_scope_count": 18,
+        "plane": "other",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 18,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 18,
+            "name": "tool_selector"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 18,
+            "name": "operator_console"
+          }
+        ],
+        "useful_count": 18,
+        "useful_rate": 1.0,
+        "verified_count": 18,
+        "verified_rate": 1.0
+      }
+    ],
+    "privacy_policy": "aggregate_counts_and_hashes_only_redacted_inputs",
+    "version": "1.0"
+  },
+  "plane_hash": "sha256:e1f074926cca842aec4d882a5976f928c84883eab26f3403069c3da7379ee138",
+  "version": "1.0"
+}

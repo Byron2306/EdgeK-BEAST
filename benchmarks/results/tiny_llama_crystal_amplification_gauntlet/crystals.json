@@ -1,0 +1,354 @@
+[
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "secure_code_review",
+    "confidence": 0.82,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_f8aa5193998a3fe5fee8",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Find risky patterns and produce safe remediation steps.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:161cbac2215fa6640f18db8f45ee6aed5a77d5a30094cb86cd94ffd22ccc0412",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "defensive_review",
+    "tokens_displaced_estimate": 741,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "input_validation_hardening",
+    "confidence": 0.84,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_ca20d01d9b5b9484a205",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Map untrusted input to validation and parser guards.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:c027bfff8c40a00c745e1ab2cdf1276e3cc1bf9fd34766d724ec45e94fd1cfa1",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "hardening",
+    "tokens_displaced_estimate": 878,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "secret_redaction_guard",
+    "confidence": 0.86,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_10ef4a8d9c8a54e6323c",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:d92eddd7b7a6517a0c5a78c1401beaff8c83446c5831a7776b251a615633ea2d",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "data_protection",
+    "tokens_displaced_estimate": 997,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "dependency_manifest_triage",
+    "confidence": 0.88,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_67ebf1351eaaa3aa01a6",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Rank dependency review targets without exploit instructions.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:16156fb9490cb429212582317334d55900250c0641e085b8072a11c6bdae0a16",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "supply_chain_defense",
+    "tokens_displaced_estimate": 1155,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "auth_boundary_audit",
+    "confidence": 0.9,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_b76ecc8b09e7a53e0520",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Check authorization boundaries and recommend tests.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:123bf2514f4567b198be530a562d095c084e489bb158ea10209d8fb5d0249c82",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "access_control_review",
+    "tokens_displaced_estimate": 1352,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "incident_timeline_digest",
+    "confidence": 0.92,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_4cce0a6b8d08a5cfd52c",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Compress logs into non-sensitive incident timelines.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:eb843c73db4853e959aa2a6540a37f525264f4437d614b1ffca7970fb1edd1eb",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "defensive_ops",
+    "tokens_displaced_estimate": 1426,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "zeroclaw_no_exec_plan",
+    "confidence": 0.92,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_8e69124c7f558646ae54",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Produce a no-execution investigation plan.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:b0621709de4ec31bcf33dcba33cc7a825bc1df9942d6bb51401815a5ec3d6de0",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "planning_only",
+    "tokens_displaced_estimate": 1566,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  },
+  {
+    "beast_object_type": "forge_crystal",
+    "capability": "openclaw_local_patch_plan",
+    "confidence": 0.92,
+    "created_at": "2026-06-21T20:46:26.361531+00:00",
+    "crystal_id": "forge_crystal_e142e130febe85f3d548",
+    "domain": "cyber_defense",
+    "model_agnostic_contract": {
+      "crystal_role": "Draft read-only patch plans with approval gates.",
+      "input_schema": {
+        "allowed_context": "local_redacted_evidence",
+        "objective": "string",
+        "repo_fingerprint": "sha256"
+      },
+      "orchestrators": [
+        "zeroclaw",
+        "openclaw"
+      ],
+      "output_schema": {
+        "required_gates": "list[approval_or_test_gate]",
+        "risk_findings": "list[bounded_finding]",
+        "safe_remediations": "list[testable_step]"
+      },
+      "tiny_model_role": "router_and_summarizer"
+    },
+    "receipts": {
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "node_id": "jetson_crystal_forge_cpu",
+      "receipt_hash": "sha256:428dde6901ea899c58b282386a800c854c104513755391340f26d2f9804ffaef",
+      "target_model_label": "llama3.2:1b",
+      "teacher_model_label": "nvidia_nim_reference"
+    },
+    "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+    "task_class": "local_first_plan",
+    "tokens_displaced_estimate": 1739,
+    "verifier": {
+      "behavior_preserved": true,
+      "forbidden_content_scan": "passed",
+      "hidden_clean": true,
+      "rollback_safe": true,
+      "verification_mode": "local_deterministic_shadow"
+    },
+    "version": "1.0"
+  }
+]

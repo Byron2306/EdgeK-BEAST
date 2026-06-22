@@ -1,4 +1,6 @@
 import json
+import os
+import runpy
 import subprocess
 from pathlib import Path
 
@@ -33,6 +35,54 @@ def test_beast_agent_welcome_is_json():
     assert "promote" in payload["commands"]
     assert "prec" in payload["commands"]
     assert "handoff-prepare" in payload["commands"]
+    assert "heal" in payload["commands"]
+    assert "spaces" in payload["commands"]
+
+
+def test_beast_spaces_packages_and_validates_tiny_llama_case(tmp_path):
+    space = tmp_path / "tiny-llama-space"
+    packaged = run_beast(
+        "--agent",
+        "spaces",
+        "package-tiny-llama",
+        "--output",
+        str(space),
+    )
+
+    assert packaged.returncode == 0
+    package_payload = json.loads(packaged.stdout)
+    assert package_payload["manifest"]["valid"] is True
+    assert package_payload["receipt"]["valid"] is True
+
+    validated = run_beast("--agent", "spaces", "validate", str(space))
+    assert validated.returncode == 0
+    assert json.loads(validated.stdout)["valid"] is True
+
+
+def test_beast_heal_dry_run_is_non_mutating():
+    result = run_beast(
+        "--agent", "heal", "--dry-run", "true", "--gateway-port", "9",
+        "--mcp-port", "10", "--litellm-port", "11", "--nginx-port", "12",
+        "--ollama-host", "127.0.0.1:13",
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["command"] == "heal"
+    assert payload["status"] == "dry_run"
+    assert payload["changed"] is True
+    assert all(action["status"].startswith("would_") for action in payload["actions"])
+
+
+def test_managed_pid_validation_rejects_unrelated_reused_pid(tmp_path):
+    module = runpy.run_path(str(BEAST))
+    pid_file = tmp_path / "gateway.pid"
+    pid_file.write_text(str(os.getpid()), encoding="utf-8")
+
+    running, pid = module["pid_running"](pid_file, "gateway")
+
+    assert running is False
+    assert pid is None
 
 
 def test_beast_mcp_config_uses_absolute_cli_path():
@@ -73,6 +123,47 @@ def test_beast_compressors_reports_builtin_fallback():
     backends = {item["name"]: item for item in payload["compressors"]["backends"]}
     assert backends["edgek_prune"]["ready"] is True
     assert backends["rtk"]["fallback"] == "edgek_builtin_prune"
+
+
+def test_model_fitness_does_not_credit_local_rescue_after_endpoint_failure(tmp_path):
+    module = runpy.run_path(str(BEAST))
+    write_fitness = module["_write_model_fitness_from_benchmark"]
+    write_fitness.__globals__["ROOT"] = tmp_path
+    results = tmp_path / "benchmarks" / "results"
+    results.mkdir(parents=True)
+    prefix = "fitness"
+    (results / f"{prefix}.json").write_text(json.dumps({
+        "live_provider_presets": {"groq": {"model": "demo-model"}},
+        "live_results": [
+            {
+                "provider": "groq",
+                "lane": "live_groq_raw",
+                "completed": False,
+                "output_evidence": {"initial_validation_error": "401 Unauthorized"},
+                "usage": {},
+            },
+            {
+                "provider": "groq",
+                "lane": "live_groq_full_beast",
+                "completed": True,
+                "output_evidence": {
+                    "initial_validation_error": "401 Unauthorized",
+                    "local_verifier_repair": True,
+                },
+                "usage": {},
+            },
+        ],
+    }), encoding="utf-8")
+
+    write_fitness(prefix)
+    payload = json.loads((results / f"{prefix}_model_fitness.json").read_text(encoding="utf-8"))
+    row = payload["models"][0]
+
+    assert row["fitness_score"] == 0.0
+    assert row["provider_responses"] == 0
+    assert row["provider_completed"] == 0
+    assert row["system_rescued_completed"] == 1
+    assert row["endpoint_failures"] == 2
 
 
 def test_beast_zeroclaw_local_plan_is_planning_only():

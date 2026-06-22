@@ -1,0 +1,50 @@
+services:
+  commons-node-a:
+    build:
+      context: .
+      dockerfile: Dockerfile.commons-node
+    environment:
+      BEAST_NODE_ID: commons-node-a
+      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
+      BEAST_COMMONS_SEED_LIMIT: "10"
+      BEAST_COMMONS_SEED_OFFSET: "0"
+      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+    ports:
+      - "8101:8000"
+    volumes:
+      - commons_node_a:/var/lib/beast
+
+  commons-node-b:
+    build:
+      context: .
+      dockerfile: Dockerfile.commons-node
+    environment:
+      BEAST_NODE_ID: commons-node-b
+      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
+      BEAST_COMMONS_SEED_LIMIT: "10"
+      BEAST_COMMONS_SEED_OFFSET: "10"
+      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+    ports:
+      - "8102:8000"
+    volumes:
+      - commons_node_b:/var/lib/beast
+
+  commons-node-c:
+    build:
+      context: .
+      dockerfile: Dockerfile.commons-node
+    environment:
+      BEAST_NODE_ID: commons-node-c
+      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
+      BEAST_COMMONS_SEED_LIMIT: "10"
+      BEAST_COMMONS_SEED_OFFSET: "20"
+      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+    ports:
+      - "8103:8000"
+    volumes:
+      - commons_node_c:/var/lib/beast
+
+volumes:
+  commons_node_a:
+  commons_node_b:
+  commons_node_c:

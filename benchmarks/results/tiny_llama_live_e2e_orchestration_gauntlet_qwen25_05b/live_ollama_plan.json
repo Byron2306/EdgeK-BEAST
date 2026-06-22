@@ -1,0 +1,103 @@
+{
+  "attempted": true,
+  "error": "",
+  "latency_ms": 8508.823,
+  "model": "qwen2.5:0.5b",
+  "normalized": {
+    "gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "needs_cloud": false,
+    "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+    "promote": false,
+    "required_gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "required_route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "pytest",
+      "promotion_candidate"
+    ],
+    "required_subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "risk": "medium",
+    "route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "pytest",
+      "promotion_candidate"
+    ],
+    "subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "task_class": "agentic_cli",
+    "task_id": "agent_awareness_e2e_debug_and_promote",
+    "tier": 6,
+    "tier_name": "live_chained_subsystem_orchestration",
+    "verify": [
+      "verification_receipt"
+    ]
+  },
+  "parsed": {
+    "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+    "required_gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "required_route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "pytest",
+      "promotion_candidate"
+    ],
+    "required_subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "risk": "medium",
+    "task_class": "agentic_cli",
+    "task_id": "agent_awareness_e2e_debug_and_promote",
+    "tier": 6,
+    "tier_name": "live_chained_subsystem_orchestration"
+  },
+  "passed": true,
+  "raw_response": "```json\n{\n    \"objective\": \"Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.\",\n    \"required_gates\": [\"no_cloud_until_local_evidence\", \"approval_before_write\", \"verification_gate\", \"receipt_required\"],\n    \"required_route\": [\"meta_tool_commons\", \"capability_registry\", \"fused_crystal\", \"zeroclaw\", \"openclaw\", \"swarm\", \"pytest\", \"promotion_candidate\"],\n    \"required_subagents\": [\"zeroclaw_planner\", \"cartographer\", \"openclaw_inspector\", \"supervisor\", \"scribe\", \"promotion_scribe\"],\n    \"risk\": \"medium\",\n    \"task_class\": \"agentic_cli\",\n    \"task_id\": \"agent_awareness_e2e_debug_and_promote\",\n    \"tier\": 6,\n    \"tier_name\": \"live_chained_subsystem_orchestration\"\n}\n```",
+  "repair_applied": true,
+  "score": 1.0
+}

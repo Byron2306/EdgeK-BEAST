@@ -1,0 +1,976 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 1547,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_d7cdae5d0a701ec38abc",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_ad2959ad3ee2b091.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "schema_validation_o01_v1",
+        "schema_validation_o02_v1"
+      ],
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1711,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_bb2813878a4ee2bf5a62",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_7bee1e4d807ba833.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "provider_alias_normalization_o01_v1",
+        "provider_alias_normalization_o02_v1"
+      ],
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1434,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_9ea4cb89a6c79bb779cc",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_b4d896ec35a78d28",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_b4d896ec35a78d28.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "patch_compilation_o01_v1",
+        "patch_compilation_o02_v1"
+      ],
+      "task_id": "patch_compilation_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1737,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "syntax_check",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+        "fixture_family": "syntax_check",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/config.py": {
+            "exists": true,
+            "file_hash": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+            "semantic_hash": "sha256:16673a7c838302213694bd80bfebd0ab7c47c93cbf458f3573afcdf80eb2d6c3",
+            "symbol_hashes": {
+              "gateway_config": "sha256:171f6e47d0812f321355effa37706b905963bc1ca710e03f8cb34386ee0d2b3f",
+              "parse_bool": "sha256:add0dfb73b3174171c36877068c28e272488f337e82b1eed4c6a1c39b3a6dd7a"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_config.py": {
+            "exists": true,
+            "file_hash": "sha256:904a236cb6a987a61d95d2900c49032721661292b4ec3e835db97ee90b38c925",
+            "semantic_hash": "sha256:7fada9eb380e1daa1d59fac9c7045f905dfcd00112bbbce811a075feaecbaa9c",
+            "symbol_hashes": {
+              "test_boolean_parser_normalizes_common_shell_values": "sha256:f8d4d27cd8709c9036b1419696b53c7ed65f90ccc12e426b2503ec973ffafc3c",
+              "test_provider_has_openrouter_default": "sha256:86f43c81a01edcd871588de0630316c445094f08240d67497025dd919c1e62f3"
+            }
+          },
+          "tests/test_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:542cd1ad8544267eab96e4198a2c856cc1cdb0b4edb739bf7e4c2b7899f5ca2a",
+            "semantic_hash": "sha256:715aaa2dfff8749a1b3cc1ae0964ea2b931ecd64e2dd9d98fd0897b81c8bd8ca",
+            "symbol_hashes": {
+              "test_hidden_empty_and_on_values_are_normalized": "sha256:edb535bbf386bdb9d4cbe79521eafb4649b7bd72b77e8e40048b2d0440976913"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:50db08487f8e7e571e535327e9018ef9026c04216100a2d4bbb82d0534571e89"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_b98601d47c110d002b06",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_71e2f9c999a8c076",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_71e2f9c999a8c076.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "syntax_check_o01_v1",
+        "syntax_check_o02_v1"
+      ],
+      "task_id": "syntax_check_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1371,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_9fc5e360b78e8d8ec10d",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_eb8febc0b04307dc",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_eb8febc0b04307dc.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "route_diagnostics_o01_v1",
+        "route_diagnostics_o02_v1"
+      ],
+      "task_id": "route_diagnostics_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1584,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_e3f01c3670b92d223ae6",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_9564cd48c121b50a.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "secret_redaction_o01_v1",
+        "secret_redaction_o02_v1"
+      ],
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_d7cdae5d0a701ec38abc.json"
+      },
+      "avoided_tokens_estimate": 1547,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_bb2813878a4ee2bf5a62.json"
+      },
+      "avoided_tokens_estimate": 1711,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_9ea4cb89a6c79bb779cc.json"
+      },
+      "avoided_tokens_estimate": 1434,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_b4d896ec35a78d28",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_b98601d47c110d002b06.json"
+      },
+      "avoided_tokens_estimate": 1737,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "syntax_check",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "fixture_anchor": "patch_compilation,quality_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Catch language syntax errors before verification credit.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_71e2f9c999a8c076",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "syntax_check_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_9fc5e360b78e8d8ec10d.json"
+      },
+      "avoided_tokens_estimate": 1371,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_eb8febc0b04307dc",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_e3f01c3670b92d223ae6.json"
+      },
+      "avoided_tokens_estimate": 1584,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": true,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    },
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    },
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    },
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "syntax_check",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    },
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    },
+    {
+      "active_provider": "groq",
+      "beast_object_type": "mega_cross_provider_reuse_case",
+      "behavior_preserved": true,
+      "cloud_calls": 0,
+      "completed": true,
+      "decision": "reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "fingerprint_match": true,
+      "hidden_passed": true,
+      "incorrect_reuse": false,
+      "occurrence": 3,
+      "provider_execution_requested": false,
+      "source_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "source_provider": "nvidia_nim",
+      "target_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "target_provider": "groq",
+      "version": "1.1",
+      "visible_passed": true
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "schema_validation",
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_d7cdae5d0a701ec38abc",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "provider_alias_normalization",
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_bb2813878a4ee2bf5a62",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "patch_compilation",
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_9ea4cb89a6c79bb779cc",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "patch_compilation_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "syntax_check",
+      "impact_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_b98601d47c110d002b06",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "syntax_check_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "route_diagnostics",
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_9fc5e360b78e8d8ec10d",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "route_diagnostics_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-06-21T10:07:46Z",
+      "cross_provider_reuse": true,
+      "family": "secret_redaction",
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_e3f01c3670b92d223ae6",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "schema_validation",
+    "provider_alias_normalization",
+    "patch_compilation",
+    "syntax_check",
+    "route_diagnostics",
+    "secret_redaction"
+  ],
+  "lanes": [
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "full_beast"
+  ],
+  "mutation_recovery_cases": [],
+  "occurrences": [
+    3
+  ],
+  "provider_reports": {},
+  "providers": [
+    "groq"
+  ],
+  "raw_live_result_count": 0,
+  "resume_source": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_definitive_mega_test_nvidia_o1_o2_o3_o5/live_execution.json"
+}

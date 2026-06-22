@@ -434,6 +434,7 @@ class TaskEnvelopeBuilder:
             ],
             "route_card": result.get("route_card"),
             "envelope": envelope,
+            "network_evidence": result.get("network_evidence"),
             "memory_candidate": category in ("quota_or_rate_limit", "auth_or_credentials", "runtime_circuit_open"),
             "artifacts": {
                 "markdown_path": str(self.chronicle_dir / f"{result['task_id']}_{provider}_diagnostic.md"),

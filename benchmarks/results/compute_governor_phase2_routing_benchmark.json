@@ -1,0 +1,82 @@
+{
+  "beast_object_type": "compute_governor_phase2_routing_benchmark",
+  "case_count": 3,
+  "claim_boundary": "Paired shadow routing measures route displacement pressure only; enforcement remains disabled.",
+  "expected_change_match_rate": 1.0,
+  "friction_selection_change_count": 2,
+  "friction_selection_change_rate": 0.333333,
+  "mode": "paired_friction_shadow_routing",
+  "paired_attempts": 6,
+  "passed": true,
+  "repeats": 2,
+  "rows": [
+    {
+      "base_selected_provider": "nim",
+      "case_id": "clean_winner_high_friction",
+      "enforced_selected_provider": "groq",
+      "expected_change": true,
+      "friction_selected_provider": "groq",
+      "repeat": 0,
+      "selection_would_change": true,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "nim"
+    },
+    {
+      "base_selected_provider": "xai",
+      "case_id": "clean_winner_low_confidence_friction",
+      "enforced_selected_provider": "xai",
+      "expected_change": false,
+      "friction_selected_provider": "xai",
+      "repeat": 0,
+      "selection_would_change": false,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "xai"
+    },
+    {
+      "base_selected_provider": "gemini",
+      "case_id": "no_matching_friction",
+      "enforced_selected_provider": "gemini",
+      "expected_change": false,
+      "friction_selected_provider": "gemini",
+      "repeat": 0,
+      "selection_would_change": false,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "gemini"
+    },
+    {
+      "base_selected_provider": "nim",
+      "case_id": "clean_winner_high_friction",
+      "enforced_selected_provider": "groq",
+      "expected_change": true,
+      "friction_selected_provider": "groq",
+      "repeat": 1,
+      "selection_would_change": true,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "nim"
+    },
+    {
+      "base_selected_provider": "xai",
+      "case_id": "clean_winner_low_confidence_friction",
+      "enforced_selected_provider": "xai",
+      "expected_change": false,
+      "friction_selected_provider": "xai",
+      "repeat": 1,
+      "selection_would_change": false,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "xai"
+    },
+    {
+      "base_selected_provider": "gemini",
+      "case_id": "no_matching_friction",
+      "enforced_selected_provider": "gemini",
+      "expected_change": false,
+      "friction_selected_provider": "gemini",
+      "repeat": 1,
+      "selection_would_change": false,
+      "shadow_preserved_current_route": true,
+      "shadow_selected_provider": "gemini"
+    }
+  ],
+  "shadow_preserved_current_route_rate": 1.0,
+  "version": "1.0"
+}

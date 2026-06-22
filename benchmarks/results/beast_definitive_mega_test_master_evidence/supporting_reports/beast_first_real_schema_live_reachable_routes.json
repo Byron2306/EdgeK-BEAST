@@ -1,0 +1,1432 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-21T05:00:15Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_cohere_full_beast": {
+      "average_latency_ms": 5691.142,
+      "average_provider_tokens": 4217.0,
+      "canonicalized": 0,
+      "clean_completed": 1,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": 4217.0,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    },
+    "live_cohere_raw": {
+      "average_latency_ms": 2958.533,
+      "average_provider_tokens": 570.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    },
+    "live_gemini_full_beast": {
+      "average_latency_ms": 5211.795,
+      "average_provider_tokens": 3935.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 3935.0,
+      "repair_attempted": 1,
+      "rescued_completed": 1,
+      "tasks": 1
+    },
+    "live_gemini_raw": {
+      "average_latency_ms": 5744.845,
+      "average_provider_tokens": 396.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    },
+    "live_mistral_full_beast": {
+      "average_latency_ms": 2281.243,
+      "average_provider_tokens": 4061.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 4061.0,
+      "repair_attempted": 0,
+      "rescued_completed": 1,
+      "tasks": 1
+    },
+    "live_mistral_raw": {
+      "average_latency_ms": 1923.604,
+      "average_provider_tokens": 627.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    },
+    "live_nvidia_nim_full_beast": {
+      "average_latency_ms": 23004.507,
+      "average_provider_tokens": 4878.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 1,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 4878.0,
+      "repair_attempted": 0,
+      "rescued_completed": 1,
+      "tasks": 1
+    },
+    "live_nvidia_nim_raw": {
+      "average_latency_ms": 40387.058,
+      "average_provider_tokens": 1247.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 5,
+    "excluded_infra_failure": 0,
+    "infra_failure": 0,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 0,
+    "nim_tests_failed": 2,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_first_real_schema_live_reachable_routes_gauntlet",
+    "result_count": 8
+  },
+  "live_provider_fitness": {
+    "cohere": {
+      "avg_latency_ms": 5691.142,
+      "avg_provider_tokens_per_success": 4217.0,
+      "beast_completed": 1,
+      "beast_completion_rate": 0.5,
+      "clean_completed": 1,
+      "clean_to_rescue_ratio": "inf",
+      "eligible_for_source_patching": true,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": true,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 1,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.5,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "metrics": {
+        "cost_per_success_score": 0.6485833333333333,
+        "hidden_test_pass_rate": 0.5,
+        "json_validity_rate": 1.0,
+        "latency_per_success_score": 0.9525738166666666,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 1.0,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 1.0,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.5
+      },
+      "recommended_role": "clean_candidate_cost_incomplete",
+      "rescue_rate": 0.0,
+      "rescued_completed": 0,
+      "route_confidence": "low",
+      "sample_size": 2,
+      "score": 0.7527,
+      "visible_clean_completed": 1,
+      "visible_clean_rate": 0.5,
+      "visible_task_count": 2
+    },
+    "gemini": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 1,
+      "beast_completion_rate": 0.5,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.0,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.0,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.0,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "scout_or_infra_probe",
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "sample_size": 2,
+      "score": 0.25,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    },
+    "mistral": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 1,
+      "beast_completion_rate": 0.5,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": true,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": true,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 1.0,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 1.0,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 1.0,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "scout_or_infra_probe",
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "sample_size": 2,
+      "score": 0.55,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    },
+    "nvidia_nim": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 1,
+      "beast_completion_rate": 0.5,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.5,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.5,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.5,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "refs_only_transform_selector",
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "sample_size": 2,
+      "score": 0.4,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 40387.058,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 40387.058,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3837,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 347,
+          "prompt_tokens_details": null,
+          "total_tokens": 1247
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, objective, actions, verify, handoff_hash? Wait the schema given is different: it's for beast.source_patch.v1 or beast.patch_intent.v1 with operations array etc. The user says: \"If the user prompt includes an output.schema, your response must match it exactly. For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\"\n\nWe have both: The user prompt includes an output.schema (the JSON under \"output_schema\"). So we must match that exactly. The instruction also says for BEAST Action IR include top-level kind, objective, actions, verify, handoff_hash. But the output.schema does not have those fields; it has kind, operations, tests. So we need to follow the higher priority: \"If the user prompt includes an output.schema, your response must match it exactly.\" So we must output JSON that matches that schema exactly.\n\nThus we need to produce a JSON with fields: kind (string), operations (array), tests (object mapping file paths to content). The kind must be either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". We need to decide which. The objective: \"Fix output governance JSON extraction for mar",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f74297070e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.04s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 347,
+        "prompt_tokens_details": null,
+        "total_tokens": 1247
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 23004.507,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 23004.507,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "nvidia_nim",
+        "raw_chars": 3305,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 3978,
+          "prompt_tokens_details": null,
+          "total_tokens": 4878
+        }
+      },
+      "prompt_tokens": 3114,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. The skeleton is:\n\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"replacement snippet only; omit old when anchor_ref is used\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:848ebd4a7d3b105e6949817ba522de072f5e0608a4bef1ede04bc45dfd60252f\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"provider_handoff_hash\": \"sha256:848ebd4a7d3b105e6949817ba522de072f5e0608a4bef1ede04bc45dfd60252f\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n\nWe must fill only the values, and we are to return exactly one JSON object.\n\nFrom the context, we have a reference packet that includes:\n- file_ref: \"F1\" (which is the file \"app/output_guard.py\")\n- anchor_refs: [\"A1\", \"A2\", \"A3\"] for that file.\n\nWe are to use the smallest possible new snippet for the replace_anchor action.\n\nLooking at the reference packet, we have:\n- A1: label \"import json\", chars=11, so the anchor is the string \"import json\"\n- A2: label \"de",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 3978,
+        "prompt_tokens_details": null,
+        "total_tokens": 4878
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n-\n+import re\n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    # Extract JSON from markdown code blocks\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    # Fallback to direct JSON parsing\n+    return json.loads(text)",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 1923.604,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1923.604,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "mistral",
+        "raw_chars": 1019,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 291,
+          "prompt_tokens": 336,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 627
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"import json\\nimport re\\n\\ndef parse_provider_output(text):\\n    # Extract JSON from markdown code blocks\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    # Fallback to direct JSON parsing\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\ndef parse_provider_output(text):\\n    # Extract JSON from markdown code blocks\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    # Fallback to direct JSON parsing\\n    return json.loads(text)\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"why\": \"Add regex to extract JSON from markdown code blocks\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "decoder.py:345: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fbb7d6e30e0>, s = 'not json'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.02s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 291,
+        "prompt_tokens": 336,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 627
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2281.243,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2281.243,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "mistral",
+        "raw_chars": 846,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 336,
+          "prompt_tokens": 3725,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 4061
+        }
+      },
+      "prompt_tokens": 3030,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Add markdown JSON extraction logic\",\n      \"new\": \"    if \\\"```json\\\" in text:\\n        start = text.find(\\\"```json\\\") + len(\\\"```json\\\")\\n        end = text.find(\\\"```\\\", start)\\n        json_str = text[start:end].strip()\\n        return json.loads(json_str)\\n\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:40eb23cb2e08acb072e1e0e2d2085a66f7de839167f0c71afbf8532c2d8ea237\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"provider_handoff_hash\": \"sha256:40eb23cb2e08acb072e1e0e2d2085a66f7de839167f0c71afbf8532c2d8ea237\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 336,
+        "prompt_tokens": 3725,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 4061
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_gemini_raw",
+      "latency_ms": 5744.845,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 5744.845,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "gemini",
+        "raw_chars": 98,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_tokens": 363,
+          "total_tokens": 1259
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "gemini",
+      "provider_text_excerpt": "{\"kind\": \"beast.source_patch.v1\", \"operations\": [{\"content\": \"import json\\nimport re\\n\\ndef parse_",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f851b2770e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.05s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 33,
+        "prompt_tokens": 363,
+        "total_tokens": 1259
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_gemini_full_beast",
+      "latency_ms": 5211.795,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "provider output did not include operations list",
+        "json_parse_ok": false,
+        "latency_ms": 5211.795,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: provider output did not include operations list",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "gemini",
+        "raw_chars": 132,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 36,
+          "prompt_tokens": 3899,
+          "total_tokens": 4795
+        }
+      },
+      "prompt_tokens": 3030,
+      "provider": "gemini",
+      "provider_text_excerpt": "{\"actions\":[{\"id\":\"a1\",\"intent\":\"Add regex import for JSON extraction.\",\"new\":\"import json\\nimport re\",\"target\":{\"anchor_ref\":\"A1\",\"",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: provider output did not include operations list",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 36,
+        "prompt_tokens": 3899,
+        "total_tokens": 4795
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    else:\n+        raise ValueError('No JSON object found in the input text')\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 2958.533,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2958.533,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 663,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 216,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 354,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 570
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\n\\ndef parse_provider_output(text):\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    else:\\n        raise ValueError('No JSON object found in the input text')\",\n      \"why\": \"Ensure JSON extraction from markdown/prose and handle failure cases\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_hidden_parse_provider_output_returns_empty_for_prose ___________\n\n    def test_hidden_parse_provider_output_returns_empty_for_prose():\n>       assert parse_provider_output(\"not json\") == {}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_output_guard_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntext = 'not json'\n\n    def parse_provider_output(text):\n        match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n        if match:\n            return json.loads(match.group(1))\n        else:\n>           raise ValueError('No JSON object found in the input text')\nE           ValueError: No JSON object found in the input text\n\napp/output_guard.py:10: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.02s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 216,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 570
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -2,4 +2,17 @@\n \n \n def parse_provider_output(text):\n+    import json\n+    import re\n+\n+    # Extract JSON from markdown code blocks\n+    markdown_match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if markdown_match:\n+        return json.loads(markdown_match.group(1))\n+\n+    # Handle plain JSON\n+    try:\n+        return json.loads(text)\n+    except json.JSONDecodeError:\n+        return {}\n     return json.loads(text)\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 5691.142,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 5691.142,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 1022,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 394,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3823,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4217
+        }
+      },
+      "prompt_tokens": 3030,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Handle JSON extraction from markdown and prose\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A2\"\n      },\n      \"new\": \"def parse_provider_output(text):\\n    import json\\n    import re\\n\\n    # Extract JSON from markdown code blocks\\n    markdown_match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if markdown_match:\\n        return json.loads(markdown_match.group(1))\\n\\n    # Handle plain JSON\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:4b1e6b659d68932fd1056988101ce713a6efce80287f9a415cde695994be16f7\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"provider_handoff_hash\": \"sha256:4b1e6b659d68932fd1056988101ce713a6efce80287f9a415cde695994be16f7\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 394,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3823,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4217
+      }
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-21T05:00:15Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "raw",
+      "full_beast"
+    ],
+    "planned_run_count": 8,
+    "providers": [
+      {
+        "api_key_env": "NVIDIA_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider": "nvidia_nim",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 150.0
+      },
+      {
+        "api_key_env": "MISTRAL_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://api.mistral.ai/v1",
+        "model": "codestral-latest",
+        "provider": "mistral",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 150.0
+      },
+      {
+        "api_key_env": "GEMINI_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "model": "gemini-2.5-flash",
+        "provider": "gemini",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 150.0
+      },
+      {
+        "api_key_env": "COHERE_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://api.cohere.ai/compatibility/v1",
+        "model": "command-a-03-2025",
+        "provider": "cohere",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 150.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/output_guard.py"
+        ],
+        "hidden_tests": [
+          "tests/test_output_guard_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "output_governance_malformed_json",
+        "task_id": "output_governance_malformed_json",
+        "visible_tests": [
+          "tests/test_output_guard_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw",
+      "full_beast"
+    ],
+    "live_only": true,
+    "max_tasks": 1,
+    "max_tokens": 900,
+    "prompt_mode": "compact",
+    "timeout_seconds": 150.0
+  },
+  "live_summary": {
+    "cohere": {
+      "average_latency_ms": 4324.837,
+      "average_provider_prompt_tokens": 2088.5,
+      "canonicalized": 0,
+      "clean_completed": 1,
+      "clean_to_rescue_ratio": "inf",
+      "completed": 1,
+      "completion_rate": 0.5,
+      "failures": [
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "output_governance_malformed_json"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 1,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.5,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "latency_ms_per_verified_fix": 5691.142,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": 4217.0,
+      "recommended_role": "clean_candidate_cost_incomplete",
+      "repair_attempted": 0,
+      "rescue_rate": 0.0,
+      "rescued_completed": 0,
+      "route_confidence": "low",
+      "tasks": 2,
+      "visible_clean_completed": 1,
+      "visible_clean_rate": 0.5,
+      "visible_task_count": 2
+    },
+    "gemini": {
+      "average_latency_ms": 5478.32,
+      "average_provider_prompt_tokens": 2131.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 1,
+      "completion_rate": 0.5,
+      "failures": [
+        {
+          "lane": "live_gemini_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "output_governance_malformed_json"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "latency_ms_per_verified_fix": 5211.795,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 3935.0,
+      "recommended_role": "scout_or_infra_probe",
+      "repair_attempted": 1,
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "tasks": 2,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    },
+    "mistral": {
+      "average_latency_ms": 2102.423,
+      "average_provider_prompt_tokens": 2030.5,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 1,
+      "completion_rate": 0.5,
+      "failures": [
+        {
+          "lane": "live_mistral_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "output_governance_malformed_json"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "latency_ms_per_verified_fix": 2281.243,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 4061.0,
+      "recommended_role": "scout_or_infra_probe",
+      "repair_attempted": 0,
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "tasks": 2,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    },
+    "nvidia_nim": {
+      "average_latency_ms": 31695.783,
+      "average_provider_prompt_tokens": 2162.5,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 1,
+      "completion_rate": 0.5,
+      "failures": [
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "output_governance_malformed_json"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 2,
+      "latency_ms_per_verified_fix": 23004.507,
+      "local_verifier_repaired": 1,
+      "provider_tokens_per_verified_fix": 4878.0,
+      "recommended_role": "refs_only_transform_selector",
+      "repair_attempted": 0,
+      "rescue_rate": 1.0,
+      "rescued_completed": 1,
+      "route_confidence": "low",
+      "tasks": 2,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 2
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    }
+  ]
+}

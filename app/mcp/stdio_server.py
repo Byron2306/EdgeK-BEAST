@@ -136,6 +136,155 @@ TOOL_DEFINITIONS = [
         },
     },
     {
+        "name": "beast_provider_economist_select",
+        "description": "Choose a provider route by role, hidden-clean economics, rescue rate, latency, auth confidence, and cost envelope.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "candidates": {"type": "array", "items": {"type": "object"}},
+                "requested_role": {"type": "string", "default": "primary_patch_provider"},
+                "max_latency_ms": {"type": "number"},
+                "max_usd_per_fix": {"type": "number"},
+                "min_auth_confidence": {"type": "number", "default": 0.6},
+                "require_cost_observation": {"type": "boolean", "default": False},
+                "prefer_hidden_clean": {"type": "boolean", "default": True},
+            },
+            "required": ["candidates", "requested_role"],
+        },
+    },
+    {
+        "name": "beast_tool_laziness_record",
+        "description": "Record whether a tool call was useful for learned call/skip policy.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "tool_name": {"type": "string"},
+                "scenario": {"type": "string"},
+                "called": {"type": "boolean", "default": True},
+                "useful": {"type": "boolean"},
+                "tokens_spent": {"type": "integer", "default": 0},
+                "cost_usd": {"type": "number", "default": 0},
+                "latency_ms": {"type": "number", "default": 0},
+                "value_score": {"type": "number", "default": 0},
+            },
+            "required": ["tool_name", "scenario", "useful"],
+        },
+    },
+    {
+        "name": "beast_tool_laziness_recommend",
+        "description": "Identify candidate MCP tools not worth calling based on previous low-value outcomes.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "candidate_tools": {
+                    "type": "array",
+                    "items": {"oneOf": [{"type": "string"}, {"type": "object"}]},
+                },
+                "scenario": {"type": "string"},
+                "required_tools": {"type": "array", "items": {"type": "string"}},
+                "min_samples": {"type": "integer", "default": 3},
+            },
+            "required": ["candidate_tools", "scenario"],
+        },
+    },
+    {
+        "name": "beast_otel_export",
+        "description": "Compile BEAST evidence into OTLP spans and optionally export to Grafana Tempo, Jaeger, or another OTLP collector.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "chronicles": {"type": "array", "items": {"type": "object"}},
+                "route_cards": {"type": "array", "items": {"type": "object"}},
+                "packet_evidence": {"type": "array", "items": {"type": "object"}},
+                "provider_fitness": {"type": "array", "items": {"type": "object"}},
+                "endpoint": {"type": "string"},
+                "approved": {"type": "boolean", "default": False},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+        },
+    },
+    {
+        "name": "beast_plugin_manifest_validate",
+        "description": "Prepare and validate risk, permission, budget, approval, and schema-hash contracts for a BEAST plugin manifest.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "manifest": {"type": "object"},
+                "prepare_hashes": {"type": "boolean", "default": False},
+            },
+            "required": ["manifest"],
+        },
+    },
+    {
+        "name": "beast_plugin_marketplace_install",
+        "description": "Dry-run or install a valid schema-pinned plugin manifest with explicit approval.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "manifest": {"type": "object"},
+                "approved": {"type": "boolean", "default": False},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["manifest"],
+        },
+    },
+    {
+        "name": "beast_capability_exchange",
+        "description": "Prepare, rank, or submit privacy-allowlisted tool/skill evidence; submission is opt-in and approval-gated.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["state", "prepare", "rank", "submit"]},
+                "capability": {"type": "object"},
+                "outcome": {"type": "object"},
+                "evidence": {"oneOf": [{"type": "object"}, {"type": "array", "items": {"type": "object"}}]},
+                "task_class": {"type": "string"},
+                "role": {"type": "string"},
+                "approved": {"type": "boolean", "default": False},
+                "dry_run": {"type": "boolean", "default": True},
+                "persist_local": {"type": "boolean", "default": True}
+            },
+            "required": ["action"]
+        }
+    },
+    {
+        "name": "beast_meta_tool_commons",
+        "description": "Ingest and rank contextual capability priors, stage candidates, or locally approve adoption.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["state", "ingest", "rank", "propose", "adopt", "snapshot"]},
+                "evidence": {"oneOf": [{"type": "object"}, {"type": "array", "items": {"type": "object"}}]},
+                "candidate": {"type": "object"},
+                "candidate_id": {"type": "string"},
+                "task_class": {"type": "string"},
+                "role": {"type": "string"},
+                "kind": {"type": "string"},
+                "source": {"type": "string"},
+                "limit": {"type": "integer", "default": 25},
+                "approved": {"type": "boolean", "default": False},
+                "dry_run": {"type": "boolean", "default": True},
+                "approved_by": {"type": "string"},
+                "reason": {"type": "string"}
+            },
+            "required": ["action"]
+        }
+    },
+    {
+        "name": "beast_compute_shadow",
+        "description": "Inspect Phase 1 Compute Plans, gates, receipts, and counterfactual savings estimates.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["state", "metrics", "savings_summary", "plans", "receipts", "receipt"]},
+                "limit": {"type": "integer", "default": 50},
+                "weekly_call_volume": {"type": "integer"},
+                "receipt_id": {"type": "string"}
+            },
+            "required": ["action"]
+        }
+    },
+    {
         "name": "beast_check_policy",
         "description": "Check whether an action is allowed under current governance rules.",
         "inputSchema": {
@@ -164,6 +313,49 @@ TOOL_DEFINITIONS = [
             "type": "object",
             "properties": {"diagnostic_result": {"type": "object"}},
             "required": ["diagnostic_result"],
+        },
+    },
+    {
+        "name": "beast_attach_network_chronicle",
+        "description": "Attach metadata-only packet-probe evidence to a provider diagnostic.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "diagnostic": {"type": "object"},
+                "probe": {"type": "object"},
+                "source": {"type": "string", "default": "packet_probe"},
+                "persist": {"type": "boolean", "default": False},
+            },
+            "required": ["diagnostic", "probe"],
+        },
+    },
+    {
+        "name": "beast_github_pr_ingest",
+        "description": "Convert GitHub PR diffs, failed checks, and review comments into a bounded BEAST task envelope.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "repo": {"type": "string"},
+                "pr_number": {"type": "integer", "minimum": 1},
+                "max_files": {"type": "integer", "default": 20},
+                "max_comments": {"type": "integer", "default": 30},
+            },
+            "required": ["repo", "pr_number"],
+        },
+    },
+    {
+        "name": "beast_github_pr_publish_chronicle",
+        "description": "Draft or publish a Chronicle summary to a PR; live comments require explicit approval.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "repo": {"type": "string"},
+                "pr_number": {"type": "integer", "minimum": 1},
+                "chronicle": {"type": "object"},
+                "approved": {"type": "boolean", "default": False},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["repo", "pr_number", "chronicle"],
         },
     },
     {
@@ -244,6 +436,23 @@ TOOL_DEFINITIONS = [
         },
     },
     {
+        "name": "beast_session_handshake",
+        "description": "Build the BEAST agent-awareness and strict local preflight latency contract.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "objective": {"type": "string"},
+                "mode": {"type": "string", "default": "openclaw"},
+                "workspace_root": {"type": "string"},
+                "candidate_tools": {"type": "array", "items": {"type": "string"}},
+                "preflight_budget_ms": {"type": "integer", "default": 500},
+                "scout_budget_ms": {"type": "integer", "default": 300},
+                "session_id": {"type": "string"}
+            },
+            "required": ["objective"]
+        }
+    },
+    {
         "name": "beast_openclaw_plan",
         "description": "Create an Ollama-first Openclaw/Nemoclaw execution plan from workflow artifacts.",
         "inputSchema": {
@@ -255,6 +464,12 @@ TOOL_DEFINITIONS = [
                 "mode": {"type": "string", "default": "openclaw"},
                 "workspace_root": {"type": "string"},
                 "use_ollama": {"type": "boolean", "default": True},
+                "candidate_tools": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "object"}]}},
+                "required_tools": {"type": "array", "items": {"type": "string"}},
+                "provider_candidates": {"type": "array", "items": {"type": "object"}},
+                "requested_role": {"type": "string", "default": "primary_patch_provider"},
+                "preflight_budget_ms": {"type": "integer", "default": 500},
+                "scout_budget_ms": {"type": "integer", "default": 300},
             },
             "required": ["objective"],
         },
@@ -273,6 +488,12 @@ TOOL_DEFINITIONS = [
                 "dry_run": {"type": "boolean", "default": True},
                 "approved": {"type": "boolean", "default": False},
                 "use_ollama": {"type": "boolean", "default": True},
+                "candidate_tools": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "object"}]}},
+                "required_tools": {"type": "array", "items": {"type": "string"}},
+                "provider_candidates": {"type": "array", "items": {"type": "object"}},
+                "requested_role": {"type": "string", "default": "primary_patch_provider"},
+                "preflight_budget_ms": {"type": "integer", "default": 500},
+                "scout_budget_ms": {"type": "integer", "default": 300},
             },
             "required": ["objective"],
         },

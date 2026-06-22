@@ -1,0 +1,191 @@
+{
+  "baseline_response_id": "chatcmpl-bc6c9d8ef5ea6283",
+  "baseline_usage": {
+    "completion_tokens": 44,
+    "prompt_tokens": 106,
+    "prompt_tokens_details": null,
+    "total_tokens": 150
+  },
+  "beast_object_type": "compute_governor_phase5_groq_streaming",
+  "claim_boundary": "This run uses Groq's OpenAI-compatible live stream, cancels after the first schema-valid governed object, measures saved tokens against a non-stream Groq completion baseline, and executes one live Groq repair prompt for an intentionally invalid governed object.",
+  "emitted_text": "{\"action\":\"patch\",\"patch\":\"diff\"}",
+  "ledger_metrics": {
+    "average_latency_ms": 0.073,
+    "avoidable_token_mean_absolute_error": null,
+    "beast_object_type": "compute_governor_metrics",
+    "claim_boundary": "Shadow estimates are hypotheses until verified by a behavior-preserving ablation.",
+    "cost_coverage_rate": 0.0,
+    "cost_observation_count": 0,
+    "deterministic_shadow_agreement_rate": null,
+    "deterministic_shadow_agreements": 0,
+    "deterministic_shadow_attempts": 1,
+    "deterministic_shadow_calibrated": 0,
+    "deterministic_shadow_verification_rate": 0.0,
+    "deterministic_shadow_verified": 0,
+    "enforced_suppression_count": 0,
+    "enforcement_pause_required": false,
+    "estimated_avoidable_input_tokens": 37,
+    "estimated_avoidable_output_tokens": 1,
+    "estimated_avoidable_total_tokens": 38,
+    "false_suppression_count": 0,
+    "false_suppression_rate": 0.0,
+    "false_suppression_redline": false,
+    "mode": "shadow",
+    "observed_cost_usd": null,
+    "observed_total_tokens": 115,
+    "predicted_savings_usd_observed": null,
+    "recommended_rungs": {
+      "escalate": 1
+    },
+    "sample_size": 1,
+    "statuses": {
+      "stream_intercepted": 1
+    },
+    "stream_early_stop_count": 1,
+    "stream_repair_actions": {
+      "accept": 1
+    },
+    "stream_tokens_saved": 35,
+    "stream_upstream_cancellation_count": 1,
+    "token_calibration_count": 0,
+    "token_calibration_coverage_rate": 0.0,
+    "version": "1.0"
+  },
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "phase5_groq_streaming_passed": true,
+  "provider": "nvidia_nim",
+  "provider_specific_cancellation_telemetry": {
+    "base_url": "https://integrate.api.nvidia.com/v1",
+    "cancel_callback_reasons": [
+      "governed_object_complete"
+    ],
+    "cancel_reason": "governed_object_complete",
+    "cancel_requested": true,
+    "close_observed": true,
+    "events_seen": 39,
+    "provider": "nvidia_nim",
+    "response_status_code": 200,
+    "stream_protocol": "openai_compatible_sse",
+    "upstream_cancel_calls": 1,
+    "wall_time_ms_until_close": 3047.072
+  },
+  "receipt": {
+    "avoidable_token_estimation_error": null,
+    "avoided_tokens_estimate": 38,
+    "beast_object_type": "compute_receipt",
+    "behavior_preserved": true,
+    "calibration_source": "",
+    "candidate_decision": "deterministic",
+    "cost_observation_available": false,
+    "cost_usd": null,
+    "counterfactual_estimates": true,
+    "created_at": "2026-06-20T21:05:35.795658+00:00",
+    "deterministic_shadow_agreements": 0,
+    "deterministic_shadow_attempts": 1,
+    "deterministic_shadow_calibrated": 0,
+    "deterministic_shadow_results": [
+      {
+        "beast_object_type": "deterministic_transform_result",
+        "behavior_preserved": null,
+        "candidate_name": "patch_compilation",
+        "checks": {},
+        "complete_task": false,
+        "duration_ms": 0.008,
+        "error_type": "structured_work_missing",
+        "expected_output_sha256": "",
+        "output_sha256": "",
+        "privacy": "hashes_and_verifier_evidence_only",
+        "status": "not_applicable",
+        "verified": false,
+        "version": "1.0"
+      }
+    ],
+    "deterministic_shadow_verified": 0,
+    "early_stopped": true,
+    "error_type": "",
+    "estimated_avoidable_input_tokens": 37,
+    "estimated_avoidable_output_tokens": 1,
+    "gate_decision": "cloud_inference",
+    "gate_id": "cgate_0846b8b85083493180e6",
+    "input_tokens": 106,
+    "latency_ms": 0.073,
+    "mode": "shadow",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "observed_avoidable_tokens": null,
+    "output_tokens": 9,
+    "plan_id": "cmp_b2c5f78ef5924dda9f16",
+    "predicted_avoidable_work": [
+      "patch_compilation"
+    ],
+    "predicted_savings_usd": null,
+    "provider": "nvidia_nim",
+    "provider_execution_requested": true,
+    "receipt_id": "crec_79394bec90fa4f409779",
+    "recommended_rung": "escalate",
+    "runtime_attempt_id": "chatcmpl-bc6c9d8ef5ea6283",
+    "selected_rung": "selected_provider",
+    "shadow_only": true,
+    "status": "stream_intercepted",
+    "stream_repair_action": "accept",
+    "stream_stop_reason": "governed_object_complete",
+    "stream_tokens_saved": 35,
+    "suppression_enforced": false,
+    "total_tokens": 115,
+    "upstream_cancel_requested": true,
+    "version": "1.0"
+  },
+  "repair_decision": {
+    "action": "repair",
+    "beast_object_type": "stream_repair_decision",
+    "reason": "governed_object_schema_invalid",
+    "repair_prompt": "Repair the governed JSON object so it satisfies the declared schema.",
+    "repaired_object": null,
+    "version": "1.0"
+  },
+  "repair_prompt_executed": true,
+  "repair_response_id": "chatcmpl-86f46852c22b51c8",
+  "repair_usage": {
+    "completion_tokens": 43,
+    "prompt_tokens": 133,
+    "prompt_tokens_details": null,
+    "total_tokens": 176
+  },
+  "repaired_payload": {
+    "action": "patch",
+    "patch": "diff"
+  },
+  "repaired_valid": true,
+  "stream_report": {
+    "beast_object_type": "stream_interception_report",
+    "emitted_chunks": 9,
+    "raw_chunks_seen": 9,
+    "repair_decision": {
+      "action": "accept",
+      "beast_object_type": "stream_repair_decision",
+      "reason": "governed_object_complete",
+      "repair_prompt": "",
+      "repaired_object": {
+        "action": "patch",
+        "patch": "diff"
+      },
+      "version": "1.0"
+    },
+    "savings": {
+      "baseline_output_tokens": 44,
+      "beast_object_type": "stream_token_savings_measurement",
+      "early_stopped": true,
+      "emitted_tokens": 9,
+      "measurement_source": "provider_reported_completion_tokens",
+      "saved_tokens": 35,
+      "version": "1.0"
+    },
+    "stop_reason": "governed_object_complete",
+    "tokens_emitted": 9,
+    "upstream_cancel_calls": 1,
+    "upstream_cancel_reason": "governed_object_complete",
+    "upstream_cancel_requested": true,
+    "version": "1.0"
+  },
+  "version": "1.0",
+  "wall_time_ms": 19610.279
+}

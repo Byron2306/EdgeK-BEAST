@@ -1,0 +1,118 @@
+{
+  "active_boundary_decision": {
+    "beast_object_type": "capability_validity_decision",
+    "confidence": 0.97,
+    "critical_changes": [],
+    "current_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "nonsemantic_changes": [],
+    "previous_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "reasons": [
+      "impact_fingerprint_unchanged"
+    ],
+    "reusable": true,
+    "state": "active",
+    "tiebreaker_policy": "shadow_revalidation_on_uncertain_repository_impact",
+    "version": "1.0"
+  },
+  "beast_object_type": "compute_governor_phase6_lifecycle",
+  "claim_boundary": "This local harness persists crystallization state, reloads it, checks the active fingerprint at runtime, then changes the target file and observes automatic demotion. Promotion precision is measured over promoted vs demoted candidates in this bounded lifecycle sample.",
+  "flaky_candidate_eligible": false,
+  "flaky_candidate_reason": "hidden_test_success_rate_below_threshold",
+  "metrics_after_demote": {
+    "beast_object_type": "capability_crystallization_metrics",
+    "demoted_count": 1,
+    "demotion_rate": 0.5,
+    "deterministic_coverage": 0.0,
+    "promoted_count": 0,
+    "promotion_precision": 0.0,
+    "retired_count": 0,
+    "total_candidates": 2,
+    "total_compute_displaced_tokens": 840,
+    "total_compute_displaced_usd": 0.0042,
+    "version": "1.0"
+  },
+  "metrics_before_demote": {
+    "beast_object_type": "capability_crystallization_metrics",
+    "demoted_count": 0,
+    "demotion_rate": 0.0,
+    "deterministic_coverage": 0.5,
+    "promoted_count": 1,
+    "promotion_precision": 1.0,
+    "retired_count": 0,
+    "total_candidates": 2,
+    "total_compute_displaced_tokens": 840,
+    "total_compute_displaced_usd": 0.0042,
+    "version": "1.0"
+  },
+  "observed_promotion_precision": 0.0,
+  "phase6_lifecycle_passed": true,
+  "promoted_proof": {
+    "allowed_transform": "phase6_schema_cap",
+    "approved_for_enforcement": true,
+    "beast_object_type": "deterministic_displacement_proof",
+    "candidate_name": "phase6_schema_cap",
+    "confidence": 0.95,
+    "created_at": "2026-06-20T21:05:35.980657+00:00",
+    "expected_output_sha256": "",
+    "hidden_tests_equal_or_better": true,
+    "impact_fingerprint": {
+      "beast_object_type": "capability_impact_fingerprint",
+      "confidence": 0.97,
+      "dependencies": {},
+      "fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+      "policy_version": "phase6_lifecycle_v1",
+      "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+      "targets": {
+        "app/phase6_contract.py": {
+          "exists": true,
+          "file_hash": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+          "semantic_hash": "sha256:2c62876ead30a38e0b951e08b17a0b118075155ed02cfb6aab77bb76ca242bbf",
+          "symbol_hashes": {}
+        }
+      },
+      "tests": {
+        "tests/test_phase6_contract.py": {
+          "exists": true,
+          "file_hash": "sha256:deb22a8dcf2d38aed20a69016b83c4596f06b390b59eb3b0b99e0d66ba737376",
+          "semantic_hash": "sha256:9664ef443921132f3bc36e4586576fbbdda9cec966032cc8b89f3966eb7a7738",
+          "symbol_hashes": {
+            "test_ok": "sha256:e1dff3444ce8147572c6898c32836a7abff66a204a564b1ae899870fd6a6c52c"
+          }
+        }
+      },
+      "tool_schema_hashes": [],
+      "version": "1.0"
+    },
+    "paired_ablation_runs": 5,
+    "policy_version": "phase6_crystallization_v1",
+    "proof_id": "crystal_proof_crystal_phase6_schema_cap_contract",
+    "risk_class": "low",
+    "rollback_equal_or_better": true,
+    "scope_checks_equal_or_better": true,
+    "security_checks_equal_or_better": true,
+    "task_class": "contract",
+    "verifier_command": "crystallized_phase6_schema_cap",
+    "version": "1.0",
+    "visible_tests_equal_or_better": true
+  },
+  "stale_boundary_decision": {
+    "beast_object_type": "capability_validity_decision",
+    "confidence": 0.485,
+    "critical_changes": [
+      "targets:app/phase6_contract.py:semantic_change"
+    ],
+    "current_fingerprint_hash": "sha256:faf791e1d68436f99e2ed8d23e83eb175cf3e72e5fe970d82190fdf13026dfe1",
+    "nonsemantic_changes": [],
+    "previous_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "reasons": [
+      "targets:app/phase6_contract.py:semantic_change"
+    ],
+    "reusable": false,
+    "state": "shadow_revalidation",
+    "tiebreaker_policy": "shadow_revalidation_on_uncertain_repository_impact",
+    "version": "1.0"
+  },
+  "state_path": "/tmp/beast-phase6-lifecycle-z1ytytr8/state/capability_crystallization_state.json",
+  "version": "1.0",
+  "wall_time_ms": 3.29
+}

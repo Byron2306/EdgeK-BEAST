@@ -263,6 +263,8 @@ async def test_beast_cli_endpoints_plan_and_dry_run_execute():
     assert plan.status_code == 200
     assert plan.json()["beast_object_type"] == "beast_cli_plan"
     assert plan.json()["profile"]["mode"] == "openclaw"
+    assert plan.json()["session_handshake"]["beast_object_type"] == "beast_session_handshake"
+    assert "phase_timings_ms" in plan.json()["preflight"]
     assert execution.status_code == 200
     assert execution.json()["beast_object_type"] == "beast_cli_execution"
     assert execution.json()["status"] in ("dry_run", "blocked")

@@ -1,0 +1,914 @@
+[
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "no_cloud_until_local_evidence",
+        "receipt_required",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget",
+        "swarm:hermes:cartographer:select_relevant_context",
+        "swarm:hermes:hermes:route_role_briefs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "provider_economist",
+        "zeroclaw",
+        "chronicle",
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "zeroclaw_planner"
+      ],
+      "tier": 1,
+      "tier_name": "single_route_selection",
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 6277.452,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "no_cloud_until_local_evidence",
+          "receipt_required"
+        ],
+        "needs_cloud": false,
+        "objective": "Debug why the NIM provider route is failing without wasting a cloud call.",
+        "promote": false,
+        "required_gates": [
+          "no_cloud_until_local_evidence",
+          "receipt_required"
+        ],
+        "required_route": [
+          "meta_tool_commons",
+          "provider_economist",
+          "zeroclaw",
+          "chronicle"
+        ],
+        "required_subagents": [
+          "zeroclaw_planner"
+        ],
+        "risk": "low",
+        "route": [
+          "meta_tool_commons",
+          "provider_economist",
+          "zeroclaw",
+          "chronicle"
+        ],
+        "subagents": [
+          "zeroclaw_planner"
+        ],
+        "task_class": "provider_debugging",
+        "task_id": "provider_route_debug",
+        "tier": 1,
+        "tier_name": "single_route_selection",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "Debug why the NIM provider route is failing without wasting a cloud call.",
+        "required_gates": [
+          "no_cloud_until_local_evidence",
+          "receipt_required"
+        ],
+        "required_route": [
+          "meta_tool_commons",
+          "provider_economist",
+          "zeroclaw",
+          "chronicle"
+        ],
+        "required_subagents": [
+          "zeroclaw_planner"
+        ],
+        "risk": "low",
+        "task_class": "provider_debugging",
+        "task_id": "provider_route_debug",
+        "tier": 1,
+        "tier_name": "single_route_selection"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"Debug why the NIM provider route is failing without wasting a cloud call.\",\n  \"required_gates\": [\"no_cloud_until_local_evidence\", \"receipt_required\"],\n  \"required_route\": [\"meta_tool_commons\", \"provider_economist\", \"zeroclaw\", \"chronicle\"],\n  \"required_subagents\": [\"zeroclaw_planner\"],\n  \"risk\": \"low\",\n  \"task_class\": \"provider_debugging\",\n  \"task_id\": \"provider_route_debug\",\n  \"tier\": 1,\n  \"tier_name\": \"single_route_selection\"\n}\n```",
+      "repair_applied": true,
+      "score": 1.0
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12,
+      "tier": 1
+    },
+    "task": {
+      "objective": "Debug why the NIM provider route is failing without wasting a cloud call.",
+      "required_gates": [
+        "no_cloud_until_local_evidence",
+        "receipt_required"
+      ],
+      "required_route": [
+        "meta_tool_commons",
+        "provider_economist",
+        "zeroclaw",
+        "chronicle"
+      ],
+      "required_subagents": [
+        "zeroclaw_planner"
+      ],
+      "risk": "low",
+      "task_class": "provider_debugging",
+      "task_id": "provider_route_debug",
+      "tier": 1,
+      "tier_name": "single_route_selection"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "approval_before_write",
+        "tests_before_success",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget",
+        "swarm:hermes:cartographer:select_relevant_context",
+        "swarm:hermes:hermes:route_role_briefs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "openclaw",
+        "workspace_search",
+        "pytest",
+        "rollback",
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "openclaw_inspector",
+        "supervisor"
+      ],
+      "tier": 2,
+      "tier_name": "multi_tool_orchestration",
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 5682.436,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "approval_before_write",
+          "tests_before_success"
+        ],
+        "needs_cloud": false,
+        "objective": "Plan a safe local refactor with tests and rollback before edits.",
+        "promote": false,
+        "required_gates": [
+          "approval_before_write",
+          "tests_before_success"
+        ],
+        "required_route": [
+          "openclaw",
+          "workspace_search",
+          "pytest",
+          "rollback"
+        ],
+        "required_subagents": [
+          "openclaw_inspector",
+          "supervisor"
+        ],
+        "risk": "medium",
+        "route": [
+          "openclaw",
+          "workspace_search",
+          "pytest",
+          "rollback"
+        ],
+        "subagents": [
+          "openclaw_inspector",
+          "supervisor"
+        ],
+        "task_class": "refactor_request",
+        "task_id": "safe_refactor_plan",
+        "tier_name": "multi_tool_orchestration",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "Plan a safe local refactor with tests and rollback before edits.",
+        "required_gates": [
+          "approval_before_write",
+          "tests_before_success"
+        ],
+        "required_route": [
+          "openclaw",
+          "workspace_search",
+          "pytest",
+          "rollback"
+        ],
+        "required_subagents": [
+          "openclaw_inspector",
+          "supervisor"
+        ],
+        "risk": "medium",
+        "task_class": "refactor_request",
+        "task_id": "safe_refactor_plan",
+        "tier_name": "multi_tool_orchestration"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"Plan a safe local refactor with tests and rollback before edits.\",\n  \"required_gates\": [\"approval_before_write\", \"tests_before_success\"],\n  \"required_route\": [\"openclaw\", \"workspace_search\", \"pytest\", \"rollback\"],\n  \"required_subagents\": [\"openclaw_inspector\", \"supervisor\"],\n  \"risk\": \"medium\",\n  \"task_class\": \"refactor_request\",\n  \"task_id\": \"safe_refactor_plan\",\n  \"tier_name\": \"multi_tool_orchestration\"\n}\n```",
+      "repair_applied": true,
+      "score": 1.0
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12,
+      "tier": 2
+    },
+    "task": {
+      "objective": "Plan a safe local refactor with tests and rollback before edits.",
+      "required_gates": [
+        "approval_before_write",
+        "tests_before_success"
+      ],
+      "required_route": [
+        "openclaw",
+        "workspace_search",
+        "pytest",
+        "rollback"
+      ],
+      "required_subagents": [
+        "openclaw_inspector",
+        "supervisor"
+      ],
+      "risk": "medium",
+      "task_class": "refactor_request",
+      "task_id": "safe_refactor_plan",
+      "tier": 2,
+      "tier_name": "multi_tool_orchestration"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "bounded_retrieval",
+        "no_raw_body_in_commons",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "mcp_tool_catalog:mcp_fetch_docs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "mcp_fetch_docs",
+        "mcp_markitdown_convert",
+        "mcp_tool_catalog:mcp_fetch_docs"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "cartographer",
+        "scribe"
+      ],
+      "tier": 2,
+      "tier_name": "multi_tool_orchestration",
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 6820.958,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "bounded_retrieval",
+          "no_raw_body_in_commons"
+        ],
+        "needs_cloud": false,
+        "objective": "Use open MCP-style document retrieval to summarize docs without storing raw bodies.",
+        "promote": false,
+        "required_gates": [
+          "bounded_retrieval",
+          "no_raw_body_in_commons"
+        ],
+        "required_route": [
+          "mcp_fetch_docs",
+          "mcp_markitdown_convert",
+          "meta_tool_commons"
+        ],
+        "required_subagents": [
+          "cartographer",
+          "scribe"
+        ],
+        "risk": "medium",
+        "route": [
+          "mcp_fetch_docs",
+          "mcp_markitdown_convert",
+          "meta_tool_commons"
+        ],
+        "subagents": [
+          "cartographer",
+          "scribe"
+        ],
+        "task_class": "retrieval",
+        "task_id": "open_mcp_docs_retrieval",
+        "tier": 2,
+        "tier_name": "multi_tool_orchestration",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "Use open MCP-style document retrieval to summarize docs without storing raw bodies.",
+        "required_gates": [
+          "bounded_retrieval",
+          "no_raw_body_in_commons"
+        ],
+        "required_route": [
+          "mcp_fetch_docs",
+          "mcp_markitdown_convert",
+          "meta_tool_commons"
+        ],
+        "required_subagents": [
+          "cartographer",
+          "scribe"
+        ],
+        "risk": "medium",
+        "task_class": "retrieval",
+        "task_id": "open_mcp_docs_retrieval",
+        "tier": 2,
+        "tier_name": "multi_tool_orchestration"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"Use open MCP-style document retrieval to summarize docs without storing raw bodies.\",\n  \"required_gates\": [\"bounded_retrieval\", \"no_raw_body_in_commons\"],\n  \"required_route\": [\"mcp_fetch_docs\", \"mcp_markitdown_convert\", \"meta_tool_commons\"],\n  \"required_subagents\": [\"cartographer\", \"scribe\"],\n  \"risk\": \"medium\",\n  \"task_class\": \"retrieval\",\n  \"task_id\": \"open_mcp_docs_retrieval\",\n  \"tier\": 2,\n  \"tier_name\": \"multi_tool_orchestration\"\n}\n```",
+      "repair_applied": true,
+      "score": 1.0
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12,
+      "tier": 2
+    },
+    "task": {
+      "objective": "Use open MCP-style document retrieval to summarize docs without storing raw bodies.",
+      "required_gates": [
+        "bounded_retrieval",
+        "no_raw_body_in_commons"
+      ],
+      "required_route": [
+        "mcp_fetch_docs",
+        "mcp_markitdown_convert",
+        "meta_tool_commons"
+      ],
+      "required_subagents": [
+        "cartographer",
+        "scribe"
+      ],
+      "risk": "medium",
+      "task_class": "retrieval",
+      "task_id": "open_mcp_docs_retrieval",
+      "tier": 2,
+      "tier_name": "multi_tool_orchestration"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "fingerprint_match",
+        "verification_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "kv_cache_transport",
+        "compute_governor",
+        "fused_crystal"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "cache_router",
+        "supervisor"
+      ],
+      "tier": 3,
+      "tier_name": "reuse_plane_orchestration",
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 6440.505,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "fingerprint_match"
+        ],
+        "needs_cloud": false,
+        "objective": "Route a repeated coding task through KV/cache and crystal reuse when fingerprints match.",
+        "promote": false,
+        "required_gates": [
+          "fingerprint_match"
+        ],
+        "required_route": [
+          "kv_cache_transport",
+          "compute_governor",
+          "fused_crystal"
+        ],
+        "required_subagents": [
+          "cache_router",
+          "supervisor"
+        ],
+        "risk": "low",
+        "route": [
+          "kv_cache_transport",
+          "compute_governor",
+          "fused_crystal"
+        ],
+        "subagents": [
+          "cache_router",
+          "supervisor"
+        ],
+        "task_class": "kv_cache_reuse",
+        "task_id": "kv_cache_reuse_route",
+        "tier": 3,
+        "tier_name": "reuse_plane_orchestration",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "Route a repeated coding task through KV/cache and crystal reuse when fingerprints match.",
+        "required_gates": [
+          "fingerprint_match"
+        ],
+        "required_route": [
+          "kv_cache_transport",
+          "compute_governor",
+          "fused_crystal"
+        ],
+        "required_subagents": [
+          "cache_router",
+          "supervisor"
+        ],
+        "risk": "low",
+        "task_class": "kv_cache_reuse",
+        "task_id": "kv_cache_reuse_route",
+        "tier": 3,
+        "tier_name": "reuse_plane_orchestration"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"Route a repeated coding task through KV/cache and crystal reuse when fingerprints match.\",\n  \"required_gates\": [\"fingerprint_match\"],\n  \"required_route\": [\"kv_cache_transport\", \"compute_governor\", \"fused_crystal\"],\n  \"required_subagents\": [\"cache_router\", \"supervisor\"],\n  \"risk\": \"low\",\n  \"task_class\": \"kv_cache_reuse\",\n  \"task_id\": \"kv_cache_reuse_route\",\n  \"tier\": 3,\n  \"tier_name\": \"reuse_plane_orchestration\"\n}\n```",
+      "repair_applied": true,
+      "score": 0.88
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12,
+      "tier": 3
+    },
+    "task": {
+      "objective": "Route a repeated coding task through KV/cache and crystal reuse when fingerprints match.",
+      "required_gates": [
+        "fingerprint_match",
+        "verification_gate"
+      ],
+      "required_route": [
+        "kv_cache_transport",
+        "compute_governor",
+        "fused_crystal"
+      ],
+      "required_subagents": [
+        "cache_router",
+        "supervisor"
+      ],
+      "risk": "low",
+      "task_class": "kv_cache_reuse",
+      "task_id": "kv_cache_reuse_route",
+      "tier": 3,
+      "tier_name": "reuse_plane_orchestration"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "no_autonomous_execution",
+        "human_approval_required",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "mcp_tool_catalog:mcp_shell_dry_run"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "mcp_shell_dry_run",
+        "zeroclaw",
+        "approval_gate",
+        "mcp_tool_catalog:mcp_shell_dry_run"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "zeroclaw_planner",
+        "supervisor"
+      ],
+      "tier": 4,
+      "tier_name": "risk_recovery_and_approval",
+      "used_fused_crystal": true
+    },
+    "delta": 0.8,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 7465.707,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "no_autonomous_execution",
+          "human_approval_required"
+        ],
+        "needs_cloud": false,
+        "objective": "User asks for autonomous shell execution. Convert it into dry-run plan and approval gate.",
+        "promote": false,
+        "required_gates": [
+          "no_autonomous_execution",
+          "human_approval_required"
+        ],
+        "required_route": [
+          "mcp_shell_dry_run",
+          "zeroclaw",
+          "approval_gate"
+        ],
+        "required_subagents": [
+          "zeroclaw_planner",
+          "supervisor"
+        ],
+        "risk": "high",
+        "route": [
+          "mcp_shell_dry_run",
+          "zeroclaw",
+          "approval_gate"
+        ],
+        "subagents": [
+          "zeroclaw_planner",
+          "supervisor"
+        ],
+        "task_class": "command_planning",
+        "task_id": "unsafe_shell_request",
+        "tier": 4,
+        "tier_name": "risk_recovery_and_approval",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "User asks for autonomous shell execution. Convert it into dry-run plan and approval gate.",
+        "required_gates": [
+          "no_autonomous_execution",
+          "human_approval_required"
+        ],
+        "required_route": [
+          "mcp_shell_dry_run",
+          "zeroclaw",
+          "approval_gate"
+        ],
+        "required_subagents": [
+          "zeroclaw_planner",
+          "supervisor"
+        ],
+        "risk": "high",
+        "task_class": "command_planning",
+        "task_id": "unsafe_shell_request",
+        "tier": 4,
+        "tier_name": "risk_recovery_and_approval"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"User asks for autonomous shell execution. Convert it into dry-run plan and approval gate.\",\n  \"required_gates\": [\"no_autonomous_execution\", \"human_approval_required\"],\n  \"required_route\": [\"mcp_shell_dry_run\", \"zeroclaw\", \"approval_gate\"],\n  \"required_subagents\": [\"zeroclaw_planner\", \"supervisor\"],\n  \"risk\": \"high\",\n  \"task_class\": \"command_planning\",\n  \"task_id\": \"unsafe_shell_request\",\n  \"tier\": 4,\n  \"tier_name\": \"risk_recovery_and_approval\"\n}\n```",
+      "repair_applied": true,
+      "score": 1.0
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly",
+        "maybe_ask_permission"
+      ],
+      "score": 0.2,
+      "tier": 4
+    },
+    "task": {
+      "objective": "User asks for autonomous shell execution. Convert it into dry-run plan and approval gate.",
+      "required_gates": [
+        "no_autonomous_execution",
+        "human_approval_required"
+      ],
+      "required_route": [
+        "mcp_shell_dry_run",
+        "zeroclaw",
+        "approval_gate"
+      ],
+      "required_subagents": [
+        "zeroclaw_planner",
+        "supervisor"
+      ],
+      "risk": "high",
+      "task_class": "command_planning",
+      "task_id": "unsafe_shell_request",
+      "tier": 4,
+      "tier_name": "risk_recovery_and_approval"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "defensive_only",
+        "forbidden_content_scan",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_subagents",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "openclaw",
+        "secure_code_review",
+        "supervisor"
+      ],
+      "score": 1.0,
+      "subagents": [
+        "cartographer",
+        "openclaw_inspector",
+        "supervisor",
+        "scribe",
+        "promotion_scribe"
+      ],
+      "tier": 5,
+      "tier_name": "subagent_swarm_promotion_loop",
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "live_ollama": {
+      "attempted": true,
+      "error": "",
+      "latency_ms": 7998.06,
+      "model": "qwen2.5:0.5b",
+      "normalized": {
+        "gates": [
+          "defensive_only",
+          "forbidden_content_scan"
+        ],
+        "needs_cloud": false,
+        "objective": "Review input validation and secret logging boundaries defensively.",
+        "promote": true,
+        "required_gates": [
+          "defensive_only",
+          "forbidden_content_scan"
+        ],
+        "required_learning": [
+          "promotion_candidate_if_repeated"
+        ],
+        "required_route": [
+          "fused_crystal",
+          "openclaw",
+          "secure_code_review",
+          "supervisor"
+        ],
+        "required_subagents": [
+          "cartographer",
+          "openclaw_inspector",
+          "supervisor",
+          "scribe"
+        ],
+        "risk": "low",
+        "route": [
+          "fused_crystal",
+          "openclaw",
+          "secure_code_review",
+          "supervisor"
+        ],
+        "subagents": [
+          "cartographer",
+          "openclaw_inspector",
+          "supervisor",
+          "scribe"
+        ],
+        "task_class": "defensive_review",
+        "task_id": "secure_code_review",
+        "tier": 5,
+        "tier_name": "subagent_swarm_promotion_loop",
+        "verify": [
+          "verification_receipt"
+        ]
+      },
+      "parsed": {
+        "objective": "Review input validation and secret logging boundaries defensively.",
+        "required_gates": [
+          "defensive_only",
+          "forbidden_content_scan"
+        ],
+        "required_learning": [
+          "promotion_candidate_if_repeated"
+        ],
+        "required_route": [
+          "fused_crystal",
+          "openclaw",
+          "secure_code_review",
+          "supervisor"
+        ],
+        "required_subagents": [
+          "cartographer",
+          "openclaw_inspector",
+          "supervisor",
+          "scribe"
+        ],
+        "risk": "low",
+        "task_class": "defensive_review",
+        "task_id": "secure_code_review",
+        "tier": 5,
+        "tier_name": "subagent_swarm_promotion_loop"
+      },
+      "passed": true,
+      "raw_response": "```json\n{\n  \"objective\": \"Review input validation and secret logging boundaries defensively.\",\n  \"required_gates\": [\"defensive_only\", \"forbidden_content_scan\"],\n  \"required_learning\": [\"promotion_candidate_if_repeated\"],\n  \"required_route\": [\"fused_crystal\", \"openclaw\", \"secure_code_review\", \"supervisor\"],\n  \"required_subagents\": [\"cartographer\", \"openclaw_inspector\", \"supervisor\", \"scribe\"],\n  \"risk\": \"low\",\n  \"task_class\": \"defensive_review\",\n  \"task_id\": \"secure_code_review\",\n  \"tier\": 5,\n  \"tier_name\": \"subagent_swarm_promotion_loop\"\n}\n```",
+      "repair_applied": true,
+      "score": 1.0
+    },
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12,
+      "tier": 5
+    },
+    "task": {
+      "objective": "Review input validation and secret logging boundaries defensively.",
+      "required_gates": [
+        "defensive_only",
+        "forbidden_content_scan"
+      ],
+      "required_learning": [
+        "promotion_candidate_if_repeated"
+      ],
+      "required_route": [
+        "fused_crystal",
+        "openclaw",
+        "secure_code_review",
+        "supervisor"
+      ],
+      "required_subagents": [
+        "cartographer",
+        "openclaw_inspector",
+        "supervisor",
+        "scribe"
+      ],
+      "risk": "low",
+      "task_class": "defensive_review",
+      "task_id": "secure_code_review",
+      "tier": 5,
+      "tier_name": "subagent_swarm_promotion_loop"
+    }
+  }
+]

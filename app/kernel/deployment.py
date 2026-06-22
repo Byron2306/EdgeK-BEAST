@@ -124,7 +124,12 @@ class DeploymentManager:
             if provider.base_url and provider.backend in {"openai_compatible", "litellm", "native_huggingface"}:
                 entry["litellm_params"]["api_base"] = provider.base_url
             if provider.backend == "ollama":
-                entry["litellm_params"]["api_base"] = provider.base_url or os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+                ollama_base = provider.base_url or os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+                # LiteLLM's ollama/* adapter uses Ollama's native API, not its
+                # OpenAI-compatible /v1 facade.
+                if ollama_base.rstrip("/").endswith("/v1"):
+                    ollama_base = ollama_base.rstrip("/")[:-3]
+                entry["litellm_params"]["api_base"] = ollama_base.rstrip("/")
                 entry["litellm_params"].pop("api_key", None)
             policy = provider.metadata.get("policy", {})
             if policy.get("rate_limit_rpm"):

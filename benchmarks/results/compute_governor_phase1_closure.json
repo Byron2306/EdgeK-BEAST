@@ -1,0 +1,82 @@
+{
+  "actual_provider_calls": {
+    "accounting_off": 120,
+    "accounting_on": 120,
+    "unchanged": true
+  },
+  "beast_object_type": "compute_governor_phase1_closure_benchmark",
+  "behavior_difference_count": 0,
+  "behavior_preserved_count": 120,
+  "candidate_call_rate": 0.833333,
+  "candidate_calls_avoidable": 100,
+  "claim_boundary": "This deterministic paired preflight measures instrumentation equivalence and counterfactual opportunity. It does not prove realized production savings or displaced live provider calls.",
+  "cost_coverage_rate": 0.0,
+  "estimated_avoided_tokens_counterfactual": 4380,
+  "estimated_avoided_usd_counterfactual": null,
+  "false_suppression_rate": 0.0,
+  "false_suppression_redline": false,
+  "mode": "deterministic_paired_preflight",
+  "paired_attempts": 120,
+  "patch_equivalence_rate": 1.0,
+  "phase": 1,
+  "phase1_preflight_passed": true,
+  "provider_path_equivalence_rate": 1.0,
+  "receipt_count": 120,
+  "receipt_coverage_rate": 1.0,
+  "repeats": 20,
+  "scenario_count": 6,
+  "suppression_decisions_enforced": 0,
+  "task_class_summary": [
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 1.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 880,
+      "task_class": "schema_validation"
+    },
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 1.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 880,
+      "task_class": "provider_routing"
+    },
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 1.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 880,
+      "task_class": "patch_compilation"
+    },
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 1.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 880,
+      "task_class": "test_selection"
+    },
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 1.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 860,
+      "task_class": "secret_redaction"
+    },
+    {
+      "attempts": 20,
+      "behavior_preservation_rate": 1.0,
+      "candidate_call_rate": 0.0,
+      "candidate_detection_rate": 1.0,
+      "estimated_avoidable_tokens": 0,
+      "task_class": "semantic_reasoning"
+    }
+  ],
+  "verified_behavior_preservation_rate": 1.0,
+  "verifier_equivalence_rate": 1.0,
+  "version": "1.0"
+}

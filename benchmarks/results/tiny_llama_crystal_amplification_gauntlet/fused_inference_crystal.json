@@ -1,0 +1,451 @@
+{
+  "beast_object_type": "fused_inference_crystal",
+  "components": {
+    "crystals": [
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secure_code_review",
+        "confidence": 0.82,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_f8aa5193998a3fe5fee8",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Find risky patterns and produce safe remediation steps.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:161cbac2215fa6640f18db8f45ee6aed5a77d5a30094cb86cd94ffd22ccc0412",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "defensive_review",
+        "tokens_displaced_estimate": 741,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "input_validation_hardening",
+        "confidence": 0.84,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_ca20d01d9b5b9484a205",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Map untrusted input to validation and parser guards.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:c027bfff8c40a00c745e1ab2cdf1276e3cc1bf9fd34766d724ec45e94fd1cfa1",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "hardening",
+        "tokens_displaced_estimate": 878,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secret_redaction_guard",
+        "confidence": 0.86,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_10ef4a8d9c8a54e6323c",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:d92eddd7b7a6517a0c5a78c1401beaff8c83446c5831a7776b251a615633ea2d",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "data_protection",
+        "tokens_displaced_estimate": 997,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "dependency_manifest_triage",
+        "confidence": 0.88,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_67ebf1351eaaa3aa01a6",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Rank dependency review targets without exploit instructions.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:16156fb9490cb429212582317334d55900250c0641e085b8072a11c6bdae0a16",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "supply_chain_defense",
+        "tokens_displaced_estimate": 1155,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "auth_boundary_audit",
+        "confidence": 0.9,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_b76ecc8b09e7a53e0520",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Check authorization boundaries and recommend tests.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:123bf2514f4567b198be530a562d095c084e489bb158ea10209d8fb5d0249c82",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "access_control_review",
+        "tokens_displaced_estimate": 1352,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "incident_timeline_digest",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_4cce0a6b8d08a5cfd52c",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Compress logs into non-sensitive incident timelines.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:eb843c73db4853e959aa2a6540a37f525264f4437d614b1ffca7970fb1edd1eb",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "defensive_ops",
+        "tokens_displaced_estimate": 1426,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "zeroclaw_no_exec_plan",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_8e69124c7f558646ae54",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Produce a no-execution investigation plan.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:b0621709de4ec31bcf33dcba33cc7a825bc1df9942d6bb51401815a5ec3d6de0",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "planning_only",
+        "tokens_displaced_estimate": 1566,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "openclaw_local_patch_plan",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T20:46:26.361531+00:00",
+        "crystal_id": "forge_crystal_e142e130febe85f3d548",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Draft read-only patch plans with approval gates.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu",
+          "receipt_hash": "sha256:428dde6901ea899c58b282386a800c854c104513755391340f26d2f9804ffaef",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "local_first_plan",
+        "tokens_displaced_estimate": 1739,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      }
+    ],
+    "meta_tools": [
+      {
+        "kind": "meta_tool",
+        "name": "meta_tool_commons_ranker",
+        "risk_class": "low"
+      },
+      {
+        "kind": "meta_tool",
+        "name": "compute_governor_reuse_gate",
+        "risk_class": "low"
+      },
+      {
+        "kind": "meta_tool",
+        "name": "kv_cache_transport_router",
+        "risk_class": "low"
+      }
+    ],
+    "skills": [
+      {
+        "kind": "skill",
+        "name": "secure_code_review",
+        "risk_class": "low"
+      },
+      {
+        "kind": "skill",
+        "name": "incident_timeline_digest",
+        "risk_class": "low"
+      }
+    ],
+    "swarm_recipes": [
+      {
+        "name": "zeroclaw_no_exec_plan",
+        "role": "planner"
+      },
+      {
+        "name": "openclaw_local_patch_plan",
+        "role": "inspector"
+      }
+    ]
+  },
+  "created_at": "2026-06-21T20:46:26.361791+00:00",
+  "economics": {
+    "crystal_credit_units": 61,
+    "currency_boundary": "internal verified compute credit; not a public monetary instrument",
+    "scarcity_basis": "hash-linked verification receipts, not proof-of-waste mining",
+    "tokens_displaced_estimate": 13004
+  },
+  "fusion_id": "fused_crystal_65c5ecddc035039fbd55",
+  "name": "llama_opus_style_defensive_orchestrator",
+  "orchestration_contract": {
+    "claim": "compound crystal inference, not base-model parameter change",
+    "compute_governor": "reuse only with matching fingerprints and verification gates",
+    "meta_tool_commons": "rank and bind tools/skills/crystals",
+    "openclaw": "inspect local evidence and prepare safe actions",
+    "target_model": "llama3.2:1b",
+    "tiny_model_role": "intent_router_policy_summarizer",
+    "zeroclaw": "decompose plan without tool execution"
+  },
+  "seal": {
+    "beast_object_type": "sealed_crystal_compute_credit",
+    "created_at": "2026-06-21T20:46:26.361883+00:00",
+    "crypto_profile": {
+      "fallback": false,
+      "kem": "ML-KEM-768",
+      "provider": "liboqs",
+      "signature": "ML-DSA-65"
+    },
+    "encapsulated_key_hash": "sha256:9dee710904aab1e8f8bc85b41ae44a89df27daeb91a70642e483eb7bc10abf10",
+    "kem_ciphertext_b64": "Dq4u/Lz/c9fB1Xb39flK6iQkAtRHkZUjrdU71DUvV/YMQMjLIEOnHYg5//K1OHBHNmIx/qiHjr6PwT6fPdre7lfm73/HHPZXXNBsnx0fkVXbarq3lPCEIEi3Dizvc8CpYOJpOsWqgmZRle01n4zk2OisnTJyJ9e+WcXzehxdjtm3XeFuVAjINyLOwz+FdjOWiW6+HSYYeRMLOxLHW7QSD7fhwZaIXZW6gfgSCsXPIWXt8TL8+9kMGvGGVezKxZ2YaDiA3jGnZq9TnVad2tNQ2DZBbldJciBxkKssR4vuKPmX17hjVR/Aay8dJaMKVQ1LuObfiNYQbAujPCM9Tyo9cArc9ciJAEoY5OwgiLn/Egw0SKh5sxi1bXRIHX9iyS4YKuc9/rZ/m6JH9PE8W0cZEn9Bh+bse17eA/qAQQ/Q4ecb/jmPTF0QUHPxS9jQ1qICIqWC/Sb0kiYWVcGWeBhxfpBUqcocRIlnmqqupb58YMS6wZMlo0twGdo8GVFVJbYOAbcWWG+uBZr94mo89yLD/bmbm7clA6vPYB/MfF98FvKarVxwAMZEH3GcnVDUW4M0JO4cR98XyXZQ6lR5vdji1VuxXXeyg0NO7ZoMiqlubNfMdmkJBnueAgS1O92hZkjp/XQCkfaCJ+mgPXc+Mss3NS6M9xDPOy10lHqlwzM27VDbhabVqeCuDK0IF4qxYCVryzyn8hS/QZhgE7EoOIDMc7SXe3i3Tc/44w1FS4NJ5bAN4eRVRjD6sbScqByeiVD6m5+JAp+55cJTLD+ZGaz2KHmN8h854KJszHb1KTxygofnodi5XNfwq1xW2gSSH40egKSptcA7um8JeOntUIsk15FuT53U+YI7Cm+XmDJlwp5geRaHn9cUN+pU3C1RR0coSJP+zl+JOP61s3sIVvMUQUtkwHl1z4fMsiwCg4ZaSa5c69HBmgTHakFDUVcPcfKNT7NJmEfMlmQ5st3eCd6IyNvn6wHXfBzmjodKjKosT7LZFm3fvWRHKJYwrxfxZYN4UkC9csTfu4F+4WAP+S3GV0A+ODP0PRCH+zuMfn1HRL20HASR4VOFVB9LXYD6HgotZMc5pZhgxCMfYNCCW9M01KJfyNDBxY1b5nXl15pWjSLcAnqMgdif78treh7JAylOiz9rt1XWc9NZpasydONcQFgQ3FR1ND3r+8XO7a+cLuIKwZPnnO6JCe19KbotQphP1l9D2Er/DwRQtHkeIW/7KsVtS4IpD05Ti/E6zAf9hLC9HpJpf49hvQqeLN0NU5uQpRf96XiDnTNlX45Vnqttz7oBW3POEXiE1sKcAgUPKef1VyT1zl0omuSZuhlykmU+8JXmRuNCvk5EGrM3j2J/sp08SVxP4H4UgLHsABEzPDmfin0CfL52IGSpw1PKpN9F77hbQCypm+TBQ7vAhAGhoLFk1aKw+PAKURLo0ujT/l8=",
+    "kem_public_key_hash": "sha256:d83064a38fb2427181de10149a3f33b466773d6a0d5676ce6f63b28a7b129a18",
+    "kem_status": "content_key_encapsulated",
+    "note": "Private recipient key is intentionally not stored in this public receipt.",
+    "payload_hash": "sha256:74dc8661dc9fd59e26c800f398968b69074db74621d89c126c8461f8852c6204",
+    "purpose": "fused_inference_crystal_credit",
+    "signature": "ml-dsa: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",
+    "signature_public_key_b64": "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",
+    "version": "1.0"
+  },
+  "seal_verification": {
+    "beast_object_type": "crystal_seal_verification",
+    "crypto_profile": {
+      "fallback": false,
+      "kem": "ML-KEM-768",
+      "provider": "liboqs",
+      "signature": "ML-DSA-65"
+    },
+    "hash_ok": true,
+    "signature_ok": true,
+    "verified": true,
+    "version": "1.0"
+  },
+  "task_class": "cyber_defense_orchestration",
+  "version": "1.0"
+}

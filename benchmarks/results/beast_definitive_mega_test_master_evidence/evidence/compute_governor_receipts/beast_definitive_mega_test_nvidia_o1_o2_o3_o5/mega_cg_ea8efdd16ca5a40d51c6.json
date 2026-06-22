@@ -1,0 +1,51 @@
+{
+  "beast_object_type": "mega_compute_governor_receipt",
+  "cloud_calls": 0,
+  "created_at": "2026-06-21T08:08:17Z",
+  "decision": "deterministic_reuse",
+  "false_reuse_warning": false,
+  "family": "syntax_check",
+  "hidden_passed": true,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:7b1902787a256473ce1142a98286db55e0700eaae0a15ae3bc7cb6e50581bfb1",
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/config.py": {
+        "exists": false,
+        "file_hash": "",
+        "semantic_hash": "",
+        "symbol_hashes": {}
+      }
+    },
+    "tests": {},
+    "tool_schema_hashes": [],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:7b1902787a256473ce1142a98286db55e0700eaae0a15ae3bc7cb6e50581bfb1",
+  "lane": "full_beast_compute_governor",
+  "occurrence": 5,
+  "policy_version": "mega_controlled_v1",
+  "provider": "nvidia_nim",
+  "provider_execution_requested": false,
+  "receipt_id": "mega_cg_ea8efdd16ca5a40d51c6",
+  "rollback_success": true,
+  "semantic_credit_id": "scc_91668092b6fd5076",
+  "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_91668092b6fd5076.json",
+  "source_occurrences": [
+    1,
+    2
+  ],
+  "source_task_ids": [
+    "syntax_check_o01_v1",
+    "syntax_check_o02_v1"
+  ],
+  "task_id": "syntax_check_o05_v1",
+  "version": "1.0",
+  "visible_passed": true
+}

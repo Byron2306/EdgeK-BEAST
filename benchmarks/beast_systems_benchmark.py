@@ -40,9 +40,11 @@ from app.kernel.output_governor import (
     provider_output_profile,
 )
 from app.kernel.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
+from app.kernel.secret_vault import SecretVault
 from app.kernel.tool_integrations import ToolCallInterceptor
 from app.kernel.tool_laziness import ToolLazinessLearner
 from app.kernel.vector_adapters import VectorAdapterRegistry
+from app.kernel.network_chronicle import NetworkChronicleConnector
 from app.kernel.workspace_graph import WorkspaceGraph
 from app.mcp.broker import MCPBroker, MCPDecision
 from benchmarks.coding_agent_harness import estimate_tokens, pct_reduction
@@ -218,9 +220,9 @@ LIVE_PROVIDER_PRESETS: Dict[str, LiveProvider] = {
     ),
     "ovhcloud": LiveProvider(
         name="ovhcloud",
-        base_url="https://router.huggingface.co/v1",
-        model="openai/gpt-oss-120b:ovhcloud",
-        api_key_env="HF_TOKEN",
+        base_url="https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+        model="Meta-Llama-3_1-8B-Instruct",
+        api_key_env="OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
         timeout=180.0,
     ),
     "cohere": LiveProvider(
@@ -235,6 +237,13 @@ LIVE_PROVIDER_PRESETS: Dict[str, LiveProvider] = {
         base_url="https://router.huggingface.co/v1",
         model="openai/gpt-oss-120b:cerebras",
         api_key_env="HF_TOKEN",
+        timeout=180.0,
+    ),
+    "cerebras_native": LiveProvider(
+        name="cerebras_native",
+        base_url="https://api.cerebras.ai/v1",
+        model="llama3.1-8b",
+        api_key_env="CEREBRAS_API_KEY",
         timeout=180.0,
     ),
     "deepinfra": LiveProvider(
@@ -2325,8 +2334,18 @@ def run_systems_benchmark(
     live_providers: Optional[List[LiveProvider]] = None,
     task_names: Optional[List[str]] = None,
     live_only: bool = False,
+    tasks_override: Optional[List[SuiteTask]] = None,
 ) -> Dict[str, Any]:
-    tasks = select_tasks(task_names)
+    if tasks_override is None:
+        tasks = select_tasks(task_names)
+    else:
+        available = list(tasks_override)
+        names = [name.strip() for name in (task_names or []) if name and name.strip()]
+        by_name = {task.name: task for task in available}
+        unknown = [name for name in names if name not in by_name]
+        if unknown:
+            raise ValueError(f"Unknown benchmark task(s): {', '.join(unknown)}")
+        tasks = [by_name[name] for name in names] if names else available
     deterministic_results = [] if live_only else [run_deterministic_lane(task, lane) for task in tasks for lane in LANES]
     probes = {} if live_only else run_subsystem_probes()
     live_results: List[LaneResult] = []
@@ -2414,7 +2433,10 @@ def write_live_gauntlet_artifacts(report: Dict[str, Any], output_dir: Path) -> D
     for child in ["evidence_cards", "patches", "rollback_snapshots"]:
         (output_dir / child).mkdir(exist_ok=True)
 
-    manifest = report.get("live_route_manifest") or {}
+    manifest = dict(report.get("live_route_manifest") or {})
+    network_chronicle = report.get("network_chronicle") or {}
+    if network_chronicle:
+        manifest["network_chronicle"] = network_chronicle
     provider_fitness_payload = report.get("live_provider_fitness") or {}
     failure_buckets = report.get("live_failures_by_bucket") or {}
     live_results = report.get("live_results") or []
@@ -2454,11 +2476,17 @@ def write_live_gauntlet_artifacts(report: Dict[str, Any], output_dir: Path) -> D
             "local_verifier_repair": evidence.get("local_verifier_repair"),
             "files_changed": result.get("files_changed") or [],
             "reason": result.get("reason"),
+            "network_probe_evidence_id": evidence.get("network_probe_evidence_id"),
+            "network_probe_status": evidence.get("network_probe_status"),
         }
         jsonl_lines.append(json.dumps(row, sort_keys=True))
 
         card_path = output_dir / "evidence_cards" / f"{provider}_{task}_{index:04d}.json"
-        card_path.write_text(json.dumps({**row, "output_evidence": evidence}, indent=2, sort_keys=True), encoding="utf-8")
+        card_path.write_text(json.dumps({
+            **row,
+            "output_evidence": evidence,
+            "network_chronicle": network_chronicle or None,
+        }, indent=2, sort_keys=True), encoding="utf-8")
         patch_text = result.get("diff_excerpt") or ""
         if patch_text:
             (output_dir / "patches" / f"{provider}_{task}_{index:04d}.diff").write_text(patch_text, encoding="utf-8")
@@ -2615,6 +2643,7 @@ def write_markdown(report: Dict[str, Any], path: Path) -> None:
 
 
 def main() -> int:
+    SecretVault().load()
     parser = argparse.ArgumentParser(description="Run the BEAST systems coding-agent benchmark")
     parser.add_argument("--live-agent", action="store_true", help="Run optional live OpenAI-compatible lanes")
     parser.add_argument(
@@ -2623,7 +2652,7 @@ def main() -> int:
         help=(
             "Comma-separated live provider presets: openrouter,nvidia_nim,huggingface,"
             "openrouter_gptoss,openrouter_qwen_coder,openrouter_deepseek,"
-            "hyperbolic,novita,fal,nscale,ovhcloud,cohere,cerebras,deepinfra,featherless. "
+            "hyperbolic,novita,fal,nscale,ovhcloud,cohere,cerebras,cerebras_native,deepinfra,featherless. "
             "groq,gemini,sambanova,mistral,cloudflare,deepseek,puter_deepseek,llm7,aion_labs,github_models,xai,replicate. "
             "local_nim is intentionally excluded."
         ),
@@ -2666,6 +2695,11 @@ def main() -> int:
         help="Comma-separated task names. Empty means all tasks.",
     )
     parser.add_argument("--output-prefix", default="beast_systems_benchmark_latest")
+    parser.add_argument(
+        "--network-probe-evidence",
+        default=os.environ.get("BEAST_NETWORK_PROBE_EVIDENCE", ""),
+        help="Optional JSON packet-probe result to attach to the report, manifest, and evidence cards.",
+    )
     args = parser.parse_args()
 
     live_lanes = [lane.strip() for lane in args.live_lanes.split(",") if lane.strip()]
@@ -2690,6 +2724,14 @@ def main() -> int:
         task_names=task_names,
         live_only=args.live_only,
     )
+    if args.network_probe_evidence:
+        probe_path = Path(args.network_probe_evidence).expanduser().resolve()
+        probe = json.loads(probe_path.read_text(encoding="utf-8"))
+        report = NetworkChronicleConnector().attach_benchmark_report(
+            report,
+            probe,
+            source=f"file:{probe_path.name}",
+        )
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     json_path = OUT_DIR / f"{args.output_prefix}.json"
     md_path = OUT_DIR / f"{args.output_prefix}.md"

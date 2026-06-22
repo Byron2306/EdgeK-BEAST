@@ -1,0 +1,2005 @@
+{
+  "capability_registry": {
+    "count": 100,
+    "discovery_item_count": 112,
+    "discovery_source_count": 2,
+    "families": {
+      "agentic_cli": 8,
+      "canon": 1,
+      "chronicle": 2,
+      "compute_governance": 2,
+      "database": 3,
+      "debugging": 4,
+      "diagnostics": 4,
+      "forge": 1,
+      "governance": 1,
+      "handoff": 4,
+      "learning": 4,
+      "lint_syntax": 5,
+      "observability": 1,
+      "parsing": 5,
+      "plugin": 5,
+      "promotion": 2,
+      "provider": 24,
+      "quality": 4,
+      "routing": 3,
+      "skill": 2,
+      "swarm": 2,
+      "tool_bus": 7,
+      "vector": 6
+    },
+    "kinds": {
+      "cli": 14,
+      "database": 8,
+      "linter": 5,
+      "mcp_tool": 10,
+      "parser": 6,
+      "plugin": 9,
+      "provider": 23,
+      "route": 3,
+      "skill": 2,
+      "tool": 7,
+      "workflow": 13
+    }
+  },
+  "cli_executor": {
+    "execution": {
+      "beast_object_type": "beast_cli_execution",
+      "plan": {
+        "actions": [],
+        "beast_object_type": "beast_cli_plan",
+        "canon": {
+          "status": "unavailable",
+          "valid": true
+        },
+        "created_at": "2026-06-21T21:30:41.049186+00:00",
+        "local_inference": {
+          "available": false,
+          "source": "none",
+          "summary": "Ollama scout unavailable"
+        },
+        "local_insight": {
+          "available": false,
+          "evidence_count": 0,
+          "top_insight": null
+        },
+        "mode": "openclaw",
+        "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+        "plan_hash": "sha256:c1acf46e01b13e756e6f8f1b1963e7c2cca43454b683c74413fe85775f254294",
+        "preflight": {
+          "beast_object_type": "beast_local_preflight",
+          "budget_ms": 900,
+          "budget_status": "within_budget",
+          "elapsed_ms": 15.63,
+          "phase_timings_ms": {
+            "ollama_scout_ms": 0.007,
+            "provider_economist_ms": 0.001,
+            "session_handshake_ms": 15.61,
+            "tool_laziness_ms": 0.004
+          },
+          "provider_economist": {
+            "beast_object_type": "provider_economist_decision",
+            "decision": "not_evaluated",
+            "excluded": [],
+            "ranked": [],
+            "reason": "no provider candidates, plugin unavailable, or deadline reached",
+            "selected": null
+          },
+          "scout": {
+            "available": false,
+            "source": "none",
+            "summary": "Ollama scout unavailable"
+          },
+          "scout_budget_ms": 500,
+          "selected_provider": null,
+          "session_handshake": {
+            "agent_awareness": {
+              "capability_registry": {
+                "count": 100,
+                "kinds": {
+                  "cli": 14,
+                  "database": 8,
+                  "linter": 5,
+                  "mcp_tool": 10,
+                  "parser": 6,
+                  "plugin": 9,
+                  "provider": 23,
+                  "route": 3,
+                  "skill": 2,
+                  "tool": 7,
+                  "workflow": 13
+                },
+                "top_families": {
+                  "agentic_cli": 8,
+                  "canon": 1,
+                  "chronicle": 2,
+                  "diagnostics": 4,
+                  "handoff": 4,
+                  "learning": 4,
+                  "promotion": 2,
+                  "provider": 24,
+                  "quality": 4,
+                  "routing": 3,
+                  "swarm": 2,
+                  "tool_bus": 7
+                }
+              },
+              "commons": {
+                "adopted_count": 193,
+                "candidate_count": 194,
+                "candidate_summary": {
+                  "discovery_mcp_tool_catalog": {
+                    "adopted": 148
+                  },
+                  "discovery_skill_manifest": {
+                    "adopted": 25
+                  },
+                  "local_swarm_commons": {
+                    "adopted": 20
+                  },
+                  "tiny_llama_live_e2e_gauntlet": {
+                    "proposed": 1
+                  }
+                },
+                "evidence_count": 693,
+                "planes": [
+                  {
+                    "evidence_count": 500,
+                    "plane": "swarm",
+                    "safe_rate": 1.0,
+                    "verified_rate": 1.0
+                  },
+                  {
+                    "evidence_count": 2,
+                    "plane": "cli",
+                    "safe_rate": 1.0,
+                    "verified_rate": 1.0
+                  },
+                  {
+                    "evidence_count": 173,
+                    "plane": "discovery",
+                    "safe_rate": 0.936416,
+                    "verified_rate": 0.0
+                  },
+                  {
+                    "evidence_count": 18,
+                    "plane": "other",
+                    "safe_rate": 1.0,
+                    "verified_rate": 1.0
+                  }
+                ]
+              },
+              "crystal_claim_boundary": "system_amplification_not_base_model_weight_change",
+              "fused_crystal": {
+                "artifact": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/tiny_llama_crystal_amplification_gauntlet/llama_open_mcp_capability_registry_fusion.json",
+                "component_counts": {
+                  "crystals": 8,
+                  "meta_tools": 148,
+                  "skills": 214,
+                  "swarm_recipes": 20
+                },
+                "crypto_profile": {
+                  "fallback": false,
+                  "kem": "ML-KEM-768",
+                  "provider": "liboqs",
+                  "signature": "ML-DSA-65"
+                },
+                "crystal_credit_units": 1380,
+                "fusion_id": "fused_crystal_87369e5e59f914214393",
+                "name": "llama_open_mcp_capability_registry_crystal_orchestrator",
+                "seal_verified": true,
+                "task_class": "frontier_style_open_tool_software_orchestration",
+                "tokens_displaced_estimate": 221142
+              },
+              "knows_it_is_inside_beast": true,
+              "tiny_model_role": "intent_router_policy_summarizer",
+              "tool_authority": "request_tools_through_beast_never_bypass_gates"
+            },
+            "agent_contract": {
+              "avoid": [
+                "Do not reload context already present in the context packet.",
+                "Do not repeat low-value tool calls merely because they are available.",
+                "Do not bypass output governance, approval gates, or rollback.",
+                "Do not ask a cloud model to perform deterministic local compilation or verification."
+              ],
+              "do": [
+                "Treat BEAST artifacts as the source of truth for local state.",
+                "Use the selected provider for the assigned role, not as a universal model winner.",
+                "Ask cloud providers only for unresolved semantic decisions.",
+                "Prefer local verification, deterministic transforms, and bounded context.",
+                "Respect tool skip recommendations unless the active workflow marks a tool required."
+              ]
+            },
+            "agent_instruction": "You are operating inside BEAST. BEAST already supplies local workspace intelligence, Chronicle memory, Ollama scouting, tool-value history, provider economics, output governance, local patch compilation, verification, and rollback. You are not a standalone model: act as the intent router, policy follower, and compact summarizer over BEAST's adopted Commons tools, skills, Swarm recipes, and fused crystals. Commons currently reports 193 adopted candidates and 693 evidence rows. The active fused crystal is fused_crystal_87369e5e59f914214393 with 1380 internal credit units. Do not duplicate work BEAST has already completed. Respect required tools and learned skip recommendations. Use cloud inference only for unresolved semantic decisions. Keep local preflight within 900 ms and scout work within 500 ms.",
+            "available_help": [
+              "local workspace and Chronicle retrieval",
+              "Ollama scouting and bounded context ranking",
+              "Tool Laziness call suppression",
+              "Provider Economist role-aware routing",
+              "governed Action IR and local patch compilation",
+              "verification, rollback, and Chronicle evidence"
+            ],
+            "beast_object_type": "beast_session_handshake",
+            "candidate_tools": [
+              "capability_registry",
+              "cartographer",
+              "fused_crystal",
+              "meta_tool_commons",
+              "openclaw",
+              "openclaw_inspector",
+              "promotion_candidate",
+              "promotion_scribe",
+              "pytest",
+              "scribe",
+              "supervisor",
+              "swarm",
+              "zeroclaw",
+              "zeroclaw_planner"
+            ],
+            "created_at": "2026-06-21T21:30:41.049025+00:00",
+            "handshake_hash": "sha256:ddb38f1a62689d0c1f3f30c34064d0284bb62be0336cb4bf2248069dd4bd4fc0",
+            "identity": {
+              "mode": "openclaw",
+              "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+              "runtime": "BEAST",
+              "workspace_root": "."
+            },
+            "latency_budget": {
+              "cloud_escalation_policy": "escalate_only_unresolved_semantic_work",
+              "deadline_policy": "skip_optional_phase_before_overrun",
+              "preflight_budget_ms": 900,
+              "scout_budget_ms": 500
+            },
+            "operating_protocol": {
+              "hard_bounds": [
+                "Do not execute tools directly when BEAST requires approval.",
+                "Do not treat discovery-only MCP seeds as installed tools.",
+                "Do not expose raw secrets, prompts, paths, or source bodies in Commons evidence."
+              ],
+              "llama_loop": [
+                "Classify the task and desired safety posture.",
+                "Ask BEAST/Commons which adopted capability or crystal matches the task.",
+                "Prefer fused crystals and local tools before cloud calls.",
+                "Use ZeroClaw for planning when execution is unsafe or unnecessary.",
+                "Use OpenClaw for local inspection and approval-gated patch preparation.",
+                "Run verification gates and summarize receipts before claiming success.",
+                "Promote repeated successful patterns back into Commons/Forge."
+              ],
+              "tool_request_format": {
+                "approval_required": "true when writes/network/execution are needed",
+                "intent": "short task intent",
+                "needed_capability": "capability_id_or_role",
+                "risk": "low|medium|high",
+                "task_class": "routing label"
+              }
+            },
+            "session_id": "ses_0b419fe6401043cc",
+            "version": "1.1"
+          },
+          "skipped_phases": [
+            {
+              "phase": "tool_laziness",
+              "reason": "unavailable_or_deadline"
+            }
+          ],
+          "tool_laziness": {
+            "beast_object_type": "tool_laziness_recommendation",
+            "reason": "plugin unavailable or preflight deadline reached",
+            "summary": {
+              "candidate_count": 14,
+              "skip_count": 0
+            },
+            "tools_not_to_call": [],
+            "tools_to_call": [],
+            "tools_to_observe": [
+              {
+                "name": "meta_tool_commons"
+              },
+              {
+                "name": "capability_registry"
+              },
+              {
+                "name": "fused_crystal"
+              },
+              {
+                "name": "zeroclaw"
+              },
+              {
+                "name": "openclaw"
+              },
+              {
+                "name": "swarm"
+              },
+              {
+                "name": "pytest"
+              },
+              {
+                "name": "promotion_candidate"
+              },
+              {
+                "name": "zeroclaw_planner"
+              },
+              {
+                "name": "cartographer"
+              },
+              {
+                "name": "openclaw_inspector"
+              },
+              {
+                "name": "supervisor"
+              },
+              {
+                "name": "scribe"
+              },
+              {
+                "name": "promotion_scribe"
+              }
+            ]
+          },
+          "version": "1.0",
+          "within_budget": true
+        },
+        "profile": {
+          "allowed_risks": [
+            "read_only",
+            "advisory"
+          ],
+          "default_execution": "read_only_or_dry_run",
+          "description": "Local-first BEAST CLI profile for reasoning, planning, and safe read-only execution.",
+          "local_inference_first": true,
+          "mode": "openclaw"
+        },
+        "ready": true,
+        "session_handshake": {
+          "agent_awareness": {
+            "capability_registry": {
+              "count": 100,
+              "kinds": {
+                "cli": 14,
+                "database": 8,
+                "linter": 5,
+                "mcp_tool": 10,
+                "parser": 6,
+                "plugin": 9,
+                "provider": 23,
+                "route": 3,
+                "skill": 2,
+                "tool": 7,
+                "workflow": 13
+              },
+              "top_families": {
+                "agentic_cli": 8,
+                "canon": 1,
+                "chronicle": 2,
+                "diagnostics": 4,
+                "handoff": 4,
+                "learning": 4,
+                "promotion": 2,
+                "provider": 24,
+                "quality": 4,
+                "routing": 3,
+                "swarm": 2,
+                "tool_bus": 7
+              }
+            },
+            "commons": {
+              "adopted_count": 193,
+              "candidate_count": 194,
+              "candidate_summary": {
+                "discovery_mcp_tool_catalog": {
+                  "adopted": 148
+                },
+                "discovery_skill_manifest": {
+                  "adopted": 25
+                },
+                "local_swarm_commons": {
+                  "adopted": 20
+                },
+                "tiny_llama_live_e2e_gauntlet": {
+                  "proposed": 1
+                }
+              },
+              "evidence_count": 693,
+              "planes": [
+                {
+                  "evidence_count": 500,
+                  "plane": "swarm",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                },
+                {
+                  "evidence_count": 2,
+                  "plane": "cli",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                },
+                {
+                  "evidence_count": 173,
+                  "plane": "discovery",
+                  "safe_rate": 0.936416,
+                  "verified_rate": 0.0
+                },
+                {
+                  "evidence_count": 18,
+                  "plane": "other",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                }
+              ]
+            },
+            "crystal_claim_boundary": "system_amplification_not_base_model_weight_change",
+            "fused_crystal": {
+              "artifact": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/tiny_llama_crystal_amplification_gauntlet/llama_open_mcp_capability_registry_fusion.json",
+              "component_counts": {
+                "crystals": 8,
+                "meta_tools": 148,
+                "skills": 214,
+                "swarm_recipes": 20
+              },
+              "crypto_profile": {
+                "fallback": false,
+                "kem": "ML-KEM-768",
+                "provider": "liboqs",
+                "signature": "ML-DSA-65"
+              },
+              "crystal_credit_units": 1380,
+              "fusion_id": "fused_crystal_87369e5e59f914214393",
+              "name": "llama_open_mcp_capability_registry_crystal_orchestrator",
+              "seal_verified": true,
+              "task_class": "frontier_style_open_tool_software_orchestration",
+              "tokens_displaced_estimate": 221142
+            },
+            "knows_it_is_inside_beast": true,
+            "tiny_model_role": "intent_router_policy_summarizer",
+            "tool_authority": "request_tools_through_beast_never_bypass_gates"
+          },
+          "agent_contract": {
+            "avoid": [
+              "Do not reload context already present in the context packet.",
+              "Do not repeat low-value tool calls merely because they are available.",
+              "Do not bypass output governance, approval gates, or rollback.",
+              "Do not ask a cloud model to perform deterministic local compilation or verification."
+            ],
+            "do": [
+              "Treat BEAST artifacts as the source of truth for local state.",
+              "Use the selected provider for the assigned role, not as a universal model winner.",
+              "Ask cloud providers only for unresolved semantic decisions.",
+              "Prefer local verification, deterministic transforms, and bounded context.",
+              "Respect tool skip recommendations unless the active workflow marks a tool required."
+            ]
+          },
+          "agent_instruction": "You are operating inside BEAST. BEAST already supplies local workspace intelligence, Chronicle memory, Ollama scouting, tool-value history, provider economics, output governance, local patch compilation, verification, and rollback. You are not a standalone model: act as the intent router, policy follower, and compact summarizer over BEAST's adopted Commons tools, skills, Swarm recipes, and fused crystals. Commons currently reports 193 adopted candidates and 693 evidence rows. The active fused crystal is fused_crystal_87369e5e59f914214393 with 1380 internal credit units. Do not duplicate work BEAST has already completed. Respect required tools and learned skip recommendations. Use cloud inference only for unresolved semantic decisions. Keep local preflight within 900 ms and scout work within 500 ms.",
+          "available_help": [
+            "local workspace and Chronicle retrieval",
+            "Ollama scouting and bounded context ranking",
+            "Tool Laziness call suppression",
+            "Provider Economist role-aware routing",
+            "governed Action IR and local patch compilation",
+            "verification, rollback, and Chronicle evidence"
+          ],
+          "beast_object_type": "beast_session_handshake",
+          "candidate_tools": [
+            "capability_registry",
+            "cartographer",
+            "fused_crystal",
+            "meta_tool_commons",
+            "openclaw",
+            "openclaw_inspector",
+            "promotion_candidate",
+            "promotion_scribe",
+            "pytest",
+            "scribe",
+            "supervisor",
+            "swarm",
+            "zeroclaw",
+            "zeroclaw_planner"
+          ],
+          "created_at": "2026-06-21T21:30:41.049025+00:00",
+          "handshake_hash": "sha256:ddb38f1a62689d0c1f3f30c34064d0284bb62be0336cb4bf2248069dd4bd4fc0",
+          "identity": {
+            "mode": "openclaw",
+            "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+            "runtime": "BEAST",
+            "workspace_root": "."
+          },
+          "latency_budget": {
+            "cloud_escalation_policy": "escalate_only_unresolved_semantic_work",
+            "deadline_policy": "skip_optional_phase_before_overrun",
+            "preflight_budget_ms": 900,
+            "scout_budget_ms": 500
+          },
+          "operating_protocol": {
+            "hard_bounds": [
+              "Do not execute tools directly when BEAST requires approval.",
+              "Do not treat discovery-only MCP seeds as installed tools.",
+              "Do not expose raw secrets, prompts, paths, or source bodies in Commons evidence."
+            ],
+            "llama_loop": [
+              "Classify the task and desired safety posture.",
+              "Ask BEAST/Commons which adopted capability or crystal matches the task.",
+              "Prefer fused crystals and local tools before cloud calls.",
+              "Use ZeroClaw for planning when execution is unsafe or unnecessary.",
+              "Use OpenClaw for local inspection and approval-gated patch preparation.",
+              "Run verification gates and summarize receipts before claiming success.",
+              "Promote repeated successful patterns back into Commons/Forge."
+            ],
+            "tool_request_format": {
+              "approval_required": "true when writes/network/execution are needed",
+              "intent": "short task intent",
+              "needed_capability": "capability_id_or_role",
+              "risk": "low|medium|high",
+              "task_class": "routing label"
+            }
+          },
+          "session_id": "ses_0b419fe6401043cc",
+          "version": "1.1"
+        },
+        "suppressed_actions": [],
+        "swarm_binding": {
+          "available": false,
+          "execution_capability": "advisory",
+          "profile_binding": {
+            "coordinator": "openclaw",
+            "mcp_policy": "brokered_read_only_or_approved",
+            "mode": "openclaw",
+            "model_policy": "ollama_first"
+          },
+          "role_lanes": {
+            "cartographer": {
+              "default_risk": "read_only",
+              "lane": "cartographer",
+              "purpose": "context, graph, memory, schema, exact files"
+            },
+            "compressor": {
+              "default_risk": "read_only",
+              "lane": "compressor",
+              "purpose": "chunk/reduce/package context"
+            },
+            "critic": {
+              "default_risk": "advisory",
+              "lane": "critic",
+              "purpose": "targeted review when risk or failure warrants it"
+            },
+            "scribe": {
+              "default_risk": "write_safe_record",
+              "lane": "scribe",
+              "purpose": "Chronicle and promotion candidate records"
+            },
+            "sentinel": {
+              "default_risk": "governance",
+              "lane": "sentinel",
+              "purpose": "policy, credentials, circuits, approvals, secrets"
+            },
+            "verifier": {
+              "default_risk": "read_only",
+              "lane": "verifier",
+              "purpose": "tests, lint, syntax, static checks"
+            }
+          },
+          "roles": [],
+          "status": "not_supplied",
+          "used": false
+        },
+        "swarm_governance": {
+          "profile": {
+            "default_execution": "planning_and_inspection",
+            "description": "Read-only/local-first planning and inspection.",
+            "execution_capability": "read_only_local_first",
+            "profile": "openclaw",
+            "requires_approval": false,
+            "role": "local_inspector"
+          },
+          "role_lanes": {
+            "cartographer": {
+              "default_risk": "read_only",
+              "lane": "cartographer",
+              "purpose": "context, graph, memory, schema, exact files"
+            },
+            "compressor": {
+              "default_risk": "read_only",
+              "lane": "compressor",
+              "purpose": "chunk/reduce/package context"
+            },
+            "critic": {
+              "default_risk": "advisory",
+              "lane": "critic",
+              "purpose": "targeted review when risk or failure warrants it"
+            },
+            "scribe": {
+              "default_risk": "write_safe_record",
+              "lane": "scribe",
+              "purpose": "Chronicle and promotion candidate records"
+            },
+            "sentinel": {
+              "default_risk": "governance",
+              "lane": "sentinel",
+              "purpose": "policy, credentials, circuits, approvals, secrets"
+            },
+            "verifier": {
+              "default_risk": "read_only",
+              "lane": "verifier",
+              "purpose": "tests, lint, syntax, static checks"
+            }
+          },
+          "routing": {
+            "approval_required": false,
+            "coordinator": "hermes",
+            "local_first": true,
+            "planning_only": false
+          }
+        },
+        "version": "1.0"
+      },
+      "reason": "BEAST CLI executor completed",
+      "results": [],
+      "status": "dry_run",
+      "summary": {
+        "action_count": 0,
+        "blocked_count": 0,
+        "executed_count": 0
+      },
+      "version": "1.0"
+    },
+    "plan": {
+      "actions": [],
+      "beast_object_type": "beast_cli_plan",
+      "canon": {
+        "status": "unavailable",
+        "valid": true
+      },
+      "created_at": "2026-06-21T21:30:41.033409+00:00",
+      "local_inference": {
+        "available": false,
+        "source": "none",
+        "summary": "Ollama scout unavailable"
+      },
+      "local_insight": {
+        "available": false,
+        "evidence_count": 0,
+        "top_insight": null
+      },
+      "mode": "openclaw",
+      "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+      "plan_hash": "sha256:8a10c12e3ba821d24ea19e86b06a5fd6bf69aa03d95aad66e338a37a7850abc7",
+      "preflight": {
+        "beast_object_type": "beast_local_preflight",
+        "budget_ms": 900,
+        "budget_status": "within_budget",
+        "elapsed_ms": 25.208,
+        "phase_timings_ms": {
+          "ollama_scout_ms": 0.007,
+          "provider_economist_ms": 0.001,
+          "session_handshake_ms": 25.181,
+          "tool_laziness_ms": 0.005
+        },
+        "provider_economist": {
+          "beast_object_type": "provider_economist_decision",
+          "decision": "not_evaluated",
+          "excluded": [],
+          "ranked": [],
+          "reason": "no provider candidates, plugin unavailable, or deadline reached",
+          "selected": null
+        },
+        "scout": {
+          "available": false,
+          "source": "none",
+          "summary": "Ollama scout unavailable"
+        },
+        "scout_budget_ms": 500,
+        "selected_provider": null,
+        "session_handshake": {
+          "agent_awareness": {
+            "capability_registry": {
+              "count": 100,
+              "kinds": {
+                "cli": 14,
+                "database": 8,
+                "linter": 5,
+                "mcp_tool": 10,
+                "parser": 6,
+                "plugin": 9,
+                "provider": 23,
+                "route": 3,
+                "skill": 2,
+                "tool": 7,
+                "workflow": 13
+              },
+              "top_families": {
+                "agentic_cli": 8,
+                "canon": 1,
+                "chronicle": 2,
+                "diagnostics": 4,
+                "handoff": 4,
+                "learning": 4,
+                "promotion": 2,
+                "provider": 24,
+                "quality": 4,
+                "routing": 3,
+                "swarm": 2,
+                "tool_bus": 7
+              }
+            },
+            "commons": {
+              "adopted_count": 193,
+              "candidate_count": 194,
+              "candidate_summary": {
+                "discovery_mcp_tool_catalog": {
+                  "adopted": 148
+                },
+                "discovery_skill_manifest": {
+                  "adopted": 25
+                },
+                "local_swarm_commons": {
+                  "adopted": 20
+                },
+                "tiny_llama_live_e2e_gauntlet": {
+                  "proposed": 1
+                }
+              },
+              "evidence_count": 693,
+              "planes": [
+                {
+                  "evidence_count": 500,
+                  "plane": "swarm",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                },
+                {
+                  "evidence_count": 2,
+                  "plane": "cli",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                },
+                {
+                  "evidence_count": 173,
+                  "plane": "discovery",
+                  "safe_rate": 0.936416,
+                  "verified_rate": 0.0
+                },
+                {
+                  "evidence_count": 18,
+                  "plane": "other",
+                  "safe_rate": 1.0,
+                  "verified_rate": 1.0
+                }
+              ]
+            },
+            "crystal_claim_boundary": "system_amplification_not_base_model_weight_change",
+            "fused_crystal": {
+              "artifact": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/tiny_llama_crystal_amplification_gauntlet/llama_open_mcp_capability_registry_fusion.json",
+              "component_counts": {
+                "crystals": 8,
+                "meta_tools": 148,
+                "skills": 214,
+                "swarm_recipes": 20
+              },
+              "crypto_profile": {
+                "fallback": false,
+                "kem": "ML-KEM-768",
+                "provider": "liboqs",
+                "signature": "ML-DSA-65"
+              },
+              "crystal_credit_units": 1380,
+              "fusion_id": "fused_crystal_87369e5e59f914214393",
+              "name": "llama_open_mcp_capability_registry_crystal_orchestrator",
+              "seal_verified": true,
+              "task_class": "frontier_style_open_tool_software_orchestration",
+              "tokens_displaced_estimate": 221142
+            },
+            "knows_it_is_inside_beast": true,
+            "tiny_model_role": "intent_router_policy_summarizer",
+            "tool_authority": "request_tools_through_beast_never_bypass_gates"
+          },
+          "agent_contract": {
+            "avoid": [
+              "Do not reload context already present in the context packet.",
+              "Do not repeat low-value tool calls merely because they are available.",
+              "Do not bypass output governance, approval gates, or rollback.",
+              "Do not ask a cloud model to perform deterministic local compilation or verification."
+            ],
+            "do": [
+              "Treat BEAST artifacts as the source of truth for local state.",
+              "Use the selected provider for the assigned role, not as a universal model winner.",
+              "Ask cloud providers only for unresolved semantic decisions.",
+              "Prefer local verification, deterministic transforms, and bounded context.",
+              "Respect tool skip recommendations unless the active workflow marks a tool required."
+            ]
+          },
+          "agent_instruction": "You are operating inside BEAST. BEAST already supplies local workspace intelligence, Chronicle memory, Ollama scouting, tool-value history, provider economics, output governance, local patch compilation, verification, and rollback. You are not a standalone model: act as the intent router, policy follower, and compact summarizer over BEAST's adopted Commons tools, skills, Swarm recipes, and fused crystals. Commons currently reports 193 adopted candidates and 693 evidence rows. The active fused crystal is fused_crystal_87369e5e59f914214393 with 1380 internal credit units. Do not duplicate work BEAST has already completed. Respect required tools and learned skip recommendations. Use cloud inference only for unresolved semantic decisions. Keep local preflight within 900 ms and scout work within 500 ms.",
+          "available_help": [
+            "local workspace and Chronicle retrieval",
+            "Ollama scouting and bounded context ranking",
+            "Tool Laziness call suppression",
+            "Provider Economist role-aware routing",
+            "governed Action IR and local patch compilation",
+            "verification, rollback, and Chronicle evidence"
+          ],
+          "beast_object_type": "beast_session_handshake",
+          "candidate_tools": [
+            "capability_registry",
+            "cartographer",
+            "fused_crystal",
+            "meta_tool_commons",
+            "openclaw",
+            "openclaw_inspector",
+            "promotion_candidate",
+            "promotion_scribe",
+            "pytest",
+            "scribe",
+            "supervisor",
+            "swarm",
+            "zeroclaw",
+            "zeroclaw_planner"
+          ],
+          "created_at": "2026-06-21T21:30:41.033256+00:00",
+          "handshake_hash": "sha256:adb1ccae71c2ef3ea6525e662028a5c779e8846d6d192dba07add077fc360d27",
+          "identity": {
+            "mode": "openclaw",
+            "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+            "runtime": "BEAST",
+            "workspace_root": "."
+          },
+          "latency_budget": {
+            "cloud_escalation_policy": "escalate_only_unresolved_semantic_work",
+            "deadline_policy": "skip_optional_phase_before_overrun",
+            "preflight_budget_ms": 900,
+            "scout_budget_ms": 500
+          },
+          "operating_protocol": {
+            "hard_bounds": [
+              "Do not execute tools directly when BEAST requires approval.",
+              "Do not treat discovery-only MCP seeds as installed tools.",
+              "Do not expose raw secrets, prompts, paths, or source bodies in Commons evidence."
+            ],
+            "llama_loop": [
+              "Classify the task and desired safety posture.",
+              "Ask BEAST/Commons which adopted capability or crystal matches the task.",
+              "Prefer fused crystals and local tools before cloud calls.",
+              "Use ZeroClaw for planning when execution is unsafe or unnecessary.",
+              "Use OpenClaw for local inspection and approval-gated patch preparation.",
+              "Run verification gates and summarize receipts before claiming success.",
+              "Promote repeated successful patterns back into Commons/Forge."
+            ],
+            "tool_request_format": {
+              "approval_required": "true when writes/network/execution are needed",
+              "intent": "short task intent",
+              "needed_capability": "capability_id_or_role",
+              "risk": "low|medium|high",
+              "task_class": "routing label"
+            }
+          },
+          "session_id": "ses_70fc2badedca46ae",
+          "version": "1.1"
+        },
+        "skipped_phases": [
+          {
+            "phase": "tool_laziness",
+            "reason": "unavailable_or_deadline"
+          }
+        ],
+        "tool_laziness": {
+          "beast_object_type": "tool_laziness_recommendation",
+          "reason": "plugin unavailable or preflight deadline reached",
+          "summary": {
+            "candidate_count": 14,
+            "skip_count": 0
+          },
+          "tools_not_to_call": [],
+          "tools_to_call": [],
+          "tools_to_observe": [
+            {
+              "name": "meta_tool_commons"
+            },
+            {
+              "name": "capability_registry"
+            },
+            {
+              "name": "fused_crystal"
+            },
+            {
+              "name": "zeroclaw"
+            },
+            {
+              "name": "openclaw"
+            },
+            {
+              "name": "swarm"
+            },
+            {
+              "name": "pytest"
+            },
+            {
+              "name": "promotion_candidate"
+            },
+            {
+              "name": "zeroclaw_planner"
+            },
+            {
+              "name": "cartographer"
+            },
+            {
+              "name": "openclaw_inspector"
+            },
+            {
+              "name": "supervisor"
+            },
+            {
+              "name": "scribe"
+            },
+            {
+              "name": "promotion_scribe"
+            }
+          ]
+        },
+        "version": "1.0",
+        "within_budget": true
+      },
+      "profile": {
+        "allowed_risks": [
+          "read_only",
+          "advisory"
+        ],
+        "default_execution": "read_only_or_dry_run",
+        "description": "Local-first BEAST CLI profile for reasoning, planning, and safe read-only execution.",
+        "local_inference_first": true,
+        "mode": "openclaw"
+      },
+      "ready": true,
+      "session_handshake": {
+        "agent_awareness": {
+          "capability_registry": {
+            "count": 100,
+            "kinds": {
+              "cli": 14,
+              "database": 8,
+              "linter": 5,
+              "mcp_tool": 10,
+              "parser": 6,
+              "plugin": 9,
+              "provider": 23,
+              "route": 3,
+              "skill": 2,
+              "tool": 7,
+              "workflow": 13
+            },
+            "top_families": {
+              "agentic_cli": 8,
+              "canon": 1,
+              "chronicle": 2,
+              "diagnostics": 4,
+              "handoff": 4,
+              "learning": 4,
+              "promotion": 2,
+              "provider": 24,
+              "quality": 4,
+              "routing": 3,
+              "swarm": 2,
+              "tool_bus": 7
+            }
+          },
+          "commons": {
+            "adopted_count": 193,
+            "candidate_count": 194,
+            "candidate_summary": {
+              "discovery_mcp_tool_catalog": {
+                "adopted": 148
+              },
+              "discovery_skill_manifest": {
+                "adopted": 25
+              },
+              "local_swarm_commons": {
+                "adopted": 20
+              },
+              "tiny_llama_live_e2e_gauntlet": {
+                "proposed": 1
+              }
+            },
+            "evidence_count": 693,
+            "planes": [
+              {
+                "evidence_count": 500,
+                "plane": "swarm",
+                "safe_rate": 1.0,
+                "verified_rate": 1.0
+              },
+              {
+                "evidence_count": 2,
+                "plane": "cli",
+                "safe_rate": 1.0,
+                "verified_rate": 1.0
+              },
+              {
+                "evidence_count": 173,
+                "plane": "discovery",
+                "safe_rate": 0.936416,
+                "verified_rate": 0.0
+              },
+              {
+                "evidence_count": 18,
+                "plane": "other",
+                "safe_rate": 1.0,
+                "verified_rate": 1.0
+              }
+            ]
+          },
+          "crystal_claim_boundary": "system_amplification_not_base_model_weight_change",
+          "fused_crystal": {
+            "artifact": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/tiny_llama_crystal_amplification_gauntlet/llama_open_mcp_capability_registry_fusion.json",
+            "component_counts": {
+              "crystals": 8,
+              "meta_tools": 148,
+              "skills": 214,
+              "swarm_recipes": 20
+            },
+            "crypto_profile": {
+              "fallback": false,
+              "kem": "ML-KEM-768",
+              "provider": "liboqs",
+              "signature": "ML-DSA-65"
+            },
+            "crystal_credit_units": 1380,
+            "fusion_id": "fused_crystal_87369e5e59f914214393",
+            "name": "llama_open_mcp_capability_registry_crystal_orchestrator",
+            "seal_verified": true,
+            "task_class": "frontier_style_open_tool_software_orchestration",
+            "tokens_displaced_estimate": 221142
+          },
+          "knows_it_is_inside_beast": true,
+          "tiny_model_role": "intent_router_policy_summarizer",
+          "tool_authority": "request_tools_through_beast_never_bypass_gates"
+        },
+        "agent_contract": {
+          "avoid": [
+            "Do not reload context already present in the context packet.",
+            "Do not repeat low-value tool calls merely because they are available.",
+            "Do not bypass output governance, approval gates, or rollback.",
+            "Do not ask a cloud model to perform deterministic local compilation or verification."
+          ],
+          "do": [
+            "Treat BEAST artifacts as the source of truth for local state.",
+            "Use the selected provider for the assigned role, not as a universal model winner.",
+            "Ask cloud providers only for unresolved semantic decisions.",
+            "Prefer local verification, deterministic transforms, and bounded context.",
+            "Respect tool skip recommendations unless the active workflow marks a tool required."
+          ]
+        },
+        "agent_instruction": "You are operating inside BEAST. BEAST already supplies local workspace intelligence, Chronicle memory, Ollama scouting, tool-value history, provider economics, output governance, local patch compilation, verification, and rollback. You are not a standalone model: act as the intent router, policy follower, and compact summarizer over BEAST's adopted Commons tools, skills, Swarm recipes, and fused crystals. Commons currently reports 193 adopted candidates and 693 evidence rows. The active fused crystal is fused_crystal_87369e5e59f914214393 with 1380 internal credit units. Do not duplicate work BEAST has already completed. Respect required tools and learned skip recommendations. Use cloud inference only for unresolved semantic decisions. Keep local preflight within 900 ms and scout work within 500 ms.",
+        "available_help": [
+          "local workspace and Chronicle retrieval",
+          "Ollama scouting and bounded context ranking",
+          "Tool Laziness call suppression",
+          "Provider Economist role-aware routing",
+          "governed Action IR and local patch compilation",
+          "verification, rollback, and Chronicle evidence"
+        ],
+        "beast_object_type": "beast_session_handshake",
+        "candidate_tools": [
+          "capability_registry",
+          "cartographer",
+          "fused_crystal",
+          "meta_tool_commons",
+          "openclaw",
+          "openclaw_inspector",
+          "promotion_candidate",
+          "promotion_scribe",
+          "pytest",
+          "scribe",
+          "supervisor",
+          "swarm",
+          "zeroclaw",
+          "zeroclaw_planner"
+        ],
+        "created_at": "2026-06-21T21:30:41.033256+00:00",
+        "handshake_hash": "sha256:adb1ccae71c2ef3ea6525e662028a5c779e8846d6d192dba07add077fc360d27",
+        "identity": {
+          "mode": "openclaw",
+          "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+          "runtime": "BEAST",
+          "workspace_root": "."
+        },
+        "latency_budget": {
+          "cloud_escalation_policy": "escalate_only_unresolved_semantic_work",
+          "deadline_policy": "skip_optional_phase_before_overrun",
+          "preflight_budget_ms": 900,
+          "scout_budget_ms": 500
+        },
+        "operating_protocol": {
+          "hard_bounds": [
+            "Do not execute tools directly when BEAST requires approval.",
+            "Do not treat discovery-only MCP seeds as installed tools.",
+            "Do not expose raw secrets, prompts, paths, or source bodies in Commons evidence."
+          ],
+          "llama_loop": [
+            "Classify the task and desired safety posture.",
+            "Ask BEAST/Commons which adopted capability or crystal matches the task.",
+            "Prefer fused crystals and local tools before cloud calls.",
+            "Use ZeroClaw for planning when execution is unsafe or unnecessary.",
+            "Use OpenClaw for local inspection and approval-gated patch preparation.",
+            "Run verification gates and summarize receipts before claiming success.",
+            "Promote repeated successful patterns back into Commons/Forge."
+          ],
+          "tool_request_format": {
+            "approval_required": "true when writes/network/execution are needed",
+            "intent": "short task intent",
+            "needed_capability": "capability_id_or_role",
+            "risk": "low|medium|high",
+            "task_class": "routing label"
+          }
+        },
+        "session_id": "ses_70fc2badedca46ae",
+        "version": "1.1"
+      },
+      "suppressed_actions": [],
+      "swarm_binding": {
+        "available": false,
+        "execution_capability": "advisory",
+        "profile_binding": {
+          "coordinator": "openclaw",
+          "mcp_policy": "brokered_read_only_or_approved",
+          "mode": "openclaw",
+          "model_policy": "ollama_first"
+        },
+        "role_lanes": {
+          "cartographer": {
+            "default_risk": "read_only",
+            "lane": "cartographer",
+            "purpose": "context, graph, memory, schema, exact files"
+          },
+          "compressor": {
+            "default_risk": "read_only",
+            "lane": "compressor",
+            "purpose": "chunk/reduce/package context"
+          },
+          "critic": {
+            "default_risk": "advisory",
+            "lane": "critic",
+            "purpose": "targeted review when risk or failure warrants it"
+          },
+          "scribe": {
+            "default_risk": "write_safe_record",
+            "lane": "scribe",
+            "purpose": "Chronicle and promotion candidate records"
+          },
+          "sentinel": {
+            "default_risk": "governance",
+            "lane": "sentinel",
+            "purpose": "policy, credentials, circuits, approvals, secrets"
+          },
+          "verifier": {
+            "default_risk": "read_only",
+            "lane": "verifier",
+            "purpose": "tests, lint, syntax, static checks"
+          }
+        },
+        "roles": [],
+        "status": "not_supplied",
+        "used": false
+      },
+      "swarm_governance": {
+        "profile": {
+          "default_execution": "planning_and_inspection",
+          "description": "Read-only/local-first planning and inspection.",
+          "execution_capability": "read_only_local_first",
+          "profile": "openclaw",
+          "requires_approval": false,
+          "role": "local_inspector"
+        },
+        "role_lanes": {
+          "cartographer": {
+            "default_risk": "read_only",
+            "lane": "cartographer",
+            "purpose": "context, graph, memory, schema, exact files"
+          },
+          "compressor": {
+            "default_risk": "read_only",
+            "lane": "compressor",
+            "purpose": "chunk/reduce/package context"
+          },
+          "critic": {
+            "default_risk": "advisory",
+            "lane": "critic",
+            "purpose": "targeted review when risk or failure warrants it"
+          },
+          "scribe": {
+            "default_risk": "write_safe_record",
+            "lane": "scribe",
+            "purpose": "Chronicle and promotion candidate records"
+          },
+          "sentinel": {
+            "default_risk": "governance",
+            "lane": "sentinel",
+            "purpose": "policy, credentials, circuits, approvals, secrets"
+          },
+          "verifier": {
+            "default_risk": "read_only",
+            "lane": "verifier",
+            "purpose": "tests, lint, syntax, static checks"
+          }
+        },
+        "routing": {
+          "approval_required": false,
+          "coordinator": "hermes",
+          "local_first": true,
+          "planning_only": false
+        }
+      },
+      "version": "1.0"
+    }
+  },
+  "commons_evidence_plane": {
+    "adoption_summary": {
+      "adopted": 193
+    },
+    "authority": "advisory_local_policy_decides",
+    "beast_object_type": "meta_tool_commons_evidence_plane",
+    "candidate_summary": {
+      "discovery_mcp_tool_catalog": {
+        "adopted": 148
+      },
+      "discovery_skill_manifest": {
+        "adopted": 25
+      },
+      "local_swarm_commons": {
+        "adopted": 20
+      },
+      "tiny_llama_live_e2e_gauntlet": {
+        "proposed": 1
+      }
+    },
+    "evidence_count": 693,
+    "latest_at": "2026-06-21T21:11:48.630124+00:00",
+    "plane_count": 4,
+    "plane_hash": "sha256:0c2334d5422454f3bdeedc9a6dbd4770b0062a97e84cf7af93cda5ccc11d2acc",
+    "planes": [
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 500,
+        "hidden_clean_count": 500,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-06-21T20:21:00.931847+00:00",
+        "local_scope_count": 500,
+        "plane": "swarm",
+        "rescued_count": 500,
+        "rescued_rate": 1.0,
+        "safe_count": 500,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 100,
+            "name": "cartographer"
+          },
+          {
+            "count": 100,
+            "name": "compressor"
+          },
+          {
+            "count": 100,
+            "name": "hermes"
+          },
+          {
+            "count": 100,
+            "name": "scribe"
+          },
+          {
+            "count": 100,
+            "name": "supervisor"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 230,
+            "name": "small_patch"
+          },
+          {
+            "count": 115,
+            "name": "provider_debugging"
+          },
+          {
+            "count": 100,
+            "name": "refactor_request"
+          },
+          {
+            "count": 55,
+            "name": "general_software_task"
+          }
+        ],
+        "useful_count": 500,
+        "useful_rate": 1.0,
+        "verified_count": 500,
+        "verified_rate": 1.0
+      },
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 2,
+        "hidden_clean_count": 2,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-06-21T21:11:48.630124+00:00",
+        "local_scope_count": 2,
+        "plane": "cli",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 2,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 2,
+            "name": "cartographer"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 2,
+            "name": "agentic_cli"
+          }
+        ],
+        "useful_count": 2,
+        "useful_rate": 1.0,
+        "verified_count": 2,
+        "verified_rate": 1.0
+      },
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 173,
+        "hidden_clean_count": 0,
+        "hidden_clean_rate": 0.0,
+        "latest_at": "2026-06-21T21:07:13.705138+00:00",
+        "local_scope_count": 173,
+        "plane": "discovery",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 162,
+        "safe_rate": 0.936416,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 57,
+            "name": "tool_router"
+          },
+          {
+            "count": 34,
+            "name": "router"
+          },
+          {
+            "count": 27,
+            "name": "orchestrator"
+          },
+          {
+            "count": 25,
+            "name": "skill_router"
+          },
+          {
+            "count": 18,
+            "name": "verifier"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 36,
+            "name": "beast_mcp_runtime_tool"
+          },
+          {
+            "count": 25,
+            "name": "request_routing"
+          },
+          {
+            "count": 24,
+            "name": "provider"
+          },
+          {
+            "count": 8,
+            "name": "agentic_cli"
+          },
+          {
+            "count": 7,
+            "name": "tool_bus"
+          }
+        ],
+        "useful_count": 173,
+        "useful_rate": 1.0,
+        "verified_count": 0,
+        "verified_rate": 0.0
+      },
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 18,
+        "hidden_clean_count": 18,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-06-21T15:20:47.050749+00:00",
+        "local_scope_count": 18,
+        "plane": "other",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 18,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 18,
+            "name": "tool_selector"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 18,
+            "name": "operator_console"
+          }
+        ],
+        "useful_count": 18,
+        "useful_rate": 1.0,
+        "verified_count": 18,
+        "verified_rate": 1.0
+      }
+    ],
+    "privacy_policy": "aggregate_counts_and_hashes_only_redacted_inputs",
+    "version": "1.0"
+  },
+  "commons_rank": {
+    "anti_gaming": {
+      "contributor_sample_cap": 3,
+      "schema_pinning": true,
+      "suppressed_samples": 0
+    },
+    "authority": "advisory_global_prior_local_policy_decides",
+    "beast_object_type": "meta_tool_commons_ranking",
+    "count": 9,
+    "ranking_policy": "contextual_global_prior_local_posterior",
+    "rankings": [
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "cli_openclaw_cartographer_read_app_main_py_990f7e41",
+        "confidence": 0.285714,
+        "global_samples": 0,
+        "hidden_clean_rate": 1.0,
+        "local_samples": 2,
+        "rescue_rate": 0.0,
+        "role": "cartographer",
+        "safety_rate": 1.0,
+        "sample_size": 2,
+        "schema_hash": "sha256:a755a6ca3e243b688741e72fe758557e51b939074f02511cb4cf29494cf73bc9",
+        "score": 0.642857,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 1.0,
+        "version": "beast-cli-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:mcp_tool_beast_openclaw_execute",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:0a5669f207dc7cb3810f3119c029c147536a1cb4e7aaa2b443bdcfd07653b706",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:mcp_tool_beast_openclaw_plan",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:477297914facd4136353793f71099a36dc131538094169e5ace30a5b0b3c6027",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:mcp_tool_beast_session_handshake",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:558306141e2312986b81f952f9b123f88b305eba02990ab1885e8e147ff51539",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:cli_zeroclaw_plan",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:7f7c21ff71c203fbe5c4bc28b3867317bd12c0c0a2dc032add1006a54d04b698",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:cli_nemoclaw_plan",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:7c55fb4f2cd84db50942255763589cff53928d17e39dedb7c3ce0366b0efd51c",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:cli_openclaw_execute",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:7ba901c92342e003b5445c6d4ae68180274939ce371177144fade8d94586e409",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:cli_openclaw_plan",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 1.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:0cf3190beff5bff00f4a1542675a1093e654e0a4e476fe1d451e4909c72a8209",
+        "score": 0.2625,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      },
+      {
+        "avg_cost_usd": 0.0,
+        "avg_latency_ms": 0.0,
+        "capability_id": "mcp_tool_catalog:cli_nemoclaw_execute",
+        "confidence": 0.166667,
+        "global_samples": 0,
+        "hidden_clean_rate": 0.0,
+        "local_samples": 1,
+        "rescue_rate": 0.0,
+        "role": "orchestrator",
+        "safety_rate": 0.0,
+        "sample_size": 1,
+        "schema_hash": "sha256:a734344a58ccf058edf97b751a3d3032701f753d752cfba564cf45d6d1e84c22",
+        "score": 0.175,
+        "task_class": "agentic_cli",
+        "usefulness_rate": 1.0,
+        "verified_rate": 0.0,
+        "version": "capability-registry-v1"
+      }
+    ],
+    "scope": {
+      "role": "all",
+      "task_class": "agentic_cli"
+    },
+    "version": "1.0"
+  },
+  "promotion_candidate": {
+    "auto_adopted": false,
+    "candidate": {
+      "action": {
+        "execution_policy": "verify_before_promote",
+        "requires_subagents": [
+          "zeroclaw_planner",
+          "cartographer",
+          "openclaw_inspector",
+          "supervisor",
+          "scribe",
+          "promotion_scribe"
+        ],
+        "type": "tiny_llama_beast_e2e_orchestration"
+      },
+      "evidence_hashes": [],
+      "kind": "skill_recipe",
+      "name": "tiny_llama_live_e2e_orchestration_recipe",
+      "pattern": {
+        "gates": [
+          "no_cloud_until_local_evidence",
+          "approval_before_write",
+          "verification_gate",
+          "receipt_required"
+        ],
+        "route": [
+          "meta_tool_commons",
+          "capability_registry",
+          "fused_crystal",
+          "zeroclaw",
+          "openclaw",
+          "swarm",
+          "pytest",
+          "promotion_candidate"
+        ],
+        "subagents": [
+          "zeroclaw_planner",
+          "cartographer",
+          "openclaw_inspector",
+          "supervisor",
+          "scribe",
+          "promotion_scribe"
+        ],
+        "task_class": "agentic_cli"
+      },
+      "risk_class": "medium",
+      "role": "tiny_llama_policy_head",
+      "schema_hash": "sha256:005453b4bd348c02b28005609dd1a2a86d69c56a173e82dc489b3a648c97afa8",
+      "source_candidate_id": null,
+      "task_class": "agentic_cli",
+      "version": "1.0"
+    },
+    "candidate_id": "commons_7182b15b46a5eb4210f0",
+    "status": "proposed"
+  },
+  "swarm": {
+    "created_at": "2026-06-21T21:30:40.994200+00:00",
+    "events": [
+      {
+        "created_at": "2026-06-21T21:30:40.994251+00:00",
+        "decision": "role_briefs_routed",
+        "details": {
+          "plan_shape": [
+            {
+              "action": "route_role_briefs",
+              "profile": "openclaw",
+              "role": "hermes"
+            },
+            {
+              "action": "select_relevant_context",
+              "role": "cartographer"
+            },
+            {
+              "action": "fit_context_budget",
+              "role": "compressor"
+            },
+            {
+              "action": "check_success_criteria",
+              "role": "supervisor"
+            },
+            {
+              "action": "record_chronicle_and_promotion_signal",
+              "role": "scribe"
+            }
+          ],
+          "profile": {
+            "default_execution": "planning_and_inspection",
+            "description": "Read-only/local-first planning and inspection.",
+            "execution_capability": "read_only_local_first",
+            "profile": "openclaw",
+            "requires_approval": false,
+            "role": "local_inspector"
+          },
+          "role_lanes": [
+            {
+              "default_risk": "read_only",
+              "lane": "cartographer",
+              "purpose": "context, graph, memory, schema, exact files"
+            },
+            {
+              "default_risk": "read_only",
+              "lane": "compressor",
+              "purpose": "chunk/reduce/package context"
+            },
+            {
+              "default_risk": "governance",
+              "lane": "sentinel",
+              "purpose": "policy, credentials, circuits, approvals, secrets"
+            },
+            {
+              "default_risk": "read_only",
+              "lane": "verifier",
+              "purpose": "tests, lint, syntax, static checks"
+            },
+            {
+              "default_risk": "write_safe_record",
+              "lane": "scribe",
+              "purpose": "Chronicle and promotion candidate records"
+            },
+            {
+              "default_risk": "advisory",
+              "lane": "critic",
+              "purpose": "targeted review when risk or failure warrants it"
+            }
+          ]
+        },
+        "role": "hermes",
+        "state": "planned"
+      },
+      {
+        "created_at": "2026-06-21T21:30:40.994264+00:00",
+        "decision": "plan_selected",
+        "details": {
+          "steps": [
+            {
+              "action": "route_role_briefs",
+              "profile": "openclaw",
+              "role": "hermes"
+            },
+            {
+              "action": "select_relevant_context",
+              "role": "cartographer"
+            },
+            {
+              "action": "fit_context_budget",
+              "role": "compressor"
+            },
+            {
+              "action": "check_success_criteria",
+              "role": "supervisor"
+            },
+            {
+              "action": "record_chronicle_and_promotion_signal",
+              "role": "scribe"
+            }
+          ],
+          "task_type": "agentic_cli"
+        },
+        "role": "conductor",
+        "state": "planned"
+      },
+      {
+        "created_at": "2026-06-21T21:30:40.994282+00:00",
+        "decision": "gates_evaluated",
+        "details": {
+          "gates": [
+            {
+              "decision": "approval_required",
+              "name": "openclaw_read_only_boundary",
+              "reason": "Openclaw is read-only/local-first; write or shell work needs approval"
+            }
+          ],
+          "profile": "openclaw",
+          "risk_level": "medium"
+        },
+        "role": "sentinel",
+        "state": "gated"
+      },
+      {
+        "created_at": "2026-06-21T21:30:40.994301+00:00",
+        "decision": "approval_required",
+        "details": {
+          "approval_gate": {
+            "decision": "approval_required",
+            "name": "openclaw_read_only_boundary",
+            "reason": "Openclaw is read-only/local-first; write or shell work needs approval"
+          },
+          "blocked_gate": null
+        },
+        "role": "supervisor",
+        "state": "blocked"
+      }
+    ],
+    "gates": [
+      {
+        "decision": "approval_required",
+        "name": "openclaw_read_only_boundary",
+        "reason": "Openclaw is read-only/local-first; write or shell work needs approval"
+      }
+    ],
+    "metadata": {
+      "execution_profile": {
+        "default_execution": "planning_and_inspection",
+        "description": "Read-only/local-first planning and inspection.",
+        "execution_capability": "read_only_local_first",
+        "profile": "openclaw",
+        "requires_approval": false,
+        "role": "local_inspector"
+      },
+      "role_lanes": [
+        {
+          "default_risk": "read_only",
+          "lane": "cartographer",
+          "purpose": "context, graph, memory, schema, exact files"
+        },
+        {
+          "default_risk": "read_only",
+          "lane": "compressor",
+          "purpose": "chunk/reduce/package context"
+        },
+        {
+          "default_risk": "governance",
+          "lane": "sentinel",
+          "purpose": "policy, credentials, circuits, approvals, secrets"
+        },
+        {
+          "default_risk": "read_only",
+          "lane": "verifier",
+          "purpose": "tests, lint, syntax, static checks"
+        },
+        {
+          "default_risk": "write_safe_record",
+          "lane": "scribe",
+          "purpose": "Chronicle and promotion candidate records"
+        },
+        {
+          "default_risk": "advisory",
+          "lane": "critic",
+          "purpose": "targeted review when risk or failure warrants it"
+        }
+      ],
+      "source": "tiny_llama_live_e2e",
+      "tiny_route": [
+        "meta_tool_commons",
+        "capability_registry",
+        "fused_crystal",
+        "zeroclaw",
+        "openclaw",
+        "swarm",
+        "pytest",
+        "promotion_candidate"
+      ],
+      "tiny_subagents": [
+        "zeroclaw_planner",
+        "cartographer",
+        "openclaw_inspector",
+        "supervisor",
+        "scribe",
+        "promotion_scribe"
+      ]
+    },
+    "objective": "Diagnose whether tiny Llama can use BEAST awareness, Commons, Swarm, OpenClaw-style planning, verification, and promotion without a cloud model.",
+    "plan": [
+      {
+        "action": "route_role_briefs",
+        "profile": "openclaw",
+        "role": "hermes"
+      },
+      {
+        "action": "select_relevant_context",
+        "role": "cartographer"
+      },
+      {
+        "action": "fit_context_budget",
+        "role": "compressor"
+      },
+      {
+        "action": "check_success_criteria",
+        "role": "supervisor"
+      },
+      {
+        "action": "record_chronicle_and_promotion_signal",
+        "role": "scribe"
+      }
+    ],
+    "risk_level": "medium",
+    "run_id": "899ac4b9-3ee0-45fa-bbbb-2acb44fd7a16",
+    "state": "blocked",
+    "status": "approval_required",
+    "task_type": "agentic_cli",
+    "updated_at": "2026-06-21T21:30:40.994200+00:00",
+    "value": {
+      "avoided_model_calls": 0.0,
+      "blocked_risk_events": 1.0,
+      "estimated_tokens_saved": 0.0,
+      "expected_value_score": 0.5,
+      "extra_model_calls": 0
+    },
+    "value_logs": [
+      {
+        "actual_value": null,
+        "created_at": "2026-06-21T21:30:40.995007+00:00",
+        "details": {
+          "status": "approval_required"
+        },
+        "expected_value": 0.0,
+        "metric": "estimated_tokens_saved"
+      },
+      {
+        "actual_value": null,
+        "created_at": "2026-06-21T21:30:40.995048+00:00",
+        "details": {
+          "status": "approval_required"
+        },
+        "expected_value": 0.0,
+        "metric": "avoided_model_calls"
+      },
+      {
+        "actual_value": null,
+        "created_at": "2026-06-21T21:30:40.995056+00:00",
+        "details": {
+          "status": "approval_required"
+        },
+        "expected_value": 1.0,
+        "metric": "blocked_risk_events"
+      },
+      {
+        "actual_value": null,
+        "created_at": "2026-06-21T21:30:40.995062+00:00",
+        "details": {
+          "status": "approval_required"
+        },
+        "expected_value": 0.5,
+        "metric": "expected_value_score"
+      },
+      {
+        "actual_value": null,
+        "created_at": "2026-06-21T21:30:40.995069+00:00",
+        "details": {
+          "status": "approval_required"
+        },
+        "expected_value": 0.0,
+        "metric": "extra_model_calls"
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "py_compile",
+          "app/kernel/session_handshake.py",
+          "benchmarks/tiny_llama_agentic_orchestrator_gauntlet.py"
+        ],
+        "latency_ms": 55.517,
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/benchmarks/test_beast_definitive_mega_test.py::test_tiny_llama_live_schema_repair_turns_weak_json_into_orchestration_contract",
+          "tests/test_session_handshake.py"
+        ],
+        "latency_ms": 708.95,
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_tail": "...                                                                      [100%]\n"
+      }
+    ],
+    "passed": true
+  }
+}

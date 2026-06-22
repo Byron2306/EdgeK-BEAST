@@ -47,6 +47,8 @@ COMMANDS = [
     "handoff-prepare",
     "mcp-config",
     "mcp-install",
+    "reinstall-surfaces",
+    "configure-intelligence",
     "openclaw-plan",
     "openclaw-execute",
     "nemoclaw-plan",
@@ -55,7 +57,11 @@ COMMANDS = [
     "hermes-plan",
     "hermes-execute",
     "ui",
+    "start",
+    "evidence",
+    "spaces",
     "up",
+    "heal",
     "gateway",
     "mcp",
     "mcp-http",
@@ -98,12 +104,26 @@ def beast_python() -> str:
     return sys.executable
 
 
-def pid_running(pid_file: Path) -> tuple[bool, Optional[int]]:
+def pid_running(pid_file: Path, service: Optional[str] = None) -> tuple[bool, Optional[int]]:
     if not pid_file.exists():
         return False, None
     try:
         pid = int(pid_file.read_text(encoding="utf-8").strip())
         os.kill(pid, 0)
+        if service:
+            expected = {
+                "gateway": ("bin/beast", "gateway"),
+                "mcp_http": ("bin/beast", "mcp-http"),
+                "litellm": ("litellm",),
+                "ollama": ("ollama", "serve"),
+            }.get(service)
+            if expected:
+                try:
+                    command = (Path("/proc") / str(pid) / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", errors="replace")
+                except OSError:
+                    return False, None
+                if not all(token in command for token in expected):
+                    return False, None
         return True, pid
     except (OSError, ValueError):
         return False, None
@@ -117,6 +137,57 @@ def url_ready(url: str, timeout: float = 1.0) -> bool:
         return False
 
 
+def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, list[str]]:
+    """Check that the running gateway is this source tree's operator surface."""
+    required = [
+        "/edgek/session/handshake",
+        "/edgek/meta-tool-commons",
+        "/edgek/meta-tool-commons/rank",
+        "/edgek/tool-laziness/recommend-tools",
+        "/edgek/provider-economist/select",
+        "/edgek/connectors/otel",
+        "/edgek/capability-exchange",
+        "/edgek/plugins",
+        "/edgek/compute",
+    ]
+    try:
+        with urllib.request.urlopen(f"{base_url.rstrip('/')}/openapi.json", timeout=timeout) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return False, required
+    paths = payload.get("paths") if isinstance(payload, dict) else {}
+    missing = [path for path in required if path not in paths]
+    return not missing, missing
+
+
+def stop_managed_process(pid_file: Path, service: str, timeout_seconds: float = 6.0) -> Dict[str, Any]:
+    running, pid = pid_running(pid_file, service)
+    if not running or pid is None:
+        pid_file.unlink(missing_ok=True)
+        return {"service": service, "status": "not_running", "pid_file": str(pid_file)}
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except OSError as exc:
+        return {"service": service, "status": "stop_failed", "pid": pid, "error": str(exc)}
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            break
+        time.sleep(0.2)
+    try:
+        os.kill(pid, 0)
+        os.kill(pid, signal.SIGKILL)
+    except OSError:
+        pass
+    try:
+        pid_file.unlink(missing_ok=True)
+    except Exception:
+        pass
+    return {"service": service, "status": "stopped", "pid": pid, "pid_file": str(pid_file)}
+
+
 def wait_url(url: str, timeout_seconds: float = 20.0) -> bool:
     deadline = time.time() + timeout_seconds
     while time.time() < deadline:
@@ -127,7 +198,9 @@ def wait_url(url: str, timeout_seconds: float = 20.0) -> bool:
 
 
 def spawn_daemon(name: str, command: list[str], pid_file: Path, log_file: Path, cwd: Path = ROOT, env: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
-    running, pid = pid_running(pid_file)
+    running, pid = pid_running(pid_file, name)
+    if not running:
+        pid_file.unlink(missing_ok=True)
     if running:
         return {"service": name, "status": "already_running", "pid": pid, "pid_file": str(pid_file), "log_file": str(log_file), "command": " ".join(command)}
     log_file.parent.mkdir(parents=True, exist_ok=True)
@@ -158,13 +231,32 @@ def start_ollama_daemon(host: str = "127.0.0.1:11434") -> Dict[str, Any]:
 
 
 def start_gateway_daemon(host: str, port: int) -> Dict[str, Any]:
-    url = f"http://{host}:{port}/health"
+    base_url = f"http://{host}:{port}"
+    url = f"{base_url}/health"
     if url_ready(url):
-        return {"service": "gateway", "status": "already_running", "base_url": f"http://{host}:{port}", "ready": True}
+        routes_ok, missing = gateway_routes_ready(base_url)
+        if routes_ok:
+            return {"service": "gateway", "status": "already_running", "base_url": base_url, "ready": True, "route_check": "ok"}
+        stop = stop_managed_process(run_dir() / "gateway.pid", "gateway")
+        if url_ready(url):
+            return {
+                "service": "gateway",
+                "status": "stale_unmanaged_gateway_on_port",
+                "base_url": base_url,
+                "ready": False,
+                "missing_routes": missing,
+                "stop": stop,
+                "recommendation": f"Stop the process bound to {base_url}, then rerun `beast up`.",
+            }
     command = [beast_python(), str(BEAST), "gateway", "--host", host, "--port", str(port)]
     result = spawn_daemon("gateway", command, run_dir() / "gateway.pid", run_dir() / "gateway.log")
     result["ready"] = wait_url(url, timeout_seconds=35.0)
-    result["base_url"] = f"http://{host}:{port}"
+    routes_ok, missing = gateway_routes_ready(base_url)
+    result["route_check"] = "ok" if routes_ok else "missing"
+    if missing:
+        result["missing_routes"] = missing
+        result["ready"] = False
+    result["base_url"] = base_url
     return result
 
 
@@ -416,7 +508,13 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
     mcp_port = int(args.mcp_port)
     litellm_port = int(args.litellm_port)
     nginx_port = int(args.nginx_port)
+    if bool_value(getattr(args, "force_gateway", "false")):
+        results.append(stop_managed_process(run_dir() / "gateway.pid", "gateway"))
 
+    surfaces = command_reinstall_surfaces(argparse.Namespace(
+        workspace=str(ROOT),
+        install_vscode_extension=getattr(args, "install_vscode_extension", "false"),
+    )) if bool_value(getattr(args, "refresh_surfaces", "true")) else {"skipped": True}
     results.append(start_ollama_daemon(host=str(args.ollama_host)))
     results.append(start_litellm_daemon(port=litellm_port))
     results.append(start_gateway_daemon(host=host, port=gateway_port))
@@ -444,8 +542,327 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
         "ollama": f"http://{args.ollama_host}",
         "nginx": f"http://127.0.0.1:{nginx_port}",
         "services": results,
+        "surfaces": surfaces,
         "checks": checks,
         "next": "Run `./bin/beast ui` for the TUI or use provider exports from `./bin/beast providers`.",
+    }
+
+
+def stack_checks(host: str, gateway_port: int, mcp_port: int, litellm_port: int, nginx_port: int, ollama_host: str) -> Dict[str, Dict[str, Any]]:
+    gateway_base = f"http://{host}:{gateway_port}"
+    return {
+        "gateway": gateway_probe(gateway_base, "/health", timeout=2.0),
+        "proxy": gateway_probe(gateway_base, "/proxy/health", timeout=2.0),
+        "mcp_gateway": gateway_probe(gateway_base, "/mcp/health", timeout=2.0),
+        "mcp_http": {"ok": url_ready(f"http://{host}:{mcp_port}/mcp/health", timeout=2.0)},
+        "litellm": {"ok": url_ready(f"http://127.0.0.1:{litellm_port}/v1/models", timeout=2.0)},
+        "ollama": {"ok": url_ready(f"http://{ollama_host}/api/tags", timeout=2.0)},
+        "nginx": {"ok": bool(pgrep("nginx")), "path": f"http://127.0.0.1:{nginx_port}"},
+    }
+
+
+def _atomic_json(path: Path, payload: Dict[str, Any]) -> None:
+    temp = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
+    with temp.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temp, path)
+
+
+def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
+    """Probe the local stack and selectively recover failed managed services."""
+    host = str(args.host)
+    gateway_port = int(args.gateway_port)
+    mcp_port = int(args.mcp_port)
+    litellm_port = int(args.litellm_port)
+    nginx_port = int(args.nginx_port)
+    ollama_host = str(args.ollama_host)
+    dry_run = bool_value(getattr(args, "dry_run", "false"))
+    before = stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
+    actions: list[Dict[str, Any]] = []
+
+    def recover(name: str, starter: Any, pid_name: Optional[str] = None) -> None:
+        if before.get(name, {}).get("ok"):
+            return
+        if dry_run:
+            actions.append({"service": name, "status": "would_restart"})
+            return
+        if pid_name:
+            actions.append(stop_managed_process(run_dir() / pid_name, name))
+        actions.append(starter())
+
+    recover("ollama", lambda: start_ollama_daemon(ollama_host), "ollama.pid")
+    recover("litellm", lambda: start_litellm_daemon(litellm_port), "litellm.pid")
+    gateway_failed = any(not before.get(name, {}).get("ok") for name in ("gateway", "proxy", "mcp_gateway"))
+    if gateway_failed:
+        if dry_run:
+            actions.append({"service": "gateway", "status": "would_restart"})
+        else:
+            actions.append(stop_managed_process(run_dir() / "gateway.pid", "gateway"))
+            actions.append(start_gateway_daemon(host, gateway_port))
+    recover("mcp_http", lambda: start_mcp_http_daemon(host, mcp_port), "mcp-http.pid")
+    if not before.get("nginx", {}).get("ok"):
+        actions.append({"service": "nginx", "status": "would_repair"} if dry_run else ensure_nginx(nginx_port, apply=True))
+
+    after = before if dry_run else stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
+    ready = all(item.get("ok") for item in after.values())
+    payload = {
+        "command": "heal",
+        "status": "dry_run" if dry_run else "healed" if ready else "attention",
+        "before": before,
+        "actions": actions,
+        "after": after,
+        "changed": bool(actions),
+        "timestamp": time.time(),
+    }
+    if not dry_run:
+        _atomic_json(run_dir() / "heal-report.json", payload)
+    return payload
+
+
+def command_start(args: argparse.Namespace) -> Dict[str, Any]:
+    """One-command startup for daily BEAST operation."""
+    configure = command_configure_intelligence(argparse.Namespace(
+        otel_endpoint=getattr(args, "otel_endpoint", None),
+        service_name="edgek-beast-gateway",
+        node_id=getattr(args, "node_id", None),
+        enable_exchange="true",
+        capability_exchange_endpoint=getattr(args, "capability_exchange_endpoint", None),
+    )) if bool_value(getattr(args, "configure", "true")) else {"skipped": True}
+    up = command_up(argparse.Namespace(
+        host=getattr(args, "host", "127.0.0.1"),
+        gateway_port=getattr(args, "gateway_port", 8000),
+        mcp_port=getattr(args, "mcp_port", 8001),
+        litellm_port=getattr(args, "litellm_port", 4000),
+        nginx_port=getattr(args, "nginx_port", 8080),
+        ollama_host=getattr(args, "ollama_host", "127.0.0.1:11434"),
+        nginx=getattr(args, "nginx", "true"),
+        refresh_surfaces=getattr(args, "refresh_surfaces", "true"),
+        install_vscode_extension=getattr(args, "install_vscode_extension", "false"),
+        force_gateway=getattr(args, "force_gateway", "true"),
+    ))
+    return {
+        "command": "start",
+        "status": up.get("status"),
+        "configure_intelligence": configure,
+        "up": up,
+        "next": "Open the TUI with `./bin/beast ui` or use the installed MCP server from your agent client.",
+    }
+
+
+def _run_evidence_command(label: str, command: list[str], timeout_seconds: float) -> Dict[str, Any]:
+    started = time.time()
+    completed = subprocess.run(
+        command,
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+        check=False,
+    )
+    return {
+        "label": label,
+        "command": command,
+        "returncode": completed.returncode,
+        "passed": completed.returncode == 0,
+        "duration_ms": round((time.time() - started) * 1000.0, 3),
+        "stdout_tail": completed.stdout[-4000:],
+        "stderr_tail": completed.stderr[-4000:],
+    }
+
+
+def _parse_phase_selection(value: str) -> list[int]:
+    selected: set[int] = set()
+    for part in str(value or "1-7").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = part.split("-", 1)
+            selected.update(range(int(start), int(end) + 1))
+        else:
+            selected.add(int(part))
+    return [phase for phase in sorted(selected) if 1 <= phase <= 7]
+
+
+def _write_model_fitness_from_benchmark(prefix: str) -> Optional[Dict[str, Any]]:
+    report_path = ROOT / "benchmarks" / "results" / f"{prefix}.json"
+    if not report_path.exists():
+        return None
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    presets = report.get("live_provider_presets") or {}
+    rows: Dict[str, Dict[str, Any]] = {}
+    for item in report.get("live_results") or []:
+        provider = str(item.get("provider") or "custom")
+        model = str((presets.get(provider) or {}).get("model") or provider)
+        key = f"{provider}::{model}"
+        row = rows.setdefault(key, {
+            "provider": provider,
+            "model": model,
+            "samples": 0,
+            "completed": 0,
+            "clean_completed": 0,
+            "rescued_completed": 0,
+            "provider_responses": 0,
+            "provider_completed": 0,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 0,
+            "system_rescued_completed": 0,
+            "endpoint_failures": 0,
+            "endpoint_errors": [],
+            "latency_ms": [],
+            "total_tokens": 0,
+            "lanes": {},
+        })
+        evidence = item.get("output_evidence") or {}
+        completed = bool(item.get("completed"))
+        rescued = bool(evidence.get("canonicalized") or evidence.get("repair_attempted") or evidence.get("local_verifier_repair"))
+        usage = item.get("usage") or {}
+        provider_response = bool(item.get("provider_text_excerpt") or usage or item.get("latency_ms") is not None)
+        initial_error = str(evidence.get("initial_validation_error") or "")
+        endpoint_failure = bool(initial_error and not provider_response)
+        row["samples"] += 1
+        row["completed"] += int(completed)
+        row["clean_completed"] += int(completed and not rescued)
+        row["rescued_completed"] += int(completed and rescued)
+        row["provider_responses"] += int(provider_response)
+        row["provider_completed"] += int(completed and provider_response)
+        row["provider_clean_completed"] += int(completed and provider_response and not rescued)
+        row["provider_rescued_completed"] += int(completed and provider_response and rescued)
+        row["system_rescued_completed"] += int(completed and rescued and not provider_response)
+        row["endpoint_failures"] += int(endpoint_failure)
+        if endpoint_failure and initial_error and initial_error not in row["endpoint_errors"]:
+            row["endpoint_errors"].append(initial_error[:500])
+        if item.get("latency_ms") is not None:
+            row["latency_ms"].append(float(item.get("latency_ms") or 0))
+        row["total_tokens"] += int(usage.get("total_tokens") or usage.get("prompt_tokens") or 0) + int(usage.get("completion_tokens") or 0)
+        lane = str(item.get("lane") or "unknown")
+        lane_row = row["lanes"].setdefault(lane, {"samples": 0, "completed": 0})
+        lane_row["samples"] += 1
+        lane_row["completed"] += int(completed)
+    model_rows = []
+    for row in rows.values():
+        samples = max(1, int(row["samples"]))
+        completion_rate = row["provider_completed"] / samples
+        clean_rate = row["provider_clean_completed"] / samples
+        rescue_rate = row["provider_rescued_completed"] / samples
+        response_rate = row["provider_responses"] / samples
+        avg_latency = sum(row["latency_ms"]) / len(row["latency_ms"]) if row["latency_ms"] else None
+        score = round(
+            (0.50 * clean_rate)
+            + (0.25 * completion_rate)
+            + (0.15 * response_rate)
+            + (0.10 * max(0.0, 1.0 - rescue_rate))
+            if row["provider_responses"]
+            else 0.0,
+            6,
+        )
+        model_rows.append({
+            **{key: value for key, value in row.items() if key != "latency_ms"},
+            "completion_rate": round(completion_rate, 6),
+            "clean_completion_rate": round(clean_rate, 6),
+            "rescue_rate": round(rescue_rate, 6),
+            "provider_response_rate": round(response_rate, 6),
+            "avg_latency_ms": round(avg_latency, 3) if avg_latency is not None else None,
+            "fitness_score": score,
+        })
+    model_rows.sort(key=lambda item: item["fitness_score"], reverse=True)
+    payload = {
+        "beast_object_type": "provider_model_fitness_snapshot",
+        "version": "1.0",
+        "source_report": str(report_path),
+        "models": model_rows,
+        "count": len(model_rows),
+    }
+    out = ROOT / "benchmarks" / "results" / f"{prefix}_model_fitness.json"
+    out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    md = ROOT / "benchmarks" / "results" / f"{prefix}_model_fitness.md"
+    lines = [
+        "# Live Provider Model Fitness",
+        "",
+        "| Provider | Model | Score | Responses | Provider completed | Clean | Provider rescued | System rescued | Endpoint failures | Avg latency ms | Tokens |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for row in model_rows:
+        lines.append(
+            f"| `{row['provider']}` | `{row['model']}` | {row['fitness_score']} | {row['provider_responses']}/{row['samples']} | "
+            f"{row['provider_completed']} | {row['provider_clean_completed']} | {row['provider_rescued_completed']} | "
+            f"{row['system_rescued_completed']} | {row['endpoint_failures']} | {row['avg_latency_ms']} | {row['total_tokens']} |"
+        )
+    md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {"json": str(out), "markdown": str(md), "count": len(model_rows)}
+
+
+def command_evidence(args: argparse.Namespace) -> Dict[str, Any]:
+    """Run bounded compute-governor and live provider/model evidence windows."""
+    phases = _parse_phase_selection(getattr(args, "phases", "1-7"))
+    provider = getattr(args, "provider", "groq")
+    max_tokens = str(int(getattr(args, "max_tokens", 96)))
+    timeout = str(float(getattr(args, "timeout", 90.0)))
+    py = beast_python()
+    phase_scripts = {
+        1: [py, "benchmarks/compute_governor_phase1_calibration.py", "--repeats", str(int(getattr(args, "phase1_repeats", 20)))],
+        2: [py, "benchmarks/compute_governor_phase2_live_displacement.py", "--provider", provider, "--max-tokens", max_tokens, "--timeout", timeout],
+        3: [py, "benchmarks/compute_governor_phase3_live_false_reuse.py", "--provider", provider, "--max-tokens", max_tokens, "--timeout", timeout],
+        4: [py, "benchmarks/compute_governor_phase4_groq_routing.py", "--provider", provider, "--max-tokens", max_tokens, "--timeout", timeout],
+        5: [py, "benchmarks/compute_governor_phase5_groq_streaming.py", "--provider", provider, "--max-tokens", max_tokens, "--timeout", timeout],
+        6: [py, "benchmarks/compute_governor_phase6_lifecycle.py"],
+        7: [py, "benchmarks/compute_governor_phase7_runtime_reuse.py", "--provider", provider, "--max-tokens", max_tokens, "--timeout", timeout],
+    }
+    results = []
+    for phase in phases:
+        results.append(_run_evidence_command(f"phase{phase}", phase_scripts[phase], float(getattr(args, "command_timeout", 240.0))))
+
+    free_live = None
+    if bool_value(getattr(args, "free_live", "true")):
+        free_live = _run_evidence_command(
+            "free_live_phase1_2",
+            [
+                py, "benchmarks/compute_governor_free_live.py",
+                "--providers", getattr(args, "free_providers", "huggingface,groq,cerebras,gemini,openrouter_gptoss"),
+                "--max-providers", str(int(getattr(args, "max_providers", 2))),
+                "--repeats", str(int(getattr(args, "free_repeats", 1))),
+                "--max-tokens", max_tokens,
+                "--timeout", timeout,
+            ],
+            float(getattr(args, "command_timeout", 240.0)),
+        )
+        results.append(free_live)
+
+    provider_model_fitness = None
+    prefix = getattr(args, "fitness_prefix", "beast_provider_model_fitness_live_free")
+    if bool_value(getattr(args, "provider_fitness", "true")):
+        fitness = _run_evidence_command(
+            "provider_model_fitness",
+            [
+                py, "benchmarks/beast_systems_benchmark.py",
+                "--live-agent",
+                "--live-provider", getattr(args, "free_providers", "huggingface,groq,cerebras,gemini,openrouter_gptoss"),
+                "--live-only",
+                "--live-max-tasks", str(int(getattr(args, "fitness_tasks", 1))),
+                "--live-max-tokens", max_tokens,
+                "--live-timeout", timeout,
+                "--live-lanes", getattr(args, "fitness_lanes", "raw,full_beast"),
+                "--live-prompt-mode", "compact",
+                "--live-json-mode",
+                "--output-prefix", prefix,
+            ],
+            float(getattr(args, "fitness_timeout", 600.0)),
+        )
+        results.append(fitness)
+        provider_model_fitness = _write_model_fitness_from_benchmark(prefix)
+
+    passed = all(item.get("passed") for item in results)
+    return {
+        "command": "evidence",
+        "status": "passed" if passed else "attention",
+        "phases": phases,
+        "provider": provider,
+        "results": results,
+        "provider_model_fitness": provider_model_fitness,
+        "artifacts": sorted(str(path) for path in (ROOT / "benchmarks" / "results").glob("compute_governor_phase*.json")),
     }
 
 
@@ -817,6 +1234,415 @@ def command_mcp_install(args: argparse.Namespace) -> Dict[str, Any]:
     return {"command": "mcp-install", "installed": True, "path": str(target), "config": existing}
 
 
+def latest_vsix() -> Optional[Path]:
+    extension_dir = ROOT / "vscode-extension"
+    versions = sorted(extension_dir.glob("edgek-beast-*.vsix"), key=lambda path: path.stat().st_mtime, reverse=True)
+    return versions[0] if versions else None
+
+
+def command_reinstall_surfaces(args: argparse.Namespace) -> Dict[str, Any]:
+    """Refresh local MCP, plugin, and extension integration surfaces."""
+    workspace = Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()
+    results: Dict[str, Any] = {"command": "reinstall-surfaces", "workspace": str(workspace)}
+    mcp_server = {
+        "command": str(BEAST),
+        "args": ["mcp", "--workspace", str(workspace)],
+        "env": {"BEAST_WORKSPACE": str(workspace)},
+    }
+
+    if bool_value(getattr(args, "install_workspace_mcp", "false")):
+        mcp_args = argparse.Namespace(workspace=str(workspace))
+        results["vscode_mcp"] = command_mcp_install(mcp_args)
+    else:
+        results["vscode_mcp"] = {
+            "installed": False,
+            "skipped": True,
+            "reason": "VS Code extension MCP provider is canonical; pass --install-workspace-mcp true for a file-based fallback.",
+        }
+
+    cursor_target = workspace / "integrations" / "mcp-clients" / "cursor" / "mcp.json"
+    cursor_target.parent.mkdir(parents=True, exist_ok=True)
+    cursor_config = {
+        "mcpServers": {
+            "edgek-beast": mcp_server
+        }
+    }
+    cursor_target.write_text(json.dumps(cursor_config, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    results["cursor_mcp_template"] = {"installed": True, "path": str(cursor_target), "config": cursor_config}
+
+    claude_target = workspace / "integrations" / "mcp-clients" / "claude-code" / "edgek-beast.mcp.json"
+    claude_target.parent.mkdir(parents=True, exist_ok=True)
+    claude_config = dict(mcp_server)
+    claude_target.write_text(json.dumps(claude_config, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    results["claude_mcp_template"] = {"installed": True, "path": str(claude_target), "config": claude_config}
+
+    client_install = {"requested": bool_value(getattr(args, "install_client_mcp", "true"))}
+    if client_install["requested"]:
+        cursor_workspace_target = workspace / ".cursor" / "mcp.json"
+        cursor_workspace_target.parent.mkdir(parents=True, exist_ok=True)
+        existing_cursor: Dict[str, Any] = {}
+        if cursor_workspace_target.exists():
+            try:
+                existing_cursor = json.loads(cursor_workspace_target.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                existing_cursor = {}
+        existing_cursor.setdefault("mcpServers", {})["edgek-beast"] = mcp_server
+        cursor_workspace_target.write_text(json.dumps(existing_cursor, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        client_install["cursor_workspace"] = {"installed": True, "path": str(cursor_workspace_target)}
+
+        claude_bin = shutil_which("claude")
+        if claude_bin:
+            completed = subprocess.run(
+                [claude_bin, "mcp", "add-json", "edgek-beast", json.dumps(claude_config, sort_keys=True), "--scope", "project"],
+                cwd=str(workspace),
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            already_exists = "already exists" in ((completed.stderr or "") + (completed.stdout or "")).lower()
+            client_install["claude_code"] = {
+                "installed": completed.returncode == 0 or already_exists,
+                "already_exists": already_exists,
+                "returncode": completed.returncode,
+                "stdout": completed.stdout[-1200:],
+                "stderr": completed.stderr[-1200:],
+            }
+        else:
+            client_install["claude_code"] = {"installed": False, "reason": "claude executable not found"}
+
+        cline_targets = [
+            Path.home() / ".config" / "Code" / "User" / "globalStorage" / "saoudrizwan.claude-dev" / "settings" / "cline_mcp_settings.json",
+            Path.home() / ".config" / "Code" / "User" / "globalStorage" / "xline.agent-lab" / "settings" / "cline_mcp_settings.json",
+            Path.home() / ".config" / "Code" / "User" / "globalStorage" / "sixth.sixth-ai" / "settings" / "sixth-mcp-settings.json",
+        ]
+        cline_results = []
+        for target in cline_targets:
+            if not target.exists():
+                continue
+            try:
+                current = json.loads(target.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                current = {}
+            current.setdefault("mcpServers", {})["edgek-beast"] = {
+                **mcp_server,
+                "disabled": False,
+                "autoApprove": [],
+            }
+            target.write_text(json.dumps(current, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            cline_results.append({"installed": True, "path": str(target)})
+        client_install["cline_compatible"] = cline_results
+    results["client_mcp"] = client_install
+
+    from app.kernel.plugin_marketplace import PluginMarketplace
+
+    marketplace = PluginMarketplace(str(workspace / ".beast" / "plugins"))
+    plugin_results = []
+    for manifest_path in sorted((workspace / "plugins" / "examples").glob("*.beast-plugin.json")):
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            plugin_results.append(marketplace.install(manifest, approved=True, dry_run=False))
+        except Exception as exc:
+            plugin_results.append({"installed": False, "path": str(manifest_path), "error": str(exc)})
+    results["plugins"] = {
+        "installed_count": sum(1 for item in plugin_results if item.get("installed")),
+        "results": plugin_results,
+        "inventory": marketplace.list_installed(),
+    }
+
+    vsix = latest_vsix()
+    extension_result: Dict[str, Any] = {
+        "latest_vsix": str(vsix) if vsix else "",
+        "installed": False,
+        "reason": "VS Code install not requested; pass --install-vscode-extension true to run code --install-extension.",
+    }
+    if bool_value(getattr(args, "install_vscode_extension", "false")):
+        if not vsix:
+            extension_result["reason"] = "No edgek-beast-*.vsix package found."
+        else:
+            completed = subprocess.run(
+                ["code", "--install-extension", str(vsix), "--force"],
+                cwd=str(workspace),
+                capture_output=True,
+                text=True,
+                timeout=45,
+                check=False,
+            )
+            extension_result.update({
+                "installed": completed.returncode == 0,
+                "returncode": completed.returncode,
+                "stdout": completed.stdout[-1200:],
+                "stderr": completed.stderr[-1200:],
+                "reason": "installed" if completed.returncode == 0 else "code --install-extension failed",
+            })
+    results["vscode_extension"] = extension_result
+    return results
+
+
+def _commons_seed_capabilities() -> list[Dict[str, Any]]:
+    return [
+        {
+            "capability_id": "beast_prepare_task",
+            "kind": "tool",
+            "version": "1.0",
+            "risk_class": "low",
+            "latency_ms": 24,
+            "tokens": 0,
+        },
+        {
+            "capability_id": "beast_prepare_handoff",
+            "kind": "tool",
+            "version": "1.0",
+            "risk_class": "low",
+            "latency_ms": 38,
+            "tokens": 0,
+        },
+        {
+            "capability_id": "beast_sourceplan_prepare",
+            "kind": "tool",
+            "version": "1.0",
+            "risk_class": "low",
+            "latency_ms": 31,
+            "tokens": 0,
+        },
+        {
+            "capability_id": "beast_provider_economist_select",
+            "kind": "meta_tool",
+            "version": "1.0",
+            "risk_class": "low",
+            "latency_ms": 18,
+            "tokens": 0,
+        },
+        {
+            "capability_id": "beast_meta_tool_commons",
+            "kind": "meta_tool",
+            "version": "1.0",
+            "risk_class": "low",
+            "latency_ms": 12,
+            "tokens": 0,
+        },
+        {
+            "capability_id": "beast_otel_export",
+            "kind": "tool",
+            "version": "1.0",
+            "risk_class": "medium",
+            "latency_ms": 44,
+            "tokens": 0,
+        },
+    ]
+
+
+def command_configure_intelligence(args: argparse.Namespace) -> Dict[str, Any]:
+    """Persist local commons/OTel config and seed privacy-safe commons evidence."""
+    from app.kernel.capability_exchange import CapabilityExchange
+    from app.kernel.local_config import DEFAULT_ENV_PATH, ensure_signing_key, load_local_env, parse_env_file, write_local_env
+    from app.kernel.meta_tool_commons import MetaToolCommons
+    from app.kernel.otel_connector import OpenTelemetryConnector
+
+    existing = parse_env_file(DEFAULT_ENV_PATH)
+    otel_endpoint = (
+        getattr(args, "otel_endpoint", None)
+        or os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT")
+        or existing.get("OTEL_EXPORTER_OTLP_ENDPOINT")
+        or "http://127.0.0.1:4318"
+    )
+    exchange_endpoint = (
+        getattr(args, "capability_exchange_endpoint", None)
+        or os.environ.get("BEAST_CAPABILITY_EXCHANGE_ENDPOINT")
+        or existing.get("BEAST_CAPABILITY_EXCHANGE_ENDPOINT")
+        or ""
+    )
+    updates = {
+        "OTEL_EXPORTER_OTLP_ENDPOINT": otel_endpoint,
+        "OTEL_SERVICE_NAME": getattr(args, "service_name", None) or existing.get("OTEL_SERVICE_NAME") or "edgek-beast-gateway",
+        "BEAST_CAPABILITY_EXCHANGE_OPT_IN": "1" if bool_value(getattr(args, "enable_exchange", "true")) else "0",
+        "BEAST_CAPABILITY_EXCHANGE_NODE_ID": getattr(args, "node_id", None) or existing.get("BEAST_CAPABILITY_EXCHANGE_NODE_ID") or "local-beast-node",
+        "BEAST_CAPABILITY_EXCHANGE_SIGNING_KEY": ensure_signing_key(existing.get("BEAST_CAPABILITY_EXCHANGE_SIGNING_KEY", "")),
+    }
+    if exchange_endpoint:
+        updates["BEAST_CAPABILITY_EXCHANGE_ENDPOINT"] = exchange_endpoint
+    merged_env = write_local_env(updates)
+    load_local_env(override=True)
+
+    exchange = CapabilityExchange(
+        enabled=bool_value(merged_env.get("BEAST_CAPABILITY_EXCHANGE_OPT_IN", "1")),
+        endpoint=merged_env.get("BEAST_CAPABILITY_EXCHANGE_ENDPOINT", ""),
+    )
+    commons = MetaToolCommons(exchange=exchange)
+    envelopes = []
+    for capability in _commons_seed_capabilities():
+        outcome = {
+            "task_class": "operator_console",
+            "role": "tool_selector",
+            "verified": True,
+            "useful": True,
+            "hidden_clean": True,
+            "safe": True,
+            "status": "configured",
+            "tokens": capability.get("tokens", 0),
+            "latency_ms": capability.get("latency_ms", 0),
+            "cost_usd": 0,
+            "evidence_scope": "local",
+        }
+        envelopes.append(exchange.prepare(capability, outcome))
+    ingest = commons.ingest(envelopes)
+    ranking = commons.rank(task_class="operator_console", role="tool_selector", limit=10)
+    otel = OpenTelemetryConnector()
+    otel_projection = otel.export(
+        otel.compile(provider_fitness=[{
+            "provider_id": "local",
+            "task_class": "operator_console",
+            "status": "configured",
+            "provider_fitness_score": 1.0,
+            "latency_ms": 1,
+        }]),
+        dry_run=True,
+        approved=False,
+    )
+    return {
+        "command": "configure-intelligence",
+        "configured": True,
+        "env_path": str(DEFAULT_ENV_PATH),
+        "restart_required": True,
+        "commons": {
+            "state": commons.state(),
+            "ingest": ingest,
+            "ranking_count": ranking.get("count", 0),
+            "top_capabilities": [item.get("capability_id") for item in ranking.get("rankings", [])[:5]],
+        },
+        "capability_exchange": exchange.state(),
+        "otel": {
+            "state": otel.state(),
+            "dry_run_export": {
+                "destination": otel_projection.get("destination"),
+                "span_count": otel_projection.get("span_count"),
+                "reason": otel_projection.get("reason"),
+            },
+        },
+        "next": "Restart the gateway with `./bin/beast --agent up --force-gateway true` so import-time connectors read the new config.",
+    }
+
+
+def command_spaces(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.commons_spaces import (
+        MANIFEST_NAME,
+        export_space,
+        import_space,
+        package_tiny_llama_case,
+        validate_manifest,
+    )
+
+    action = args.spaces_action
+    if action == "package-tiny-llama":
+        source = Path(args.source).resolve()
+        destination = Path(args.output).resolve()
+        return {"command": "spaces", "action": action, **package_tiny_llama_case(source, destination)}
+    if action == "validate":
+        root = Path(args.path).resolve()
+        manifest = json.loads((root / MANIFEST_NAME).read_text(encoding="utf-8"))
+        return {"command": "spaces", "action": action, **validate_manifest(root, manifest)}
+    if action == "export":
+        return {
+            "command": "spaces",
+            "action": action,
+            **export_space(Path(args.path).resolve(), Path(args.output).resolve()),
+        }
+    if action == "import":
+        return {
+            "command": "spaces",
+            "action": action,
+            **import_space(
+                Path(args.bundle).resolve(),
+                Path(args.destination).resolve(),
+                approved=bool_value(args.approved),
+                dry_run=bool_value(args.dry_run),
+            ),
+        }
+    if action == "replay":
+        from app.kernel.commons_space_registry import CommonsSpaceRegistry
+
+        registry = CommonsSpaceRegistry(Path(args.registry).resolve() if args.registry else None)
+        return {
+            "command": "spaces",
+            "action": action,
+            **registry.replay(
+                args.space_id,
+                target=Path(args.target).resolve() if args.target else None,
+                deterministic_only=bool_value(args.deterministic_only),
+                approved=bool_value(args.approved),
+                timeout_seconds=int(args.timeout),
+            ),
+        }
+    if action in {"economy", "economy-proof", "economy-simulate", "credit-issue", "promote-crystal", "prototype-complete"}:
+        from app.kernel.commons_economy import ComputeReductionEconomy
+        from app.kernel.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
+        from app.kernel.commons_space_registry import CommonsSpaceRegistry
+
+        registry = CommonsSpaceRegistry(Path(args.registry).resolve() if args.registry else None)
+        economy = ComputeReductionEconomy(registry)
+        promoter = CommonsCrystalPromoter(registry, economy)
+        if action == "economy":
+            result = economy.state()
+        elif action == "economy-proof":
+            result = economy.proof(args.space_id)
+        elif action == "economy-simulate":
+            result = economy.simulate(args.space_id)
+        elif action == "credit-issue":
+            result = economy.issue_credit(
+                args.space_id, approved=bool_value(args.approved),
+                approved_by=args.approved_by, reason=args.reason or "",
+            )
+        elif action == "promote-crystal":
+            result = promoter.promote(
+                args.space_id, approved=bool_value(args.approved),
+                approved_by=args.approved_by, reason=args.reason or "",
+            )
+        else:
+            result = FirstPrototypeRunner(registry, economy, promoter).complete(
+                space_id=args.space_id,
+                target=Path(args.target).resolve(),
+                approved=bool_value(args.approved),
+                approved_by=args.approved_by,
+                reason=args.reason or "",
+            )
+        return {"command": "spaces", "action": action, **result}
+    if action.startswith("federate-"):
+        from app.kernel.commons_space_registry import CommonsSpaceRegistry
+        from app.kernel.federated_commons import FederatedCommons
+
+        registry = CommonsSpaceRegistry(Path(args.registry).resolve() if args.registry else None)
+        federation = FederatedCommons(registry)
+        if action == "federate-state":
+            return {"command": "spaces", "action": action, **federation.state()}
+        if action == "federate-prepare":
+            return {
+                "command": "spaces", "action": action,
+                **federation.prepare(args.space_id, contributor_id=args.contributor_id, ttl_days=int(args.ttl_days)),
+            }
+        if action == "federate-allow":
+            return {
+                "command": "spaces", "action": action,
+                **federation.allow_contributor(
+                    args.contributor_id, public_key_hash=args.public_key_hash,
+                    approved=bool_value(args.approved), reason=args.reason or "",
+                ),
+            }
+        if action == "federate-ingest":
+            return {
+                "command": "spaces", "action": action,
+                **federation.ingest(read_json_file(args.envelope), require_allowlisted=bool_value(args.require_allowlisted)),
+            }
+        if action == "federate-revoke":
+            return {
+                "command": "spaces", "action": action,
+                **federation.revoke(
+                    args.envelope_id, approved=bool_value(args.approved),
+                    reason=args.reason or "", approved_by=args.approved_by,
+                ),
+            }
+    return {"command": "spaces", "action": action, "error": "unsupported_spaces_action"}
+
+
 def default_workflow(mode: str) -> Dict[str, Any]:
     digest = hashlib.sha256(f"{mode}_cli_harness".encode("utf-8")).hexdigest()
     workflow: Dict[str, Any] = {
@@ -983,6 +1809,149 @@ def build_parser() -> argparse.ArgumentParser:
     up_parser.add_argument("--nginx-port", type=int, default=8080)
     up_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
     up_parser.add_argument("--nginx", default="true", help="true/false; test and start/reload installed nginx")
+    up_parser.add_argument("--refresh-surfaces", default="true", help="true/false; refresh MCP/plugin/extension integration files")
+    up_parser.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
+    up_parser.add_argument("--force-gateway", default="false", help="true/false; stop managed gateway before starting")
+
+    heal_parser = subparsers.add_parser("heal", help="Probe and selectively restore unhealthy BEAST services")
+    heal_parser.set_defaults(handler=command_heal)
+    heal_parser.add_argument("--host", default="127.0.0.1")
+    heal_parser.add_argument("--gateway-port", type=int, default=8000)
+    heal_parser.add_argument("--mcp-port", type=int, default=8001)
+    heal_parser.add_argument("--litellm-port", type=int, default=4000)
+    heal_parser.add_argument("--nginx-port", type=int, default=8080)
+    heal_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
+    heal_parser.add_argument("--dry-run", default="false", help="true/false; report recovery actions without changing processes")
+
+    start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
+    start_parser.set_defaults(handler=command_start)
+    start_parser.add_argument("--host", default="127.0.0.1")
+    start_parser.add_argument("--gateway-port", type=int, default=8000)
+    start_parser.add_argument("--mcp-port", type=int, default=8001)
+    start_parser.add_argument("--litellm-port", type=int, default=4000)
+    start_parser.add_argument("--nginx-port", type=int, default=8080)
+    start_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
+    start_parser.add_argument("--nginx", default="true", help="true/false")
+    start_parser.add_argument("--refresh-surfaces", default="true", help="true/false")
+    start_parser.add_argument("--install-vscode-extension", default="false", help="true/false")
+    start_parser.add_argument("--force-gateway", default="true", help="true/false")
+    start_parser.add_argument("--configure", default="true", help="true/false; configure commons and OTel before startup")
+    start_parser.add_argument("--otel-endpoint", help="OTLP/HTTP base endpoint")
+    start_parser.add_argument("--node-id", help="Local capability-exchange node id")
+    start_parser.add_argument("--capability-exchange-endpoint", help="Optional remote capability exchange endpoint")
+
+    evidence_parser = subparsers.add_parser("evidence", help="Run compute-governor phase evidence and live provider/model fitness probes")
+    evidence_parser.set_defaults(handler=command_evidence)
+    evidence_parser.add_argument("--phases", default="1-7", help="Phase selection, e.g. 1-7 or 1,2,6")
+    evidence_parser.add_argument("--provider", default="groq", help="Live provider preset for phase 2/3/4/5/7")
+    evidence_parser.add_argument("--max-tokens", type=int, default=96)
+    evidence_parser.add_argument("--timeout", type=float, default=90.0)
+    evidence_parser.add_argument("--command-timeout", type=float, default=240.0)
+    evidence_parser.add_argument("--phase1-repeats", type=int, default=20)
+    evidence_parser.add_argument("--free-live", default="true", help="true/false; run free-provider phase 1/2 live window")
+    evidence_parser.add_argument("--free-providers", default="huggingface,groq,cerebras,gemini,openrouter_gptoss")
+    evidence_parser.add_argument("--max-providers", type=int, default=2)
+    evidence_parser.add_argument("--free-repeats", type=int, default=1)
+    evidence_parser.add_argument("--provider-fitness", default="true", help="true/false; run live provider/model fitness benchmark")
+    evidence_parser.add_argument("--fitness-tasks", type=int, default=1)
+    evidence_parser.add_argument("--fitness-lanes", default="raw,full_beast")
+    evidence_parser.add_argument("--fitness-timeout", type=float, default=600.0)
+    evidence_parser.add_argument("--fitness-prefix", default="beast_provider_model_fitness_live_free")
+
+    spaces = subparsers.add_parser("spaces", help="Package, validate, export, or import local BEAST Compute Spaces")
+    spaces_sub = spaces.add_subparsers(dest="spaces_action", required=True)
+    spaces_package = spaces_sub.add_parser("package-tiny-llama", help="Package the Tiny Llama Opus case study")
+    spaces_package.set_defaults(handler=command_spaces)
+    spaces_package.add_argument(
+        "--source",
+        default=str(ROOT / "benchmarks" / "results" / "tiny_llama_opus_case_study_qwen25_05b"),
+    )
+    spaces_package.add_argument(
+        "--output",
+        default=str(ROOT / "data" / "commons_spaces" / "tiny_llama_opus_gateway_repair"),
+    )
+    spaces_validate = spaces_sub.add_parser("validate", help="Validate a local Compute Space")
+    spaces_validate.set_defaults(handler=command_spaces)
+    spaces_validate.add_argument("path")
+    spaces_export = spaces_sub.add_parser("export", help="Export a validated local Compute Space bundle")
+    spaces_export.set_defaults(handler=command_spaces)
+    spaces_export.add_argument("path")
+    spaces_export.add_argument("--output", required=True)
+    spaces_import = spaces_sub.add_parser("import", help="Preview or import a local Compute Space bundle")
+    spaces_import.set_defaults(handler=command_spaces)
+    spaces_import.add_argument("bundle")
+    spaces_import.add_argument("--destination", default=str(ROOT / "data" / "commons_spaces" / "imports"))
+    spaces_import.add_argument("--approved", default="false", help="true/false")
+    spaces_import.add_argument("--dry-run", default="true", help="true/false")
+    spaces_replay = spaces_sub.add_parser("replay", help="Replay Space integrity or approved local verifiers")
+    spaces_replay.set_defaults(handler=command_spaces)
+    spaces_replay.add_argument("space_id")
+    spaces_replay.add_argument("--registry", help="Local Commons Spaces registry root")
+    spaces_replay.add_argument("--target", help="Workspace-local verifier target")
+    spaces_replay.add_argument("--deterministic-only", default="true", help="true/false")
+    spaces_replay.add_argument("--approved", default="false", help="true/false")
+    spaces_replay.add_argument("--timeout", type=int, default=120)
+    spaces_economy = spaces_sub.add_parser("economy", help="Show non-financial Compute Reduction Economy state")
+    spaces_economy.set_defaults(handler=command_spaces)
+    spaces_economy.add_argument("--registry")
+    spaces_proof = spaces_sub.add_parser("economy-proof", help="Build reproduced useful-reduction proof")
+    spaces_proof.set_defaults(handler=command_spaces)
+    spaces_proof.add_argument("space_id")
+    spaces_proof.add_argument("--registry")
+    spaces_simulate = spaces_sub.add_parser("economy-simulate", help="Simulate non-financial Commons credits")
+    spaces_simulate.set_defaults(handler=command_spaces)
+    spaces_simulate.add_argument("space_id", nargs="?")
+    spaces_simulate.add_argument("--registry")
+    spaces_credit = spaces_sub.add_parser("credit-issue", help="Issue one approved non-financial Commons credit")
+    spaces_credit.set_defaults(handler=command_spaces)
+    spaces_credit.add_argument("space_id")
+    spaces_credit.add_argument("--registry")
+    spaces_credit.add_argument("--approved", default="false", help="true/false")
+    spaces_credit.add_argument("--approved-by", default="operator")
+    spaces_credit.add_argument("--reason", default="")
+    spaces_promote = spaces_sub.add_parser("promote-crystal", help="Promote a thrice-reproduced Space into advisory Crystal Compute")
+    spaces_promote.set_defaults(handler=command_spaces)
+    spaces_promote.add_argument("space_id")
+    spaces_promote.add_argument("--registry")
+    spaces_promote.add_argument("--approved", default="false", help="true/false")
+    spaces_promote.add_argument("--approved-by", default="operator")
+    spaces_promote.add_argument("--reason", default="")
+    spaces_prototype = spaces_sub.add_parser("prototype-complete", help="Complete the approved Tiny Llama first prototype")
+    spaces_prototype.set_defaults(handler=command_spaces)
+    spaces_prototype.add_argument("--space-id", default="tiny_llama_opus_gateway_repair")
+    spaces_prototype.add_argument("--registry")
+    spaces_prototype.add_argument("--target", default=str(ROOT))
+    spaces_prototype.add_argument("--approved", default="false", help="true/false")
+    spaces_prototype.add_argument("--approved-by", default="operator")
+    spaces_prototype.add_argument("--reason", default="")
+    fed_state = spaces_sub.add_parser("federate-state", help="Show local federation trust state")
+    fed_state.set_defaults(handler=command_spaces)
+    fed_state.add_argument("--registry")
+    fed_prepare = spaces_sub.add_parser("federate-prepare", help="Prepare a signed expiring Space envelope")
+    fed_prepare.set_defaults(handler=command_spaces)
+    fed_prepare.add_argument("space_id")
+    fed_prepare.add_argument("--registry")
+    fed_prepare.add_argument("--contributor-id", required=True)
+    fed_prepare.add_argument("--ttl-days", type=int, default=30)
+    fed_allow = spaces_sub.add_parser("federate-allow", help="Locally allowlist a federation contributor")
+    fed_allow.set_defaults(handler=command_spaces)
+    fed_allow.add_argument("contributor_id")
+    fed_allow.add_argument("--registry")
+    fed_allow.add_argument("--approved", default="false", help="true/false")
+    fed_allow.add_argument("--public-key-hash", required=True)
+    fed_allow.add_argument("--reason", required=True)
+    fed_ingest = spaces_sub.add_parser("federate-ingest", help="Ingest a signed envelope as a hypothesis")
+    fed_ingest.set_defaults(handler=command_spaces)
+    fed_ingest.add_argument("envelope", help="Envelope JSON path")
+    fed_ingest.add_argument("--registry")
+    fed_ingest.add_argument("--require-allowlisted", default="true", help="true/false")
+    fed_revoke = spaces_sub.add_parser("federate-revoke", help="Revoke a federated hypothesis")
+    fed_revoke.set_defaults(handler=command_spaces)
+    fed_revoke.add_argument("envelope_id")
+    fed_revoke.add_argument("--registry")
+    fed_revoke.add_argument("--approved", default="false", help="true/false")
+    fed_revoke.add_argument("--reason", required=True)
+    fed_revoke.add_argument("--approved-by", default="operator")
 
     gateway_parser = subparsers.add_parser("gateway", help="Start the BEAST FastAPI gateway")
     gateway_parser.add_argument("--host", default="127.0.0.1")
@@ -1004,9 +1973,22 @@ def build_parser() -> argparse.ArgumentParser:
         ("compressors", command_compressors, "Report compressor backend readiness"),
         ("mcp-config", command_mcp_config, "Print MCP stdio config"),
         ("mcp-install", command_mcp_install, "Install MCP stdio config into .vscode/mcp.json"),
+        ("reinstall-surfaces", command_reinstall_surfaces, "Refresh MCP configs, local plugins, and latest VS Code extension metadata"),
+        ("configure-intelligence", command_configure_intelligence, "Configure Meta Tool Commons, local capability exchange, and OTel"),
     ]:
         item = subparsers.add_parser(name, help=help_text)
         item.set_defaults(handler=handler)
+        if name == "reinstall-surfaces":
+            item.add_argument("--workspace", help="Workspace folder path")
+            item.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
+            item.add_argument("--install-workspace-mcp", default="false", help="true/false; write .vscode/mcp.json fallback")
+            item.add_argument("--install-client-mcp", default="true", help="true/false; install Cursor, Claude Code, and Cline-compatible MCP configs")
+        if name == "configure-intelligence":
+            item.add_argument("--otel-endpoint", help="OTLP/HTTP base endpoint, e.g. http://127.0.0.1:4318")
+            item.add_argument("--service-name", default="edgek-beast-gateway")
+            item.add_argument("--node-id", help="Local node id to hash into capability exchange contributor identity")
+            item.add_argument("--enable-exchange", default="true", help="true/false; enable local signed capability exchange evidence")
+            item.add_argument("--capability-exchange-endpoint", help="Optional remote exchange endpoint; local mode works without it")
 
     compress = subparsers.add_parser("compress", help="Run token pruning/compression")
     compress.set_defaults(handler=command_compress)

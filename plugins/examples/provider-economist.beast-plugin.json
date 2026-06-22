@@ -1,0 +1,23 @@
+{
+  "approval_policy": {"external_write": false, "filesystem_write": false, "first_run": true, "install": true, "network": false},
+  "beast_plugin_manifest_version": "1.0",
+  "budget": {"calls_per_hour": 500, "max_cost_usd_per_call": 0.0, "max_latency_ms": 1000, "max_tokens_per_call": 1000},
+  "description": "Local provider route selection using governed benchmark evidence.",
+  "entrypoint": {"kind": "python", "module": "app.kernel.provider_economist"},
+  "id": "edgek.provider-economist",
+  "name": "BEAST Provider Economist",
+  "permissions": {"environment": [], "filesystem_read": ["benchmarks/results"], "filesystem_write": [], "network_domains": [], "subprocess": false},
+  "publisher": "EdgeK BEAST",
+  "risk_class": "medium",
+  "tools": [{
+    "description": "Choose the best eligible provider route for a requested role.",
+    "inputSchema": {
+      "properties": {"candidates": {"items": {"type": "object"}, "type": "array"}, "requested_role": {"type": "string"}},
+      "required": ["candidates", "requested_role"],
+      "type": "object"
+    },
+    "name": "beast_provider_economist_select",
+    "tool_schema_hash": "sha256:191d1652cc7055be97bd2b31e896165460105c0ebe3661bc37bfc7ef391da323"
+  }],
+  "version": "0.1.0"
+}

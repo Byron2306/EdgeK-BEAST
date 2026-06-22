@@ -60,16 +60,35 @@ def test_capability_registry_rolls_up_families():
     assert "workflow:test_failure_cascade" in families["families"]["debugging"]["capability_ids"]
 
 
+def test_capability_registry_exports_commons_discovery_sources():
+    sources = CapabilityRegistry().discovery_sources()
+
+    assert sources["beast_object_type"] == "capability_registry_discovery_sources"
+    assert sources["source_count"] == 2
+    by_id = {source["source_id"]: source for source in sources["sources"]}
+    assert "beast_capability_registry" in by_id
+    assert "open_source_mcp_seed_catalog" in by_id
+    registry_names = {item["tool_id"] for item in by_id["beast_capability_registry"]["items"]}
+    mcp_names = {item["name"] for item in by_id["open_source_mcp_seed_catalog"]["items"]}
+    assert "workflow:quality_cascade" in registry_names
+    assert "mcp_filesystem_read" in mcp_names
+    assert "mcp_playwright_inspect" in mcp_names
+    assert all(item["risk_class"] in {"low", "medium", "high", "critical"} for source in sources["sources"] for item in source["items"])
+
+
 @pytest.mark.asyncio
 async def test_capability_family_endpoint():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get("/edgek/capabilities/families")
+        discovery = await client.get("/edgek/capabilities/discovery-sources")
         vectors = await client.get("/edgek/vector/adapters")
 
     assert response.status_code == 200
     assert response.json()["beast_object_type"] == "capability_family_inventory"
     assert "tool_bus" in response.json()["families"]
+    assert discovery.status_code == 200
+    assert discovery.json()["beast_object_type"] == "capability_registry_discovery_sources"
     assert vectors.status_code == 200
     assert vectors.json()["beast_object_type"] == "vector_adapter_inventory"
     assert vectors.json()["active_adapter"] == "sqlite_local_embeddings"

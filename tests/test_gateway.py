@@ -23,7 +23,38 @@ async def test_root_endpoint():
         response = await client.get("/")
 
     assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "BEAST Commons" in response.text
+    assert "/beast-assets/idle/frame_00.png" in response.text
+    assert "/commons-media/beast-logo.png" in response.text
+    assert "/commons-media/inference-economy.mp4" in response.text
+    assert "/commons-media/inference-inversion.pptx" in response.text
+    assert "TUI Web Surface" in response.text
+    assert "Raw status" not in response.text
+    assert 'href="/edgek/federated-commons"' not in response.text
+
+
+@pytest.mark.asyncio
+async def test_root_info_endpoint():
+    async with _client() as client:
+        response = await client.get("/edgek/root-info")
+
+    assert response.status_code == 200
     assert response.json()["service"] == "EdgeK BEAST Gateway"
+
+
+@pytest.mark.asyncio
+async def test_commons_media_assets():
+    async with _client() as client:
+        logo = await client.head("/commons-media/beast-logo.png")
+        video = await client.head("/commons-media/inference-economy.mp4")
+        deck = await client.head("/commons-media/inference-inversion.pptx")
+
+    assert logo.status_code == 200
+    assert logo.headers["content-type"] == "image/png"
+    assert video.status_code == 200
+    assert "video" in video.headers["content-type"]
+    assert deck.status_code == 200
 
 
 @pytest.mark.asyncio

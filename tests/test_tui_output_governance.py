@@ -179,6 +179,33 @@ def test_provider_route_summary_keeps_litellm_resolved_model_visible():
     assert summary["resolved_model"] == "litellm/ollama"
 
 
+def test_provider_page_uses_benchmarked_model_fitness():
+    snap = BackendSnapshot(
+        base_url="http://gateway",
+        provider_registry={"providers": [{"provider_id": "groq", "enabled": True}]},
+        provider_model_fitness={
+            "artifact_path": "/tmp/model_fitness.json",
+            "models": [{
+                "provider": "groq",
+                "model": "llama-3.1-8b-instant",
+                "fitness_score": 0.875,
+                "samples": 8,
+                "completed": 7,
+                "clean_completed": 6,
+                "rescued_completed": 1,
+                "completion_rate": 0.875,
+                "clean_completion_rate": 0.75,
+                "rescue_rate": 0.125,
+                "avg_latency_ms": 320.0,
+            }],
+        },
+    )
+
+    rendered = __import__("app.cli.ui", fromlist=["PageHost"]).PageHost().providers(snap, 0)
+
+    assert rendered.row_count == 2
+
+
 def test_mascot_sprite_frames_load_for_tui_states():
     frames = mascot_frames()
 

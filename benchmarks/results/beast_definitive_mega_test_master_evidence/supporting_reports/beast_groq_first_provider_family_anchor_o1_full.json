@@ -1,0 +1,1869 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-21T05:33:52Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_groq_full_beast": {
+      "average_latency_ms": 1028.347,
+      "average_provider_tokens": 3457.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 6,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 6,
+      "provider_tokens_per_verified_fix": 1152.333,
+      "repair_attempted": 0,
+      "rescued_completed": 6,
+      "tasks": 6
+    },
+    "live_groq_raw": {
+      "average_latency_ms": 621.52,
+      "average_provider_tokens": 652.167,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    },
+    "live_groq_schema_only": {
+      "average_latency_ms": 602.116,
+      "average_provider_tokens": 650.667,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 14,
+    "excluded_infra_failure": 0,
+    "infra_failure": 4,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 0,
+    "nim_tests_failed": 0,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_groq_first_provider_family_anchor_o1_full_gauntlet",
+    "result_count": 18
+  },
+  "live_provider_fitness": {
+    "groq": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 6,
+      "beast_completion_rate": 0.3333,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.7778,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.1111,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.1111,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "scout_or_infra_probe",
+      "rescue_rate": 1.0,
+      "rescued_completed": 6,
+      "route_confidence": "low",
+      "sample_size": 18,
+      "score": 0.2833,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 18
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 535.283,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 535.283,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 523,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.178581736,
+          "completion_tokens": 137,
+          "prompt_time": 0.021211771,
+          "prompt_tokens": 334,
+          "queue_time": 0.017900993,
+          "total_time": 0.199793507,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"old\": \"\",\n      \"why\": \"replace existing content with new JSON parsing function\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new content in app/output_guard.py\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fa89a4130e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.05s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.178581736,
+        "completion_tokens": 137,
+        "prompt_time": 0.021211771,
+        "prompt_tokens": 334,
+        "queue_time": 0.017900993,
+        "total_time": 0.199793507,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 477.393,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 477.393,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 523,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.190189613,
+          "completion_tokens": 137,
+          "prompt_time": 0.02252243,
+          "prompt_tokens": 334,
+          "queue_time": 0.0485033,
+          "total_time": 0.212712043,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"old\": \"\",\n      \"why\": \"replace existing content with new JSON parsing function\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new content in app/output_guard.py\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f8dd1d0f0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.190189613,
+        "completion_tokens": 137,
+        "prompt_time": 0.02252243,
+        "prompt_tokens": 334,
+        "queue_time": 0.0485033,
+        "total_time": 0.212712043,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": 1118.014,
+      "output_evidence": {
+        "action_count": 3,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1118.014,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "groq",
+        "raw_chars": 980,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_time": 0.311027456,
+          "completion_tokens": 298,
+          "prompt_time": 0.551972264,
+          "prompt_tokens": 3105,
+          "queue_time": 0.023781974,
+          "total_time": 0.86299972,
+          "total_tokens": 3403
+        }
+      },
+      "prompt_tokens": 3028,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"import json\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"def parse_provider_output(text):\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"    return json.loads(text)\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"verify\": [\"python -m pytest tests -q\"],\n  \"provider_handoff_hash\": \"sha256:0ca62a2381f00c61fac3bfe1dcfe83056bb6e4eaca47036224ef2b26c293a1b6\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.311027456,
+        "completion_tokens": 298,
+        "prompt_time": 0.551972264,
+        "prompt_tokens": 3105,
+        "queue_time": 0.023781974,
+        "total_time": 0.86299972,
+        "total_tokens": 3403
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 739.716,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 739.716,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 1346,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.371525083,
+          "completion_tokens": 351,
+          "prompt_time": 0.037705704,
+          "prompt_tokens": 482,
+          "queue_time": 0.018285557,
+          "total_time": 0.409230787,
+          "total_tokens": 833
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/provider_parser.py\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with complete normalization.\\\"\\\"\\\"\\n\\n\\ndef normalize_provider_id(value):\\n    if isinstance(value, str):\\n        value = value.replace('-', '').replace(' ', '').lower()\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"why\": \"Fix provi",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.05s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_time": 0.371525083,
+        "completion_tokens": 351,
+        "prompt_time": 0.037705704,
+        "prompt_tokens": 482,
+        "queue_time": 0.018285557,
+        "total_time": 0.409230787,
+        "total_tokens": 833
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 734.68,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 734.68,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 1346,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.440689508,
+          "completion_tokens": 351,
+          "prompt_time": 0.032525009,
+          "prompt_tokens": 482,
+          "queue_time": 0.049406239,
+          "total_time": 0.473214517,
+          "total_tokens": 833
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/provider_parser.py\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with complete normalization.\\\"\\\"\\\"\\n\\n\\ndef normalize_provider_id(value):\\n    if isinstance(value, str):\\n        value = value.replace('-', '').replace(' ', '').lower()\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"why\": \"Fix provi",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_time": 0.440689508,
+        "completion_tokens": 351,
+        "prompt_time": 0.032525009,
+        "prompt_tokens": 482,
+        "queue_time": 0.049406239,
+        "total_time": 0.473214517,
+        "total_tokens": 833
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+      },
+      "prompt_tokens": 3158,
+      "provider": "groq",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 487.954,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 487.954,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 614,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.232953115,
+          "completion_tokens": 166,
+          "prompt_time": 0.027430069,
+          "prompt_tokens": 378,
+          "queue_time": 0.018901875,
+          "total_time": 0.260383184,
+          "total_tokens": 544
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/service.py\",\n      \"why\": \"replace invoice_total function\",\n      \"new\": \"def invoice_total(items):\\n    return sum(int(item[\\\"amount\\\"] for item in items)\\n\",\n      \"old\": \"def invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"] for item in items)\\n\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the handoff\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_time": 0.232953115,
+        "completion_tokens": 166,
+        "prompt_time": 0.027430069,
+        "prompt_tokens": 378,
+        "queue_time": 0.018901875,
+        "total_time": 0.260383184,
+        "total_tokens": 544
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 492.151,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 492.151,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 614,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.206256292,
+          "completion_tokens": 166,
+          "prompt_time": 0.025771241,
+          "prompt_tokens": 378,
+          "queue_time": 0.018362154,
+          "total_time": 0.232027533,
+          "total_tokens": 544
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/service.py\",\n      \"why\": \"replace invoice_total function\",\n      \"new\": \"def invoice_total(items):\\n    return sum(int(item[\\\"amount\\\"] for item in items)\\n\",\n      \"old\": \"def invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"] for item in items)\\n\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the handoff\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_time": 0.206256292,
+        "completion_tokens": 166,
+        "prompt_time": 0.025771241,
+        "prompt_tokens": 378,
+        "queue_time": 0.018362154,
+        "total_time": 0.232027533,
+        "total_tokens": 544
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+      },
+      "prompt_tokens": 3186,
+      "provider": "groq",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 765.606,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 765.606,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 1610,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.443158441,
+          "completion_tokens": 437,
+          "prompt_time": 0.09675567,
+          "prompt_tokens": 504,
+          "queue_time": 0.017823869,
+          "total_time": 0.539914111,
+          "total_tokens": 941
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix config parsing defaults and shell-style boolean normalization.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/config.py\",\n      \"new\": \"\\\"\\\"\\\"Small config parser with default values and boolean edge case.\\\"\\\"\\\"\\n\\n\\ndef parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\", \\\"TRUE\\\", \\\"YES\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\", \\\"OFF\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\", \\\"openrouter\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEOUT\\\", \\\"120\\\")),\\n    }\\n\",\n      \"old\": \"\\\"\\\"\\\"Small config parser with a missing default and boolean edge case.\\\"\\\"\\\"\\n\\n\\ndef parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\nde",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_time": 0.443158441,
+        "completion_tokens": 437,
+        "prompt_time": 0.09675567,
+        "prompt_tokens": 504,
+        "queue_time": 0.017823869,
+        "total_time": 0.539914111,
+        "total_tokens": 941
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 741.999,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 741.999,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 1610,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.452815281,
+          "completion_tokens": 437,
+          "prompt_time": 0.03474647,
+          "prompt_tokens": 504,
+          "queue_time": 0.018339345,
+          "total_time": 0.487561751,
+          "total_tokens": 941
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix config parsing defaults and shell-style boolean normalization.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/config.py\",\n      \"new\": \"\\\"\\\"\\\"Small config parser with default values and boolean edge case.\\\"\\\"\\\"\\n\\n\\ndef parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\", \\\"TRUE\\\", \\\"YES\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\", \\\"OFF\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\", \\\"openrouter\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEOUT\\\", \\\"120\\\")),\\n    }\\n\",\n      \"old\": \"\\\"\\\"\\\"Small config parser with a missing default and boolean edge case.\\\"\\\"\\\"\\n\\n\\ndef parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\nde",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_time": 0.452815281,
+        "completion_tokens": 437,
+        "prompt_time": 0.03474647,
+        "prompt_tokens": 504,
+        "queue_time": 0.018339345,
+        "total_time": 0.487561751,
+        "total_tokens": 941
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+      },
+      "prompt_tokens": 3180,
+      "provider": "groq",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 638.715,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 638.715,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 761,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.245757483,
+          "completion_tokens": 210,
+          "prompt_time": 0.027485768,
+          "prompt_tokens": 373,
+          "queue_time": 0.018713929,
+          "total_time": 0.273243251,
+          "total_tokens": 583
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key_present\\\": True}\\n\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\\n\",\n      \"why\": \"Fix provider config normalization and never return raw API keys.\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new code content\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'api_key': '... 'openrouter'} == {'api_key_pre... 'openrouter'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_time": 0.245757483,
+        "completion_tokens": 210,
+        "prompt_time": 0.027485768,
+        "prompt_tokens": 373,
+        "queue_time": 0.018713929,
+        "total_time": 0.273243251,
+        "total_tokens": 583
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 675.654,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 675.654,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 761,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.279823829,
+          "completion_tokens": 210,
+          "prompt_time": 0.021130626,
+          "prompt_tokens": 373,
+          "queue_time": 0.08901439,
+          "total_time": 0.300954455,
+          "total_tokens": 583
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key_present\\\": True}\\n\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\\n\",\n      \"why\": \"Fix provider config normalization and never return raw API keys.\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new code content\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'api_key': '... 'openrouter'} == {'api_key_pre... 'openrouter'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_time": 0.279823829,
+        "completion_tokens": 210,
+        "prompt_time": 0.021130626,
+        "prompt_tokens": 373,
+        "queue_time": 0.08901439,
+        "total_time": 0.300954455,
+        "total_tokens": 583
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": 938.681,
+      "output_evidence": {
+        "action_count": 3,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 938.681,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "groq",
+        "raw_chars": 1092,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_time": 0.383069016,
+          "completion_tokens": 336,
+          "prompt_time": 0.248849276,
+          "prompt_tokens": 3175,
+          "queue_time": 0.01980126,
+          "total_time": 0.631918292,
+          "total_tokens": 3511
+        }
+      },
+      "prompt_tokens": 3042,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"def provider_env(provider_id, env):\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"    key = provider_id.upper() + \\\"_API_KEY\\\"\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"verify\": [\"python -m pytest tests -q\"],\n  \"provider_handoff_hash\": \"sha256:e8fd65bcb058b7a3ee0a9aab67427119b78a70a187dd3bbed0f5c1ad83d540f9\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_time": 0.383069016,
+        "completion_tokens": 336,
+        "prompt_time": 0.248849276,
+        "prompt_tokens": 3175,
+        "queue_time": 0.01980126,
+        "total_time": 0.631918292,
+        "total_tokens": 3511
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 561.849,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 561.849,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 669,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.240650435,
+          "completion_tokens": 183,
+          "prompt_time": 0.029085682,
+          "prompt_tokens": 358,
+          "queue_time": 0.048407722,
+          "total_time": 0.269736117,
+          "total_tokens": 541
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/nim_contract.py\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\")) and action.get(\\\"target\\\", {}).get(\\\"file_ref\\\")\\n\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"why\": \"Added file_ref check to validate_nim_action\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new code\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_time": 0.240650435,
+        "completion_tokens": 183,
+        "prompt_time": 0.029085682,
+        "prompt_tokens": 358,
+        "queue_time": 0.048407722,
+        "total_time": 0.269736117,
+        "total_tokens": 541
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 490.819,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "Action IR missing provider_handoff_hash",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 490.819,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 636,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.233488477,
+          "completion_tokens": 174,
+          "prompt_time": 0.024445995,
+          "prompt_tokens": 358,
+          "queue_time": 0.017716057,
+          "total_time": 0.257934472,
+          "total_tokens": 532
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/nim_contract.py\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\")) and action.get(\\\"new\\\")\\n\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"why\": \"Added check for new content\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"handoff_hash\": \"hash of the new code content\"\n}",
+      "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_time": 0.233488477,
+        "completion_tokens": 174,
+        "prompt_time": 0.024445995,
+        "prompt_tokens": 358,
+        "queue_time": 0.017716057,
+        "total_time": 0.257934472,
+        "total_tokens": 532
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429"
+      },
+      "prompt_tokens": 3055,
+      "provider": "groq",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {}
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-21T05:33:52Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "planned_run_count": 18,
+    "providers": [
+      {
+        "api_key_env": "GROQ_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://api.groq.com/openai/v1",
+        "model": "llama-3.1-8b-instant",
+        "provider": "groq",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 180.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/output_guard.py"
+        ],
+        "hidden_tests": [
+          "tests/test_output_guard_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "output_governance_malformed_json",
+        "task_id": "output_governance_malformed_json",
+        "visible_tests": [
+          "tests/test_output_guard_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_parser.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_parser_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_id_parser",
+        "task_id": "provider_id_parser",
+        "visible_tests": [
+          "tests/test_provider_parser.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/service.py",
+          "app/math_ops.py"
+        ],
+        "hidden_tests": [
+          "tests/test_invoice_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "multi_file_hidden_decimal_fix",
+        "task_id": "multi_file_hidden_decimal_fix",
+        "visible_tests": [
+          "tests/test_invoice_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "config_validation_edge_case",
+        "task_id": "config_validation_edge_case",
+        "visible_tests": [
+          "tests/test_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_config_secret_redaction",
+        "task_id": "provider_config_secret_redaction",
+        "visible_tests": [
+          "tests/test_provider_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/nim_contract.py"
+        ],
+        "hidden_tests": [
+          "tests/test_nim_contract_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "nim_refs_only_contract",
+        "task_id": "nim_refs_only_contract",
+        "visible_tests": [
+          "tests/test_nim_contract_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "live_only": true,
+    "max_tasks": 6,
+    "max_tokens": 900,
+    "prompt_mode": "compact",
+    "timeout_seconds": 180.0
+  },
+  "live_summary": {
+    "groq": {
+      "average_latency_ms": 671.322,
+      "average_provider_prompt_tokens": 795.571,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 6,
+      "completion_rate": 0.3333,
+      "failures": [
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "provider_id_parser"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "provider_id_parser"
+        },
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "multi_file_hidden_decimal_fix"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "multi_file_hidden_decimal_fix"
+        },
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "nim_refs_only_contract"
+        },
+        {
+          "lane": "live_groq_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: Action IR missing provider_handoff_hash",
+          "task": "nim_refs_only_contract"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "latency_ms_per_verified_fix": 342.782,
+      "local_verifier_repaired": 6,
+      "provider_tokens_per_verified_fix": 1152.333,
+      "recommended_role": "scout_or_infra_probe",
+      "repair_attempted": 0,
+      "rescue_rate": 1.0,
+      "rescued_completed": 6,
+      "route_confidence": "low",
+      "tasks": 18,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 18
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_parser.py"
+      ],
+      "failing_assertions": [
+        "normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"",
+        "route_for(\"LOCAL NIM\") == \"/proxy/local-nim\""
+      ],
+      "files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with incomplete normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").lower()\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "fixed_files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_parser_hidden.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_hidden_tabs_and_mixed_separator_variants():\n    assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\n    assert normalize_provider_id(\"NVIDIA NIM\") == \"nvidia_nim\"\n    assert route_for(\"local-nim\") == \"/proxy/local-nim\"\n"
+      },
+      "name": "provider_id_parser",
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "relevant_files": [
+        "app/provider_parser.py",
+        "tests/test_provider_parser.py"
+      ],
+      "tests": {
+        "tests/test_provider_parser.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_normalize_provider_id_accepts_hyphen_and_space_variants():\n    assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\n    assert normalize_provider_id(\"local nim\") == \"local_nim\"\n\n\ndef test_route_for_uses_normalized_provider_id():\n    assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n    assert route_for(\"LOCAL NIM\") == \"/proxy/local-nim\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "failing_assertions": [
+        "invoice_total string amounts produce Decimal total",
+        "hidden half-up rounding passes"
+      ],
+      "files": {
+        "app/math_ops.py": "def normalize_amount(value):\n    return int(value)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "fixed_files": {
+        "app/math_ops.py": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef normalize_amount(value):\n    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "hidden_tests": {
+        "tests/test_invoice_hidden.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_rounds_half_up_hidden():\n    assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\n"
+      },
+      "name": "multi_file_hidden_decimal_fix",
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "relevant_files": [
+        "app/service.py",
+        "app/math_ops.py",
+        "tests/test_invoice_public.py"
+      ],
+      "tests": {
+        "tests/test_invoice_public.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_accepts_string_amounts():\n    assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {
+        "tests/test_config_hidden.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_hidden_empty_and_on_values_are_normalized():\n    assert parse_bool(\"\") is False\n    assert parse_bool(\" on \") is True\n    assert gateway_config({\"BEAST_TIMEOUT\": \"30\"})[\"provider\"] == \"openrouter\"\n"
+      },
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_config.py"
+      ],
+      "failing_assertions": [
+        "hyphen providers normalize to env names",
+        "raw API keys are redacted"
+      ],
+      "files": {
+        "app/provider_config.py": "def provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n"
+      },
+      "fixed_files": {
+        "app/provider_config.py": "def normalize_provider_id(provider_id):\n    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n\n\ndef provider_env(provider_id, env):\n    normalized = normalize_provider_id(provider_id)\n    key = normalized.upper() + \"_API_KEY\"\n    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_config_hidden.py": "from app.provider_config import provider_env\n\n\ndef test_hidden_missing_key_is_false_and_secret_never_leaks():\n    result = provider_env(\"openrouter\", {})\n    assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\n    assert \"api_key\" not in result\n"
+      },
+      "name": "provider_config_secret_redaction",
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "relevant_files": [
+        "app/provider_config.py",
+        "tests/test_provider_config.py"
+      ],
+      "tests": {
+        "tests/test_provider_config.py": "from app.provider_config import provider_env\n\n\ndef test_provider_config_normalizes_and_redacts_secret():\n    result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n    assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

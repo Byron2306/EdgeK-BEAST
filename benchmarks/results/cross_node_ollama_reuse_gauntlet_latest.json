@@ -1,0 +1,367 @@
+{
+  "adoption": {
+    "adopted": true,
+    "adoption_id": "adopt_671dd7ab0e31f329455d",
+    "approved": true,
+    "approved_by": "cross_node_ollama_reuse_gauntlet",
+    "artifact_references": [
+      {
+        "artifact_type": "public_documentation",
+        "path": "README.md",
+        "sha256": "sha256:dbf8c8553a64a03030e8ecc192713fd09eb4294c3c21c0b370e747dfa932c47b"
+      },
+      {
+        "artifact_type": "artifact_hash_manifest",
+        "path": "integrity_manifest.json",
+        "sha256": "sha256:91ae01d8b25f01980a2bdb521fe11eba56afc54f91d86aa5c8a14aeebd18d8e7"
+      },
+      {
+        "artifact_type": "provider_fitness_card",
+        "path": "provider_fitness.json",
+        "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      {
+        "artifact_type": "run_manifest",
+        "path": "run_manifest.json",
+        "sha256": "sha256:67173c653b1ba8916aafa69036ecf93e5a04cc860cdb8f40b501a82583bb9ee8"
+      },
+      {
+        "artifact_type": "cost_latency_summary",
+        "path": "cost_latency_summary.md",
+        "sha256": "sha256:d66f9e258c6b77285f2126e0d0c0c9655c5c4c693f206d9af0c727947b5ca241"
+      },
+      {
+        "artifact_type": "failure_summary",
+        "path": "failures_by_bucket.json",
+        "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      }
+    ],
+    "authority": "local_operator",
+    "beast_object_type": "commons_space_adoption",
+    "created_at": "2026-06-22T08:19:00.629890+00:00",
+    "dry_run": false,
+    "local_seal": {
+      "beast_object_type": "sealed_crystal_compute_credit",
+      "created_at": "2026-06-22T08:19:00.630147+00:00",
+      "crypto_profile": {
+        "fallback": true,
+        "kem": "none",
+        "production_note": "Install/configure a PQC provider for ML-DSA/ML-KEM production seals.",
+        "provider": "stdlib_dev_fallback",
+        "signature": "HMAC-SHA256"
+      },
+      "payload_hash": "sha256:e22d6933e830f86feba6d0092e8b31c2ec7db98edc2aa5c4eee654801dab5fda",
+      "purpose": "commons_space_adoption",
+      "signature": "hmac-sha256:30412fd8e4a9ccd8f7f5b5facaeede258723b33061c1f8d975886445b4a6220d",
+      "version": "1.0"
+    },
+    "manifest_hash": "sha256:f367d5d294dcfa6cd97a48605a94828b352da671a0b70b05ccbc1d03e3ff8f75",
+    "reason": "Imported bundle verified and deterministic replay passed in Ollama reuse gauntlet",
+    "receipt_path": "/var/lib/beast/commons_spaces/adoptions/adopt_671dd7ab0e31f329455d.json",
+    "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+    "status": "adopted",
+    "version": "1.0"
+  },
+  "beast_object_type": "cross_node_ollama_reuse_gauntlet",
+  "beast_verified_reuse": true,
+  "bundle_import": {
+    "error": "{\"detail\":\"Space already exists: /var/lib/beast/commons_spaces/bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout\"}",
+    "ok": false,
+    "status_code": 400
+  },
+  "cloud_api_calls_observed": 0,
+  "credit_attempt": {
+    "error": "{\"detail\":\"Space is not eligible for reproduced useful-reduction credit\"}",
+    "ok": false,
+    "status_code": 400
+  },
+  "currency_gate_interpretation": "credit should issue only with eligible live/adoption/displacement proof; refusal is correct if evidence is insufficient",
+  "infrastructure_success": true,
+  "model_decision_is_advisory": true,
+  "node_a": "http://127.0.0.1:8101",
+  "node_a_beast_handoff": {
+    "beast_object_type": "beast_inference_inversion_handoff",
+    "cascade": {
+      "check_count": 1,
+      "local_only": true,
+      "status": "warning",
+      "warnings": 1
+    },
+    "forge_card": {
+      "decision": "proceed_with_constraints",
+      "required_gates": {
+        "chronicle_required": true,
+        "compatibility_tests_required": true,
+        "dependency_review_required": false,
+        "human_approval_required": false,
+        "minimal_patch_required": false
+      },
+      "risk_level": "low",
+      "scorecard_id": "forge_a10fecdbf8efb0da"
+    },
+    "insights": {
+      "evidence_count": 0,
+      "handoff_recommendation": "Current task markup is required; no local Chronicle evidence matched.",
+      "local_first": true
+    },
+    "language_contract": {
+      "forge_card": true,
+      "insight_packet": true,
+      "pathway_route_card": true,
+      "public_registry_card": true,
+      "quality_cascade": true,
+      "skill_tree_state": true,
+      "task_envelope": true,
+      "verifier_receipts": true,
+      "workflow_card": true
+    },
+    "pathway": {
+      "avoid": [
+        "full_repo_upload",
+        "blind_provider_retries",
+        "secret_value_capture",
+        "cloud_reasoning_before_local_evidence",
+        "production_provider_account_change"
+      ],
+      "name": "Provider diagnostic route",
+      "promotion_status": "candidate",
+      "route_id": "route_provider_diagnostic_ollama"
+    },
+    "provider": "ollama",
+    "registries": {
+      "approval_required": null,
+      "authority": "advisory_remote_hypothesis",
+      "risk": null,
+      "space_name": "Beast Definitive Mega Test Cross Provider Nvidia Groq Scout",
+      "task_class": "benchmark_replay_candidate"
+    },
+    "role": "Node A crystallizer",
+    "skill_tree": {
+      "object_type": null,
+      "patterns": {
+        "detected": 0,
+        "promoted": 0,
+        "validated": 0
+      },
+      "skills": {
+        "average_success_rate": 1.0,
+        "categories": {
+          "meta_tool_commons": 169,
+          "request_routing": 26,
+          "swarm_recipe": 20
+        },
+        "total_skills": 215,
+        "total_usage": 795
+      }
+    },
+    "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+    "task_envelope": {
+      "allowed_actions": [
+        "read_files",
+        "read_logs",
+        "summarize",
+        "draft_patch"
+      ],
+      "approval_required_for": [
+        "external_write",
+        "database_write",
+        "git_push",
+        "production_config_change",
+        "provider_account_change"
+      ],
+      "privacy_class": "internal",
+      "risk_level": "low",
+      "task_class": "commons_crystallized_compute_reuse",
+      "task_id": "tsk_5a51d6c051b8"
+    },
+    "version": "1.0",
+    "workflow": {
+      "chronicle_required": true,
+      "decision": "proceed_with_constraints",
+      "execution_mode": "advisory_plan",
+      "swarm_used": true,
+      "workflow_id": "wf_c7ed9bf2607a02ef"
+    }
+  },
+  "node_a_ollama": {
+    "json": {
+      "parsed": false,
+      "raw": "{\n  \"space_id\": \"bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout\",\n  \"reusable_capability\": \"none\",\n  \"verifier\": \"none\",\n  \"risk\": {\n    \"why_it_reduces_recompute\": \"The task is currently marked as requiring local evidence, which means it will be recomputed locally. This can lead to increased computation time and overhead.\"\n  },\n  \"why_it_redu"
+    },
+    "latency_ms": 17185.76,
+    "model": "qwen2.5:0.5b",
+    "response": "{\n  \"space_id\": \"bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout\",\n  \"reusable_capability\": \"none\",\n  \"verifier\": \"none\",\n  \"risk\": {\n    \"why_it_reduces_recompute\": \"The task is currently marked as requiring local evidence, which means it will be recomputed locally. This can lead to increased computation time and overhead.\"\n  },\n  \"why_it_redu",
+    "role": "node_a_crystallizer"
+  },
+  "node_b": "http://127.0.0.1:8102",
+  "node_b_beast_handoff": {
+    "beast_object_type": "beast_inference_inversion_handoff",
+    "cascade": {
+      "check_count": 1,
+      "local_only": true,
+      "status": "warning",
+      "warnings": 1
+    },
+    "forge_card": {
+      "decision": "proceed_with_constraints",
+      "required_gates": {
+        "chronicle_required": true,
+        "compatibility_tests_required": true,
+        "dependency_review_required": false,
+        "human_approval_required": false,
+        "minimal_patch_required": false
+      },
+      "risk_level": "low",
+      "scorecard_id": "forge_fb052df735153e0e"
+    },
+    "insights": {
+      "evidence_count": 0,
+      "handoff_recommendation": "Current task markup is required; no local Chronicle evidence matched.",
+      "local_first": true
+    },
+    "language_contract": {
+      "forge_card": true,
+      "insight_packet": true,
+      "pathway_route_card": true,
+      "public_registry_card": true,
+      "quality_cascade": true,
+      "skill_tree_state": true,
+      "task_envelope": true,
+      "verifier_receipts": true,
+      "workflow_card": true
+    },
+    "pathway": {
+      "avoid": [
+        "full_repo_upload",
+        "blind_provider_retries",
+        "secret_value_capture",
+        "cloud_reasoning_before_local_evidence",
+        "production_provider_account_change"
+      ],
+      "name": "Provider diagnostic route",
+      "promotion_status": "candidate",
+      "route_id": "route_provider_diagnostic_ollama"
+    },
+    "provider": "ollama",
+    "registries": {
+      "approval_required": null,
+      "authority": "advisory_remote_hypothesis",
+      "risk": null,
+      "space_name": "Beast Definitive Mega Test Cross Provider Nvidia Groq Scout",
+      "task_class": "benchmark_replay_candidate"
+    },
+    "role": "Node B reuse decider",
+    "skill_tree": {
+      "object_type": null,
+      "patterns": {
+        "detected": 0,
+        "promoted": 0,
+        "validated": 0
+      },
+      "skills": {
+        "average_success_rate": 1.0,
+        "categories": {
+          "meta_tool_commons": 169,
+          "request_routing": 26,
+          "swarm_recipe": 20
+        },
+        "total_skills": 215,
+        "total_usage": 795
+      }
+    },
+    "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+    "task_envelope": {
+      "allowed_actions": [
+        "read_files",
+        "read_logs",
+        "summarize",
+        "draft_patch"
+      ],
+      "approval_required_for": [
+        "external_write",
+        "database_write",
+        "git_push",
+        "production_config_change",
+        "provider_account_change"
+      ],
+      "privacy_class": "internal",
+      "risk_level": "low",
+      "task_class": "commons_crystallized_compute_reuse",
+      "task_id": "tsk_2e2b9bac6b78"
+    },
+    "version": "1.0",
+    "workflow": {
+      "chronicle_required": true,
+      "decision": "proceed_with_constraints",
+      "execution_mode": "advisory_plan",
+      "swarm_used": true,
+      "workflow_id": "wf_c864f9b3a714ef08"
+    }
+  },
+  "node_b_ollama": {
+    "json": {
+      "cloud_api_needed": false,
+      "parsed": true,
+      "reason": "The current task requires local evidence, which is necessary for the inference inversion handoff.",
+      "required_local_checks": [
+        "chronicle_required",
+        "compatibility_tests_required"
+      ],
+      "reuse": true
+    },
+    "latency_ms": 16560.499,
+    "model": "qwen2.5:0.5b",
+    "response": "{\n  \"reuse\": true,\n  \"reason\": \"The current task requires local evidence, which is necessary for the inference inversion handoff.\",\n  \"required_local_checks\": [\n    \"chronicle_required\",\n    \"compatibility_tests_required\"\n  ],\n  \"cloud_api_needed\": false\n}",
+    "role": "node_b_reuse_decider"
+  },
+  "node_b_replay": {
+    "beast_object_type": "commons_space_reproduction_receipt",
+    "commands": [],
+    "contributor_id": "commons-node-a",
+    "created_at": "2026-06-22T08:18:43.342700+00:00",
+    "deterministic": {
+      "manifest_valid": true,
+      "privacy_safe": true,
+      "receipt_valid": true
+    },
+    "deterministic_passed": true,
+    "live_verifier_passed": null,
+    "local_seal": {
+      "beast_object_type": "sealed_crystal_compute_credit",
+      "created_at": "2026-06-22T08:18:43.342805+00:00",
+      "crypto_profile": {
+        "fallback": true,
+        "kem": "none",
+        "production_note": "Install/configure a PQC provider for ML-DSA/ML-KEM production seals.",
+        "provider": "stdlib_dev_fallback",
+        "signature": "HMAC-SHA256"
+      },
+      "payload_hash": "sha256:e879b6a10ba308b6b44d4fb79ea2e19917c9f468466aa9fbc7f7a38153ede017",
+      "purpose": "commons_space_reproduction",
+      "signature": "hmac-sha256:70fb7cb6705977a628e6aed454157b41285cb308ad054bd60871b0bb3417758e",
+      "version": "1.0"
+    },
+    "manifest_hash": "sha256:f367d5d294dcfa6cd97a48605a94828b352da671a0b70b05ccbc1d03e3ff8f75",
+    "mode": "deterministic",
+    "privacy": {
+      "beast_object_type": "commons_privacy_scan",
+      "files_scanned": 6,
+      "findings": [],
+      "safe": true,
+      "version": "1.0"
+    },
+    "receipt_path": "/var/lib/beast/commons_spaces/reproductions/repro_cb4659f7c6330adbc3af.json",
+    "reproduced": true,
+    "reproduction_id": "repro_cb4659f7c6330adbc3af",
+    "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+    "trust_class": "integrity_reproduced",
+    "trust_score": 0.75,
+    "version": "1.0"
+  },
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "ollama_model": "qwen2.5:0.5b",
+  "receipt_path": "benchmarks/results/cross_node_ollama_reuse_gauntlet_latest.json",
+  "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+  "success": true,
+  "version": "1.0"
+}

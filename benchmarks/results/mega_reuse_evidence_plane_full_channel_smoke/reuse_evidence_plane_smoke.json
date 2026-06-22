@@ -1,0 +1,145 @@
+{
+  "beast_object_type": "mega_reuse_evidence_plane_smoke_seed",
+  "candidate_summary": {
+    "authority": "staged_only_explicit_local_approval_required",
+    "beast_object_type": "meta_tool_commons_swarm_candidates",
+    "min_samples": 2,
+    "proposed": [
+      {
+        "auto_adopted": false,
+        "candidate": {
+          "action": {
+            "action": "confirm_reuse_boundary",
+            "approval_required": false,
+            "execution_policy": "advisory_until_local_approval",
+            "profile": "openclaw",
+            "role": "verifier",
+            "type": "swarm_role_recipe"
+          },
+          "evidence_hashes": [
+            "sha256:39f7cd73d4d266f69ad2b99a6ea3bd7b89769f515de41b18b3a30297c19130e5",
+            "sha256:93dd5114009d4f8db1211a3aa2df9ac068d9300d883ec07d82b114d646925eda"
+          ],
+          "kind": "skill_recipe",
+          "name": "swarm_openclaw_verifier_confirm_reuse_boundary",
+          "pattern": {
+            "capability_id": "swarm:openclaw:verifier:confirm_reuse_boundary",
+            "role": "verifier",
+            "safe_rate": 1.0,
+            "sample_size": 2,
+            "source": "commons_swarm",
+            "task_class": "schema_validation",
+            "useful_rate": 1.0,
+            "verified_rate": 1.0
+          },
+          "risk_class": "low",
+          "role": "verifier",
+          "schema_hash": "sha256:39c55587fbb12ae56b44efe654d9996d0da1ccc4262e792d5cf640e908961534",
+          "source_candidate_id": null,
+          "task_class": "schema_validation",
+          "version": "1.0"
+        },
+        "candidate_id": "commons_0609e98419f83e26978f",
+        "status": "proposed"
+      },
+      {
+        "auto_adopted": false,
+        "candidate": {
+          "action": {
+            "action": "classify_contract",
+            "approval_required": false,
+            "execution_policy": "advisory_until_local_approval",
+            "profile": "openclaw",
+            "role": "scout",
+            "type": "swarm_role_recipe"
+          },
+          "evidence_hashes": [
+            "sha256:4e37e1a00589b9d098f8043517e29f9c043c722243b6670dbd92deb71d641824",
+            "sha256:f4e0df9a5ec1983bd14fb9ad5dfebf69c37970c27540ccfa16a7b3283c1eba95"
+          ],
+          "kind": "skill_recipe",
+          "name": "swarm_openclaw_scout_classify_contract",
+          "pattern": {
+            "capability_id": "swarm:openclaw:scout:classify_contract",
+            "role": "scout",
+            "safe_rate": 1.0,
+            "sample_size": 2,
+            "source": "commons_swarm",
+            "task_class": "schema_validation",
+            "useful_rate": 1.0,
+            "verified_rate": 1.0
+          },
+          "risk_class": "low",
+          "role": "scout",
+          "schema_hash": "sha256:e3fe8a65ebc875cfe760047400cec80dcf86e955a3d84360136cc75187532ce9",
+          "source_candidate_id": null,
+          "task_class": "schema_validation",
+          "version": "1.0"
+        },
+        "candidate_id": "commons_6d1cfb2b5cdd99c5a6c0",
+        "status": "proposed"
+      }
+    ],
+    "proposed_count": 2,
+    "skipped": [],
+    "skipped_count": 0,
+    "source": "local_swarm_commons"
+  },
+  "channel_count": 4,
+  "claim_boundary": "Synthetic local receipts seed the four Commons reuse channels for mega-test plumbing verification. This does not claim live provider displacement.",
+  "generated_at": "2026-06-21T20:05:24Z",
+  "passed": true,
+  "results": {
+    "cli": {
+      "accepted": 2,
+      "beast_object_type": "meta_tool_commons_cli_execution_ingest",
+      "duplicates": 0,
+      "mode": "openclaw",
+      "prepared": 2,
+      "privacy_policy": "allowlisted_capability_evidence_only",
+      "rejected": [],
+      "skipped": 0,
+      "source": "beast_cli_execution"
+    },
+    "kv_cache": {
+      "accepted": 1,
+      "beast_object_type": "meta_tool_commons_kv_cache_ingest",
+      "capability_id": "kv_cache_vllm_crossenginekvcachetransport",
+      "duplicates": 0,
+      "prepared": 1,
+      "privacy_policy": "allowlisted_capability_evidence_only",
+      "rejected": [],
+      "source": "kv_cache_transport",
+      "useful": true,
+      "verified": true
+    },
+    "ollama": {
+      "accepted": 1,
+      "beast_object_type": "meta_tool_commons_ollama_calibration",
+      "confidence_bucket": 0.9,
+      "duplicates": 0,
+      "matched_verifier": true,
+      "prepared": 1,
+      "privacy_policy": "allowlisted_capability_evidence_only",
+      "rejected": [],
+      "source": "ollama_scout_verifier"
+    },
+    "swarm": {
+      "accepted": 4,
+      "beast_object_type": "meta_tool_commons_swarm_ingest",
+      "duplicates": 0,
+      "prepared": 4,
+      "privacy_policy": "allowlisted_capability_evidence_only",
+      "rejected": [],
+      "skipped": 0,
+      "source": "local_swarm_runs"
+    }
+  },
+  "seeded_channels": [
+    "swarm",
+    "cli",
+    "ollama",
+    "kv_cache"
+  ],
+  "version": "1.0"
+}

@@ -10,11 +10,14 @@ governed MCP requests without bypassing approval policy.
 import hashlib
 import json
 import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from app.kernel.swarm import PROFILE_BINDINGS, ROLE_LANES
+from app.kernel.provider_economist import EconomistPolicy
+from app.kernel.session_handshake import SessionHandshakeBuilder
 
 
 class BeastCLIExecutor:
@@ -38,12 +41,18 @@ class BeastCLIExecutor:
         canon_registry: Any = None,
         runtime_governor: Any = None,
         tool_laziness_learner: Any = None,
+        tool_laziness_plugin: Any = None,
+        provider_economist: Any = None,
+        handshake_builder: Any = None,
     ):
         self.ollama_scout = ollama_scout
         self.mcp_broker = mcp_broker
         self.canon_registry = canon_registry
         self.runtime_governor = runtime_governor
         self.tool_laziness_learner = tool_laziness_learner
+        self.tool_laziness_plugin = tool_laziness_plugin
+        self.provider_economist = provider_economist
+        self.handshake_builder = handshake_builder or SessionHandshakeBuilder()
 
     def plan(
         self,
@@ -55,12 +64,32 @@ class BeastCLIExecutor:
         workspace_root: str = ".",
         use_ollama: bool = True,
         scout_options: Optional[Dict[str, Any]] = None,
+        candidate_tools: Optional[List[Any]] = None,
+        required_tools: Optional[List[str]] = None,
+        provider_candidates: Optional[List[Dict[str, Any]]] = None,
+        requested_role: str = "primary_patch_provider",
+        preflight_budget_ms: int = 500,
+        scout_budget_ms: int = 300,
     ) -> Dict[str, Any]:
         """Create a local-first execution plan without executing actions."""
         profile = self._profile(mode)
-        scout = self._think(objective, workspace_root, use_ollama, scout_options or {})
+        preflight = self._preflight(
+            objective=objective,
+            profile=profile,
+            workspace_root=workspace_root,
+            use_ollama=use_ollama,
+            scout_options=scout_options or {},
+            candidate_tools=candidate_tools or [],
+            required_tools=required_tools or [],
+            provider_candidates=provider_candidates or [],
+            requested_role=requested_role,
+            preflight_budget_ms=preflight_budget_ms,
+            scout_budget_ms=scout_budget_ms,
+        )
+        scout = preflight["scout"]
         insight = self._insight_summary(insight_packet or {})
         actions = self._actions_from_workflow(workflow or {}, context_packet or {}, profile, insight_packet or {})
+        actions, suppressed_actions = self._apply_tool_laziness(actions, preflight["tool_laziness"])
         canon = self._canon(workflow, context_packet)
         plan = {
             "beast_object_type": "beast_cli_plan",
@@ -68,12 +97,15 @@ class BeastCLIExecutor:
             "mode": profile["mode"],
             "profile": profile,
             "objective": objective,
+            "session_handshake": preflight["session_handshake"],
+            "preflight": preflight,
             "local_inference": scout,
             "local_insight": insight,
             "swarm_binding": self._swarm_binding(workflow or {}, profile),
             "swarm_governance": self._swarm_governance(profile),
             "canon": canon,
             "actions": actions,
+            "suppressed_actions": suppressed_actions,
             "ready": canon.get("valid", True) and not self._has_blocking_workflow_gate(workflow or {}),
             "created_at": self._utc_now(),
             "plan_hash": "",
@@ -93,6 +125,12 @@ class BeastCLIExecutor:
         approved: bool = False,
         use_ollama: bool = True,
         scout_options: Optional[Dict[str, Any]] = None,
+        candidate_tools: Optional[List[Any]] = None,
+        required_tools: Optional[List[str]] = None,
+        provider_candidates: Optional[List[Dict[str, Any]]] = None,
+        requested_role: str = "primary_patch_provider",
+        preflight_budget_ms: int = 500,
+        scout_budget_ms: int = 300,
     ) -> Dict[str, Any]:
         """Execute allowed workflow actions through MCP, defaulting to dry-run."""
         plan = self.plan(
@@ -104,6 +142,12 @@ class BeastCLIExecutor:
             workspace_root=workspace_root,
             use_ollama=use_ollama,
             scout_options=scout_options or {},
+            candidate_tools=candidate_tools or [],
+            required_tools=required_tools or [],
+            provider_candidates=provider_candidates or [],
+            requested_role=requested_role,
+            preflight_budget_ms=preflight_budget_ms,
+            scout_budget_ms=scout_budget_ms,
         )
         if not plan["ready"]:
             return self._execution_result(plan, [], "blocked", "Canon or workflow gates are not ready")
@@ -127,6 +171,168 @@ class BeastCLIExecutor:
                 results.append({**action, "executed": False, "reason": "no executor binding for action kind"})
         status = "succeeded" if any(item.get("executed") for item in results) else ("dry_run" if dry_run else "blocked")
         return self._execution_result(plan, results, status, "BEAST CLI executor completed")
+
+    def _preflight(
+        self,
+        *,
+        objective: str,
+        profile: Dict[str, Any],
+        workspace_root: str,
+        use_ollama: bool,
+        scout_options: Dict[str, Any],
+        candidate_tools: List[Any],
+        required_tools: List[str],
+        provider_candidates: List[Dict[str, Any]],
+        requested_role: str,
+        preflight_budget_ms: int,
+        scout_budget_ms: int,
+    ) -> Dict[str, Any]:
+        started = time.perf_counter()
+        budget_ms = max(25, min(int(preflight_budget_ms), 30_000))
+        scout_cap_ms = max(0, min(int(scout_budget_ms), budget_ms))
+        default_tools = ["read_file", "workspace_search", "chronicle_lookup", "provider_call", "pytest"]
+        tools = candidate_tools or default_tools
+        tool_names = [
+            str(item.get("name") or item.get("tool_name") or "") if isinstance(item, dict) else str(item)
+            for item in tools
+        ]
+        timings: Dict[str, float] = {}
+        skipped_phases: List[Dict[str, str]] = []
+
+        phase_started = time.perf_counter()
+        handshake = self.handshake_builder.build(
+            objective,
+            mode=profile["mode"],
+            workspace_root=workspace_root,
+            tools=tool_names,
+            preflight_budget_ms=budget_ms,
+            scout_budget_ms=scout_cap_ms,
+        )
+        timings["session_handshake_ms"] = self._elapsed_ms(phase_started)
+
+        phase_started = time.perf_counter()
+        if self.tool_laziness_plugin and self._remaining_ms(started, budget_ms) > 5:
+            tool_decision = self.tool_laziness_plugin.recommend_tools(
+                tools,
+                str(
+                    scout_options.get("scenario")
+                    or re.sub(r"[^A-Za-z0-9]+", "_", objective).strip("_").lower()[:120]
+                    or "general"
+                ),
+                required_tools=required_tools,
+                min_samples=max(1, int(scout_options.get("laziness_min_samples", 3))),
+            )
+        else:
+            tool_decision = {
+                "beast_object_type": "tool_laziness_recommendation",
+                "tools_not_to_call": [],
+                "tools_to_call": [],
+                "tools_to_observe": [{"name": name} for name in tool_names if name],
+                "summary": {"candidate_count": len(tool_names), "skip_count": 0},
+                "reason": "plugin unavailable or preflight deadline reached",
+            }
+            skipped_phases.append({"phase": "tool_laziness", "reason": "unavailable_or_deadline"})
+        timings["tool_laziness_ms"] = self._elapsed_ms(phase_started)
+
+        phase_started = time.perf_counter()
+        if self.provider_economist and provider_candidates and self._remaining_ms(started, budget_ms) > 5:
+            route_decision = self.provider_economist.select(
+                provider_candidates,
+                EconomistPolicy(
+                    requested_role=requested_role,
+                    max_latency_ms=scout_options.get("max_latency_ms"),
+                    max_usd_per_fix=scout_options.get("max_usd_per_fix"),
+                    min_auth_confidence=float(scout_options.get("min_auth_confidence", 0.6)),
+                    require_cost_observation=bool(scout_options.get("require_cost_observation", False)),
+                ),
+            )
+        else:
+            route_decision = {
+                "beast_object_type": "provider_economist_decision",
+                "decision": "not_evaluated",
+                "selected": None,
+                "ranked": [],
+                "excluded": [],
+                "reason": "no provider candidates, plugin unavailable, or deadline reached",
+            }
+            if provider_candidates:
+                skipped_phases.append({"phase": "provider_economist", "reason": "unavailable_or_deadline"})
+        timings["provider_economist_ms"] = self._elapsed_ms(phase_started)
+
+        phase_started = time.perf_counter()
+        remaining_ms = self._remaining_ms(started, budget_ms)
+        allowed_scout_ms = min(scout_cap_ms, max(0, remaining_ms))
+        if allowed_scout_ms >= 25:
+            scout = self._think(
+                objective,
+                workspace_root,
+                use_ollama,
+                {
+                    **scout_options,
+                    "context_limit": min(3, max(1, int(scout_options.get("context_limit", 3)))),
+                    "tool_limit": min(4, max(1, int(scout_options.get("tool_limit", 4)))),
+                    "include_postgres_schema": False,
+                    "include_github_context": False,
+                    "include_forensic_context": False,
+                    "agent_awareness": handshake,
+                    "status_timeout_seconds": min(0.08, max(0.01, allowed_scout_ms / 4000.0)),
+                    "timeout_seconds": max(0.01, allowed_scout_ms / 1000.0),
+                },
+            )
+        else:
+            scout = {
+                "available": False,
+                "source": "preflight_budget",
+                "summary": "Ollama scout skipped to preserve the preflight latency budget.",
+                "budget_skipped": True,
+            }
+            skipped_phases.append({"phase": "ollama_scout", "reason": "insufficient_remaining_budget"})
+        timings["ollama_scout_ms"] = self._elapsed_ms(phase_started)
+        elapsed_ms = self._elapsed_ms(started)
+        return {
+            "beast_object_type": "beast_local_preflight",
+            "version": "1.0",
+            "session_handshake": handshake,
+            "tool_laziness": tool_decision,
+            "provider_economist": route_decision,
+            "scout": scout,
+            "budget_ms": budget_ms,
+            "scout_budget_ms": scout_cap_ms,
+            "elapsed_ms": elapsed_ms,
+            "within_budget": elapsed_ms <= budget_ms,
+            "budget_status": "within_budget" if elapsed_ms <= budget_ms else "overrun_detected",
+            "phase_timings_ms": timings,
+            "skipped_phases": skipped_phases,
+            "selected_provider": (route_decision.get("selected") or {}).get("provider"),
+        }
+
+    @staticmethod
+    def _apply_tool_laziness(
+        actions: List[Dict[str, Any]],
+        recommendation: Dict[str, Any],
+    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        skip = {str(item.get("name") or "") for item in recommendation.get("tools_not_to_call") or []}
+        kept = []
+        suppressed = []
+        for action in actions:
+            tool_name = str((action.get("request") or {}).get("tool_name") or "")
+            if tool_name and tool_name in skip:
+                suppressed.append({
+                    **action,
+                    "suppressed": True,
+                    "reason": "tool_laziness_low_value_history",
+                })
+            else:
+                kept.append(action)
+        return kept, suppressed
+
+    @staticmethod
+    def _elapsed_ms(started: float) -> float:
+        return round((time.perf_counter() - started) * 1000.0, 3)
+
+    @staticmethod
+    def _remaining_ms(started: float, budget_ms: int) -> float:
+        return max(0.0, float(budget_ms) - ((time.perf_counter() - started) * 1000.0))
 
     def _actions_from_workflow(
         self,

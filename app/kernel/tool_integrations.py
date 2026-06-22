@@ -107,14 +107,20 @@ class RequiredIntegrationRegistry:
             detail["env"] = str(env_name)
             detail["env_present"] = ready
             if not ready and name == "github" and shutil.which("gh"):
-                auth = subprocess.run(
-                    ["gh", "auth", "status"],
-                    capture_output=True,
-                    text=True,
-                    timeout=10,
-                    check=False,
-                )
-                ready = auth.returncode == 0
+                try:
+                    auth = subprocess.run(
+                        ["gh", "auth", "status"],
+                        capture_output=True,
+                        text=True,
+                        timeout=3,
+                        check=False,
+                    )
+                    ready = auth.returncode == 0
+                    detail["gh_auth_returncode"] = auth.returncode
+                    detail["gh_auth_output"] = (auth.stdout or auth.stderr or "").strip()[:500]
+                except (subprocess.TimeoutExpired, OSError) as exc:
+                    ready = False
+                    detail["gh_auth_error"] = str(exc)
                 detail["gh_auth_present"] = ready
                 detail["gh_path"] = shutil.which("gh")
             if not ready and name == "postgres":
@@ -141,27 +147,33 @@ class RequiredIntegrationRegistry:
             "ready": False,
         }
         if pg_isready:
-            probe = subprocess.run(
-                [pg_isready, "-h", "/var/run/postgresql", "-p", "5432"],
-                capture_output=True,
-                text=True,
-                timeout=5,
-                check=False,
-            )
-            detail["pg_isready_returncode"] = probe.returncode
-            detail["pg_isready_output"] = (probe.stdout or probe.stderr).strip()
-            if probe.returncode == 0:
-                detail["ready"] = True
+            try:
+                probe = subprocess.run(
+                    [pg_isready, "-h", "/var/run/postgresql", "-p", "5432"],
+                    capture_output=True,
+                    text=True,
+                    timeout=3,
+                    check=False,
+                )
+                detail["pg_isready_returncode"] = probe.returncode
+                detail["pg_isready_output"] = (probe.stdout or probe.stderr).strip()
+                if probe.returncode == 0:
+                    detail["ready"] = True
+            except (subprocess.TimeoutExpired, OSError) as exc:
+                detail["pg_isready_error"] = str(exc)
         elif psql:
-            probe = subprocess.run(
-                [psql, "-h", "/var/run/postgresql", "-d", "postgres", "-c", "select 1"],
-                capture_output=True,
-                text=True,
-                timeout=5,
-                check=False,
-            )
-            detail["psql_returncode"] = probe.returncode
-            detail["ready"] = probe.returncode == 0
+            try:
+                probe = subprocess.run(
+                    [psql, "-h", "/var/run/postgresql", "-d", "postgres", "-c", "select 1"],
+                    capture_output=True,
+                    text=True,
+                    timeout=3,
+                    check=False,
+                )
+                detail["psql_returncode"] = probe.returncode
+                detail["ready"] = probe.returncode == 0
+            except (subprocess.TimeoutExpired, OSError) as exc:
+                detail["psql_error"] = str(exc)
         return detail
 
 

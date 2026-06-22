@@ -90,13 +90,13 @@ class OllamaScout:
         self._postgres_schema_cached_at = 0.0
         self._postgres_schema_ttl = float(scout.get("postgres_schema_ttl_seconds", 300.0))
 
-    def status(self) -> Dict[str, Any]:
+    def status(self, timeout_seconds: float = 2.0) -> Dict[str, Any]:
         installed = self._ollama_installed()
         models: List[str] = []
         error = ""
         server_ready = False
         try:
-            response = httpx.get(f"{self.base_url}/api/tags", timeout=2.0)
+            response = httpx.get(f"{self.base_url}/api/tags", timeout=max(0.01, float(timeout_seconds)))
             server_ready = response.status_code < 400
             if server_ready:
                 data = response.json()
@@ -131,6 +131,8 @@ class OllamaScout:
         forensic_event_kind: Optional[str] = None,
         forensic_provider: Optional[str] = None,
         forensic_status: Optional[str] = None,
+        agent_awareness: Optional[Dict[str, Any]] = None,
+        status_timeout_seconds: float = 2.0,
     ) -> Dict[str, Any]:
         retrieved = self._retrieve_context(task, context_limit)
         exact_context = self._exact_context(retrieved, max_items=3)
@@ -177,12 +179,15 @@ class OllamaScout:
                 "Return compact, source-referenced context.",
                 "Prefer local verification before cloud escalation.",
             ],
+            "agent_awareness": agent_awareness or {},
             "handoff_hash": "",
         }
+        if agent_awareness:
+            packet["constraints"].insert(0, str(agent_awareness.get("agent_instruction") or "Operate inside BEAST."))
         packet["decision_contract"] = self._decision_contract(packet["local_analysis"], packet)
         packet["handoff_hash"] = self._hash(packet)
         packet["decision_contract"]["packet_hash"] = packet["handoff_hash"]
-        packet["ollama"] = self.status()
+        packet["ollama"] = self.status(timeout_seconds=status_timeout_seconds)
         packet["model"] = model or self.default_model
         packet["packet_stats"] = self._packet_stats(packet)
         return packet
@@ -209,10 +214,16 @@ class OllamaScout:
             forensic_event_kind=payload.get("forensic_event_kind"),
             forensic_provider=payload.get("forensic_provider"),
             forensic_status=payload.get("forensic_status"),
+            agent_awareness=payload.get("agent_awareness") if isinstance(payload.get("agent_awareness"), dict) else None,
+            status_timeout_seconds=max(0.01, float(payload.get("status_timeout_seconds", 2.0))),
         )
         decision = None
         if payload.get("use_ollama", True) and packet["ollama"]["server_ready"]:
-            decision = self._call_ollama(packet, model=str(model))
+            decision = self._call_ollama(
+                packet,
+                model=str(model),
+                timeout_seconds=max(0.01, float(payload.get("timeout_seconds", self.timeout_seconds))),
+            )
         if not decision:
             decision = packet["local_analysis"]
             decision["source"] = "edgek_fallback"
@@ -611,7 +622,12 @@ class OllamaScout:
             "compression_contract": contract,
         }
 
-    def _call_ollama(self, packet: Dict[str, Any], model: str) -> Optional[Dict[str, Any]]:
+    def _call_ollama(
+        self,
+        packet: Dict[str, Any],
+        model: str,
+        timeout_seconds: Optional[float] = None,
+    ) -> Optional[Dict[str, Any]]:
         self._last_ollama_error = ""
         scout_view = self._scout_view(packet)
         prompt = (
@@ -630,7 +646,11 @@ class OllamaScout:
             "options": {"temperature": 0, "num_ctx": self.num_ctx, "num_predict": 128},
         }
         try:
-            response = httpx.post(f"{self.base_url}/api/chat", json=payload, timeout=self.timeout_seconds)
+            response = httpx.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+                timeout=max(0.01, float(timeout_seconds or self.timeout_seconds)),
+            )
             response.raise_for_status()
             content = response.json().get("message", {}).get("content", "")
             try:
@@ -799,6 +819,7 @@ class OllamaScout:
         }
         return {
             "goal": packet.get("goal"),
+            "agent_awareness": packet.get("agent_awareness", {}),
             "economized_task_envelope": packet.get("economized_task_envelope", {}),
             "compression_contract": packet.get("compression_contract", {}),
             "memory_state": packet.get("memory_state", {}),

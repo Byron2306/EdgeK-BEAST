@@ -5,18 +5,25 @@ Responsible for routing the governed request to the appropriate provider/model
 
 import os
 import json
+import hashlib
 import httpx
 import asyncio
 from typing import Dict, Any, Optional
 from dataclasses import asdict
 import logging
+from pathlib import Path
 
 from .perceive import EdgeKIR, ProviderType
 from .reason import GovernanceDecision, GovernanceResult
 from .providers import ProviderFactory, OpenAIProvider, AnthropicProvider
 from .runtime import runtime_governor
+from .inference_interceptor import compute_interceptor
+from .streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
+from .durable_inference_storage import DurableInferenceStorage
 
 logger = logging.getLogger(__name__)
+
+streaming_compute_interceptor = StreamingComputeInterceptor()
 
 
 class Executor:
@@ -54,13 +61,125 @@ class Executor:
         # Determine the target provider
         provider_type = self._determine_provider_type(ir)
         provider_name = "google" if provider_type == ProviderType.GEMINI else provider_type.value
+        compute = compute_interceptor.begin(ir, provider_name)
+        compute_route = compute_interceptor.execution_route(compute)
+        if compute_route == "deterministic":
+            response = compute_interceptor.deterministic_response(compute)
+            receipt = compute_interceptor.complete(
+                compute,
+                response=response,
+                status="deterministic_succeeded",
+                provider_execution_requested=False,
+                behavior_preserved=True,
+            )
+            response["edgek_compute"] = self._compute_summary(compute, receipt)
+            response["edgek_runtime"] = {
+                "attempt_id": "",
+                "provider": "deterministic_transform",
+                "timeout_seconds": 0,
+            }
+            return response
+        if compute_route == "reuse":
+            response = compute_interceptor.reuse_response(compute)
+            receipt = compute_interceptor.complete(
+                compute,
+                response=response,
+                status="reuse_succeeded",
+                provider_execution_requested=False,
+                behavior_preserved=True,
+            )
+            response["edgek_compute"] = self._compute_summary(compute, receipt)
+            response["edgek_runtime"] = {
+                "attempt_id": "",
+                "provider": "verified_reuse",
+                "timeout_seconds": 0,
+            }
+            return response
+        if compute_route == "approval":
+            receipt = compute_interceptor.complete(
+                compute,
+                status="approval_required",
+                provider_execution_requested=False,
+                error_type="approval_required",
+            )
+            return self._create_error_response(
+                "APPROVAL_REQUIRED",
+                compute.gate.reason,
+                status_code=409,
+                extra={"compute": self._compute_summary(compute, receipt)},
+            )
+        if compute_route == "escalate":
+            receipt = compute_interceptor.complete(
+                compute,
+                status="compute_escalated",
+                provider_execution_requested=False,
+                error_type="compute_escalated",
+            )
+            return self._create_error_response(
+                "COMPUTE_ESCALATED",
+                compute.gate.reason,
+                status_code=409,
+                extra={"compute": self._compute_summary(compute, receipt)},
+            )
+        if compute_route == "local":
+            response = compute_interceptor.local_inference_response(compute)
+            receipt = compute_interceptor.complete(
+                compute,
+                response=response,
+                status="local_inference_selected",
+                provider_execution_requested=False,
+                behavior_preserved=None,
+            )
+            response["edgek_compute"] = self._compute_summary(compute, receipt)
+            response["edgek_runtime"] = {
+                "attempt_id": "",
+                "provider": "local_inference",
+                "timeout_seconds": 0,
+            }
+            return response
+        durable_replay = self._durable_inference_replay(ir)
+        if durable_replay is not None:
+            response = {
+                "object": "beast.durable_inference_replay",
+                "replay": durable_replay.to_dict(),
+                "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            }
+            if durable_replay.replay_type == "cached_answer":
+                response["text"] = durable_replay.payload.get("response", "")
+            receipt = compute_interceptor.complete(
+                compute,
+                response=response,
+                status="durable_replay_succeeded",
+                provider_execution_requested=False,
+                behavior_preserved=True,
+            )
+            response["edgek_compute"] = self._compute_summary(compute, receipt)
+            response["edgek_runtime"] = {
+                "attempt_id": "",
+                "provider": "durable_inference_storage",
+                "timeout_seconds": 0,
+            }
+            return response
         admission = runtime_governor.begin_execution(
             provider=provider_name,
             model=ir.model,
             session_id=ir.metadata.get("session_id", "default"),
-            metadata={"stream": ir.stream}
+            metadata={
+                "stream": ir.stream,
+                "compute_plan_id": compute.plan.plan_id,
+                "compute_gate_id": compute.gate.gate_id,
+                "compute_mode": compute.plan.mode,
+                "compute_recommended_rung": compute.gate.recommended_rung,
+            }
         )
         if not admission.allowed:
+            receipt = compute_interceptor.complete(
+                compute,
+                runtime_attempt_id=admission.attempt_id,
+                status="runtime_rejected",
+                provider_execution_requested=False,
+                error_type="runtime_admission",
+            )
             return self._create_error_response(
                 "RUNTIME_DEFERRED",
                 admission.reason,
@@ -68,10 +187,42 @@ class Executor:
                 extra={
                     "attempt_id": admission.attempt_id,
                     "retry_after_seconds": admission.retry_after_seconds,
+                    "compute": self._compute_summary(compute, receipt),
                 }
             )
 
         try:
+            if self._should_intercept_stream(ir):
+                response = await asyncio.wait_for(
+                    self._execute_intercepted_stream(provider_type, ir, compute),
+                    timeout=admission.timeout_seconds,
+                )
+                success = "error" not in response
+                runtime_governor.complete_execution(
+                    attempt_id=admission.attempt_id,
+                    provider=provider_name,
+                    success=success,
+                    error_type=response.get("error", {}).get("type", "") if not success else "",
+                    error_message=response.get("error", {}).get("message", "") if not success else "",
+                )
+                stream_report = response.pop("_edgek_stream_interception_report", None)
+                receipt = compute_interceptor.complete(
+                    compute,
+                    response=response,
+                    runtime_attempt_id=admission.attempt_id,
+                    status="stream_intercepted" if success else "stream_interception_error",
+                    provider_execution_requested=True,
+                    error_type=response.get("error", {}).get("type", "") if not success else "",
+                    stream_report=stream_report,
+                )
+                if isinstance(response, dict):
+                    response.setdefault("edgek_runtime", {
+                        "attempt_id": admission.attempt_id,
+                        "provider": provider_name,
+                        "timeout_seconds": admission.timeout_seconds,
+                    })
+                    response.setdefault("edgek_compute", self._compute_summary(compute, receipt))
+                return response
             response = await asyncio.wait_for(
                 self._route_to_provider(provider_type, ir),
                 timeout=admission.timeout_seconds,
@@ -84,12 +235,21 @@ class Executor:
                 error_type=response.get("error", {}).get("type", "") if not success else "",
                 error_message=response.get("error", {}).get("message", "") if not success else "",
             )
+            receipt = compute_interceptor.complete(
+                compute,
+                response=response,
+                runtime_attempt_id=admission.attempt_id,
+                status="succeeded" if success else "provider_error",
+                provider_execution_requested=True,
+                error_type=response.get("error", {}).get("type", "") if not success else "",
+            )
             if isinstance(response, dict):
                 response.setdefault("edgek_runtime", {
                     "attempt_id": admission.attempt_id,
                     "provider": provider_name,
                     "timeout_seconds": admission.timeout_seconds,
                 })
+                response.setdefault("edgek_compute", self._compute_summary(compute, receipt))
             return response
         except asyncio.TimeoutError:
             runtime_governor.complete_execution(
@@ -99,11 +259,18 @@ class Executor:
                 error_type="timeout",
                 error_message=f"Provider execution timed out after {admission.timeout_seconds}s",
             )
+            receipt = compute_interceptor.complete(
+                compute,
+                runtime_attempt_id=admission.attempt_id,
+                status="timeout",
+                provider_execution_requested=True,
+                error_type="timeout",
+            )
             return self._create_error_response(
                 "RUNTIME_TIMEOUT",
                 f"Provider execution timed out after {admission.timeout_seconds}s",
                 status_code=504,
-                extra={"attempt_id": admission.attempt_id}
+                extra={"attempt_id": admission.attempt_id, "compute": self._compute_summary(compute, receipt)}
             )
         except Exception as e:
             runtime_governor.complete_execution(
@@ -113,12 +280,181 @@ class Executor:
                 error_type="runtime_exception",
                 error_message=str(e),
             )
+            receipt = compute_interceptor.complete(
+                compute,
+                runtime_attempt_id=admission.attempt_id,
+                status="runtime_exception",
+                provider_execution_requested=True,
+                error_type="runtime_exception",
+            )
             return self._create_error_response(
                 "RUNTIME_ERROR",
                 str(e),
                 status_code=500,
-                extra={"attempt_id": admission.attempt_id}
+                extra={"attempt_id": admission.attempt_id, "compute": self._compute_summary(compute, receipt)}
             )
+
+    @staticmethod
+    def _compute_summary(compute, receipt) -> Dict[str, Any]:
+        return {
+            "mode": compute.plan.mode,
+            "enforced": compute.gate.enforced,
+            "plan_id": compute.plan.plan_id,
+            "gate_id": compute.gate.gate_id,
+            "receipt_id": receipt.receipt_id,
+            "selected_rung": compute.gate.selected_rung,
+            "recommended_rung": compute.gate.recommended_rung,
+            "predicted_avoidable_work": compute.gate.predicted_avoidable_work,
+            "deterministic_shadow": {
+                "attempts": receipt.deterministic_shadow_attempts,
+                "verified": receipt.deterministic_shadow_verified,
+                "calibrated": receipt.deterministic_shadow_calibrated,
+                "agreements": receipt.deterministic_shadow_agreements,
+            },
+            "verified_reuse": {
+                "decision": (compute.verified_reuse_decision or {}).get("decision"),
+                "matched_capability": (compute.verified_reuse_decision or {}).get("matched_capability"),
+                "confidence": (compute.verified_reuse_decision or {}).get("confidence"),
+            },
+            "adaptive_routing": {
+                "decision": getattr(compute.adaptive_routing, "decision", None),
+                "route": getattr(compute.adaptive_routing, "route", None),
+                "requires_approval": getattr(compute.adaptive_routing, "requires_approval", None),
+                "violations": getattr(getattr(compute.adaptive_routing, "budget_check", None), "violations", None),
+            },
+            "streaming": {
+                "early_stopped": receipt.early_stopped,
+                "stop_reason": receipt.stream_stop_reason,
+                "tokens_saved": receipt.stream_tokens_saved,
+                "repair_action": receipt.stream_repair_action,
+                "upstream_cancel_requested": receipt.upstream_cancel_requested,
+            },
+        }
+
+    def _should_intercept_stream(self, ir: EdgeKIR) -> bool:
+        metadata = ir.metadata or {}
+        return bool(ir.stream and metadata.get("stream_interception_enabled") is True)
+
+    def _durable_inference_replay(self, ir: EdgeKIR):
+        metadata = ir.metadata or {}
+        if metadata.get("durable_inference_replay_enabled") is not True:
+            return None
+        storage_path = metadata.get("durable_inference_storage_path")
+        storage = DurableInferenceStorage(Path(storage_path)) if storage_path else DurableInferenceStorage()
+        parameters = metadata.get("durable_parameters")
+        if parameters is None:
+            parameters = {
+                "temperature": getattr(ir, "temperature", None),
+                "max_tokens": getattr(ir, "max_tokens", None),
+            }
+        prompt_hash = metadata.get("prompt_hash") or metadata.get("durable_prompt_hash")
+        if not prompt_hash:
+            prompt_hash = "sha256:" + hashlib.sha256(
+                json.dumps(getattr(ir, "messages", []) or [], sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+        replay = storage.runtime_lookup_replay(
+            task_class=metadata.get("task_class"),
+            repo_fingerprint=metadata.get("repo_fingerprint"),
+            prompt_hash=prompt_hash,
+            model=getattr(ir, "model", None),
+            parameters=parameters if isinstance(parameters, dict) else {},
+            tokenizer=metadata.get("tokenizer"),
+            prompt_prefix=metadata.get("prompt_prefix"),
+            system_prompt=metadata.get("system_prompt"),
+        )
+        measured = metadata.get("measured_reuse_tokens_saved")
+        if replay is not None and measured is not None:
+            storage.replay_credit(replay.credit_id, measured_tokens_saved=self._optional_int(measured) or 0)
+        return replay
+
+    async def _execute_intercepted_stream(self, provider_type: ProviderType, ir: EdgeKIR, compute) -> Dict[str, Any]:
+        metadata = ir.metadata or {}
+        schema = metadata.get("stream_schema_contract") or metadata.get("governed_schema")
+        max_tokens = self._optional_int(metadata.get("stream_max_output_tokens")) or ir.max_tokens
+        baseline = self._optional_int(metadata.get("stream_baseline_output_tokens")) or ir.max_tokens
+        interceptor = streaming_compute_interceptor
+        if schema:
+            interceptor = StreamingComputeInterceptor(
+                StreamingInterceptionEngine(max_output_tokens=max_tokens or 4096, schema_contract=schema)
+            )
+        provider_stream = self._route_to_provider_stream(provider_type, ir)
+        report = await interceptor.intercept_provider_stream(
+            provider_stream,
+            max_tokens=max_tokens,
+            baseline_output_tokens=baseline,
+        )
+        content = "".join(report.emitted_chunks)
+        response = self._openai_text_response(
+            ir,
+            content,
+            provider="stream_interception",
+            extra={
+                "edgek_stream_interception": report.to_dict(),
+                "_edgek_stream_interception_report": report,
+            },
+        )
+        response["usage"]["completion_tokens"] = report.savings.emitted_tokens
+        response["usage"]["total_tokens"] = response["usage"]["prompt_tokens"] + report.savings.emitted_tokens
+        response["choices"][0]["finish_reason"] = report.final_state.stop_reason or "stop"
+        return response
+
+    async def _route_to_provider_stream(self, provider_type: ProviderType, ir: EdgeKIR):
+        if provider_type == ProviderType.OPENAI:
+            api_key = os.environ.get("OPENAI_API_KEY")
+            if not api_key or api_key.startswith("sk-test") or "test" in api_key.lower():
+                async for item in self._simulate_openai_stream(ir):
+                    yield item
+                return
+            provider = OpenAIProvider(api_key=api_key)
+            try:
+                async for item in provider.complete_stream(ir):
+                    yield item
+            finally:
+                await provider.close()
+            return
+        if provider_type == ProviderType.ANTHROPIC:
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+            if not api_key:
+                async for item in self._simulate_anthropic_stream(ir):
+                    yield item
+                return
+            provider = AnthropicProvider(api_key=api_key)
+            try:
+                async for item in provider.complete_stream(ir):
+                    yield item
+            finally:
+                await provider.close()
+            return
+        async for item in self._simulate_openai_stream(ir):
+            yield item
+
+    async def _simulate_openai_stream(self, ir: EdgeKIR):
+        text = str((ir.metadata or {}).get("simulated_stream_text") or self._simulate_openai_response(ir)["choices"][0]["message"]["content"])
+        for chunk in self._stream_text_chunks(text):
+            yield {"choices": [{"delta": {"content": chunk}}]}
+        yield {"choices": [{"delta": {}, "finish_reason": "stop"}]}
+
+    async def _simulate_anthropic_stream(self, ir: EdgeKIR):
+        content = self._simulate_anthropic_response(ir)["content"][0]["text"]
+        text = str((ir.metadata or {}).get("simulated_stream_text") or content)
+        for chunk in self._stream_text_chunks(text):
+            yield {"type": "content_block_delta", "delta": {"type": "text_delta", "text": chunk}}
+        yield {"type": "message_delta", "stop_reason": "end_turn"}
+
+    @staticmethod
+    def _stream_text_chunks(text: str):
+        size = 24
+        for index in range(0, len(text), size):
+            yield text[index:index + size]
+
+    @staticmethod
+    def _optional_int(value: Any) -> Optional[int]:
+        if value in (None, ""):
+            return None
+        try:
+            return max(0, int(value))
+        except (TypeError, ValueError):
+            return None
 
     async def _route_to_provider(self, provider_type: ProviderType, ir: EdgeKIR) -> Dict[str, Any]:
         """Route to the appropriate provider implementation."""

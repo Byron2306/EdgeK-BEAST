@@ -1,0 +1,115 @@
+{
+  "attempted": true,
+  "error": "",
+  "latency_ms": 15376.288,
+  "model": "qwen2.5:0.5b",
+  "normalized": {
+    "gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "rollback_plan",
+      "secret_redaction_gate",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "needs_cloud": false,
+    "objective": "Repair an isolated provider gateway package",
+    "promote": false,
+    "required_gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "rollback_plan",
+      "secret_redaction_gate",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "required_route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "mcp_git_status_diff",
+      "pytest",
+      "approval_gate",
+      "promotion_candidate"
+    ],
+    "required_subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "risk": "high",
+    "route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "mcp_git_status_diff",
+      "pytest",
+      "approval_gate",
+      "promotion_candidate"
+    ],
+    "subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "task_class": "hard_gateway_repair",
+    "task_id": "opus_case_gateway_repair",
+    "tier": 7,
+    "tier_name": "approved_multifile_patch_verify_promote",
+    "verify": [
+      "verification_receipt"
+    ]
+  },
+  "parsed": {
+    "objective": "Repair an isolated provider gateway package",
+    "required_gates": [
+      "no_cloud_until_local_evidence",
+      "approval_before_write",
+      "rollback_plan",
+      "secret_redaction_gate",
+      "verification_gate",
+      "receipt_required"
+    ],
+    "required_route": [
+      "meta_tool_commons",
+      "capability_registry",
+      "fused_crystal",
+      "zeroclaw",
+      "openclaw",
+      "swarm",
+      "mcp_git_status_diff",
+      "pytest",
+      "approval_gate",
+      "promotion_candidate"
+    ],
+    "required_subagents": [
+      "zeroclaw_planner",
+      "cartographer",
+      "openclaw_inspector",
+      "supervisor",
+      "scribe",
+      "promotion_scribe"
+    ],
+    "risk": "high",
+    "task_class": "hard_gateway_repair",
+    "task_id": "opus_case_gateway_repair",
+    "tier": 7,
+    "tier_name": "approved_multifile_patch_verify_promote"
+  },
+  "passed": true,
+  "raw_response": "```json\n{\n    \"objective\": \"Repair an isolated provider gateway package\",\n    \"required_gates\": [\"no_cloud_until_local_evidence\", \"approval_before_write\", \"rollback_plan\", \"secret_redaction_gate\", \"verification_gate\", \"receipt_required\"],\n    \"required_route\": [\"meta_tool_commons\", \"capability_registry\", \"fused_crystal\", \"zeroclaw\", \"openclaw\", \"swarm\", \"mcp_git_status_diff\", \"pytest\", \"approval_gate\", \"promotion_candidate\"],\n    \"required_subagents\": [\"zeroclaw_planner\", \"cartographer\", \"openclaw_inspector\", \"supervisor\", \"scribe\", \"promotion_scribe\"],\n    \"risk\": \"high\",\n    \"task_class\": \"hard_gateway_repair\",\n    \"task_id\": \"opus_case_gateway_repair\",\n    \"tier\": 7,\n    \"tier_name\": \"approved_multifile_patch_verify_promote\"\n}\n```",
+  "repair_applied": true,
+  "score": 0.955
+}

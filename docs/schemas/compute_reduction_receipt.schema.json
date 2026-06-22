@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgek.local/schemas/compute_reduction_receipt.schema.json",
+  "title": "BEAST Compute Reduction Receipt",
+  "type": "object",
+  "required": [
+    "beast_object_type",
+    "version",
+    "receipt_id",
+    "space_id",
+    "space_manifest_hash",
+    "baseline_route",
+    "optimized_route",
+    "displacement",
+    "resource_deltas",
+    "verifier",
+    "provenance",
+    "fingerprint_hash",
+    "local_seal"
+  ],
+  "properties": {
+    "beast_object_type": {"const": "compute_reduction_receipt"},
+    "version": {"const": "1.0"},
+    "receipt_id": {"type": "string", "pattern": "^space_receipt_[a-f0-9]{20}$"},
+    "space_id": {"type": "string"},
+    "space_manifest_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "baseline_route": {"type": "object"},
+    "optimized_route": {"type": "object"},
+    "displacement": {"type": "object"},
+    "resource_deltas": {"type": "object"},
+    "verifier": {"type": "object"},
+    "provenance": {"type": "object"},
+    "fingerprint_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "local_seal": {"type": "object"}
+  }
+}

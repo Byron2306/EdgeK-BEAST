@@ -1,0 +1,32 @@
+{
+  "annealing": {
+    "beast_object_type": "crystal_annealing_report",
+    "fork_count": 8,
+    "merged_duplicates": 1,
+    "retired_stale": 1,
+    "split_multimodal": 1,
+    "version": "1.0"
+  },
+  "beast_object_type": "compute_governor_phase5_temporal_forks",
+  "candidate_traffic_share": 0.25,
+  "claim_boundary": "Local benchmark proves bounded temporal channels, rollback isolation, promotion gating, and annealing operations; production rollout remains approval/policy gated.",
+  "experimental_state_after_failure": "rolled_back",
+  "experimental_traffic_share": 0.05,
+  "fork_state": {
+    "channels": {
+      "candidate": 4,
+      "experimental": 2,
+      "stable": 2
+    },
+    "states": {
+      "active": 5,
+      "merged": 1,
+      "retired": 1,
+      "rolled_back": 1
+    }
+  },
+  "passed": true,
+  "promoted_channel": "stable",
+  "stable_traffic_after_experiment": 1.0,
+  "version": "1.0"
+}

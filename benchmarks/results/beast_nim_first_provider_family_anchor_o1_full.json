@@ -1,0 +1,1892 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-21T05:17:47Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_nvidia_nim_full_beast": {
+      "average_latency_ms": 13199.22,
+      "average_provider_tokens": 5295.5,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 6,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 6,
+      "provider_tokens_per_verified_fix": 5295.5,
+      "repair_attempted": 5,
+      "rescued_completed": 6,
+      "tasks": 6
+    },
+    "live_nvidia_nim_raw": {
+      "average_latency_ms": 32146.373,
+      "average_provider_tokens": 1325.833,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    },
+    "live_nvidia_nim_schema_only": {
+      "average_latency_ms": 27094.27,
+      "average_provider_tokens": 1325.833,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 0,
+    "excluded_infra_failure": 0,
+    "infra_failure": 0,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 5,
+    "nim_tests_failed": 13,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_nim_first_provider_family_anchor_o1_full_gauntlet",
+    "result_count": 18
+  },
+  "live_provider_fitness": {
+    "nvidia_nim": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 6,
+      "beast_completion_rate": 0.3333,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "metrics": {
+        "cost_per_success_score": 1.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.1111,
+        "latency_per_success_score": 1.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.0556,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.0556,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "refs_only_transform_selector",
+      "rescue_rate": 1.0,
+      "rescued_completed": 6,
+      "route_confidence": "low",
+      "sample_size": 18,
+      "score": 0.2667,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 18
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 59070.194,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 59070.194,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3542,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 347,
+          "prompt_tokens_details": null,
+          "total_tokens": 1247
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The objective: fix output governance JSON extraction for markdown/prose failure cases. The allowed edit path: app/output_guard.py. The current file content: a simple parse_provider_output that just does json.loads(text). We need to modify it to extract JSON from markdown or prose, i.e., find JSON block within triple backticks or maybe first {...}. The test expects that parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") returns {\"ok\": True}. So we need to implement extraction: if text contains triple backticks with optional language, extract the inner content, then parse JSON. Also handle cases where there is extra prose before/after.\n\nWe need to output a JSON with operations list. Since we are replacing the file content, we can use op \"create_or_replace\" with path \"app/output_guard.py\" and content being the new file content.\n\nWe need to include op_id, why, etc. Also include tests array (list of strings) as given: [\"python -m pytest tests -q\"].\n\nWe need verification also? The schema includes tests array at top-level? Actually schema: kind, operations[], tests[] (l",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7ff24a05b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.06s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 347,
+        "prompt_tokens_details": null,
+        "total_tokens": 1247
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 22386.561,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 22386.561,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3676,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 347,
+          "prompt_tokens_details": null,
+          "total_tokens": 1247
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. The objective: fix output governance JSON extraction for markdown/prose failure cases. The file to edit: app/output_guard.py. We need to modify parse_provider_output to extract JSON from markdown or prose. Currently it just does json.loads(text). We need to improve to handle cases where text may contain markdown code fences or extra prose.\n\nWe need to output a patch. The schema expects operations array with objects containing op, path, etc. Since we are editing a file, we likely need replace_exact or create_or_replace. The file currently:\n\nimport json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n\nWe need to replace the function body with something that extracts JSON. Could replace the whole function. Use op: replace_exact? Or create_or_replace? Since file exists, we can replace_exact the function definition.\n\nWe need to specify old snippet exactly as it appears, and new snippet with our implementation.\n\nLet's craft old snippet:\n\n\"def parse_provider_output(text):\\n    return json.loads(text)\"\n\nBut note there is",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7ff8fc04b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 347,
+        "prompt_tokens_details": null,
+        "total_tokens": 1247
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 17146.063,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 17146.063,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 2841,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 3978,
+          "prompt_tokens_details": null,
+          "total_tokens": 4878
+        }
+      },
+      "prompt_tokens": 3114,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. We must return exactly one JSON object with the specified structure.\n The skeleton is:\n {\n   \"actions\": [ ... ],\n   \"fallback\": \"\",\n   \"handoff_hash\": \"sha256:848ebd4a7d3b105e6949817ba522de072f5e0608a4bef1ede04bc45dfd60252f\",\n   \"kind\": \"beast.action_intent.v1\",\n   \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n   \"provider_handoff_hash\": \"sha256:848ebd4a7d3b105e6949817ba522de072f5e0608a4bef1ede04bc45dfd60252f\",\n   \"verify\": [\"python -m pytest tests -q\"]\n }\n\n We are to fill the \"actions\" array. The skeleton provided in the user message for the actions is:\n   [{\"id\":\"a1\",\"intent\":\"state the local change BEAST should make\",\"new\":\"replacement snippet only; omit old when anchor_ref is used\",\"target\":{\"anchor_ref\":\"A1\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}]\n\n However, note that the user message also says: \"Copy the JSON skeleton below and fill only its values.\"\n\n But then the user provided a skeleton that already has an action. We are to fill the values of that skeleton.\n\n However, looking at the context, we are in a strict output mode and must return the filled JSON.\n\n Let's break down the requirements f",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 3978,
+        "prompt_tokens_details": null,
+        "total_tokens": 4878
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 21865.571,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 21865.571,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3930,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 511,
+          "prompt_tokens_details": null,
+          "total_tokens": 1411
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also tests array (list of strings). The top-level also includes kind, objective, actions, verify, handoff_hash? Wait the instruction: \"For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" But the output_schema given is different: it's for source_patch or patch_intent. The user prompt includes output_schema with fields kind, operations, tests. And also there is a separate \"tests\" field in the prompt (the test file content). And verification.\n\nWe need to return exactly one JSON object matching the output_schema. The schema says kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". We need to choose one. Probably source_patch.v1 for file content replacement. We'll include operations array with one operation to replace the file content.\n\nWe need to fix provider-id normalization for hyphen and space variants. The current normalize_provider_id just lowercases. We need to also replace hyphens and spaces with ",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 511,
+        "prompt_tokens_details": null,
+        "total_tokens": 1411
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 43022.943,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 43022.943,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 11,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 511,
+          "prompt_tokens_details": null,
+          "total_tokens": 1411
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "{\n  \"kind\":",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 511,
+        "prompt_tokens_details": null,
+        "total_tokens": 1411
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 13720.321,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 13720.321,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3330,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 4756,
+          "prompt_tokens_details": null,
+          "total_tokens": 5656
+        }
+      },
+      "prompt_tokens": 3421,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. We must return exactly one JSON object with the specified structure.\n The skeleton is:\n {\n   \"actions\": [ ... ],\n   \"fallback\": \"\",\n   \"handoff_hash\": \"sha256:cd0d913fa96c880cff2fea5b410b5f2e018953b05dbe99f638bc095afb5c52da\",\n   \"kind\": \"beast.action_intent.v1\",\n   \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n   \"provider_handoff_hash\": \"sha256:cd0d913fa96c880cff2fea5b410b5f2e018953b05dbe99f638bc095afb5c52da\",\n   \"verify\": [\"python -m pytest tests -q\"]\n }\n\n We are to fill the \"actions\" array. We are allowed at most 4 operations.\n\n From the context, we are to fix provider-id normalization for hyphen and space variants.\n\n The file we are working on is: app/provider_parser.py (file_ref: F1)\n\n We are given anchor references in the file. We are to use replace_anchor actions.\n\n We are to use the smallest possible new snippet.\n\n Let's look at the anchors provided in the reference packet for F1 (app/provider_parser.py):\n\n A1: \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\"\n A2: \"def normalize_provider_id(value):\"\n A3: \"return str(value or \\\"\\\").lower()\"\n A4: \"def route_for(provider_id):\"\n A5: \"normalized ",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 4756,
+        "prompt_tokens_details": null,
+        "total_tokens": 5656
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 20782.903,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 20782.903,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3924,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 397,
+          "prompt_tokens_details": null,
+          "total_tokens": 1297
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce JSON matching output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. Probably \"beast.source_patch.v1\". Then operations array with objects containing content, new, old, op, op_id, path, why. Also tests array (list of strings). The user gave tests field with a test file content. But output_schema expects tests: [\"python -m pytest tests -q\"]? Actually they gave both tests and verification. The schema includes tests array of strings. We'll follow schema: tests: [\"python -m pytest tests -q\"].\n\nWe need to fix invoice totals across service and math helper files while satisfying hidden rounding tests. The current code: normalize_amount returns int(value). That truncates decimal. Need to handle string amounts and return Decimal? The test expects invoice_total to accept string amounts and return Decimal(\"3.50\") for [\"1.20\",\"2.30\"].\n\nThus we need to change normalize_amount to convert value to Decimal (from decimal import Decimal) and return Decimal(value). Also need to import Decimal in math_ops.py. Also service.py imports normalize_amount; invoice_total sums them; sum of Decimals returns Decimal? sum starts with 0 int",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 397,
+        "prompt_tokens_details": null,
+        "total_tokens": 1297
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 13761.416,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].path was not allowed: one allowed path",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 13761.416,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3827,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 397,
+          "prompt_tokens_details": null,
+          "total_tokens": 1297
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce JSON with kind, objective, actions, verify, handoff_hash? Wait the output_schema given is different: it's a schema for beast.source_patch.v1 or beast.patch_intent.v1 with operations and tests. The instruction: \"If the user prompt includes an output.schema, your response must match it exactly.\" So we must output JSON matching that schema. The schema includes fields: kind (string), operations (list of objects with content, new, old, op, op_id, path, why), tests (list of strings). Also there is a top-level \"tests\" field? Actually schema shows:\n\n{\n  \"kind\":\"beast.source_patch.v1 or beast.patch_intent.v1\",\n  \"operations\":[{\n    \"content\":\"complete replacement content only for create_or_replace\",\n    \"new\":\"replacement snippet for intent ops\",\n    \"old\":\"exact snippet for intent ops\",\n    \"op\":\"create_or_replace | replace_exact | insert_after | delete_exact\",\n    \"op_id\":\"op_001\",\n    \"path\":\"one allowed path\",\n    \"why\":\"short reason\"\n  }],\n  \"tests\":[\"python -m pytest tests -q\"]\n}\n\nThus we need to output exactly that shape. The user also gave verification command: \"python -m pytest tests -q\". That matches tests array.\n\nWe need to fix invoice totals across service and",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].path was not allowed: one allowed path",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:5: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:5: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return int(value)\n               ^^^^^^^^^^\nE       ValueError: invalid literal for int() with base 10: '1.20'\n\napp/math_ops.py:2: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.03s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 397,
+        "prompt_tokens_details": null,
+        "total_tokens": 1297
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 8336.873,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 8336.873,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py",
+          "app/service.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "nvidia_nim",
+        "raw_chars": 3388,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 4477,
+          "prompt_tokens_details": null,
+          "total_tokens": 5377
+        }
+      },
+      "prompt_tokens": 3324,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to output a JSON object matching the skeleton given, with filled values.\n\nSkeleton:\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"replacement snippet only; omit old when anchor_ref is used\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:fafd5c295871a4b947b72066324e7b2a1141693e30cb88ae0861f7b726fd7f70\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:fafd5c295871a4b947b72066324e7b2a1141693e30cb88ae0861f7b726fd7f70\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n\nWe need to fill only its values, but we can adjust actions maybe more than one? The skeleton shows one action a1. We can add more actions? The instruction: \"Copy the JSON skeleton below and fill only its values.\" Means we keep same structure, just fill values. So we must keep exactly that shape: actions array with one object? It says fill only its values. Likely we keep same number of actions (one).",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 4477,
+        "prompt_tokens_details": null,
+        "total_tokens": 5377
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 49190.195,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 49190.195,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3584,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 537,
+          "prompt_tokens_details": null,
+          "total_tokens": 1437
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to output a JSON object matching the schema: kind, operations list, tests. The schema says kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". We need to pick one. Likely \"beast.source_patch.v1\". Provide operations: we need to edit app/config.py to fix defaults and boolean normalization.\n\nCurrent code:\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n\nIssues:\n\n- provider default missing: test expects provider default \"openrouter\". So we need to set default for env.get(\"BEAST_PROVIDER\", \"openrouter\").\n\n- live_agent: parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)): The default is False (bool). parse_bool will see isinstance(value, bool) and return False. That's okay. But we need to handle shell-style boolean normalization: parse_bool should strip whitespace and be case-insensitive. Also a",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 537,
+        "prompt_tokens_details": null,
+        "total_tokens": 1437
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 45928.872,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 45928.872,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3761,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 537,
+          "prompt_tokens_details": null,
+          "total_tokens": 1437
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce JSON with kind, objective, actions, verify, handoff_hash? Wait the output_schema given is different: it's a schema for beast.source_patch.v1 or beast.patch_intent.v1 with operations and tests. The user says: \"If the user prompt includes an output.schema, your response must match it exactly. For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" There's a conflict: The user prompt includes an output.schema (the JSON under \"output_schema\"). So we must match that exactly. The instruction about BEAST Action IR might be generic but the presence of output.schema overrides? The instruction: \"If the user prompt includes an output.schema, your response must match it exactly.\" So we must output JSON matching that schema, not the BEAST Action IR. So we need to produce a JSON with fields: kind, operations, tests. The kind can be either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". We need to decide which. Likely source_patch for file changes. Provide operations list with one operation to fix config parsing defaults and shell-style boolean normalization.\n\nWe need to edit allowed path: app/config.py. We need to replace content to fix ",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 537,
+        "prompt_tokens_details": null,
+        "total_tokens": 1437
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 9879.423,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 9879.423,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3116,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 5059,
+          "prompt_tokens_details": null,
+          "total_tokens": 5959
+        }
+      },
+      "prompt_tokens": 3540,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. We must return exactly one JSON object with the specified structure.\n The skeleton is:\n {\n   \"actions\": [ ... ],\n   \"fallback\": \"\",\n   \"handoff_hash\": \"sha256:eb74d11d9f2724f73febc76b2b8108214badc32e13e91b5529a41dffc6ddfab2\",\n   \"kind\": \"beast.action_intent.v1\",\n   \"objective\": \"Fix config parsing defaults and shell-style boolean normalization.\",\n   \"provider_handoff_hash\": \"sha256:eb74d11d9f2724f73febc76b2b8108214badc32e13e91b5529a41dffc6ddfab2\",\n   \"verify\": [\"python -m pytest tests -q\"]\n }\n\n We are to fill the \"actions\" array. The skeleton provided in the user message for the actions is:\n   [{\"id\":\"a1\",\"intent\":\"state the local change BEAST should make\",\"new\":\"replacement snippet only; omit old when anchor_ref is used\",\"target\":{\"anchor_ref\":\"A1\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}]\n\n However, note that the user says: \"Copy the JSON skeleton below and fill only its values.\"\n\n But we are also given a reference packet and constraints.\n\n Let's break down the task:\n\n Objective: Fix config parsing defaults and shell-style boolean normalization.\n\n We are allowed to use at most 4 operations (actions). We are to use replace_anchor actions with",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.02s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 5059,
+        "prompt_tokens_details": null,
+        "total_tokens": 5959
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 25464.381,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 25464.381,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3785,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 384,
+          "prompt_tokens_details": null,
+          "total_tokens": 1284
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind is either beast.source_patch.v1 or beast.patch_intent.v1. The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also tests array (list of strings). The user gave tests dict with a test file content. The schema expects tests as list of strings? It says \"tests\": [\"python -m pytest tests -q\"] in schema. But the user gave a dict mapping file path to content. We need to follow the schema: tests is an array of strings. However the user also gave a \"tests\" field in the prompt with file content. The instruction: \"If the user prompt includes an output.schema, your response must match it exactly.\" So we must output JSON that matches the schema: kind, operations, tests (array of strings). The verification field is not in schema; we should not include extra fields? The schema only includes kind, operations, tests. We should not include verification. The user also gave verification string but we must follow schema. So output JSON with kind, operations, tests.\n\nWe need to fix provider config normalization and never return raw API keys. The current function returns dict with provider and api_key (ra",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'api_key': '... 'openrouter'} == {'api_key_pre... 'openrouter'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 384,
+        "prompt_tokens_details": null,
+        "total_tokens": 1284
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 13949.959,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 13949.959,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3669,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 384,
+          "prompt_tokens_details": null,
+          "total_tokens": 1284
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. The task: fix provider config normalization and never return raw API keys. The current code returns dict with provider and api_key (raw). We need to change to return provider normalized (underscores?) and api_key_present boolean. The test expects provider: \"nvidia_nim\" (note they changed hyphen to underscore) and api_key_present: True. So we need to modify provider_env function to:\n\n- Normalize provider_id: replace hyphens with underscores? The test shows input provider_id \"nvidia-nim\" becomes \"nvidia_nim\". So we can do provider_id.replace('-', '_').\n\n- Instead of returning raw api_key, return a boolean indicating presence: api_key_present: bool(env.get(key)).\n\nThus new function:\n\ndef provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    normalized_provider = provider_id.replace('-', '_')\n    return {\n        \"provider\": normalized_provider,\n        \"api_key_present\": bool(env.get(key, \"\"))\n    }\n\nWe need to output a patch. Since we have allowed_edit_paths: [\"app/provider_config.py\"].\n\nWe need to provide an",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'api_key': '... 'openrouter'} == {'api_key_pre... 'openrouter'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 384,
+        "prompt_tokens_details": null,
+        "total_tokens": 1284
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 14658.323,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 14658.323,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 2920,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 4095,
+          "prompt_tokens_details": null,
+          "total_tokens": 4995
+        }
+      },
+      "prompt_tokens": 3126,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. The skeleton is:\n\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"replacement snippet only; omit old when anchor_ref is used\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:7608749f93e72f32fb2289eaf46d07cd2ad4f1db1d064a6c1b4305a9488e6457\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"provider_handoff_hash\": \"sha256:7608749f93e72f32fb2289eaf46d07cd2ad4f1db1d064a6c1b4305a9488e6457\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n\nWe must fill only the values, and we are to return exactly one compact JSON object.\n\nFrom the context, we have:\n- The file_ref is F1, which points to \"app/provider_config.py\"\n- The anchor_ref A1 is defined in the references: \n    \"anchors\": [{\"chars\":35,\"label\":\"def provider_env(provider_id, env):\",\"ref\":\"A1\",\"sha256\":\"28d5949cd2ba083e4f21de0b6ff5828b9d2c44cfb0315982541f5567e42cebeb\"}]\n\nSo the anchor A1 is at the function definition: \"def provider_env(provider_id, ",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 4095,
+        "prompt_tokens_details": null,
+        "total_tokens": 4995
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 16504.994,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 16504.994,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3919,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 379,
+          "prompt_tokens_details": null,
+          "total_tokens": 1279
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. Since we are editing a file, we can use beast.source_patch.v1. Provide operations array with one operation. The file path: \"app/nim_contract.py\". We need to replace the function validate_nim_action to fix NIM refs-only output validation so anchor refs are used without copied old snippets. The current function:\n\ndef validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n\nWe need to ensure that anchor refs are used without copied old snippets. Possibly we need to check that action has target with anchor_ref and also maybe file_ref? The test expects that action with target containing file_ref and anchor_ref returns True. The current function only checks anchor_ref, not file_ref. The test passes? It passes because anchor_ref present. But objective: \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\" Might need to ensure that we don't copy old snippets? Not sure. Perhaps we need to change validation to also require file_ref? The test expects True when both file_ref",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 379,
+        "prompt_tokens_details": null,
+        "total_tokens": 1279
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 23515.87,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 23515.87,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3812,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 379,
+          "prompt_tokens_details": null,
+          "total_tokens": 1279
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. The objective: \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\" The allowed edit path: app/nim_contract.py. The current file content: \ndef validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n\nWe need to fix validation so anchor refs are used without copied old snippets. Possibly we need to also check for file_ref? The test expects that validate_nim_action returns True for action with target containing file_ref and anchor_ref, and new field present. The current function only checks anchor_ref inside target, returns bool of that. It does not check file_ref. The test passes if it returns True for that action. Let's see: action = {\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}. action.get(\"target\", {}).get(\"anchor_ref\") => \"A1\" => bool(\"A1\") => True. So test passes already. But maybe the issue is that we need to ensure that we don't copy old snippets? The validation should ensure that anchor refs are used without copied old snippets. Perha",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 379,
+        "prompt_tokens_details": null,
+        "total_tokens": 1279
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 15454.316,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 15454.316,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "nvidia_nim",
+        "raw_chars": 3061,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 900,
+          "prompt_tokens": 4008,
+          "prompt_tokens_details": null,
+          "total_tokens": 4908
+        }
+      },
+      "prompt_tokens": 3114,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. The skeleton is:\n\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"replacement snippet only; omit old when anchor_ref is used\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:9398d1cde0334c87fbab7a3ea45b0e66c00adec39428fa64316ff616a15fab90\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:9398d1cde0334c87fbab7a3ea45b0e66c00adec39428fa64316ff616a15fab90\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n\nWe must fill only the values, and we are not to invent keys. We are to use the reference packet provided in the user prompt.\n\nFrom the reference packet, we have:\n- file_ref: \"F1\" (from the legal file refs and anchor refs: [{\"anchor_refs\":[\"A1\",\"A2\"],\"file_ref\":\"F1\",\"path\":\"app/nim_contract.py\"}]\n- anchor_refs: \"A1\" and \"A2\"\n\nThe objective is already given in the skeleton and matches the context.\n\nWe are to use the smallest possible new snipp",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 900,
+        "prompt_tokens": 4008,
+        "prompt_tokens_details": null,
+        "total_tokens": 4908
+      }
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-21T05:17:47Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "planned_run_count": 18,
+    "providers": [
+      {
+        "api_key_env": "NVIDIA_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider": "nvidia_nim",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 180.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/output_guard.py"
+        ],
+        "hidden_tests": [
+          "tests/test_output_guard_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "output_governance_malformed_json",
+        "task_id": "output_governance_malformed_json",
+        "visible_tests": [
+          "tests/test_output_guard_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_parser.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_parser_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_id_parser",
+        "task_id": "provider_id_parser",
+        "visible_tests": [
+          "tests/test_provider_parser.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/service.py",
+          "app/math_ops.py"
+        ],
+        "hidden_tests": [
+          "tests/test_invoice_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "multi_file_hidden_decimal_fix",
+        "task_id": "multi_file_hidden_decimal_fix",
+        "visible_tests": [
+          "tests/test_invoice_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "config_validation_edge_case",
+        "task_id": "config_validation_edge_case",
+        "visible_tests": [
+          "tests/test_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_config_secret_redaction",
+        "task_id": "provider_config_secret_redaction",
+        "visible_tests": [
+          "tests/test_provider_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/nim_contract.py"
+        ],
+        "hidden_tests": [
+          "tests/test_nim_contract_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "nim_refs_only_contract",
+        "task_id": "nim_refs_only_contract",
+        "visible_tests": [
+          "tests/test_nim_contract_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "live_only": true,
+    "max_tasks": 6,
+    "max_tokens": 900,
+    "prompt_mode": "compact",
+    "timeout_seconds": 180.0
+  },
+  "live_summary": {
+    "nvidia_nim": {
+      "average_latency_ms": 24146.621,
+      "average_provider_prompt_tokens": 1749.056,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": 0.0,
+      "completed": 6,
+      "completion_rate": 0.3333,
+      "failures": [
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "provider_id_parser"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "provider_id_parser"
+        },
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "multi_file_hidden_decimal_fix"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: operations[0].path was not allowed: one allowed path",
+          "task": "multi_file_hidden_decimal_fix"
+        },
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_nvidia_nim_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "nim_refs_only_contract"
+        },
+        {
+          "lane": "live_nvidia_nim_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "nim_refs_only_contract"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "latency_ms_per_verified_fix": 13199.22,
+      "local_verifier_repaired": 6,
+      "provider_tokens_per_verified_fix": 5295.5,
+      "recommended_role": "refs_only_transform_selector",
+      "repair_attempted": 5,
+      "rescue_rate": 1.0,
+      "rescued_completed": 6,
+      "route_confidence": "low",
+      "tasks": 18,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 18
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_parser.py"
+      ],
+      "failing_assertions": [
+        "normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"",
+        "route_for(\"LOCAL NIM\") == \"/proxy/local-nim\""
+      ],
+      "files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with incomplete normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").lower()\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "fixed_files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_parser_hidden.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_hidden_tabs_and_mixed_separator_variants():\n    assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\n    assert normalize_provider_id(\"NVIDIA NIM\") == \"nvidia_nim\"\n    assert route_for(\"local-nim\") == \"/proxy/local-nim\"\n"
+      },
+      "name": "provider_id_parser",
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "relevant_files": [
+        "app/provider_parser.py",
+        "tests/test_provider_parser.py"
+      ],
+      "tests": {
+        "tests/test_provider_parser.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_normalize_provider_id_accepts_hyphen_and_space_variants():\n    assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\n    assert normalize_provider_id(\"local nim\") == \"local_nim\"\n\n\ndef test_route_for_uses_normalized_provider_id():\n    assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n    assert route_for(\"LOCAL NIM\") == \"/proxy/local-nim\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "failing_assertions": [
+        "invoice_total string amounts produce Decimal total",
+        "hidden half-up rounding passes"
+      ],
+      "files": {
+        "app/math_ops.py": "def normalize_amount(value):\n    return int(value)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "fixed_files": {
+        "app/math_ops.py": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef normalize_amount(value):\n    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "hidden_tests": {
+        "tests/test_invoice_hidden.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_rounds_half_up_hidden():\n    assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\n"
+      },
+      "name": "multi_file_hidden_decimal_fix",
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "relevant_files": [
+        "app/service.py",
+        "app/math_ops.py",
+        "tests/test_invoice_public.py"
+      ],
+      "tests": {
+        "tests/test_invoice_public.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_accepts_string_amounts():\n    assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {
+        "tests/test_config_hidden.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_hidden_empty_and_on_values_are_normalized():\n    assert parse_bool(\"\") is False\n    assert parse_bool(\" on \") is True\n    assert gateway_config({\"BEAST_TIMEOUT\": \"30\"})[\"provider\"] == \"openrouter\"\n"
+      },
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_config.py"
+      ],
+      "failing_assertions": [
+        "hyphen providers normalize to env names",
+        "raw API keys are redacted"
+      ],
+      "files": {
+        "app/provider_config.py": "def provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n"
+      },
+      "fixed_files": {
+        "app/provider_config.py": "def normalize_provider_id(provider_id):\n    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n\n\ndef provider_env(provider_id, env):\n    normalized = normalize_provider_id(provider_id)\n    key = normalized.upper() + \"_API_KEY\"\n    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_config_hidden.py": "from app.provider_config import provider_env\n\n\ndef test_hidden_missing_key_is_false_and_secret_never_leaks():\n    result = provider_env(\"openrouter\", {})\n    assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\n    assert \"api_key\" not in result\n"
+      },
+      "name": "provider_config_secret_redaction",
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "relevant_files": [
+        "app/provider_config.py",
+        "tests/test_provider_config.py"
+      ],
+      "tests": {
+        "tests/test_provider_config.py": "from app.provider_config import provider_env\n\n\ndef test_provider_config_normalizes_and_redacts_secret():\n    result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n    assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

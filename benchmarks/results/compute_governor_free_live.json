@@ -1,0 +1,76 @@
+{
+  "beast_object_type": "compute_governor_free_provider_live",
+  "candidate_avoidable_tokens_counterfactual": 123,
+  "claim_boundary": "Free-provider live evidence proves receipt coverage and Phase 2 shadow transform agreement beside real provider calls. It does not claim deterministic displacement of live calls.",
+  "compute_receipts": 3,
+  "cost_coverage_rate": 0.0,
+  "deterministic_shadow_agreement_rate": 1.0,
+  "deterministic_shadow_verification_rate": 1.0,
+  "enforced_suppression_count": 0,
+  "errors": [],
+  "false_suppression_rate": 0.0,
+  "mode": "phase2_shadow_live_free_provider_observation",
+  "observed_cost_usd": null,
+  "observed_total_tokens": 421,
+  "phase1_free_live_passed": true,
+  "phase2_free_live_shadow_passed": true,
+  "predicted_savings_usd_counterfactual": null,
+  "provider_calls": 3,
+  "receipt_coverage_rate": 1.0,
+  "requested_providers": [
+    "nvidia_nim"
+  ],
+  "rows": [
+    {
+      "deterministic_agreement": true,
+      "deterministic_verified": true,
+      "latency_ms": 3208.739,
+      "provider": "nvidia_nim",
+      "provider_called": true,
+      "status": "succeeded",
+      "task_class": "schema_validation",
+      "usage": {
+        "completion_tokens": 46,
+        "prompt_tokens": 93,
+        "prompt_tokens_details": null,
+        "total_tokens": 139
+      }
+    },
+    {
+      "deterministic_agreement": true,
+      "deterministic_verified": true,
+      "latency_ms": 17299.882,
+      "provider": "nvidia_nim",
+      "provider_called": true,
+      "status": "succeeded",
+      "task_class": "syntax_check",
+      "usage": {
+        "completion_tokens": 47,
+        "prompt_tokens": 94,
+        "prompt_tokens_details": null,
+        "total_tokens": 141
+      }
+    },
+    {
+      "deterministic_agreement": true,
+      "deterministic_verified": true,
+      "latency_ms": 1944.319,
+      "provider": "nvidia_nim",
+      "provider_called": true,
+      "status": "succeeded",
+      "task_class": "test_execution",
+      "usage": {
+        "completion_tokens": 47,
+        "prompt_tokens": 94,
+        "prompt_tokens_details": null,
+        "total_tokens": 141
+      }
+    }
+  ],
+  "selected_providers": [
+    "nvidia_nim"
+  ],
+  "successful_provider_calls": 3,
+  "version": "1.0",
+  "wall_time_ms": 22471.67
+}

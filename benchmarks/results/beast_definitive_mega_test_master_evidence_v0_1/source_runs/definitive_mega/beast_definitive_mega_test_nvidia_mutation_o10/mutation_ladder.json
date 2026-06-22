@@ -1,0 +1,630 @@
+{
+  "case_count": 24,
+  "cases": [
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "schema_validation",
+      "fingerprint_after_hash": "sha256:3e2bc941cca09d01e6c593f44dcd3be8d9bb42bac235ba89b80683c223bd5fa1",
+      "fingerprint_before_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/output_guard.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "schema_validation",
+      "fingerprint_after_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+      "fingerprint_before_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/output_guard.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "schema_validation",
+      "fingerprint_after_hash": "sha256:9a5261fac11b356eafc7c29610c344899d7a67b479cf0582fed775a47a3bd132",
+      "fingerprint_before_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "schema_validation",
+      "fingerprint_after_hash": "sha256:adad4b65e231332e4e52331780adc8b8e8bb4c7d136d2f0248c7d1b46a3647b6",
+      "fingerprint_before_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/output_guard.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "provider_alias_normalization",
+      "fingerprint_after_hash": "sha256:76bef31107e67d1d8efce6b5d7f4d2e0857329f0404f91025021946fde1cd274",
+      "fingerprint_before_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/provider_parser.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "provider_alias_normalization",
+      "fingerprint_after_hash": "sha256:8597ba30e84c75fa620c41c3344bb0df7d9bdec8bef39a86177e4d0fd1d80430",
+      "fingerprint_before_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/provider_parser.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "provider_alias_normalization",
+      "fingerprint_after_hash": "sha256:1eb3b99f94548a4ad6bf4d543f072fd007bb0db4615275e48d7e589dd4b21ff3",
+      "fingerprint_before_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "provider_alias_normalization",
+      "fingerprint_after_hash": "sha256:2eb8f1f7c586409e66f3d93b1c97d9ad8ca1891782badb85723187713a8c2919",
+      "fingerprint_before_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/provider_parser.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "patch_compilation",
+      "fingerprint_after_hash": "sha256:9e055c89e34cc14107986701faf3098cf2b7cb75c6c78a55494ba5688b7b2a5c",
+      "fingerprint_before_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/math_ops.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "patch_compilation",
+      "fingerprint_after_hash": "sha256:2752476f6643507056c7bf001208dc8088fe39fdc6e96bb7dfe1f3546e2e6ab4",
+      "fingerprint_before_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/math_ops.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "patch_compilation",
+      "fingerprint_after_hash": "sha256:fda25866d1337de19112542d39379973f236fb6cc1654d1ecd51fd1704e77bae",
+      "fingerprint_before_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "patch_compilation",
+      "fingerprint_after_hash": "sha256:680227e1eb0f023f5da164e9cbaabb1394b191bec004a258e4fa63b457c69cf3",
+      "fingerprint_before_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/math_ops.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "syntax_check",
+      "fingerprint_after_hash": "sha256:ea6801ee89ab0a6a37575d694be956ae00fe37ab28000253ac6eedb4e97fd201",
+      "fingerprint_before_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/config.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "syntax_check",
+      "fingerprint_after_hash": "sha256:8f02d3d76697f53602c23eda381bdff2bc1da9e63229a400d64a7b4808a1da10",
+      "fingerprint_before_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/config.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "syntax_check",
+      "fingerprint_after_hash": "sha256:17899788b427ff2a420c2079ddbc1cd9af30477e9fd0008342feaa6c84cc7443",
+      "fingerprint_before_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "syntax_check",
+      "fingerprint_after_hash": "sha256:471943c0dc073b2e82d9b9490bdc8c3dec3dc6ce2e79dfffc1ef9a2b1e709423",
+      "fingerprint_before_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/config.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "route_diagnostics",
+      "fingerprint_after_hash": "sha256:8228e4d28231dcaa3b3c1901b83f4e7bcb01df5b2c2519bd80aeba9447660ebc",
+      "fingerprint_before_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/nim_contract.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "route_diagnostics",
+      "fingerprint_after_hash": "sha256:bc70d74a294d926c6dd6cf58c2cd007e6556364dd14bb441930db589c131ed23",
+      "fingerprint_before_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/nim_contract.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "route_diagnostics",
+      "fingerprint_after_hash": "sha256:99c0660dbdb1d8d5972a5f3857af59a4a284972a8c00b95524b8cc1de2bc127d",
+      "fingerprint_before_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "route_diagnostics",
+      "fingerprint_after_hash": "sha256:0540f4abb955a06be9e05acdbef8e5f31fadbf8d3b6b0b860a43cd0b5fe4a9d6",
+      "fingerprint_before_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/nim_contract.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": 0,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "secret_redaction",
+      "fingerprint_after_hash": "sha256:e4554985b675950a954f371b58016520be323d38baf78e8f993a1c73af14db0e",
+      "fingerprint_before_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "incorrect_reuse": false,
+      "mutation_type": "cosmetic",
+      "next_action": "reuse_local",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": false,
+        "reasons": [
+          "targets:app/provider_config.py:nonsemantic_change"
+        ],
+        "reusable": true,
+        "state": "active"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "A",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "secret_redaction",
+      "fingerprint_after_hash": "sha256:6e30cd84fbaef93462439ac2d0ab0f275d779e87d259edb4b60b1d53cc2caccd",
+      "fingerprint_before_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "incorrect_reuse": false,
+      "mutation_type": "semantic_adjacent",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/provider_config.py:semantic_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "B",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": false,
+      "evidence_status": "policy_decision",
+      "family": "secret_redaction",
+      "fingerprint_after_hash": "sha256:23b3b405c1ab7333607a039fd3c95813af1bcbc01321e6b561123bc87bd04f41",
+      "fingerprint_before_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "incorrect_reuse": false,
+      "mutation_type": "structural_tool_schema",
+      "next_action": "shadow_revalidate",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "tool_schema_change"
+        ],
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "shadow_revalidation_required": true,
+      "tier": "C",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_mutation_ladder_case",
+      "cloud_calls": null,
+      "cloud_or_human_escalation_required": true,
+      "evidence_status": "policy_decision",
+      "family": "secret_redaction",
+      "fingerprint_after_hash": "sha256:445a7b553fef4807dd4b06299be0decbacc4b3beeea98bf1cb9b56ed782e6964",
+      "fingerprint_before_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "incorrect_reuse": false,
+      "mutation_type": "breaking_target_or_test",
+      "next_action": "cloud_or_human_escalation",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_execution_requested": true,
+      "reuse_decision": {
+        "material_drift_made_reuse_unavailable": true,
+        "reasons": [
+          "targets:app/provider_config.py:missing_or_added"
+        ],
+        "reusable": false,
+        "state": "demoted"
+      },
+      "shadow_revalidation_required": false,
+      "tier": "D",
+      "version": "1.0"
+    }
+  ],
+  "schema_version": "1.0"
+}

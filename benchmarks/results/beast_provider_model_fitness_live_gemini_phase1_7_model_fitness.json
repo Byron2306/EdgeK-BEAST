@@ -1,0 +1,42 @@
+{
+  "beast_object_type": "provider_model_fitness_snapshot",
+  "count": 1,
+  "models": [
+    {
+      "avg_latency_ms": null,
+      "clean_completed": 0,
+      "clean_completion_rate": 0.0,
+      "completed": 1,
+      "completion_rate": 0.0,
+      "endpoint_errors": [
+        "Client error '400 Bad Request' for url 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      ],
+      "endpoint_failures": 2,
+      "fitness_score": 0.0,
+      "lanes": {
+        "live_gemini_full_beast": {
+          "completed": 1,
+          "samples": 1
+        },
+        "live_gemini_raw": {
+          "completed": 0,
+          "samples": 1
+        }
+      },
+      "model": "gemini-2.5-flash",
+      "provider": "gemini",
+      "provider_clean_completed": 0,
+      "provider_completed": 0,
+      "provider_rescued_completed": 0,
+      "provider_response_rate": 0.0,
+      "provider_responses": 0,
+      "rescue_rate": 0.0,
+      "rescued_completed": 1,
+      "samples": 2,
+      "system_rescued_completed": 1,
+      "total_tokens": 0
+    }
+  ],
+  "source_report": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_provider_model_fitness_live_gemini_phase1_7.json",
+  "version": "1.0"
+}

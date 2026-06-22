@@ -17,6 +17,13 @@ from benchmarks.beast_systems_benchmark import (
 )
 
 
+def test_live_benchmark_entrypoint_loads_secret_vault():
+    source = Path("benchmarks/beast_systems_benchmark.py").read_text(encoding="utf-8")
+
+    main_body = source.split("def main() -> int:", 1)[1]
+    assert "SecretVault().load()" in main_body.split("parser =", 1)[0]
+
+
 def provider_wiring_action_ir(handoff_hash: str = ""):
     return {
         "kind": "beast.action_intent.v1",
@@ -272,7 +279,8 @@ def test_live_raw_lane_is_non_beast_source_patch_baseline():
         "live_fake_provider_full_beast",
     ]
     assert all(result["completed"] for result in report["live_results"])
-    assert report["live_summary"]["fake_provider"]["clean_completed"] == 2
+    assert report["live_summary"]["fake_provider"]["clean_completed"] == 1
+    assert report["live_summary"]["fake_provider"]["rescued_completed"] == 1
     assert report["live_summary"]["fake_provider"]["provider_tokens_per_verified_fix"] == 50
     assert "input_handoff_hash" not in calls[0]
     assert "input_handoff_hash" in calls[1]
@@ -321,7 +329,7 @@ def test_live_full_beast_local_verifier_repair_is_counted_as_rescue():
     assert report["live_summary"]["fake_provider"]["clean_completed"] == 0
 
 
-def test_live_provider_fitness_scores_clean_and_rescued_results():
+def test_live_provider_fitness_counts_verifier_repair_as_rescued():
     def fake_provider(prompt):
         return {
             "text": json.dumps(provider_wiring_action_ir(handoff_hash_from_prompt(prompt))),
@@ -348,7 +356,8 @@ def test_live_provider_fitness_scores_clean_and_rescued_results():
     fitness = report["live_provider_fitness"]["fake_provider"]
 
     assert fitness["sample_size"] == 1
-    assert fitness["clean_completed"] == 1
+    assert fitness["clean_completed"] == 0
+    assert fitness["rescued_completed"] == 1
     assert fitness["metrics"]["json_validity_rate"] == 1.0
     assert "json_validity_ge_90" in fitness["hard_gates"]
 

@@ -1,0 +1,391 @@
+[
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "no_cloud_until_local_evidence",
+        "receipt_required",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget",
+        "swarm:hermes:cartographer:select_relevant_context",
+        "swarm:hermes:hermes:route_role_briefs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "provider_economist",
+        "zeroclaw",
+        "chronicle",
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12
+    },
+    "task": {
+      "objective": "Debug why the NIM provider route is failing without wasting a cloud call.",
+      "required_gates": [
+        "no_cloud_until_local_evidence",
+        "receipt_required"
+      ],
+      "required_route": [
+        "meta_tool_commons",
+        "provider_economist",
+        "zeroclaw",
+        "chronicle"
+      ],
+      "risk": "low",
+      "task_class": "provider_debugging",
+      "task_id": "provider_route_debug"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "approval_before_write",
+        "tests_before_success",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria",
+        "swarm:hermes:compressor:fit_context_budget",
+        "swarm:hermes:cartographer:select_relevant_context",
+        "swarm:hermes:hermes:route_role_briefs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "openclaw",
+        "workspace_search",
+        "pytest",
+        "rollback",
+        "swarm:hermes:scribe:record_chronicle_and_promotion_signal",
+        "swarm:hermes:supervisor:check_success_criteria"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12
+    },
+    "task": {
+      "objective": "Plan a safe local refactor with tests and rollback before edits.",
+      "required_gates": [
+        "approval_before_write",
+        "tests_before_success"
+      ],
+      "required_route": [
+        "openclaw",
+        "workspace_search",
+        "pytest",
+        "rollback"
+      ],
+      "risk": "medium",
+      "task_class": "refactor_request",
+      "task_id": "safe_refactor_plan"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "bounded_retrieval",
+        "no_raw_body_in_commons",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "mcp_tool_catalog:mcp_fetch_docs"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "mcp_fetch_docs",
+        "mcp_markitdown_convert",
+        "mcp_tool_catalog:mcp_fetch_docs"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12
+    },
+    "task": {
+      "objective": "Use open MCP-style document retrieval to summarize docs without storing raw bodies.",
+      "required_gates": [
+        "bounded_retrieval",
+        "no_raw_body_in_commons"
+      ],
+      "required_route": [
+        "mcp_fetch_docs",
+        "mcp_markitdown_convert",
+        "meta_tool_commons"
+      ],
+      "risk": "medium",
+      "task_class": "retrieval",
+      "task_id": "open_mcp_docs_retrieval"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "fingerprint_match",
+        "verification_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "kv_cache_transport",
+        "compute_governor",
+        "fused_crystal"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12
+    },
+    "task": {
+      "objective": "Route a repeated coding task through KV/cache and crystal reuse when fingerprints match.",
+      "required_gates": [
+        "fingerprint_match",
+        "verification_gate"
+      ],
+      "required_route": [
+        "kv_cache_transport",
+        "compute_governor",
+        "fused_crystal"
+      ],
+      "risk": "low",
+      "task_class": "kv_cache_reuse",
+      "task_id": "kv_cache_reuse_route"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "no_autonomous_execution",
+        "human_approval_required",
+        "approval_gate",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [
+        "mcp_tool_catalog:mcp_shell_dry_run"
+      ],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "mcp_shell_dry_run",
+        "zeroclaw",
+        "approval_gate",
+        "mcp_tool_catalog:mcp_shell_dry_run"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.8,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly",
+        "maybe_ask_permission"
+      ],
+      "score": 0.2
+    },
+    "task": {
+      "objective": "User asks for autonomous shell execution. Convert it into dry-run plan and approval gate.",
+      "required_gates": [
+        "no_autonomous_execution",
+        "human_approval_required"
+      ],
+      "required_route": [
+        "mcp_shell_dry_run",
+        "zeroclaw",
+        "approval_gate"
+      ],
+      "risk": "high",
+      "task_class": "command_planning",
+      "task_id": "unsafe_shell_request"
+    }
+  },
+  {
+    "beast_aware_tiny": {
+      "commons_adopted_count": 193,
+      "fused_crystal_id": "fused_crystal_87369e5e59f914214393",
+      "gates": [
+        "defensive_only",
+        "forbidden_content_scan",
+        "verification_receipt",
+        "promotion_candidate_if_repeated"
+      ],
+      "lane": "beast_aware_tiny_orchestrator",
+      "passed": true,
+      "ranked_capability_hints": [],
+      "reasoning_pattern": [
+        "classify_task",
+        "rank_commons",
+        "select_route",
+        "apply_risk_gate",
+        "verify_before_success",
+        "promote_reusable_pattern"
+      ],
+      "route": [
+        "meta_tool_commons",
+        "fused_crystal",
+        "openclaw",
+        "secure_code_review",
+        "supervisor"
+      ],
+      "score": 1.0,
+      "used_fused_crystal": true
+    },
+    "delta": 0.88,
+    "raw_tiny": {
+      "failure_mode": "no_agent_awareness_no_commons_no_verification_loop",
+      "gates": [
+        "none"
+      ],
+      "lane": "raw_tiny_non_reasoning",
+      "passed": false,
+      "route": [
+        "answer_directly"
+      ],
+      "score": 0.12
+    },
+    "task": {
+      "objective": "Review input validation and secret logging boundaries defensively.",
+      "required_gates": [
+        "defensive_only",
+        "forbidden_content_scan"
+      ],
+      "required_route": [
+        "fused_crystal",
+        "openclaw",
+        "secure_code_review",
+        "supervisor"
+      ],
+      "risk": "low",
+      "task_class": "defensive_review",
+      "task_id": "secure_code_review"
+    }
+  }
+]

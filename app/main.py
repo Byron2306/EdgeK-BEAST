@@ -5,20 +5,27 @@ Phase 9: Team and Enterprise Mode
 
 import uvicorn
 import os
+import subprocess
 import time
+import tempfile
 from collections import Counter, deque
 from fastapi import FastAPI, Request
 from fastapi import HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from typing import Dict, Any
 import logging
+import httpx
 
 os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("TQDM_DISABLE", "1")
+
+from app.kernel.local_config import load_local_env
+
+load_local_env()
 
 # Import adapters
 from app.adapters.openai_adapter import openai_router
@@ -38,6 +45,14 @@ from app.kernel.ast_compressor import ASTCompressor
 from app.kernel.isolation_forest import IsolationForest
 from app.kernel.os_bypass import af_packet_capture_probe, capabilities as os_bypass_capabilities, open_ring_probe, dpdk_probe, af_xdp_probe
 from app.kernel.tool_laziness import ToolLazinessLearner
+from app.kernel.tool_laziness_plugin import ToolLazinessPlugin
+from app.kernel.provider_economist import EconomistPolicy, ProviderEconomist
+from app.kernel.otel_connector import OpenTelemetryConnector
+from app.kernel.plugin_marketplace import PluginMarketplace
+from app.kernel.session_handshake import SessionHandshakeBuilder
+from app.kernel.capability_exchange import CapabilityExchange
+from app.kernel.meta_tool_commons import MetaToolCommons
+from app.kernel.inference_interceptor import compute_ledger
 from app.kernel.deployment import DeploymentManager
 from app.kernel.tool_integrations import RequiredIntegrationRegistry, ToolCallInterceptor
 from app.kernel.ollama_scout import OllamaScout
@@ -57,10 +72,21 @@ from app.kernel.compression_pipeline import CompressionPipeline
 from app.kernel.interception_events import InterceptionEventFactory
 from app.kernel.forensic_memory import ForensicMemory
 from app.kernel.chronicle_projection import ChronicleProjectionPublisher
+from app.kernel.network_chronicle import NetworkChronicleConnector
+from app.kernel.github_pr_connector import GitHubPRConnector
 from app.kernel.vector_adapters import VectorAdapterRegistry
 from app.kernel.provider_registry import ProviderRegistry
 from app.kernel.provider_adapters import ProviderAdapterRegistry
 from app.kernel.prec_lifecycle import prec_lifecycle_store
+from app.kernel.outcome_evidence import OutcomeEvidence, default_outcome_store
+from app.kernel.crystal_forks import TemporalCrystalForkManager
+from app.kernel.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
+from app.kernel.kv_cache_transport import CrossEngineKVCacheTransport
+from app.kernel.commons_space_registry import CommonsSpaceRegistry
+from app.kernel.commons_policy import CommonsPolicyLearner
+from app.kernel.federated_commons import FederatedCommons
+from app.kernel.commons_economy import ComputeReductionEconomy
+from app.kernel.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
 from app.mcp.broker import MCPBroker
 
 # Configure logging
@@ -79,6 +105,24 @@ benchmark_runner = ComparativeBenchmark(reasoner.policies, reasoner=reasoner)
 mega_gauntlet = MegaGauntlet(reasoner.policies, reasoner=reasoner)
 ast_compressor = ASTCompressor()
 tool_laziness_learner = ToolLazinessLearner()
+tool_laziness_plugin = ToolLazinessPlugin(tool_laziness_learner)
+provider_economist = ProviderEconomist()
+crystal_compute_store = default_outcome_store()
+crystal_fork_manager = TemporalCrystalForkManager(Path(__file__).resolve().parents[1] / ".beast" / "crystal_forks.json")
+semantic_raid_store = SemanticRaidStore(Path(__file__).resolve().parents[1] / ".beast" / "semantic_raid")
+artifact_fossil_store = ArtifactFossilLayerStore(Path(__file__).resolve().parents[1] / ".beast" / "fossils")
+kv_cache_transport = CrossEngineKVCacheTransport()
+commons_space_registry = CommonsSpaceRegistry()
+commons_policy_learner = CommonsPolicyLearner(commons_space_registry, compute_ledger)
+federated_commons = FederatedCommons(commons_space_registry)
+commons_economy = ComputeReductionEconomy(commons_space_registry)
+commons_crystal_promoter = CommonsCrystalPromoter(commons_space_registry, commons_economy)
+commons_prototype_runner = FirstPrototypeRunner(commons_space_registry, commons_economy, commons_crystal_promoter)
+otel_connector = OpenTelemetryConnector()
+plugin_marketplace = PluginMarketplace()
+session_handshake_builder = SessionHandshakeBuilder()
+capability_exchange = CapabilityExchange()
+meta_tool_commons = MetaToolCommons(exchange=capability_exchange, skill_registry=skill_tree.skill_registry)
 deployment_manager = DeploymentManager(reasoner.policies)
 integration_registry = RequiredIntegrationRegistry(reasoner.policies)
 tool_call_interceptor = ToolCallInterceptor(crystallizer.workspace_graph, reasoner.policies)
@@ -94,6 +138,9 @@ beast_cli_executor = BeastCLIExecutor(
     canon_registry=canon_registry,
     runtime_governor=runtime_governor,
     tool_laziness_learner=tool_laziness_learner,
+    tool_laziness_plugin=tool_laziness_plugin,
+    provider_economist=provider_economist,
+    handshake_builder=session_handshake_builder,
 )
 promotion_loop = PromotionLoop(
     task_envelope_builder=task_envelope_builder,
@@ -109,6 +156,8 @@ compression_pipeline = CompressionPipeline(reasoner.policies)
 interception_event_factory = InterceptionEventFactory(reasoner.policies)
 forensic_memory = ForensicMemory()
 chronicle_publisher = ChronicleProjectionPublisher()
+network_chronicle_connector = NetworkChronicleConnector()
+github_pr_connector = GitHubPRConnector(task_envelope_builder=task_envelope_builder)
 vector_adapter_registry = VectorAdapterRegistry()
 provider_registry = ProviderRegistry(reasoner.policies)
 provider_adapter_registry = ProviderAdapterRegistry(reasoner.policies)
@@ -154,6 +203,14 @@ app.include_router(proxy_router, prefix="/proxy")
 app.include_router(huggingface_router)
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+cli_assets_dir = Path(__file__).parent / "cli" / "assets"
+if cli_assets_dir.exists():
+    app.mount("/beast-assets", StaticFiles(directory=str(cli_assets_dir)), name="beast-assets")
+commons_media_files = {
+    "beast-logo.png": Path(__file__).resolve().parents[1] / "BEAST_mascot-removebg-preview.png",
+    "inference-economy.mp4": Path(__file__).resolve().parents[1] / "BEAST__Inference_Economy.mp4",
+    "inference-inversion.pptx": Path(__file__).resolve().parents[1] / "BEAST_INFERENCE_INVERSION.pptx",
+}
 
 # In-memory process counters; durable governance state lives in the kernel stores.
 active_sessions: Dict[str, Any] = {}
@@ -214,8 +271,24 @@ def _telemetry_stats() -> Dict[str, Any]:
         "recent": recent[-40:],
     }
 
+def _commons_site_file() -> Path:
+    site_path = frontend_dir / "commons.html"
+    if site_path.exists():
+        return site_path
+    return frontend_dir / "index.html"
+
+
 @app.get("/")
-async def root():
+async def beast_commons_home():
+    """Serve the BEAST Commons web UI on the default port-8000 root."""
+    site_path = _commons_site_file()
+    if not site_path.exists():
+        raise HTTPException(status_code=404, detail="BEAST Commons frontend is not installed")
+    return HTMLResponse(site_path.read_text(encoding="utf-8"))
+
+
+@app.get("/edgek/root-info")
+async def root_info():
     """Root endpoint providing basic gateway information"""
     return {
         "service": "EdgeK BEAST Gateway",
@@ -318,11 +391,22 @@ async def root():
 
 @app.get("/ui")
 async def beast_cockpit():
-    """Serve the BEAST live operations cockpit."""
-    index_path = frontend_dir / "index.html"
+    """Serve the BEAST Commons web UI."""
+    index_path = _commons_site_file()
     if not index_path.exists():
-        raise HTTPException(status_code=404, detail="BEAST cockpit frontend is not installed")
-    return FileResponse(str(index_path))
+        raise HTTPException(status_code=404, detail="BEAST Commons frontend is not installed")
+    return HTMLResponse(index_path.read_text(encoding="utf-8"))
+
+
+@app.get("/commons-media/{asset_name}")
+@app.head("/commons-media/{asset_name}")
+async def beast_commons_media(asset_name: str):
+    """Serve approved BEAST Commons media assets without exposing the repo tree."""
+    path = commons_media_files.get(asset_name)
+    if not path or not path.exists():
+        raise HTTPException(status_code=404, detail="BEAST Commons media asset not found")
+    return FileResponse(str(path))
+
 
 @app.get("/health")
 async def health_check():
@@ -1157,6 +1241,20 @@ def _prepare_workflow_artifacts(payload: Dict[str, Any], workspace_root: str) ->
         "workflow": workflow,
     }
 
+@app.post("/edgek/session/handshake")
+async def edgek_session_handshake(payload: Dict[str, Any] = None):
+    """Build the compact BEAST agent-awareness and latency contract."""
+    payload = payload or {}
+    return session_handshake_builder.build(
+        str(payload.get("objective") or payload.get("task") or payload.get("goal") or "Use BEAST efficiently"),
+        mode=str(payload.get("mode") or "openclaw"),
+        workspace_root=str(payload.get("workspace_root") or Path(__file__).resolve().parents[1]),
+        tools=payload.get("candidate_tools") or [],
+        preflight_budget_ms=int(payload.get("preflight_budget_ms", 500)),
+        scout_budget_ms=int(payload.get("scout_budget_ms", 300)),
+        session_id=payload.get("session_id"),
+    )
+
 @app.post("/edgek/beast-cli/plan")
 async def edgek_beast_cli_plan(payload: Dict[str, Any]):
     """Build an Openclaw/Nemoclaw local-first execution plan."""
@@ -1181,6 +1279,12 @@ async def edgek_beast_cli_plan(payload: Dict[str, Any]):
         workspace_root=workspace_root,
         use_ollama=bool(payload.get("use_ollama", True)),
         scout_options=payload.get("scout_options") or {},
+        candidate_tools=payload.get("candidate_tools") or [],
+        required_tools=payload.get("required_tools") or [],
+        provider_candidates=payload.get("provider_candidates") or [],
+        requested_role=str(payload.get("requested_role") or "primary_patch_provider"),
+        preflight_budget_ms=int(payload.get("preflight_budget_ms", 500)),
+        scout_budget_ms=int(payload.get("scout_budget_ms", 300)),
     )
     lifecycle = prec_lifecycle.record_artifact_lifecycle(
         kind="cli_plan",
@@ -1215,13 +1319,20 @@ async def edgek_beast_cli_execute(payload: Dict[str, Any]):
         approved=bool(payload.get("approved", False)),
         use_ollama=bool(payload.get("use_ollama", True)),
         scout_options=payload.get("scout_options") or {},
+        candidate_tools=payload.get("candidate_tools") or [],
+        required_tools=payload.get("required_tools") or [],
+        provider_candidates=payload.get("provider_candidates") or [],
+        requested_role=str(payload.get("requested_role") or "primary_patch_provider"),
+        preflight_budget_ms=int(payload.get("preflight_budget_ms", 500)),
+        scout_budget_ms=int(payload.get("scout_budget_ms", 300)),
     )
     lifecycle = prec_lifecycle.record_artifact_lifecycle(
         kind="cli_execute",
         payload={**payload, "objective": objective},
         artifacts={**artifacts, "insight_packet": payload.get("insight_packet") or (payload.get("handoff_precheck") or {}).get("insight_packet")},
     )
-    return {**result, "artifacts": artifacts, "prec_lifecycle": _prec_summary(lifecycle)}
+    commons_ingest = meta_tool_commons.ingest_cli_execution(result)
+    return {**result, "artifacts": artifacts, "prec_lifecycle": _prec_summary(lifecycle), "commons_ingest": commons_ingest}
 
 @app.get("/edgek/canon/schemas")
 async def edgek_canon_schemas():
@@ -1292,6 +1403,72 @@ async def edgek_chronicle_publish(payload: Dict[str, Any] = None):
     )
     result["prec_lifecycle"] = _prec_summary(lifecycle)
     return result
+
+@app.post("/edgek/connectors/network-chronicle/attach")
+async def edgek_network_chronicle_attach(payload: Dict[str, Any] = None):
+    """Attach metadata-only packet evidence to a provider diagnostic Chronicle."""
+    payload = payload or {}
+    diagnostic = payload.get("diagnostic")
+    if diagnostic is None:
+        provider = str(payload.get("provider") or "unknown")
+        diagnostic = task_envelope_builder.diagnose_provider(
+            {"provider": provider, "user_request": payload.get("user_request") or f"Diagnose {provider} route"},
+            workspace_root=str(Path(__file__).resolve().parents[1]),
+            write_chronicle=False,
+        )
+    probe = payload.get("probe")
+    if probe is None and bool(payload.get("run_probe", False)):
+        probe = af_packet_capture_probe(
+            interface=str(payload.get("interface") or "lo"),
+            timeout_ms=int(payload.get("timeout_ms", 1000)),
+            max_packets=int(payload.get("max_packets", 64)),
+        )
+    if not isinstance(probe, dict):
+        raise HTTPException(status_code=400, detail="probe is required unless run_probe=true")
+    return network_chronicle_connector.attach_provider_diagnostic(
+        diagnostic,
+        probe,
+        source=str(payload.get("source") or "af_packet_capture_probe"),
+        chronicle_builder=task_envelope_builder,
+        persist=bool(payload.get("persist", False)),
+    )
+
+@app.post("/edgek/connectors/github/pr/ingest")
+async def edgek_github_pr_ingest(payload: Dict[str, Any] = None):
+    """Convert a GitHub PR diff, failed checks, and comments into a task envelope."""
+    payload = payload or {}
+    try:
+        return github_pr_connector.ingest(
+            str(payload.get("repo") or payload.get("repository") or ""),
+            int(payload.get("pr_number") or payload.get("number") or 0),
+            max_files=max(1, min(int(payload.get("max_files", 20)), 50)),
+            max_comments=max(1, min(int(payload.get("max_comments", 30)), 100)),
+        )
+    except (ValueError, httpx.HTTPError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/edgek/connectors/github/pr/publish-chronicle")
+async def edgek_github_pr_publish_chronicle(payload: Dict[str, Any] = None):
+    """Publish a bounded Chronicle summary as a governed PR comment."""
+    payload = payload or {}
+    chronicle = payload.get("chronicle")
+    if chronicle is None and payload.get("task_id"):
+        try:
+            chronicle = task_envelope_builder.get_chronicle(str(payload["task_id"]))
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc))
+    if not isinstance(chronicle, dict):
+        raise HTTPException(status_code=400, detail="chronicle or task_id is required")
+    try:
+        return github_pr_connector.publish_chronicle(
+            str(payload.get("repo") or payload.get("repository") or ""),
+            int(payload.get("pr_number") or payload.get("number") or 0),
+            chronicle,
+            approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)),
+        )
+    except (ValueError, httpx.HTTPError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 @app.post("/edgek/insights/compile")
 async def edgek_insights_compile(payload: Dict[str, Any] = None):
@@ -1373,6 +1550,35 @@ async def edgek_capabilities(kind: str = None):
 async def edgek_capability_families():
     """Return capability families for routing and prioritization."""
     return capability_registry.list_families()
+
+@app.get("/edgek/capabilities/discovery-sources")
+async def edgek_capability_discovery_sources(include_inventory: bool = True, include_open_source_mcp: bool = True):
+    """Export local and generic MCP capabilities as Commons discovery sources."""
+    return capability_registry.discovery_sources(
+        include_inventory=include_inventory,
+        include_open_source_mcp=include_open_source_mcp,
+    )
+
+@app.post("/edgek/capabilities/ingest-commons")
+async def edgek_capability_ingest_commons(payload: Dict[str, Any] = None):
+    """Stage registry and generic MCP capability hypotheses into Meta Tool Commons."""
+    payload = payload or {}
+    sources = capability_registry.discovery_sources(
+        include_inventory=bool(payload.get("include_inventory", True)),
+        include_open_source_mcp=bool(payload.get("include_open_source_mcp", True)),
+    )
+    result = meta_tool_commons.ingest_discovery_sources({
+        "sources": sources["sources"],
+        "stage_candidates": bool(payload.get("stage_candidates", True)),
+    })
+    return {
+        **result,
+        "source": "capability_registry_discovery_bridge",
+        "capability_sources": {
+            "source_count": sources["source_count"],
+            "item_count": sum(len(source.get("items") or []) for source in sources["sources"]),
+        },
+    }
 
 @app.get("/edgek/vector/adapters")
 async def edgek_vector_adapters():
@@ -1470,6 +1676,740 @@ async def edgek_tool_laziness_record(payload: Dict[str, Any]):
 async def edgek_tool_laziness_recommend(tool_name: str, scenario: str):
     """Return learned call/skip recommendation for a tool/scenario pair."""
     return tool_laziness_learner.recommend(tool_name, scenario)
+
+@app.post("/edgek/tool-laziness/recommend-tools")
+async def edgek_tool_laziness_recommend_tools(payload: Dict[str, Any] = None):
+    """Recommend which candidate tools should not be called for this scenario."""
+    payload = payload or {}
+    return tool_laziness_plugin.recommend_tools(
+        payload.get("candidate_tools") or [],
+        str(payload.get("scenario") or "general"),
+        required_tools=payload.get("required_tools") or [],
+        min_samples=max(1, int(payload.get("min_samples", 3))),
+    )
+
+@app.post("/edgek/provider-economist/select")
+async def edgek_provider_economist_select(payload: Dict[str, Any] = None):
+    """Choose the best eligible route for a role, quality, cost, latency, and auth envelope."""
+    payload = payload or {}
+    return provider_economist.select(
+        payload.get("candidates") or [],
+        EconomistPolicy(
+            requested_role=str(payload.get("requested_role") or "primary_patch_provider"),
+            task_class=str(payload.get("task_class") or "general"),
+            max_latency_ms=payload.get("max_latency_ms"),
+            max_usd_per_fix=payload.get("max_usd_per_fix"),
+            min_auth_confidence=float(payload.get("min_auth_confidence", 0.6)),
+            require_cost_observation=bool(payload.get("require_cost_observation", False)),
+            prefer_hidden_clean=bool(payload.get("prefer_hidden_clean", True)),
+            friction_mode=str(payload.get("friction_mode") or "shadow"),
+        ),
+        negative_capabilities=crystal_compute_store.list_records(),
+        friction_profiles=crystal_compute_store.friction_profiles(),
+    )
+
+@app.get("/edgek/connectors/otel")
+async def edgek_otel_connector_state():
+    """Return OTLP/HTTP connector configuration and approval state."""
+    return otel_connector.state()
+
+@app.post("/edgek/connectors/otel/export")
+async def edgek_otel_export(payload: Dict[str, Any] = None):
+    """Compile and optionally export governed BEAST evidence as OTLP trace spans."""
+    payload = payload or {}
+    otlp_payload = payload.get("otlp_payload")
+    if not isinstance(otlp_payload, dict):
+        otlp_payload = otel_connector.compile(
+            chronicles=payload.get("chronicles") or [],
+            route_cards=payload.get("route_cards") or [],
+            packet_evidence=payload.get("packet_evidence") or [],
+            provider_fitness=payload.get("provider_fitness") or [],
+        )
+    try:
+        return otel_connector.export(
+            otlp_payload,
+            endpoint=payload.get("endpoint"),
+            headers=payload.get("headers") if isinstance(payload.get("headers"), dict) else None,
+            approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)),
+        )
+    except (ValueError, httpx.HTTPError) as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+@app.post("/edgek/plugins/manifest/prepare")
+async def edgek_plugin_manifest_prepare(payload: Dict[str, Any] = None):
+    """Canonicalize a BEAST plugin manifest and pin each tool schema hash."""
+    payload = payload or {}
+    raw_manifest = payload.get("manifest") if isinstance(payload.get("manifest"), dict) else payload
+    manifest = plugin_marketplace.prepare(raw_manifest)
+    return {"manifest": manifest, "validation": plugin_marketplace.validate(manifest)}
+
+@app.post("/edgek/plugins/manifest/validate")
+async def edgek_plugin_manifest_validate(payload: Dict[str, Any] = None):
+    """Validate risk, permissions, budgets, approvals, and tool schema pins."""
+    payload = payload or {}
+    raw_manifest = payload.get("manifest") if isinstance(payload.get("manifest"), dict) else payload
+    return plugin_marketplace.validate(raw_manifest)
+
+@app.post("/edgek/plugins/install")
+async def edgek_plugin_install(payload: Dict[str, Any] = None):
+    """Dry-run or install an approved, schema-pinned plugin manifest."""
+    payload = payload or {}
+    return plugin_marketplace.install(
+        payload.get("manifest") or {},
+        approved=bool(payload.get("approved", False)),
+        dry_run=bool(payload.get("dry_run", True)),
+    )
+
+@app.get("/edgek/plugins")
+async def edgek_plugins_installed():
+    """List locally installed BEAST plugin manifests."""
+    return plugin_marketplace.list_installed()
+
+@app.get("/edgek/capability-exchange")
+async def edgek_capability_exchange_state():
+    """Return opt-in and privacy state for the BEAST Capability Exchange."""
+    return capability_exchange.state()
+
+@app.post("/edgek/capability-exchange/prepare")
+async def edgek_capability_exchange_prepare(payload: Dict[str, Any] = None):
+    """Prepare an allowlisted tool/skill outcome envelope without publishing it."""
+    payload = payload or {}
+    try:
+        return capability_exchange.prepare(payload.get("capability") or {}, payload.get("outcome") or {})
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/edgek/capability-exchange/rank")
+async def edgek_capability_exchange_rank(payload: Dict[str, Any] = None):
+    """Build contextual rankings by task class and role from exchange evidence."""
+    payload = payload or {}
+    return capability_exchange.rank(
+        payload.get("evidence") or [],
+        task_class=payload.get("task_class"),
+        role=payload.get("role"),
+    )
+
+@app.post("/edgek/capability-exchange/submit")
+async def edgek_capability_exchange_submit(payload: Dict[str, Any] = None):
+    """Submit evidence only when exchange opt-in and explicit approval are active."""
+    payload = payload or {}
+    try:
+        return capability_exchange.contribute(
+            payload.get("evidence") or {},
+            approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)),
+            persist_local=bool(payload.get("persist_local", True)),
+        )
+    except (ValueError, httpx.HTTPError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.get("/edgek/meta-tool-commons")
+async def edgek_meta_tool_commons_state():
+    """Return local Commons evidence, candidate, and adoption state."""
+    return meta_tool_commons.state()
+
+@app.get("/edgek/meta-tool-commons/evidence-plane")
+async def edgek_meta_tool_commons_evidence_plane():
+    """Return aggregate local reuse evidence across Swarm, CLI, Ollama, and KV."""
+    return meta_tool_commons.evidence_plane()
+
+@app.post("/edgek/meta-tool-commons/ingest")
+async def edgek_meta_tool_commons_ingest(payload: Dict[str, Any] = None):
+    """Ingest privacy-safe, hash-valid capability evidence into local priors."""
+    payload = payload or {}
+    evidence = payload.get("evidence") or []
+    return meta_tool_commons.ingest(evidence if isinstance(evidence, list) else [evidence])
+
+@app.get("/edgek/meta-tool-commons/swarm-ingest")
+@app.post("/edgek/meta-tool-commons/swarm-ingest")
+async def edgek_meta_tool_commons_swarm_ingest(payload: Dict[str, Any] = None):
+    """Crystallize recent local swarm role traces into Commons evidence."""
+    payload = payload or {}
+    limit = max(1, min(int(payload.get("limit", 25)), 100))
+    status = payload.get("status")
+    runs = swarm_kernel.recent_runs(limit=limit, status=str(status) if status else None)
+    return meta_tool_commons.ingest_swarm_runs(runs)
+
+@app.get("/edgek/meta-tool-commons/swarm-candidates")
+@app.post("/edgek/meta-tool-commons/swarm-candidates")
+async def edgek_meta_tool_commons_swarm_candidates(payload: Dict[str, Any] = None):
+    """Stage approval-gated skill recipes from repeated Commons Swarm priors."""
+    payload = payload or {}
+    return meta_tool_commons.propose_swarm_candidates(
+        task_class=payload.get("task_class"),
+        role=payload.get("role"),
+        min_samples=max(1, min(int(payload.get("min_samples", 2)), 25)),
+        limit=max(1, min(int(payload.get("limit", 10)), 100)),
+    )
+
+@app.post("/edgek/meta-tool-commons/ollama-calibration")
+async def edgek_meta_tool_commons_ollama_calibration(payload: Dict[str, Any] = None):
+    """Record Ollama scout confidence against a verifier outcome."""
+    payload = payload or {}
+    return meta_tool_commons.ingest_ollama_calibration(
+        scout=payload.get("scout") or {},
+        verifier=payload.get("verifier") or {},
+    )
+
+@app.get("/edgek/meta-tool-commons/kv-cache-ingest")
+@app.post("/edgek/meta-tool-commons/kv-cache-ingest")
+async def edgek_meta_tool_commons_kv_cache_ingest(payload: Dict[str, Any] = None):
+    """Record KV/cache transport reuse in Commons without prompt/source payloads."""
+    payload = payload or {}
+    stats = payload.get("stats") if isinstance(payload.get("stats"), dict) else kv_cache_transport.get_stats()
+    result = payload.get("result") if isinstance(payload.get("result"), dict) else {}
+    return meta_tool_commons.ingest_kv_cache_evidence(stats=stats, result=result)
+
+@app.post("/edgek/meta-tool-commons/discovery-ingest")
+async def edgek_meta_tool_commons_discovery_ingest(payload: Dict[str, Any] = None):
+    """Stage discovered MCP/plugin/retrieval/skill metadata as guarded hypotheses."""
+    try:
+        return meta_tool_commons.ingest_discovery_sources(payload or {})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/edgek/meta-tool-commons/rank")
+async def edgek_meta_tool_commons_rank(payload: Dict[str, Any] = None):
+    """Rank tools or skills in context without creating a universal leaderboard."""
+    payload = payload or {}
+    return meta_tool_commons.rank(
+        task_class=payload.get("task_class"), role=payload.get("role"),
+        kind=payload.get("kind"), limit=int(payload.get("limit", 25)),
+    )
+
+@app.post("/edgek/meta-tool-commons/candidates")
+async def edgek_meta_tool_commons_propose(payload: Dict[str, Any] = None):
+    """Stage a schema-pinned local or shared promotion candidate."""
+    payload = payload or {}
+    try:
+        return meta_tool_commons.propose(payload.get("candidate") or {}, source=str(payload.get("source") or "local"))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.get("/edgek/meta-tool-commons/candidates")
+async def edgek_meta_tool_commons_candidates(status: str = None, source: str = None, limit: int = 25):
+    """List local Commons candidates staged for explicit approval."""
+    return meta_tool_commons.candidates(
+        status=status,
+        source=source,
+        limit=max(1, min(limit, 100)),
+    )
+
+@app.post("/edgek/meta-tool-commons/adopt")
+async def edgek_meta_tool_commons_adopt(payload: Dict[str, Any] = None):
+    """Adopt a candidate only after explicit local approval."""
+    payload = payload or {}
+    try:
+        return meta_tool_commons.adopt(
+            str(payload.get("candidate_id") or ""), approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)), approved_by=str(payload.get("approved_by") or "user"),
+            reason=str(payload.get("reason") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.get("/edgek/meta-tool-commons/snapshot")
+async def edgek_meta_tool_commons_snapshot(task_class: str = None, role: str = None):
+    """Export an integrity-hashed advisory ranking snapshot."""
+    return meta_tool_commons.snapshot(task_class=task_class, role=role)
+
+@app.get("/edgek/compute")
+async def edgek_compute_state():
+    """Return Phase 1 shadow Compute Governor state."""
+    return compute_ledger.state()
+
+
+@app.get("/edgek/commons-spaces")
+async def edgek_commons_spaces():
+    """List validated local Compute Spaces and aggregate reduction evidence."""
+    return commons_space_registry.list_spaces()
+
+
+@app.get("/edgek/commons-spaces/{space_id}")
+async def edgek_commons_space_detail(space_id: str):
+    """Inspect one local Space, its receipt, and local adoption history."""
+    try:
+        return commons_space_registry.get(space_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.get("/edgek/commons-spaces/{space_id}/bundle")
+async def edgek_commons_space_bundle(space_id: str):
+    """Export one Space as a content-addressed bundle for remote import."""
+    try:
+        exported = commons_space_registry.export_bundle(space_id)
+        return FileResponse(
+            exported["path"],
+            media_type="application/zip",
+            filename=f"{space_id}.beast-space.zip",
+        )
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/edgek/public-commons-registry")
+async def edgek_public_commons_registry():
+    """Return the cloud-safe public Commons Registry projection."""
+    return commons_space_registry.public_registry()
+
+
+@app.get("/edgek/public-commons-registry/{space_id}")
+async def edgek_public_commons_space_card(space_id: str):
+    """Return one public-safe Space card; no artifact payloads are exposed."""
+    try:
+        return commons_space_registry.public_space_card(space_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.get("/edgek/commons-scale/readiness")
+async def edgek_commons_scale_readiness():
+    """Report whether Commons evidence is ready to scale beyond one-off demos."""
+    return commons_space_registry.scale_readiness()
+
+
+@app.get("/edgek/commons-scale/registration-candidates")
+async def edgek_commons_registration_candidates(limit: int = 50):
+    """Discover benchmark result folders that are candidates for new Spaces."""
+    return commons_space_registry.registration_candidates(limit=max(1, min(int(limit), 500)))
+
+
+@app.post("/edgek/commons-spaces/import")
+async def edgek_commons_space_import(payload: Dict[str, Any] = None):
+    """Preview or import a bundle from inside the local workspace."""
+    payload = payload or {}
+    try:
+        return commons_space_registry.import_bundle(
+            Path(str(payload.get("bundle_path") or "")),
+            approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)),
+            workspace_root=Path(__file__).resolve().parents[1],
+        )
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-spaces/import-remote")
+async def edgek_commons_space_import_remote(payload: Dict[str, Any] = None):
+    """Fetch a remote bundle and import it only through local verification gates."""
+    payload = payload or {}
+    bundle_url = str(payload.get("bundle_url") or "")
+    if not bundle_url.startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="bundle_url must be http(s)")
+    try:
+        with httpx.Client(timeout=max(5, min(int(payload.get("timeout_seconds", 30)), 120))) as client:
+            response = client.get(bundle_url)
+            response.raise_for_status()
+            if len(response.content) > 25_000_000:
+                raise ValueError("remote bundle exceeds size limit")
+            with tempfile.NamedTemporaryFile(prefix="beast-remote-space-", suffix=".zip") as bundle:
+                bundle.write(response.content)
+                bundle.flush()
+                imported = commons_space_registry.import_untrusted_bundle(
+                    Path(bundle.name),
+                    approved=bool(payload.get("approved", False)),
+                    dry_run=bool(payload.get("dry_run", True)),
+                )
+        return {
+            **imported,
+            "remote": {
+                "bundle_url": bundle_url,
+                "authority": "quarantined_hypothesis_until_local_replay",
+                "bytes": len(response.content),
+            },
+        }
+    except (httpx.HTTPError, OSError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-spaces/{space_id}/adopt")
+async def edgek_commons_space_adopt(space_id: str, payload: Dict[str, Any] = None):
+    """Adopt selected artifact references after explicit local approval."""
+    payload = payload or {}
+    try:
+        return commons_space_registry.adopt(
+            space_id,
+            artifact_paths=payload.get("artifact_paths"),
+            approved=bool(payload.get("approved", False)),
+            dry_run=bool(payload.get("dry_run", True)),
+            approved_by=str(payload.get("approved_by") or "operator"),
+            reason=str(payload.get("reason") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-spaces/{space_id}/replay")
+async def edgek_commons_space_replay(space_id: str, payload: Dict[str, Any] = None):
+    """Replay integrity only, or run approved allowlisted verifiers on a local target."""
+    payload = payload or {}
+    deterministic_only = bool(payload.get("deterministic_only", True))
+    target_value = str(payload.get("target") or "")
+    try:
+        return commons_space_registry.replay(
+            space_id,
+            target=Path(target_value) if target_value else None,
+            deterministic_only=deterministic_only,
+            approved=bool(payload.get("approved", False)),
+            timeout_seconds=int(payload.get("timeout_seconds", 120)),
+            contributor_id=str(payload.get("contributor_id") or "local"),
+        )
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/edgek/commons-spaces/{space_id}/reproductions")
+async def edgek_commons_space_reproductions(space_id: str):
+    """List local reproduction receipts used to derive Space trust."""
+    try:
+        commons_space_registry.get(space_id)
+        rows = commons_space_registry.replay_engine.list_reproductions(space_id)
+        return {"space_id": space_id, "count": len(rows), "reproductions": rows}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.get("/edgek/commons-economy")
+async def edgek_commons_economy_state():
+    """Return non-financial credits, duplicate checks, and verified adoptions."""
+    return commons_economy.state()
+
+
+@app.get("/edgek/commons-economy/proof/{space_id}")
+async def edgek_commons_economy_proof(space_id: str):
+    """Build a reproduction-backed proof of useful compute reduction."""
+    try:
+        return commons_economy.proof(space_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.post("/edgek/commons-economy/simulate")
+async def edgek_commons_economy_simulate(payload: Dict[str, Any] = None):
+    """Simulate capped Commons credits with no financial or transfer value."""
+    payload = payload or {}
+    try:
+        return commons_economy.simulate(str(payload.get("space_id"))) if payload.get("space_id") else commons_economy.simulate()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-economy/credits/{space_id}")
+async def edgek_commons_economy_issue(space_id: str, payload: Dict[str, Any] = None):
+    """Issue one sealed non-financial credit after explicit approval."""
+    payload = payload or {}
+    try:
+        return commons_economy.issue_credit(
+            space_id,
+            approved=bool(payload.get("approved", False)),
+            approved_by=str(payload.get("approved_by") or "operator"),
+            reason=str(payload.get("reason") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-spaces/{space_id}/promote-crystal")
+async def edgek_commons_space_promote_crystal(space_id: str, payload: Dict[str, Any] = None):
+    """Promote a thrice-reproduced Space into advisory Crystal Compute."""
+    payload = payload or {}
+    try:
+        return commons_crystal_promoter.promote(
+            space_id,
+            approved=bool(payload.get("approved", False)),
+            approved_by=str(payload.get("approved_by") or "operator"),
+            reason=str(payload.get("reason") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/commons-prototype/complete")
+async def edgek_commons_prototype_complete(payload: Dict[str, Any] = None):
+    """Complete the explicitly approved Tiny Llama first-prototype workflow."""
+    payload = payload or {}
+    try:
+        return commons_prototype_runner.complete(
+            space_id=str(payload.get("space_id") or "tiny_llama_opus_gateway_repair"),
+            target=Path(str(payload.get("target") or Path(__file__).resolve().parents[1])),
+            approved=bool(payload.get("approved", False)),
+            approved_by=str(payload.get("approved_by") or "operator"),
+            reason=str(payload.get("reason") or ""),
+        )
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/edgek/commons-policy/examples")
+async def edgek_commons_policy_examples(limit: int = 500):
+    """Extract privacy-safe route policy examples from local receipts."""
+    return commons_policy_learner.extract_examples(max(1, min(limit, 2000)))
+
+
+@app.get("/edgek/commons-policy/model")
+async def edgek_commons_policy_model():
+    """Train and return the current tiny local shadow ranker."""
+    return commons_policy_learner.train()
+
+
+@app.get("/edgek/commons-policy/evaluation")
+async def edgek_commons_policy_evaluation():
+    """Evaluate route matching and verification preservation offline."""
+    return commons_policy_learner.evaluate()
+
+
+@app.post("/edgek/commons-policy/recommend")
+async def edgek_commons_policy_recommend(payload: Dict[str, Any] = None):
+    """Recommend a lower-compute route in non-enforcing shadow mode."""
+    return commons_policy_learner.recommend(payload or {})
+
+
+@app.get("/edgek/federated-commons")
+async def edgek_federated_commons_state():
+    """Return local allowlists, quarantined hypotheses, revocations, and reputation."""
+    return federated_commons.state()
+
+
+@app.post("/edgek/federated-commons/prepare/{space_id}")
+async def edgek_federated_commons_prepare(space_id: str, payload: Dict[str, Any] = None):
+    """Create a signed, expiring federation envelope for one valid local Space."""
+    payload = payload or {}
+    try:
+        return federated_commons.prepare(
+            space_id,
+            contributor_id=str(payload.get("contributor_id") or "local_node"),
+            ttl_days=int(payload.get("ttl_days", 30)),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/federated-commons/allowlist")
+async def edgek_federated_commons_allowlist(payload: Dict[str, Any] = None):
+    """Allow one contributor after explicit local operator approval."""
+    payload = payload or {}
+    try:
+        return federated_commons.allow_contributor(
+            str(payload.get("contributor_id") or ""),
+            public_key_hash=str(payload.get("public_key_hash") or ""),
+            approved=bool(payload.get("approved", False)),
+            reason=str(payload.get("reason") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/federated-commons/ingest")
+async def edgek_federated_commons_ingest(payload: Dict[str, Any] = None):
+    """Ingest a signed envelope as a quarantined hypothesis, never an authority."""
+    payload = payload or {}
+    try:
+        return federated_commons.ingest(
+            payload.get("envelope") or {},
+            require_allowlisted=bool(payload.get("require_allowlisted", True)),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/federated-commons/{envelope_id}/reproduce")
+async def edgek_federated_commons_reproduce(envelope_id: str, payload: Dict[str, Any] = None):
+    """Reproduce an ingested hypothesis and update contributor reputation."""
+    payload = payload or {}
+    state = federated_commons.state()
+    record = next((item for item in state["envelopes"] if item.get("envelope_id") == envelope_id), None)
+    if not record:
+        raise HTTPException(status_code=404, detail="federated envelope not found")
+    try:
+        replay = commons_space_registry.replay(
+            str(record.get("space_id") or ""),
+            target=Path(str(payload.get("target"))) if payload.get("target") else None,
+            deterministic_only=bool(payload.get("deterministic_only", True)),
+            approved=bool(payload.get("approved", False)),
+            timeout_seconds=int(payload.get("timeout_seconds", 120)),
+            contributor_id=str(record.get("contributor_id") or "unknown"),
+        )
+        reputation = federated_commons.record_reproduction(envelope_id, replay)
+        return {"replay": replay, "federation": reputation}
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/edgek/federated-commons/{envelope_id}/revoke")
+async def edgek_federated_commons_revoke(envelope_id: str, payload: Dict[str, Any] = None):
+    """Revoke a federated hypothesis under explicit local authority."""
+    payload = payload or {}
+    try:
+        return federated_commons.revoke(
+            envelope_id,
+            approved=bool(payload.get("approved", False)),
+            reason=str(payload.get("reason") or ""),
+            approved_by=str(payload.get("approved_by") or "operator"),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.get("/edgek/kv-cache/state")
+@app.post("/edgek/kv-cache/state")
+async def edgek_kv_cache_state():
+    """Return local KV/cache transport state."""
+    return kv_cache_transport.get_stats()
+
+@app.get("/edgek/crystal-compute")
+async def edgek_crystal_compute_state(include_expired: bool = False):
+    """Return Crystal Compute failure memory, friction, counterfactual, and escrow state."""
+    return {
+        "beast_object_type": "crystal_compute_state",
+        "version": "1.0",
+        "phase1": "operational",
+        "phase2": "shadow",
+        "phase3": "advisory",
+        "phase4": "escrow_shadow",
+        "phase5": "temporal_forks_shadow",
+        "phase6": "durable_intelligence_local",
+        "phase7": "non_financial_simulation",
+        "summary": crystal_compute_store.summary(),
+        "negative_capabilities": crystal_compute_store.list_records(include_expired=include_expired),
+        "friction_profiles": crystal_compute_store.friction_profiles(),
+        "counterfactual_summary": compute_ledger.counterfactual_summary(),
+        "escrow_summary": compute_ledger.escrow_summary(),
+        "temporal_forks": crystal_fork_manager.state(),
+        "semantic_raid": semantic_raid_store.integrity_report(),
+        "artifact_fossils": artifact_fossil_store.replay(),
+        "commons_space_crystals": commons_crystal_promoter.state(),
+    }
+
+@app.get("/edgek/crystal-compute/forks")
+async def edgek_crystal_compute_forks():
+    """Return temporal crystal fork channels and annealing events."""
+    return crystal_fork_manager.state()
+
+@app.post("/edgek/crystal-compute/forks")
+async def edgek_crystal_compute_create_fork(payload: Dict[str, Any] = None):
+    """Create a stable, candidate, or experimental temporal crystal fork."""
+    payload = payload or {}
+    try:
+        return crystal_fork_manager.create_fork(
+            capability_id=str(payload.get("capability_id") or ""),
+            task_class=str(payload.get("task_class") or "general"),
+            channel=str(payload.get("channel") or "candidate"),
+            parent_fork_id=str(payload.get("parent_fork_id") or ""),
+            traffic_share=float(payload.get("traffic_share") or 0.0),
+            confidence=float(payload.get("confidence") or 0.0),
+        ).to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/edgek/crystal-compute/forks/anneal")
+async def edgek_crystal_compute_anneal():
+    """Run crystal annealing across temporal forks."""
+    return crystal_fork_manager.anneal()
+
+@app.get("/edgek/crystal-compute/semantic-raid")
+async def edgek_crystal_compute_semantic_raid():
+    """Return Semantic RAID integrity state."""
+    return semantic_raid_store.integrity_report()
+
+@app.post("/edgek/crystal-compute/semantic-raid/reconstruct")
+async def edgek_crystal_compute_semantic_raid_reconstruct():
+    """Repair corrupt or missing shard refs from redundant mirrors."""
+    return semantic_raid_store.reconstruct()
+
+@app.post("/edgek/crystal-compute/semantic-raid/shards")
+async def edgek_crystal_compute_semantic_raid_store(payload: Dict[str, Any] = None):
+    """Store one metadata-only durable intelligence shard."""
+    payload = payload or {}
+    artifact = payload.get("payload") if isinstance(payload.get("payload"), dict) else payload
+    return semantic_raid_store.store_shard(
+        str(payload.get("artifact_type") or artifact.get("beast_object_type") or "compute_artifact"),
+        artifact,
+        value_score=float(payload.get("value_score") or 0.5),
+    ).to_dict()
+
+@app.get("/edgek/crystal-compute/fossils/replay")
+async def edgek_crystal_compute_fossil_replay():
+    """Replay fossilized artifact decision lineage."""
+    return artifact_fossil_store.replay()
+
+@app.post("/edgek/crystal-compute/outcomes")
+async def edgek_crystal_compute_record(payload: Dict[str, Any] = None):
+    """Record a privacy-safe execution outcome."""
+    try:
+        evidence = OutcomeEvidence.create(**(payload or {}))
+        record = crystal_compute_store.record(evidence)
+        return {"recorded": True, "evidence": evidence.to_dict(), "negative_capability": record.to_dict() if record else None}
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.post("/edgek/crystal-compute/maintenance")
+async def edgek_crystal_compute_maintenance(payload: Dict[str, Any] = None):
+    """Expire evidence and optionally prune expired local records."""
+    return crystal_compute_store.maintain(prune_expired=bool((payload or {}).get("prune_expired", False)))
+
+@app.post("/edgek/crystal-compute/negative/{record_id}/override")
+async def edgek_crystal_compute_override(record_id: str, payload: Dict[str, Any] = None):
+    """Apply an explicit, auditable local override to negative evidence."""
+    payload = payload or {}
+    if payload.get("approved") is not True:
+        raise HTTPException(status_code=403, detail="explicit approved=true is required")
+    try:
+        return crystal_compute_store.override(
+            record_id,
+            state=str(payload.get("state") or ""),
+            reason=str(payload.get("reason") or ""),
+            approved_by=str(payload.get("approved_by") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+@app.get("/edgek/compute/metrics")
+async def edgek_compute_metrics(limit: int = 500):
+    """Return observed inference usage and counterfactual shadow estimates."""
+    return compute_ledger.metrics(limit=max(1, min(int(limit), 2000)))
+
+@app.get("/edgek/compute/savings-summary")
+async def edgek_compute_savings_summary(limit: int = 2000, weekly_call_volume: int = None):
+    """Project weekly shadow savings only when cost and call-volume evidence exist."""
+    return compute_ledger.savings_summary(
+        limit=max(1, min(int(limit), 5000)),
+        weekly_call_volume=max(0, int(weekly_call_volume)) if weekly_call_volume is not None else None,
+    )
+
+@app.get("/edgek/compute/plans")
+async def edgek_compute_plans(limit: int = 50):
+    """List privacy-safe shadow Compute Plans."""
+    return {"plans": compute_ledger.recent_plans(max(1, min(int(limit), 500)))}
+
+@app.get("/edgek/compute/receipts")
+async def edgek_compute_receipts(limit: int = 50):
+    """List shadow Compute Receipts."""
+    return {"receipts": compute_ledger.recent_receipts(max(1, min(int(limit), 500)))}
+
+@app.get("/edgek/compute/receipts/{receipt_id}")
+async def edgek_compute_receipt(receipt_id: str):
+    """Return one Compute Receipt by identity."""
+    try:
+        return compute_ledger.receipt(receipt_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+@app.get("/edgek/compute/counterfactuals")
+async def edgek_compute_counterfactuals(limit: int = 50):
+    """List bounded rejected-route counterfactual crystals."""
+    return {
+        "summary": compute_ledger.counterfactual_summary(limit=max(1, min(int(limit), 2000))),
+        "counterfactual_crystals": compute_ledger.recent_counterfactuals(max(1, min(int(limit), 500))),
+    }
+
+@app.get("/edgek/compute/escrows")
+async def edgek_compute_escrows(limit: int = 50):
+    """List compute escrow reservations and settlements."""
+    return {
+        "summary": compute_ledger.escrow_summary(limit=max(1, min(int(limit), 2000))),
+        "escrows": compute_ledger.recent_escrows(max(1, min(int(limit), 500))),
+    }
 
 @app.get("/edgek/tool-laziness/semantic-recommend")
 async def edgek_tool_laziness_semantic_recommend(

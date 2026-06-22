@@ -30,6 +30,43 @@ try:
 except Exception:  # pragma: no cover
     httpx = None
 
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def provider_stream_read_timeout(provider: str) -> float:
+    """Return a bounded idle-read timeout for provider SSE streams."""
+    configured = os.environ.get("BEAST_STREAM_READ_TIMEOUT_SECONDS")
+    if configured:
+        try:
+            return max(15.0, min(float(configured), 600.0))
+        except ValueError:
+            pass
+    normalized = str(provider or "").strip().lower().replace("-", "_")
+    return 210.0 if normalized in {"nvidia", "nvidia_nim", "nim"} else 90.0
+
+
+def classify_stream_failure(exc: Exception | str) -> Dict[str, Any]:
+    """Classify a stream failure without mistaking provider errors for stack death."""
+    message = str(exc or "stream failed")
+    lowered = message.lower()
+    status = 0
+    match = re.search(r"(?:status(?:_code)?[=: ]+|http[/ ]?)(\d{3})", lowered)
+    if match:
+        status = int(match.group(1))
+    timeout = "timeout" in lowered or "timed out" in lowered
+    transport = any(token in lowered for token in (
+        "connection refused", "connection reset", "connecterror", "remoteprotocolerror",
+        "server disconnected", "all connection attempts failed", "broken pipe",
+    ))
+    local_service_failure = transport or status in {502, 503, 504}
+    return {
+        "kind": "timeout" if timeout else "transport" if transport else "http" if status else "provider",
+        "status_code": status or None,
+        "recoverable": timeout or transport or status in {408, 429, 500, 502, 503, 504},
+        "local_service_failure": local_service_failure,
+        "error": message[:1200],
+    }
+
 
 def _as_dict(value: Any) -> Dict[str, Any]:
     return value if isinstance(value, dict) else {}
@@ -50,6 +87,21 @@ def _first_list(value: Any, keys: Iterable[str]) -> List[Dict[str, Any]]:
     return []
 
 
+def _list_at_paths(value: Any, paths: Iterable[str]) -> List[Dict[str, Any]]:
+    for path in paths:
+        current: Any = value
+        ok = True
+        for part in path.split("."):
+            if isinstance(current, dict) and part in current:
+                current = current[part]
+            else:
+                ok = False
+                break
+        if ok and isinstance(current, list):
+            return [x for x in current if isinstance(x, dict)]
+    return []
+
+
 def _nested(value: Dict[str, Any], path: str, default: Any = None) -> Any:
     current: Any = value
     for part in path.split('.'):
@@ -58,6 +110,467 @@ def _nested(value: Dict[str, Any], path: str, default: Any = None) -> Any:
         else:
             return default
     return current
+
+
+def _latest_files(patterns: Iterable[str]) -> List[Path]:
+    files: List[Path] = []
+    base = ROOT / "benchmarks" / "results"
+    for pattern in patterns:
+        files.extend([path for path in base.glob(pattern) if path.is_file()])
+    return sorted(files, key=lambda item: item.stat().st_mtime, reverse=True)
+
+
+def _provider_fitness_from_omni(path: Path) -> Dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    fitness = payload.get("governed_provider_fitness")
+    if not isinstance(fitness, dict) or not fitness:
+        fitness = payload.get("live_provider_fitness")
+    if not isinstance(fitness, dict) or not fitness:
+        return {}
+    models = []
+    for provider, row in fitness.items():
+        if not isinstance(row, dict):
+            continue
+        models.append({
+            "provider": str(provider),
+            "model": _nested(payload, f"live_provider_presets.{provider}.model", provider),
+            "fitness_score": row.get("score"),
+            "samples": row.get("sample_size") or row.get("tasks"),
+            "completed": row.get("beast_completed") or row.get("completed"),
+            "completion_rate": row.get("beast_completion_rate") or row.get("completion_rate"),
+            "clean_completed": row.get("clean_completed"),
+            "clean_completion_rate": row.get("hidden_clean_rate") or row.get("visible_clean_rate"),
+            "rescued_completed": row.get("rescued_completed"),
+            "rescue_rate": row.get("rescue_rate"),
+            "avg_latency_ms": row.get("avg_latency_ms"),
+            "recommended_role": row.get("recommended_role"),
+            "route_confidence": row.get("route_confidence"),
+        })
+    if not models:
+        return {}
+    return {
+        "beast_object_type": "provider_model_fitness_snapshot",
+        "source": "latest_omni_report",
+        "generated_at": payload.get("generated_at"),
+        "artifact_path": str(path),
+        "models": models,
+    }
+
+
+def load_latest_omni_report(path: Optional[Path] = None) -> Dict[str, Any]:
+    candidates = [path] if path else _latest_files(["**/omni_report.json"])
+    for candidate in candidates:
+        if candidate is None or not candidate.is_file():
+            continue
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if payload.get("beast_object_type") == "beast_xai_omni_gauntlet":
+            payload.setdefault("artifact_path", str(candidate))
+            return payload
+    return {}
+
+
+def load_local_compute_snapshot() -> Dict[str, Any]:
+    try:
+        from app.kernel.compute_ledger import ComputeLedger
+        ledger = ComputeLedger()
+        return {
+            "state": ledger.state(),
+            "metrics": ledger.metrics(500),
+            "savings": ledger.savings_summary(2000),
+        }
+    except Exception:
+        return {}
+
+
+def load_local_kv_cache_state() -> Dict[str, Any]:
+    """Summarize persisted KV/cache blocks when the live transport process is empty."""
+    storage_dir = ROOT / "data" / "kv_cache"
+    blocks: List[Dict[str, Any]] = []
+    for path in sorted(storage_dir.glob("*.json")) if storage_dir.exists() else []:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        block = payload.get("block") if isinstance(payload.get("block"), dict) else payload
+        if isinstance(block, dict) and block.get("beast_object_type") == "kv_cache_block":
+            blocks.append(block)
+    if not blocks:
+        return {}
+    by_location: Dict[str, int] = {}
+    by_engine: Dict[str, int] = {}
+    total_bytes = 0
+    compressed = 0
+    compressed_bytes = 0
+    pinned = 0
+    for block in blocks:
+        location = str(block.get("location") or "storage")
+        engine = str(block.get("engine") or "unknown")
+        size = int(block.get("size_bytes") or 0)
+        ratio = float(block.get("compression_ratio") or 1.0)
+        by_location[location] = by_location.get(location, 0) + 1
+        by_engine[engine] = by_engine.get(engine, 0) + 1
+        total_bytes += size
+        if block.get("compressed"):
+            compressed += 1
+            compressed_bytes += int(size * ratio)
+        if block.get("pinned"):
+            pinned += 1
+    return {
+        "beast_object_type": "kv_cache_transport_stats",
+        "version": "1.0",
+        "source": "local_persisted_kv_cache",
+        "total_blocks": len(blocks),
+        "pinned_blocks": pinned,
+        "compressed_blocks": compressed,
+        "total_size_bytes": total_bytes,
+        "compressed_size_bytes": compressed_bytes,
+        "memory_utilization": 0.0,
+        "blocks_by_location": by_location,
+        "blocks_by_engine": by_engine,
+        "operations_logged": sum(int(block.get("access_count") or 0) for block in blocks),
+        "max_memory_bytes": 0,
+    }
+
+
+def load_local_commons_snapshot() -> Dict[str, Any]:
+    """Load local Commons/Swarm evidence for TUI fallback when the gateway is stale."""
+    out: Dict[str, Any] = {}
+    try:
+        from app.kernel.meta_tool_commons import MetaToolCommons
+        commons = MetaToolCommons()
+        out["state"] = commons.state()
+        out["evidence_plane"] = commons.evidence_plane()
+        candidates = commons.candidates(limit=250)
+        out["candidates"] = candidates
+        candidate_rows = _first_list(candidates, ["candidates", "records", "items"])
+        staged_swarm = [row for row in candidate_rows if str(row.get("source") or "") == "local_swarm_commons"]
+        out["swarm_candidates"] = {
+            "beast_object_type": "meta_tool_commons_swarm_candidates",
+            "source": "local_swarm_commons",
+            "proposed_count": len(staged_swarm),
+            "skipped_count": 0,
+            "proposed": staged_swarm[:50],
+            "read_only_fallback": True,
+        }
+    except Exception:
+        pass
+    try:
+        from app.kernel.swarm import SwarmKernel
+        swarm = SwarmKernel()
+        out["swarm_state"] = swarm.state()
+        out["swarm_governance"] = swarm.governed_roles()
+        out["swarm_runs"] = {"runs": swarm.recent_runs(limit=20)}
+        out["swarm_value"] = {"value_logs": swarm.value_logs(limit=40)}
+    except Exception:
+        pass
+    latest_plane = load_latest_reuse_plane_artifact()
+    if latest_plane:
+        out["latest_artifact_plane"] = latest_plane
+    local_kv = load_local_kv_cache_state()
+    if local_kv:
+        out["kv_cache_state"] = local_kv
+        blocks = int(local_kv.get("total_blocks") or 0)
+        operations = int(local_kv.get("operations_logged") or 0)
+        out["kv_cache_ingest"] = {
+            "beast_object_type": "meta_tool_commons_kv_cache_ingest",
+            "source": "local_persisted_kv_cache_fallback",
+            "prepared": blocks if blocks else 0,
+            "accepted": blocks if blocks else 0,
+            "duplicates": 0,
+            "skipped": 0 if blocks or operations else 1,
+            "read_only_fallback": True,
+        }
+    return out
+
+
+def load_local_spaces_snapshot() -> Dict[str, Any]:
+    """Load Spaces and shadow policy state without requiring the gateway."""
+    try:
+        from app.kernel.commons_policy import CommonsPolicyLearner
+        from app.kernel.commons_space_registry import CommonsSpaceRegistry
+
+        registry = CommonsSpaceRegistry()
+        learner = CommonsPolicyLearner(registry)
+        return {
+            "registry": registry.list_spaces(),
+            "policy": learner.recommend({
+                "task_class": "operator_console",
+                "risk": "medium",
+                "gpu_available": False,
+                "approval_required": False,
+            }),
+            "evaluation": learner.evaluate(),
+        }
+    except Exception:
+        return {}
+
+
+def load_local_scale_economics_snapshot() -> Dict[str, Any]:
+    """Load the latest Commons scale economics ladder receipt."""
+    path = ROOT / "benchmarks" / "results" / "commons_scale_economics_ladder_latest.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    if isinstance(payload, dict) and payload.get("beast_object_type") == "commons_scale_economics_report":
+        payload.setdefault("artifact_path", str(path))
+        return payload
+    return {}
+
+
+def load_latest_reuse_plane_artifact() -> Dict[str, Any]:
+    candidates = sorted(
+        ROOT.glob("benchmarks/results/**/reuse_evidence_plane.json"),
+        key=lambda path: path.stat().st_mtime if path.exists() else 0,
+        reverse=True,
+    )
+    for candidate in candidates[:20]:
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        plane = payload.get("plane") if isinstance(payload.get("plane"), dict) else payload
+        if isinstance(plane, dict) and plane.get("beast_object_type") == "meta_tool_commons_evidence_plane":
+            plane = dict(plane)
+            plane.setdefault("artifact_path", str(candidate))
+            return plane
+    return {}
+
+
+def load_local_litellm_config() -> Dict[str, Any]:
+    """Load generated LiteLLM config when the gateway endpoint is stale/offline."""
+    yaml_path = ROOT / "deploy" / "generated" / "litellm.config.yaml"
+    if not yaml_path.exists():
+        return {}
+    try:
+        import yaml  # type: ignore
+        payload = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    if isinstance(payload, dict):
+        payload.setdefault("artifact_path", str(yaml_path))
+        return payload
+    return {}
+
+
+def normalize_litellm_models(config: Dict[str, Any]) -> List[Dict[str, Any]]:
+    rows = _list_at_paths(config, [
+        "model_list",
+        "models",
+        "items",
+        "config.model_list",
+        "config.models",
+        "litellm_config.model_list",
+    ])
+    normalized: List[Dict[str, Any]] = []
+    for idx, row in enumerate(rows, 1):
+        params = row.get("litellm_params") if isinstance(row.get("litellm_params"), dict) else {}
+        info = row.get("model_info") if isinstance(row.get("model_info"), dict) else {}
+        name = (
+            row.get("model_name")
+            or row.get("name")
+            or row.get("id")
+            or info.get("id")
+            or info.get("model_name")
+            or params.get("model")
+            or f"model_{idx}"
+        )
+        provider_model = params.get("model") or row.get("model") or info.get("base_model") or ""
+        normalized_row = dict(row)
+        normalized_row["model_name"] = str(name)
+        normalized_row.setdefault("litellm_params", params)
+        normalized_row["provider_model"] = str(provider_model)
+        normalized.append(normalized_row)
+    return normalized
+
+
+def _plane_by_name(plane: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    rows = plane.get("planes") if isinstance(plane.get("planes"), list) else []
+    return {str(row.get("plane") or ""): row for row in rows if isinstance(row, dict)}
+
+
+def merge_evidence_planes(primary: Dict[str, Any], fallback: Dict[str, Any]) -> Dict[str, Any]:
+    if not primary:
+        return dict(fallback or {})
+    if not fallback:
+        return primary
+    merged = dict(primary)
+    rows = _plane_by_name(primary)
+    changed = False
+    for name, row in _plane_by_name(fallback).items():
+        if name and int((rows.get(name) or {}).get("evidence_count") or 0) <= 0 and int(row.get("evidence_count") or 0) > 0:
+            rows[name] = dict(row)
+            rows[name]["source"] = rows[name].get("source") or fallback.get("artifact_path") or "local_fallback"
+            changed = True
+    if changed:
+        ordered = [rows[name] for name in sorted(rows)]
+        merged["planes"] = ordered
+        merged["plane_count"] = len(ordered)
+        merged["evidence_count"] = sum(int(row.get("evidence_count") or 0) for row in ordered)
+        merged["fallback_augmented"] = True
+    return merged
+
+
+def load_provider_model_fitness(path: Optional[Path] = None) -> Dict[str, Any]:
+    """Load the latest local provider/model fitness snapshot for the TUI."""
+    candidates = [path] if path else [
+        *_latest_files(["**/omni_report.json"]),
+        *_latest_files(["**/*_model_fitness.json", "**/provider_fitness.json"]),
+        ROOT / "benchmarks" / "results" / "beast_provider_model_fitness_live_free_model_fitness.json",
+    ]
+    for candidate in candidates:
+        if candidate is None or not candidate.is_file():
+            continue
+        if candidate.name == "omni_report.json":
+            converted = _provider_fitness_from_omni(candidate)
+            if converted:
+                return converted
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if isinstance(payload, dict) and isinstance(payload.get("models"), list):
+            payload.setdefault("artifact_path", str(candidate))
+            return payload
+    return {}
+
+
+def load_master_mega_evidence(path: Optional[Path] = None) -> Dict[str, Any]:
+    """Load the frozen definitive mega-test release for local TUI reporting."""
+    candidates = [path] if path else [
+        ROOT / "benchmarks" / "results" / "beast_definitive_mega_test_master_evidence_v0_1",
+        ROOT / "benchmarks" / "results" / "beast_definitive_mega_test_master_evidence",
+    ]
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        bundle = candidate if candidate.is_dir() else candidate.parent
+        try:
+            release = json.loads((bundle / "release_manifest.json").read_text(encoding="utf-8"))
+            metrics = json.loads((bundle / "analysis_metrics.json").read_text(encoding="utf-8"))
+            coverage = json.loads((bundle / "coverage_matrix.json").read_text(encoding="utf-8"))
+            integrity = json.loads((bundle / "integrity_manifest.json").read_text(encoding="utf-8"))
+            secret_scan = json.loads((bundle / "secret_scan.json").read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if release.get("release_status") != "frozen" or not isinstance(metrics, dict):
+            continue
+        latest_omni = load_latest_omni_report()
+        return {
+            "release_name": release.get("release_name"),
+            "release_version": release.get("release_version"),
+            "release_status": release.get("release_status"),
+            "controlled_design": release.get("controlled_design") or {},
+            "credibility_layers": release.get("credibility_layers") or [],
+            "metrics": metrics,
+            "coverage": coverage,
+            "integrity_hash": integrity.get("manifest_hash"),
+            "secret_scan_passed": bool(secret_scan.get("passed")),
+            "artifact_path": str(bundle),
+            "latest_omni": {
+                "generated_at": latest_omni.get("generated_at"),
+                "artifact_path": latest_omni.get("artifact_path"),
+                "covered_layers": _nested(latest_omni, "coverage.covered_layers", 0),
+                "total_layers": _nested(latest_omni, "coverage.total_layers", 0),
+                "live_summary": latest_omni.get("live_summary") or {},
+                "governed_summary": latest_omni.get("governed_summary") or {},
+                "live_efficiency_summary": latest_omni.get("live_efficiency_summary") or {},
+            } if latest_omni else {},
+        }
+    return {}
+
+
+def load_latest_mega_artifact(path: Optional[Path] = None) -> Dict[str, Any]:
+    """Load the newest local definitive mega-test artifact for operator reporting."""
+    candidates = [path] if path else [
+        item.parent
+        for item in _latest_files(["beast_definitive_mega_test*/run_manifest.json"])
+    ]
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        bundle = candidate if candidate.is_dir() else candidate.parent
+        try:
+            run_manifest = json.loads((bundle / "run_manifest.json").read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if run_manifest.get("beast_object_type") != "definitive_mega_test_report":
+            continue
+        try:
+            live_execution = json.loads((bundle / "live_execution.json").read_text(encoding="utf-8"))
+        except Exception:
+            live_execution = {}
+        try:
+            mutation = json.loads((bundle / "mutation_recovery.json").read_text(encoding="utf-8"))
+        except Exception:
+            mutation = {}
+        try:
+            qpc = json.loads((bundle / "qpc_cloud_call_displacement.json").read_text(encoding="utf-8"))
+        except Exception:
+            qpc = {}
+        try:
+            phase_package = json.loads((bundle / "crystal_compute_phase_package.json").read_text(encoding="utf-8"))
+        except Exception:
+            phase_package = {}
+        try:
+            integrity = json.loads((bundle / "integrity_manifest.json").read_text(encoding="utf-8"))
+        except Exception:
+            integrity = {}
+        provider_receipts_path = bundle / "provider_call_receipts.jsonl"
+        provider_call_receipts = 0
+        if provider_receipts_path.is_file():
+            try:
+                provider_call_receipts = sum(1 for line in provider_receipts_path.read_text(encoding="utf-8").splitlines() if line.strip())
+            except Exception:
+                provider_call_receipts = 0
+        controlled_path = bundle / "controlled_observations.jsonl"
+        controlled_rows = 0
+        completed_rows = 0
+        if controlled_path.is_file():
+            try:
+                for line in controlled_path.read_text(encoding="utf-8").splitlines():
+                    if not line.strip():
+                        continue
+                    controlled_rows += 1
+                    try:
+                        completed_rows += 1 if json.loads(line).get("completed") else 0
+                    except Exception:
+                        pass
+            except Exception:
+                controlled_rows = completed_rows = 0
+        return {
+            "artifact_path": str(bundle),
+            "archive_path": str(bundle) + ".zip" if (Path(str(bundle) + ".zip")).exists() else "",
+            "generated_at": run_manifest.get("generated_at"),
+            "mode": run_manifest.get("mode"),
+            "live": bool(run_manifest.get("live")),
+            "providers": run_manifest.get("providers") or [],
+            "families": run_manifest.get("families") or [],
+            "occurrences": run_manifest.get("occurrences") or [],
+            "lanes": run_manifest.get("lanes") or [],
+            "acceptance_status": run_manifest.get("acceptance_status") or {},
+            "controlled_rows": controlled_rows,
+            "completed_rows": completed_rows,
+            "raw_live_result_count": int(live_execution.get("raw_live_result_count") or 0),
+            "live_result_count": len(live_execution.get("live_results") or []),
+            "provider_call_receipts": provider_call_receipts or len(live_execution.get("provider_call_receipts") or []),
+            "provider_call_receipt_files": len(list((bundle / "provider_call_receipts").glob("*.json"))) if (bundle / "provider_call_receipts").is_dir() else 0,
+            "impact_fingerprint_files": len(list((bundle / "impact_fingerprints").glob("*.json"))) if (bundle / "impact_fingerprints").is_dir() else 0,
+            "compute_governor_receipts": len(live_execution.get("compute_governor_receipts") or []),
+            "crystallization_events": len(live_execution.get("crystallization_events") or []),
+            "mutation": mutation,
+            "qpc": qpc,
+            "phase_package": phase_package,
+            "integrity_hash": integrity.get("manifest_hash"),
+            "resume_source": live_execution.get("resume_source"),
+        }
+    return {}
 
 
 
@@ -128,6 +641,40 @@ class BackendSnapshot:
     handoff_precheck: Dict[str, Any] = field(default_factory=dict)
     http_telemetry: Dict[str, Any] = field(default_factory=dict)
     runtime_metrics: Dict[str, Any] = field(default_factory=dict)
+    session_handshake: Dict[str, Any] = field(default_factory=dict)
+    commons_state: Dict[str, Any] = field(default_factory=dict)
+    commons_ranking: Dict[str, Any] = field(default_factory=dict)
+    commons_evidence_plane: Dict[str, Any] = field(default_factory=dict)
+    commons_swarm_ingest: Dict[str, Any] = field(default_factory=dict)
+    commons_swarm_candidates: Dict[str, Any] = field(default_factory=dict)
+    commons_kv_cache_ingest: Dict[str, Any] = field(default_factory=dict)
+    commons_candidates: List[Dict[str, Any]] = field(default_factory=list)
+    capability_exchange_state: Dict[str, Any] = field(default_factory=dict)
+    tool_laziness: Dict[str, Any] = field(default_factory=dict)
+    provider_economist: Dict[str, Any] = field(default_factory=dict)
+    otel_state: Dict[str, Any] = field(default_factory=dict)
+    plugins_state: Dict[str, Any] = field(default_factory=dict)
+    swarm_state: Dict[str, Any] = field(default_factory=dict)
+    swarm_governance: Dict[str, Any] = field(default_factory=dict)
+    swarm_runs_raw: Dict[str, Any] = field(default_factory=dict)
+    swarm_runs: List[Dict[str, Any]] = field(default_factory=list)
+    swarm_value_raw: Dict[str, Any] = field(default_factory=dict)
+    swarm_value_logs: List[Dict[str, Any]] = field(default_factory=list)
+    ollama_status: Dict[str, Any] = field(default_factory=dict)
+    beast_cli_plan: Dict[str, Any] = field(default_factory=dict)
+    kv_cache_state: Dict[str, Any] = field(default_factory=dict)
+    compute_state: Dict[str, Any] = field(default_factory=dict)
+    compute_metrics: Dict[str, Any] = field(default_factory=dict)
+    compute_savings: Dict[str, Any] = field(default_factory=dict)
+    crystal_compute: Dict[str, Any] = field(default_factory=dict)
+    commons_spaces: Dict[str, Any] = field(default_factory=dict)
+    commons_economy: Dict[str, Any] = field(default_factory=dict)
+    commons_scale_economics: Dict[str, Any] = field(default_factory=dict)
+    commons_policy: Dict[str, Any] = field(default_factory=dict)
+    commons_policy_evaluation: Dict[str, Any] = field(default_factory=dict)
+    provider_model_fitness: Dict[str, Any] = field(default_factory=dict)
+    master_mega_evidence: Dict[str, Any] = field(default_factory=dict)
+    latest_mega_artifact: Dict[str, Any] = field(default_factory=dict)
     errors: Dict[str, str] = field(default_factory=dict)
 
     def capabilities_by_kind(self, *kinds: str) -> List[Dict[str, Any]]:
@@ -223,6 +770,58 @@ class BackendSnapshot:
             'backend_classes': len(self.provider_backend_counts()),
         }
 
+    def swarm_summary(self) -> Dict[str, Any]:
+        statuses = self.swarm_state.get('statuses') if isinstance(self.swarm_state.get('statuses'), dict) else {}
+        roles = self.swarm_state.get('role_events') if isinstance(self.swarm_state.get('role_events'), dict) else {}
+        profiles = self.swarm_governance.get('profiles') if isinstance(self.swarm_governance.get('profiles'), dict) else {}
+        ollama_ready = bool(self.ollama_status.get('server_ready'))
+        plan_profile = self.beast_cli_plan.get('profile') if isinstance(self.beast_cli_plan.get('profile'), dict) else {}
+        planes = _plane_by_name(self.commons_evidence_plane)
+        swarm_plane = planes.get('swarm') or {}
+        kv_plane = planes.get('kv_cache') or {}
+        candidate_summary = self.commons_evidence_plane.get('candidate_summary') if isinstance(self.commons_evidence_plane.get('candidate_summary'), dict) else {}
+        candidate_source_totals: Dict[str, int] = {}
+        for source, statuses_by_source in candidate_summary.items():
+            if isinstance(statuses_by_source, dict):
+                candidate_source_totals[str(source)] = sum(int(value or 0) for value in statuses_by_source.values())
+        for candidate in self.commons_candidates:
+            source = str(candidate.get('source') or 'unknown')
+            if source and source not in candidate_source_totals:
+                candidate_source_totals[source] = candidate_source_totals.get(source, 0) + 1
+        swarm_evidence = int(swarm_plane.get('evidence_count') or 0)
+        kv_evidence = int(kv_plane.get('evidence_count') or 0)
+        return {
+            'enabled': bool(self.swarm_state.get('enabled')),
+            'runs': int(self.swarm_state.get('runs') or 0),
+            'statuses': statuses,
+            'role_events': roles,
+            'profiles': profiles,
+            'profile_count': len(profiles),
+            'recent_count': len(self.swarm_runs),
+            'value_count': len(self.swarm_value_logs),
+            'commons_prepared': max(int(self.commons_swarm_ingest.get('prepared') or 0), swarm_evidence),
+            'commons_accepted': max(int(self.commons_swarm_ingest.get('accepted') or 0), swarm_evidence),
+            'commons_duplicates': int(self.commons_swarm_ingest.get('duplicates') or 0),
+            'evidence_plane_count': int(self.commons_evidence_plane.get('plane_count') or 0),
+            'evidence_plane_total': int(self.commons_evidence_plane.get('evidence_count') or 0),
+            'evidence_plane_hash': self.commons_evidence_plane.get('plane_hash') or '',
+            'swarm_candidates_proposed': max(int(self.commons_swarm_candidates.get('proposed_count') or 0), len(self.commons_candidates)),
+            'swarm_candidates_skipped': int(self.commons_swarm_candidates.get('skipped_count') or 0),
+            'commons_candidate_queue': len(self.commons_candidates),
+            'commons_candidate_sources': candidate_source_totals,
+            'kv_cache_blocks': max(int(self.kv_cache_state.get('total_blocks') or 0), kv_evidence),
+            'kv_cache_operations': int(self.kv_cache_state.get('operations_logged') or 0),
+            'kv_cache_prepared': max(int(self.commons_kv_cache_ingest.get('prepared') or 0), kv_evidence),
+            'kv_cache_accepted': max(int(self.commons_kv_cache_ingest.get('accepted') or 0), kv_evidence),
+            'ollama_ready': ollama_ready,
+            'ollama_model': self.ollama_status.get('default_model') or '',
+            'ollama_models': len(self.ollama_status.get('models') or []),
+            'openclaw_ready': bool(self.beast_cli_plan.get('ready')),
+            'openclaw_mode': plan_profile.get('mode') or self.beast_cli_plan.get('mode') or 'openclaw',
+            'openclaw_actions': len(self.beast_cli_plan.get('actions') or []),
+            'openclaw_hash': self.beast_cli_plan.get('plan_hash') or '',
+        }
+
 
 class BeastApiClient:
     def __init__(self, base_url: str = 'http://127.0.0.1:8000', timeout: float = 2.2):
@@ -245,6 +844,14 @@ class BeastApiClient:
             response = await client.get(f'{self.base_url}{path}', params=params)
             response.raise_for_status()
             return response.text
+
+    async def record_outcome_evidence(self, payload: Dict[str, Any]) -> bool:
+        """Best-effort evidence emission; telemetry must never break a live turn."""
+        try:
+            await self.post_json("/edgek/crystal-compute/outcomes", payload)
+            return True
+        except Exception:
+            return False
 
     async def post_json(self, path: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         if httpx is None:
@@ -304,6 +911,33 @@ class BeastApiClient:
             handoff,
             http_telemetry,
             runtime_metrics,
+            session_handshake,
+            commons_state,
+            commons_ranking,
+            commons_evidence_plane,
+            commons_swarm_ingest,
+            commons_swarm_candidates,
+            commons_kv_cache_ingest,
+            commons_candidates,
+            capability_exchange_state,
+            tool_laziness,
+            otel_state,
+            plugins_state,
+            swarm_state,
+            swarm_governance,
+            swarm_runs,
+            swarm_value,
+            ollama_status,
+            beast_cli_plan,
+            kv_cache_state,
+            compute_state,
+            compute_metrics,
+            compute_savings,
+            crystal_compute,
+            commons_spaces,
+            commons_economy,
+            commons_policy,
+            commons_policy_evaluation,
         ) = await asyncio.gather(
             guarded_json('capabilities', self.get_json('/edgek/capabilities')),
             guarded_json('capability_families', self.get_json('/edgek/capabilities/families')),
@@ -343,6 +977,74 @@ class BeastApiClient:
             })),
             guarded_json('http_telemetry', self.get_json('/edgek/telemetry/http')),
             guarded_json('runtime_metrics', self.get_json('/edgek/runtime/metrics', {'limit': 500})),
+            guarded_json('session_handshake', self.post_json('/edgek/session/handshake', {
+                'objective': 'Operate the BEAST Power Console efficiently',
+                'mode': 'tui',
+                'session_id': 'beast_tui_operator_console',
+                'candidate_tools': [
+                    'beast_prepare_task', 'beast_prepare_handoff', 'beast_sourceplan_prepare',
+                    'beast_provider_economist_select', 'beast_meta_tool_commons',
+                ],
+                'preflight_budget_ms': 500,
+                'scout_budget_ms': 300,
+            })),
+            guarded_json('commons_state', self.get_json('/edgek/meta-tool-commons')),
+            guarded_json('commons_ranking', self.post_json('/edgek/meta-tool-commons/rank', {
+                'task_class': 'operator_console', 'role': 'tool_selector', 'limit': 10,
+            })),
+            guarded_json('commons_evidence_plane', self.get_json('/edgek/meta-tool-commons/evidence-plane')),
+            guarded_json('commons_swarm_ingest', self.post_json('/edgek/meta-tool-commons/swarm-ingest', {
+                'limit': 25,
+            })),
+            guarded_json('commons_swarm_candidates', self.post_json('/edgek/meta-tool-commons/swarm-candidates', {
+                'min_samples': 2,
+                'limit': 10,
+            })),
+            guarded_json('commons_kv_cache_ingest', self.post_json('/edgek/meta-tool-commons/kv-cache-ingest', {})),
+            guarded_json('commons_candidates', self.get_json('/edgek/meta-tool-commons/candidates', {
+                'limit': 100,
+            })),
+            guarded_json('capability_exchange', self.get_json('/edgek/capability-exchange')),
+            guarded_json('tool_laziness', self.post_json('/edgek/tool-laziness/recommend-tools', {
+                'scenario': 'operator_console',
+                'candidate_tools': [
+                    'beast_prepare_task', 'beast_prepare_handoff', 'beast_sourceplan_prepare',
+                    'beast_provider_economist_select', 'beast_meta_tool_commons',
+                ],
+                'required_tools': [], 'min_samples': 3,
+            })),
+            guarded_json('otel', self.get_json('/edgek/connectors/otel')),
+            guarded_json('plugins', self.get_json('/edgek/plugins')),
+            guarded_json('swarm_state', self.get_json('/edgek/swarm/state')),
+            guarded_json('swarm_governance', self.get_json('/edgek/swarm/governance')),
+            guarded_json('swarm_runs', self.get_json('/edgek/swarm/runs', {'limit': 20})),
+            guarded_json('swarm_value', self.get_json('/edgek/swarm/value', {'limit': 40})),
+            guarded_json('ollama_status', self.get_json('/edgek/ollama/status')),
+            guarded_json('beast_cli_plan', self.post_json('/edgek/beast-cli/plan', {
+                'objective': 'Operator console swarm/OpenClaw/Ollama readiness preview',
+                'mode': 'openclaw',
+                'use_ollama': False,
+                'preflight_budget_ms': 350,
+                'scout_budget_ms': 0,
+                'candidate_tools': [
+                    'beast_workflow_plan', 'beast_openclaw_plan', 'beast_openclaw_execute',
+                    'beast_meta_tool_commons', 'beast_check_promotion', 'ollama_scout',
+                ],
+                'required_tools': ['beast_workflow_plan'],
+                'run_swarm': True,
+            })),
+            guarded_json('kv_cache_state', self.get_json('/edgek/kv-cache/state')),
+            guarded_json('compute_state', self.get_json('/edgek/compute')),
+            guarded_json('compute_metrics', self.get_json('/edgek/compute/metrics', {'limit': 500})),
+            guarded_json('compute_savings', self.get_json('/edgek/compute/savings-summary', {'limit': 2000})),
+            guarded_json('crystal_compute', self.get_json('/edgek/crystal-compute')),
+            guarded_json('commons_spaces', self.get_json('/edgek/commons-spaces')),
+            guarded_json('commons_economy', self.get_json('/edgek/commons-economy')),
+            guarded_json('commons_policy', self.post_json('/edgek/commons-policy/recommend', {
+                'task_class': 'operator_console', 'risk': 'medium',
+                'gpu_available': False, 'approval_required': False,
+            })),
+            guarded_json('commons_policy_evaluation', self.get_json('/edgek/commons-policy/evaluation')),
         )
 
         snap.capability_inventory = _as_dict(capabilities)
@@ -357,7 +1059,12 @@ class BeastApiClient:
         snap.prec_lifecycle_raw = _as_dict(prec_lifecycle)
         snap.prec_lifecycles = _first_list(prec_lifecycle, ['lifecycles', 'records', 'items'])
         snap.litellm_config = _as_dict(litellm_config)
-        snap.litellm_models = _first_list(litellm_config, ['model_list', 'models', 'items'])
+        if not snap.litellm_config or not normalize_litellm_models(snap.litellm_config):
+            local_litellm = load_local_litellm_config()
+            if local_litellm:
+                snap.litellm_config = local_litellm
+                snap.errors.pop('litellm_config', None)
+        snap.litellm_models = normalize_litellm_models(snap.litellm_config)
         snap.nginx_config = str(nginx_config or '')
         snap.litellm_sidecar = _as_dict(litellm_sidecar)
         snap.chronicles_raw = _as_dict(chronicles)
@@ -368,6 +1075,169 @@ class BeastApiClient:
         snap.handoff_precheck = _as_dict(handoff)
         snap.http_telemetry = _as_dict(http_telemetry)
         snap.runtime_metrics = _as_dict(runtime_metrics)
+        snap.session_handshake = _as_dict(session_handshake)
+        snap.commons_state = _as_dict(commons_state)
+        snap.commons_ranking = _as_dict(commons_ranking)
+        snap.commons_evidence_plane = _as_dict(commons_evidence_plane)
+        snap.commons_swarm_ingest = _as_dict(commons_swarm_ingest)
+        snap.commons_swarm_candidates = _as_dict(commons_swarm_candidates)
+        snap.commons_kv_cache_ingest = _as_dict(commons_kv_cache_ingest)
+        snap.commons_candidates = _first_list(commons_candidates, ['candidates', 'records', 'items'])
+        snap.capability_exchange_state = _as_dict(capability_exchange_state)
+        snap.tool_laziness = _as_dict(tool_laziness)
+        snap.otel_state = _as_dict(otel_state)
+        snap.plugins_state = _as_dict(plugins_state)
+        snap.swarm_state = _as_dict(swarm_state)
+        snap.swarm_governance = _as_dict(swarm_governance)
+        snap.swarm_runs_raw = _as_dict(swarm_runs)
+        snap.swarm_runs = _first_list(swarm_runs, ['runs', 'records', 'items'])
+        snap.swarm_value_raw = _as_dict(swarm_value)
+        snap.swarm_value_logs = _first_list(swarm_value, ['value_logs', 'records', 'items'])
+        snap.ollama_status = _as_dict(ollama_status)
+        snap.beast_cli_plan = _as_dict(beast_cli_plan)
+        snap.kv_cache_state = _as_dict(kv_cache_state)
+        snap.compute_state = _as_dict(compute_state)
+        snap.compute_metrics = _as_dict(compute_metrics)
+        snap.compute_savings = _as_dict(compute_savings)
+        snap.crystal_compute = _as_dict(crystal_compute)
+        snap.commons_spaces = _as_dict(commons_spaces)
+        snap.commons_economy = _as_dict(commons_economy)
+        snap.commons_policy = _as_dict(commons_policy)
+        snap.commons_policy_evaluation = _as_dict(commons_policy_evaluation)
+        localish_gateway = any(token in self.base_url for token in ("127.0.0.1", "localhost", "0.0.0.0"))
+        if localish_gateway:
+            local_spaces = load_local_spaces_snapshot()
+            local_registry = _as_dict(local_spaces.get("registry"))
+            if local_registry and int(local_registry.get("count") or 0) >= int(snap.commons_spaces.get("count") or 0):
+                snap.commons_spaces = local_registry
+                snap.errors.pop("commons_spaces", None)
+            if not snap.commons_policy and isinstance(local_spaces.get("policy"), dict):
+                snap.commons_policy = _as_dict(local_spaces.get("policy"))
+                snap.errors.pop("commons_policy", None)
+            if not snap.commons_policy_evaluation and isinstance(local_spaces.get("evaluation"), dict):
+                snap.commons_policy_evaluation = _as_dict(local_spaces.get("evaluation"))
+                snap.errors.pop("commons_policy_evaluation", None)
+            local_scale_economics = load_local_scale_economics_snapshot()
+            if local_scale_economics:
+                snap.commons_scale_economics = local_scale_economics
+            local_commons = load_local_commons_snapshot()
+            local_state = _as_dict(local_commons.get("state"))
+            local_plane = _as_dict(local_commons.get("evidence_plane"))
+            artifact_plane = _as_dict(local_commons.get("latest_artifact_plane"))
+            local_candidates = _first_list(local_commons.get("candidates"), ["candidates", "records", "items"])
+            local_swarm_candidates = _as_dict(local_commons.get("swarm_candidates"))
+            local_kv_ingest = _as_dict(local_commons.get("kv_cache_ingest"))
+            local_kv_state = _as_dict(local_commons.get("kv_cache_state"))
+            if local_state and int(local_state.get("evidence_count") or 0) > int(snap.commons_state.get("evidence_count") or 0):
+                snap.commons_state = local_state
+            if local_plane and int(local_plane.get("evidence_count") or 0) > int(snap.commons_evidence_plane.get("evidence_count") or 0):
+                snap.commons_evidence_plane = local_plane
+                snap.errors.pop("commons_evidence_plane", None)
+            if artifact_plane:
+                snap.commons_evidence_plane = merge_evidence_planes(snap.commons_evidence_plane, artifact_plane)
+                snap.errors.pop("commons_evidence_plane", None)
+            if not snap.commons_swarm_ingest and snap.commons_evidence_plane:
+                planes = snap.commons_evidence_plane.get("planes") if isinstance(snap.commons_evidence_plane.get("planes"), list) else []
+                swarm_plane = next((row for row in planes if isinstance(row, dict) and row.get("plane") == "swarm"), {})
+                prepared = int((swarm_plane or {}).get("evidence_count") or 0)
+                if prepared:
+                    snap.commons_swarm_ingest = {
+                        "prepared": prepared,
+                        "accepted": prepared,
+                        "duplicates": 0,
+                        "source": "local_fallback_evidence_plane",
+                    }
+                    snap.errors.pop("commons_swarm_ingest", None)
+            if local_candidates and len(local_candidates) > len(snap.commons_candidates):
+                snap.commons_candidates = local_candidates
+                snap.errors.pop("commons_candidates", None)
+            if local_swarm_candidates and int(local_swarm_candidates.get("proposed_count") or 0) >= int(snap.commons_swarm_candidates.get("proposed_count") or 0):
+                snap.commons_swarm_candidates = local_swarm_candidates
+                snap.errors.pop("commons_swarm_candidates", None)
+            if local_kv_state and int(local_kv_state.get("total_blocks") or 0) >= int(snap.kv_cache_state.get("total_blocks") or 0):
+                snap.kv_cache_state = local_kv_state
+                snap.errors.pop("kv_cache_state", None)
+            if local_kv_ingest and int(local_kv_ingest.get("prepared") or 0) >= int(snap.commons_kv_cache_ingest.get("prepared") or 0):
+                snap.commons_kv_cache_ingest = local_kv_ingest
+                snap.errors.pop("commons_kv_cache_ingest", None)
+            if not snap.commons_kv_cache_ingest and snap.commons_evidence_plane:
+                planes = snap.commons_evidence_plane.get("planes") if isinstance(snap.commons_evidence_plane.get("planes"), list) else []
+                kv_plane = next((row for row in planes if isinstance(row, dict) and row.get("plane") == "kv_cache"), {})
+                prepared = int((kv_plane or {}).get("evidence_count") or 0)
+                if prepared:
+                    snap.commons_kv_cache_ingest = {
+                        "prepared": prepared,
+                        "accepted": prepared,
+                        "duplicates": 0,
+                        "source": "local_fallback_evidence_plane",
+                    }
+                    snap.errors.pop("commons_kv_cache_ingest", None)
+            if not snap.swarm_state and isinstance(local_commons.get("swarm_state"), dict):
+                snap.swarm_state = _as_dict(local_commons.get("swarm_state"))
+            if not snap.swarm_governance and isinstance(local_commons.get("swarm_governance"), dict):
+                snap.swarm_governance = _as_dict(local_commons.get("swarm_governance"))
+            if not snap.swarm_runs:
+                snap.swarm_runs_raw = _as_dict(local_commons.get("swarm_runs"))
+                snap.swarm_runs = _first_list(local_commons.get("swarm_runs"), ["runs", "records", "items"])
+            if not snap.swarm_value_logs:
+                snap.swarm_value_raw = _as_dict(local_commons.get("swarm_value"))
+                snap.swarm_value_logs = _first_list(local_commons.get("swarm_value"), ["value_logs", "records", "items"])
+            local_compute = load_local_compute_snapshot()
+            local_metrics = _as_dict(local_compute.get("metrics"))
+            local_savings = _as_dict(local_compute.get("savings"))
+            local_state = _as_dict(local_compute.get("state"))
+            try:
+                local_samples = int(local_metrics.get("sample_size") or 0)
+                remote_samples = int(snap.compute_metrics.get("sample_size") or 0)
+            except Exception:
+                local_samples = remote_samples = 0
+            if local_metrics and local_samples >= remote_samples:
+                snap.compute_metrics = local_metrics
+            if local_savings and (local_samples >= remote_samples or not snap.compute_savings):
+                snap.compute_savings = local_savings
+            if local_state:
+                merged_state = dict(snap.compute_state)
+                merged_state.update(local_state)
+                snap.compute_state = merged_state
+        snap.provider_model_fitness = load_provider_model_fitness()
+        snap.master_mega_evidence = load_master_mega_evidence()
+        snap.latest_mega_artifact = load_latest_mega_artifact()
+
+        economist_candidates = []
+        for provider in snap.providers():
+            provider_id = str(provider.get('provider_id') or provider.get('id') or provider.get('name') or '')
+            matching = [
+                item for item in snap.chronicles
+                if str(item.get('provider') or '').lower().replace('-', '_') == provider_id.lower().replace('-', '_')
+            ][:20]
+            if not provider_id or not matching:
+                continue
+            tasks = len(matching)
+            rescued = sum(1 for item in matching if item.get('canonicalized') or (item.get('output_evidence') or {}).get('repair_attempted'))
+            latencies = [float(item['latency_ms']) for item in matching if item.get('latency_ms') not in (None, '')]
+            latest = matching[0]
+            economist_candidates.append({
+                'provider': provider_id,
+                'recommended_role': latest.get('recommended_role') or latest.get('provider_role') or 'rescue_backed_action_ir',
+                'sample_size': tasks,
+                'rescued_completed': rescued,
+                'rescue_rate': rescued / tasks if tasks else 0.0,
+                'hidden_clean_completed': sum(1 for item in matching if item.get('hidden_clean')),
+                'hidden_clean_rate': sum(1 for item in matching if item.get('hidden_clean')) / tasks if tasks else 0.0,
+                'avg_latency_ms': sum(latencies) / len(latencies) if latencies else None,
+                'route_confidence': latest.get('route_confidence') or 'medium',
+                'hidden_clean_usd_per_fix': latest.get('hidden_clean_usd_per_fix'),
+            })
+        if economist_candidates:
+            snap.provider_economist = _as_dict(await guarded_json(
+                'provider_economist',
+                self.post_json('/edgek/provider-economist/select', {
+                    'candidates': economist_candidates,
+                    'requested_role': 'primary_patch_provider',
+                    'min_auth_confidence': 0.6,
+                    'prefer_hidden_clean': True,
+                }),
+            ))
 
         return snap
 
@@ -483,6 +1353,13 @@ class BeastApiClient:
 
     async def render_litellm_config(self) -> ActionResult:
         return await self.action("Render LiteLLM config", "/edgek/deploy/litellm-config", method="GET")
+
+    async def import_provider_secrets(self, source_path: str, overwrite: bool = True, load: bool = True) -> ActionResult:
+        return await self.action("Import provider secrets", "/edgek/providers/secrets/import", {
+            "source_path": source_path,
+            "overwrite": overwrite,
+            "load": load,
+        })
 
 
     def workspace_root(self) -> Path:
@@ -1152,14 +2029,28 @@ class BeastApiClient:
             except Exception as exc:
                 checks.append({"kind": "py_compile", "path": rel, "ok": False, "error": str(exc)})
                 errors.append(f"py_compile error for {rel}: {exc}")
-        run_tests = bool((plan.get("apply_policy") or {}).get("run_tests")) or os.environ.get("BEAST_PATCH_RUN_TESTS") == "1"
+        apply_policy = plan.get("apply_policy") if isinstance(plan.get("apply_policy"), dict) else {}
+        run_tests = bool(apply_policy.get("run_tests")) or os.environ.get("BEAST_PATCH_RUN_TESTS") == "1"
         if run_tests:
             try:
-                proc = subprocess.run([sys.executable, "-m", "pytest", "-q"], cwd=str(root), text=True, capture_output=True, timeout=int(os.environ.get("BEAST_PATCH_TEST_TIMEOUT", "60")))
+                test_cwd_raw = str(apply_policy.get("test_cwd") or plan.get("verification_cwd") or root)
+                test_cwd = Path(test_cwd_raw).expanduser().resolve()
+                if not test_cwd.exists() or not test_cwd.is_dir():
+                    raise RuntimeError(f"pytest cwd does not exist: {test_cwd}")
+                test_args = apply_policy.get("test_args")
+                if not isinstance(test_args, list) or not all(isinstance(item, str) for item in test_args):
+                    test_args = ["-q"]
+                proc = subprocess.run(
+                    [sys.executable, "-m", "pytest", *test_args],
+                    cwd=str(test_cwd),
+                    text=True,
+                    capture_output=True,
+                    timeout=int(os.environ.get("BEAST_PATCH_TEST_TIMEOUT", "60")),
+                )
                 ok = proc.returncode == 0
-                checks.append({"kind": "pytest", "ok": ok, "stdout": proc.stdout[-2500:], "stderr": proc.stderr[-2500:]})
+                checks.append({"kind": "pytest", "ok": ok, "cwd": str(test_cwd), "args": test_args, "stdout": proc.stdout[-2500:], "stderr": proc.stderr[-2500:]})
                 if not ok:
-                    errors.append("pytest failed")
+                    errors.append(f"pytest failed in {test_cwd}")
             except Exception as exc:
                 checks.append({"kind": "pytest", "ok": False, "error": str(exc)})
                 errors.append(f"pytest error: {exc}")
@@ -1464,8 +2355,10 @@ class BeastApiClient:
         }
         token_count = 0
         raw_chunks: List[str] = []
+        saw_done = False
+        finish_reason = ""
         try:
-            timeout = httpx.Timeout(connect=5.0, read=60.0, write=10.0, pool=5.0)
+            timeout = httpx.Timeout(connect=10.0, read=provider_stream_read_timeout(provider), write=20.0, pool=10.0)
             async with httpx.AsyncClient(timeout=timeout) as client:
                 async with client.stream(
                     "POST",
@@ -1493,7 +2386,7 @@ class BeastApiClient:
                         if delta:
                             token_count += 1
                             yield {"type": "token", "text": delta}
-                            yield {"type": "provider_done", "tokens": token_count, "raw_chunks": 1}
+                            yield {"type": "provider_done", "tokens": token_count, "raw_chunks": 1, "completed": True, "finish_reason": "non_stream_response"}
                             return
                         yield {"type": "error", "error": text[:1200]}
                         return
@@ -1508,6 +2401,7 @@ class BeastApiClient:
                         if line.startswith("data:"):
                             line = line[5:].strip()
                         if line in {"[DONE]", "data: [DONE]"}:
+                            saw_done = True
                             break
                         try:
                             data = json.loads(line)
@@ -1525,11 +2419,20 @@ class BeastApiClient:
                         if data.get("tool_events"):
                             for item in data.get("tool_events") or []:
                                 yield {"type": "tool", "text": str(item)}
-            yield {"type": "provider_done", "tokens": token_count, "raw_chunks": len(raw_chunks)}
+                        choices = data.get("choices") if isinstance(data, dict) else None
+                        if isinstance(choices, list) and choices and isinstance(choices[0], dict):
+                            reason = choices[0].get("finish_reason")
+                            if reason:
+                                finish_reason = str(reason)
+            completed = bool(saw_done or finish_reason)
+            if completed:
+                yield {"type": "provider_done", "tokens": token_count, "raw_chunks": len(raw_chunks), "completed": True, "finish_reason": finish_reason or "done"}
+            else:
+                yield {"type": "error", **classify_stream_failure("provider stream closed before a completion marker"), "tokens": token_count}
         except Exception as exc:
-            yield {"type": "error", "error": str(exc)}
+            yield {"type": "error", **classify_stream_failure(exc), "tokens": token_count}
 
-    async def stream_live_turn(self, text: str, history: List[Dict[str, str]], provider: str = "litellm", lifecycle_id: str = "", context_files: Optional[List[str]] = None) -> AsyncIterator[Dict[str, Any]]:
+    async def stream_live_turn(self, text: str, history: List[Dict[str, str]], provider: str = "litellm", lifecycle_id: str = "", context_files: Optional[List[str]] = None, model: str = "beast-auto") -> AsyncIterator[Dict[str, Any]]:
         """Streaming version of live_turn.
 
         It streams BEAST stage/tool events separately from assistant text, then
@@ -1607,6 +2510,9 @@ class BeastApiClient:
 
         provider_error = ""
         provider_ok = False
+        provider_completed = False
+        provider_failure: Dict[str, Any] = {}
+        stream_started = time.perf_counter()
         assistant_parts: List[str] = []
 
         skip_provider = False
@@ -1618,7 +2524,7 @@ class BeastApiClient:
 
         if not skip_provider:
             yield {"type": "stage", "text": f"stream provider: {provider or 'litellm'}"}
-            async for event in self.stream_chat_completion(provider, chat_history, context_files=context_files):
+            async for event in self.stream_chat_completion(provider, chat_history, model=model, context_files=context_files):
                 if event.get("type") == "token":
                     provider_ok = True
                     assistant_parts.append(str(event.get("text") or ""))
@@ -1628,24 +2534,50 @@ class BeastApiClient:
                     yield event
                 elif event.get("type") == "error":
                     provider_error = str(event.get("error") or "")
+                    provider_failure = dict(event)
                     yield {"type": "tool", "text": "provider stream error: " + provider_error[:240]}
                 elif event.get("type") == "provider_done":
+                    provider_completed = bool(event.get("completed"))
                     yield event
 
-        if not provider_ok:
-            yield {"type": "stage", "text": "local scout fallback"}
+        if not provider_completed:
+            yield {"type": "stage", "text": "local scout fallback" if not provider_ok else "local scout continuation"}
             fallback = await self._scout_fallback_reply(text, insight, handoff, provider_error)
+            if provider_ok:
+                separator = "\n\n[Provider stream ended early. BEAST preserved the partial response and continued locally.]\n\n"
+                assistant_parts.append(separator)
+                yield {"type": "token", "text": separator}
             for chunk in self._chunk_text(fallback):
                 assistant_parts.append(chunk)
                 yield {"type": "token", "text": chunk}
                 await asyncio.sleep(0.012)
-            tool_events.append("provider route: local fallback")
+            tool_events.append("provider route: local fallback" if not provider_ok else "provider route: partial response recovered locally")
         else:
             tool_events.append("provider route: streaming ok")
 
+        evidence_outcome = "success" if provider_completed else "recovered" if assistant_parts else "failure"
+        evidence_recorded = await self.record_outcome_evidence({
+            "capability_id": f"provider:{provider or 'litellm'}",
+            "task_class": "chat_completion",
+            "outcome": evidence_outcome,
+            "failure_category": str(provider_failure.get("kind") or "provider_stream_incomplete") if not provider_completed else "",
+            "failure_code": str(provider_failure.get("status_code") or "") if not provider_completed else "",
+            "detail": provider_error[:500],
+            "scope": {
+                "provider": str(provider or "litellm"),
+                "model": self._chat_model_for_provider(provider, model),
+                "route": "tui_live_stream",
+            },
+            "retries": int(bool(provider_failure)),
+            "repair_depth": int(not provider_completed),
+            "latency_ms": round((time.perf_counter() - stream_started) * 1000.0, 3),
+            "selected_capabilities": [f"provider:{provider or 'litellm'}"],
+        })
+        tool_events.append("crystal outcome evidence: " + ("recorded" if evidence_recorded else "deferred"))
+
         if lifecycle_id:
             yield {"type": "stage", "text": "PREC crystallize"}
-            await self.update_prec(lifecycle_id, "crystallize", "Streaming live session turn completed; outcome returned to operator.", "completed", artifacts={"provider_ok": provider_ok, "tool_events": tool_events}, signals=["live_turn_stream_complete"])
+            await self.update_prec(lifecycle_id, "crystallize", "Streaming live session turn completed; outcome returned to operator.", "completed", artifacts={"provider_ok": provider_ok, "provider_completed": provider_completed, "provider_recovered": bool(provider_failure), "tool_events": tool_events}, signals=["live_turn_stream_complete"])
 
         yield {
             "type": "done",
@@ -1659,6 +2591,9 @@ class BeastApiClient:
                 "handoff": handoff.data,
                 "provider_error": provider_error,
                 "provider_streaming": provider_ok,
+                "provider_completed": provider_completed,
+                "provider_recovered": bool(provider_failure),
+                "heal_recommended": bool(provider_failure.get("local_service_failure")),
             },
         }
 
@@ -1688,7 +2623,7 @@ class BeastApiClient:
         except Exception as exc:
             return ActionResult(False, "Provider chat", "", error=str(exc))
 
-    async def live_turn(self, text: str, history: List[Dict[str, str]], provider: str = "litellm", lifecycle_id: str = "", context_files: Optional[List[str]] = None) -> LiveTurnResult:
+    async def live_turn(self, text: str, history: List[Dict[str, str]], provider: str = "litellm", lifecycle_id: str = "", context_files: Optional[List[str]] = None, model: str = "beast-auto") -> LiveTurnResult:
         """Run one Claude-Code-like BEAST live session turn.
 
         The turn is useful even without provider credentials: it still compiles local
@@ -1745,7 +2680,7 @@ class BeastApiClient:
                 skip_provider = True
                 provider_result = ActionResult(False, "Provider chat", "", error="LiteLLM sidecar is OFF, so BEAST skipped the provider route and used local scout fallback.")
         if not skip_provider:
-            provider_result = await self.chat_completion(provider, chat_history, context_files=context_files)
+            provider_result = await self.chat_completion(provider, chat_history, model=model, context_files=context_files)
         if provider_result.ok:
             assistant_text = self._extract_assistant_text(provider_result.data)
             if not assistant_text:

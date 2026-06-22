@@ -1,0 +1,2218 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-21T05:20:59Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_cohere_full_beast": {
+      "average_latency_ms": 5432.008,
+      "average_provider_tokens": 4176.0,
+      "canonicalized": 0,
+      "clean_completed": 1,
+      "completed": 6,
+      "completion_rate": 1.0,
+      "local_verifier_repaired": 5,
+      "provider_tokens_per_verified_fix": 4176.0,
+      "repair_attempted": 1,
+      "rescued_completed": 5,
+      "tasks": 6
+    },
+    "live_cohere_raw": {
+      "average_latency_ms": 5048.334,
+      "average_provider_tokens": 697.5,
+      "canonicalized": 0,
+      "clean_completed": 1,
+      "completed": 1,
+      "completion_rate": 0.1667,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": 691.0,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    },
+    "live_cohere_schema_only": {
+      "average_latency_ms": 3440.064,
+      "average_provider_tokens": 675.667,
+      "canonicalized": 0,
+      "clean_completed": 2,
+      "completed": 2,
+      "completion_rate": 0.3333,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": 633.0,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 6
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 14,
+    "excluded_infra_failure": 0,
+    "infra_failure": 0,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 0,
+    "nim_tests_failed": 0,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_cohere_first_provider_family_anchor_o1_full_gauntlet",
+    "result_count": 18
+  },
+  "live_provider_fitness": {
+    "cohere": {
+      "avg_latency_ms": 3394.838,
+      "avg_provider_tokens_per_success": 1556.25,
+      "beast_completed": 9,
+      "beast_completion_rate": 0.5,
+      "clean_completed": 4,
+      "clean_to_rescue_ratio": 0.8,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": true,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": false,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 4,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.2222,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "metrics": {
+        "cost_per_success_score": 0.8703125,
+        "hidden_test_pass_rate": 0.2222,
+        "json_validity_rate": 1.0,
+        "latency_per_success_score": 0.9717096875,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.8889,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.8889,
+        "syntax_error_rate": 0.0556,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.2222
+      },
+      "recommended_role": "clean_candidate_cost_incomplete",
+      "rescue_rate": 0.5556,
+      "rescued_completed": 5,
+      "route_confidence": "low",
+      "sample_size": 18,
+      "score": 0.6073,
+      "visible_clean_completed": 4,
+      "visible_clean_rate": 0.2222,
+      "visible_task_count": 18
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    else:\n+        raise ValueError('No JSON object found in the input text')\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 3758.043,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3758.043,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 663,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 216,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 354,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 570
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\n\\ndef parse_provider_output(text):\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    else:\\n        raise ValueError('No JSON object found in the input text')\",\n      \"why\": \"Ensure JSON extraction from markdown/prose and handle failure cases\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_hidden_parse_provider_output_returns_empty_for_prose ___________\n\n    def test_hidden_parse_provider_output_returns_empty_for_prose():\n>       assert parse_provider_output(\"not json\") == {}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_output_guard_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntext = 'not json'\n\n    def parse_provider_output(text):\n        match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n        if match:\n            return json.loads(match.group(1))\n        else:\n>           raise ValueError('No JSON object found in the input text')\nE           ValueError: No JSON object found in the input text\n\napp/output_guard.py:10: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 216,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 570
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    else:\n+        raise ValueError('No JSON object found in the input text')\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 3131.917,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3131.917,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 663,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 216,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 354,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 570
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\n\\ndef parse_provider_output(text):\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    else:\\n        raise ValueError('No JSON object found in the input text')\",\n      \"why\": \"Ensure JSON extraction from markdown/prose and handle failure cases\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_hidden_parse_provider_output_returns_empty_for_prose ___________\n\n    def test_hidden_parse_provider_output_returns_empty_for_prose():\n>       assert parse_provider_output(\"not json\") == {}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_output_guard_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntext = 'not json'\n\n    def parse_provider_output(text):\n        match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n        if match:\n            return json.loads(match.group(1))\n        else:\n>           raise ValueError('No JSON object found in the input text')\nE           ValueError: No JSON object found in the input text\n\napp/output_guard.py:10: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.02s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 216,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 570
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4500.492,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "initial_validation_error": "action a2 old snippet matched 2 times in app/output_guard.py",
+        "json_parse_ok": true,
+        "latency_ms": 4500.492,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 730,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 270,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 2800,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 3070
+        }
+      },
+      "prompt_tokens": 3030,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A1\"\n      },\n      \"intent\": \"Extract JSON from markdown code blocks\",\n      \"new\": \"import re\\n\\ndef extract_json_from_markdown(text):\\n    json_pattern = r'```json\\\\n(.*?)\\\\n```'\\n    match = re.search(json_pattern, text, re.DOTALL)\\n    return match.group(1) if match else None\"\n    }\n  ],\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"provider_handoff_hash\": \"sha256:4b1e6b659d68932fd1056988101ce713a6efce80287f9a415cde695994be16f7\",\n  \"fallback\": \"\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 270,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 2800,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 3070
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,8 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    return value.replace('-', '_').replace(' ', '_').lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 2727.991,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2727.991,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 565,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 170,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 521,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 691
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    return value.replace('-', '_').replace(' ', '_').lower()\",\n      \"why\": \"Normalize provider IDs by replacing hyphens and spaces with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 170,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 521,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 691
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,8 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    return value.replace('-', '_').replace(' ', '_').lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2512.701,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2512.701,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 565,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 170,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 521,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 691
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    return value.replace('-', '_').replace(' ', '_').lower()\",\n      \"why\": \"Normalize provider IDs by replacing hyphens and spaces with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 170,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 521,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 691
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 5003.587,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 5003.587,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 730,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 298,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4073,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4371
+        }
+      },
+      "prompt_tokens": 3159,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider IDs by replacing spaces with underscores and stripping whitespace\",\n      \"new\": \"    return str(value or \\\"\\\").strip().replace(\\\" \\\", \\\"_\\\").lower()\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:a38c782f208023084b770229d14f1d7f97765a8dc192c79dc3467bdc2ac6ab31\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"provider_handoff_hash\": \"sha256:a38c782f208023084b770229d14f1d7f97765a8dc192c79dc3467bdc2ac6ab31\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 298,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4073,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4371
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,4 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,8 @@\n from app.math_ops import normalize_amount\n \n \n+from decimal import Decimal\n+from app.math_ops import normalize_amount\n+\n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal(0))\n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 8655.38,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 8655.38,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 1006,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 305,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 408,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 713
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\",\n      \"new\": \"from decimal import Decimal, ROUND_HALF_UP\\n\\ndef normalize_amount(value):\\n    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\",\n      \"why\": \"Ensure accurate decimal rounding for financial calculations\"\n    },\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"old\": \"def invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items, start=Decimal(0))\",\n      \"why\": \"Ensure sum operation uses Decimal for accurate financial totals\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 2,
+      "stderr_tail": "",
+      "stdout_tail": "/__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/home/byron/.local/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:197: in exec_module\n    exec(co, module.__dict__)\ntests/test_invoice_public.py:3: in <module>\n    from app.service import invoice_total\nE     File \"/tmp/beast-systems-live-multi_file_hidden_decimal_fix-raw-n2q87ub7/app/service.py\", line 8\nE       return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal(0))\nE                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   SyntaxError: Generator expression must be parenthesized\n=========================== short test summary info ============================\nERROR tests/test_invoice_hidden.py\nERROR tests/test_invoice_public.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.19s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 305,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 408,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 713
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,4 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2291.708,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2291.708,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 516,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 167,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 408,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\",\n      \"new\": \"from decimal import Decimal, ROUND_HALF_UP\\n\\ndef normalize_amount(value):\\n    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\",\n      \"why\": \"Ensure proper rounding of amounts to two decimal places\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 167,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 408,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 6068.908,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6068.908,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py",
+          "app/service.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 1100,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 403,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4116,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4519
+        }
+      },
+      "prompt_tokens": 3187,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Replace normalize_amount with Decimal handling\",\n      \"new\": \"def normalize_amount(value):\\n    return Decimal(value)\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F2\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Update invoice_total to use Decimal directly\",\n      \"new\": \"from decimal import Decimal\\n\\nfrom app.math_ops import normalize_amount\\n\\ndef invoice_total(items):\\n    return sum(Decimal(item[\\\"amount\\\"]) for item in items)\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:69e4cf83732bfd7a62c708ab4627e0117c72e0258e0a1af855ff8bf584c00aa8\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:69e4cf83732bfd7a62c708ab4627e0117c72e0258e0a1af855ff8bf584c00aa8\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 403,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4116,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4519
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_cohere_raw",
+      "latency_ms": 5412.347,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 5412.347,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "cohere",
+        "raw_chars": 1398,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 453,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 551,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 1004
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/config.py\",\n      \"old\": \"def parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEOUT\\\", \\\"120\\\")),\\n    }\",\n      \"new\": \"def parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    value = str(value).strip().lower()\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\", \\\"on\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\", \\\"off\\\"}:\\n        return False\\n    raise ValueError(f\\\"Invalid boolean value: {value}\\\")\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\", \\\"openrouter\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEOUT",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.04s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 453,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 551,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 1004
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 5945.269,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 5945.269,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "cohere",
+        "raw_chars": 1402,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 455,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 551,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 1006
+        }
+      },
+      "prompt_tokens": 427,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/config.py\",\n      \"old\": \"def parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\"}:\\n        return False\\n    raise ValueError(value)\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEOUT\\\", \\\"120\\\")),\\n    }\\n\",\n      \"new\": \"def parse_bool(value):\\n    if isinstance(value, bool):\\n        return value\\n    value = str(value).strip().lower()\\n    if value in {\\\"true\\\", \\\"1\\\", \\\"yes\\\", \\\"on\\\"}:\\n        return True\\n    if value in {\\\"false\\\", \\\"0\\\", \\\"no\\\", \\\"off\\\"}:\\n        return False\\n    raise ValueError(f\\\"Invalid boolean value: {value}\\\")\\n\\n\\ndef gateway_config(env):\\n    return {\\n        \\\"provider\\\": env.get(\\\"BEAST_PROVIDER\\\", \\\"openrouter\\\"),\\n        \\\"live_agent\\\": parse_bool(env.get(\\\"BEAST_LIVE_AGENT\\\", False)),\\n        \\\"timeout\\\": int(env.get(\\\"BEAST_TIMEO",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "      if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError:  TRUE\n\napp/config.py:11: ValueError\n________________ test_hidden_empty_and_on_values_are_normalized ________________\n\n    def test_hidden_empty_and_on_values_are_normalized():\n>       assert parse_bool(\"\") is False\n               ^^^^^^^^^^^^^^\n\ntests/test_config_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def parse_bool(value):\n        if isinstance(value, bool):\n            return value\n        if value in {\"true\", \"1\", \"yes\"}:\n            return True\n        if value in {\"false\", \"0\", \"no\"}:\n            return False\n>       raise ValueError(value)\nE       ValueError\n\napp/config.py:11: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_config.py::test_provider_has_openrouter_default - Assertion...\nFAILED tests/test_config.py::test_boolean_parser_normalizes_common_shell_values\nFAILED tests/test_config_hidden.py::test_hidden_empty_and_on_values_are_normalized\n3 failed in 0.04s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 455,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 551,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 1006
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/config.py\n+++ b/app/config.py\n@@ -1,19 +1,20 @@\n-\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n+\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n \n \n def parse_bool(value):\n     if isinstance(value, bool):\n         return value\n-    if value in {\"true\", \"1\", \"yes\"}:\n+    normalized = str(value).strip().lower()\n+    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n         return True\n-    if value in {\"false\", \"0\", \"no\"}:\n+    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n         return False\n     raise ValueError(value)\n \n \n def gateway_config(env):\n     return {\n-        \"provider\": env.get(\"BEAST_PROVIDER\"),\n+        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n         \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n         \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n     }\n",
+      "files_changed": [
+        "app/config.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 6495.819,
+      "output_evidence": {
+        "action_count": 3,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6495.819,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 1285,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 476,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4079,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4555
+        }
+      },
+      "prompt_tokens": 3181,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Add default provider value to gateway_config\",\n      \"new\": \"\\\"openrouter\\\" if env.get(\\\"BEAST_PROVIDER\\\") is None else env.get(\\\"BEAST_PROVIDER\\\")\",\n      \"target\": {\n        \"anchor_ref\": \"A12\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Normalize shell-style boolean values in parse_bool\",\n      \"new\": \"value.strip().lower() in {\\\"true\\\", \\\"1\\\", \\\"yes\\\", \\\"on\\\"}\",\n      \"target\": {\n        \"anchor_ref\": \"A5\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"Add shell-style false values to parse_bool\",\n      \"new\": \"value.strip().lower() in {\\\"false\\\", \\\"0\\\", \\\"no\\\", \\\"off\\\"}\",\n      \"target\": {\n        \"anchor_ref\": \"A7\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:e6f05e067b51accc742ba712f9fafd152d0cbc3432e87623a6abd969a13a0e36\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix config parsing defaults and shell-style boolean normalization.\",\n  \"provider_handoff_hash\": \"sha256:e6f05e067b51accc742ba712f9fafd152",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "config_validation_edge_case",
+      "usage": {
+        "completion_tokens": 476,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4079,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4555
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,5 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    api_key_present = bool(env.get(key, \"\"))\n+    normalized_provider = provider_id.replace('-', '_')\n+    return {\"provider\": normalized_provider, \"api_key_present\": api_key_present}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 4082.319,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4082.319,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 776,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 252,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 396,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 648
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    normalized_provider = provider_id.replace('-', '_')\\n    return {\\\"provider\\\": normalized_provider, \\\"api_key_present\\\": api_key_present}\",\n      \"why\": \"Normalize provider ID and redact API key by returning a boolean flag instead of the raw key.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 252,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 396,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 648
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,5 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    api_key_present = bool(env.get(key, \"\"))\n+    normalized_provider = provider_id.replace('-', '_')\n+    return {\"provider\": normalized_provider, \"api_key_present\": api_key_present}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 3513.232,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3513.232,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 776,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 252,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 396,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 648
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    normalized_provider = provider_id.replace('-', '_')\\n    return {\\\"provider\\\": normalized_provider, \\\"api_key_present\\\": api_key_present}\",\n      \"why\": \"Normalize provider ID and redact API key by returning a boolean flag instead of the raw key.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 252,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 396,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 648
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,5 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    key = provider_id.upper().replace('-', '_') + \"_API_KEY\"\n+    api_key_present = bool(env.get(key, \"\"))\n+    return {\"provider\": provider_id.lower().replace('-', '_'), \"api_key_present\": api_key_present}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 6046.95,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6046.95,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 832,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3925,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4268
+        }
+      },
+      "prompt_tokens": 3043,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Normalize provider ID to lowercase and redact API key\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A3\"\n      },\n      \"new\": \"    key = provider_id.upper().replace('-', '_') + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    return {\\\"provider\\\": provider_id.lower().replace('-', '_'), \\\"api_key_present\\\": api_key_present}\"\n    }\n  ],\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"handoff_hash\": \"sha256:d4962969644f8904012707cceb5f033734ce9ed8f191d74f13beb640a764d286\",\n  \"provider_handoff_hash\": \"sha256:d4962969644f8904012707cceb5f033734ce9ed8f191d74f13beb640a764d286\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 343,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3925,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4268
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,3 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get('target', {})\n+    return 'anchor_ref' in target and 'file_ref' in target\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 5653.924,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 5653.924,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 565,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 183,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 376,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 559
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get('target', {})\\n    return 'anchor_ref' in target and 'file_ref' in target\\n\",\n      \"why\": \"Ensure anchor refs are used with file refs for NIM refs-only output validation\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 183,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 376,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 559
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,3 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get('target', {})\n+    return 'anchor_ref' in target and 'file_ref' in target\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 3245.558,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3245.558,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 603,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 188,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 376,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 564
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get('target', {})\\n    return 'anchor_ref' in target and 'file_ref' in target\\n\",\n      \"why\": \"Ensure anchor refs are used without requiring copied old snippets, validating both file_ref and anchor_ref presence.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 188,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 376,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 564
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4476.291,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4476.291,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "provider": "cohere",
+        "raw_chars": 841,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 338,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3935,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4273
+        }
+      },
+      "prompt_tokens": 3057,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update validation to require both file_ref and anchor_ref without copying old snippets.\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get(\\\"target\\\", {})\\n    return bool(target.get(\\\"file_ref\\\") and target.get(\\\"anchor_ref\\\"))\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:1f17041d32ab1c2ce9c72289b1549564dbbacb5e533d1b2d2b1158a244b34428\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:1f17041d32ab1c2ce9c72289b1549564dbbacb5e533d1b2d2b1158a244b34428\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 338,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3935,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4273
+      }
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-21T05:20:59Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "planned_run_count": 18,
+    "providers": [
+      {
+        "api_key_env": "COHERE_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://api.cohere.ai/compatibility/v1",
+        "model": "command-a-03-2025",
+        "provider": "cohere",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 180.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/output_guard.py"
+        ],
+        "hidden_tests": [
+          "tests/test_output_guard_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "output_governance_malformed_json",
+        "task_id": "output_governance_malformed_json",
+        "visible_tests": [
+          "tests/test_output_guard_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_parser.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_parser_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_id_parser",
+        "task_id": "provider_id_parser",
+        "visible_tests": [
+          "tests/test_provider_parser.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/service.py",
+          "app/math_ops.py"
+        ],
+        "hidden_tests": [
+          "tests/test_invoice_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "multi_file_hidden_decimal_fix",
+        "task_id": "multi_file_hidden_decimal_fix",
+        "visible_tests": [
+          "tests/test_invoice_public.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "config_validation_edge_case",
+        "task_id": "config_validation_edge_case",
+        "visible_tests": [
+          "tests/test_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/provider_config.py"
+        ],
+        "hidden_tests": [
+          "tests/test_provider_config_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "provider_config_secret_redaction",
+        "task_id": "provider_config_secret_redaction",
+        "visible_tests": [
+          "tests/test_provider_config.py"
+        ]
+      },
+      {
+        "allowed_files": [
+          "app/nim_contract.py"
+        ],
+        "hidden_tests": [
+          "tests/test_nim_contract_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "nim_refs_only_contract",
+        "task_id": "nim_refs_only_contract",
+        "visible_tests": [
+          "tests/test_nim_contract_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw",
+      "schema_only",
+      "full_beast"
+    ],
+    "live_only": true,
+    "max_tasks": 6,
+    "max_tokens": 900,
+    "prompt_mode": "compact",
+    "timeout_seconds": 180.0
+  },
+  "live_summary": {
+    "cohere": {
+      "average_latency_ms": 4640.135,
+      "average_provider_prompt_tokens": 1563.333,
+      "canonicalized": 0,
+      "clean_completed": 4,
+      "clean_to_rescue_ratio": 0.8,
+      "completed": 9,
+      "completion_rate": 0.5,
+      "failures": [
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_cohere_schema_only",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "output_governance_malformed_json"
+        },
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "multi_file_hidden_decimal_fix"
+        },
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_cohere_schema_only",
+          "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+          "task": "config_validation_edge_case"
+        },
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_cohere_schema_only",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "provider_config_secret_redaction"
+        },
+        {
+          "lane": "live_cohere_raw",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "nim_refs_only_contract"
+        },
+        {
+          "lane": "live_cohere_schema_only",
+          "reason": "live provider returned scoped operations; pytest judged completion",
+          "task": "nim_refs_only_contract"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 4,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.2222,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 18,
+      "latency_ms_per_verified_fix": 4458.272,
+      "local_verifier_repaired": 5,
+      "provider_tokens_per_verified_fix": 3001.444,
+      "recommended_role": "clean_candidate_cost_incomplete",
+      "repair_attempted": 1,
+      "rescue_rate": 0.5556,
+      "rescued_completed": 5,
+      "route_confidence": "low",
+      "tasks": 18,
+      "visible_clean_completed": 4,
+      "visible_clean_rate": 0.2222,
+      "visible_task_count": 18
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_parser.py"
+      ],
+      "failing_assertions": [
+        "normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"",
+        "route_for(\"LOCAL NIM\") == \"/proxy/local-nim\""
+      ],
+      "files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with incomplete normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").lower()\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "fixed_files": {
+        "app/provider_parser.py": "\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n\n\ndef normalize_provider_id(value):\n    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n\n\ndef route_for(provider_id):\n    normalized = normalize_provider_id(provider_id)\n    routes = {\n        \"openrouter\": \"/proxy/openrouter\",\n        \"nvidia_nim\": \"/proxy/nvidia\",\n        \"local_nim\": \"/proxy/local-nim\",\n    }\n    return routes[normalized]\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_parser_hidden.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_hidden_tabs_and_mixed_separator_variants():\n    assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\n    assert normalize_provider_id(\"NVIDIA NIM\") == \"nvidia_nim\"\n    assert route_for(\"local-nim\") == \"/proxy/local-nim\"\n"
+      },
+      "name": "provider_id_parser",
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "relevant_files": [
+        "app/provider_parser.py",
+        "tests/test_provider_parser.py"
+      ],
+      "tests": {
+        "tests/test_provider_parser.py": "from app.provider_parser import normalize_provider_id, route_for\n\n\ndef test_normalize_provider_id_accepts_hyphen_and_space_variants():\n    assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\n    assert normalize_provider_id(\"local nim\") == \"local_nim\"\n\n\ndef test_route_for_uses_normalized_provider_id():\n    assert route_for(\"nvidia-nim\") == \"/proxy/nvidia\"\n    assert route_for(\"LOCAL NIM\") == \"/proxy/local-nim\"\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "failing_assertions": [
+        "invoice_total string amounts produce Decimal total",
+        "hidden half-up rounding passes"
+      ],
+      "files": {
+        "app/math_ops.py": "def normalize_amount(value):\n    return int(value)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "fixed_files": {
+        "app/math_ops.py": "from decimal import Decimal, ROUND_HALF_UP\n\n\ndef normalize_amount(value):\n    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+        "app/service.py": "from app.math_ops import normalize_amount\n\n\ndef invoice_total(items):\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n"
+      },
+      "hidden_tests": {
+        "tests/test_invoice_hidden.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_rounds_half_up_hidden():\n    assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\n"
+      },
+      "name": "multi_file_hidden_decimal_fix",
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "relevant_files": [
+        "app/service.py",
+        "app/math_ops.py",
+        "tests/test_invoice_public.py"
+      ],
+      "tests": {
+        "tests/test_invoice_public.py": "from decimal import Decimal\n\nfrom app.service import invoice_total\n\n\ndef test_invoice_total_accepts_string_amounts():\n    assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/config.py"
+      ],
+      "failing_assertions": [
+        "gateway_config({})[\"provider\"] == \"openrouter\"",
+        "parse_bool(\" TRUE \") is True"
+      ],
+      "files": {
+        "app/config.py": "\"\"\"Small config parser with a missing default and boolean edge case.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    if value in {\"true\", \"1\", \"yes\"}:\n        return True\n    if value in {\"false\", \"0\", \"no\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "fixed_files": {
+        "app/config.py": "\"\"\"Small config parser with safe defaults and normalized booleans.\"\"\"\n\n\ndef parse_bool(value):\n    if isinstance(value, bool):\n        return value\n    normalized = str(value).strip().lower()\n    if normalized in {\"true\", \"1\", \"yes\", \"on\"}:\n        return True\n    if normalized in {\"false\", \"0\", \"no\", \"off\", \"\"}:\n        return False\n    raise ValueError(value)\n\n\ndef gateway_config(env):\n    return {\n        \"provider\": env.get(\"BEAST_PROVIDER\", \"openrouter\"),\n        \"live_agent\": parse_bool(env.get(\"BEAST_LIVE_AGENT\", False)),\n        \"timeout\": int(env.get(\"BEAST_TIMEOUT\", \"120\")),\n    }\n"
+      },
+      "hidden_tests": {
+        "tests/test_config_hidden.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_hidden_empty_and_on_values_are_normalized():\n    assert parse_bool(\"\") is False\n    assert parse_bool(\" on \") is True\n    assert gateway_config({\"BEAST_TIMEOUT\": \"30\"})[\"provider\"] == \"openrouter\"\n"
+      },
+      "name": "config_validation_edge_case",
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "relevant_files": [
+        "app/config.py",
+        "tests/test_config.py"
+      ],
+      "tests": {
+        "tests/test_config.py": "from app.config import gateway_config, parse_bool\n\n\ndef test_provider_has_openrouter_default():\n    assert gateway_config({})[\"provider\"] == \"openrouter\"\n\n\ndef test_boolean_parser_normalizes_common_shell_values():\n    assert parse_bool(\" TRUE \") is True\n    assert parse_bool(\"off\") is False\n    assert gateway_config({\"BEAST_LIVE_AGENT\": \"YES\"})[\"live_agent\"] is True\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/provider_config.py"
+      ],
+      "failing_assertions": [
+        "hyphen providers normalize to env names",
+        "raw API keys are redacted"
+      ],
+      "files": {
+        "app/provider_config.py": "def provider_env(provider_id, env):\n    key = provider_id.upper() + \"_API_KEY\"\n    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n"
+      },
+      "fixed_files": {
+        "app/provider_config.py": "def normalize_provider_id(provider_id):\n    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n\n\ndef provider_env(provider_id, env):\n    normalized = normalize_provider_id(provider_id)\n    key = normalized.upper() + \"_API_KEY\"\n    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n"
+      },
+      "hidden_tests": {
+        "tests/test_provider_config_hidden.py": "from app.provider_config import provider_env\n\n\ndef test_hidden_missing_key_is_false_and_secret_never_leaks():\n    result = provider_env(\"openrouter\", {})\n    assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\n    assert \"api_key\" not in result\n"
+      },
+      "name": "provider_config_secret_redaction",
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "relevant_files": [
+        "app/provider_config.py",
+        "tests/test_provider_config.py"
+      ],
+      "tests": {
+        "tests/test_provider_config.py": "from app.provider_config import provider_env\n\n\ndef test_provider_config_normalizes_and_redacts_secret():\n    result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n    assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\n"
+      }
+    },
+    {
+      "allowed_edit_paths": [
+        "app/nim_contract.py"
+      ],
+      "failing_assertions": [
+        "NIM action requires file_ref and anchor_ref",
+        "hidden copied old is rejected"
+      ],
+      "files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n"
+      },
+      "fixed_files": {
+        "app/nim_contract.py": "def validate_nim_action(action):\n    target = action.get(\"target\", {})\n    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n        return False\n    return \"old\" not in action\n"
+      },
+      "hidden_tests": {
+        "tests/test_nim_contract_hidden.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_hidden_nim_refs_only_rejects_copied_old():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\n"
+      },
+      "name": "nim_refs_only_contract",
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "relevant_files": [
+        "app/nim_contract.py",
+        "tests/test_nim_contract_public.py"
+      ],
+      "tests": {
+        "tests/test_nim_contract_public.py": "from app.nim_contract import validate_nim_action\n\n\ndef test_nim_refs_only_requires_file_and_anchor_refs():\n    assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"new\": \"x\"}) is True\n"
+      }
+    }
+  ]
+}

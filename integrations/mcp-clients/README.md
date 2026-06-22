@@ -16,11 +16,13 @@ The important behavior is not just "add another MCP server." The BEAST MCP lane 
 
 Core coding tools:
 
+- `beast_session_handshake`
 - `beast_sourceplan_prepare`
 - `beast_sourceplan_preview_hunks`
 - `beast_sourceplan_apply_selected`
 - `beast_sourceplan_rollback_latest`
 - `beast_provider_fitness`
+- `beast_provider_economist_select`
 
 Governance and memory tools:
 
@@ -31,6 +33,14 @@ Governance and memory tools:
 - `beast_validate_canon`
 - `beast_publish_chronicle`
 - `beast_mcp_tool_catalog`
+- `beast_tool_laziness_record`
+- `beast_tool_laziness_recommend`
+- `beast_otel_export`
+- `beast_plugin_manifest_validate`
+- `beast_plugin_marketplace_install`
+- `beast_capability_exchange`
+- `beast_meta_tool_commons`
+- `beast_compute_shadow`
 
 ## Cursor
 

@@ -1,0 +1,620 @@
+{
+  "beast_object_type": "commons_scale_economics_report",
+  "claim_boundary": "Observed proof counts are local evidence. Financial projections are scenario math from caller-provided assumptions, not promises or market prices.",
+  "generated_at": "2026-06-22T08:51:31.118052+00:00",
+  "marketplace_readiness": {
+    "beast_object_type": "commons_marketplace_readiness",
+    "gates": [
+      {
+        "gate": "public_marketplace",
+        "requires": "at least 10 Spaces with repeated local proof before public listing claims",
+        "status": "not_ready"
+      },
+      {
+        "gate": "large_scale_anti_gaming",
+        "requires": "duplicate suppression, one credit per evidence fingerprint, mutation/ablation oracles, contributor reputation",
+        "status": "minimum_local_controls_present"
+      },
+      {
+        "gate": "cross_machine_repeated_adoption",
+        "requires": "same Space adopted and live-reproduced across multiple machines/OS/Ollama versions",
+        "status": "not_proven"
+      },
+      {
+        "gate": "long_term_credit_value",
+        "requires": "credits retain predictive value after expiry, demotion, and workload drift",
+        "status": "not_ready"
+      },
+      {
+        "gate": "production_workload_frequency",
+        "requires": "real production task-boundary match rate, not synthetic repetition",
+        "status": "not_ready"
+      },
+      {
+        "gate": "financial_pricing",
+        "requires": "observed willingness-to-pay, cost baseline, legal review, abuse controls, tax/accounting treatment",
+        "status": "scenario_only"
+      }
+    ],
+    "next_required_experiment": "reach_10_spaces_with_3_live_repeated_matches_each",
+    "public_claim_allowed_now": false,
+    "status_counts": {
+      "minimum_local_controls_present": 1,
+      "not_proven": 1,
+      "not_ready": 3,
+      "scenario_only": 1
+    },
+    "tiered_marketplace_requirements": {
+      "public_marketplace": [
+        "10_plus_spaces_with_tier_3_eligibility",
+        "3_plus_spaces_with_tier_4_status",
+        "zero_false_suppression_incidents",
+        "cross_node_reputation_validated",
+        "sybil_defense_tested_active",
+        "credit_cap_enforcement_operational"
+      ],
+      "tier_3_credits": [
+        "valid_manifest",
+        "live_reproduction",
+        "multiple_artifact_types",
+        "verifier_bundle",
+        "3_plus_successful_workload_matches",
+        "zero_false_suppressions",
+        "privacy_scan_clean"
+      ],
+      "tier_4_credits": [
+        "all_tier_3_requirements",
+        "10_plus_matches_or_30_days_clean",
+        "cross_machine_validation_or_reputation_0_85_plus",
+        "durable_storage_validated",
+        "post_quantum_seal_verified",
+        "no_demotion_events_in_60_days"
+      ]
+    },
+    "version": "1.0"
+  },
+  "proof_density": {
+    "beast_object_type": "commons_proof_density",
+    "proof_gap_to_10x3": {
+      "matches_needed": 27,
+      "spaces_needed": 9
+    },
+    "proof_sets": {
+      "credited_space_ids": [
+        "tiny_llama_opus_gateway_repair"
+      ],
+      "eligible_space_ids": [
+        "tiny_llama_opus_gateway_repair"
+      ],
+      "live_reproduced_space_ids": [
+        "tiny_llama_opus_gateway_repair"
+      ]
+    },
+    "spaces": {
+      "credited": 1,
+      "eligible_for_credit": 1,
+      "live_reproduced": 1,
+      "valid": 10
+    },
+    "tier_inventory": {
+      "beast_object_type": "commons_tier_inventory",
+      "candidate_kinds": {
+        "benchmark_result_space": 61,
+        "forge_candidate_proposal": 1,
+        "forge_crystal": 4,
+        "fused_inference_crystal": 1,
+        "meta_tool": 2,
+        "mutation_ablation_case": 30,
+        "skill": 2,
+        "swarm_recipe": 2
+      },
+      "forge_candidates": 42,
+      "tier_policy": {
+        "base_space": "single verified Space boundary",
+        "forge_crystal": "model-agnostic reusable contract",
+        "fused_inference_crystal": "compound crystal combining crystals/meta-tools/skills/swarm recipes",
+        "meta_tool": "tool-selection or tool-binding capability",
+        "skill_tree": "reusable skill/pattern memory"
+      },
+      "version": "1.0"
+    },
+    "version": "1.0",
+    "workload": {
+      "cloud_calls_avoided_by_space": {
+        "tiny_llama_opus_gateway_repair": 3
+      },
+      "matched_spaces": 1,
+      "matches_by_space": {
+        "tiny_llama_opus_gateway_repair": 3
+      },
+      "receipt_count": 1,
+      "total_cloud_calls_avoided": 3,
+      "total_repeated_matches": 3
+    }
+  },
+  "scale_ladder": {
+    "assumptions": {
+      "cloud_call_cost_usd": 0.02,
+      "local_verifier_cost_usd": 0.0,
+      "marketplace_take_rate": 0.1,
+      "matches_per_space": 3,
+      "setup_cost_usd": 1.0,
+      "target_spaces": 10,
+      "tier_value_multiplier": 3.0,
+      "token_cost_per_1m_usd": 5.0,
+      "tokens_per_match": 3900,
+      "value_tier": "fused_inference_crystal"
+    },
+    "beast_object_type": "commons_scale_ladder",
+    "pricing_boundary": "Use --cloud-call-cost, --token-cost-per-1m, --local-verifier-cost, and --setup-cost to test pricing assumptions. Use --value-tier and --tier-value-multiplier to model fused crystals/meta-tools/skill trees separately from base Spaces. Defaults are zero or 1.0 to avoid fake market claims.",
+    "primary_question": {
+      "answer": "first_economic_signal_under_current_assumptions",
+      "matches_per_space": 3,
+      "spaces": 10,
+      "total_displacements": 30
+    },
+    "scenarios": [
+      {
+        "break_even_displacements_for_setup_cost": 9,
+        "displacements": 30,
+        "effective_cloud_call_cost_usd": 0.06,
+        "effective_tokens_per_match": 11700,
+        "gross_avoided_cost_usd": 3.555,
+        "label": "observed_minimum",
+        "local_verifier_cost_usd": 0.0,
+        "marketplace_revenue_at_take_rate_usd": 0.3555,
+        "matches_per_space": 3,
+        "net_avoided_cost_usd": 3.555,
+        "spaces": 10,
+        "tier_value_multiplier": 3.0,
+        "tokens_avoided_estimate": 351000,
+        "value_tier": "fused_inference_crystal"
+      },
+      {
+        "break_even_displacements_for_setup_cost": 9,
+        "displacements": 30,
+        "effective_cloud_call_cost_usd": 0.06,
+        "effective_tokens_per_match": 11700,
+        "gross_avoided_cost_usd": 3.555,
+        "label": "first_market_signal",
+        "local_verifier_cost_usd": 0.0,
+        "marketplace_revenue_at_take_rate_usd": 0.3555,
+        "matches_per_space": 3,
+        "net_avoided_cost_usd": 3.555,
+        "spaces": 10,
+        "tier_value_multiplier": 3.0,
+        "tokens_avoided_estimate": 351000,
+        "value_tier": "fused_inference_crystal"
+      },
+      {
+        "break_even_displacements_for_setup_cost": 9,
+        "displacements": 1000,
+        "effective_cloud_call_cost_usd": 0.06,
+        "effective_tokens_per_match": 11700,
+        "gross_avoided_cost_usd": 118.5,
+        "label": "team_level_repeatability",
+        "local_verifier_cost_usd": 0.0,
+        "marketplace_revenue_at_take_rate_usd": 11.85,
+        "matches_per_space": 10,
+        "net_avoided_cost_usd": 118.5,
+        "spaces": 100,
+        "tier_value_multiplier": 3.0,
+        "tokens_avoided_estimate": 11700000,
+        "value_tier": "fused_inference_crystal"
+      },
+      {
+        "break_even_displacements_for_setup_cost": 9,
+        "displacements": 25000,
+        "effective_cloud_call_cost_usd": 0.06,
+        "effective_tokens_per_match": 11700,
+        "gross_avoided_cost_usd": 2962.5,
+        "label": "marketplace_candidate",
+        "local_verifier_cost_usd": 0.0,
+        "marketplace_revenue_at_take_rate_usd": 296.25,
+        "matches_per_space": 25,
+        "net_avoided_cost_usd": 2962.5,
+        "spaces": 1000,
+        "tier_value_multiplier": 3.0,
+        "tokens_avoided_estimate": 292500000,
+        "value_tier": "fused_inference_crystal"
+      },
+      {
+        "break_even_displacements_for_setup_cost": 9,
+        "displacements": 1000000,
+        "effective_cloud_call_cost_usd": 0.06,
+        "effective_tokens_per_match": 11700,
+        "gross_avoided_cost_usd": 118500.0,
+        "label": "infrastructure_grade",
+        "local_verifier_cost_usd": 0.0,
+        "marketplace_revenue_at_take_rate_usd": 11850.0,
+        "matches_per_space": 100,
+        "net_avoided_cost_usd": 118500.0,
+        "spaces": 10000,
+        "tier_value_multiplier": 3.0,
+        "tokens_avoided_estimate": 11700000000,
+        "value_tier": "fused_inference_crystal"
+      }
+    ],
+    "tier_defaults": {
+      "base_space": 1.0,
+      "forge_crystal": 1.5,
+      "fused_inference_crystal": 3.0,
+      "meta_tool": 1.8,
+      "skill_tree": 2.2
+    },
+    "version": "1.0"
+  },
+  "tiered_credit_pricing": {
+    "anti_inflation_rules": {
+      "aggregate_marketplace_cap": "total credits capped at 10x marketplace operational cost until self-sustaining",
+      "per_artifact_monthly_cap": "base_value * 3.0 * highest_monthly_frequency",
+      "sybil_defense": "node earnings capped by node_reputation_score * historical_match_accuracy * max_per_node"
+    },
+    "artifact_tiers": {
+      "tier_1_tiny_replay": {
+        "base_value_usd": 0.01,
+        "label": "Tier 1: Tiny Replay",
+        "proof_depth_cap": 1.0,
+        "requirements": [
+          "deterministic_execution",
+          "narrow_boundary",
+          "one_off_reproduction"
+        ]
+      },
+      "tier_2_skill_meta_tool": {
+        "base_value_usd": 0.015,
+        "label": "Tier 2: Skill / Meta-Tool",
+        "proof_depth_cap": 1.5,
+        "requirements": [
+          "valid_manifest",
+          "local_reproduction",
+          "verifier_bundle",
+          "privacy_clean"
+        ]
+      },
+      "tier_3_fused_crystal": {
+        "base_value_usd": 0.02,
+        "label": "Tier 3: Fused Crystal",
+        "proof_depth_cap": 2.5,
+        "requirements": [
+          "tier_2",
+          "multiple_artifact_types",
+          "cross_component_evidence",
+          "rollback_tested",
+          "live_reproduction"
+        ]
+      },
+      "tier_4_promotion_candidate": {
+        "base_value_usd": 0.03,
+        "label": "Tier 4: Promotion Candidate",
+        "proof_depth_cap": 3.5,
+        "requirements": [
+          "tier_3",
+          "durability_or_cross_machine_or_reputation",
+          "durable_storage",
+          "post_quantum_seal"
+        ]
+      }
+    },
+    "beast_object_type": "tiered_credit_pricing_report",
+    "demotion_and_decay": {
+      "false_suppression_event": "drop all multipliers by one tier",
+      "match_frequency_decay": "frequency multiplier decreases when recent frequency drops by 50%",
+      "repository_drift": "proof depth drops to live-reproduced level until revalidated",
+      "reputation_decay": "anti-gaming decreases 0.25x per 30 days without matches, floor 1.0x"
+    },
+    "observed_spaces": [
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_mistral",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_mistral_cohere_all_families",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_crystal_phase_package_smoke",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_dry_run",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_first_live_routes_o1_all_families_live",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_first_live_routes_o1_all_families_plan",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_first_live_routes_o1_schema_batch0",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.015,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "within_cap",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 2,
+        "duration_days": 0,
+        "matches": 0,
+        "multipliers": {
+          "anti_gaming_strength": 1.75,
+          "capped_total": 2.8,
+          "fusion_complexity": 1.6,
+          "match_frequency": 1.0,
+          "proof_depth": 1.0,
+          "raw_total": 2.8
+        },
+        "per_displacement_value_usd": 0.042,
+        "space_id": "bench_beast_definitive_mega_test_nim_live_crystal_phase_package",
+        "tier": "tier_2_skill_meta_tool",
+        "tier_label": "Tier 2: Skill / Meta-Tool",
+        "total_credit_value_usd": 0.0,
+        "version": "1.0"
+      },
+      {
+        "base_value_usd": 0.02,
+        "beast_object_type": "tiered_space_credit_pricing",
+        "cap_reason": "max_premium_3x_applied",
+        "claim_boundary": "Pricing is proof-based scenario accounting, not a redeemable financial instrument.",
+        "component_count": 5,
+        "duration_days": 0,
+        "matches": 3,
+        "multipliers": {
+          "anti_gaming_strength": 3.0,
+          "capped_total": 3.0,
+          "fusion_complexity": 2.5,
+          "match_frequency": 1.09,
+          "proof_depth": 2.0,
+          "raw_total": 16.35
+        },
+        "per_displacement_value_usd": 0.06,
+        "space_id": "tiny_llama_opus_gateway_repair",
+        "tier": "tier_3_fused_crystal",
+        "tier_label": "Tier 3: Fused Crystal",
+        "total_credit_value_usd": 0.18,
+        "version": "1.0"
+      }
+    ],
+    "observed_total_credit_value_usd": 0.18,
+    "pricing_formula": "base_value * proof_depth_multiplier * fusion_complexity_multiplier * match_frequency_multiplier * anti_gaming_multiplier, capped to 0.5x..3.0x total premium",
+    "tiered_10_space_portfolio_example": {
+      "beast_object_type": "tiered_10_space_portfolio",
+      "displacements": 38,
+      "flat_credit_value_usd": 0.76,
+      "marketplace_take_10pct_usd": 0.28215,
+      "rows": [
+        {
+          "anti_gaming_strength": 1.5,
+          "base_value_usd": 0.015,
+          "capped_multiplier": 2.7,
+          "credit_value_usd": 0.1215,
+          "displacements": 3,
+          "fusion_complexity": 1.2,
+          "label": "tier_2_rare_skill",
+          "match_frequency": 1.0,
+          "matches_per_space": 1,
+          "per_displacement_value_usd": 0.0405,
+          "proof_depth": 1.5,
+          "raw_multiplier": 2.7,
+          "spaces": 3,
+          "tier": "tier_2_skill_meta_tool"
+        },
+        {
+          "anti_gaming_strength": 2.5,
+          "base_value_usd": 0.02,
+          "capped_multiplier": 3.0,
+          "credit_value_usd": 0.72,
+          "displacements": 12,
+          "fusion_complexity": 2.5,
+          "label": "tier_3_early_fused",
+          "match_frequency": 1.3,
+          "matches_per_space": 3,
+          "per_displacement_value_usd": 0.06,
+          "proof_depth": 2.0,
+          "raw_multiplier": 16.25,
+          "spaces": 4,
+          "tier": "tier_3_fused_crystal"
+        },
+        {
+          "anti_gaming_strength": 3.0,
+          "base_value_usd": 0.03,
+          "capped_multiplier": 3.0,
+          "credit_value_usd": 1.8,
+          "displacements": 20,
+          "fusion_complexity": 3.0,
+          "label": "tier_4_proven_high_frequency",
+          "match_frequency": 2.5,
+          "matches_per_space": 10,
+          "per_displacement_value_usd": 0.09,
+          "proof_depth": 3.5,
+          "raw_multiplier": 78.75,
+          "spaces": 2,
+          "tier": "tier_4_promotion_candidate"
+        },
+        {
+          "anti_gaming_strength": 2.5,
+          "base_value_usd": 0.02,
+          "capped_multiplier": 3.0,
+          "credit_value_usd": 0.18,
+          "displacements": 3,
+          "fusion_complexity": 2.5,
+          "label": "tier_3_launch_space",
+          "match_frequency": 1.3,
+          "matches_per_space": 3,
+          "per_displacement_value_usd": 0.06,
+          "proof_depth": 2.0,
+          "raw_multiplier": 16.25,
+          "spaces": 1,
+          "tier": "tier_3_fused_crystal"
+        }
+      ],
+      "source_spec_note": "The provided scenario text lists an additional Tier 3 launch Space but its written subtotal omits that Space. This implementation includes all listed rows.",
+      "spaces": 10,
+      "tiered_credit_value_usd": 2.8215,
+      "tiered_vs_flat_multiplier": 3.7125,
+      "version": "1.0"
+    },
+    "version": "1.0"
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,679 @@
+{
+  "actual_provider_calls": 25,
+  "beast_object_type": "compute_governor_phase1_xai_live",
+  "candidate_avoidable_tokens_counterfactual": 33017,
+  "claim_boundary": "This live run proves shadow receipt coverage and observed behavior on xAI. Avoidable-token and USD values remain counterfactual; no provider call was suppressed or displaced.",
+  "compute_receipts": 25,
+  "cost_coverage_rate": 1.0,
+  "enforced_suppression_count": 0,
+  "false_suppression_rate": 0.0,
+  "false_suppression_redline": false,
+  "mode": "live_shadow_observation",
+  "model": "grok-build-0.1",
+  "observed_total_tokens": 232081,
+  "observed_final_response_cost_usd_lower_bound": 0.3589802,
+  "phase": 1,
+  "phase1_live_observation_passed": true,
+  "predicted_savings_usd_counterfactual": 0.052213896,
+  "total_observed_cost_note": "Lower bound covers 24 final task responses; one discarded pre-repair response was observed by the temporary ledger but is not reconstructable from task rows.",
+  "provider": "xai",
+  "receipt_coverage_rate": 1.0,
+  "task_class_count": 24,
+  "task_classes": [
+    "async_streaming",
+    "chronicle_provider_evidence_record",
+    "commons_local_approval_gate",
+    "config_governance",
+    "deployment_route_resolution",
+    "github_pr_task_envelope",
+    "mcp_tool_schema_pinning",
+    "multi_file_hidden",
+    "network_probe_failure_classification",
+    "otel_attribute_secret_redaction",
+    "output_governance",
+    "parsing",
+    "plugin_permission_risk_gate",
+    "provider_economist_role_route",
+    "provider_routing",
+    "quality_cascade_language_matrix",
+    "refs_only_action_ir",
+    "rollback",
+    "secret_redaction",
+    "session_latency_budget_clamp",
+    "stale_file_hash_rejection",
+    "tool_laziness_required_override",
+    "tui_state",
+    "vector_context_deduplication"
+  ],
+  "task_results": [
+    {
+      "completed": true,
+      "latency_ms": 6902.997,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "provider_model_wiring",
+      "task_class": "provider_routing",
+      "usage": {
+        "completion_tokens": 668,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 942,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 41636000,
+        "num_sources_used": 0,
+        "prompt_tokens": 4630,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 4608,
+          "image_tokens": 0,
+          "text_tokens": 4630
+        },
+        "total_tokens": 6240
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 49845.458,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "config_validation_edge_case",
+      "task_class": "config_governance",
+      "usage": {
+        "completion_tokens": 361,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 9745,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 235318000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3371,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3371
+        },
+        "total_tokens": 13477
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 33768.579,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "provider_id_parser",
+      "task_class": "parsing",
+      "usage": {
+        "completion_tokens": 212,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 5947,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 155998000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3333,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3333
+        },
+        "total_tokens": 9492
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 41081.101,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "multi_file_hidden_decimal_fix",
+      "task_class": "multi_file_hidden",
+      "usage": {
+        "completion_tokens": 351,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6304,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 166308000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3372,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3372
+        },
+        "total_tokens": 10027
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 46320.102,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "ui_state_collapse_selection",
+      "task_class": "tui_state",
+      "usage": {
+        "completion_tokens": 198,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 8355,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 203308000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3276,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3276
+        },
+        "total_tokens": 11829
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 19769.787,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "async_streaming_empty_chunk",
+      "task_class": "async_streaming",
+      "usage": {
+        "completion_tokens": 225,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 3731,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 110708000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3210,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3210
+        },
+        "total_tokens": 7166
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 39470.063,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "provider_config_secret_redaction",
+      "task_class": "secret_redaction",
+      "usage": {
+        "completion_tokens": 263,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6701,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 170808000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3204,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3204
+        },
+        "total_tokens": 10168
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 50901.122,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "patch_rollback_created_file",
+      "task_class": "rollback",
+      "usage": {
+        "completion_tokens": 199,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 9082,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 215542000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3197,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3197
+        },
+        "total_tokens": 12478
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 55359.329,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "output_governance_malformed_json",
+      "task_class": "output_governance",
+      "usage": {
+        "completion_tokens": 276,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 5210,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 141408000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3220,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3220
+        },
+        "total_tokens": 8706
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 31889.963,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "nim_refs_only_contract",
+      "task_class": "refs_only_action_ir",
+      "usage": {
+        "completion_tokens": 261,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 4859,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 133868000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3198,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3198
+        },
+        "total_tokens": 8318
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 33902.346,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "stale_file_hash_rejection",
+      "task_class": "stale_file_hash_rejection",
+      "usage": {
+        "completion_tokens": 181,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 4708,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 129468000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3220,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3220
+        },
+        "total_tokens": 8109
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 29877.344,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "session_latency_budget_clamp",
+      "task_class": "session_latency_budget_clamp",
+      "usage": {
+        "completion_tokens": 278,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 4811,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 132352000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3262,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3262
+        },
+        "total_tokens": 8351
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 38272.069,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "provider_economist_role_route",
+      "task_class": "provider_economist_role_route",
+      "usage": {
+        "completion_tokens": 298,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6629,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 168942000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3245,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3245
+        },
+        "total_tokens": 10172
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 17032.377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "tool_laziness_required_override",
+      "task_class": "tool_laziness_required_override",
+      "usage": {
+        "completion_tokens": 236,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 2850,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 93248000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3204,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3204
+        },
+        "total_tokens": 6290
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 22835.982,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "commons_local_approval_gate",
+      "task_class": "commons_local_approval_gate",
+      "usage": {
+        "completion_tokens": 262,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 4134,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 118532000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3266,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3266
+        },
+        "total_tokens": 7662
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 52940.327,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "plugin_permission_risk_gate",
+      "task_class": "plugin_permission_risk_gate",
+      "usage": {
+        "completion_tokens": 371,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 8543,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 202278000,
+        "num_sources_used": 0,
+        "prompt_tokens": 2451,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 2451
+        },
+        "total_tokens": 11365
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 27736.371,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "otel_attribute_secret_redaction",
+      "task_class": "otel_attribute_secret_redaction",
+      "usage": {
+        "completion_tokens": 278,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 4759,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 132858000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3263,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3263
+        },
+        "total_tokens": 8300
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 29768.423,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "network_probe_failure_classification",
+      "task_class": "network_probe_failure_classification",
+      "usage": {
+        "completion_tokens": 319,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 5705,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 150832000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3240,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3240
+        },
+        "total_tokens": 9264
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 33453.884,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "github_pr_task_envelope",
+      "task_class": "github_pr_task_envelope",
+      "usage": {
+        "completion_tokens": 307,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6585,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 168792000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3300,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3300
+        },
+        "total_tokens": 10192
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 34699.71,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "quality_cascade_language_matrix",
+      "task_class": "quality_cascade_language_matrix",
+      "usage": {
+        "completion_tokens": 372,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 5642,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 151142000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3291,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3291
+        },
+        "total_tokens": 9305
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 18029.552,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "mcp_tool_schema_pinning",
+      "task_class": "mcp_tool_schema_pinning",
+      "usage": {
+        "completion_tokens": 336,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 3391,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 105202000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3271,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 256,
+          "image_tokens": 0,
+          "text_tokens": 3271
+        },
+        "total_tokens": 6998
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 36191.943,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "chronicle_provider_evidence_record",
+      "task_class": "chronicle_provider_evidence_record",
+      "usage": {
+        "completion_tokens": 276,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6807,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 174098000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3295,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3295
+        },
+        "total_tokens": 10378
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 35163.159,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "deployment_route_resolution",
+      "task_class": "deployment_route_resolution",
+      "usage": {
+        "completion_tokens": 245,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 6622,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 168918000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3209,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3209
+        },
+        "total_tokens": 10076
+      }
+    },
+    {
+      "completed": true,
+      "latency_ms": 27869.057,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "task": "vector_context_deduplication",
+      "task_class": "vector_context_deduplication",
+      "usage": {
+        "completion_tokens": 348,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 3937,
+          "rejected_prediction_tokens": 0
+        },
+        "cost_in_usd_ticks": 118238000,
+        "num_sources_used": 0,
+        "prompt_tokens": 3305,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 64,
+          "image_tokens": 0,
+          "text_tokens": 3305
+        },
+        "total_tokens": 7590
+      }
+    }
+  ],
+  "tasks": 24,
+  "verified_task_rate": 1.0,
+  "verified_tasks": 24,
+  "version": "1.0",
+  "wall_time_ms": 866405.573
+}

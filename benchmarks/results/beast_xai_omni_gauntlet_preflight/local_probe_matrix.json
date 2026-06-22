@@ -1,0 +1,191 @@
+{
+  "all_passed": true,
+  "beast_object_type": "xai_omni_local_probe_matrix",
+  "generated_at": "2026-06-20T07:57:06Z",
+  "group_count": 13,
+  "groups": [
+    {
+      "latency_ms": 2134.369,
+      "name": "coding_and_hidden_tests",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "............                                                             [100%]\n",
+      "test_files": [
+        "tests/test_sourceplan_bridge.py",
+        "tests/test_tui_output_governance.py",
+        "tests/test_quality_cascade.py"
+      ]
+    },
+    {
+      "latency_ms": 1740.32,
+      "name": "input_governance",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "....................                                                     [100%]\n",
+      "test_files": [
+        "tests/test_task_envelope.py",
+        "tests/test_context_packet.py",
+        "tests/test_context_economizer.py",
+        "tests/test_compression_pipeline.py",
+        "tests/test_workspace_reasoning.py"
+      ]
+    },
+    {
+      "latency_ms": 750.466,
+      "name": "output_governance",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..........................                                               [100%]\n",
+      "test_files": [
+        "tests/test_output_governor.py",
+        "tests/test_provider_handoff.py",
+        "tests/test_sourceplan_bridge.py"
+      ]
+    },
+    {
+      "latency_ms": 2057.308,
+      "name": "agent_awareness_preflight",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...................                                                      [100%]\n",
+      "test_files": [
+        "tests/test_session_handshake.py",
+        "tests/test_openclaw_preflight.py",
+        "tests/test_ollama_scout.py",
+        "tests/test_beast_cli_executor.py"
+      ]
+    },
+    {
+      "latency_ms": 1075.189,
+      "name": "provider_economics_and_routing",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".................                                                        [100%]\n",
+      "test_files": [
+        "tests/test_provider_economist.py",
+        "tests/test_provider_registry.py",
+        "tests/test_deployment_manager.py",
+        "tests/test_budget_governance.py"
+      ]
+    },
+    {
+      "latency_ms": 2698.369,
+      "name": "tool_bus_and_laziness",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...........................s.........                                    [100%]\n",
+      "test_files": [
+        "tests/test_mcp_broker.py",
+        "tests/test_mcp_runtime_v2.py",
+        "tests/test_tool_laziness.py",
+        "tests/test_tool_laziness_plugin.py",
+        "tests/test_tool_integrations.py"
+      ]
+    },
+    {
+      "latency_ms": 1355.909,
+      "name": "commons_skills_and_promotion",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "kill_registry.py:86: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    now = datetime.utcnow().isoformat()\n\ntests/test_skill_tree.py::test_skill_tree_mines_generates_validates_and_promotes_candidate\ntests/test_skill_tree.py::test_skill_tree_mines_generates_validates_and_promotes_candidate\ntests/test_skill_tree.py::test_skill_tree_mines_generates_validates_and_promotes_candidate\ntests/test_skill_tree.py::test_skill_tree_requires_validation_before_promotion\n  /home/byron/Hivenance/edgek_beast_gateway/edgek-beast/app/kernel/sequence_detector.py:269: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    now = __import__('datetime').datetime.utcnow().isoformat()\n\ntests/test_skill_tree.py::test_skill_tree_mines_generates_validates_and_promotes_candidate\n  /home/byron/Hivenance/edgek_beast_gateway/edgek-beast/app/kernel/sequence_detector.py:335: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    now = __import__('datetime').datetime.utcnow().isoformat()\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n",
+      "test_files": [
+        "tests/test_capability_exchange.py",
+        "tests/test_meta_tool_commons.py",
+        "tests/test_skill_tree.py",
+        "tests/test_promotion_loop.py",
+        "tests/test_capability_registry.py"
+      ]
+    },
+    {
+      "latency_ms": 1311.3,
+      "name": "chronicle_memory_and_prec",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".......................                                                  [100%]\n",
+      "test_files": [
+        "tests/test_prec_lifecycle.py",
+        "tests/test_forensic_memory.py",
+        "tests/test_memory_stack.py",
+        "tests/test_insight_compiler.py",
+        "tests/test_evidence_scoring.py",
+        "tests/test_canon_registry.py"
+      ]
+    },
+    {
+      "latency_ms": 443.462,
+      "name": "connectors_observability_and_network",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".............                                                            [100%]\n",
+      "test_files": [
+        "tests/test_connectors.py",
+        "tests/test_otel_connector.py",
+        "tests/test_os_bypass.py"
+      ]
+    },
+    {
+      "latency_ms": 556.428,
+      "name": "marketplace_security_and_enterprise",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".....................                                                    [100%]\n",
+      "test_files": [
+        "tests/test_plugin_marketplace.py",
+        "tests/test_runtime_governance.py",
+        "tests/test_secret_vault.py",
+        "tests/test_enterprise_mode.py",
+        "tests/test_isolation_forest.py"
+      ]
+    },
+    {
+      "latency_ms": 2467.804,
+      "name": "quality_forge_and_packaging",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..........                                                               [100%]\n",
+      "test_files": [
+        "tests/test_quality_cascade.py",
+        "tests/test_forge_scorecard.py",
+        "tests/test_ast_compressor.py"
+      ]
+    },
+    {
+      "latency_ms": 1310.226,
+      "name": "tui_and_operator_surface",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...........                                                              [100%]\n",
+      "test_files": [
+        "tests/test_tui_intelligence.py",
+        "tests/test_tui_output_governance.py"
+      ]
+    },
+    {
+      "latency_ms": 1470.603,
+      "name": "gateway_swarm_and_workflows",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".....................                                                    [100%]\n=============================== warnings summary ===============================\ntests/test_gateway.py::test_openai_chat_completion\ntests/test_gateway.py::test_anthropic_message\n  /home/byron/Hivenance/edgek_beast_gateway/edgek-beast/app/kernel/crystallize.py:114: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    timestamp = datetime.utcnow().isoformat() + \"Z\"\n\ntests/test_gateway.py::test_openai_chat_completion\ntests/test_gateway.py::test_anthropic_message\n  /home/byron/Hivenance/edgek_beast_gateway/edgek-beast/app/kernel/skill_registry.py:86: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    now = datetime.utcnow().isoformat()\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n",
+      "test_files": [
+        "tests/test_gateway.py",
+        "tests/test_conductor_workflow.py",
+        "tests/test_swarm_kernel.py",
+        "tests/test_interception_events.py"
+      ]
+    }
+  ],
+  "passed_groups": 13
+}

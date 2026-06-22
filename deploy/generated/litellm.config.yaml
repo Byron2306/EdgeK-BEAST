@@ -103,7 +103,7 @@ model_list:
 - model_name: llama3.2:3b
   litellm_params:
     model: ollama/llama3.2:3b
-    api_base: http://127.0.0.1:11434/v1
+    api_base: http://127.0.0.1:11434
 - model_name: gpt-3.5-turbo
   litellm_params:
     model: openai/gpt-3.5-turbo
@@ -125,6 +125,10 @@ model_list:
     api_base: https://api.ovh.com/1.0
   rpm: 60
   tpm: 120000
+- model_name: meta/meta-llama-3-70b-instruct
+  litellm_params:
+    model: meta/meta-llama-3-70b-instruct
+    api_key: os.environ/REPLICATE_API_TOKEN
 - model_name: tgi-llamacpp
   litellm_params:
     model: openai/Qwen/Qwen2.5-3B-Instruct
@@ -132,6 +136,11 @@ model_list:
     api_base: http://127.0.0.1:3000
   rpm: 120
   tpm: 120000
+- model_name: grok-build-0.1
+  litellm_params:
+    model: openai/grok-build-0.1
+    api_key: os.environ/XAI_API_KEY
+    api_base: https://api.x.ai/v1
 litellm_settings:
   drop_params: true
   set_verbose: false

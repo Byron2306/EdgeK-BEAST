@@ -1,0 +1,122 @@
+{
+  "all_behavior_preserved": true,
+  "beast_object_type": "compute_governor_shadow_benchmark",
+  "candidate_detection_rate": 1.0,
+  "claim_boundary": "Avoidable-token values are counterfactual estimates, not measured savings.",
+  "metrics": {
+    "average_latency_ms": 0.02,
+    "beast_object_type": "compute_governor_metrics",
+    "claim_boundary": "Shadow estimates are hypotheses until verified by a behavior-preserving ablation.",
+    "cost_coverage_rate": 0.0,
+    "cost_observation_count": 0,
+    "estimated_avoidable_input_tokens": 16,
+    "estimated_avoidable_output_tokens": 160,
+    "estimated_avoidable_total_tokens": 176,
+    "mode": "shadow",
+    "observed_total_tokens": 615,
+    "predicted_savings_usd_observed": null,
+    "recommended_rungs": {
+      "escalate": 4,
+      "selected_provider": 1
+    },
+    "sample_size": 5,
+    "statuses": {
+      "succeeded": 5
+    },
+    "version": "1.0"
+  },
+  "mode": "shadow",
+  "phase": 1,
+  "privacy": {
+    "prompts_persisted": false,
+    "source_code_persisted": false
+  },
+  "scenario_count": 5,
+  "scenarios": [
+    {
+      "behavior_preserved": true,
+      "candidate_detection_ok": true,
+      "detected_candidates": [
+        "syntax_check",
+        "test_execution"
+      ],
+      "enforced": false,
+      "estimated_avoidable_tokens": 44,
+      "expected_candidates": [
+        "test_execution",
+        "syntax_check"
+      ],
+      "observed_tokens": 121,
+      "receipt_id": "crec_504ce8552a8546629558",
+      "recommended_rung": "escalate",
+      "scenario": "deterministic_test",
+      "selected_rung": "selected_provider"
+    },
+    {
+      "behavior_preserved": true,
+      "candidate_detection_ok": true,
+      "detected_candidates": [
+        "schema_validation"
+      ],
+      "enforced": false,
+      "estimated_avoidable_tokens": 43,
+      "expected_candidates": [
+        "schema_validation"
+      ],
+      "observed_tokens": 122,
+      "receipt_id": "crec_2732642aee7d4e77b229",
+      "recommended_rung": "escalate",
+      "scenario": "schema_contract",
+      "selected_rung": "selected_provider"
+    },
+    {
+      "behavior_preserved": true,
+      "candidate_detection_ok": true,
+      "detected_candidates": [
+        "route_diagnostics"
+      ],
+      "enforced": false,
+      "estimated_avoidable_tokens": 45,
+      "expected_candidates": [
+        "route_diagnostics"
+      ],
+      "observed_tokens": 123,
+      "receipt_id": "crec_7e1a4d15675c4df582fc",
+      "recommended_rung": "escalate",
+      "scenario": "route_diagnostic",
+      "selected_rung": "selected_provider"
+    },
+    {
+      "behavior_preserved": true,
+      "candidate_detection_ok": true,
+      "detected_candidates": [
+        "patch_compilation",
+        "syntax_check"
+      ],
+      "enforced": false,
+      "estimated_avoidable_tokens": 44,
+      "expected_candidates": [
+        "patch_compilation"
+      ],
+      "observed_tokens": 124,
+      "receipt_id": "crec_9125771d1f914f44aa8b",
+      "recommended_rung": "escalate",
+      "scenario": "patch_compile",
+      "selected_rung": "selected_provider"
+    },
+    {
+      "behavior_preserved": true,
+      "candidate_detection_ok": true,
+      "detected_candidates": [],
+      "enforced": false,
+      "estimated_avoidable_tokens": 0,
+      "expected_candidates": [],
+      "observed_tokens": 125,
+      "receipt_id": "crec_926411bc6b7e44348736",
+      "recommended_rung": "selected_provider",
+      "scenario": "semantic_only",
+      "selected_rung": "selected_provider"
+    }
+  ],
+  "version": "1.0"
+}

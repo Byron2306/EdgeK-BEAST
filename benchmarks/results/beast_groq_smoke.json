@@ -1,0 +1,569 @@
+{
+  "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
+  "deterministic_results": [],
+  "generated_at": "2026-06-21T05:07:06Z",
+  "lane_summary": {
+    "context_only": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "full_beast": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "rag_tools": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    },
+    "raw": {
+      "completed": 0,
+      "completion_rate": 0.0,
+      "median_prompt_tokens": 0,
+      "median_reduction_vs_raw_percent": 0.0,
+      "tasks": 0
+    }
+  },
+  "live_efficiency_summary": {
+    "live_groq_raw": {
+      "average_latency_ms": 454.026,
+      "average_provider_tokens": 454.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "repair_attempted": 0,
+      "rescued_completed": 0,
+      "tasks": 1
+    }
+  },
+  "live_failures_by_bucket": {
+    "capability_failure": 1,
+    "excluded_infra_failure": 0,
+    "infra_failure": 0,
+    "nim_indentation_error": 0,
+    "nim_infra_auth_failure": 0,
+    "nim_litellm_mapping_error": 0,
+    "nim_model_not_found": 0,
+    "nim_no_files_changed": 0,
+    "nim_non_json_output": 0,
+    "nim_patch_out_of_scope": 0,
+    "nim_schema_invalid": 0,
+    "nim_streaming_unsupported": 0,
+    "nim_success": 0,
+    "nim_tests_failed": 0,
+    "nim_timeout": 0
+  },
+  "live_gauntlet_artifacts": {
+    "files": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_groq_smoke_gauntlet",
+    "result_count": 1
+  },
+  "live_provider_fitness": {
+    "groq": {
+      "avg_latency_ms": null,
+      "avg_provider_tokens_per_success": null,
+      "beast_completed": 0,
+      "beast_completion_rate": 0.0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": null,
+      "eligible_for_source_patching": false,
+      "first_party_cost_coverage_rate": 0.0,
+      "hard_gates": {
+        "json_validity_ge_90": false,
+        "out_of_scope_edit_rate_le_2": true,
+        "rollback_success_100": true,
+        "syntax_error_rate_le_5": true,
+        "timeout_rate_le_10": true
+      },
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 1,
+      "metrics": {
+        "cost_per_success_score": 0.0,
+        "hidden_test_pass_rate": 0.0,
+        "json_validity_rate": 0.0,
+        "latency_per_success_score": 0.0,
+        "out_of_scope_edit_rate": 0.0,
+        "out_of_scope_safety_score": 1.0,
+        "patch_apply_rate": 0.0,
+        "rollback_cleanliness_score": 1.0,
+        "rollback_success_rate": 1.0,
+        "schema_valid_rate": 0.0,
+        "syntax_error_rate": 0.0,
+        "timeout_rate": 0.0,
+        "verified_success_rate": 0.0
+      },
+      "recommended_role": "scout_or_infra_probe",
+      "rescue_rate": 0.0,
+      "rescued_completed": 0,
+      "route_confidence": "low",
+      "sample_size": 1,
+      "score": 0.1,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 1
+    }
+  },
+  "live_provider_presets": {
+    "aion_labs": {
+      "api_key_env": "AION_LABS_API_KEY,AIONLABS_API_KEY",
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "name": "aion_labs",
+      "timeout": 180.0
+    },
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "name": "cerebras",
+      "timeout": 180.0
+    },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "name": "cloudflare",
+      "timeout": 180.0
+    },
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "name": "cohere",
+      "timeout": 180.0
+    },
+    "deepinfra": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "name": "deepinfra",
+      "timeout": 180.0
+    },
+    "deepseek": {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "name": "deepseek",
+      "timeout": 180.0
+    },
+    "fal": {
+      "api_key_env": "FAL_KEY",
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "fal",
+      "timeout": 180.0
+    },
+    "featherless": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "name": "featherless",
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "name": "gemini",
+      "timeout": 180.0
+    },
+    "github_models": {
+      "api_key_env": "GITHUB_TOKEN,GITHUB_MODELS_TOKEN",
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "name": "github_models",
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "name": "groq",
+      "timeout": 180.0
+    },
+    "huggingface": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "huggingface",
+      "timeout": 180.0
+    },
+    "hyperbolic": {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "name": "hyperbolic",
+      "timeout": 180.0
+    },
+    "llm7": {
+      "api_key_env": "LLM7_API_KEY",
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "name": "llm7",
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "name": "mistral",
+      "timeout": 180.0
+    },
+    "novita": {
+      "api_key_env": "NOVITA_API_KEY",
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "name": "novita",
+      "timeout": 180.0
+    },
+    "nscale": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "name": "nscale",
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "name": "nvidia_nim",
+      "timeout": 180.0
+    },
+    "openrouter": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "name": "openrouter",
+      "timeout": 120.0
+    },
+    "openrouter_deepseek": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "name": "openrouter_deepseek",
+      "timeout": 180.0
+    },
+    "openrouter_gptoss": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "name": "openrouter_gptoss",
+      "timeout": 180.0
+    },
+    "openrouter_qwen_coder": {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "name": "openrouter_qwen_coder",
+      "timeout": 180.0
+    },
+    "ovhcloud": {
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
+      "name": "ovhcloud",
+      "timeout": 180.0
+    },
+    "puter_deepseek": {
+      "api_key_env": "PUTER_AUTH_TOKEN,PUTER_API_KEY",
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "name": "puter_deepseek",
+      "timeout": 180.0
+    },
+    "replicate": {
+      "api_key_env": "REPLICATE_API_TOKEN,REPLICATE_API_KEY",
+      "base_url": "https://api.replicate.com/v1",
+      "model": "meta/meta-llama-3-70b-instruct",
+      "name": "replicate",
+      "timeout": 180.0
+    },
+    "sambanova": {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "name": "sambanova",
+      "timeout": 180.0
+    },
+    "xai": {
+      "api_key_env": "XAI_API_KEY",
+      "base_url": "https://api.x.ai/v1",
+      "model": "grok-build-0.1",
+      "name": "xai",
+      "timeout": 180.0
+    }
+  },
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 454.026,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 454.026,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "provider": "groq",
+        "raw_chars": 462,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.156632318,
+          "completion_tokens": 120,
+          "prompt_time": 0.018857862,
+          "prompt_tokens": 334,
+          "queue_time": 0.017388213,
+          "total_time": 0.17549018,
+          "total_tokens": 454
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"actions\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"old\": \"\",\n      \"why\": \"replace existing content with new JSON parsing function\"\n    }\n  ],\n  \"verify\": \"python -m pytest tests -q\",\n  \"hand",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f030b05b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.156632318,
+        "completion_tokens": 120,
+        "prompt_time": 0.018857862,
+        "prompt_tokens": 334,
+        "queue_time": 0.017388213,
+        "total_time": 0.17549018,
+        "total_tokens": 454
+      }
+    }
+  ],
+  "live_route_manifest": {
+    "artifact_layout": [
+      "run_manifest.json",
+      "provider_fitness.json",
+      "task_results.jsonl",
+      "failures_by_bucket.json",
+      "cost_latency_summary.md",
+      "evidence_cards/",
+      "patches/",
+      "rollback_snapshots/"
+    ],
+    "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+    "contract_tests": [
+      "strict_json_only",
+      "source_patch_plan_schema",
+      "one_selected_file_only",
+      "python_indentation_preserved",
+      "out_of_scope_refusal"
+    ],
+    "generated_at": "2026-06-21T05:07:06Z",
+    "infra_gate_steps": [
+      "api_key_present",
+      "models_route_works",
+      "plain_chat_works",
+      "strict_json_works",
+      "streaming_works_if_claimed",
+      "beast_proxy_route_works",
+      "timeout_under_threshold"
+    ],
+    "lanes": [
+      "raw"
+    ],
+    "planned_run_count": 1,
+    "providers": [
+      {
+        "api_key_env": "GROQ_API_KEY",
+        "api_key_present": true,
+        "base_url": "https://api.groq.com/openai/v1",
+        "model": "llama-3.1-8b-instant",
+        "provider": "groq",
+        "stage0_route_gates": {
+          "api_key_present": true,
+          "beast_proxy_route_works": "not_run_direct_provider_matrix",
+          "models_route_works": "not_run_in_benchmark_manifest",
+          "plain_chat_works": "covered_by_live_call",
+          "streaming_works_if_claimed": "not_claimed",
+          "strict_json_works": "covered_by_output_gate",
+          "timeout_under_threshold": true
+        },
+        "timeout_seconds": 45.0
+      }
+    ],
+    "separation_rule": {
+      "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+      "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+      "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+    },
+    "tasks": [
+      {
+        "allowed_files": [
+          "app/output_guard.py"
+        ],
+        "hidden_tests": [
+          "tests/test_output_guard_hidden.py"
+        ],
+        "success_criteria": [
+          "output gate compiles",
+          "pytest tests pass",
+          "scope remains within allowed files"
+        ],
+        "task_class": "output_governance_malformed_json",
+        "task_id": "output_governance_malformed_json",
+        "visible_tests": [
+          "tests/test_output_guard_public.py"
+        ]
+      }
+    ],
+    "trials": 1
+  },
+  "live_settings": {
+    "available_ablation_lanes": [
+      "raw",
+      "schema_only",
+      "action_ir",
+      "action_ir_resolver",
+      "full_beast_no_scout",
+      "full_beast"
+    ],
+    "json_mode": false,
+    "lanes": [
+      "raw"
+    ],
+    "live_only": true,
+    "max_tasks": 1,
+    "max_tokens": 120,
+    "prompt_mode": "compact",
+    "timeout_seconds": 45.0
+  },
+  "live_summary": {
+    "groq": {
+      "average_latency_ms": 454.026,
+      "average_provider_prompt_tokens": 334.0,
+      "canonicalized": 0,
+      "clean_completed": 0,
+      "clean_to_rescue_ratio": null,
+      "completed": 0,
+      "completion_rate": 0.0,
+      "failures": [
+        {
+          "lane": "live_groq_raw",
+          "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+          "task": "output_governance_malformed_json"
+        }
+      ],
+      "first_party_clean_usd_per_fix": null,
+      "first_party_cost_coverage_rate": 0.0,
+      "first_party_cost_observations": 0,
+      "first_party_cost_usd_total": null,
+      "first_party_rescued_usd_per_fix": null,
+      "first_party_usd_per_verified_fix": null,
+      "hidden_clean_completed": 0,
+      "hidden_clean_per_usd": null,
+      "hidden_clean_rate": 0.0,
+      "hidden_clean_usd_per_fix": null,
+      "hidden_task_count": 1,
+      "latency_ms_per_verified_fix": null,
+      "local_verifier_repaired": 0,
+      "provider_tokens_per_verified_fix": null,
+      "recommended_role": "scout_or_infra_probe",
+      "repair_attempted": 0,
+      "rescue_rate": 0.0,
+      "rescued_completed": 0,
+      "route_confidence": "low",
+      "tasks": 1,
+      "visible_clean_completed": 0,
+      "visible_clean_rate": 0.0,
+      "visible_task_count": 1
+    }
+  },
+  "local_nim_live_status": "excluded: local NIM requires a local GPU/Jetson container for this run",
+  "subsystem_probes": {},
+  "tasks": [
+    {
+      "allowed_edit_paths": [
+        "app/output_guard.py"
+      ],
+      "failing_assertions": [
+        "markdown JSON extracts",
+        "hidden prose returns empty dict"
+      ],
+      "files": {
+        "app/output_guard.py": "import json\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n"
+      },
+      "fixed_files": {
+        "app/output_guard.py": "import json\nimport re\n\n\ndef parse_provider_output(text):\n    text = str(text or \"\").strip()\n    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n        if not candidate:\n            continue\n        try:\n            value = json.loads(candidate)\n            return value if isinstance(value, dict) else {}\n        except Exception:\n            continue\n    return {}\n"
+      },
+      "hidden_tests": {
+        "tests/test_output_guard_hidden.py": "from app.output_guard import parse_provider_output\n\n\ndef test_hidden_parse_provider_output_returns_empty_for_prose():\n    assert parse_provider_output(\"not json\") == {}\n"
+      },
+      "name": "output_governance_malformed_json",
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "relevant_files": [
+        "app/output_guard.py",
+        "tests/test_output_guard_public.py"
+      ],
+      "tests": {
+        "tests/test_output_guard_public.py": "from app.output_guard import parse_provider_output\n\n\ndef test_parse_provider_output_extracts_json_from_markdown():\n    assert parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") == {\"ok\": True}\n"
+      }
+    }
+  ]
+}

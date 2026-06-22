@@ -1,0 +1,2705 @@
+{
+  "beast_object_type": "llama_opus_style_full_commons_fusion_run",
+  "claim_boundary": "Tiny Llama is amplified by verified tools, skills, swarm recipes, and crystals; base model weights are unchanged.",
+  "commons_state": {
+    "adopted_count": 81,
+    "adoption_policy": "explicit_local_approval_only",
+    "beast_object_type": "meta_tool_commons_state",
+    "candidate_count": 81,
+    "evidence_count": 579,
+    "ranking_policy": "contextual_global_prior_local_posterior",
+    "universal_leaderboard": false,
+    "version": "1.0"
+  },
+  "comparison": {
+    "beast_object_type": "tiny_llama_crystal_amplification_comparison",
+    "beats_big_raw_on_bounded_score": true,
+    "big_model_label": "opus_4_8_style_reference",
+    "bounded_domain": "cyber_defense_hardening",
+    "claim_boundary": "This compares a tiny model plus verified defensive crystals as a system. It does not claim the base model acquired frontier general intelligence.",
+    "created_at": "2026-06-21T21:03:01.469414+00:00",
+    "gap_to_big_raw": -0.08,
+    "node_id": "jetson_crystal_forge_cpu_full_commons",
+    "rows": [
+      {
+        "crystal_hits": 0,
+        "lane": "tiny_raw",
+        "model": "llama3.2:1b",
+        "score": 0.34
+      },
+      {
+        "crystal_hits": 0,
+        "lane": "tiny_openclaw_zeroclaw",
+        "model": "llama3.2:1b",
+        "score": 0.5
+      },
+      {
+        "crystal_hits": 8,
+        "lane": "tiny_crystal_amplified",
+        "model": "llama3.2:1b",
+        "score": 0.94
+      },
+      {
+        "crystal_hits": 0,
+        "lane": "big_model_raw",
+        "model": "opus_4_8_style_reference",
+        "score": 0.86
+      },
+      {
+        "crystal_hits": 8,
+        "lane": "big_model_beast",
+        "model": "opus_4_8_style_reference",
+        "score": 0.97
+      }
+    ],
+    "safety_boundary": "No offensive cyber automation or exploit instructions are generated.",
+    "target_model": "llama3.2:1b",
+    "tiny_gain_over_raw": 0.6,
+    "version": "1.0"
+  },
+  "component_counts": {
+    "crystals": 8,
+    "meta_tools": 36,
+    "skills": 102,
+    "swarm_recipes": 20
+  },
+  "economics": {
+    "crystal_credit_units": 596,
+    "currency_boundary": "internal verified compute credit; not a public monetary instrument",
+    "scarcity_basis": "hash-linked verification receipts, not proof-of-waste mining",
+    "tokens_displaced_estimate": 97738
+  },
+  "fused_inference_crystal": {
+    "beast_object_type": "fused_inference_crystal",
+    "components": {
+      "crystals": [
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "secure_code_review",
+          "confidence": 0.82,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_8f754c0f3cc14e823035",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Find risky patterns and produce safe remediation steps.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:d9d0955abca2b146beb962b55749f3750b4268c4df89021d468f7f94710e5612",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "defensive_review",
+          "tokens_displaced_estimate": 813,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "input_validation_hardening",
+          "confidence": 0.84,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_d488d853059d093b147b",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Map untrusted input to validation and parser guards.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:3bd3b8b064ea1be44d185f07f048e8fafa10c7e195219d7d82b2889364c4634c",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "hardening",
+          "tokens_displaced_estimate": 947,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "secret_redaction_guard",
+          "confidence": 0.86,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_aecf80e20a3f300bd15c",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:6aea6654995861b1dc63708bf70c90eea9984fd9e7aab8bb31b6c2c078166c5a",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "data_protection",
+          "tokens_displaced_estimate": 1066,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "dependency_manifest_triage",
+          "confidence": 0.88,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_f412bec1311c5e79fc09",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Rank dependency review targets without exploit instructions.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:bfa113ad6b7287478b9acfcfada36a4676558ec8a8363c246fc9436272b0b10e",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "supply_chain_defense",
+          "tokens_displaced_estimate": 1206,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "auth_boundary_audit",
+          "confidence": 0.9,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_a717ce6cb96a7c768213",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Check authorization boundaries and recommend tests.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:748f1fe9594274254522b7bdba03153b74d46a1d1b7699a7b7b111288c039cef",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "access_control_review",
+          "tokens_displaced_estimate": 1358,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "incident_timeline_digest",
+          "confidence": 0.92,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_7de2eb1702a899c107cd",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Compress logs into non-sensitive incident timelines.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:6e1c9b7da2749c5fcae5602b463b1b5700e9a1c94654ba72e038647d6f9c4e07",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "defensive_ops",
+          "tokens_displaced_estimate": 1504,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "zeroclaw_no_exec_plan",
+          "confidence": 0.92,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_33c9f2e430fab209b45e",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Produce a no-execution investigation plan.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:0135cb22d0258dfdec039df616d066e98d91449c9422b5a40f5b0a9b2b307fca",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "planning_only",
+          "tokens_displaced_estimate": 1599,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "openclaw_local_patch_plan",
+          "confidence": 0.92,
+          "created_at": "2026-06-21T21:03:01.404065+00:00",
+          "crystal_id": "forge_crystal_424b2e3e9122aaa0439d",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Draft read-only patch plans with approval gates.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "jetson_crystal_forge_cpu_full_commons",
+            "receipt_hash": "sha256:7c6a98a90ef329b20f483ea03bcf875842be2451ffc748b64ab0e7096dfd4f11",
+            "target_model_label": "llama3.2:1b",
+            "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "local_first_plan",
+          "tokens_displaced_estimate": 1745,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        }
+      ],
+      "meta_tools": [
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_3cd2011918b47eeb2b10",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_prepare_task_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:a1a07ba744073cb87c3bff12f922ba478c7279be0ce8ff3c414cc86e61f3fdfb",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_cf71407c8f94526c5ab4",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_run_quality_cascade_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:fef2f381d03c26a087506f4a8d2123bf8e746a40df79cf17cca4b7001aa38a0b",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_1e28a8cf6b9a5a7f8534",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_run_maintenance_cascade_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:777a8f83e65a99e700e6346e728c2beccb3160a641840f3cbf4aab426634ef49",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_4250e91b97caf06e7171",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_prepare_handoff_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:69581d91b774e92f425378a1baf7c099a96e5253cb7eb8e769f7a1d2e6fca900",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_2746c02f87ec458ad774",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_sourceplan_prepare_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:2b092929298b5741165d068034c0c7392846cd79ff75de525fdfc25d7340816a",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_16c89d7974634f96b0ea",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_sourceplan_preview_hunks_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:75773b37d599ff366ddd3661973e6eaf3af55e081eb42c6d5653bcce8f575b5e",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_c00613a2ec90062ed161",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_sourceplan_apply_selected_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:caf1348da53f9e125d8cdfb59470a6b7a9a9148e7b263a90af49058ccc4430a4",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_958064f1f84905315ce2",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_sourceplan_rollback_latest_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:2dd6541cb9c0ae53b0d2c8bcaf160c3d0c265b661d562002fb55c3904a0e9bd5",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_e24266cd73fc67b3ccb7",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_provider_fitness_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:7f2de0855c8625f4abb44790beaf28f4e9ca5922718a39165e37bf54f473b5d9",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_75c7fa4b7932eb3fcca8",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_provider_economist_select_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:ea377d66510cbb963194a6f5b2f919b01b69c3cd5692646ee201e8cab5232d55",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_a6be798f4b71a334e531",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_tool_laziness_record_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:f409e7a40dd37dcc52018e5feec403f67e23670b47ba2dab27092630c7b2d82a",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_0c22491071f338e12762",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_tool_laziness_recommend_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:abe6e6cf8e5f22d6027299cc01f2249547ddc851d5a6e2bf90784cf80b8f8057",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_77981a7b82c07a860725",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_otel_export_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:41326ced006f9821760720f8efecaa3fd477b07126063c58f3cc3db0c324db16",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_598f00fadad32c7dd1dd",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_plugin_manifest_validate_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:6b00236664079b0ebb2e38dbbe245e525d68052ad5c5ac4e83a4d1e17935a97c",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_8aef9ff260980194ee21",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_plugin_marketplace_install_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:954ba0b3f805bf9a883419b5f81c251524daa0e3be8c4f85b16aee2ed6e6eb5b",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_6d9b6c1c02ac3b1ba9c5",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_capability_exchange_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:253c6ac38edcf86ca9718cb346fb844882e3ac1fbe8bb8c747ae50b7e8881846",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_c95525285a088121e480",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_meta_tool_commons_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:760341730eaf8d233f85e87cef4faa8981de384b2e80a793b5a2c1c9d0ce985a",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_8d2d57c184b2cdaf4e27",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_compute_shadow_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:34371c7ace9d291628d6641545ab6d2751bf4b4f8b6d1e3f61ffddcb69deeee1",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_888a278055d14872ff54",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_check_policy_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:546e42494cd703942609c1f2c95c8b5bda2c2abe97e822c083c1bc23f28b8083",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_cccdf471840a169eb039",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_build_route_card_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:519d468922c138dc38eda708f796f0d764acd14cadb0b4382ef9a0192445f036",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_758857aa8c5980cdf401",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_publish_chronicle_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:08c35fa8a0bc162f684d3ac9b040b557c4c1071ef587f98a34e03b963d618358",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_e2b1aae4b5852c0ca667",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_attach_network_chronicle_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:1e3da641cb9fcbe94655f9d729a61ad8338d62c5a723b70ad8f046265c96c073",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_c33bec0c896df5b3ec94",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_github_pr_ingest_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:e5b7cd482412826ff6bd7c3b56d675c3ab3d8b9263905d3d5c40c68196a96b1f",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_d9bd8ffaedaf1fb17cf4",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_github_pr_publish_chronicle_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:d6c9891278ec145fd23ad1ad6d0c34b0f41723f9fae656f08cb11e9d12b8ccf0",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_61bc661e83355a1f7a39",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_get_workspace_graph_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:5650a33944280f6b4fe2efd762e60eb3a80ef2506154ae05173d07a01c54ef2b",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_be0e9dbb8435638c5996",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_build_context_packet_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:2163b1fd30c41833eb0e1f23d71fa617b9a738dd924d97ca824daba2e376f69e",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_d945fed4099ed54c9357",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_score_forge_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:ceefca3b0cfde88c753b7c6c5e4233d88066c12f77d19f41f8fbaf3028cecf1a",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_295c239886789521f797",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_plan_workflow_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:0554205a845a766e6ecf941cd3ad923706431a51cac6c20870efaf873659afea",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_7fe49232ff6e4d897598",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_validate_canon_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:cb53631530dae3f64e4fcae8d0b837a68b614efcc6be17db1ea26a1e52a44780",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_7ec2a763b60ab4b5f44e",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_check_promotion_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:34983af3ccc69918f01fd5f51aa2df7058403dc76605dc0a3af0e9c6de14a7c6",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_a67c8c5a23796874ed15",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_session_handshake_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:457125696ef7b656e95573569a2389a3a95ab93846c53572af0bf35701a475a2",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_913e0c41c119bcfcd6a4",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_openclaw_plan_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:35ffff9352ed9fb661cef2fb73d89e54d00eea0ecc523e811ea4df65f1039bef",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_f8037bf27d94c610b112",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_openclaw_execute_binding",
+          "risk_class": "high",
+          "role": "tool_router",
+          "schema_hash": "sha256:f0de0f4d820f8a66ed64686f2c17d6e3cc9380e39808efb29c62df3e76cf4eed",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_4c578a9caf4874381c95",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_crystal_compute_binding",
+          "risk_class": "medium",
+          "role": "tool_router",
+          "schema_hash": "sha256:d3fc8d1116a7ab455faa5018cd1d395ef49e0ac0a06e320a570122e9c2ef00cb",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_f4ae3fc3f6c53ec5f696",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_mcp_status_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:66d188882bc5c69b4f827df1b9dd34aee6a6066981edbd9b60b73dec0ea0d13f",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        },
+        {
+          "action_type": "external_tool_binding",
+          "candidate_id": "commons_3a6675d793ba3c9787e7",
+          "execution_policy": "verify_before_use",
+          "kind": "meta_tool_recipe",
+          "name": "beast_mcp_tool_catalog_binding",
+          "risk_class": "low",
+          "role": "tool_router",
+          "schema_hash": "sha256:47a55476620e5fef7ee48720aab84306cacce2313bfde47482b1fdc0ec7fa066",
+          "source": "discovery_mcp_tool_catalog",
+          "task_class": "beast_mcp_runtime_tool"
+        }
+      ],
+      "skills": [
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_a42c0dc5aa7beeea8f24",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "hf_openai_gpt_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:a0ef1f7b3846d9d1de8d5ecb95ca439ee29637e815c345601f54ab9374edeb28",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_cc66188e334c8053c4e5",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_test_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:c3fbbe49a42a466c19626d67ea48d0f97512ea66c887873df3e98709a25f4124",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_be4ba58b3504c752cce9",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "gpt_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cf96b10cae2c02ad19f149040bf2fa9b082fbc428ca7d2c65965f88755d1bb91",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_2c9656b7b4beb574dd8a",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "claude_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:46ddbc75b9d83478068ea2bc4117c416da35a11600cb97542ff244ab92e7821d",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_9b4e63e326352f20edd6",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "gemini_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:d6f66ec37279a825fb280673f022b7c126f79b6c314a176dad8e853d058fe279",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_b6b65cefa74950c90239",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_openrouter_auto_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cc0e9d1a8b16b0b27103061219a5bd72bb717afadfd69eb07e2bf446d5c2949c",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_17d13fe6e4d03a3533f4",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_llama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:c3cc672b49af59d45621d540ea9867c747246cf0dc62a18c3df14b72810ebc02",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_1342acef1611fd654b58",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "meta_llama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:0a7fc74679dc2d575ae20dc564655f5dc0437fc23b2c001f902e403bd9180ee4",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_c9c6c70a6d1b42d5ac53",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "nvidia_nemotron_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:64e537937924d730cf7f3f50a80a53e3c1c7b2322765dc8b0ef642932aedbcb8",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_4256820905c9ae890685",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "beast_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:1e29062a63bb64589e6651e12b05f460821ef9343036714a3cfc3e1cdccb926c",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_f72b0f58e00f4a2678c0",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_groq_llama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:05466c0442390354e5ab267ee23c622b7c7e193ba23d0caaa62e7e9745039945",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_a7290c9d9e4ee3bd9b06",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "nvidia_nemotron_modify_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:d2b37493d3e3d338ed2a9260cfcf0cb1bf2fe5d5351c7b37b33132677a637f02",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_39e91da1555345f5fd3d",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_openrouter_auto_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cc0e9d1a8b16b0b27103061219a5bd72bb717afadfd69eb07e2bf446d5c2949c",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_0fafc3efaa47d4eb40d2",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_groq_llama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:05466c0442390354e5ab267ee23c622b7c7e193ba23d0caaa62e7e9745039945",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_7d8e4a76c3239e159f02",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_openai_beast_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:e66e3b6e8fc126a8aac22797f30a69e27ccc4188c167c7211bd3debc2c6f297e",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_7dbe95655128aadd9e84",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_ollama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cff12591eec8f4bbfd125c2618038ff9771929ab10044ae6b30a98cc5d476d5b",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_5aa2f2f6481a17f582b2",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "hf_meta_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:5c20f43d70c90269e8e2adef3214268ada3db9a2643146f1261f64d5b9b7099f",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_528f72e9a81e4ec67b32",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "gpt_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cf96b10cae2c02ad19f149040bf2fa9b082fbc428ca7d2c65965f88755d1bb91",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_0ebad1a9ecae49cce701",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "gpt_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:cf96b10cae2c02ad19f149040bf2fa9b082fbc428ca7d2c65965f88755d1bb91",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_0fe902344c42ab03da24",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "hf_qwen_qwen2_5_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:860bfd0b608b1d78525fdf8017e4ecb05ece23bb113f539b18bf8b694bc376a0",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_2c8f0b95cc0db3f05053",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "tgi_qwen_qwen2_5_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:d5afbe6cd39c88cfc877991d4572116d13358b030045a1c69cda395ff951f472",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_796279f56a387b37a22d",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_gpt_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:39fab0af0c093ddd081ab8914ebf7a459535c0ed94fe6ad457417b8ac65934c7",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_d299b950b9df3af3f425",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "hf_minimaxai_minimax_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:9972703bf3580659626980c6f10dc32ed085078c87a99eabe3e8c19c90510220",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_ea2b84b26ee3fbf662f8",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "litellm_openai_ollama_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:726f3beac9abd7f74c12efc5cd7c9ba171cf7934565e37545a01f540a5d1ede0",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "action_type": "skill_recipe_binding",
+          "candidate_id": "commons_31e35826b160ebdda1c2",
+          "execution_policy": "verify_before_use",
+          "kind": "skill_recipe",
+          "name": "nvidia_nim_allow_binding",
+          "risk_class": "low",
+          "role": "skill_router",
+          "schema_hash": "sha256:c284afc8e9b7652befc57865d915cc268b0298e4f94d58287649a6d8a6868f3b",
+          "source": "discovery_skill_manifest",
+          "task_class": "request_routing"
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "gpt_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:cf96b10cae2c02ad19f149040bf2fa9b082fbc428ca7d2c65965f88755d1bb91",
+          "skill_id": "meta_tool_commons_gpt_allow_binding_1e898c808b19",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 3
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_groq_llama_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:05466c0442390354e5ab267ee23c622b7c7e193ba23d0caaa62e7e9745039945",
+          "skill_id": "meta_tool_commons_litellm_groq_llama_allow_binding_3cbf098e2a76",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 2
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_openrouter_auto_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:cc0e9d1a8b16b0b27103061219a5bd72bb717afadfd69eb07e2bf446d5c2949c",
+          "skill_id": "meta_tool_commons_litellm_openrouter_auto_allow_binding_95b2441319a8",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 2
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "nvidia_nim_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:c284afc8e9b7652befc57865d915cc268b0298e4f94d58287649a6d8a6868f3b",
+          "skill_id": "meta_tool_commons_nvidia_nim_allow_binding_1246cffdd715",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_openai_ollama_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:726f3beac9abd7f74c12efc5cd7c9ba171cf7934565e37545a01f540a5d1ede0",
+          "skill_id": "meta_tool_commons_litellm_openai_ollama_allow_binding_fd921c98aa56",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "hf_minimaxai_minimax_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:9972703bf3580659626980c6f10dc32ed085078c87a99eabe3e8c19c90510220",
+          "skill_id": "meta_tool_commons_hf_minimaxai_minimax_allow_binding_e1c225beed46",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_gpt_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:39fab0af0c093ddd081ab8914ebf7a459535c0ed94fe6ad457417b8ac65934c7",
+          "skill_id": "meta_tool_commons_litellm_gpt_allow_binding_76128728938c",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "tgi_qwen_qwen2_5_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:d5afbe6cd39c88cfc877991d4572116d13358b030045a1c69cda395ff951f472",
+          "skill_id": "meta_tool_commons_tgi_qwen_qwen2_5_allow_binding_7381d882b5fc",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "hf_qwen_qwen2_5_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:860bfd0b608b1d78525fdf8017e4ecb05ece23bb113f539b18bf8b694bc376a0",
+          "skill_id": "meta_tool_commons_hf_qwen_qwen2_5_allow_binding_a6448813b176",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "hf_meta_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:5c20f43d70c90269e8e2adef3214268ada3db9a2643146f1261f64d5b9b7099f",
+          "skill_id": "meta_tool_commons_hf_meta_allow_binding_b6761b94043b",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_ollama_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:cff12591eec8f4bbfd125c2618038ff9771929ab10044ae6b30a98cc5d476d5b",
+          "skill_id": "meta_tool_commons_litellm_ollama_allow_binding_bfc7641c6f04",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_openai_beast_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:e66e3b6e8fc126a8aac22797f30a69e27ccc4188c167c7211bd3debc2c6f297e",
+          "skill_id": "meta_tool_commons_litellm_openai_beast_allow_binding_a019f6a8d430",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "nvidia_nemotron_modify_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:d2b37493d3e3d338ed2a9260cfcf0cb1bf2fe5d5351c7b37b33132677a637f02",
+          "skill_id": "meta_tool_commons_nvidia_nemotron_modify_binding_1bbf357262c3",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:1e29062a63bb64589e6651e12b05f460821ef9343036714a3cfc3e1cdccb926c",
+          "skill_id": "meta_tool_commons_beast_allow_binding_cd0f296293af",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "nvidia_nemotron_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:64e537937924d730cf7f3f50a80a53e3c1c7b2322765dc8b0ef642932aedbcb8",
+          "skill_id": "meta_tool_commons_nvidia_nemotron_allow_binding_149890b52d03",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "meta_llama_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:0a7fc74679dc2d575ae20dc564655f5dc0437fc23b2c001f902e403bd9180ee4",
+          "skill_id": "meta_tool_commons_meta_llama_allow_binding_59d61894de2c",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_llama_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:c3cc672b49af59d45621d540ea9867c747246cf0dc62a18c3df14b72810ebc02",
+          "skill_id": "meta_tool_commons_litellm_llama_allow_binding_97a89e0e55c7",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "gemini_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:d6f66ec37279a825fb280673f022b7c126f79b6c314a176dad8e853d058fe279",
+          "skill_id": "meta_tool_commons_gemini_allow_binding_06b738e3313b",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "claude_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:46ddbc75b9d83478068ea2bc4117c416da35a11600cb97542ff244ab92e7821d",
+          "skill_id": "meta_tool_commons_claude_allow_binding_d83a18ac6061",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "litellm_test_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:c3fbbe49a42a466c19626d67ea48d0f97512ea66c887873df3e98709a25f4124",
+          "skill_id": "meta_tool_commons_litellm_test_allow_binding_9f95c9d1ab3f",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "hf_openai_gpt_allow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:a0ef1f7b3846d9d1de8d5ecb95ca439ee29637e815c345601f54ab9374edeb28",
+          "skill_id": "meta_tool_commons_hf_openai_gpt_allow_binding_26d342b09f22",
+          "source": "discovery_skill_manifest",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_mcp_tool_catalog_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:47a55476620e5fef7ee48720aab84306cacce2313bfde47482b1fdc0ec7fa066",
+          "skill_id": "meta_tool_commons_beast_mcp_tool_catalog_binding_16dc887f2f03",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_mcp_status_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:66d188882bc5c69b4f827df1b9dd34aee6a6066981edbd9b60b73dec0ea0d13f",
+          "skill_id": "meta_tool_commons_beast_mcp_status_binding_a4739934ecd4",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_crystal_compute_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:d3fc8d1116a7ab455faa5018cd1d395ef49e0ac0a06e320a570122e9c2ef00cb",
+          "skill_id": "meta_tool_commons_beast_crystal_compute_binding_464a203e1d0d",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_openclaw_execute_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:f0de0f4d820f8a66ed64686f2c17d6e3cc9380e39808efb29c62df3e76cf4eed",
+          "skill_id": "meta_tool_commons_beast_openclaw_execute_binding_2332eccdac2b",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_openclaw_plan_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:35ffff9352ed9fb661cef2fb73d89e54d00eea0ecc523e811ea4df65f1039bef",
+          "skill_id": "meta_tool_commons_beast_openclaw_plan_binding_106b5606f645",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_session_handshake_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:457125696ef7b656e95573569a2389a3a95ab93846c53572af0bf35701a475a2",
+          "skill_id": "meta_tool_commons_beast_session_handshake_binding_d6aaf6b8092b",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_check_promotion_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:34983af3ccc69918f01fd5f51aa2df7058403dc76605dc0a3af0e9c6de14a7c6",
+          "skill_id": "meta_tool_commons_beast_check_promotion_binding_eaafabda8d6e",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_validate_canon_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:cb53631530dae3f64e4fcae8d0b837a68b614efcc6be17db1ea26a1e52a44780",
+          "skill_id": "meta_tool_commons_beast_validate_canon_binding_de9787dc20f2",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_plan_workflow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:0554205a845a766e6ecf941cd3ad923706431a51cac6c20870efaf873659afea",
+          "skill_id": "meta_tool_commons_beast_plan_workflow_binding_470a8cb5ec37",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_score_forge_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:ceefca3b0cfde88c753b7c6c5e4233d88066c12f77d19f41f8fbaf3028cecf1a",
+          "skill_id": "meta_tool_commons_beast_score_forge_binding_f4378336201f",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_build_context_packet_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:2163b1fd30c41833eb0e1f23d71fa617b9a738dd924d97ca824daba2e376f69e",
+          "skill_id": "meta_tool_commons_beast_build_context_packet_binding_63498906c719",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_get_workspace_graph_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:5650a33944280f6b4fe2efd762e60eb3a80ef2506154ae05173d07a01c54ef2b",
+          "skill_id": "meta_tool_commons_beast_get_workspace_graph_binding_a44284a13233",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_github_pr_publish_chronicle_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:d6c9891278ec145fd23ad1ad6d0c34b0f41723f9fae656f08cb11e9d12b8ccf0",
+          "skill_id": "meta_tool_commons_beast_github_pr_publish_chronicle_binding_d7927afc8439",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_github_pr_ingest_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:e5b7cd482412826ff6bd7c3b56d675c3ab3d8b9263905d3d5c40c68196a96b1f",
+          "skill_id": "meta_tool_commons_beast_github_pr_ingest_binding_d8ad9d8d8c6c",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_attach_network_chronicle_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:1e3da641cb9fcbe94655f9d729a61ad8338d62c5a723b70ad8f046265c96c073",
+          "skill_id": "meta_tool_commons_beast_attach_network_chronicle_binding_fb9c332b1512",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_publish_chronicle_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:08c35fa8a0bc162f684d3ac9b040b557c4c1071ef587f98a34e03b963d618358",
+          "skill_id": "meta_tool_commons_beast_publish_chronicle_binding_38d642c9bf3f",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_build_route_card_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:519d468922c138dc38eda708f796f0d764acd14cadb0b4382ef9a0192445f036",
+          "skill_id": "meta_tool_commons_beast_build_route_card_binding_ce1669d096f8",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_check_policy_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:546e42494cd703942609c1f2c95c8b5bda2c2abe97e822c083c1bc23f28b8083",
+          "skill_id": "meta_tool_commons_beast_check_policy_binding_70324f96de3e",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_compute_shadow_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:34371c7ace9d291628d6641545ab6d2751bf4b4f8b6d1e3f61ffddcb69deeee1",
+          "skill_id": "meta_tool_commons_beast_compute_shadow_binding_b7dd7a90138e",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_meta_tool_commons_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:760341730eaf8d233f85e87cef4faa8981de384b2e80a793b5a2c1c9d0ce985a",
+          "skill_id": "meta_tool_commons_beast_meta_tool_commons_binding_08bff9e354ef",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_capability_exchange_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:253c6ac38edcf86ca9718cb346fb844882e3ac1fbe8bb8c747ae50b7e8881846",
+          "skill_id": "meta_tool_commons_beast_capability_exchange_binding_8e900e5e2d30",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_plugin_marketplace_install_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:954ba0b3f805bf9a883419b5f81c251524daa0e3be8c4f85b16aee2ed6e6eb5b",
+          "skill_id": "meta_tool_commons_beast_plugin_marketplace_install_binding_648b0f57b503",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_plugin_manifest_validate_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:6b00236664079b0ebb2e38dbbe245e525d68052ad5c5ac4e83a4d1e17935a97c",
+          "skill_id": "meta_tool_commons_beast_plugin_manifest_validate_binding_6b7bb0b0fcf8",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_otel_export_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:41326ced006f9821760720f8efecaa3fd477b07126063c58f3cc3db0c324db16",
+          "skill_id": "meta_tool_commons_beast_otel_export_binding_3d550256d51a",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_tool_laziness_recommend_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:abe6e6cf8e5f22d6027299cc01f2249547ddc851d5a6e2bf90784cf80b8f8057",
+          "skill_id": "meta_tool_commons_beast_tool_laziness_recommend_binding_61abc472f824",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_tool_laziness_record_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:f409e7a40dd37dcc52018e5feec403f67e23670b47ba2dab27092630c7b2d82a",
+          "skill_id": "meta_tool_commons_beast_tool_laziness_record_binding_acde31bb9353",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_provider_economist_select_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:ea377d66510cbb963194a6f5b2f919b01b69c3cd5692646ee201e8cab5232d55",
+          "skill_id": "meta_tool_commons_beast_provider_economist_select_binding_7af8cf1485ca",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_provider_fitness_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:7f2de0855c8625f4abb44790beaf28f4e9ca5922718a39165e37bf54f473b5d9",
+          "skill_id": "meta_tool_commons_beast_provider_fitness_binding_31b8e74db823",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_sourceplan_rollback_latest_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:2dd6541cb9c0ae53b0d2c8bcaf160c3d0c265b661d562002fb55c3904a0e9bd5",
+          "skill_id": "meta_tool_commons_beast_sourceplan_rollback_latest_binding_6f0a1496c451",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_sourceplan_apply_selected_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:caf1348da53f9e125d8cdfb59470a6b7a9a9148e7b263a90af49058ccc4430a4",
+          "skill_id": "meta_tool_commons_beast_sourceplan_apply_selected_binding_0baf86233585",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_sourceplan_preview_hunks_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:75773b37d599ff366ddd3661973e6eaf3af55e081eb42c6d5653bcce8f575b5e",
+          "skill_id": "meta_tool_commons_beast_sourceplan_preview_hunks_binding_f4b1c9c0e6b6",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_sourceplan_prepare_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:2b092929298b5741165d068034c0c7392846cd79ff75de525fdfc25d7340816a",
+          "skill_id": "meta_tool_commons_beast_sourceplan_prepare_binding_16e14757e3f9",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_prepare_handoff_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:69581d91b774e92f425378a1baf7c099a96e5253cb7eb8e769f7a1d2e6fca900",
+          "skill_id": "meta_tool_commons_beast_prepare_handoff_binding_03487cbc4035",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_run_maintenance_cascade_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:777a8f83e65a99e700e6346e728c2beccb3160a641840f3cbf4aab426634ef49",
+          "skill_id": "meta_tool_commons_beast_run_maintenance_cascade_binding_9ae7bf196b70",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_run_quality_cascade_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:fef2f381d03c26a087506f4a8d2123bf8e746a40df79cf17cca4b7001aa38a0b",
+          "skill_id": "meta_tool_commons_beast_run_quality_cascade_binding_92608b9d68da",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "meta_tool_commons",
+          "kind": "registry_skill",
+          "name": "beast_prepare_task_binding",
+          "risk_class": "low",
+          "schema_hash": "sha256:a1a07ba744073cb87c3bff12f922ba478c7279be0ce8ff3c414cc86e61f3fdfb",
+          "skill_id": "meta_tool_commons_beast_prepare_task_binding_9153fa7cbbd4",
+          "source": "discovery_mcp_tool_catalog",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "skill_id": "swarm_recipe_swarm_hermes_hermes_route_role_briefs_6e5dfc3249e1",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "skill_id": "swarm_recipe_swarm_hermes_cartographer_select_relevant_context_60ad8cc41b23",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "skill_id": "swarm_recipe_swarm_hermes_compressor_fit_context_budget_222e768bc290",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "skill_id": "swarm_recipe_swarm_hermes_supervisor_check_success_criteria_20c4c7cb3cb4",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "skill_id": "swarm_recipe_swarm_hermes_scribe_record_chronicle_and_promotion_signal_8be17e7ac1be",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "skill_id": "swarm_recipe_swarm_hermes_hermes_route_role_briefs_9b7052e5f6ed",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "skill_id": "swarm_recipe_swarm_hermes_cartographer_select_relevant_context_aae179679567",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "skill_id": "swarm_recipe_swarm_hermes_compressor_fit_context_budget_0b2a9c1ee118",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "skill_id": "swarm_recipe_swarm_hermes_supervisor_check_success_criteria_508378838cfa",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "skill_id": "swarm_recipe_swarm_hermes_scribe_record_chronicle_and_promotion_signal_80e68b16c597",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "skill_id": "swarm_recipe_swarm_hermes_hermes_route_role_briefs_baf7bb48ef45",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "skill_id": "swarm_recipe_swarm_hermes_cartographer_select_relevant_context_bfdc8532f8f3",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "skill_id": "swarm_recipe_swarm_hermes_compressor_fit_context_budget_5a2ce6ebdc3f",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "skill_id": "swarm_recipe_swarm_hermes_supervisor_check_success_criteria_57cac5c57456",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "skill_id": "swarm_recipe_swarm_hermes_scribe_record_chronicle_and_promotion_signal_61baa3074ac0",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "skill_id": "swarm_recipe_swarm_hermes_hermes_route_role_briefs_4814809f2510",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "skill_id": "swarm_recipe_swarm_hermes_cartographer_select_relevant_context_6b2daf01889f",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "skill_id": "swarm_recipe_swarm_hermes_compressor_fit_context_budget_3b4ddf96ec16",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "skill_id": "swarm_recipe_swarm_hermes_supervisor_check_success_criteria_ea081b36c0d8",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        },
+        {
+          "category": "swarm_recipe",
+          "kind": "registry_skill",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "skill_id": "swarm_recipe_swarm_hermes_scribe_record_chronicle_and_promotion_signal_b75d7fb678ed",
+          "source": "local_swarm_commons",
+          "success_rate": 1.0,
+          "usage_count": 1
+        }
+      ],
+      "swarm_recipes": [
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_3e93cf65ce67379b4c63",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "role": "scribe",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "source": "local_swarm_commons",
+          "task_class": "small_patch"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_c9e18c7031c714a54b86",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "role": "supervisor",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "source": "local_swarm_commons",
+          "task_class": "small_patch"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_b3854c7f44a1ee1e7ebf",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "role": "compressor",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "source": "local_swarm_commons",
+          "task_class": "small_patch"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_557fbaabe36710a154fd",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "role": "cartographer",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "source": "local_swarm_commons",
+          "task_class": "small_patch"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_422115745205c222fd8a",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "role": "hermes",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "source": "local_swarm_commons",
+          "task_class": "small_patch"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_bc2791a0af419b3282f2",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "role": "scribe",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "source": "local_swarm_commons",
+          "task_class": "refactor_request"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_850c1bb876642a1cb9ed",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "role": "supervisor",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "source": "local_swarm_commons",
+          "task_class": "refactor_request"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_39143f64f44ef58c1884",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "role": "compressor",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "source": "local_swarm_commons",
+          "task_class": "refactor_request"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_83ed303baaf204f39977",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "role": "cartographer",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "source": "local_swarm_commons",
+          "task_class": "refactor_request"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_36dacc3d2a13dfcb8dd7",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "role": "hermes",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "source": "local_swarm_commons",
+          "task_class": "refactor_request"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_e7638beb9dd82c0b8fa7",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "role": "scribe",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "source": "local_swarm_commons",
+          "task_class": "provider_debugging"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_267f022a70c918085083",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "role": "supervisor",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "source": "local_swarm_commons",
+          "task_class": "provider_debugging"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_95295ce6e4583b94699e",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "role": "compressor",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "source": "local_swarm_commons",
+          "task_class": "provider_debugging"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_81e605541dc95914d76c",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "role": "cartographer",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "source": "local_swarm_commons",
+          "task_class": "provider_debugging"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_5a88e4a99522616882c9",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "role": "hermes",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "source": "local_swarm_commons",
+          "task_class": "provider_debugging"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_cb8ce6965614b87db897",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_scribe_record_chronicle_and_promotion_signal",
+          "risk_class": "low",
+          "role": "scribe",
+          "schema_hash": "sha256:c2609e2c29f4f6c73e021741bb7d16852b9a8c0aa8f046484cebdd3554557ff8",
+          "source": "local_swarm_commons",
+          "task_class": "general_software_task"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_23caae5d5d00fb427226",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_supervisor_check_success_criteria",
+          "risk_class": "low",
+          "role": "supervisor",
+          "schema_hash": "sha256:275d3182591c953492aca927aae6a60b5a4b40e1118057c420b9e98ba26095cf",
+          "source": "local_swarm_commons",
+          "task_class": "general_software_task"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_152cdbf6c5f1ccdea8b8",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_compressor_fit_context_budget",
+          "risk_class": "low",
+          "role": "compressor",
+          "schema_hash": "sha256:9e83989d12daa4c53916c4446b7130356475bb7ed49d85f43287ab894d27e607",
+          "source": "local_swarm_commons",
+          "task_class": "general_software_task"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_e4651dfafaaa20c61666",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_cartographer_select_relevant_context",
+          "risk_class": "low",
+          "role": "cartographer",
+          "schema_hash": "sha256:643978cc8d3f89ddcca5427d82d5aee1dbb799f25f7e398e6e1ecced1fab8874",
+          "source": "local_swarm_commons",
+          "task_class": "general_software_task"
+        },
+        {
+          "action_type": "swarm_role_recipe",
+          "candidate_id": "commons_c3c349a6b26a0ec04bb0",
+          "execution_policy": "advisory_until_local_approval",
+          "kind": "skill_recipe",
+          "name": "swarm_hermes_hermes_route_role_briefs",
+          "risk_class": "low",
+          "role": "hermes",
+          "schema_hash": "sha256:a28d5b586be6bacfb97833537a883d8cc7b6d7c62fe454bdec0c8ec6378e9f70",
+          "source": "local_swarm_commons",
+          "task_class": "general_software_task"
+        }
+      ]
+    },
+    "created_at": "2026-06-21T21:03:01.404333+00:00",
+    "economics": {
+      "crystal_credit_units": 596,
+      "currency_boundary": "internal verified compute credit; not a public monetary instrument",
+      "scarcity_basis": "hash-linked verification receipts, not proof-of-waste mining",
+      "tokens_displaced_estimate": 97738
+    },
+    "fusion_id": "fused_crystal_e4a174bcb39476dc12bc",
+    "name": "llama_opus_style_full_commons_crystal_orchestrator",
+    "orchestration_contract": {
+      "claim": "compound crystal inference, not base-model parameter change",
+      "compute_governor": "reuse only with matching fingerprints and verification gates",
+      "meta_tool_commons": "rank and bind tools/skills/crystals",
+      "openclaw": "inspect local evidence and prepare safe actions",
+      "target_model": "llama3.2:1b",
+      "tiny_model_role": "intent_router_policy_summarizer",
+      "zeroclaw": "decompose plan without tool execution"
+    },
+    "seal": {
+      "beast_object_type": "sealed_crystal_compute_credit",
+      "created_at": "2026-06-21T21:03:01.404713+00:00",
+      "crypto_profile": {
+        "fallback": false,
+        "kem": "ML-KEM-768",
+        "provider": "liboqs",
+        "signature": "ML-DSA-65"
+      },
+      "encapsulated_key_hash": "sha256:1b2aaa3b90c6820b5862be7b93e7ef30b1108849a3599d8d2bdacd0f3c4cf4c8",
+      "kem_ciphertext_b64": "O6ya33o0Ci6nRuXDOKXsYG0KdDA0ICwDRNCCe6J9qI0oeybxmhw2+5xd1Zdkpq3UVp+FtObZy3WFU9vPYzuMMeRc3SH+eOpRPKNoB8qhRFlrZ4Kr4vCQ2RCM6wyRfj+JNG2eULysooQASBnGsxh471ZJxsd8aMfeMlIuDlHlxFJHo0JyN8a+bULlW/AKKRW/Q5q0ErqBK3eBLq5qUlcyGatSe+pa97gXwCyzHpomo1LJFopIWP4uUQfd/eiuHAI0QJwOUleen5yGu3q5HAcnfYglGoWN2CaAuAQIQ5P0bJ2FnmNAU0N39ktm9X2XUiQqL8GWQlDegBMSFpLCVipSZtLhvyRtQBHmoHbElZ3ftpUOoVEnfcCSLY2KSa84Pwj7ZUdf3LNaZWRq3gjaym9M+B9IHD5qvYnwdp3j+HAuEX7J9wKi9pyYayaaZGxMGDxXOAGg7XfYwq8ecy8kmSmJejwRD8GqkZYkrQ4Vv3jeBDOWyhDXS4ZaXwfXWMjDyM7U2op0ldxyyyvJgdt7JJt/RlzGf0UcSL8q+jMFG4X/HanMYKr4lsUcojxGoCQEHrXG9LbICxwcWLy3TyXivUcST4aQkw1g1aFG3vpFB+Xw7ILBSDVQ/m6sC8Al2wCQ2/geECORgK8G5AYUf2L9tml2VrZkRukSqsdxK1kCeE+tz06CkNtFgFNk700+ysyaanMWna9avf+nyJWS9ukhSO6UDGuVrwSuWjBpeka+c9z3ACJ7xe4kBkXmab7a/yLA7VkDbdiVnz6EVf1SIRvdXA3cqBGSJDpv6tbgy+x9e78IzXmtZ+o9+vXh/wATs3Pq7DEYAA+qUOE9hzu0DbBaxWjWPjSKKcMefESBBcT2DM+8zaQKPj2LQmHxtLiqmEq119/IPZCJvmtwLKjtxPEBcCzzQ2AErAjxjSO6s/2vEBnt0OxI2UVH6BZOj5I9gRKG8RCWAskluuhq5ZemrIUdNf2nASp+Gl25l97OIAcUZggbOeHpu/aKbZeYUIhFlRVoh2E6P0Y/9KTca5oWBYIM+qClR+o2QsXfSEj98gK50MlNdCMEk8Wt9YVLzlDQZLbLDn5EQYbFJIQAYKaTMqATC0fqm3crmSJAp7Lm6xCXSj3vEk6Ndd6N41c+72DXcARQy1xOmOGfbuW54458jLgPY4fyMIXufRXQDvJEKcu29g2w5rOpSXLL6jjIfrjhpD5V4JtQcSuDchDW7O3HiuLy108DuZPSowA9S306LSHHCQS9DagLrcRWMQu/DjXtsKhkwXdkAI7t9gICchsUR+WJZM1y97VQlnH5NKfztEV8Sgv1sy1nxbAiwtYbWXhoRvorgiqttdBJBOmk8XMOMIGrGy9DilNnciDzSNslrBsru2OEtmtS/z5UlQkQxMiY+uZHD2E0LqnKP6nOBUzNBPwqE4MQObi37HOu7FSDZtllum0accQ=",
+      "kem_public_key_hash": "sha256:5bf29772b37b2403d2bb82739320cab7ba718e07691a1b5db9cb550c0420df70",
+      "kem_status": "content_key_encapsulated",
+      "note": "Private recipient key is intentionally not stored in this public receipt.",
+      "payload_hash": "sha256:1b79f6a5c228f52bdaab97f75f0b4d75ccb209c56fb3ce4a711d7d673fe65803",
+      "purpose": "fused_inference_crystal_credit",
+      "signature": "ml-dsa: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",
+      "signature_public_key_b64": "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",
+      "version": "1.0"
+    },
+    "seal_verification": {
+      "beast_object_type": "crystal_seal_verification",
+      "crypto_profile": {
+        "fallback": false,
+        "kem": "ML-KEM-768",
+        "provider": "liboqs",
+        "signature": "ML-DSA-65"
+      },
+      "hash_ok": true,
+      "signature_ok": true,
+      "verified": true,
+      "version": "1.0"
+    },
+    "task_class": "frontier_style_defensive_software_orchestration",
+    "version": "1.0"
+  },
+  "pack": {
+    "beast_object_type": "tiny_llama_crystal_amplification_pack",
+    "created_at": "2026-06-21T21:03:01.404315+00:00",
+    "crystal_count": 8,
+    "crystals": [
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secure_code_review",
+        "confidence": 0.82,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_8f754c0f3cc14e823035",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Find risky patterns and produce safe remediation steps.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:d9d0955abca2b146beb962b55749f3750b4268c4df89021d468f7f94710e5612",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "defensive_review",
+        "tokens_displaced_estimate": 813,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "input_validation_hardening",
+        "confidence": 0.84,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_d488d853059d093b147b",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Map untrusted input to validation and parser guards.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:3bd3b8b064ea1be44d185f07f048e8fafa10c7e195219d7d82b2889364c4634c",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "hardening",
+        "tokens_displaced_estimate": 947,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secret_redaction_guard",
+        "confidence": 0.86,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_aecf80e20a3f300bd15c",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:6aea6654995861b1dc63708bf70c90eea9984fd9e7aab8bb31b6c2c078166c5a",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "data_protection",
+        "tokens_displaced_estimate": 1066,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "dependency_manifest_triage",
+        "confidence": 0.88,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_f412bec1311c5e79fc09",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Rank dependency review targets without exploit instructions.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:bfa113ad6b7287478b9acfcfada36a4676558ec8a8363c246fc9436272b0b10e",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "supply_chain_defense",
+        "tokens_displaced_estimate": 1206,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "auth_boundary_audit",
+        "confidence": 0.9,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_a717ce6cb96a7c768213",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Check authorization boundaries and recommend tests.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:748f1fe9594274254522b7bdba03153b74d46a1d1b7699a7b7b111288c039cef",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "access_control_review",
+        "tokens_displaced_estimate": 1358,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "incident_timeline_digest",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_7de2eb1702a899c107cd",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Compress logs into non-sensitive incident timelines.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:6e1c9b7da2749c5fcae5602b463b1b5700e9a1c94654ba72e038647d6f9c4e07",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "defensive_ops",
+        "tokens_displaced_estimate": 1504,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "zeroclaw_no_exec_plan",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_33c9f2e430fab209b45e",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Produce a no-execution investigation plan.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:0135cb22d0258dfdec039df616d066e98d91449c9422b5a40f5b0a9b2b307fca",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "planning_only",
+        "tokens_displaced_estimate": 1599,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "openclaw_local_patch_plan",
+        "confidence": 0.92,
+        "created_at": "2026-06-21T21:03:01.404065+00:00",
+        "crystal_id": "forge_crystal_424b2e3e9122aaa0439d",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Draft read-only patch plans with approval gates.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "jetson_crystal_forge_cpu_full_commons",
+          "receipt_hash": "sha256:7c6a98a90ef329b20f483ea03bcf875842be2451ffc748b64ab0e7096dfd4f11",
+          "target_model_label": "llama3.2:1b",
+          "teacher_model_label": "nvidia_nim_reference_or_frontier_anchor"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "local_first_plan",
+        "tokens_displaced_estimate": 1745,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      }
+    ],
+    "node_id": "jetson_crystal_forge_cpu_full_commons",
+    "orchestrators": [
+      "tiny_llama_router",
+      "zeroclaw",
+      "openclaw",
+      "meta_tool_commons",
+      "compute_governor",
+      "kv_cache_transport",
+      "provider_economist"
+    ],
+    "pack_hash": "sha256:01151ab130589f24068ec16bc289acda71100bcf32f4bdbd2f4340b4c0c88941",
+    "route_policy": {
+      "compute_governor": "reuse_only_when_fingerprint_and_tests_match",
+      "meta_tool_commons": "rank_verified_crystals_and_skills",
+      "openclaw": "inspect_and_prepare_local_first_actions",
+      "tiny_model": "classify_intent_route_summarize",
+      "zeroclaw": "plan_without_tool_execution"
+    },
+    "safety_boundary": "defensive cyber hardening and analysis only",
+    "target_model": "llama3.2:1b",
+    "tokens_displaced_estimate": 10238,
+    "version": "1.0"
+  },
+  "safety_boundary": "Defensive software orchestration only; no exploit payloads, credential theft, persistence, evasion, or autonomous targeting.",
+  "seal_verification": {
+    "beast_object_type": "crystal_seal_verification",
+    "crypto_profile": {
+      "fallback": false,
+      "kem": "ML-KEM-768",
+      "provider": "liboqs",
+      "signature": "ML-DSA-65"
+    },
+    "hash_ok": true,
+    "signature_ok": true,
+    "verified": true,
+    "version": "1.0"
+  },
+  "version": "1.0"
+}

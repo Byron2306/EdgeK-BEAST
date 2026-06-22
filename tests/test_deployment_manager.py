@@ -78,6 +78,17 @@ def test_nginx_config_generator_routes_protocols(tmp_path):
     assert 'X-EdgeK-Gateway "beast-provider-registry"' in config
 
 
+def test_litellm_config_normalizes_ollama_openai_compatible_base_url(tmp_path):
+    policies = _policies()
+    policies["providers"]["ollama"]["base_url"] = "http://127.0.0.1:11434/v1"
+    manager = DeploymentManager(policies, db_path=str(tmp_path / "deploy.db"))
+
+    config = manager.generate_litellm_config()
+    models = {item["model_name"]: item["litellm_params"] for item in config["model_list"]}
+
+    assert models["llama3.2:3b"]["api_base"] == "http://127.0.0.1:11434"
+
+
 def test_nginx_apply_and_litellm_sidecar_are_dry_run_by_default(tmp_path):
     manager = DeploymentManager(_policies(), db_path=str(tmp_path / "deploy.db"))
 
