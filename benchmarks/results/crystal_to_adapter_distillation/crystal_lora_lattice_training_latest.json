@@ -1,0 +1,118 @@
+{
+  "authority": "proposal_only_until_local_verifiers_pass",
+  "beast_object_type": "crystal_lora_lattice_training_receipt",
+  "claim": "Crystallized compute has been vectorized into a lattice and trained into actual low-rank parameter matrices.",
+  "class_count": 16,
+  "created_at": "2026-06-22T19:40:43.363580+00:00",
+  "epochs": 250,
+  "families": [
+    "access_control_review",
+    "cyber_defense_orchestration",
+    "data_protection",
+    "defensive_ops",
+    "defensive_review",
+    "hardening",
+    "local_first_plan",
+    "patch_compilation",
+    "phase_package",
+    "planning_only",
+    "provider_alias_normalization",
+    "route_diagnostics",
+    "schema_validation",
+    "secret_redaction",
+    "supply_chain_defense",
+    "syntax_check"
+  ],
+  "final_training_accuracy": 0.947368,
+  "history": [
+    {
+      "accuracy": 0.0,
+      "epoch": 1,
+      "loss": 2.772584
+    },
+    {
+      "accuracy": 0.0,
+      "epoch": 50,
+      "loss": 1.878898
+    },
+    {
+      "accuracy": 0.0,
+      "epoch": 100,
+      "loss": 1.310311
+    },
+    {
+      "accuracy": 0.0,
+      "epoch": 150,
+      "loss": 0.825177
+    },
+    {
+      "accuracy": 0.0,
+      "epoch": 200,
+      "loss": 0.452922
+    },
+    {
+      "accuracy": 0.0,
+      "epoch": 250,
+      "loss": 0.265319
+    }
+  ],
+  "input_dimension": 512,
+  "insertion_boundary": "BEAST adapter-assisted route/proposal head; not direct Ollama GGUF mutation",
+  "learning_rate": 0.35,
+  "parameter_shapes": {
+    "bias": [
+      16
+    ],
+    "delta_W": [
+      512,
+      16
+    ],
+    "lora_A": [
+      512,
+      16
+    ],
+    "lora_B": [
+      16,
+      16
+    ]
+  },
+  "rank": 16,
+  "row_count": 304,
+  "vector_report": {
+    "authority": "training_scaffold_only",
+    "beast_object_type": "crystal_lattice_vectorization",
+    "class_count": 16,
+    "created_at": "2026-06-22T19:40:43.253713+00:00",
+    "dimension": 512,
+    "families": [
+      "access_control_review",
+      "cyber_defense_orchestration",
+      "data_protection",
+      "defensive_ops",
+      "defensive_review",
+      "hardening",
+      "local_first_plan",
+      "patch_compilation",
+      "phase_package",
+      "planning_only",
+      "provider_alias_normalization",
+      "route_diagnostics",
+      "schema_validation",
+      "secret_redaction",
+      "supply_chain_defense",
+      "syntax_check"
+    ],
+    "matrix_shape": [
+      304,
+      512
+    ],
+    "npz_path": "benchmarks/results/crystal_to_adapter_distillation/crystal_lattice_vectors_latest.npz",
+    "row_count": 304,
+    "vector_lattice_hash": "sha256:235015e8eda3eb61acd545bb45392ec8825a6fff91cfe84d874839469b6afe26",
+    "vectorizer": "signed_hashing_trick_over_privacy_safe_crystal_features",
+    "version": "1.0"
+  },
+  "version": "1.0",
+  "weights_hash": "sha256:bbff035fa9fd934ca1da1d571a80d563de7ab74b337c41c6d4b88d490152cdbe",
+  "weights_path": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_weights_latest.npz"
+}

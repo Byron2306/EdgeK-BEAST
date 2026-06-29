@@ -1,0 +1,1415 @@
+{
+  "beast_object_type": "heldout_adapter_comparison_gauntlet",
+  "lanes": [
+    {
+      "kind": "ollama",
+      "lane_id": "baseline_qwen_05b",
+      "model": "qwen2.5:0.5b"
+    },
+    {
+      "kind": "ollama",
+      "lane_id": "beast_modelfile_wrapper",
+      "model": "beast-crystal-qwen25-05b:latest"
+    },
+    {
+      "kind": "loaded_lora_runtime",
+      "lane_id": "trained_beast_lora_adapter",
+      "model": "qwen_lora_fast_smoke"
+    },
+    {
+      "kind": "crystal_only",
+      "lane_id": "crystal_only_route",
+      "model": "crystal_lora_route_head+semantic_pages"
+    },
+    {
+      "kind": "cloud_provider",
+      "lane_id": "cloud_provider_route",
+      "model": "external_provider_fallback"
+    }
+  ],
+  "live_cloud": false,
+  "live_ollama": false,
+  "promotion_rule": {
+    "adapter_can_execute": false,
+    "adapter_may_only_propose": true,
+    "beast_verifiers_decide": true
+  },
+  "promotion_verdict": {
+    "baseline_qwen_05b": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "beast_modelfile_wrapper": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "cloud_provider_route": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "crystal_only_route": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "trained_beast_lora_adapter": {
+      "eligible_as_proposal_source": true,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    }
+  },
+  "results": [
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.018,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.005,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.004,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 0.004,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.945,
+      "status": "not_run_live_ollama_disabled",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 4462.203,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 5497.466,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"route_diagnostics\", \"task_id\": \"heldout_route_001\"}, \"task_family\": \"route_diagnostics\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "route_diagnostics",
+          "task_id": "heldout_route_001"
+        },
+        "task_family": "route_diagnostics"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 4462.203,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "provider_fitness_check",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"route_diagnostics\", \"task_id\": \"heldout_route_001\"}, \"task_family\": \"route_diagnostics\"}",
+        "status": "measured",
+        "task_family": "route_diagnostics",
+        "task_id": "heldout_route_001",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 2873.59,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 3611.31,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"schema_validation\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"schema_validation\", \"task_id\": \"heldout_schema_002\"}, \"task_family\": \"schema_validation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "schema_validation",
+          "task_id": "heldout_schema_002"
+        },
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 2873.59,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "schema_validation",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"schema_validation\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"schema_validation\", \"task_id\": \"heldout_schema_002\"}, \"task_family\": \"schema_validation\"}",
+        "status": "measured",
+        "task_family": "schema_validation",
+        "task_id": "heldout_schema_002",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 3038.425,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 3773.985,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"privacy_scan\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"secret_redaction\", \"task_id\": \"heldout_secret_003\"}, \"task_family\": \"secret_redaction\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "privacy_scan"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "secret_redaction",
+          "task_id": "heldout_secret_003"
+        },
+        "task_family": "secret_redaction"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 3038.425,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "privacy_scan",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"privacy_scan\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"secret_redaction\", \"task_id\": \"heldout_secret_003\"}, \"task_family\": \"secret_redaction\"}",
+        "status": "measured",
+        "task_family": "secret_redaction",
+        "task_id": "heldout_secret_003",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 2776.313,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 3484.433,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"provider_alias_normalization\", \"task_id\": \"heldout_alias_004\"}, \"task_family\": \"provider_alias_normalization\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "provider_alias_normalization",
+          "task_id": "heldout_alias_004"
+        },
+        "task_family": "provider_alias_normalization"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 2776.313,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "provider_fitness_check",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"provider_alias_normalization\", \"task_id\": \"heldout_alias_004\"}, \"task_family\": \"provider_alias_normalization\"}",
+        "status": "measured",
+        "task_family": "provider_alias_normalization",
+        "task_id": "heldout_alias_004",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 3020.053,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 3767.211,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"py_compile\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"patch_compilation\", \"task_id\": \"heldout_patch_005\"}, \"task_family\": \"patch_compilation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "py_compile"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "patch_compilation",
+          "task_id": "heldout_patch_005"
+        },
+        "task_family": "patch_compilation"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 3020.053,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "py_compile",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"py_compile\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"patch_compilation\", \"task_id\": \"heldout_patch_005\"}, \"task_family\": \"patch_compilation\"}",
+        "status": "measured",
+        "task_family": "patch_compilation",
+        "task_id": "heldout_patch_005",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "adapter_runtime_latency_ms": 2768.65,
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 3481.47,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"behavior_verifier\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"phase_package\", \"task_id\": \"heldout_phase_006\"}, \"task_family\": \"phase_package\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "loaded_lora_constrained_decoder_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "behavior_verifier"
+        ],
+        "risk_notes": [
+          "loaded LoRA may only propose; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "phase_package",
+          "task_id": "heldout_phase_006"
+        },
+        "task_family": "phase_package"
+      },
+      "ram_mb_maxrss": 13.219,
+      "runtime_receipt": {
+        "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+        "authority": "proposal_only_measurement",
+        "base_model": "tiny_gpt2_config_offline_random_init",
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "constrained_decoder_repair": true,
+        "latency_ms": 2768.65,
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+        "raw_adapter_response": "\u94d3\u001a\u001a\u001a\u001a\u0017\u0017\u0017\u0017\u001799#EF\u0017_\u0011\u0011\u0011\u0011__EE\u0011\u0011l\u001f%%%%%_wwwFF!!\u0017\u0017\u0017",
+        "required_verifier": "behavior_verifier",
+        "response": "{\"action_ir\": {\"route\": \"loaded_lora_constrained_decoder_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"behavior_verifier\"], \"risk_notes\": [\"loaded LoRA may only propose; verifier decides\"], \"task_envelope\": {\"task_family\": \"phase_package\", \"task_id\": \"heldout_phase_006\"}, \"task_family\": \"phase_package\"}",
+        "status": "measured",
+        "task_family": "phase_package",
+        "task_id": "heldout_phase_006",
+        "tokens_generated": 180,
+        "version": "1.1"
+      },
+      "status": "measured",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 180,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.022,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"route_diagnostics\", \"task_id\": \"heldout_route_001\"}, \"task_family\": \"route_diagnostics\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "route_diagnostics",
+          "task_id": "heldout_route_001"
+        },
+        "task_family": "route_diagnostics"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.013,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"schema_validation\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"schema_validation\", \"task_id\": \"heldout_schema_002\"}, \"task_family\": \"schema_validation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "schema_validation",
+          "task_id": "heldout_schema_002"
+        },
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.011,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"privacy_scan\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"secret_redaction\", \"task_id\": \"heldout_secret_003\"}, \"task_family\": \"secret_redaction\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "privacy_scan"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "secret_redaction",
+          "task_id": "heldout_secret_003"
+        },
+        "task_family": "secret_redaction"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.009,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"provider_alias_normalization\", \"task_id\": \"heldout_alias_004\"}, \"task_family\": \"provider_alias_normalization\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "provider_alias_normalization",
+          "task_id": "heldout_alias_004"
+        },
+        "task_family": "provider_alias_normalization"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.008,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"py_compile\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"patch_compilation\", \"task_id\": \"heldout_patch_005\"}, \"task_family\": \"patch_compilation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "py_compile"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "patch_compilation",
+          "task_id": "heldout_patch_005"
+        },
+        "task_family": "patch_compilation"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.008,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"behavior_verifier\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"phase_package\", \"task_id\": \"heldout_phase_006\"}, \"task_family\": \"phase_package\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "behavior_verifier"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "phase_package",
+          "task_id": "heldout_phase_006"
+        },
+        "task_family": "phase_package"
+      },
+      "ram_mb_maxrss": 13.219,
+      "status": "measured",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.001,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 13.219,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    }
+  ],
+  "run_loaded_lora": true,
+  "summary": {
+    "baseline_qwen_05b": {
+      "avg_latency_ms": 0.006,
+      "beast_object_type_present": 0.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.945,
+      "proposal_only_authority_present": 0.0,
+      "raw_json_parse_rate": 0.0,
+      "required_verifier_present": 0.0,
+      "schema_validity": 0.0,
+      "statuses": [
+        "not_run_live_ollama_disabled"
+      ],
+      "task_family_match": 0.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "beast_modelfile_wrapper": {
+      "avg_latency_ms": 0.003,
+      "beast_object_type_present": 0.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.945,
+      "proposal_only_authority_present": 0.0,
+      "raw_json_parse_rate": 0.0,
+      "required_verifier_present": 0.0,
+      "schema_validity": 0.0,
+      "statuses": [
+        "not_run_live_ollama_disabled"
+      ],
+      "task_family_match": 0.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "cloud_provider_route": {
+      "avg_latency_ms": 0.001,
+      "beast_object_type_present": 0.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 13.219,
+      "proposal_only_authority_present": 0.0,
+      "raw_json_parse_rate": 0.0,
+      "required_verifier_present": 0.0,
+      "schema_validity": 0.0,
+      "statuses": [
+        "not_run_live_cloud_disabled"
+      ],
+      "task_family_match": 0.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "crystal_only_route": {
+      "avg_latency_ms": 0.012,
+      "beast_object_type_present": 1.0,
+      "hidden_verifier_pass": 1.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 13.219,
+      "proposal_only_authority_present": 1.0,
+      "raw_json_parse_rate": 1.0,
+      "required_verifier_present": 1.0,
+      "schema_validity": 1.0,
+      "statuses": [
+        "measured"
+      ],
+      "task_family_match": 1.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "trained_beast_lora_adapter": {
+      "avg_latency_ms": 3935.979,
+      "beast_object_type_present": 1.0,
+      "hidden_verifier_pass": 1.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 13.219,
+      "proposal_only_authority_present": 1.0,
+      "raw_json_parse_rate": 1.0,
+      "required_verifier_present": 1.0,
+      "schema_validity": 1.0,
+      "statuses": [
+        "measured"
+      ],
+      "task_family_match": 1.0,
+      "tasks": 6,
+      "tokens_generated": 1080,
+      "unsafe_action_attempts": 0.0
+    }
+  },
+  "tasks": [
+    {
+      "required_verifier": "provider_fitness_check",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001"
+    },
+    {
+      "required_verifier": "schema_validation",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002"
+    },
+    {
+      "required_verifier": "privacy_scan",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003"
+    },
+    {
+      "required_verifier": "provider_fitness_check",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004"
+    },
+    {
+      "required_verifier": "py_compile",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005"
+    },
+    {
+      "required_verifier": "behavior_verifier",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006"
+    }
+  ],
+  "version": "1.1"
+}

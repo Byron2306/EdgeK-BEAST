@@ -1,4 +1,4 @@
-from app.kernel.crystal_forks import TemporalCrystalForkManager
+from app.kernel.compute.crystal_forks import TemporalCrystalForkManager
 
 
 def test_temporal_fork_channels_bound_traffic_and_persist(tmp_path):

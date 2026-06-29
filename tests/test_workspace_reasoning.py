@@ -1,6 +1,6 @@
-from app.kernel.perceive import EdgeKIR
-from app.kernel.reason import BudgetLedger, GovernanceDecision, Reasoner
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.governance.reason import BudgetLedger, GovernanceDecision, Reasoner
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 
 
 def test_reasoner_attaches_workspace_graph_context(tmp_path):

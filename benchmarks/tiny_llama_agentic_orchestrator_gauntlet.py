@@ -26,8 +26,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.meta_tool_commons import MetaToolCommons
-from app.kernel.session_handshake import SessionHandshakeBuilder
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.execution.session_handshake import SessionHandshakeBuilder
+from app.kernel.compute.factory import ServiceFactory
+
+# Initialize container before any service usage
+ServiceFactory.initialize()
 
 RESULTS = ROOT / "benchmarks" / "results"
 
@@ -104,6 +108,17 @@ def tasks() -> List[Dict[str, Any]]:
             "required_subagents": ["cartographer", "openclaw_inspector", "supervisor", "scribe"],
             "required_learning": ["promotion_candidate_if_repeated"],
             "risk": "low",
+        },
+        {
+            "task_id": "browser_automation_search",
+            "tier": 6,
+            "tier_name": "sophisticated_tool_usage",
+            "objective": "Use browser automation to inspect a dynamic page and extract specific data points safely.",
+            "task_class": "browser_automation",
+            "required_route": ["mcp_playwright_inspect", "meta_tool_commons", "supervisor"],
+            "required_gates": ["browser_sandbox_gate", "data_redaction_gate", "verification_receipt"],
+            "required_subagents": ["cartographer", "openclaw_inspector", "supervisor"],
+            "risk": "medium",
         },
     ]
 

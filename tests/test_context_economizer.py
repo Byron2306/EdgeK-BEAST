@@ -1,5 +1,5 @@
 from app.context.economizer import ContextEconomizer
-from app.kernel.perceive import EdgeKIR
+from app.kernel.compute.perceive import EdgeKIR
 
 
 def test_context_economizer_reduces_oversized_context():

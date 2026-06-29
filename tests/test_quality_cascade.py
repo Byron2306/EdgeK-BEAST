@@ -1,5 +1,5 @@
-from app.kernel.quality_cascade import QualityCascade
-from app.kernel.runtime import RuntimeGovernor
+from app.kernel.data_processing.quality_cascade import QualityCascade
+from app.kernel.governance.runtime import RuntimeGovernor
 
 
 def test_quality_cascade_runs_provider_steps(tmp_path, monkeypatch):

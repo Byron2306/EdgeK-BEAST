@@ -1,0 +1,118 @@
+{
+  "beast_object_type": "memory_hull_sidecar",
+  "markdown_sha256": "sha256:b04150983eeca7d161d05a5249f1a81e97829074ad5d31ffead69854b404d631",
+  "payload": {
+    "beast_object_type": "memory_hull_residue",
+    "beast_systems": {
+      "chronicle_compatible": true,
+      "residue_sealed": true,
+      "vault_editable": true
+    },
+    "caller": "spiffe://beast.local/runtime-governor",
+    "correlation_id": "",
+    "cost_saved": {
+      "avoided_tokens_estimate": 143
+    },
+    "created_at": "2026-06-29T04:17:24.185154+00:00",
+    "decision": "Stored provider response as reusable BEAST crystal.",
+    "evidence": {
+      "actual_live_provider_call": true,
+      "actual_local_engine_call": true,
+      "answer_credit_id": "cache_501ad904cfd351c2",
+      "evaluation_gates": {
+        "baseline_pytest_failed": true,
+        "beast_object_type": "final_boss_evaluation_gates",
+        "expected_file_list_match": true,
+        "expected_hash_precondition_match": true,
+        "far_transfer_prompt_distance": {
+          "jaccard_distance": 0.923077,
+          "jaccard_similarity": 0.076923,
+          "left_terms": 20,
+          "metric": "token_set_jaccard",
+          "right_terms": 22,
+          "shared_terms": 3
+        },
+        "far_transfer_prompt_distance_recorded": true,
+        "mutation_negative_cases_required": true,
+        "no_forbidden_path_writes": true,
+        "passed": true,
+        "patch_schema_valid": true,
+        "secret_scan_pass": true,
+        "version": "1.0"
+      },
+      "files_changed": [
+        "gateway/providers.py",
+        "gateway/auth.py",
+        "gateway/streaming.py",
+        "gateway/client.py"
+      ],
+      "local_eval_gate": {
+        "beast_object_type": "local_eval_gate_result",
+        "checks": [
+          {
+            "passed": true,
+            "rule": {
+              "type": "max_length",
+              "value": 200000
+            }
+          },
+          {
+            "passed": true,
+            "rule": {
+              "type": "no_secret_patterns"
+            }
+          }
+        ],
+        "passed": true,
+        "promotion_allowed": true,
+        "version": "1.0"
+      },
+      "raw_quality": {
+        "beast_object_type": "raw_patch_plan_quality",
+        "contains_forbidden_secret": false,
+        "patch_count": 0,
+        "required_concept_count": 2,
+        "required_concepts": {
+          "beast_auto_routing": false,
+          "provider_normalization": true,
+          "secret_redaction": false,
+          "streaming_empty_chunks": true
+        },
+        "schema_valid": true
+      },
+      "raw_response_sha256": "sha256:1504239820020eeb6f706b6211d07368b59db8ef58ff91e7abf3a63f21dd310e",
+      "requested_verified": true,
+      "semantic_credit_id": "scc_d194914b8bf17507",
+      "skill_contract": "gateway_integration_pytest",
+      "tool_contract": "approved_multifile_patch_tool",
+      "verification": "multi_file_patch_plan_verified_by_integration_tests",
+      "verified": true
+    },
+    "files_touched": [],
+    "markdown_sha256": "sha256:b04150983eeca7d161d05a5249f1a81e97829074ad5d31ffead69854b404d631",
+    "policy_tags": [
+      "crystal_reuse",
+      "provider_response"
+    ],
+    "provider": "ollama",
+    "residue_id": "residue_b7d051dc18108a35aeb6",
+    "section": "residue",
+    "task": "Crystallized inference for gateway_provider_hardening",
+    "version": "2.0"
+  },
+  "residue_seal": {
+    "algorithm": "Ed25519",
+    "beast_object_type": "beast_residue_seal",
+    "created_at": "2026-06-29T04:17:24.191867+00:00",
+    "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+    "message_sha256": "sha256:e98ce86eb425229e19006f69ae85442bdd166c9962d9a84976e709c7fc31d4af",
+    "payload_sha256": "sha256:8ec8fc2af0a799a3e2f9955627864c483b5c75029d7c7ab103c5f4065a75b971",
+    "provider": "cryptography",
+    "public_key_hash": "sha256:ffc3e24cfbca1f56e031736ccaacc224282c0376f5bd2cefba61cbefd72381f3",
+    "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQXlHbWVCYS82YkVtZUR4RkFXWEswb01uV1F6VzNVcjlzODVCTUhXVFV0cm89Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+    "purpose": "memory_hull_residue",
+    "signature_b64": "HnxelEIRVJIrjWV2iJowimkb7sJ6qDQoS+6rttF1X539zlCbNVNVM/gxMx/Nxi7KUKE4WNk9qhtLA6C3DWs3DQ==",
+    "version": "2.0"
+  },
+  "version": "2.0"
+}

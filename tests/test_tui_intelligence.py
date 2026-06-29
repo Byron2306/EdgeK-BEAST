@@ -18,10 +18,12 @@ from app.cli.ui import (
     METRIC_CARD_HEIGHT,
     PAGES,
     PageHost,
+    crystal_kv_prefill_counts,
     economy_action_rows,
     intelligence_summary,
     master_evidence_summary,
     metric,
+    provider_secrets_operational,
     structured_payload,
 )
 
@@ -72,6 +74,80 @@ def test_intelligence_summary_explains_offline_waits():
     assert "gateway offline" in summary["blocker"]
     assert summary["endpoint_errors"] == 1
     assert summary["economist_reason"] == "no provider Chronicle samples"
+
+
+def test_provider_secrets_local_routes_are_operational_not_warn():
+    snap = BackendSnapshot(
+        base_url="offline",
+        provider_adapters=[
+            {"provider_id": "litellm", "backend": "litellm"},
+            {"provider_id": "ollama", "backend": "ollama"},
+        ],
+        provider_secrets={"providers": {}},
+    )
+
+    summary = provider_secrets_operational(snap)
+
+    assert summary["status"] == "OK"
+    assert "local" in summary["detail"]
+
+
+def test_crystal_kv_prefill_counts_include_durable_prefill_credits():
+    snap = BackendSnapshot(
+        base_url="offline",
+        kv_cache_state={"total_blocks": 0, "operations_logged": 0},
+        crystal_reuse={
+            "storage": {
+                "active_credits": 3,
+                "stored_by_type": {"kv_prefill": 2, "cached_answer": 1},
+                "kv_prefill_credits": 2,
+            },
+            "kv_transport": {"total_blocks": 0, "operations_logged": 0},
+        },
+    )
+
+    counts = crystal_kv_prefill_counts(snap)
+    summary = intelligence_summary(snap)
+
+    assert counts["durable_prefills"] == 2
+    assert counts["display_blocks"] == 2
+    assert summary["crystal_kv_blocks"] == 2
+
+
+def test_intelligence_summary_and_page_show_crystal_reuse_and_memory_security():
+    snap = BackendSnapshot(
+        base_url="http://gateway",
+        online=True,
+        crystal_reuse={
+            "storage": {"active_credits": 2, "total_credits": 3, "total_reuse_count": 1, "measured_reuse_tokens_saved": 42},
+            "kv_transport": {"total_blocks": 1},
+            "integration_health": {
+                "integration_count": 7,
+                "configured_count": 2,
+                "integrations": [
+                    {"project": "LMCache", "configured": True, "role": "kv", "env_vars": ["LMCACHE_ENDPOINT"], "capabilities": {"kv_cache": True}},
+                    {"project": "GPTCache", "configured": False, "role": "semantic", "env_vars": ["GPTCACHE_ENDPOINT"], "capabilities": {"semantic_cache": True}},
+                ],
+            },
+        },
+        memory_security={
+            "memory_hull": {"root": "/tmp/vault", "verified_sidecars": 1, "failed_sidecars": 0},
+            "residue_seal": {"key_exists": True, "key_mode": "0o600"},
+            "agent_passport": {
+                "policy_lint": {"valid": True, "policy_count": 4},
+                "sample_decisions": {"scout_memory_append": {"allowed": True, "reason": "explicit_allow"}},
+            },
+        },
+    )
+
+    summary = intelligence_summary(snap)
+    renderable = PageHost().intelligence(snap, 0)
+
+    assert summary["crystal_reuse_credits"] == 2
+    assert summary["crystal_integration_configured"] == 2
+    assert summary["memory_hull_verified"] == 1
+    assert summary["passport_policy_valid"] is True
+    assert renderable is not None
 
 
 def test_intelligence_page_renders_without_active_textual_app():

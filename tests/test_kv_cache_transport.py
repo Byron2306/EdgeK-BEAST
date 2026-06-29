@@ -2,13 +2,13 @@
 
 import pytest
 
-from app.kernel.kv_cache_transport import (
+from app.kernel.compute.kv_cache_transport import (
     CrossEngineKVCacheTransport,
     CacheEngine,
     CacheLocation,
     KVCacheBlock,
 )
-from app.kernel.kv_engine_adapter import LocalKVEngineAdapter
+from app.kernel.compute.kv_engine_adapter import OptimizedKVEngineAdapter
 
 
 def test_register_block_creates_cache_entry():
@@ -307,7 +307,7 @@ def test_import_tensor_payload_updates_existing_block_and_network_manifest(tmp_p
 
 def test_local_kv_engine_adapter_prepares_live_transport_payload(tmp_path):
     transport = CrossEngineKVCacheTransport(storage_dir=tmp_path)
-    adapter = LocalKVEngineAdapter(transport, engine=CacheEngine.VLLM)
+    adapter = OptimizedKVEngineAdapter(transport, engine=CacheEngine.VLLM)
 
     result = adapter.prepare_prefill(
         model="llama",

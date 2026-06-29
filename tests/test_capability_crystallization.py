@@ -2,7 +2,7 @@
 
 import pytest
 
-from app.kernel.capability_crystallization import (
+from app.kernel.capability.capability_crystallization import (
     CapabilityCrystallizationEngine,
     CrystallizationCandidate,
 )

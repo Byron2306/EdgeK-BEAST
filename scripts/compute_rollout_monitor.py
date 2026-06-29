@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.compute_ledger import ComputeLedger
+from app.kernel.compute.compute_ledger import ComputeLedger
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -43,7 +43,7 @@ def evaluate_rollout(
     limit: int = 500,
 ) -> Dict[str, Any]:
     ledger = ComputeLedger(ledger_path) if ledger_path else ComputeLedger()
-    state = ledger.state()
+    state = ledger.get_state()
     metrics = ledger.metrics(limit)
     receipts = ledger.recent_receipts(limit)
     artifacts = _artifact_results(results_dir)

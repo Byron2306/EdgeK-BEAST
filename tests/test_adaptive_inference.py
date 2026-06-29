@@ -2,18 +2,18 @@
 
 import pytest
 
-from app.kernel.adaptive_inference import (
+from app.kernel.compute.adaptive_inference import (
     AdaptiveInferenceController,
     BudgetCheckResult,
     AdaptiveRoutingDecision,
 )
-from app.kernel.compute_governor import ComputeGovernor
-from app.kernel.compute_ir import ComputeBudget, ComputePlan, ComputeGateDecision
-from app.kernel.compute_ledger import ComputeLedger
-from app.kernel.approval_audit import ApprovalAuditStore
-from app.kernel.outcome_evidence import NegativeCapabilityStore
-from app.kernel.inference_interceptor import InferenceComputeInterceptor
-from app.kernel.perceive import EdgeKIR
+from app.kernel.governance.compute_governor import ComputeGovernor
+from app.kernel.compute.compute_ir import ComputeBudget, ComputePlan, ComputeGateDecision
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.governance.approval_audit import ApprovalAuditStore
+from app.kernel.storage.outcome_evidence import NegativeCapabilityStore
+from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+from app.kernel.compute.perceive import EdgeKIR
 
 
 def test_budget_check_detects_token_violations():

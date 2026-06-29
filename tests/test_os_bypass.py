@@ -1,6 +1,6 @@
 import pytest
 
-from app.kernel.os_bypass import PacketCaptureConfig, PacketRingConfig, build_udp_probe_payload, capabilities, parse_packet_frame
+from app.kernel.networking.os_bypass import PacketCaptureConfig, PacketRingConfig, build_udp_probe_payload, capabilities, parse_packet_frame
 
 
 def test_os_bypass_capabilities_reports_modes():

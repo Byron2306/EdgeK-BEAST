@@ -1,0 +1,129 @@
+{
+  "beast_object_type": "phase3_semantic_compute_pages_receipt",
+  "bytes_reused": 5847,
+  "cpu_build_elapsed_ms": 16.953,
+  "estimated_tokens_avoided": 1458,
+  "exit_criteria": {
+    "cpu_or_token_improvement": true,
+    "every_identity_mutation_causes_miss": true,
+    "repeated_workloads_reuse_individual_pages": true,
+    "reuse_preserves_verifier_success": true
+  },
+  "identity_mutation_gauntlet": {
+    "beast_object_type": "semantic_compute_page_mutation_gauntlet",
+    "passed": true,
+    "results": [
+      {
+        "missed": true,
+        "mutation": "model_revision",
+        "reason": "identity_or_kind_miss"
+      },
+      {
+        "missed": true,
+        "mutation": "tool_schema",
+        "reason": "identity_or_kind_miss"
+      },
+      {
+        "missed": true,
+        "mutation": "skill_tree",
+        "reason": "identity_or_kind_miss"
+      },
+      {
+        "missed": true,
+        "mutation": "repository",
+        "reason": "identity_or_kind_miss"
+      },
+      {
+        "missed": true,
+        "mutation": "verifier",
+        "reason": "identity_or_kind_miss"
+      },
+      {
+        "missed": true,
+        "mutation": "privacy_class",
+        "reason": "identity_or_kind_miss"
+      }
+    ],
+    "version": "1.0"
+  },
+  "issued_at": "2026-06-22T20:18:51.765477+00:00",
+  "page_count": 4,
+  "page_ids": [
+    "scp_eb5fe95be34cd65140654943",
+    "scp_1f3dc90c402af55544016efb",
+    "scp_f1bec742716578b6308fa86f",
+    "scp_84bdec163bb35b55242afb28"
+  ],
+  "page_kinds": [
+    "intermediate_summary",
+    "route_card",
+    "verifier_plan",
+    "negative_capability"
+  ],
+  "reuse_hits": 12,
+  "reuse_repetitions": 3,
+  "state": {
+    "active_verified_pages": 5,
+    "beast_object_type": "semantic_compute_page_store",
+    "exit_criteria": {
+      "identity_mutation_miss": true,
+      "individual_page_reuse": true,
+      "local_behavior_verification": true
+    },
+    "latest_receipt": "benchmarks/results/semantic_compute_pages/receipts/scp_reuse_536d5aa98ddcf306b35b142a.json",
+    "page_count": 5,
+    "page_kinds": {
+      "intermediate_summary": 1,
+      "negative_capability": 1,
+      "route_card": 2,
+      "verifier_plan": 1
+    },
+    "reuse_count": 15,
+    "root": "benchmarks/results/semantic_compute_pages",
+    "version": "1.0"
+  },
+  "status": "implemented",
+  "validations": [
+    {
+      "beast_object_type": "semantic_compute_page_validation",
+      "content_hash": "sha256:8a98ebc24ce8e9af7fc32f80ab800b4bfcd19ea079b881700dc1ac34e0a59c93",
+      "errors": [],
+      "identity_hash": "sha256:0b2594fcbbc1279d87b62db119d347d5357670a8c2154726b2560f1b3fd1cf93",
+      "page_id": "scp_eb5fe95be34cd65140654943",
+      "privacy_findings": [],
+      "valid": true,
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "semantic_compute_page_validation",
+      "content_hash": "sha256:aa5da9c3cb10541d20677d1316ce18aac97f286bf0fb9caf4cd0de0b58fdc13a",
+      "errors": [],
+      "identity_hash": "sha256:5a0bf6e3f84190ce1ca4ab50054c69c22accb4ea9f3cc675d03750145cc9ea3d",
+      "page_id": "scp_1f3dc90c402af55544016efb",
+      "privacy_findings": [],
+      "valid": true,
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "semantic_compute_page_validation",
+      "content_hash": "sha256:181e44885ff52748a5df4d0fa9ac298fe683e2b7ba589ee662dc88fc53e8ea7f",
+      "errors": [],
+      "identity_hash": "sha256:ce16720d0764dbe00e45a1ea8b79580bfb0e57f400ad0215722fe667f5371af7",
+      "page_id": "scp_f1bec742716578b6308fa86f",
+      "privacy_findings": [],
+      "valid": true,
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "semantic_compute_page_validation",
+      "content_hash": "sha256:8ac24070ee61894400af489d2e3a96161f742ee6ff5e98ec967e065e39c6def4",
+      "errors": [],
+      "identity_hash": "sha256:b11c62ee0efc6b8c9fb43505ebff07f66ca5b93c7da6d3b15231e2725f4859a6",
+      "page_id": "scp_84bdec163bb35b55242afb28",
+      "privacy_findings": [],
+      "valid": true,
+      "version": "1.0"
+    }
+  ],
+  "version": "1.0"
+}

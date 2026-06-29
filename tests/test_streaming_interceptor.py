@@ -2,7 +2,7 @@
 
 import pytest
 
-from app.kernel.streaming_interceptor import (
+from app.kernel.compute.streaming_interceptor import (
     ProviderStreamAdapter,
     StreamingInterceptionEngine,
     StreamInterceptionState,

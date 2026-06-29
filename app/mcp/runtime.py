@@ -8,31 +8,31 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from app.kernel.reason import reasoner
-from app.kernel.runtime import runtime_governor
-from app.kernel.crystallize import crystallizer
-from app.kernel.task_envelope import TaskEnvelopeBuilder
-from app.kernel.context_packet import ContextPacketBuilder
-from app.kernel.canon_registry import CanonRegistry
-from app.kernel.forge_scorecard import ForgeScorecardBuilder
-from app.kernel.conductor_workflow import ConductorWorkflowBuilder
-from app.kernel.promotion_loop import PromotionLoop
-from app.kernel.beast_cli_executor import BeastCLIExecutor
-from app.kernel.ollama_scout import OllamaScout
-from app.kernel.swarm import swarm_kernel
-from app.kernel.skill_tree import skill_tree
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.tool_laziness_plugin import ToolLazinessPlugin
-from app.kernel.provider_economist import EconomistPolicy, ProviderEconomist
-from app.kernel.otel_connector import OpenTelemetryConnector
-from app.kernel.plugin_marketplace import PluginMarketplace
-from app.kernel.session_handshake import SessionHandshakeBuilder
-from app.kernel.capability_exchange import CapabilityExchange
-from app.kernel.meta_tool_commons import MetaToolCommons
-from app.kernel.inference_interceptor import compute_ledger
-from app.kernel.outcome_evidence import default_outcome_store
-from app.kernel.network_chronicle import NetworkChronicleConnector
-from app.kernel.github_pr_connector import GitHubPRConnector
+from app.kernel.governance.reason import reasoner
+from app.kernel.governance.runtime import runtime_governor
+from app.kernel.execution.crystallize import crystallizer
+from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
+from app.kernel.data_processing.context_packet import ContextPacketBuilder
+from app.kernel.registry.canon_registry import CanonRegistry
+from app.kernel.data_processing.forge_scorecard import ForgeScorecardBuilder
+from app.kernel.execution.conductor_workflow import ConductorWorkflowBuilder
+from app.kernel.data_processing.promotion_loop import PromotionLoop
+from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
+from app.kernel.local.ollama_scout import OllamaScout
+from app.kernel.networking.swarm import swarm_kernel
+from app.kernel.capability.skill_tree import skill_tree
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
+from app.kernel.adapters.provider_economist import EconomistPolicy, ProviderEconomist
+from app.kernel.networking.otel_connector import OpenTelemetryConnector
+from app.kernel.deployment.plugin_marketplace import PluginMarketplace
+from app.kernel.execution.session_handshake import SessionHandshakeBuilder
+from app.kernel.capability.capability_exchange import CapabilityExchange
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.compute.inference_interceptor import compute_ledger
+from app.kernel.storage.outcome_evidence import default_outcome_store
+from app.kernel.networking.network_chronicle import NetworkChronicleConnector
+from app.kernel.networking.github_pr_connector import GitHubPRConnector
 from app.cli.api import BeastApiClient
 from app.mcp.broker import MCPBroker
 

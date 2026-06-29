@@ -1,6 +1,6 @@
 import json
 
-from app.kernel.commons_scale_economics import CommonsScaleEconomics, ScaleEconomicsAssumptions
+from app.kernel.networking.commons_scale_economics import CommonsScaleEconomics, ScaleEconomicsAssumptions
 
 
 class FakeRegistry:
@@ -58,6 +58,28 @@ class FakeRegistry:
                 {"source": "compute_forge", "candidate_kind": "meta_tool"},
                 {"source": "compute_forge", "candidate_kind": "skill"},
                 {"source": "benchmarks/results", "candidate_kind": "benchmark_result_space"},
+            ]
+        }
+
+    def public_registry(self):
+        return {
+            "spaces": [
+                {
+                    "space_id": "space_a",
+                    "name": "Space A",
+                    "task_class": "verified_reuse",
+                    "manifest_hash": "sha256:abc",
+                    "reproduction_status": {"successful": 3, "failed": 0},
+                    "risk_approval": {"adoption_state": "adopted", "risk": "medium"},
+                },
+                {
+                    "space_id": "space_b",
+                    "name": "Space B",
+                    "task_class": "unverified_reuse",
+                    "manifest_hash": "sha256:def",
+                    "reproduction_status": {"successful": 0, "failed": 1},
+                    "risk_approval": {"adoption_state": "quarantined_hypothesis", "risk": "high"},
+                },
             ]
         }
 
@@ -148,3 +170,24 @@ def test_tiered_credit_pricing_uses_proof_based_caps(tmp_path):
     assert portfolio["flat_credit_value_usd"] == 0.76
     assert portfolio["marketplace_take_10pct_usd"] == 0.28215
     assert "omits that Space" in portfolio["source_spec_note"]
+
+
+def test_marketplace_catalog_lists_only_eligible_spaces_and_stays_non_financial(tmp_path):
+    receipt = {
+        "beast_object_type": "live_commons_displacement_harness_receipt",
+        "space_id": "space_a",
+        "observed": {"repeated_matches": 3, "cloud_api_calls_avoided": 3},
+    }
+    (tmp_path / "live_commons_displacement_harness_latest.json").write_text(json.dumps(receipt))
+
+    catalog = CommonsScaleEconomics(FakeRegistry(), FakeEconomy(), result_root=tmp_path).marketplace_catalog()
+
+    assert catalog["mode"] == "governed_preview"
+    assert catalog["listing_count"] == 1
+    assert catalog["public_launch_ready"] is False
+    assert catalog["financial_transactions_enabled"] is False
+    listing = catalog["listings"][0]
+    assert listing["space_id"] == "space_a"
+    assert listing["primary_action"] == "import_as_quarantined_hypothesis"
+    assert listing["scenario_credit"]["transferable"] is False
+    assert listing["scenario_credit"]["redeemable"] is False

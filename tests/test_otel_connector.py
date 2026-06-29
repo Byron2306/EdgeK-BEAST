@@ -2,7 +2,7 @@ import json
 
 import httpx
 
-from app.kernel.otel_connector import OTLPConfig, OpenTelemetryConnector
+from app.kernel.networking.otel_connector import OTLPConfig, OpenTelemetryConnector
 
 
 def test_otel_connector_compiles_all_beast_evidence_as_spans():

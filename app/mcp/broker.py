@@ -19,7 +19,8 @@ from typing import Any, Dict, Optional, Tuple
 
 import httpx
 
-from app.kernel.tool_integrations import ToolCallInterceptor
+from app.kernel.registry.tool_integrations import ToolCallInterceptor
+from app.kernel.compute.crystal_tool_boundary import CrystalToolBoundary
 
 EXECUTABLE_SERVER_CLASSES = {
     "github",
@@ -78,6 +79,7 @@ class MCPBroker:
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.workspace_graph = workspace_graph
+        self.crystal_tool_boundary = CrystalToolBoundary()
         self._init_db()
 
     def _connect(self):
@@ -790,6 +792,7 @@ class MCPBroker:
                 response.get("returncode"),
                 json.dumps(self._redact_request(request), sort_keys=True),
             ))
+        response.setdefault("edgek_crystal_tool_boundary", self.crystal_tool_boundary.receipt(request, result, response))
         return response
 
     def _approval_count(self, status: str) -> int:

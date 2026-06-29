@@ -15,11 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.compute_governor import ComputeGovernor
-from app.kernel.compute_ledger import ComputeLedger
-from app.kernel.inference_interceptor import InferenceComputeInterceptor
-from app.kernel.perceive import EdgeKIR
-from app.kernel.secret_vault import SecretVault
+from app.kernel.governance.compute_governor import ComputeGovernor
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.security.secret_vault import SecretVault
 from benchmarks.beast_systems_benchmark import (
     LIVE_PROVIDER_PRESETS,
     call_openai_compatible_agent,

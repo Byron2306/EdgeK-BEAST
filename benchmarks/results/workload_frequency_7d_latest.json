@@ -1,0 +1,27 @@
+{
+  "beast_object_type": "workload_frequency_window_receipt",
+  "claim_boundary": "This receipt normalizes current evidence into a window; it is production-grade only after real traffic fills the window.",
+  "frequency": {
+    "avoided_cloud_calls_per_day": 4.2857,
+    "local_matches_per_day": 11.1429,
+    "receipt_sources_per_day": 1.4286
+  },
+  "gates": {
+    "has_false_reuse_measurement": true,
+    "has_traffic_window": true
+  },
+  "generated_at": "2026-06-28T17:30:04.061082+00:00",
+  "lab_status": "satisfied",
+  "observed": {
+    "cloud_api_calls_avoided_from_live_receipts": 30,
+    "pilot_receipt": "benchmarks/results/workload_frequency_pilot_latest.json",
+    "receipt_count": 10,
+    "semantic_compute_reuse_receipts": 48,
+    "spaces_with_live_matches": 10,
+    "total_local_matches_or_reuse_receipts": 78
+  },
+  "receipt_hash": "sha256:43f19587097053c052683c8a8bfff34f5bfe9fce9b9066669f373f8f877e47ba",
+  "source_gate_status": "satisfied",
+  "version": "1.0",
+  "window_days": 7
+}

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -29,6 +30,10 @@ logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent
 BEAST = Path(__file__).resolve()
 DEFAULT_GATEWAY = "http://127.0.0.1:8000"
+
+with contextlib.redirect_stdout(sys.stderr):
+    from app.kernel.compute.factory import ServiceFactory
+    ServiceFactory.initialize()
 
 COMMANDS = [
     "doctor",
@@ -272,7 +277,7 @@ def start_mcp_http_daemon(host: str, port: int) -> Dict[str, Any]:
 
 
 def start_litellm_daemon(port: int = 4000) -> Dict[str, Any]:
-    from app.kernel.reason import reasoner
+    from app.kernel.governance.reason import reasoner
     from app.kernel.deployment import DeploymentManager
 
     manager = DeploymentManager(reasoner.policies)
@@ -293,7 +298,7 @@ def start_litellm_daemon(port: int = 4000) -> Dict[str, Any]:
 
 
 def ensure_nginx(listen_port: int = 8080, apply: bool = True) -> Dict[str, Any]:
-    from app.kernel.reason import reasoner
+    from app.kernel.governance.reason import reasoner
     from app.kernel.deployment import DeploymentManager
 
     manager = DeploymentManager(reasoner.policies)
@@ -1030,7 +1035,7 @@ def command_promote(args: argparse.Namespace) -> Dict[str, Any]:
 
 
 def command_prec(args: argparse.Namespace) -> Dict[str, Any]:
-    from app.kernel.prec_lifecycle import PRECLifecycleStore
+    from app.kernel.storage.prec_lifecycle import PRECLifecycleStore
 
     store = PRECLifecycleStore()
     action = args.prec_action
@@ -1334,7 +1339,7 @@ def command_reinstall_surfaces(args: argparse.Namespace) -> Dict[str, Any]:
         client_install["cline_compatible"] = cline_results
     results["client_mcp"] = client_install
 
-    from app.kernel.plugin_marketplace import PluginMarketplace
+    from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 
     marketplace = PluginMarketplace(str(workspace / ".beast" / "plugins"))
     plugin_results = []

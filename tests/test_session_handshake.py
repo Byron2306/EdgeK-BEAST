@@ -1,4 +1,4 @@
-from app.kernel.session_handshake import SessionHandshakeBuilder
+from app.kernel.execution.session_handshake import SessionHandshakeBuilder
 
 
 def test_session_handshake_makes_agent_beast_aware():

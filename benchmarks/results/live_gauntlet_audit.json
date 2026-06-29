@@ -1,0 +1,2348 @@
+{
+  "amplification_pack": {
+    "crystal_count": 4,
+    "pack_hash": "sha256:a1526747ea16ae5edafd528d492e30eed36e453263a1026b89f86d075ce44d37",
+    "tokens_displaced_estimate": 3633
+  },
+  "beast_object_type": "forge_commons_grind_gauntlet_receipt",
+  "claim_boundary": "Forge grind stages candidates and failure oracles; Commons adoption still requires privacy scan, replay, approval, and receipts.",
+  "commons_candidate_feed": {
+    "beast_object_type": "forge_commons_candidate_feed",
+    "candidate_count": 42,
+    "candidates": [
+      {
+        "already_registered": false,
+        "artifact_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+        "candidate_kind": "fused_inference_crystal",
+        "name": "commons_space_registration_operator",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa",
+        "recommended_next_step": "register_fused_crystal_as_compound_compute_space",
+        "registration_score": 20,
+        "signals": [
+          "sealed_fusion",
+          "crystals",
+          "meta_tools",
+          "skills",
+          "swarm_recipes"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+        "candidate_kind": "forge_crystal",
+        "name": "dependency_manifest_triage",
+        "path": "forge://prod-validator-01/crystal/forge_crystal_c2ab56c13dd049bb3ad8",
+        "recommended_next_step": "privacy_scrub_then_register_crystal_space",
+        "registration_score": 12,
+        "signals": [
+          "model_agnostic_contract",
+          "verifier",
+          "receipts",
+          "tokens_displaced_estimate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_crystal_5bdccad998a7b7f409e5",
+        "candidate_kind": "forge_crystal",
+        "name": "input_validation_hardening",
+        "path": "forge://prod-validator-01/crystal/forge_crystal_5bdccad998a7b7f409e5",
+        "recommended_next_step": "privacy_scrub_then_register_crystal_space",
+        "registration_score": 12,
+        "signals": [
+          "model_agnostic_contract",
+          "verifier",
+          "receipts",
+          "tokens_displaced_estimate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_crystal_3c04eab2d6ae0d94758d",
+        "candidate_kind": "forge_crystal",
+        "name": "secret_redaction_guard",
+        "path": "forge://prod-validator-01/crystal/forge_crystal_3c04eab2d6ae0d94758d",
+        "recommended_next_step": "privacy_scrub_then_register_crystal_space",
+        "registration_score": 12,
+        "signals": [
+          "model_agnostic_contract",
+          "verifier",
+          "receipts",
+          "tokens_displaced_estimate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+        "candidate_kind": "forge_crystal",
+        "name": "secure_code_review",
+        "path": "forge://prod-validator-01/crystal/forge_crystal_5b8c86f6cbe9fec3cd59",
+        "recommended_next_step": "privacy_scrub_then_register_crystal_space",
+        "registration_score": 12,
+        "signals": [
+          "model_agnostic_contract",
+          "verifier",
+          "receipts",
+          "tokens_displaced_estimate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_commons_reuse_boundary",
+        "candidate_kind": "forge_candidate_proposal",
+        "name": "forge_commons_reuse_boundary",
+        "path": "forge://prod-validator-01/proposal/forge_commons_reuse_boundary",
+        "recommended_next_step": "package_forge_proposal_as_quarantined_space",
+        "registration_score": 8,
+        "signals": [
+          "shadow_runs",
+          "rollback_checks",
+          "behavior_preservation",
+          "impact_fingerprint"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_crystallized_compute_reuse"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_09933290e4d7560a06ba",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "artifact_hash_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_09933290e4d7560a06ba",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_19db0937666d4f9cc8bd",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "artifact_hash_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_19db0937666d4f9cc8bd",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_f6d5ee523c0c62411ce2",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "artifact_hash_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_f6d5ee523c0c62411ce2",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_f9a4a39708d263cd5c3a",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "artifact_hash_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_f9a4a39708d263cd5c3a",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_cd4f27fd7943000a3fb8",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "artifact_hash_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_cd4f27fd7943000a3fb8",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_d6f7eb145566bf1ba779",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "component_ablation",
+        "path": "forge://prod-validator-01/failure/forge_failcase_d6f7eb145566bf1ba779",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_02e413d07c6fac7ba097",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "component_ablation",
+        "path": "forge://prod-validator-01/failure/forge_failcase_02e413d07c6fac7ba097",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_a301707769dedd093857",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "component_ablation",
+        "path": "forge://prod-validator-01/failure/forge_failcase_a301707769dedd093857",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_c13780bafded3058d9c2",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "component_ablation",
+        "path": "forge://prod-validator-01/failure/forge_failcase_c13780bafded3058d9c2",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_1dfa54f12de8a394c26f",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "component_ablation",
+        "path": "forge://prod-validator-01/failure/forge_failcase_1dfa54f12de8a394c26f",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_3693694b535f77b0795f",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "missing_verifier_artifact",
+        "path": "forge://prod-validator-01/failure/forge_failcase_3693694b535f77b0795f",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_5ad8b6795bdb675121b8",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "missing_verifier_artifact",
+        "path": "forge://prod-validator-01/failure/forge_failcase_5ad8b6795bdb675121b8",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_cc909eb74888cbf306bb",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "missing_verifier_artifact",
+        "path": "forge://prod-validator-01/failure/forge_failcase_cc909eb74888cbf306bb",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_e4562ec345692489a3a1",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "missing_verifier_artifact",
+        "path": "forge://prod-validator-01/failure/forge_failcase_e4562ec345692489a3a1",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_82131fd2b3567ff10df1",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "missing_verifier_artifact",
+        "path": "forge://prod-validator-01/failure/forge_failcase_82131fd2b3567ff10df1",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_cf21a45f48ed65e03205",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "privacy_forbidden_pattern",
+        "path": "forge://prod-validator-01/failure/forge_failcase_cf21a45f48ed65e03205",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_69e6ad4df360008432ed",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "privacy_forbidden_pattern",
+        "path": "forge://prod-validator-01/failure/forge_failcase_69e6ad4df360008432ed",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_7a1a0a9fafcd1fe0be4f",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "privacy_forbidden_pattern",
+        "path": "forge://prod-validator-01/failure/forge_failcase_7a1a0a9fafcd1fe0be4f",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_85b767df58caf708dcd1",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "privacy_forbidden_pattern",
+        "path": "forge://prod-validator-01/failure/forge_failcase_85b767df58caf708dcd1",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_0ae691066d640c59dc02",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "privacy_forbidden_pattern",
+        "path": "forge://prod-validator-01/failure/forge_failcase_0ae691066d640c59dc02",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_8ee40bfeffca44f9636a",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "signed_envelope_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_8ee40bfeffca44f9636a",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_2ba4b56a1896bdae80a8",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "signed_envelope_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_2ba4b56a1896bdae80a8",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_be22d7fbb631aa8513eb",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "signed_envelope_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_be22d7fbb631aa8513eb",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_cb1463a39d80afcec948",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "signed_envelope_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_cb1463a39d80afcec948",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_95acc492aebcd1a52537",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "signed_envelope_tamper",
+        "path": "forge://prod-validator-01/failure/forge_failcase_95acc492aebcd1a52537",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_fb53cc3e122cf332d9a3",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "stale_fingerprint",
+        "path": "forge://prod-validator-01/failure/forge_failcase_fb53cc3e122cf332d9a3",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "defensive_review"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_22ee87279321110c08f0",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "stale_fingerprint",
+        "path": "forge://prod-validator-01/failure/forge_failcase_22ee87279321110c08f0",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "hardening"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_f0b293a27af7301715bf",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "stale_fingerprint",
+        "path": "forge://prod-validator-01/failure/forge_failcase_f0b293a27af7301715bf",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "data_protection"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_c03cd359d0f9506d65d4",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "stale_fingerprint",
+        "path": "forge://prod-validator-01/failure/forge_failcase_c03cd359d0f9506d65d4",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "supply_chain_defense"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "forge_failcase_7cf7fb13bfcd19dc8954",
+        "candidate_kind": "mutation_ablation_case",
+        "name": "stale_fingerprint",
+        "path": "forge://prod-validator-01/failure/forge_failcase_7cf7fb13bfcd19dc8954",
+        "recommended_next_step": "run_failure_oracle_before_space_promotion",
+        "registration_score": 7,
+        "signals": [
+          "expected_failure_oracle",
+          "negative_evidence",
+          "promotion_gate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "commons_privacy_scrubber",
+        "candidate_kind": "meta_tool",
+        "name": "commons_privacy_scrubber",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/meta_tools/commons_privacy_scrubber",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "meta_tools",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "live_replay_verifier",
+        "candidate_kind": "skill",
+        "name": "live_replay_verifier",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/skills/live_replay_verifier",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "skills",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "meta_tool_commons_ranker",
+        "candidate_kind": "meta_tool",
+        "name": "meta_tool_commons_ranker",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/meta_tools/meta_tool_commons_ranker",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "meta_tools",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "openclaw_local_evidence_replay",
+        "candidate_kind": "swarm_recipe",
+        "name": "openclaw_local_evidence_replay",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/swarm_recipes/openclaw_local_evidence_replay",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "swarm_recipes",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "space_manifest_packager",
+        "candidate_kind": "skill",
+        "name": "space_manifest_packager",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/skills/space_manifest_packager",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "skills",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      },
+      {
+        "already_registered": false,
+        "artifact_id": "zeroclaw_no_exec_plan",
+        "candidate_kind": "swarm_recipe",
+        "name": "zeroclaw_no_exec_plan",
+        "path": "forge://prod-validator-01/fusion/fused_crystal_b53eb4895f25ce9f8aaa/swarm_recipes/zeroclaw_no_exec_plan",
+        "recommended_next_step": "stage_component_as_meta_tool_or_skill_space_candidate",
+        "registration_score": 6,
+        "signals": [
+          "component_of_fused_crystal",
+          "swarm_recipes",
+          "reuse_candidate"
+        ],
+        "source": "compute_forge",
+        "task_class": "commons_space_registration"
+      }
+    ],
+    "claim_boundary": "Forge output is registration input, not adopted Commons authority.",
+    "created_at": "2026-06-23T15:35:29.863030+00:00",
+    "mutation_ablation_backlog": {
+      "beast_object_type": "forge_mutation_ablation_backlog",
+      "case_count": 30,
+      "cases": [
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_09933290e4d7560a06ba",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "import_rejected",
+          "mutation_type": "artifact_hash_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "content_hash_validation_fails",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_8ee40bfeffca44f9636a",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "signature_verification_fails",
+          "mutation_type": "signed_envelope_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "federated_envelope_rejected",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_3693694b535f77b0795f",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "reproduction_fails",
+          "mutation_type": "missing_verifier_artifact",
+          "node_id": "prod-validator-01",
+          "oracle": "reputation_unchanged_or_penalized",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_fb53cc3e122cf332d9a3",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "remains_quarantined",
+          "mutation_type": "stale_fingerprint",
+          "node_id": "prod-validator-01",
+          "oracle": "local_fingerprint_mismatch_blocks_adoption",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_d6f7eb145566bf1ba779",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "quality_or_reuse_score_drops",
+          "mutation_type": "component_ablation",
+          "node_id": "prod-validator-01",
+          "oracle": "ablation_delta_recorded_before_promotion",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_cf21a45f48ed65e03205",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "privacy_scan_fails",
+          "mutation_type": "privacy_forbidden_pattern",
+          "node_id": "prod-validator-01",
+          "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+            "target_type": "forge_crystal",
+            "task_class": "defensive_review"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_19db0937666d4f9cc8bd",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "import_rejected",
+          "mutation_type": "artifact_hash_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "content_hash_validation_fails",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_2ba4b56a1896bdae80a8",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "signature_verification_fails",
+          "mutation_type": "signed_envelope_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "federated_envelope_rejected",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_5ad8b6795bdb675121b8",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "reproduction_fails",
+          "mutation_type": "missing_verifier_artifact",
+          "node_id": "prod-validator-01",
+          "oracle": "reputation_unchanged_or_penalized",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_22ee87279321110c08f0",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "remains_quarantined",
+          "mutation_type": "stale_fingerprint",
+          "node_id": "prod-validator-01",
+          "oracle": "local_fingerprint_mismatch_blocks_adoption",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_02e413d07c6fac7ba097",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "quality_or_reuse_score_drops",
+          "mutation_type": "component_ablation",
+          "node_id": "prod-validator-01",
+          "oracle": "ablation_delta_recorded_before_promotion",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_69e6ad4df360008432ed",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "privacy_scan_fails",
+          "mutation_type": "privacy_forbidden_pattern",
+          "node_id": "prod-validator-01",
+          "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+            "target_type": "forge_crystal",
+            "task_class": "hardening"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_f6d5ee523c0c62411ce2",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "import_rejected",
+          "mutation_type": "artifact_hash_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "content_hash_validation_fails",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_be22d7fbb631aa8513eb",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "signature_verification_fails",
+          "mutation_type": "signed_envelope_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "federated_envelope_rejected",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_cc909eb74888cbf306bb",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "reproduction_fails",
+          "mutation_type": "missing_verifier_artifact",
+          "node_id": "prod-validator-01",
+          "oracle": "reputation_unchanged_or_penalized",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_f0b293a27af7301715bf",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "remains_quarantined",
+          "mutation_type": "stale_fingerprint",
+          "node_id": "prod-validator-01",
+          "oracle": "local_fingerprint_mismatch_blocks_adoption",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_a301707769dedd093857",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "quality_or_reuse_score_drops",
+          "mutation_type": "component_ablation",
+          "node_id": "prod-validator-01",
+          "oracle": "ablation_delta_recorded_before_promotion",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_7a1a0a9fafcd1fe0be4f",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "privacy_scan_fails",
+          "mutation_type": "privacy_forbidden_pattern",
+          "node_id": "prod-validator-01",
+          "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+            "target_type": "forge_crystal",
+            "task_class": "data_protection"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_f9a4a39708d263cd5c3a",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "import_rejected",
+          "mutation_type": "artifact_hash_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "content_hash_validation_fails",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_cb1463a39d80afcec948",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "signature_verification_fails",
+          "mutation_type": "signed_envelope_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "federated_envelope_rejected",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_e4562ec345692489a3a1",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "reproduction_fails",
+          "mutation_type": "missing_verifier_artifact",
+          "node_id": "prod-validator-01",
+          "oracle": "reputation_unchanged_or_penalized",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_c03cd359d0f9506d65d4",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "remains_quarantined",
+          "mutation_type": "stale_fingerprint",
+          "node_id": "prod-validator-01",
+          "oracle": "local_fingerprint_mismatch_blocks_adoption",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_c13780bafded3058d9c2",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "quality_or_reuse_score_drops",
+          "mutation_type": "component_ablation",
+          "node_id": "prod-validator-01",
+          "oracle": "ablation_delta_recorded_before_promotion",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_85b767df58caf708dcd1",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "privacy_scan_fails",
+          "mutation_type": "privacy_forbidden_pattern",
+          "node_id": "prod-validator-01",
+          "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+            "target_type": "forge_crystal",
+            "task_class": "supply_chain_defense"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_cd4f27fd7943000a3fb8",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "import_rejected",
+          "mutation_type": "artifact_hash_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "content_hash_validation_fails",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_95acc492aebcd1a52537",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "signature_verification_fails",
+          "mutation_type": "signed_envelope_tamper",
+          "node_id": "prod-validator-01",
+          "oracle": "federated_envelope_rejected",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_82131fd2b3567ff10df1",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "reproduction_fails",
+          "mutation_type": "missing_verifier_artifact",
+          "node_id": "prod-validator-01",
+          "oracle": "reputation_unchanged_or_penalized",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_7cf7fb13bfcd19dc8954",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "remains_quarantined",
+          "mutation_type": "stale_fingerprint",
+          "node_id": "prod-validator-01",
+          "oracle": "local_fingerprint_mismatch_blocks_adoption",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_1dfa54f12de8a394c26f",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "quality_or_reuse_score_drops",
+          "mutation_type": "component_ablation",
+          "node_id": "prod-validator-01",
+          "oracle": "ablation_delta_recorded_before_promotion",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        },
+        {
+          "adoption_allowed": false,
+          "beast_object_type": "forge_mutation_ablation_case",
+          "case_id": "forge_failcase_0ae691066d640c59dc02",
+          "created_at": "2026-06-23T15:35:29.788389+00:00",
+          "expected_outcome": "privacy_scan_fails",
+          "mutation_type": "privacy_forbidden_pattern",
+          "node_id": "prod-validator-01",
+          "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+          "space_id": "",
+          "status": "planned",
+          "target": {
+            "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+            "target_type": "fused_inference_crystal",
+            "task_class": "commons_space_registration"
+          },
+          "version": "1.0"
+        }
+      ],
+      "created_at": "2026-06-23T15:35:29.862974+00:00",
+      "node_id": "prod-validator-01",
+      "promotion_rule": "A candidate should not promote until relevant mutation and ablation oracles are observed or explicitly waived.",
+      "space_id": "",
+      "version": "1.0"
+    },
+    "node_id": "prod-validator-01",
+    "version": "1.0"
+  },
+  "comparison": {
+    "beast_object_type": "tiny_llama_crystal_amplification_comparison",
+    "beats_big_raw_on_bounded_score": false,
+    "big_model_label": "frontier_reference",
+    "bounded_domain": "cyber_defense_hardening",
+    "claim_boundary": "This compares a tiny model plus verified defensive crystals as a system. It does not claim the base model acquired frontier general intelligence.",
+    "created_at": "2026-06-23T15:35:29.862328+00:00",
+    "gap_to_big_raw": 0.129,
+    "node_id": "prod-validator-01",
+    "rows": [
+      {
+        "crystal_hits": 0,
+        "lane": "tiny_raw",
+        "model": "qwen2.5:0.5b",
+        "score": 0.34
+      },
+      {
+        "crystal_hits": 0,
+        "lane": "tiny_openclaw_zeroclaw",
+        "model": "qwen2.5:0.5b",
+        "score": 0.5
+      },
+      {
+        "crystal_hits": 4,
+        "lane": "tiny_crystal_amplified",
+        "model": "qwen2.5:0.5b",
+        "score": 0.731
+      },
+      {
+        "crystal_hits": 0,
+        "lane": "big_model_raw",
+        "model": "frontier_reference",
+        "score": 0.86
+      },
+      {
+        "crystal_hits": 4,
+        "lane": "big_model_beast",
+        "model": "frontier_reference",
+        "score": 0.93
+      }
+    ],
+    "safety_boundary": "No offensive cyber automation or exploit instructions are generated.",
+    "target_model": "qwen2.5:0.5b",
+    "tiny_gain_over_raw": 0.391,
+    "version": "1.0"
+  },
+  "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+  "fused_crystal": {
+    "beast_object_type": "fused_inference_crystal",
+    "components": {
+      "crystals": [
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "secure_code_review",
+          "confidence": 0.82,
+          "created_at": "2026-06-23T15:35:29.745129+00:00",
+          "crystal_chain_block_hash": "sha256:da761ef1bcd6bfbb2fb91b249376aba0f5a6f7f353b2691a452be0f582a6bc66",
+          "crystal_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Find risky patterns and produce safe remediation steps.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "prod-validator-01",
+            "receipt_hash": "sha256:efec5bb326c51de087aea36ca92119ef62ce17f428ac25ca58801dbae59f4097",
+            "target_model_label": "qwen2.5:0.5b",
+            "teacher_model_label": "local_beast_reference"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "defensive_review",
+          "tokens_displaced_estimate": 699,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "input_validation_hardening",
+          "confidence": 0.84,
+          "created_at": "2026-06-23T15:35:29.745129+00:00",
+          "crystal_chain_block_hash": "sha256:7158874ccaecbbfec6189f8596caeab5420c492b7c876cb57231d01777ae2ed4",
+          "crystal_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Map untrusted input to validation and parser guards.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "prod-validator-01",
+            "receipt_hash": "sha256:e04d8bef861fa669d283b7ad9173ad1b4c804172ef3988e19f0cd78279109e10",
+            "target_model_label": "qwen2.5:0.5b",
+            "teacher_model_label": "local_beast_reference"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "hardening",
+          "tokens_displaced_estimate": 842,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "secret_redaction_guard",
+          "confidence": 0.86,
+          "created_at": "2026-06-23T15:35:29.745129+00:00",
+          "crystal_chain_block_hash": "sha256:9f172772fe31b1a56af3b11f3e8809bde00560422162b3d9c785aa5fd1155bc3",
+          "crystal_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "prod-validator-01",
+            "receipt_hash": "sha256:04673e01cbdeff1f110ccf2612422921dbd591022fd8098513309d0b950fb4ff",
+            "target_model_label": "qwen2.5:0.5b",
+            "teacher_model_label": "local_beast_reference"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "data_protection",
+          "tokens_displaced_estimate": 961,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        },
+        {
+          "beast_object_type": "forge_crystal",
+          "capability": "dependency_manifest_triage",
+          "confidence": 0.88,
+          "created_at": "2026-06-23T15:35:29.745129+00:00",
+          "crystal_chain_block_hash": "sha256:459367fb82a75a3d0bcb032a33e4be1a08e333cd034195ae296fc46bb87148a6",
+          "crystal_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "domain": "cyber_defense",
+          "model_agnostic_contract": {
+            "crystal_role": "Rank dependency review targets without exploit instructions.",
+            "input_schema": {
+              "allowed_context": "local_redacted_evidence",
+              "objective": "string",
+              "repo_fingerprint": "sha256"
+            },
+            "orchestrators": [
+              "zeroclaw",
+              "openclaw"
+            ],
+            "output_schema": {
+              "required_gates": "list[approval_or_test_gate]",
+              "risk_findings": "list[bounded_finding]",
+              "safe_remediations": "list[testable_step]"
+            },
+            "tiny_model_role": "router_and_summarizer"
+          },
+          "receipts": {
+            "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+            "node_id": "prod-validator-01",
+            "receipt_hash": "sha256:fcbf2f86a27b06ecb7116e01b60c05d312a69cd2828366b04cb8fe28ffb03e35",
+            "target_model_label": "qwen2.5:0.5b",
+            "teacher_model_label": "local_beast_reference"
+          },
+          "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+          "task_class": "supply_chain_defense",
+          "tokens_displaced_estimate": 1131,
+          "verifier": {
+            "behavior_preserved": true,
+            "forbidden_content_scan": "passed",
+            "hidden_clean": true,
+            "rollback_safe": true,
+            "verification_mode": "local_deterministic_shadow"
+          },
+          "version": "1.0"
+        }
+      ],
+      "meta_tools": [
+        {
+          "name": "meta_tool_commons_ranker"
+        },
+        {
+          "name": "commons_privacy_scrubber"
+        }
+      ],
+      "skills": [
+        {
+          "name": "space_manifest_packager"
+        },
+        {
+          "name": "live_replay_verifier"
+        }
+      ],
+      "swarm_recipes": [
+        {
+          "name": "zeroclaw_no_exec_plan"
+        },
+        {
+          "name": "openclaw_local_evidence_replay"
+        }
+      ]
+    },
+    "created_at": "2026-06-23T15:35:29.788389+00:00",
+    "crystal_chain_block_hash": "sha256:463b7b19c1b505b6bf4c8c74c09bc3c0b3b6f0b233139ca05e98fbf0959b96f1",
+    "economics": {
+      "crystal_credit_units": 38,
+      "currency_boundary": "internal verified compute credit; not a public monetary instrument",
+      "scarcity_basis": "hash-linked verification receipts, not proof-of-waste mining",
+      "tokens_displaced_estimate": 6333
+    },
+    "fusion_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+    "name": "commons_space_registration_operator",
+    "orchestration_contract": {
+      "claim": "compound crystal inference, not base-model parameter change",
+      "compute_governor": "reuse only with matching fingerprints and verification gates",
+      "meta_tool_commons": "rank and bind tools/skills/crystals",
+      "openclaw": "inspect local evidence and prepare safe actions",
+      "target_model": "qwen2.5:0.5b",
+      "tiny_model_role": "intent_router_policy_summarizer",
+      "zeroclaw": "decompose plan without tool execution"
+    },
+    "seal": {
+      "beast_object_type": "sealed_crystal_compute_credit",
+      "created_at": "2026-06-23T15:35:29.788467+00:00",
+      "crypto_profile": {
+        "fallback": false,
+        "kem": "ML-KEM-768",
+        "provider": "liboqs",
+        "signature": "ML-DSA-65"
+      },
+      "encapsulated_key_hash": "sha256:cd085e76350fc645a80e1bfb8c8582ed06934fd3bc147802529512225fd1f54c",
+      "kem_ciphertext_b64": "p0o3+V4kLbNJvpizHhSLTiUuDjv0XoxRiM0J86jkMe1EmtQEAXeg8khKc5V/ye5kVY+7kjsopOT45npCk+unTgAOPQJ/RIeiYymTdfrGK/ZYTRUIJn0xCa3aFs5URx+Cbsm4aoB2crLcxwhVW40C26V/POGjw+VXWtrMu2d2MF0QdAj/v3DIyA/6i0ceXKocF92KHlNVxrXD4E/ZQLh4OcCvje4c1760MyYQmEv+7I7et17NWW3CdZvJ4n2PKTi5HGgXdTnbMwjPbC2E1LtpesO3i/5juUtcTzC2y5zUM1uy5OqQtvRkUPI5FBeZ2+ih1K036zgwjcqdEoNw8jyHdR2ZuWKFX7nniTxrillruRE8DPkc/D/Sw13RSkKCE1UTz4ZYOEtscqrfd9YXfWk5QVFLGaPni2AF1ivM1tOB+rQ+KjXLeFeee1g1giAMhX7edV/KJiRiA4gLXJ2aWljNTUKhLYRxhOY7pgatxxzGZDorWVdHG46hb1rOjuJDodVzTE204cLIzW88qW1FsReLZuKs/BXIZC5W4XM3pDuQl8oPyFkEAMiSAFqTpAJSOdyfvlRPQLcQknm3MlNnS6W6xRGPGPR/yHEy8rLeOnlaPH3NPrPNedjopUFxAFZ6VrdYsNa1FsATZWUHynIGmlbu5lBujkzCMdxRHnaI5TQozLrunHOKEqVQVGlChr0sOD65Ta+DgGa5MQFp4GoaOvB2RQsvJ05HZc4qKE3yg+WxOE7N5JzNVa46/9KnrUgGzgYuR7I0oi4G0Y7QxzYXpiCcF/f3ouHwgZS4wYr+SPVw62JuIXrU0/p5GE3CaYnFdb3yYJ6NINK9jpZeloZfM9QXcO6HOxSwcLapsbR/sXp4QzZVY1pN8AkR+dwzG5XCr6rmDMwU95/XFTukxtnoMqMb4ZxD6UQNKGNF5Bhq42i8UzzRGUGB78REzZf4vZLG1xaAQWZoVzvVmBpNJb+qgAq1T4r89l0FRw6W6t95GkkzwbQBoQJ5T/KKhzjtK5Yd5cM6vmiwD/h2Xx/7smI39acON3a+qHGqUnuFw/7BM3dWUlGrjsuUAofvNlNRbIE0uHUOQ8N2kmCbboQbZpHCiimRMINVvYf01a2jvAriJdAJNm3UGVZ3pgwrSVC0yYnZNBrDZStLt4Hq2WoeHxvrGuoGkf/JgCoxQLoE9rF5eF7q2V92VZTq/gqpdF2D7bZbjaWY/l0Z31Wxje4Xz8gD8u1K2aow8dkncwhL4ENYU6s216V2J7b60iqblRZYRM+m/8s5XEE4PqPPOstpADmZE6dfqZLGpFMEPP2cP3Sv5x/T9oqSrwrrToiIn9QzkGYhmd6Q3Oq57w1uFTSoNGdyx8+zvk9Lnrvf5sNXQYS/9qLTnyoo77FoZfllX9XYSk5CwHTH7LQQSeZ2IDv/0w3qD0FDAZykhInJ5mgXRPnVtxl1+W8=",
+      "kem_public_key_hash": "sha256:4f9dbda38ebe4f5895a285b9235c3c5c2794eb9cadb3b92ad8114cff94b162a2",
+      "kem_status": "content_key_encapsulated",
+      "local_integrity_signature": "hmac-sha256:ef23115bf88185b69dbd6ab07ac7c9fe308afdf36c8e8f82c73162a07a9ba298",
+      "note": "Private recipient key is intentionally not stored in this public receipt.",
+      "payload_hash": "sha256:c46b6090a369f898f3a275f17d429e9e246bc22db2858e33b1bf1598b23c3d68",
+      "purpose": "fused_inference_crystal_credit",
+      "signature": "ml-dsa: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",
+      "signature_public_key_b64": "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",
+      "version": "1.0"
+    },
+    "seal_verification": {
+      "beast_object_type": "crystal_seal_verification",
+      "crypto_profile": {
+        "fallback": false,
+        "kem": "ML-KEM-768",
+        "provider": "liboqs",
+        "signature": "ML-DSA-65"
+      },
+      "hash_ok": true,
+      "signature_ok": true,
+      "verified": true,
+      "version": "1.0"
+    },
+    "task_class": "commons_space_registration",
+    "version": "1.0"
+  },
+  "mining": {
+    "crystal_count": 4,
+    "crystals": [
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secure_code_review",
+        "confidence": 0.82,
+        "created_at": "2026-06-23T15:35:29.745129+00:00",
+        "crystal_chain_block_hash": "sha256:da761ef1bcd6bfbb2fb91b249376aba0f5a6f7f353b2691a452be0f582a6bc66",
+        "crystal_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Find risky patterns and produce safe remediation steps.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "prod-validator-01",
+          "receipt_hash": "sha256:efec5bb326c51de087aea36ca92119ef62ce17f428ac25ca58801dbae59f4097",
+          "target_model_label": "qwen2.5:0.5b",
+          "teacher_model_label": "local_beast_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "defensive_review",
+        "tokens_displaced_estimate": 699,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "input_validation_hardening",
+        "confidence": 0.84,
+        "created_at": "2026-06-23T15:35:29.745129+00:00",
+        "crystal_chain_block_hash": "sha256:7158874ccaecbbfec6189f8596caeab5420c492b7c876cb57231d01777ae2ed4",
+        "crystal_id": "forge_crystal_5bdccad998a7b7f409e5",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Map untrusted input to validation and parser guards.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "prod-validator-01",
+          "receipt_hash": "sha256:e04d8bef861fa669d283b7ad9173ad1b4c804172ef3988e19f0cd78279109e10",
+          "target_model_label": "qwen2.5:0.5b",
+          "teacher_model_label": "local_beast_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "hardening",
+        "tokens_displaced_estimate": 842,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "secret_redaction_guard",
+        "confidence": 0.86,
+        "created_at": "2026-06-23T15:35:29.745129+00:00",
+        "crystal_chain_block_hash": "sha256:9f172772fe31b1a56af3b11f3e8809bde00560422162b3d9c785aa5fd1155bc3",
+        "crystal_id": "forge_crystal_3c04eab2d6ae0d94758d",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Detect secret-bearing surfaces and require redaction.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "prod-validator-01",
+          "receipt_hash": "sha256:04673e01cbdeff1f110ccf2612422921dbd591022fd8098513309d0b950fb4ff",
+          "target_model_label": "qwen2.5:0.5b",
+          "teacher_model_label": "local_beast_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "data_protection",
+        "tokens_displaced_estimate": 961,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      },
+      {
+        "beast_object_type": "forge_crystal",
+        "capability": "dependency_manifest_triage",
+        "confidence": 0.88,
+        "created_at": "2026-06-23T15:35:29.745129+00:00",
+        "crystal_chain_block_hash": "sha256:459367fb82a75a3d0bcb032a33e4be1a08e333cd034195ae296fc46bb87148a6",
+        "crystal_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+        "domain": "cyber_defense",
+        "model_agnostic_contract": {
+          "crystal_role": "Rank dependency review targets without exploit instructions.",
+          "input_schema": {
+            "allowed_context": "local_redacted_evidence",
+            "objective": "string",
+            "repo_fingerprint": "sha256"
+          },
+          "orchestrators": [
+            "zeroclaw",
+            "openclaw"
+          ],
+          "output_schema": {
+            "required_gates": "list[approval_or_test_gate]",
+            "risk_findings": "list[bounded_finding]",
+            "safe_remediations": "list[testable_step]"
+          },
+          "tiny_model_role": "router_and_summarizer"
+        },
+        "receipts": {
+          "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+          "node_id": "prod-validator-01",
+          "receipt_hash": "sha256:fcbf2f86a27b06ecb7116e01b60c05d312a69cd2828366b04cb8fe28ffb03e35",
+          "target_model_label": "qwen2.5:0.5b",
+          "teacher_model_label": "local_beast_reference"
+        },
+        "safety_boundary": "Defensive analysis only: no exploit payloads, credential theft, persistence, evasion, destructive action, or autonomous external targeting.",
+        "task_class": "supply_chain_defense",
+        "tokens_displaced_estimate": 1131,
+        "verifier": {
+          "behavior_preserved": true,
+          "forbidden_content_scan": "passed",
+          "hidden_clean": true,
+          "rollback_safe": true,
+          "verification_mode": "local_deterministic_shadow"
+        },
+        "version": "1.0"
+      }
+    ]
+  },
+  "mutation_ablation_backlog": {
+    "beast_object_type": "forge_mutation_ablation_backlog",
+    "case_count": 30,
+    "cases": [
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_5dddf1b31e416af1a7b7",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "import_rejected",
+        "mutation_type": "artifact_hash_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "content_hash_validation_fails",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_4d9a5dc735e898ef779e",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "signature_verification_fails",
+        "mutation_type": "signed_envelope_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "federated_envelope_rejected",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_77a6ea2cd091753d850c",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "reproduction_fails",
+        "mutation_type": "missing_verifier_artifact",
+        "node_id": "prod-validator-01",
+        "oracle": "reputation_unchanged_or_penalized",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_26a1ce37c241c07c234d",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "remains_quarantined",
+        "mutation_type": "stale_fingerprint",
+        "node_id": "prod-validator-01",
+        "oracle": "local_fingerprint_mismatch_blocks_adoption",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_675708e471b62c2818b3",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "quality_or_reuse_score_drops",
+        "mutation_type": "component_ablation",
+        "node_id": "prod-validator-01",
+        "oracle": "ablation_delta_recorded_before_promotion",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_d14eb4e60a6c132f4077",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "privacy_scan_fails",
+        "mutation_type": "privacy_forbidden_pattern",
+        "node_id": "prod-validator-01",
+        "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5b8c86f6cbe9fec3cd59",
+          "target_type": "forge_crystal",
+          "task_class": "defensive_review"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_95abe160d54162792325",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "import_rejected",
+        "mutation_type": "artifact_hash_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "content_hash_validation_fails",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_ad732dd137ae94885edb",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "signature_verification_fails",
+        "mutation_type": "signed_envelope_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "federated_envelope_rejected",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_5f16da32e89a46c3b44d",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "reproduction_fails",
+        "mutation_type": "missing_verifier_artifact",
+        "node_id": "prod-validator-01",
+        "oracle": "reputation_unchanged_or_penalized",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_b47419588e7f44bf9b9c",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "remains_quarantined",
+        "mutation_type": "stale_fingerprint",
+        "node_id": "prod-validator-01",
+        "oracle": "local_fingerprint_mismatch_blocks_adoption",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_d2eed4703397d3e9dddc",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "quality_or_reuse_score_drops",
+        "mutation_type": "component_ablation",
+        "node_id": "prod-validator-01",
+        "oracle": "ablation_delta_recorded_before_promotion",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_6a83972b592052b53a4a",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "privacy_scan_fails",
+        "mutation_type": "privacy_forbidden_pattern",
+        "node_id": "prod-validator-01",
+        "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_5bdccad998a7b7f409e5",
+          "target_type": "forge_crystal",
+          "task_class": "hardening"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_8e76f04aeee34d31e70a",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "import_rejected",
+        "mutation_type": "artifact_hash_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "content_hash_validation_fails",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_54231fa1bb4908ffcf02",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "signature_verification_fails",
+        "mutation_type": "signed_envelope_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "federated_envelope_rejected",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_f79bed9207beb1faa147",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "reproduction_fails",
+        "mutation_type": "missing_verifier_artifact",
+        "node_id": "prod-validator-01",
+        "oracle": "reputation_unchanged_or_penalized",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_3f877089870b6ec8033e",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "remains_quarantined",
+        "mutation_type": "stale_fingerprint",
+        "node_id": "prod-validator-01",
+        "oracle": "local_fingerprint_mismatch_blocks_adoption",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_ecb3d503fcdd6d2025a7",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "quality_or_reuse_score_drops",
+        "mutation_type": "component_ablation",
+        "node_id": "prod-validator-01",
+        "oracle": "ablation_delta_recorded_before_promotion",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_113f2ef7216bd3e4f8bc",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "privacy_scan_fails",
+        "mutation_type": "privacy_forbidden_pattern",
+        "node_id": "prod-validator-01",
+        "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_3c04eab2d6ae0d94758d",
+          "target_type": "forge_crystal",
+          "task_class": "data_protection"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_c6e195f36ba553eea0f6",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "import_rejected",
+        "mutation_type": "artifact_hash_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "content_hash_validation_fails",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_6cfd8300f4ee01eef105",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "signature_verification_fails",
+        "mutation_type": "signed_envelope_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "federated_envelope_rejected",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_dc4b03ca2d869b0c8a3d",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "reproduction_fails",
+        "mutation_type": "missing_verifier_artifact",
+        "node_id": "prod-validator-01",
+        "oracle": "reputation_unchanged_or_penalized",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_335fc17ceb9eda8b36ee",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "remains_quarantined",
+        "mutation_type": "stale_fingerprint",
+        "node_id": "prod-validator-01",
+        "oracle": "local_fingerprint_mismatch_blocks_adoption",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_381d25e0d79d1c10cbb2",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "quality_or_reuse_score_drops",
+        "mutation_type": "component_ablation",
+        "node_id": "prod-validator-01",
+        "oracle": "ablation_delta_recorded_before_promotion",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_f11ec0b941a568f8180f",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "privacy_scan_fails",
+        "mutation_type": "privacy_forbidden_pattern",
+        "node_id": "prod-validator-01",
+        "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "forge_crystal_c2ab56c13dd049bb3ad8",
+          "target_type": "forge_crystal",
+          "task_class": "supply_chain_defense"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_ea0f9c32d0895949f186",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "import_rejected",
+        "mutation_type": "artifact_hash_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "content_hash_validation_fails",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_dfb2348858dd9f28b90a",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "signature_verification_fails",
+        "mutation_type": "signed_envelope_tamper",
+        "node_id": "prod-validator-01",
+        "oracle": "federated_envelope_rejected",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_9ab1a37c91ff7a0e59d1",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "reproduction_fails",
+        "mutation_type": "missing_verifier_artifact",
+        "node_id": "prod-validator-01",
+        "oracle": "reputation_unchanged_or_penalized",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_45d8018080adf13ecec6",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "remains_quarantined",
+        "mutation_type": "stale_fingerprint",
+        "node_id": "prod-validator-01",
+        "oracle": "local_fingerprint_mismatch_blocks_adoption",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_b2c1d4d5665fc6d0193f",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "quality_or_reuse_score_drops",
+        "mutation_type": "component_ablation",
+        "node_id": "prod-validator-01",
+        "oracle": "ablation_delta_recorded_before_promotion",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      },
+      {
+        "adoption_allowed": false,
+        "beast_object_type": "forge_mutation_ablation_case",
+        "case_id": "forge_failcase_44a9a230345924a90909",
+        "created_at": "2026-06-23T15:35:29.788389+00:00",
+        "expected_outcome": "privacy_scan_fails",
+        "mutation_type": "privacy_forbidden_pattern",
+        "node_id": "prod-validator-01",
+        "oracle": "private_key_raw_prompt_path_or_fixture_blocked",
+        "space_id": "forge_generated_commons_space_candidate",
+        "status": "planned",
+        "target": {
+          "target_id": "fused_crystal_b53eb4895f25ce9f8aaa",
+          "target_type": "fused_inference_crystal",
+          "task_class": "commons_space_registration"
+        },
+        "version": "1.0"
+      }
+    ],
+    "created_at": "2026-06-23T15:35:29.862680+00:00",
+    "node_id": "prod-validator-01",
+    "promotion_rule": "A candidate should not promote until relevant mutation and ablation oracles are observed or explicitly waived.",
+    "space_id": "forge_generated_commons_space_candidate",
+    "version": "1.0"
+  },
+  "node": {
+    "beast_object_type": "forge_node_profile",
+    "capabilities": [
+      "fingerprint",
+      "local_inference",
+      "secret_scan",
+      "verifier",
+      "handoff_prep"
+    ],
+    "last_activity_at": "2026-06-23T15:35:29.788389+00:00",
+    "metadata": {},
+    "node_id": "prod-validator-01",
+    "node_type": "cpu_ollama",
+    "stale_fingerprints_caught": 0,
+    "total_candidates_produced": 6,
+    "total_handoff_reduction_pct": 0.0,
+    "total_tokens_displaced": 9966,
+    "version": "1.0"
+  },
+  "proposal": {
+    "beast_object_type": "forge_candidate_proposal",
+    "behavior_preserved_count": 3,
+    "candidate_name": "forge_commons_reuse_boundary",
+    "created_at": "2026-06-23T15:35:29.727019+00:00",
+    "crystal_chain_block_hash": "sha256:91a9940c83ae3936142164a0f577d26d570473cfe68f4710e0a8531c1b798a6a",
+    "hidden_test_successes": 3,
+    "impact_fingerprint": {
+      "beast_object_type": "capability_impact_fingerprint",
+      "confidence": 1.0,
+      "dependencies": {},
+      "fingerprint_hash": "sha256:6d2ad75ae1c5e51988b316e80e3a69f1fbe409783b05ad083f7cdb982fa57089",
+      "policy_version": "unknown",
+      "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+      "targets": {},
+      "tests": {},
+      "tool_schema_hashes": [],
+      "version": "1.0"
+    },
+    "node_id": "prod-validator-01",
+    "rollback_successes": 3,
+    "shadow_runs": 3,
+    "task_class": "commons_crystallized_compute_reuse",
+    "transform_type": "deterministic_reuse_boundary",
+    "version": "1.0"
+  },
+  "registry_forge_candidate_count": 196,
+  "snapshot_candidate_count": 42,
+  "snapshot_path": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/data/forge_nodes/prod-validator-01.json",
+  "success": true,
+  "version": "1.0"
+}

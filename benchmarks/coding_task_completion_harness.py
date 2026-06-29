@@ -109,7 +109,7 @@ class BeastApiClient:
 
 
 TEST_PROVIDER_CONTRACTS = '''from app.cli.api import BeastApiClient
-from app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry
+from app.kernel.registry.provider_registry import ProviderAdapterRegistry, ProviderRegistry
 
 
 def test_codex_is_routable():
@@ -210,7 +210,7 @@ class ProviderAdapterRegistry:
 
 API_FIXED = '''"""Fixed mini TUI API model mapper used by the task completion harness."""
 
-from app.kernel.provider_registry import ProviderAdapterRegistry
+from app.kernel.registry.provider_registry import ProviderAdapterRegistry
 
 
 class BeastApiClient:
@@ -270,8 +270,19 @@ def write_file(root: Path, rel: str, text: str) -> None:
 
 
 def create_broken_workspace(root: Path) -> None:
-    for rel in ["app/__init__.py", "app/cli/__init__.py", "app/kernel/__init__.py", "tests/__init__.py"]:
+    for rel in [
+        "app/__init__.py",
+        "app/cli/__init__.py",
+        "app/kernel/__init__.py",
+        "app/kernel/registry/__init__.py",
+        "tests/__init__.py",
+    ]:
         write_file(root, rel, "")
+    write_file(
+        root,
+        "app/kernel/registry/provider_registry.py",
+        "from app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRecord, ProviderRegistry\n",
+    )
     write_file(root, "app/kernel/provider_registry.py", PROVIDER_REGISTRY_BROKEN)
     write_file(root, "app/cli/api.py", API_BROKEN)
     write_file(root, "tests/test_provider_contracts.py", TEST_PROVIDER_CONTRACTS)

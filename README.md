@@ -165,6 +165,7 @@ The opt-in Meta Tool Commons exchanges privacy-safe capability evidence, not pro
 | Confidence decay | Repository change automatically demotes promoted capabilities |
 | Chronicle and PREC lifecycle | Records perception, reasoning, economy, crystallisation, and outcomes |
 | Meta Tool Commons | Shares schema-pinned capability priors without automatic adoption |
+| BEAST Commons Compute Spaces | Publishes cloud-safe hypotheses while local BEAST verifies, adopts, and credits only reproduced displacement |
 | GitHub PR Connector | Converts PR diffs and failed checks into governed task envelopes |
 | OpenTelemetry Connector | Projects Chronicle and fitness evidence into OTLP traces |
 | Plugin Marketplace | Validates risk, permissions, budgets, and tool-schema hashes |
@@ -204,6 +205,66 @@ export OPENAI_BASE_URL=http://localhost:8005/v1
 # Anthropic-compatible
 export ANTHROPIC_BASE_URL=http://localhost:8005
 ```
+
+### BEAST Commons proof ladder
+
+BEAST Commons is the compute-displacement layer: public registries publish privacy-safe Space hypotheses, while the local adoption engine quarantines, verifies, replays, approves, and only then promotes crystallized compute.
+
+Current local ladder result:
+
+- `100` valid Spaces are registered: `10` proof-bearing Spaces and `90` quarantined hypotheses.
+- The first proof cohort remains `10` Spaces × `3` real workload matches each = `30` proof-backed displacements.
+- `10/10` Spaces are live-reproduced, adopted, credit-eligible, and credited.
+- The original `27`-match gap is closed with three separately sealed verifier executions for each of nine promoted benchmark Spaces.
+- A match only counts when a Space is locally reproduced, adopted or credit-eligible, and attached to a real repeated workload boundary.
+- This is local lab proof; production frequency, cross-machine durability, and metered cloud savings remain open gates.
+
+Run the current economics receipt:
+
+```bash
+python3 scripts/commons_scale_economics_ladder.py \
+  --target-spaces 10 \
+  --matches-per-space 3 \
+  --cloud-call-cost 0.02 \
+  --token-cost-per-1m 5 \
+  --setup-cost 1 \
+  --marketplace-take-rate 0.1
+```
+
+Reproduce the nine-Space promotion ladder:
+
+```bash
+python3 scripts/promote_commons_nine_space_ladder.py
+```
+
+The grinder is idempotent by default and reuses successful receipts. Pass `--force-replay` only when deliberately collecting a new proof epoch.
+
+Grow the hypothesis corpus to 100 without inflating proof counts:
+
+```bash
+BEAST_COMMONS_SEED_LIMIT=90 python3 scripts/seed_commons_node.py
+python3 scripts/seed_forge_commons_spaces.py --target-spaces 100
+```
+
+Run the cross-node Ollama mutation/ablation qualification:
+
+```bash
+python3 scripts/cross_node_mutation_ablation_gauntlet.py
+```
+
+### BEASTCOIN local testnet
+
+The Commons website includes local accounts and a mock wallet backed by an
+append-only SQLite double-entry ledger. `BEASTCOIN` and `CRYSTAL` are integer
+test units with no financial value, transferability, redemption, withdrawal,
+or public-chain representation.
+
+Controls include scrypt password hashing, hashed 12-hour sessions, unique
+proof-credit claims, owner binding, source/day faucet limits, a global faucet
+cap, bounded swaps, daily swap caps, credit decay, and a public ledger-invariant
+audit at `/edgek/commons-testnet/audit`.
+
+The TUI reads `benchmarks/results/commons_scale_economics_ladder_latest.json` and shows proof density, the `10×3` gap, tiered credit value, and marketplace gates in the Spaces and Economy views.
 
 ---
 

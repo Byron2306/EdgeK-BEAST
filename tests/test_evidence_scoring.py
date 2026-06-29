@@ -1,4 +1,4 @@
-from app.kernel.evidence_scoring import EvidenceScorer
+from app.kernel.storage.evidence_scoring import EvidenceScorer
 from httpx import ASGITransport, AsyncClient
 import pytest
 

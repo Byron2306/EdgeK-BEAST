@@ -1,0 +1,68 @@
+{
+  "beast_object_type": "semantic_compute_page",
+  "behavior_contract_hash": "sha256:5249bc0b817e6d5eeac69f719f1ec79455ebb2bc7cfe9f8b50dfd11805e8519b",
+  "content": {
+    "credit_policy": "no credit for stale or mutated semantic pages",
+    "demotion_action": "miss_and_recompute",
+    "miss_conditions": [
+      "model revision drift",
+      "tool schema drift",
+      "skill tree drift",
+      "repository fingerprint drift",
+      "verifier fingerprint drift",
+      "privacy class drift"
+    ],
+    "title": "Do not reuse outside the fingerprint boundary"
+  },
+  "content_hash": "sha256:8ac24070ee61894400af489d2e3a96161f742ee6ff5e98ec967e065e39c6def4",
+  "created_at": "2026-06-22T20:18:51.754111+00:00",
+  "expires_at": "2026-06-23T20:18:51.754019+00:00",
+  "identity": {
+    "beast_object_type": "semantic_page_identity",
+    "behavior_contract_hash": "sha256:5249bc0b817e6d5eeac69f719f1ec79455ebb2bc7cfe9f8b50dfd11805e8519b",
+    "commons_space_id": "local_phase7_crystal_distillation",
+    "identity_hash": "sha256:b11c62ee0efc6b8c9fb43505ebff07f66ca5b93c7da6d3b15231e2725f4859a6",
+    "inference_identity": {
+      "attention_backend": "unknown",
+      "beast_object_type": "inference_artifact_identity",
+      "engine": "semantic_compute_pages",
+      "engine_version": "phase3",
+      "identity_hash": "sha256:b4f1c487cba5179ec4cd354e658fabcb9bb62baf26df42871197004e4dd0571b",
+      "model": "beast-crystal-qwen25-05b:latest",
+      "model_revision": "local_ollama",
+      "policy_fingerprint": "sha256:22540dcb86fe53768d3f9cba54ebe9624690a6e6c3b5796ccf95cd4877ed74a9",
+      "precision": "cpu",
+      "prompt_prefix_hash": "sha256:5d4e46c3c24e2b5f81498add53fdc8ea9dc2326c87bf8f3aaa77f30b4f22565b",
+      "quantization": "ollama_or_micro_lora",
+      "repository_fingerprint": "sha256:9729e3b17b79a4d92e450c5e5107ab01a7f2a1dee8cf10718784c7c887af5333",
+      "rope_config_hash": "unknown",
+      "skill_tree_fingerprint": "sha256:e9d9991279036fbd87b46abe1787abb487616c61ba1de43d69e14a3be7b07f1f",
+      "system_prompt_hash": "sha256:13a80c7c0bddf1de3cddd1323965b1eedf30b203f97b079982afaf79a006da36",
+      "tenant_privacy_class": "local_metadata_only",
+      "tensor_parallel_size": 1,
+      "tokenizer": "ollama-qwen2.5-local",
+      "tokenizer_revision": "local",
+      "tool_schema_fingerprint": "sha256:4402c1ba13ac699c84c62678f92586f24b50f659458c8a427bab8440e7744e9d",
+      "version": "1.0"
+    },
+    "page_kind": "negative_capability",
+    "page_version": "1.0",
+    "task_class": "proof_local_phase3",
+    "task_family": "schema_validation",
+    "verifier_fingerprint": "sha256:07e30f6d88b482a7aa234bf954ab29c44ee1326234cbb511805bd05a79b24636",
+    "version": "1.0"
+  },
+  "identity_hash": "sha256:b11c62ee0efc6b8c9fb43505ebff07f66ca5b93c7da6d3b15231e2725f4859a6",
+  "invalidation_reason": "",
+  "last_reused_at": "2026-06-22T20:18:51.763173+00:00",
+  "page_id": "scp_84bdec163bb35b55242afb28",
+  "page_kind": "negative_capability",
+  "reuse_count": 3,
+  "state": "active",
+  "verifier_refs": [
+    "schema_validation",
+    "local_behavior_verification",
+    "identity_mutation_miss"
+  ],
+  "version": "1.0"
+}

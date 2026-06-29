@@ -2,7 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
-from app.kernel.capability_registry import CapabilityRegistry
+from app.kernel.capability.capability_registry import CapabilityRegistry
 
 
 def test_capability_registry_surfaces_core_families():

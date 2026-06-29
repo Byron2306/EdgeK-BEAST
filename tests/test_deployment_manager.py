@@ -1,7 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.deployment import DeploymentManager
+from app.kernel.deployment.deployment import DeploymentManager
 from app.main import app
 
 

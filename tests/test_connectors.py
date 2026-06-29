@@ -2,9 +2,9 @@ import json
 
 import httpx
 
-from app.kernel.github_pr_connector import GitHubPRConnector
-from app.kernel.network_chronicle import NetworkChronicleConnector
-from app.kernel.task_envelope import TaskEnvelopeBuilder
+from app.kernel.networking.github_pr_connector import GitHubPRConnector
+from app.kernel.networking.network_chronicle import NetworkChronicleConnector
+from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
 
 
 def test_network_chronicle_attaches_metadata_without_packet_payloads(tmp_path):

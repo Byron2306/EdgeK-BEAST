@@ -1,9 +1,9 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.memory_stack import MemoryStack
-from app.kernel.runtime import RuntimeGovernor
-from app.kernel.task_envelope import TaskEnvelopeBuilder
+from app.kernel.storage.memory_stack import MemoryStack
+from app.kernel.governance.runtime import RuntimeGovernor
+from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
 from app.main import app
 
 

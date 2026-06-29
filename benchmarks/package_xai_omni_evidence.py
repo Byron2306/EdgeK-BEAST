@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.secret_vault import SecretVault
+from app.kernel.security.secret_vault import SecretVault
 
 
 RESULTS = ROOT / "benchmarks" / "results"
@@ -39,26 +39,26 @@ IMPLEMENTATION_FILES = [
     "app/kernel/action_ir.py",
     "app/kernel/action_resolver.py",
     "app/kernel/beast_cli_executor.py",
-    "app/kernel/capability_exchange.py",
-    "app/kernel/capability_registry.py",
+    "app.kernel.capability.capability_exchange.py",
+    "app.kernel.capability.capability_registry.py",
     "app/kernel/context_packet.py",
     "app/kernel/forge_scorecard.py",
     "app/kernel/github_pr_connector.py",
     "app/kernel/local_patch_compiler.py",
     "app/kernel/meta_tool_commons.py",
-    "app/kernel/network_chronicle.py",
+    "app.kernel.networking.network_chronicle.py",
     "app/kernel/ollama_scout.py",
-    "app/kernel/otel_connector.py",
+    "app.kernel.networking.otel_connector.py",
     "app/kernel/output_evidence.py",
-    "app/kernel/output_governor.py",
+    "app.kernel.governance.output_governor.py",
     "app/kernel/plugin_marketplace.py",
-    "app/kernel/prec_lifecycle.py",
+    "app.kernel.storage.prec_lifecycle.py",
     "app/kernel/provider_economist.py",
     "app/kernel/provider_handoff.py",
     "app/kernel/provider_registry.py",
     "app/kernel/quality_cascade.py",
     "app/kernel/session_handshake.py",
-    "app/kernel/skill_registry.py",
+    "app.kernel.capability.skill_registry.py",
     "app/kernel/task_envelope.py",
     "app/kernel/tool_laziness.py",
     "app/kernel/tool_laziness_plugin.py",

@@ -18,14 +18,14 @@ import zlib
 from pathlib import Path
 from typing import Any, Dict, List
 
-from app.kernel.ast_compressor import ASTCompressor
-from app.kernel.isolation_forest import IsolationForest
-from app.kernel.os_bypass import capabilities as os_bypass_capabilities
-from app.kernel.tool_laziness import ToolLazinessLearner
+from app.kernel.compute.ast_compressor import ASTCompressor
+from app.kernel.security.isolation_forest import IsolationForest
+from app.kernel.networking.os_bypass import capabilities as os_bypass_capabilities
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
 from app.context.economizer import ContextEconomizer
-from app.kernel.perceive import EdgeKIR
-from app.kernel.runtime import RuntimeGovernor
-from app.kernel.swarm import SwarmKernel
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.governance.runtime import RuntimeGovernor
+from app.kernel.networking.swarm import SwarmKernel
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -339,7 +339,7 @@ def benchmark_swarm() -> Dict[str, Any]:
                 "objective": "Refactor module and run targeted tests",
                 "context": "code context " * 9000,
                 "target_context_tokens": 2600,
-                "files": ["app/kernel/reason.py", "app/kernel/tool_laziness.py"],
+                "files": ["app.kernel.governance.reason.py", "app/kernel/tool_laziness.py"],
                 "execution_result": {"success": True},
             })
         else:

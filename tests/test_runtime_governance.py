@@ -1,9 +1,9 @@
 import pytest
 
-from app.kernel.execute import Executor
-from app.kernel.perceive import EdgeKIR
-from app.kernel.reason import GovernanceDecision, GovernanceResult
-from app.kernel.runtime import RuntimeGovernor
+from app.kernel.execution.execute import Executor
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
+from app.kernel.governance.runtime import RuntimeGovernor
 
 
 def test_runtime_governor_enforces_stasis_wall(tmp_path):
@@ -138,7 +138,7 @@ def test_runtime_governor_sweeps_stale_started_attempts(tmp_path):
 
 @pytest.mark.asyncio
 async def test_executor_records_runtime_success(tmp_path, monkeypatch):
-    import app.kernel.execute as execute_module
+    import app.kernel.execution.execute as execute_module
 
     governor = RuntimeGovernor(
         policies={"meta_rules": {"runtime_provider_timeout_seconds": 10}},

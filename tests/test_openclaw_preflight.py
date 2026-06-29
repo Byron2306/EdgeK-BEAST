@@ -1,7 +1,7 @@
-from app.kernel.beast_cli_executor import BeastCLIExecutor
-from app.kernel.provider_economist import ProviderEconomist
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.tool_laziness_plugin import ToolLazinessPlugin
+from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
+from app.kernel.adapters.provider_economist import ProviderEconomist
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
 
 
 def test_openclaw_preflight_consumes_laziness_and_provider_economics(tmp_path):

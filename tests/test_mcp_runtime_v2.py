@@ -1,8 +1,8 @@
 from app.mcp.runtime import BeastToolRuntime
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.tool_laziness_plugin import ToolLazinessPlugin
-from app.kernel.plugin_marketplace import PluginMarketplace
-from app.kernel.outcome_evidence import NegativeCapabilityStore
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
+from app.kernel.deployment.plugin_marketplace import PluginMarketplace
+from app.kernel.storage.outcome_evidence import NegativeCapabilityStore
 
 
 def test_runtime_exposes_v2_mcp_tools():

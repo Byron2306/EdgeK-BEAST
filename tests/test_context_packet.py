@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.context_packet import ContextPacketBuilder
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.data_processing.context_packet import ContextPacketBuilder
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 from app.main import app
 
 

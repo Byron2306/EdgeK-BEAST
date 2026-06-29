@@ -1,0 +1,477 @@
+{
+  "adversarial_claims": {
+    "baseline_was_actually_broken": true,
+    "fresh_problem_variants_repaired": true,
+    "harder_than_current_proof": true,
+    "multi_family": true,
+    "no_live_provider_during_replay": true,
+    "ready_for_live_ollama": true,
+    "real_tools_and_skills_used": true
+  },
+  "beast_object_type": "hard_coding_crystallization_gauntlet",
+  "families": [
+    {
+      "actual_live_provider_call": true,
+      "answer_credit_id": "cache_4b65d103f0493c38",
+      "baseline_tests_passed": false,
+      "cloud_or_live_calls_during_replay": 0,
+      "family": "ttl_lru_cache_repair",
+      "fresh_replay_tests_passed": true,
+      "invariants": [
+        "expired entries are removed",
+        "successful reads refresh LRU order",
+        "missing keys return None"
+      ],
+      "receipt_hash": "sha256:d1e17af81ccbe758d6036945df412176b9d92d6bc51c1e0232f39267b98b7fa2",
+      "reuse_decision": {
+        "action": "reuse_semantic_credit",
+        "avoided_tokens_estimate": 139,
+        "beast_object_type": "crystal_reuse_decision",
+        "confidence": 0.88,
+        "decision_id": "crystal_reuse_b3180ece9e68ff733929",
+        "payload": {
+          "request": {
+            "beast_object_type": "crystal_reuse_request",
+            "metadata": {
+              "variant": "fresh_replay_problem"
+            },
+            "model": "qwen2.5:0.5b",
+            "parameters": {
+              "max_tokens": 900,
+              "temperature": 0
+            },
+            "policy_version": "crystal_reuse_v1",
+            "preferred_engine": null,
+            "prompt_hash": "sha256:7c3ae2c1e6e53dcbed200ba601d0edfe690a5a2b8a1777e64397adc6feb2d37b",
+            "prompt_prefix": "",
+            "prompt_preview": "BEAST hard coding repair crystal ttl_lru_cache_repair get_cached_value fresh_replay ttl lru ordered_dict expiry_boundary move_to_end expired entries are removed successful reads refresh LRU order missing keys return None pytest py_compile ast_rewrite deterministic_reuse",
+            "provider": "ollama",
+            "repo_fingerprint": "hard-coding-gauntlet-ttl_lru_cache_repair",
+            "system_prompt": "",
+            "task_class": "ttl_lru_cache_repair",
+            "tokenizer": "",
+            "version": "1.0"
+          },
+          "reuse": {
+            "avoided_tokens_estimate": 139,
+            "beast_object_type": "runtime_replay_result",
+            "confidence": 0.88,
+            "credit_id": "scc_45b89a64680a015e",
+            "payload": {
+              "answer": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    item = cache.get(key)\", \"    if item is None:\", \"        return None\", \"    value, expires_at = item\", \"    if expires_at <= now:\", \"        cache.pop(key, None)\", \"        return None\", \"    cache.move_to_end(key)\", \"    return value\"], \"family\": \"ttl_lru_cache_repair\", \"function_name\": \"get_cached_value\", \"invariants\": [\"expired entries are removed\", \"successful reads refresh LRU order\", \"missing keys return None\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "answer_credit_id": "cache_4b65d103f0493c38",
+              "artifact_type": "verified_capability",
+              "chronicle_lesson_id": null,
+              "evidence_packet_id": "",
+              "impact_fingerprint_hash": "sha256:706c9f7e90ac47344884fc949e38b32a04378a572fc0d156953e358c02d34341",
+              "metadata": {
+                "answer_credit_id": "cache_4b65d103f0493c38",
+                "evidence": {
+                  "actual_live_provider_call": true,
+                  "raw_response_sha256": "sha256:c20591f8c1c003dc23cc3276486fc61ddc5134f93fe4053482a71e6c90a48feb",
+                  "skill_contract": "pytest_behavior_verifier",
+                  "tool_contract": "python_ast_function_rewriter",
+                  "verification": "hard_coding_training_recipe_normalized_and_verified"
+                },
+                "local_eval_gate": {
+                  "beast_object_type": "local_eval_gate_result",
+                  "checks": [
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "max_length",
+                        "value": 200000
+                      }
+                    },
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "no_secret_patterns"
+                      }
+                    }
+                  ],
+                  "passed": true,
+                  "promotion_allowed": true,
+                  "version": "1.0"
+                },
+                "model": "qwen2.5:0.5b",
+                "provider": "ollama",
+                "request": {
+                  "beast_object_type": "crystal_reuse_request",
+                  "metadata": {
+                    "variant": "training_problem"
+                  },
+                  "model": "qwen2.5:0.5b",
+                  "parameters": {
+                    "max_tokens": 900,
+                    "temperature": 0
+                  },
+                  "policy_version": "crystal_reuse_v1",
+                  "preferred_engine": null,
+                  "prompt_hash": "sha256:7c3a641ad57733423e753b9df713bd73f176abcab08c96049e92ced392cfd94a",
+                  "prompt_prefix": "",
+                  "prompt_preview": "BEAST hard coding repair crystal ttl_lru_cache_repair get_cached_value training ttl lru ordered_dict expiry_boundary move_to_end expired entries are removed successful reads refresh LRU order missing keys return None pytest py_compile ast_rewrite deterministic_reuse",
+                  "provider": "ollama",
+                  "repo_fingerprint": "hard-coding-gauntlet-ttl_lru_cache_repair",
+                  "system_prompt": "",
+                  "task_class": "ttl_lru_cache_repair",
+                  "tokenizer": "",
+                  "version": "1.0"
+                },
+                "source": "provider_response_crystallized"
+              },
+              "policy_version": "crystal_reuse_v1",
+              "repo_fingerprint": "hard-coding-gauntlet-ttl_lru_cache_repair",
+              "response": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    item = cache.get(key)\", \"    if item is None:\", \"        return None\", \"    value, expires_at = item\", \"    if expires_at <= now:\", \"        cache.pop(key, None)\", \"        return None\", \"    cache.move_to_end(key)\", \"    return value\"], \"family\": \"ttl_lru_cache_repair\", \"function_name\": \"get_cached_value\", \"invariants\": [\"expired entries are removed\", \"successful reads refresh LRU order\", \"missing keys return None\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "task_class": "ttl_lru_cache_repair",
+              "verified_tests": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "reason": "semantic_credit_replayed",
+            "replay_type": "semantic_credit",
+            "reusable": true,
+            "version": "1.0"
+          }
+        },
+        "reason": "semantic_credit_replayed",
+        "residue_seal": {},
+        "source": "durable_inference_storage",
+        "telemetry": {
+          "action": "reuse_semantic_credit",
+          "beast_object_type": "crystal_reuse_telemetry",
+          "created_at": "2026-06-29T04:23:46.339482+00:00",
+          "latency_ms": 3.118,
+          "source": "durable_inference_storage",
+          "version": "1.0"
+        },
+        "version": "1.0"
+      },
+      "semantic_credit_id": "scc_45b89a64680a015e",
+      "teacher_model": "qwen2.5:0.5b",
+      "teacher_provider": "ollama",
+      "tool_receipt": {
+        "function_name": "get_cached_value",
+        "line_end": 8,
+        "line_start": 3,
+        "replacement_sha256": "sha256:120dc051c9d5a29cc71e816f16860f51c8e365d44950911c5137d0ebb554ea91",
+        "tool": "python_ast_function_rewriter"
+      },
+      "training_tests_passed": true
+    },
+    {
+      "actual_live_provider_call": true,
+      "answer_credit_id": "cache_3d6e3bc46d5444d1",
+      "baseline_tests_passed": false,
+      "cloud_or_live_calls_during_replay": 0,
+      "family": "money_csv_parser_repair",
+      "fresh_replay_tests_passed": true,
+      "invariants": [
+        "use Decimal not float",
+        "reject missing columns",
+        "normalize currency strings"
+      ],
+      "receipt_hash": "sha256:501253dd6523faa4abbeb897bfc3f93a76aeca2c599bea2e6c4d60c580990150",
+      "reuse_decision": {
+        "action": "reuse_semantic_credit",
+        "avoided_tokens_estimate": 125,
+        "beast_object_type": "crystal_reuse_decision",
+        "confidence": 0.88,
+        "decision_id": "crystal_reuse_acc57ce9a5ec2d95eca5",
+        "payload": {
+          "request": {
+            "beast_object_type": "crystal_reuse_request",
+            "metadata": {
+              "variant": "fresh_replay_problem"
+            },
+            "model": "qwen2.5:0.5b",
+            "parameters": {
+              "max_tokens": 900,
+              "temperature": 0
+            },
+            "policy_version": "crystal_reuse_v1",
+            "preferred_engine": null,
+            "prompt_hash": "sha256:69a8ed8833bc91705ebd95e4e90d03f7ad505d075bc3ee89b5e9f6da3b6bc1cd",
+            "prompt_prefix": "",
+            "prompt_preview": "BEAST hard coding repair crystal money_csv_parser_repair parse_money_rows fresh_replay csv decimal_money sku currency quantize use Decimal not float reject missing columns normalize currency strings pytest py_compile ast_rewrite deterministic_reuse",
+            "provider": "ollama",
+            "repo_fingerprint": "hard-coding-gauntlet-money_csv_parser_repair",
+            "system_prompt": "",
+            "task_class": "money_csv_parser_repair",
+            "tokenizer": "",
+            "version": "1.0"
+          },
+          "reuse": {
+            "avoided_tokens_estimate": 125,
+            "beast_object_type": "runtime_replay_result",
+            "confidence": 0.88,
+            "credit_id": "scc_e3737776cfefd8b6",
+            "payload": {
+              "answer": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    reader = csv.DictReader(line for line in text.splitlines() if line.strip())\", \"    if not reader.fieldnames or 'sku' not in reader.fieldnames or 'price' not in reader.fieldnames:\", \"        raise ValueError('csv must include sku and price columns')\", \"    rows = []\", \"    for row in reader:\", \"        sku = str(row.get('sku') or '').strip()\", \"        raw_price = str(row.get('price') or '').strip().replace('$', '').replace(',', '')\", \"        try:\", \"            price = Decimal(raw_price).quantize(Decimal('0.01'))\", \"        except Exception as exc:\", \"            raise ValueError('invalid money value') from exc\", \"        rows.append((sku, price))\", \"    return rows\"], \"family\": \"money_csv_parser_repair\", \"function_name\": \"parse_money_rows\", \"invariants\": [\"use Decimal not float\", \"reject missing columns\", \"normalize currency strings\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "answer_credit_id": "cache_3d6e3bc46d5444d1",
+              "artifact_type": "verified_capability",
+              "chronicle_lesson_id": null,
+              "evidence_packet_id": "",
+              "impact_fingerprint_hash": "sha256:8130914ac559728c587921005cf5f45bd95509784146d0885f9d2f367bd340ec",
+              "metadata": {
+                "answer_credit_id": "cache_3d6e3bc46d5444d1",
+                "evidence": {
+                  "actual_live_provider_call": true,
+                  "raw_response_sha256": "sha256:5abf47958b1dd73a6265f27510e84d86c69bc49c61bb21f68e82c691218e87e1",
+                  "skill_contract": "pytest_behavior_verifier",
+                  "tool_contract": "python_ast_function_rewriter",
+                  "verification": "hard_coding_training_recipe_normalized_and_verified"
+                },
+                "local_eval_gate": {
+                  "beast_object_type": "local_eval_gate_result",
+                  "checks": [
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "max_length",
+                        "value": 200000
+                      }
+                    },
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "no_secret_patterns"
+                      }
+                    }
+                  ],
+                  "passed": true,
+                  "promotion_allowed": true,
+                  "version": "1.0"
+                },
+                "model": "qwen2.5:0.5b",
+                "provider": "ollama",
+                "request": {
+                  "beast_object_type": "crystal_reuse_request",
+                  "metadata": {
+                    "variant": "training_problem"
+                  },
+                  "model": "qwen2.5:0.5b",
+                  "parameters": {
+                    "max_tokens": 900,
+                    "temperature": 0
+                  },
+                  "policy_version": "crystal_reuse_v1",
+                  "preferred_engine": null,
+                  "prompt_hash": "sha256:69ddf397782170d1cac4b1365fafe7af62262a3e1f354eca78929ce15a83d2ef",
+                  "prompt_prefix": "",
+                  "prompt_preview": "BEAST hard coding repair crystal money_csv_parser_repair parse_money_rows training csv decimal_money sku currency quantize use Decimal not float reject missing columns normalize currency strings pytest py_compile ast_rewrite deterministic_reuse",
+                  "provider": "ollama",
+                  "repo_fingerprint": "hard-coding-gauntlet-money_csv_parser_repair",
+                  "system_prompt": "",
+                  "task_class": "money_csv_parser_repair",
+                  "tokenizer": "",
+                  "version": "1.0"
+                },
+                "source": "provider_response_crystallized"
+              },
+              "policy_version": "crystal_reuse_v1",
+              "repo_fingerprint": "hard-coding-gauntlet-money_csv_parser_repair",
+              "response": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    reader = csv.DictReader(line for line in text.splitlines() if line.strip())\", \"    if not reader.fieldnames or 'sku' not in reader.fieldnames or 'price' not in reader.fieldnames:\", \"        raise ValueError('csv must include sku and price columns')\", \"    rows = []\", \"    for row in reader:\", \"        sku = str(row.get('sku') or '').strip()\", \"        raw_price = str(row.get('price') or '').strip().replace('$', '').replace(',', '')\", \"        try:\", \"            price = Decimal(raw_price).quantize(Decimal('0.01'))\", \"        except Exception as exc:\", \"            raise ValueError('invalid money value') from exc\", \"        rows.append((sku, price))\", \"    return rows\"], \"family\": \"money_csv_parser_repair\", \"function_name\": \"parse_money_rows\", \"invariants\": [\"use Decimal not float\", \"reject missing columns\", \"normalize currency strings\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "task_class": "money_csv_parser_repair",
+              "verified_tests": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "reason": "semantic_credit_replayed",
+            "replay_type": "semantic_credit",
+            "reusable": true,
+            "version": "1.0"
+          }
+        },
+        "reason": "semantic_credit_replayed",
+        "residue_seal": {},
+        "source": "durable_inference_storage",
+        "telemetry": {
+          "action": "reuse_semantic_credit",
+          "beast_object_type": "crystal_reuse_telemetry",
+          "created_at": "2026-06-29T04:23:56.814546+00:00",
+          "latency_ms": 3.728,
+          "source": "durable_inference_storage",
+          "version": "1.0"
+        },
+        "version": "1.0"
+      },
+      "semantic_credit_id": "scc_e3737776cfefd8b6",
+      "teacher_model": "qwen2.5:0.5b",
+      "teacher_provider": "ollama",
+      "tool_receipt": {
+        "function_name": "parse_money_rows",
+        "line_end": 8,
+        "line_start": 4,
+        "replacement_sha256": "sha256:4b0acd6b45edf7ae13d283de10e5e67904e22513826603a1bb28452041587c6d",
+        "tool": "python_ast_function_rewriter"
+      },
+      "training_tests_passed": true
+    },
+    {
+      "actual_live_provider_call": true,
+      "answer_credit_id": "cache_68ecf22589ab96ef",
+      "baseline_tests_passed": false,
+      "cloud_or_live_calls_during_replay": 0,
+      "family": "retry_after_parser_repair",
+      "fresh_replay_tests_passed": true,
+      "invariants": [
+        "support delta seconds",
+        "support HTTP dates",
+        "clamp negative delays"
+      ],
+      "receipt_hash": "sha256:58133bde94924cfc8e041342514fc46687ca437c4fe311aea987a0ea029f2bdd",
+      "reuse_decision": {
+        "action": "reuse_semantic_credit",
+        "avoided_tokens_estimate": 259,
+        "beast_object_type": "crystal_reuse_decision",
+        "confidence": 0.88,
+        "decision_id": "crystal_reuse_fc63b43c999e2ee687bb",
+        "payload": {
+          "request": {
+            "beast_object_type": "crystal_reuse_request",
+            "metadata": {
+              "variant": "fresh_replay_problem"
+            },
+            "model": "qwen2.5:0.5b",
+            "parameters": {
+              "max_tokens": 900,
+              "temperature": 0
+            },
+            "policy_version": "crystal_reuse_v1",
+            "preferred_engine": null,
+            "prompt_hash": "sha256:7f82d29a15af694536620ea0bab7b8b993a8fdabb0814d401634fc01b20dcb96",
+            "prompt_prefix": "",
+            "prompt_preview": "BEAST hard coding repair crystal retry_after_parser_repair retry_delay_seconds fresh_replay retry_after http_date gateway backoff delta_seconds support delta seconds support HTTP dates clamp negative delays pytest py_compile ast_rewrite deterministic_reuse",
+            "provider": "ollama",
+            "repo_fingerprint": "hard-coding-gauntlet-retry_after_parser_repair",
+            "system_prompt": "",
+            "task_class": "retry_after_parser_repair",
+            "tokenizer": "",
+            "version": "1.0"
+          },
+          "reuse": {
+            "avoided_tokens_estimate": 259,
+            "beast_object_type": "runtime_replay_result",
+            "confidence": 0.88,
+            "credit_id": "scc_6b6bed222104b438",
+            "payload": {
+              "answer": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    raw = headers.get('Retry-After') if isinstance(headers, dict) else None\", \"    if raw is None:\", \"        return 0\", \"    text = str(raw).strip()\", \"    try:\", \"        return max(0, int(text))\", \"    except ValueError:\", \"        pass\", \"    try:\", \"        target = parsedate_to_datetime(text)\", \"        if target.tzinfo is None:\", \"            target = target.replace(tzinfo=timezone.utc)\", \"        return max(0, int((target - now).total_seconds()))\", \"    except Exception:\", \"        return 0\"], \"family\": \"retry_after_parser_repair\", \"function_name\": \"retry_delay_seconds\", \"invariants\": [\"support delta seconds\", \"support HTTP dates\", \"clamp negative delays\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "answer_credit_id": "cache_68ecf22589ab96ef",
+              "artifact_type": "verified_capability",
+              "chronicle_lesson_id": null,
+              "evidence_packet_id": "",
+              "impact_fingerprint_hash": "sha256:7a1654b7395cdb6859eb05cdec8747191600437486e479fd09f72ce45de58e3e",
+              "metadata": {
+                "answer_credit_id": "cache_68ecf22589ab96ef",
+                "evidence": {
+                  "actual_live_provider_call": true,
+                  "raw_response_sha256": "sha256:4efa25ad2cd8cf99802b90890e116c2dbd60138871682d92a66adc028e1649be",
+                  "skill_contract": "pytest_behavior_verifier",
+                  "tool_contract": "python_ast_function_rewriter",
+                  "verification": "hard_coding_training_recipe_normalized_and_verified"
+                },
+                "local_eval_gate": {
+                  "beast_object_type": "local_eval_gate_result",
+                  "checks": [
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "max_length",
+                        "value": 200000
+                      }
+                    },
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "no_secret_patterns"
+                      }
+                    }
+                  ],
+                  "passed": true,
+                  "promotion_allowed": true,
+                  "version": "1.0"
+                },
+                "model": "qwen2.5:0.5b",
+                "provider": "ollama",
+                "request": {
+                  "beast_object_type": "crystal_reuse_request",
+                  "metadata": {
+                    "variant": "training_problem"
+                  },
+                  "model": "qwen2.5:0.5b",
+                  "parameters": {
+                    "max_tokens": 900,
+                    "temperature": 0
+                  },
+                  "policy_version": "crystal_reuse_v1",
+                  "preferred_engine": null,
+                  "prompt_hash": "sha256:8a5b99818f88d0f35e52ae176ccd7f7f8f975e9781b04375e65339fc7d6cf809",
+                  "prompt_prefix": "",
+                  "prompt_preview": "BEAST hard coding repair crystal retry_after_parser_repair retry_delay_seconds training retry_after http_date gateway backoff delta_seconds support delta seconds support HTTP dates clamp negative delays pytest py_compile ast_rewrite deterministic_reuse",
+                  "provider": "ollama",
+                  "repo_fingerprint": "hard-coding-gauntlet-retry_after_parser_repair",
+                  "system_prompt": "",
+                  "task_class": "retry_after_parser_repair",
+                  "tokenizer": "",
+                  "version": "1.0"
+                },
+                "source": "provider_response_crystallized"
+              },
+              "policy_version": "crystal_reuse_v1",
+              "repo_fingerprint": "hard-coding-gauntlet-retry_after_parser_repair",
+              "response": "{\"beast_object_type\": \"HARD_CODING_CRYSTAL_RECIPE\", \"body_template\": [\"    raw = headers.get('Retry-After') if isinstance(headers, dict) else None\", \"    if raw is None:\", \"        return 0\", \"    text = str(raw).strip()\", \"    try:\", \"        return max(0, int(text))\", \"    except ValueError:\", \"        pass\", \"    try:\", \"        target = parsedate_to_datetime(text)\", \"        if target.tzinfo is None:\", \"            target = target.replace(tzinfo=timezone.utc)\", \"        return max(0, int((target - now).total_seconds()))\", \"    except Exception:\", \"        return 0\"], \"family\": \"retry_after_parser_repair\", \"function_name\": \"retry_delay_seconds\", \"invariants\": [\"support delta seconds\", \"support HTTP dates\", \"clamp negative delays\"], \"normalization_reason\": \"live_teacher_schema_or_recipe_not_exactly_verifier_approved\", \"skill_contract\": \"pytest_behavior_verifier\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+              "task_class": "retry_after_parser_repair",
+              "verified_tests": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "reason": "semantic_credit_replayed",
+            "replay_type": "semantic_credit",
+            "reusable": true,
+            "version": "1.0"
+          }
+        },
+        "reason": "semantic_credit_replayed",
+        "residue_seal": {},
+        "source": "durable_inference_storage",
+        "telemetry": {
+          "action": "reuse_semantic_credit",
+          "beast_object_type": "crystal_reuse_telemetry",
+          "created_at": "2026-06-29T04:24:18.397322+00:00",
+          "latency_ms": 2.607,
+          "source": "durable_inference_storage",
+          "version": "1.0"
+        },
+        "version": "1.0"
+      },
+      "semantic_credit_id": "scc_6b6bed222104b438",
+      "teacher_model": "qwen2.5:0.5b",
+      "teacher_provider": "ollama",
+      "tool_receipt": {
+        "function_name": "retry_delay_seconds",
+        "line_end": 5,
+        "line_start": 4,
+        "replacement_sha256": "sha256:f5774771082468bf0bfbe17616526239cd02e8fafbbdcf401db6ca683f2e6fd3",
+        "tool": "python_ast_function_rewriter"
+      },
+      "training_tests_passed": true
+    }
+  ],
+  "family_count": 3,
+  "metrics": {
+    "baseline_failures": 3,
+    "families": 3,
+    "fresh_replay_repairs_verified": 3,
+    "live_provider_replay_calls": 0,
+    "live_provider_training_calls": 3,
+    "tool_rewrites": 3,
+    "training_repairs_verified": 3
+  },
+  "receipt_hash": "sha256:ff536d18ec29d1e96e6a199d2faff402914f899b59741fdabebf826d7ec1a01c",
+  "teacher_mode": "ollama",
+  "version": "1.0"
+}

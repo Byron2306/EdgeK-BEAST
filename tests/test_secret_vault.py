@@ -1,4 +1,4 @@
-from app.kernel.secret_vault import SecretVault
+from app.kernel.security.secret_vault import SecretVault
 
 
 def test_secret_vault_imports_redacted_provider_env(tmp_path, monkeypatch):

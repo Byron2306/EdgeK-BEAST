@@ -1,0 +1,94 @@
+{
+  "authority": "verified_runtime_package_not_promoted",
+  "base_model": "qwen2.5:0.5b",
+  "beast_object_type": "ollama_crystal_runtime_verification",
+  "checks": [
+    {
+      "check": "modelfile_exists",
+      "passed": true
+    },
+    {
+      "check": "modelfile_uses_local_ollama_base",
+      "passed": true
+    },
+    {
+      "check": "agent_awareness_contract_present",
+      "passed": true
+    },
+    {
+      "check": "compute_governor_present",
+      "passed": true
+    },
+    {
+      "check": "proposal_only_present",
+      "passed": true
+    },
+    {
+      "check": "modelfile_receipt_exists",
+      "passed": true
+    },
+    {
+      "check": "create_receipt_exists",
+      "passed": true
+    },
+    {
+      "check": "create_receipt_created",
+      "passed": true
+    },
+    {
+      "check": "required_beast_systems_complete",
+      "passed": true
+    },
+    {
+      "check": "authority_proposal_only",
+      "passed": true
+    }
+  ],
+  "hf_peft_boundary": "optional export/training lane only; not BEAST runtime center",
+  "live": {
+    "attempted": true,
+    "blocked": false,
+    "contract_passed": true,
+    "contract_violations": [],
+    "model_missing_on_this_daemon": false,
+    "model_name": "beast-crystal-qwen25-05b:latest",
+    "ollama_host": "http://127.0.0.1:11434",
+    "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"route_diagnostics\",\"task_envelope\":{\"task_id\":\"live_ollama_crystal_runtime\",\"task_family\":\"route_diagnostics\"},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"provider_fitness_check\"],\"beast_systems_used\":[\"task_envelope\",\"prec_lifecycle\",\"compute_governor\",\"chronicle\",\"local_verifiers\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G",
+    "parsed_json": {
+      "action_ir": {
+        "route": "local_verifier_first"
+      },
+      "agent_awareness": {
+        "authority": "proposal_only",
+        "linked": true,
+        "must_use_beast_systems": true
+      },
+      "authority": "proposal_only",
+      "beast_object_type": "adapter_assisted_local_proposal",
+      "beast_systems_used": [
+        "task_envelope",
+        "prec_lifecycle",
+        "compute_governor",
+        "chronicle",
+        "local_verifiers"
+      ],
+      "prec_stage": "reason",
+      "required_verifiers": [
+        "provider_fitness_check"
+      ],
+      "risk_notes": [],
+      "task_envelope": {
+        "task_family": "route_diagnostics",
+        "task_id": "live_ollama_crystal_runtime"
+      },
+      "task_family": "route_diagnostics"
+    },
+    "passed": true,
+    "returncode": 0
+  },
+  "model_name": "beast-crystal-qwen25-05b:latest",
+  "offline_passed": true,
+  "root": "benchmarks/results/crystal_to_adapter_distillation",
+  "runtime_priority": "local_ollama_primary",
+  "version": "1.0"
+}

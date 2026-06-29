@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.beast_cli_executor import BeastCLIExecutor
-from app.kernel.canon_registry import CanonRegistry
+from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
+from app.kernel.registry.canon_registry import CanonRegistry
 from app.mcp.broker import MCPBroker
 from app.main import app
 

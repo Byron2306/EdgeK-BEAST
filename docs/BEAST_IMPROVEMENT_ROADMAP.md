@@ -69,7 +69,7 @@ The formatter and correlation context exist, but new and legacy modules still co
 - `CircuitBreaker` with threshold + timeout
 The taxonomy exists and local Ollama forge inference now uses the circuit breaker. Scheduler, storage, ablation, and connector boundaries still need consistent typed-error adoption.
 
-**Files:** `app/kernel/beast_errors.py`, `app/kernel/compute_forge.py`
+**Files:** `app/kernel/beast_errors.py`, `app.kernel.compute.compute_forge.py`
 
 ### ~~1.4 Integration Test Harness~~ ✅ **COMPLETE**
 **Problem:** 66 unit tests, but no end-to-end test of:

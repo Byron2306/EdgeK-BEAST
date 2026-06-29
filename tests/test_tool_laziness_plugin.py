@@ -1,5 +1,5 @@
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.tool_laziness_plugin import ToolLazinessPlugin
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
 
 
 def test_tool_laziness_plugin_recommends_low_value_tools_not_to_call(tmp_path):

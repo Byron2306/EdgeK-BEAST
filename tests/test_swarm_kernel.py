@@ -2,7 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
-from app.kernel.swarm import SwarmKernel
+from app.kernel.networking.swarm import SwarmKernel
 
 
 def test_swarm_governance_contract_lists_profiles_and_role_lanes(tmp_path):
@@ -35,7 +35,7 @@ def test_swarm_kernel_runs_role_state_machine_and_logs_value(tmp_path):
         "objective": "Implement a bug fix and run targeted pytest",
         "context": "x" * 40000,
         "target_context_tokens": 2000,
-        "files": ["app/kernel/reason.py"],
+        "files": ["app.kernel.governance.reason.py"],
         "execution_result": {"success": True},
     })
 

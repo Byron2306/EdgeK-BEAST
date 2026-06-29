@@ -1,0 +1,15 @@
+{
+  "bf16": false,
+  "cpu_first": true,
+  "fp16": false,
+  "gradient_accumulation_steps": 8,
+  "learning_rate": 0.0002,
+  "logging_steps": 5,
+  "max_seq_length": 1024,
+  "num_train_epochs": 3,
+  "optim": "adamw_torch",
+  "output_dir": "benchmarks/results/crystal_to_adapter_distillation/true_lora_package_latest/adapter_out",
+  "per_device_train_batch_size": 1,
+  "save_strategy": "epoch",
+  "warmup_ratio": 0.03
+}

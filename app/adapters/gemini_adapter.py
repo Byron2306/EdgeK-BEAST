@@ -11,10 +11,10 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.context.economizer import ContextEconomizer
-from app.kernel.crystallize import crystallizer
-from app.kernel.execute import executor
-from app.kernel.perceive import ProviderType, perceiver
-from app.kernel.reason import GovernanceDecision, reasoner
+from app.kernel.execution.crystallize import crystallizer
+from app.kernel.execution.execute import executor
+from app.kernel.compute.perceive import ProviderType, perceiver
+from app.kernel.governance.reason import GovernanceDecision, reasoner
 
 
 logger = logging.getLogger(__name__)

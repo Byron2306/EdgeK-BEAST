@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from app.kernel.output_governor import output_gate, provider_output_profile
-from app.kernel.action_ir import ActionIR
-from app.kernel.action_resolver import build_file_references, resolve_actions
-from app.kernel.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
+from app.kernel.governance.output_governor import output_gate, provider_output_profile
+from app.kernel.compute.action_ir import ActionIR
+from app.kernel.compute.action_resolver import build_file_references, resolve_actions
+from app.kernel.adapters.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
 from benchmarks.coding_task_completion_harness import API_BROKEN, PROVIDER_REGISTRY_BROKEN
 
 

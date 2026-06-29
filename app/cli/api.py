@@ -18,12 +18,12 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any, AsyncIterator, Dict, Iterable, List, Optional, Tuple
 
-from app.kernel.output_governor import (
+from app.kernel.governance.output_governor import (
     output_gate,
     provider_output_profile,
 )
-from app.kernel.provider_adapters import ProviderAdapterRegistry
-from app.kernel.provider_handoff import build_provider_handoff, render_provider_handoff_prompt
+from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
+from app.kernel.adapters.provider_handoff import build_provider_handoff, render_provider_handoff_prompt
 
 try:
     import httpx
@@ -177,7 +177,7 @@ def load_latest_omni_report(path: Optional[Path] = None) -> Dict[str, Any]:
 
 def load_local_compute_snapshot() -> Dict[str, Any]:
     try:
-        from app.kernel.compute_ledger import ComputeLedger
+        from app.kernel.compute.compute_ledger import ComputeLedger
         ledger = ComputeLedger()
         return {
             "state": ledger.state(),
@@ -242,7 +242,7 @@ def load_local_commons_snapshot() -> Dict[str, Any]:
     """Load local Commons/Swarm evidence for TUI fallback when the gateway is stale."""
     out: Dict[str, Any] = {}
     try:
-        from app.kernel.meta_tool_commons import MetaToolCommons
+        from app.kernel.networking.meta_tool_commons import MetaToolCommons
         commons = MetaToolCommons()
         out["state"] = commons.state()
         out["evidence_plane"] = commons.evidence_plane()
@@ -261,7 +261,7 @@ def load_local_commons_snapshot() -> Dict[str, Any]:
     except Exception:
         pass
     try:
-        from app.kernel.swarm import SwarmKernel
+        from app.kernel.networking.swarm import SwarmKernel
         swarm = SwarmKernel()
         out["swarm_state"] = swarm.state()
         out["swarm_governance"] = swarm.governed_roles()
@@ -292,8 +292,8 @@ def load_local_commons_snapshot() -> Dict[str, Any]:
 def load_local_spaces_snapshot() -> Dict[str, Any]:
     """Load Spaces and shadow policy state without requiring the gateway."""
     try:
-        from app.kernel.commons_policy import CommonsPolicyLearner
-        from app.kernel.commons_space_registry import CommonsSpaceRegistry
+        from app.kernel.governance.commons_policy import CommonsPolicyLearner
+        from app.kernel.registry.commons_space_registry import CommonsSpaceRegistry
 
         registry = CommonsSpaceRegistry()
         learner = CommonsPolicyLearner(registry)
@@ -654,6 +654,7 @@ class BackendSnapshot:
     provider_economist: Dict[str, Any] = field(default_factory=dict)
     otel_state: Dict[str, Any] = field(default_factory=dict)
     plugins_state: Dict[str, Any] = field(default_factory=dict)
+    skill_promotion_candidates: List[Dict[str, Any]] = field(default_factory=list)
     swarm_state: Dict[str, Any] = field(default_factory=dict)
     swarm_governance: Dict[str, Any] = field(default_factory=dict)
     swarm_runs_raw: Dict[str, Any] = field(default_factory=dict)
@@ -663,10 +664,15 @@ class BackendSnapshot:
     ollama_status: Dict[str, Any] = field(default_factory=dict)
     beast_cli_plan: Dict[str, Any] = field(default_factory=dict)
     kv_cache_state: Dict[str, Any] = field(default_factory=dict)
+    crystal_reuse: Dict[str, Any] = field(default_factory=dict)
+    crystal_integration_health: Dict[str, Any] = field(default_factory=dict)
+    memory_security: Dict[str, Any] = field(default_factory=dict)
     compute_state: Dict[str, Any] = field(default_factory=dict)
     compute_metrics: Dict[str, Any] = field(default_factory=dict)
     compute_savings: Dict[str, Any] = field(default_factory=dict)
     crystal_compute: Dict[str, Any] = field(default_factory=dict)
+    proof_local_semantic_pages: Dict[str, Any] = field(default_factory=dict)
+    proof_local_distillation: Dict[str, Any] = field(default_factory=dict)
     commons_spaces: Dict[str, Any] = field(default_factory=dict)
     commons_economy: Dict[str, Any] = field(default_factory=dict)
     commons_scale_economics: Dict[str, Any] = field(default_factory=dict)
@@ -862,6 +868,81 @@ class BeastApiClient:
             data = response.json()
             return data if isinstance(data, dict) else {'items': data}
 
+    async def crystal_reuse_decision(self, prompt: str, provider: str, model: str = "beast-auto") -> Dict[str, Any]:
+        """Best-effort pre-provider reuse decision for live TUI turns."""
+        try:
+            return await self.post_json("/edgek/crystal-reuse/decide", {
+                "prompt": prompt,
+                "model": self._chat_model_for_provider(provider, model),
+                "task_class": "chat_completion",
+                "provider": provider,
+                "metadata": {"source": "beast_tui_live_turn"},
+            })
+        except Exception:
+            return {}
+
+    async def integration_harness_turn(self, prompt: str, provider: str, model: str = "beast-auto", *, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Default live-turn execution path through the BEAST integration harness."""
+        try:
+            return await self.post_json("/edgek/integration-harness/run", {
+                "prompt": prompt,
+                "model": self._chat_model_for_provider(provider, model),
+                "task_class": "chat_completion",
+                "provider": provider or "litellm",
+                "caller": "proxy/gateway",
+                "projected_tokens": max(1, len(prompt.split()) + 128),
+                "metadata": {
+                    "source": "beast_tui_live_turn",
+                    **(metadata or {}),
+                },
+            })
+        except Exception as exc:
+            decision = await self.crystal_reuse_decision(prompt, provider, model)
+            response = self.crystal_decision_response(decision)
+            return {
+                "beast_object_type": "beast_thin_integration_harness_receipt",
+                "error": str(exc),
+                "crystal_reuse_decision": decision,
+                "provider_result": {
+                    "called": False,
+                    "status": "offline_crystal_reuse_fallback" if response else "harness_unavailable",
+                    "response": response,
+                },
+                "verification": {"verified": bool(response), "reason": "offline_crystal_reuse_fallback" if response else type(exc).__name__},
+            }
+
+    @staticmethod
+    def crystal_decision_event(decision: Dict[str, Any]) -> str:
+        if not decision:
+            return "crystal reuse: unavailable"
+        return (
+            f"crystal reuse: id={str(decision.get('decision_id') or '')[:28]} "
+            f"action={decision.get('action')} source={decision.get('source')} "
+            f"confidence={float(decision.get('confidence') or 0.0):.2f}"
+        )
+
+    @staticmethod
+    def crystal_decision_response(decision: Dict[str, Any]) -> str:
+        reuse = ((decision.get("payload") or {}).get("reuse") or {})
+        payload = reuse.get("payload") if isinstance(reuse.get("payload"), dict) else {}
+        return str(payload.get("response") or "")
+
+    @staticmethod
+    def harness_receipt_event(receipt: Dict[str, Any]) -> str:
+        decision = receipt.get("crystal_reuse_decision") if isinstance(receipt.get("crystal_reuse_decision"), dict) else {}
+        if not decision:
+            return "integration harness: unavailable"
+        return (
+            f"crystal reuse: id={str(decision.get('decision_id') or '')[:28]} "
+            f"action={decision.get('action')} source={decision.get('source')} "
+            f"confidence={float(decision.get('confidence') or 0.0):.2f}"
+        )
+
+    @staticmethod
+    def harness_response(receipt: Dict[str, Any]) -> str:
+        provider_result = receipt.get("provider_result") if isinstance(receipt.get("provider_result"), dict) else {}
+        return str(provider_result.get("response") or "")
+
     async def _health_json(self, path: str) -> tuple[str, Dict[str, Any]]:
         try:
             data = await self.get_json(path)
@@ -923,6 +1004,7 @@ class BeastApiClient:
             tool_laziness,
             otel_state,
             plugins_state,
+            skill_promotion_candidates,
             swarm_state,
             swarm_governance,
             swarm_runs,
@@ -930,10 +1012,15 @@ class BeastApiClient:
             ollama_status,
             beast_cli_plan,
             kv_cache_state,
+            crystal_reuse,
+            crystal_integration_health,
+            memory_security,
             compute_state,
             compute_metrics,
             compute_savings,
             crystal_compute,
+            proof_local_semantic_pages,
+            proof_local_distillation,
             commons_spaces,
             commons_economy,
             commons_policy,
@@ -955,6 +1042,18 @@ class BeastApiClient:
             guarded_json('insights', self.post_json('/edgek/insights/compile', {
                 'objective': 'BEAST Power Console operator summary',
                 'task_class': 'operator_console',
+                'current_task': {
+                    'objective': 'BEAST Power Console operator summary',
+                    'scope': 'operator console integration',
+                    'constraints': ['local first', 'read only UI refresh', 'no secret capture'],
+                    'success_criteria': [
+                        'agent awareness visible',
+                        'handoff readiness visible',
+                        'Chronicle evidence visible',
+                        'insight evidence ranked',
+                    ],
+                    'source': 'beast_power_console',
+                },
                 'limit': 10,
             })),
             guarded_json('handoff', self.post_json('/edgek/handoff/prepare', {
@@ -1015,6 +1114,7 @@ class BeastApiClient:
             })),
             guarded_json('otel', self.get_json('/edgek/connectors/otel')),
             guarded_json('plugins', self.get_json('/edgek/plugins')),
+            guarded_json('skill_promotions', self.get_json('/edgek/skills/promotion-candidates', {'limit': 100})),
             guarded_json('swarm_state', self.get_json('/edgek/swarm/state')),
             guarded_json('swarm_governance', self.get_json('/edgek/swarm/governance')),
             guarded_json('swarm_runs', self.get_json('/edgek/swarm/runs', {'limit': 20})),
@@ -1034,10 +1134,15 @@ class BeastApiClient:
                 'run_swarm': True,
             })),
             guarded_json('kv_cache_state', self.get_json('/edgek/kv-cache/state')),
+            guarded_json('crystal_reuse', self.get_json('/edgek/crystal-reuse')),
+            guarded_json('crystal_integration_health', self.get_json('/edgek/crystal-reuse/integrations', {'probe': 'true', 'timeout_seconds': '0.45'})),
+            guarded_json('memory_security', self.get_json('/edgek/memory-security', {'verify': 'true'})),
             guarded_json('compute_state', self.get_json('/edgek/compute')),
             guarded_json('compute_metrics', self.get_json('/edgek/compute/metrics', {'limit': 500})),
             guarded_json('compute_savings', self.get_json('/edgek/compute/savings-summary', {'limit': 2000})),
             guarded_json('crystal_compute', self.get_json('/edgek/crystal-compute')),
+            guarded_json('proof_local_semantic_pages', self.get_json('/edgek/proof-local/semantic-pages')),
+            guarded_json('proof_local_distillation', self.get_json('/edgek/proof-local/distillation')),
             guarded_json('commons_spaces', self.get_json('/edgek/commons-spaces')),
             guarded_json('commons_economy', self.get_json('/edgek/commons-economy')),
             guarded_json('commons_policy', self.post_json('/edgek/commons-policy/recommend', {
@@ -1046,6 +1151,25 @@ class BeastApiClient:
             })),
             guarded_json('commons_policy_evaluation', self.get_json('/edgek/commons-policy/evaluation')),
         )
+        # Operational controls must not disappear when heavyweight dashboard
+        # endpoints briefly monopolize the single local gateway worker.
+        async def operational_retry(name: str, value: Any, factory):
+            if value not in ({}, [], None):
+                return value
+            try:
+                retried = await factory()
+                snap.errors.pop(name, None)
+                return retried
+            except Exception as exc:
+                snap.errors[name] = str(exc)
+                return value
+        tool_laziness = await operational_retry('tool_laziness', tool_laziness, lambda: self.post_json('/edgek/tool-laziness/recommend-tools', {
+            'scenario': 'operator_console',
+            'candidate_tools': ['beast_prepare_task','beast_prepare_handoff','beast_sourceplan_prepare','beast_provider_economist_select','beast_meta_tool_commons'],
+            'required_tools': [], 'min_samples': 3,
+        }))
+        plugins_state = await operational_retry('plugins', plugins_state, lambda: self.get_json('/edgek/plugins'))
+        skill_promotion_candidates = await operational_retry('skill_promotions', skill_promotion_candidates, lambda: self.get_json('/edgek/skills/promotion-candidates', {'limit': 100}))
 
         snap.capability_inventory = _as_dict(capabilities)
         snap.capabilities = _first_list(capabilities, ['capabilities', 'records', 'items'])
@@ -1085,8 +1209,35 @@ class BeastApiClient:
         snap.commons_candidates = _first_list(commons_candidates, ['candidates', 'records', 'items'])
         snap.capability_exchange_state = _as_dict(capability_exchange_state)
         snap.tool_laziness = _as_dict(tool_laziness)
+        if not snap.tool_laziness:
+            try:
+                from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+                from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
+                snap.tool_laziness = ToolLazinessPlugin(ToolLazinessLearner()).recommend_tools(
+                    ['beast_prepare_task','beast_prepare_handoff','beast_sourceplan_prepare','beast_provider_economist_select','beast_meta_tool_commons'],
+                    'operator_console', required_tools=[], min_samples=3,
+                )
+                snap.errors.pop('tool_laziness', None)
+            except Exception as exc:
+                snap.errors['tool_laziness'] = str(exc)
         snap.otel_state = _as_dict(otel_state)
         snap.plugins_state = _as_dict(plugins_state)
+        if not snap.plugins_state:
+            try:
+                from app.kernel.deployment.plugin_marketplace import PluginMarketplace
+                snap.plugins_state = PluginMarketplace().list_installed()
+                snap.errors.pop('plugins', None)
+            except Exception as exc:
+                snap.errors['plugins'] = str(exc)
+        snap.skill_promotion_candidates = _first_list(skill_promotion_candidates, ['candidates', 'records', 'items'])
+        if not snap.skill_promotion_candidates:
+            try:
+                from app.kernel.data_processing.promotion_loop import PromotionLoop
+                local_promotions = PromotionLoop().list_candidates(limit=100)
+                snap.skill_promotion_candidates = _first_list(local_promotions, ['promotion_candidates','candidates','records','items'])
+                snap.errors.pop('skill_promotions', None)
+            except Exception as exc:
+                snap.errors['skill_promotions'] = str(exc)
         snap.swarm_state = _as_dict(swarm_state)
         snap.swarm_governance = _as_dict(swarm_governance)
         snap.swarm_runs_raw = _as_dict(swarm_runs)
@@ -1096,14 +1247,108 @@ class BeastApiClient:
         snap.ollama_status = _as_dict(ollama_status)
         snap.beast_cli_plan = _as_dict(beast_cli_plan)
         snap.kv_cache_state = _as_dict(kv_cache_state)
+        snap.crystal_reuse = _as_dict(crystal_reuse)
+        snap.crystal_integration_health = _as_dict(crystal_integration_health)
+        if snap.crystal_integration_health:
+            snap.crystal_reuse.setdefault("integration_health", snap.crystal_integration_health)
+            snap.crystal_reuse["integration_health"] = snap.crystal_integration_health
+        snap.memory_security = _as_dict(memory_security)
         snap.compute_state = _as_dict(compute_state)
         snap.compute_metrics = _as_dict(compute_metrics)
         snap.compute_savings = _as_dict(compute_savings)
         snap.crystal_compute = _as_dict(crystal_compute)
+        snap.proof_local_semantic_pages = _as_dict(proof_local_semantic_pages)
+        snap.proof_local_distillation = _as_dict(proof_local_distillation)
         snap.commons_spaces = _as_dict(commons_spaces)
         snap.commons_economy = _as_dict(commons_economy)
         snap.commons_policy = _as_dict(commons_policy)
         snap.commons_policy_evaluation = _as_dict(commons_policy_evaluation)
+
+        # The cockpit's critical control-plane panels should not disappear just
+        # because the wide dashboard gather briefly overloads a local gateway.
+        # Recover them sequentially with a wider timeout before rendering PREC
+        # state, handoff readiness, agent awareness, and Chronicle evidence.
+        async def critical_json(name: str, method: str, path: str, payload: Optional[Dict[str, Any]] = None, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+            if httpx is None:
+                return {}
+            try:
+                async with httpx.AsyncClient(timeout=max(float(self.timeout), 8.0)) as client:
+                    if method == "POST":
+                        response = await client.post(f"{self.base_url}{path}", json=payload or {})
+                    else:
+                        response = await client.get(f"{self.base_url}{path}", params=params)
+                    response.raise_for_status()
+                    data = response.json()
+                    snap.errors.pop(name, None)
+                    return data if isinstance(data, dict) else {"items": data}
+            except Exception as exc:
+                snap.errors[name] = str(exc)
+                return {}
+
+        if not snap.chronicles:
+            recovered = await critical_json("chronicle", "GET", "/edgek/chronicle", params={"limit": 30})
+            if recovered:
+                snap.chronicles_raw = _as_dict(recovered)
+                snap.chronicles = _first_list(recovered, ["chronicles", "records", "items", "tasks"])
+        if not snap.insight_packet:
+            recovered = await critical_json("insights", "POST", "/edgek/insights/compile", {
+                "objective": "BEAST Power Console operator summary",
+                "task_class": "operator_console",
+                "current_task": {
+                    "objective": "BEAST Power Console operator summary",
+                    "scope": "operator console integration",
+                    "constraints": ["local first", "read only UI refresh", "no secret capture"],
+                    "success_criteria": [
+                        "agent awareness visible",
+                        "handoff readiness visible",
+                        "Chronicle evidence visible",
+                        "insight evidence ranked",
+                    ],
+                    "source": "beast_power_console",
+                },
+                "limit": 10,
+            })
+            if recovered:
+                snap.insight_packet = _as_dict(recovered)
+        if not snap.handoff_precheck.get("ready"):
+            recovered = await critical_json("handoff", "POST", "/edgek/handoff/prepare", {
+                "objective": "Show BEAST cockpit readiness and routing power",
+                "current_task": {
+                    "objective": "Show BEAST cockpit readiness and routing power",
+                    "scope": "operator console integration",
+                    "constraints": ["local first", "no secret capture", "read only UI refresh"],
+                    "success_criteria": [
+                        "PREC lifecycle visible",
+                        "provider routing fabric visible",
+                        "LiteLLM and Nginx wiring visible",
+                        "capability inventory visible",
+                    ],
+                    "source": "beast_power_console",
+                },
+                "task_class": "operator_console",
+                "limit": 8,
+                "persist_task": False,
+            })
+            if recovered:
+                snap.handoff_precheck = _as_dict(recovered)
+        if snap.session_handshake.get("beast_object_type") != "beast_session_handshake":
+            recovered = await critical_json("session_handshake", "POST", "/edgek/session/handshake", {
+                "objective": "Operate the BEAST Power Console efficiently",
+                "mode": "tui",
+                "session_id": "beast_tui_operator_console",
+                "candidate_tools": [
+                    "beast_prepare_task",
+                    "beast_prepare_handoff",
+                    "beast_sourceplan_prepare",
+                    "beast_provider_economist_select",
+                    "beast_meta_tool_commons",
+                ],
+                "preflight_budget_ms": 500,
+                "scout_budget_ms": 300,
+            })
+            if recovered:
+                snap.session_handshake = _as_dict(recovered)
+
         localish_gateway = any(token in self.base_url for token in ("127.0.0.1", "localhost", "0.0.0.0"))
         if localish_gateway:
             local_spaces = load_local_spaces_snapshot()
@@ -1243,14 +1488,38 @@ class BeastApiClient:
 
     async def action(self, title: str, path: str, payload: Optional[Dict[str, Any]] = None, method: str = "POST") -> ActionResult:
         """Run one BEAST backend action and normalize the result for the TUI."""
+        started = time.perf_counter()
         try:
             if method.upper() == "GET":
                 data = await self.get_json(path, payload or None)
             else:
                 data = await self.post_json(path, payload or {})
             summary = self._summarize(data)
+            if not path.startswith('/edgek/tool-laziness/'):
+                try:
+                    await self.post_json('/edgek/tool-laziness/record', {
+                        'tool_name': path,
+                        'scenario': 'beast_tui_action',
+                        'called': True,
+                        'useful': True,
+                        'tokens_spent': max(1, len(json.dumps(data, default=str)) // 4),
+                        'cost_usd': 0.0,
+                        'latency_ms': round((time.perf_counter() - started) * 1000, 3),
+                        'value_score': 0.7,
+                    })
+                except Exception:
+                    pass
             return ActionResult(ok=True, title=title, summary=summary, data=data)
         except Exception as exc:
+            if not path.startswith('/edgek/tool-laziness/'):
+                try:
+                    await self.post_json('/edgek/tool-laziness/record', {
+                        'tool_name': path, 'scenario': 'beast_tui_action', 'called': True,
+                        'useful': False, 'tokens_spent': 0, 'cost_usd': 0.0,
+                        'latency_ms': round((time.perf_counter() - started) * 1000, 3), 'value_score': 0.0,
+                    })
+                except Exception:
+                    pass
             return ActionResult(ok=False, title=title, summary="", data={}, error=str(exc))
 
     async def action_text(self, title: str, path: str, params: Optional[Dict[str, Any]] = None) -> ActionResult:
@@ -2515,30 +2784,36 @@ class BeastApiClient:
         stream_started = time.perf_counter()
         assistant_parts: List[str] = []
 
-        skip_provider = False
-        if str(provider or "").lower() in {"litellm", "auto", "beast-auto"}:
-            if not await self.litellm_sidecar_running():
-                skip_provider = True
-                provider_error = "LiteLLM sidecar is OFF, so BEAST skipped the provider route and used local scout fallback."
-                yield {"type": "tool", "text": provider_error}
-
-        if not skip_provider:
-            yield {"type": "stage", "text": f"stream provider: {provider or 'litellm'}"}
-            async for event in self.stream_chat_completion(provider, chat_history, model=model, context_files=context_files):
-                if event.get("type") == "token":
-                    provider_ok = True
-                    assistant_parts.append(str(event.get("text") or ""))
-                    yield event
-                elif event.get("type") == "tool":
-                    tool_events.append(str(event.get("text") or ""))
-                    yield event
-                elif event.get("type") == "error":
-                    provider_error = str(event.get("error") or "")
-                    provider_failure = dict(event)
-                    yield {"type": "tool", "text": "provider stream error: " + provider_error[:240]}
-                elif event.get("type") == "provider_done":
-                    provider_completed = bool(event.get("completed"))
-                    yield event
+        yield {"type": "stage", "text": "integration harness"}
+        harness_receipt = await self.integration_harness_turn(
+            text,
+            provider,
+            model,
+            metadata={"context_files": context_files, "history_count": len(chat_history), "streaming": True},
+        )
+        crystal_decision = harness_receipt.get("crystal_reuse_decision") if isinstance(harness_receipt.get("crystal_reuse_decision"), dict) else {}
+        crystal_event = self.harness_receipt_event(harness_receipt)
+        tool_events.append(crystal_event)
+        yield {"type": "tool", "text": crystal_event}
+        provider_payload = harness_receipt.get("provider_result") if isinstance(harness_receipt.get("provider_result"), dict) else {}
+        route_event = "provider route: executed through integration harness" if provider_payload.get("called") else "provider route: skipped by crystal reuse"
+        tool_events.append(route_event)
+        yield {"type": "tool", "text": route_event}
+        verification = harness_receipt.get("verification") if isinstance(harness_receipt.get("verification"), dict) else {}
+        verify_event = "provider result verified: " + ("yes" if verification.get("verified") else "no")
+        tool_events.append(verify_event)
+        yield {"type": "tool", "text": verify_event}
+        provider_error = str(harness_receipt.get("error") or "")
+        harness_text = self.harness_response(harness_receipt)
+        if harness_text:
+            yield {"type": "stage", "text": "harness response"}
+            for chunk in self._chunk_text(harness_text):
+                provider_ok = True
+                provider_completed = True
+                assistant_parts.append(chunk)
+                yield {"type": "token", "text": chunk}
+                await asyncio.sleep(0.006)
+            yield {"type": "provider_done", "tokens": len(assistant_parts), "raw_chunks": len(assistant_parts), "completed": True, "finish_reason": "integration_harness"}
 
         if not provider_completed:
             yield {"type": "stage", "text": "local scout fallback" if not provider_ok else "local scout continuation"}
@@ -2552,8 +2827,6 @@ class BeastApiClient:
                 yield {"type": "token", "text": chunk}
                 await asyncio.sleep(0.012)
             tool_events.append("provider route: local fallback" if not provider_ok else "provider route: partial response recovered locally")
-        else:
-            tool_events.append("provider route: streaming ok")
 
         evidence_outcome = "success" if provider_completed else "recovered" if assistant_parts else "failure"
         evidence_recorded = await self.record_outcome_evidence({
@@ -2589,6 +2862,8 @@ class BeastApiClient:
                 "envelope": envelope.data,
                 "insight": insight.data,
                 "handoff": handoff.data,
+                "crystal_reuse_decision": crystal_decision,
+                "integration_harness_receipt": harness_receipt,
                 "provider_error": provider_error,
                 "provider_streaming": provider_ok,
                 "provider_completed": provider_completed,
@@ -2673,31 +2948,35 @@ class BeastApiClient:
         if context_message:
             chat_history = chat_history + [{"role": "system", "content": "Selected BEAST workspace context follows. Stay within this scope unless the user expands it.\n" + context_message}]
         chat_history = chat_history + [{"role": "user", "content": text}]
-        skip_provider = False
-        provider_result = ActionResult(False, "Provider chat", "", error="")
-        if str(provider or "").lower() in {"litellm", "auto", "beast-auto"}:
-            if not await self.litellm_sidecar_running():
-                skip_provider = True
-                provider_result = ActionResult(False, "Provider chat", "", error="LiteLLM sidecar is OFF, so BEAST skipped the provider route and used local scout fallback.")
-        if not skip_provider:
-            provider_result = await self.chat_completion(provider, chat_history, model=model, context_files=context_files)
-        if provider_result.ok:
-            assistant_text = self._extract_assistant_text(provider_result.data)
-            if not assistant_text:
-                assistant_text = self._local_beast_reply(text, insight, handoff, provider_result.error)
-            tool_events.append("provider route: ok")
+        harness_receipt = await self.integration_harness_turn(
+            text,
+            provider,
+            model,
+            metadata={"context_files": context_files, "history_count": len(chat_history)},
+        )
+        crystal_decision = harness_receipt.get("crystal_reuse_decision") if isinstance(harness_receipt.get("crystal_reuse_decision"), dict) else {}
+        tool_events.append(self.harness_receipt_event(harness_receipt))
+        provider_payload = harness_receipt.get("provider_result") if isinstance(harness_receipt.get("provider_result"), dict) else {}
+        if provider_payload.get("called"):
+            tool_events.append("provider route: executed through integration harness")
         else:
-            assistant_text = await self._scout_fallback_reply(text, insight, handoff, provider_result.error)
+            tool_events.append("provider route: skipped by crystal reuse")
+        verification = harness_receipt.get("verification") if isinstance(harness_receipt.get("verification"), dict) else {}
+        tool_events.append("provider result verified: " + ("yes" if verification.get("verified") else "no"))
+        assistant_text = self.harness_response(harness_receipt)
+        provider_error = str(harness_receipt.get("error") or "")
+        if not assistant_text:
+            assistant_text = await self._scout_fallback_reply(text, insight, handoff, provider_error)
             tool_events.append("provider route: local fallback")
 
         if lifecycle_id:
-            await self.update_prec(lifecycle_id, "crystallize", "Live session turn completed; outcome returned to operator.", "completed", artifacts={"provider_ok": provider_result.ok, "tool_events": tool_events}, signals=["live_turn_complete"])
+            await self.update_prec(lifecycle_id, "crystallize", "Live session turn completed through integration harness.", "completed", artifacts={"integration_harness_receipt": harness_receipt, "tool_events": tool_events}, signals=["live_turn_complete", "integration_harness"])
 
         return LiveTurnResult(
             ok=True,
             title="Live turn",
-            summary="BEAST live turn complete",
-            data={"envelope": envelope.data, "insight": insight.data, "handoff": handoff.data, "provider": provider_result.data, "provider_error": provider_result.error},
+            summary="BEAST live turn complete through integration harness",
+            data={"envelope": envelope.data, "insight": insight.data, "handoff": handoff.data, "crystal_reuse_decision": crystal_decision, "integration_harness_receipt": harness_receipt, "provider": provider_payload, "provider_error": provider_error},
             assistant_text=assistant_text,
             tool_events=tool_events,
             lifecycle_id=lifecycle_id,

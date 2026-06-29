@@ -67,6 +67,33 @@ async def test_openai_models():
 
 
 @pytest.mark.asyncio
+async def test_crystal_reuse_gateway_endpoints():
+    async with _client() as client:
+        inventory = await client.get("/edgek/crystal-reuse")
+        integrations = await client.get("/edgek/crystal-reuse/integrations")
+        decision = await client.post(
+            "/edgek/crystal-reuse/decide",
+            json={"prompt": "hello reusable compute", "model": "local-test", "parameters": {"temperature": 0}},
+        )
+        export = await client.post(
+            "/edgek/crystal-reuse/export",
+            json={"prompt": "hello reusable compute", "model": "local-test", "parameters": {"temperature": 0}},
+        )
+        memory = await client.get("/edgek/memory-security")
+
+    assert inventory.status_code == 200
+    assert inventory.json()["beast_object_type"] == "crystal_reuse_gateway_inventory"
+    assert integrations.status_code == 200
+    assert integrations.json()["beast_object_type"] == "beast_local_capability_health"
+    assert decision.status_code == 200
+    assert decision.json()["action"] in {"execute_local_cpu", "reuse_answer", "reuse_semantic_credit", "reuse_kv_prefill"}
+    assert export.status_code == 200
+    assert export.json()["beast_object_type"] == "beast_local_capability_export_bundle"
+    assert memory.status_code == 200
+    assert memory.json()["beast_object_type"] == "beast_memory_security_state"
+
+
+@pytest.mark.asyncio
 async def test_openai_chat_completion():
     async with _client() as client:
         payload = {

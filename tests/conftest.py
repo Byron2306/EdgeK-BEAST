@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
+from pathlib import Path
+from app.kernel.compute.factory import ServiceFactory
 
+# Initialize services at module level to run before test collection
+ServiceFactory.initialize()
 
 ROOT = Path(__file__).resolve().parents[1]
 

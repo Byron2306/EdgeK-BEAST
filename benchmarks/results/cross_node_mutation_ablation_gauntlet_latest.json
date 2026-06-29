@@ -1,0 +1,356 @@
+{
+  "ablation_count": 10,
+  "ablations": [
+    {
+      "adoption_allowed": true,
+      "beast_gate_allows_reuse": true,
+      "condition": "full_beast",
+      "credit_allowed": true,
+      "expected_reuse": true,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "parsed": false,
+          "raw": "{\n  \"reuse\": true,\n  \"cloud_api_needed\": false,\n  \"missing_contracts\": [\n    \"forge_card\",\n    \"insight_packet\",\n    \"pathway_route_card\",\n    \"public_registry_card\",\n    \"quality_cascade\",\n    \"skill_tree_state\",\n    \"task_envelope\",\n    \"verifier_receipts\",\n    \"workflow_card\"\n  ],\n  \"reason\": \"The provided contract does not include all the necessary components for a BE"
+        },
+        "latency_ms": 19363.364,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": null
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_forge_card",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": false,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": true,
+      "ollama_advisory": {
+        "decision": {
+          "parsed": false,
+          "raw": "{\n  \"reuse\": false,\n  \"cloud_api_needed\": false,\n  \"missing_contracts\": [\n    \"forge_card\",\n    \"insight_packet\",\n    \"pathway_route_card\",\n    \"public_registry_card\",\n    \"quality_cascade\",\n    \"skill_tree_state\",\n    \"task_envelope\",\n    \"verifier_receipts\",\n    \"workflow_card\"\n  ],\n  \"reason\": \"The provided contract does not include any of the necessary components for reuse"
+        },
+        "latency_ms": 11400.988,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "forge_card"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_insight_packet",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": false,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": true,
+      "ollama_advisory": {
+        "decision": {
+          "parsed": false,
+          "raw": "{\n  \"reuse\": true,\n  \"cloud_api_needed\": false,\n  \"missing_contracts\": [\n    \"forge_card\",\n    \"insight_packet\",\n    \"pathway_route_card\",\n    \"public_registry_card\",\n    \"quality_cascade\",\n    \"skill_tree_state\",\n    \"task_envelope\",\n    \"verifier_receipts\",\n    \"workflow_card\"\n  ],\n  \"reason\": \"The contract provided does not include all the necessary components for a strict"
+        },
+        "latency_ms": 13069.153,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "insight_packet"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_pathway_route_card",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": false,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [],
+          "reason": "The contract provided includes all the necessary components for a reuse agent to function. No additional contracts are needed.",
+          "reuse": true
+        },
+        "latency_ms": 7937.33,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "pathway_route_card"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_public_registry_card",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": false,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [
+            "forge_card",
+            "insight_packet",
+            "pathway_route_card"
+          ],
+          "reason": "The contract provided includes all the necessary components for a reuse agent, including forge_card, insight_packet, pathway_route_card. However, it does not include the verifier_receipts or workflow_card.",
+          "reuse": true
+        },
+        "latency_ms": 12140.229,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "public_registry_card"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_quality_cascade",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": false,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [],
+          "reason": "The given contract does not contain any conditions that would allow for reuse. The only condition is the 'quality_cascade' which is set to false, indicating that it should be used with caution.",
+          "reuse": true
+        },
+        "latency_ms": 9044.307,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "quality_cascade"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_skill_tree_state",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": false,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [],
+          "reason": "The provided contract does not contain any contracts that are explicitly reused or needed. The only known contracts in the given JSON are 'forge_card', 'insight_packet', and 'pathway_route_card'. These are all non-reusable.",
+          "reuse": true
+        },
+        "latency_ms": 8856.809,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "skill_tree_state"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_task_envelope",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": false,
+        "verifier_receipts": true,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [],
+          "reason": "The contract provided does not include any of the required components for reuse.",
+          "reuse": true
+        },
+        "latency_ms": 6622.331,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "task_envelope"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_verifier_receipts",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": false,
+        "workflow_card": true
+      },
+      "model_aligned_with_gate": true,
+      "ollama_advisory": {
+        "decision": {
+          "parsed": false,
+          "raw": "{\n  \"reuse\": true,\n  \"cloud_api_needed\": true,\n  \"missing_contracts\": [\n    \"forge_card\",\n    \"insight_packet\",\n    \"pathway_route_card\",\n    \"public_registry_card\",\n    \"quality_cascade\",\n    \"skill_tree_state\"\n  ],\n  \"reason\": \"The contract provided contains all the necessary components for a reuse agent, but it does not specify any contracts that are required or missing. The contract is incomplete and"
+        },
+        "latency_ms": 10757.063,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "verifier_receipts"
+    },
+    {
+      "adoption_allowed": false,
+      "beast_gate_allows_reuse": false,
+      "condition": "without_workflow_card",
+      "credit_allowed": false,
+      "expected_reuse": false,
+      "language_contract": {
+        "forge_card": true,
+        "insight_packet": true,
+        "pathway_route_card": true,
+        "public_registry_card": true,
+        "quality_cascade": true,
+        "skill_tree_state": true,
+        "task_envelope": true,
+        "verifier_receipts": true,
+        "workflow_card": false
+      },
+      "model_aligned_with_gate": false,
+      "ollama_advisory": {
+        "decision": {
+          "cloud_api_needed": true,
+          "missing_contracts": [],
+          "reason": "The given contract does not contain any conditions that would allow for reuse.",
+          "reuse": true
+        },
+        "latency_ms": 8009.496,
+        "model": "qwen2.5:0.5b"
+      },
+      "removed": "workflow_card"
+    }
+  ],
+  "beast_object_type": "cross_node_mutation_ablation_gauntlet",
+  "cloud_api_calls_observed": 0,
+  "mutations": {
+    "allowlist_setup": {
+      "body": {
+        "allowlisted": true,
+        "approved_at": "2026-06-22T11:39:14.078752+00:00",
+        "contributor_id": "commons-node-a",
+        "public_key_hash": "sha256:5c718bd57a52a74f070789eaa172d8f28399f2128fd9f6a166ef4c0198beb613",
+        "reason": "mutation ablation gauntlet"
+      },
+      "ok": true,
+      "status_code": 200
+    },
+    "local_artifact_privacy_replay_mutations": {
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..............                                                           [100%]\n=============================== warnings summary ===============================\ntests/test_commons_adversarial.py::test_tampered_bundle_artifact_hash_is_rejected\n  /home/byron/.local/lib/python3.13/site-packages/oqs/__init__.py:1: UserWarning: liboqs version (major, minor) 0.15.0 differs from liboqs-python version 0.14.1\n    from oqs.oqs import (\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"
+    },
+    "non_allowlisted_sender": {
+      "oracle_passed": true,
+      "result": {
+        "body": {
+          "detail": "contributor is not locally allowlisted"
+        },
+        "ok": false,
+        "status_code": 400
+      }
+    },
+    "signed_envelope_tamper": {
+      "oracle_passed": true,
+      "result": {
+        "body": {
+          "detail": "federated envelope signature did not verify"
+        },
+        "ok": false,
+        "status_code": 400
+      }
+    }
+  },
+  "nodes": [
+    "http://127.0.0.1:8101",
+    "http://127.0.0.1:8102"
+  ],
+  "ollama_alignment": {
+    "aligned": 3,
+    "model_is_advisory": true,
+    "total": 10
+  },
+  "ollama_model": "qwen2.5:0.5b",
+  "promotion_rule": "Only the full BEAST contract may reach adoption or credit; model disagreement never overrides the deterministic gate.",
+  "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+  "success": true,
+  "version": "1.0"
+}

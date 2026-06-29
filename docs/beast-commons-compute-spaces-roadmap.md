@@ -787,6 +787,8 @@ Purpose:
 File:
 
 - `scripts/commons_scale_economics_ladder.py`
+- `scripts/promote_commons_nine_space_ladder.py`
+- `tests/test_commons_promoted_space_verifiers.py`
 
 Run:
 
@@ -807,15 +809,20 @@ Latest receipt:
 Current local evidence:
 
 - Valid Spaces: `10`.
-- Live reproduced Spaces: `1`.
-- Credit-eligible Spaces: `1`.
-- Credited Spaces: `1`.
-- Repeated workload matches: `3`.
-- Cloud calls avoided: `3`.
+- Live reproduced Spaces: `10`.
+- Credit-eligible Spaces: `10`.
+- Credited Spaces: `10`.
+- Repeated workload matches: `30`.
+- Locally routed cloud calls avoided: `30`.
 - Gap to first market signal `10 Spaces × 3 matches = 30 displacements`:
-  corpus size reached, but proof still needs `9` more Spaces with repeated
-  matches and `27` more matches.
-- Seeded benchmark-derived metadata Spaces: `9`.
+  `0` Spaces and `0` matches.
+- Nine benchmark-derived metadata Spaces were promoted with hashed verifier
+  contracts, explicit adoption, and three distinct sealed live-verifier
+  reproductions each.
+- The harness now executes one live verifier replay per claimed match; it no
+  longer creates three match records from a single verifier run.
+- Promotion is idempotent by default so re-running the grinder does not inflate
+  match or credit counts accidentally.
 - One candidate was correctly blocked by privacy scanning for an
   `absolute_workspace_path` finding.
 - Forge tier inventory currently includes `42` Forge-fed candidates:
@@ -832,12 +839,164 @@ Example scenario result:
 - Break-even for `$1` setup cost: `26` displacements.
 - Marketplace revenue at `10%`: `$0.1185`.
 
+Evidence boundary:
+
+- The 30 matches prove local lab reuse of published, hashed benchmark evidence.
+- Avoided probabilistic escalation is route-policy counterfactual evidence, not
+  a metered production cloud invoice.
+- Production frequency, cross-machine repeated adoption, and long-term credit
+  durability remain open marketplace gates.
+
 Tiered credit pricing model:
 
 - Tier 1 Tiny Replay: `$0.01` base per displacement.
 - Tier 2 Skill / Meta-Tool: `$0.015` base per displacement.
 - Tier 3 Fused Crystal: `$0.02` base per displacement.
 - Tier 4 Promotion Candidate: `$0.03` base per displacement.
+
+### Phase 6.10: 100-Space Corpus + Cross-Node Mutation/Ablation
+
+Status: **100-Space hypothesis corpus reached; first live mutation/ablation matrix executed**.
+
+Files:
+
+- `scripts/seed_forge_commons_spaces.py`
+- `scripts/cross_node_mutation_ablation_gauntlet.py`
+- `benchmarks/results/forge_commons_seed_latest.json`
+- `benchmarks/results/cross_node_mutation_ablation_gauntlet_latest.json`
+
+Current evidence:
+
+- Valid Spaces: `100`.
+- Live-reproduced, adopted, eligible, and credited Spaces: `10`.
+- Quarantined or metadata-only hypotheses: `90`.
+- Proof-backed repeated matches: `30` across the original 10-Space cohort.
+- The 100-Space economics path exposed and fixed quadratic duplicate-report
+  recomputation; duplicate indexing is now computed once per proof-density run.
+- Ten Ollama/BEAST conditions executed: full BEAST plus one ablation for each
+  shared-language component.
+- The Qwen 2.5 0.5B advisory model aligned with the deterministic reuse gate in
+  only `3/10` conditions. This is evidence that model judgment must not control
+  adoption or credit.
+- BEAST blocked every incomplete language contract regardless of model output.
+- Signed-envelope tampering and a non-allowlisted sender were rejected across
+  Docker nodes.
+- All `14` local artifact, privacy, stale-fingerprint, duplicate, and
+  reputation-gaming adversarial tests passed.
+- Cloud API calls observed during the matrix: `0`.
+
+Evidence boundary:
+
+- `100 Spaces` proves registry and UI corpus breadth, not 100 proven reusable
+  capabilities.
+- The next proof target is to promote additional cohorts with candidate-specific
+  live verifiers, then repeat adoption on independent physical machines.
+
+### Phase 6.11: BEASTCOIN Account + Wallet Testnet
+
+Status: **local non-financial account, wallet, swap, claim, pricing, and audit system implemented**.
+
+File:
+
+- `app/kernel/commons_testnet.py`
+- `tests/test_commons_testnet.py`
+
+Implemented:
+
+- Commons signup, login, logout, account, wallet, ledger, swap, proof-credit
+  claim, long-term pricing, and anti-gaming audit endpoints.
+- Passwords use scrypt with per-account salts.
+- Session tokens are random, stored only as hashes, expire after 12 hours, and
+  are delivered to the local web UI in HttpOnly SameSite=Strict cookies.
+- Wallet movements use integer atomic units and double-entry postings.
+- Evidence fingerprints and credit IDs can mint only once.
+- Credit claiming is bound to the account identity recorded in `approved_by`;
+  unbound historical grinder credits cannot be claimed by arbitrary users.
+- Signup grants are limited per source/day and by a global testnet faucet cap.
+- Swaps have size limits, daily account caps, a 1% mock fee, and a fixed test
+  rate of `10 BEASTCOIN = 1 CRYSTAL`.
+- Long-term scenario pricing applies a 90-day half-life and exposes a 365-day
+  expiry candidate without asserting real currency value.
+
+Live end-to-end evidence:
+
+- Signup and HttpOnly-cookie authentication passed on port `8000`.
+- `100 BEASTCOIN` swapped to `9 CRYSTAL` after a one-unit fee.
+- Wallet balance became `900 BEASTCOIN / 9 CRYSTAL`.
+- Ledger audit reported zero net imbalance for both assets.
+
+Boundary:
+
+- This is not cryptocurrency, legal tender, a security, a redeemable token, or
+  a public blockchain.
+- Before any real-value system: TLS-only Secure cookies, CSRF tokens, email
+  verification, password recovery, MFA/WebAuthn, external security review,
+  jurisdiction-specific legal/accounting/tax work, custody design, fraud
+  operations, and independent database backups are mandatory.
+
+### Phase 6.12: Large-Scale Anti-Gaming Pressure
+
+Status: **deterministic scoring, live audit dashboard, and 10k-identity stress harness implemented**.
+
+Files:
+
+- `app/kernel/commons_anti_gaming.py`
+- `scripts/commons_anti_gaming_stress.py`
+- `tests/test_commons_anti_gaming.py`
+- `benchmarks/results/commons_anti_gaming_stress_latest.json`
+
+Controls score shared-source Sybil clusters, faucet farming, swap velocity,
+swap volume, bidirectional wash cycles, credit concentration, and double-entry
+ledger integrity. Actions escalate through allow, monitor, throttle, quarantine,
+and freeze; a ledger imbalance globally halts the testnet.
+
+Deterministic stress result:
+
+- Identities: `10,000`.
+- Events: `30,951`.
+- Injected malicious identities: `250` across `50` Sybil clusters.
+- True positives: `250`.
+- False positives: `0`.
+- Recall: `1.0`.
+- Synthetic false-positive rate: `0.0`.
+
+This result validates the seeded scenario, not open-world fraud detection.
+Independent red-team distributions, IP/device privacy design, appeals, operator
+review, and adversarial adaptation testing remain required.
+
+### Phase 6.13: Operational TUI Intelligence + Built-in Plugins
+
+Status: **Tool Laziness, approval-gated skill promotion, and callable built-in plugins wired end-to-end**.
+
+TUI fixes:
+
+- The Capabilities page now reads persisted promotion candidates rather than
+  rendering confidence-derived decorative promotion states.
+- `Promote Skill` calls `/edgek/skills/promote` with the selected candidate ID,
+  explicit operator identity, and eligibility enforcement.
+- `Test Skill` opens the persisted promotion evidence.
+- Every successful/failed TUI backend action records Tool Laziness evidence.
+- Intelligence actions can run the schema benchmark and explicitly mark a tool
+  useful or low-value.
+- Tool Laziness, plugins, and promotion candidates retry after the heavyweight
+  snapshot and fall back to their local durable stores if the gateway is busy.
+- Heavy 100-Space web registry work is cached and moved into FastAPI's thread
+  pool so it cannot block operational controls.
+
+Operational built-in plugins:
+
+- Commons Guardian: integrity and anti-gaming audits.
+- Crystal Matchmaker: advisory task-to-Space matching.
+- Inference Inverter: deterministic reuse/escalation planning.
+- Forge Qualifier: Forge candidate inventory and promotion requirements.
+- Marketplace Sentinel: listing, pricing, and launch-gate audit.
+- Context Surgeon: bounded symbol/span/fingerprint context budgeting.
+
+Each plugin has schema-pinned tools, governed permissions, zero cloud budget by
+default, explicit first-run approval, an installed manifest, and a real invoke
+path. Live validation promoted one eligible candidate into the SkillRegistry,
+invoked Context Surgeon, and returned `7` installed plugins total including the
+existing Provider Economist plugin.
 - Tiered value uses proof depth, fusion complexity, match frequency, and
   anti-gaming strength multipliers.
 - Total premium is capped at `3.0x`; credits cannot fall below `0.5x` base.
@@ -940,7 +1099,7 @@ Prototype evidence:
 
 - Space: `tiny_llama_opus_gateway_repair`
 - Artifacts: 9, including a privacy-safe prompt fingerprint; the raw prompt,
-  source code, verifier output, and rollback snapshot are not exported.
+  source code, verifier output, and rollback snapshot are not exporred.
 - Adoption: `adopt_32f069762f6995fe42a6`
 - Live reproductions: `repro_8cce309de6e64edc900b`,
   `repro_51ecdb76c868cbd76781`, and `repro_344048452d24d9a232c0`
@@ -949,6 +1108,68 @@ Prototype evidence:
 - Non-financial credit: `ccredit_b9e57662a02461f982af`, 205 simulated units
 - Completion hash:
   `sha256:000bfe78ff40937fcd993af4739f1ca6e226ac5d06c84dbf9d048a549f56eecb`
+
+## CPU-First Inference Fabric and Crystal Chain
+
+Status: **implemented as a capability-gated control plane**.
+
+BEAST now exposes one serving inventory across Ollama, llama.cpp, vLLM,
+SGLang, TGI, and TensorRT-LLM. The host policy is CPU-first:
+
+- Ollama is the configured local default and uses its real HTTP generation API.
+- llama.cpp is available through an explicitly configured OpenAI-compatible
+  endpoint.
+- TGI remains a compatibility lane.
+- vLLM, SGLang, TensorRT-LLM, NVIDIA Dynamo, and llm-d are described but cannot
+  be selected as live CPU routes. No unavailable GPU execution is simulated.
+- Ray Serve is an optional future serving orchestrator, not a replacement for
+  Compute Governor policy or the Distributed Forge Scheduler.
+
+Endpoints:
+
+```text
+GET /edgek/inference-engines
+GET /edgek/inference-engines?probe=true
+POST /edgek/inference-engines/{engine_id}/generate
+GET /edgek/crystal-chain
+GET /edgek/crystal-chain?include_blocks=true
+```
+
+`InferenceArtifactIdentity` is the common fail-closed identity shared by KV
+transport and durable prefill storage. It commits to model/tokenizer revisions,
+engine, precision, attention configuration, policy, tools, skills, repository,
+and tenant privacy class without retaining raw prompt or system text.
+
+Crystallized-compute lifecycle events are recorded in an append-only SHA-256
+hash chain. Promotion, demotion, retirement, Forge mining/fusion, and Commons
+adoption link to the previous block. The chain is verified before every append
+and rejects writes after detected tampering.
+
+Claim boundary:
+
+- This is a tamper-evident local ledger, not decentralized consensus.
+- It is not proof-of-work and does not reward wasted CPU cycles.
+- It is not a financial asset or public cryptocurrency.
+- A filesystem administrator can replace the complete chain, so future real
+  federation must periodically cross-sign or externally anchor chain heads.
+
+Files:
+
+- `app/kernel/inference_artifact_identity.py`
+- `app.kernel.compute.inference_engine_fabric.py`
+- `app/kernel/crystal_chain.py`
+
+The layer boundary remains:
+
+```text
+Compute Governor decides
+→ serving orchestrator schedules
+→ engine executes
+→ KV backend stores private state
+→ Forge qualifies candidates
+→ Commons publishes safe proof
+→ Crystal Chain records lifecycle transitions
+```
 
 ## Strategic Positioning
 

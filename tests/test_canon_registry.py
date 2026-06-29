@@ -1,7 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.canon_registry import CanonRegistry
+from app.kernel.registry.canon_registry import CanonRegistry
 from app.main import app
 
 

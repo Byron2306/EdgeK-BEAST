@@ -26,7 +26,7 @@ from benchmarks.tiny_llama_opus_case_study_gauntlet import (
     prepare_case_repo,
     run_case_tests,
 )
-from app.kernel.meta_tool_commons import MetaToolCommons
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
 from benchmarks.mega_test_metrics import compute_qpccd
 from benchmarks.mega_test_tasks import build_observation_plan, expected_controlled_observations
 
@@ -128,10 +128,12 @@ def test_reuse_evidence_plane_certification_counts_seeded_channels(tmp_path):
 
     assert certification["passed"] is True
     assert certification["plane_hash"].startswith("sha256:")
-    assert certification["assertions"]["active_channel_count"] == 1
+    assert certification["assertions"]["active_channel_count"] == 4
     by_channel = {item["channel"]: item for item in certification["channels"]}
     assert by_channel["kv_cache"]["status"] == "present"
-    assert by_channel["swarm"]["status"] == "absent_expected"
+    assert by_channel["swarm"]["status"] == "present"
+    assert by_channel["cli"]["status"] == "present"
+    assert by_channel["ollama"]["status"] == "present"
 
 
 def test_full_channel_reuse_plane_smoke_populates_all_channels(tmp_path):

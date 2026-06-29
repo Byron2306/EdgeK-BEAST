@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.ollama_scout import OllamaScout
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.local.ollama_scout import OllamaScout
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 from app.main import app
 
 

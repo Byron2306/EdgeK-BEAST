@@ -3,12 +3,12 @@ import importlib
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.commons_policy import CommonsPolicyLearner
-from app.kernel.commons_economy import ComputeReductionEconomy
-from app.kernel.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
-from app.kernel.commons_space_registry import CommonsSpaceRegistry
-from app.kernel.commons_spaces import package_tiny_llama_case
-from app.kernel.federated_commons import FederatedCommons
+from app.kernel.governance.commons_policy import CommonsPolicyLearner
+from app.kernel.networking.commons_economy import ComputeReductionEconomy
+from app.kernel.networking.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
+from app.kernel.registry.commons_space_registry import CommonsSpaceRegistry
+from app.kernel.networking.commons_spaces import package_tiny_llama_case
+from app.kernel.networking.federated_commons import FederatedCommons
 
 
 @pytest.mark.asyncio
@@ -67,6 +67,9 @@ async def test_commons_spaces_api_lists_details_adopts_and_recommends(monkeypatc
             "/edgek/commons-economy/credits/tiny_llama_opus_gateway_repair",
             json={"approved": False, "reason": "API approval gate"},
         )
+        engines = await client.get("/edgek/inference-engines")
+        gpu_denied = await client.post("/edgek/inference-engines/vllm/generate", json={"prompt": "test"})
+        crystal_chain = await client.get("/edgek/crystal-chain")
 
     assert listed.status_code == 200
     assert listed.json()["count"] == 1
@@ -88,3 +91,7 @@ async def test_commons_spaces_api_lists_details_adopts_and_recommends(monkeypatc
     assert economy_state.json()["mode"] == "non_financial_simulation"
     assert proof.json()["components"]["observed_tokens_credited"] == 0
     assert denied_credit.status_code == 400
+    assert engines.json()["host_policy"] == "cpu_first_capability_gated"
+    assert gpu_denied.status_code == 400
+    assert crystal_chain.json()["valid"] is True
+    assert crystal_chain.json()["financial_asset"] is False

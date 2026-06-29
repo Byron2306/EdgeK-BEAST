@@ -1,0 +1,19 @@
+{
+  "adapter_config": "benchmarks/results/crystal_to_adapter_distillation/true_lora_package_latest/adapter_config.json",
+  "adapter_name": "beast-crystal-lora",
+  "authority": "training_package_only",
+  "base_model_name": "Qwen/Qwen2.5-0.5B-Instruct",
+  "beast_object_type": "true_lora_training_package",
+  "claim_boundary": "Package is PEFT/LoRA-ready; actual training requires torch/transformers/peft stack.",
+  "created_at": "2026-06-22T19:44:31.869045+00:00",
+  "crystal_matrix_receipt": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_training_latest.json",
+  "crystal_matrix_weights": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_weights_latest.npz",
+  "package_dir": "benchmarks/results/crystal_to_adapter_distillation/true_lora_package_latest",
+  "package_hash": "sha256:2d639802258ef8c60ab75de1a9e9f1b6ba1df5f0ec0b3308b95da2ac39f0391a",
+  "promotion_boundary": "trained LoRA must pass BEAST local verifier gauntlet before adoption",
+  "requirements": "benchmarks/results/crystal_to_adapter_distillation/true_lora_package_latest/requirements.txt",
+  "sft_dataset": "benchmarks/results/crystal_to_adapter_distillation/crystal_sft_training_latest.jsonl",
+  "sft_rows": 304,
+  "training_args": "benchmarks/results/crystal_to_adapter_distillation/true_lora_package_latest/training_args.json",
+  "version": "1.0"
+}

@@ -77,7 +77,7 @@ curl -sS -X POST http://127.0.0.1:8005/edgek/tools/intercept \
   -H 'Content-Type: application/json' \
   -d '{
     "tool_name": "read_file",
-    "target": "app/kernel/reason.py",
+    "target": "app.kernel.governance.reason.py",
     "query": "budget and circuit breaker decision",
     "limit": 3
   }'

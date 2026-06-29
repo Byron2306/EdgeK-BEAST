@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 
-from app.kernel.provider_handoff import build_provider_handoff
+from app.kernel.adapters.provider_handoff import build_provider_handoff
 from benchmarks.beast_systems_benchmark import (
     LiveProvider,
     canonicalize_live_output_for_task,

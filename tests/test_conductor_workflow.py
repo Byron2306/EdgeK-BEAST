@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.conductor_workflow import ConductorWorkflowBuilder
-from app.kernel.swarm import SwarmKernel
+from app.kernel.execution.conductor_workflow import ConductorWorkflowBuilder
+from app.kernel.networking.swarm import SwarmKernel
 from app.main import app
 
 

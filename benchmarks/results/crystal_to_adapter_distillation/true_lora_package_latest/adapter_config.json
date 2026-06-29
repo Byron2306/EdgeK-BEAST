@@ -1,0 +1,25 @@
+{
+  "base_model_name_or_path": "Qwen/Qwen2.5-0.5B-Instruct",
+  "beast_authority": "proposal_only_until_local_verifiers_pass",
+  "beast_source": {
+    "crystal_matrix_receipt": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_training_latest.json",
+    "crystal_matrix_weights": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_weights_latest.npz",
+    "sft_dataset": "benchmarks/results/crystal_to_adapter_distillation/crystal_sft_training_latest.jsonl"
+  },
+  "bias": "none",
+  "inference_mode": false,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "peft_type": "LORA",
+  "r": 16,
+  "target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "task_type": "CAUSAL_LM"
+}

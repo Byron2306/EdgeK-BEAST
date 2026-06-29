@@ -1,4 +1,4 @@
-from app.kernel.provider_economist import EconomistPolicy, ProviderEconomist
+from app.kernel.adapters.provider_economist import EconomistPolicy, ProviderEconomist
 
 
 def test_provider_economist_chooses_hidden_clean_economic_route():

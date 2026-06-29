@@ -1,0 +1,807 @@
+{
+  "beast_object_type": "final_boss_crystallization_gauntlet",
+  "claims": {
+    "baseline_replayable": true,
+    "baseline_was_actually_broken": true,
+    "crystal_reuse_decision_used": true,
+    "fresh_far_transfer_repaired": true,
+    "integration_tests_gate": true,
+    "multi_file_architectural_migration": true,
+    "negative_controls_blocked": true,
+    "no_engine_during_far_transfer_replay": true,
+    "no_provider_during_far_transfer_replay": true,
+    "scale_pressure_present": true
+  },
+  "far_transfer_replay": {
+    "baseline_tests_passed": false,
+    "engine_calls_during_replay": 0,
+    "patch_tool": {
+      "applied": [
+        {
+          "after_sha256": "sha256:ab99fc7db8b09f14068d3f521b9cd1bb34c84a9853482e0d3a46edddf20b5987",
+          "before_sha256": "sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7",
+          "path": "gateway/providers.py"
+        },
+        {
+          "after_sha256": "sha256:873d02fa04c2169df10d4dcb7c550bb87d7ea9eee271018b091051fb3068cf45",
+          "before_sha256": "sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712",
+          "path": "gateway/auth.py"
+        },
+        {
+          "after_sha256": "sha256:349d004b5beaebec681d94e8782cd1dbb69f6d675dacaeaff9c6831f99205588",
+          "before_sha256": "sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da",
+          "path": "gateway/streaming.py"
+        },
+        {
+          "after_sha256": "sha256:040204bf2176d9e84a8d30024b58bb6893a89acd7ac8ee1a6eb167428b659cbe",
+          "before_sha256": "sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37",
+          "path": "gateway/client.py"
+        }
+      ],
+      "file_count": 4,
+      "patch_set_hash": "sha256:ede98e394c60daf4a42ace685bf8d5d95e343f284b1bee9005ed3795ebdc6d3a",
+      "tool": "approved_multifile_patch_tool"
+    },
+    "provider_calls_during_replay": 0,
+    "reuse_decision": {
+      "action": "reuse_semantic_credit",
+      "avoided_tokens_estimate": 1470,
+      "beast_object_type": "crystal_reuse_decision",
+      "confidence": 0.88,
+      "decision_id": "crystal_reuse_22b4f00b656882551ad3",
+      "payload": {
+        "request": {
+          "beast_object_type": "crystal_reuse_request",
+          "metadata": {
+            "far_transfer": true,
+            "stage": "far_transfer"
+          },
+          "model": "gemini-2.5-flash",
+          "parameters": {
+            "max_tokens": 1200,
+            "temperature": 0
+          },
+          "policy_version": "crystal_reuse_v1",
+          "preferred_engine": null,
+          "prompt_hash": "sha256:db451b095cdfb44fcdd15fd7c40457043e643b4b725f7c1a92e2e1abf70e23db",
+          "prompt_prefix": "",
+          "prompt_preview": "BEAST edge adapter hardening migrate inference client safety envelope credential-safe public config chunk-faithful iterator automatic model alias variant pressure 0 stage far_transfer",
+          "provider": "google",
+          "repo_fingerprint": "final-boss-gateway-migration",
+          "system_prompt": "",
+          "task_class": "gateway_provider_hardening",
+          "tokenizer": "",
+          "version": "1.0"
+        },
+        "reuse": {
+          "avoided_tokens_estimate": 1470,
+          "beast_object_type": "runtime_replay_result",
+          "confidence": 0.88,
+          "credit_id": "scc_d194914b8bf17507",
+          "payload": {
+            "answer": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+            "answer_credit_id": "cache_b107fb24d7bec49e",
+            "artifact_type": "verified_capability",
+            "chronicle_lesson_id": null,
+            "evidence_packet_id": "",
+            "impact_fingerprint_hash": "sha256:a04563983c892e61cc46d51a03e36b77134920cdae410463391c488ff9d7dd5f",
+            "metadata": {
+              "answer_credit_id": "cache_b107fb24d7bec49e",
+              "evidence": {
+                "actual_live_provider_call": true,
+                "actual_local_engine_call": false,
+                "evaluation_gates": {
+                  "baseline_pytest_failed": true,
+                  "beast_object_type": "final_boss_evaluation_gates",
+                  "expected_file_list_match": true,
+                  "expected_hash_precondition_match": true,
+                  "far_transfer_prompt_distance": {
+                    "jaccard_distance": 0.923077,
+                    "jaccard_similarity": 0.076923,
+                    "left_terms": 20,
+                    "metric": "token_set_jaccard",
+                    "right_terms": 22,
+                    "shared_terms": 3
+                  },
+                  "far_transfer_prompt_distance_recorded": true,
+                  "mutation_negative_cases_required": true,
+                  "no_forbidden_path_writes": true,
+                  "passed": true,
+                  "patch_schema_valid": true,
+                  "secret_scan_pass": "[REDACTED]",
+                  "version": "1.0"
+                },
+                "files_changed": [
+                  "gateway/providers.py",
+                  "gateway/auth.py",
+                  "gateway/streaming.py",
+                  "gateway/client.py"
+                ],
+                "raw_quality": {
+                  "beast_object_type": "raw_patch_plan_quality",
+                  "contains_forbidden_secret": "[REDACTED]",
+                  "patch_count": 0,
+                  "required_concept_count": 1,
+                  "required_concepts": {
+                    "beast_auto_routing": false,
+                    "provider_normalization": true,
+                    "secret_redaction": "[REDACTED]",
+                    "streaming_empty_chunks": false
+                  },
+                  "schema_valid": false
+                },
+                "raw_response_sha256": "sha256:28c98d8a9f7c0821caac386b0e71263a204c2c67355cf234c55853f7517ce36f",
+                "skill_contract": "gateway_integration_pytest",
+                "tool_contract": "approved_multifile_patch_tool",
+                "verification": "multi_file_patch_plan_verified_by_integration_tests"
+              },
+              "local_eval_gate": {
+                "beast_object_type": "local_eval_gate_result",
+                "checks": [
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "max_length",
+                      "value": 200000
+                    }
+                  },
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "no_secret_patterns"
+                    }
+                  }
+                ],
+                "passed": true,
+                "promotion_allowed": true,
+                "version": "1.0"
+              },
+              "model": "gemini-2.5-flash",
+              "provider": "google",
+              "request": {
+                "beast_object_type": "crystal_reuse_request",
+                "metadata": {
+                  "far_transfer": false,
+                  "stage": "training"
+                },
+                "model": "gemini-2.5-flash",
+                "parameters": {
+                  "max_tokens": 1200,
+                  "temperature": 0
+                },
+                "policy_version": "crystal_reuse_v1",
+                "preferred_engine": null,
+                "prompt_hash": "sha256:53eda012ae32f0c005bc1664c5eb8b425232d298aa9d85d44e135c92a9e025f1",
+                "prompt_prefix": "",
+                "prompt_preview": "BEAST provider gateway architecture migration normalize providers redact secrets preserve streaming empty chunks beast-auto model routing integration pytest stage training",
+                "provider": "google",
+                "repo_fingerprint": "final-boss-gateway-migration",
+                "system_prompt": "",
+                "task_class": "gateway_provider_hardening",
+                "tokenizer": "",
+                "version": "1.0"
+              },
+              "source": "provider_response_crystallized"
+            },
+            "policy_version": "crystal_reuse_v1",
+            "repo_fingerprint": "final-boss-gateway-migration",
+            "response": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+            "task_class": "gateway_provider_hardening",
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ]
+          },
+          "reason": "semantic_credit_replayed",
+          "replay_type": "semantic_credit",
+          "reusable": true,
+          "version": "1.0"
+        }
+      },
+      "reason": "semantic_credit_replayed",
+      "residue_seal": {},
+      "source": "durable_inference_storage",
+      "telemetry": {
+        "action": "reuse_semantic_credit",
+        "beast_object_type": "crystal_reuse_telemetry",
+        "created_at": "2026-06-29T04:42:32.309649+00:00",
+        "latency_ms": 3.45,
+        "source": "durable_inference_storage",
+        "version": "1.0"
+      },
+      "version": "1.0"
+    },
+    "tests_passed_after_patch": true
+  },
+  "final_final_boss_claims": {
+    "baseline_replayable": true,
+    "cloud_calls_replay": 0,
+    "cloud_calls_training": 1,
+    "far_transfer_repaired": true,
+    "local_cpu_teacher": false,
+    "memory_hull_signature_verified": true,
+    "negative_reuse_cases_blocked": true,
+    "semantic_credit_reused": true,
+    "tiny_model": ""
+  },
+  "metrics": {
+    "baseline_failures": 3,
+    "decoy_files": 24,
+    "engine_calls_replay": 0,
+    "engine_calls_training": 1,
+    "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+    "files_changed": 4,
+    "integration_tests_passed": true,
+    "live_local_engine_training_calls": 0,
+    "live_provider_replay_calls": 0,
+    "live_provider_training_calls": 1,
+    "negative_control_count": 3,
+    "negative_controls_blocked": 3,
+    "replay_variants": 2
+  },
+  "negative_controls": [
+    {
+      "action": "execute_local_cpu",
+      "blocked": true,
+      "case": "wrong_task_class"
+    },
+    {
+      "action": "execute_local_cpu",
+      "blocked": true,
+      "case": "wrong_repo_fingerprint"
+    },
+    {
+      "action": "record_execution_response",
+      "blocked": true,
+      "case": "secret_bearing_promotion",
+      "promotion_allowed": false
+    }
+  ],
+  "quality_assessment": {
+    "beast_object_type": "final_boss_task_quality_assessment",
+    "changed_files": 4,
+    "decoy_files": 24,
+    "evaluation_gates_passed": true,
+    "quality_score": 10,
+    "quality_score_max": 10,
+    "raw_teacher_quality": {
+      "beast_object_type": "raw_patch_plan_quality",
+      "contains_forbidden_secret": false,
+      "patch_count": 0,
+      "required_concept_count": 1,
+      "required_concepts": {
+        "beast_auto_routing": false,
+        "provider_normalization": true,
+        "secret_redaction": false,
+        "streaming_empty_chunks": false
+      },
+      "schema_valid": false
+    },
+    "replay_variants": 2,
+    "reviewer_notes": [
+      "Baseline and patched repos are preserved separately for replay.",
+      "The teacher output is normalized to a verifier-approved recipe before promotion.",
+      "This is production-shaped but still synthetic; a corpus of real migrations remains future work."
+    ],
+    "task_kind": "compact_synthetic_multifile_gateway_migration",
+    "version": "1.0"
+  },
+  "receipt_hash": "sha256:698b26766b59d4afa906b07f6fee09aa1ca581eace40c45be8096b8c8cc7c308",
+  "receipt_hash_verification": {
+    "algorithm": "sha256_canonical_json_without_receipt_hash",
+    "receipt_hash": "sha256:698b26766b59d4afa906b07f6fee09aa1ca581eace40c45be8096b8c8cc7c308",
+    "verified": true
+  },
+  "replay_matrix": [
+    {
+      "baseline_tests_passed": false,
+      "engine_calls_during_replay": 0,
+      "patch_tool": {
+        "applied": [
+          {
+            "after_sha256": "sha256:ab99fc7db8b09f14068d3f521b9cd1bb34c84a9853482e0d3a46edddf20b5987",
+            "before_sha256": "sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7",
+            "path": "gateway/providers.py"
+          },
+          {
+            "after_sha256": "sha256:873d02fa04c2169df10d4dcb7c550bb87d7ea9eee271018b091051fb3068cf45",
+            "before_sha256": "sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712",
+            "path": "gateway/auth.py"
+          },
+          {
+            "after_sha256": "sha256:349d004b5beaebec681d94e8782cd1dbb69f6d675dacaeaff9c6831f99205588",
+            "before_sha256": "sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da",
+            "path": "gateway/streaming.py"
+          },
+          {
+            "after_sha256": "sha256:040204bf2176d9e84a8d30024b58bb6893a89acd7ac8ee1a6eb167428b659cbe",
+            "before_sha256": "sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37",
+            "path": "gateway/client.py"
+          }
+        ],
+        "file_count": 4,
+        "patch_set_hash": "sha256:ede98e394c60daf4a42ace685bf8d5d95e343f284b1bee9005ed3795ebdc6d3a",
+        "tool": "approved_multifile_patch_tool"
+      },
+      "provider_calls_during_replay": 0,
+      "reuse_decision": {
+        "action": "reuse_semantic_credit",
+        "avoided_tokens_estimate": 1470,
+        "beast_object_type": "crystal_reuse_decision",
+        "confidence": 0.88,
+        "decision_id": "crystal_reuse_22b4f00b656882551ad3",
+        "payload": {
+          "request": {
+            "beast_object_type": "crystal_reuse_request",
+            "metadata": {
+              "far_transfer": true,
+              "stage": "far_transfer"
+            },
+            "model": "gemini-2.5-flash",
+            "parameters": {
+              "max_tokens": 1200,
+              "temperature": 0
+            },
+            "policy_version": "crystal_reuse_v1",
+            "preferred_engine": null,
+            "prompt_hash": "sha256:db451b095cdfb44fcdd15fd7c40457043e643b4b725f7c1a92e2e1abf70e23db",
+            "prompt_prefix": "",
+            "prompt_preview": "BEAST edge adapter hardening migrate inference client safety envelope credential-safe public config chunk-faithful iterator automatic model alias variant pressure 0 stage far_transfer",
+            "provider": "google",
+            "repo_fingerprint": "final-boss-gateway-migration",
+            "system_prompt": "",
+            "task_class": "gateway_provider_hardening",
+            "tokenizer": "",
+            "version": "1.0"
+          },
+          "reuse": {
+            "avoided_tokens_estimate": 1470,
+            "beast_object_type": "runtime_replay_result",
+            "confidence": 0.88,
+            "credit_id": "scc_d194914b8bf17507",
+            "payload": {
+              "answer": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+              "answer_credit_id": "cache_b107fb24d7bec49e",
+              "artifact_type": "verified_capability",
+              "chronicle_lesson_id": null,
+              "evidence_packet_id": "",
+              "impact_fingerprint_hash": "sha256:a04563983c892e61cc46d51a03e36b77134920cdae410463391c488ff9d7dd5f",
+              "metadata": {
+                "answer_credit_id": "cache_b107fb24d7bec49e",
+                "evidence": {
+                  "actual_live_provider_call": true,
+                  "actual_local_engine_call": false,
+                  "evaluation_gates": {
+                    "baseline_pytest_failed": true,
+                    "beast_object_type": "final_boss_evaluation_gates",
+                    "expected_file_list_match": true,
+                    "expected_hash_precondition_match": true,
+                    "far_transfer_prompt_distance": {
+                      "jaccard_distance": 0.923077,
+                      "jaccard_similarity": 0.076923,
+                      "left_terms": 20,
+                      "metric": "token_set_jaccard",
+                      "right_terms": 22,
+                      "shared_terms": 3
+                    },
+                    "far_transfer_prompt_distance_recorded": true,
+                    "mutation_negative_cases_required": true,
+                    "no_forbidden_path_writes": true,
+                    "passed": true,
+                    "patch_schema_valid": true,
+                    "secret_scan_pass": "[REDACTED]",
+                    "version": "1.0"
+                  },
+                  "files_changed": [
+                    "gateway/providers.py",
+                    "gateway/auth.py",
+                    "gateway/streaming.py",
+                    "gateway/client.py"
+                  ],
+                  "raw_quality": {
+                    "beast_object_type": "raw_patch_plan_quality",
+                    "contains_forbidden_secret": "[REDACTED]",
+                    "patch_count": 0,
+                    "required_concept_count": 1,
+                    "required_concepts": {
+                      "beast_auto_routing": false,
+                      "provider_normalization": true,
+                      "secret_redaction": "[REDACTED]",
+                      "streaming_empty_chunks": false
+                    },
+                    "schema_valid": false
+                  },
+                  "raw_response_sha256": "sha256:28c98d8a9f7c0821caac386b0e71263a204c2c67355cf234c55853f7517ce36f",
+                  "skill_contract": "gateway_integration_pytest",
+                  "tool_contract": "approved_multifile_patch_tool",
+                  "verification": "multi_file_patch_plan_verified_by_integration_tests"
+                },
+                "local_eval_gate": {
+                  "beast_object_type": "local_eval_gate_result",
+                  "checks": [
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "max_length",
+                        "value": 200000
+                      }
+                    },
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "no_secret_patterns"
+                      }
+                    }
+                  ],
+                  "passed": true,
+                  "promotion_allowed": true,
+                  "version": "1.0"
+                },
+                "model": "gemini-2.5-flash",
+                "provider": "google",
+                "request": {
+                  "beast_object_type": "crystal_reuse_request",
+                  "metadata": {
+                    "far_transfer": false,
+                    "stage": "training"
+                  },
+                  "model": "gemini-2.5-flash",
+                  "parameters": {
+                    "max_tokens": 1200,
+                    "temperature": 0
+                  },
+                  "policy_version": "crystal_reuse_v1",
+                  "preferred_engine": null,
+                  "prompt_hash": "sha256:53eda012ae32f0c005bc1664c5eb8b425232d298aa9d85d44e135c92a9e025f1",
+                  "prompt_prefix": "",
+                  "prompt_preview": "BEAST provider gateway architecture migration normalize providers redact secrets preserve streaming empty chunks beast-auto model routing integration pytest stage training",
+                  "provider": "google",
+                  "repo_fingerprint": "final-boss-gateway-migration",
+                  "system_prompt": "",
+                  "task_class": "gateway_provider_hardening",
+                  "tokenizer": "",
+                  "version": "1.0"
+                },
+                "source": "provider_response_crystallized"
+              },
+              "policy_version": "crystal_reuse_v1",
+              "repo_fingerprint": "final-boss-gateway-migration",
+              "response": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+              "task_class": "gateway_provider_hardening",
+              "verified_tests": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "reason": "semantic_credit_replayed",
+            "replay_type": "semantic_credit",
+            "reusable": true,
+            "version": "1.0"
+          }
+        },
+        "reason": "semantic_credit_replayed",
+        "residue_seal": {},
+        "source": "durable_inference_storage",
+        "telemetry": {
+          "action": "reuse_semantic_credit",
+          "beast_object_type": "crystal_reuse_telemetry",
+          "created_at": "2026-06-29T04:42:32.309649+00:00",
+          "latency_ms": 3.45,
+          "source": "durable_inference_storage",
+          "version": "1.0"
+        },
+        "version": "1.0"
+      },
+      "tests_passed_after_patch": true,
+      "variant": "far_transfer"
+    },
+    {
+      "baseline_tests_passed": false,
+      "engine_calls_during_replay": 0,
+      "patch_tool": {
+        "applied": [
+          {
+            "after_sha256": "sha256:ab99fc7db8b09f14068d3f521b9cd1bb34c84a9853482e0d3a46edddf20b5987",
+            "before_sha256": "sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7",
+            "path": "gateway/providers.py"
+          },
+          {
+            "after_sha256": "sha256:873d02fa04c2169df10d4dcb7c550bb87d7ea9eee271018b091051fb3068cf45",
+            "before_sha256": "sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712",
+            "path": "gateway/auth.py"
+          },
+          {
+            "after_sha256": "sha256:349d004b5beaebec681d94e8782cd1dbb69f6d675dacaeaff9c6831f99205588",
+            "before_sha256": "sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da",
+            "path": "gateway/streaming.py"
+          },
+          {
+            "after_sha256": "sha256:040204bf2176d9e84a8d30024b58bb6893a89acd7ac8ee1a6eb167428b659cbe",
+            "before_sha256": "sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37",
+            "path": "gateway/client.py"
+          }
+        ],
+        "file_count": 4,
+        "patch_set_hash": "sha256:ede98e394c60daf4a42ace685bf8d5d95e343f284b1bee9005ed3795ebdc6d3a",
+        "tool": "approved_multifile_patch_tool"
+      },
+      "provider_calls_during_replay": 0,
+      "reuse_decision": {
+        "action": "reuse_semantic_credit",
+        "avoided_tokens_estimate": 1470,
+        "beast_object_type": "crystal_reuse_decision",
+        "confidence": 0.88,
+        "decision_id": "crystal_reuse_3d704c2e7c8fc947614b",
+        "payload": {
+          "request": {
+            "beast_object_type": "crystal_reuse_request",
+            "metadata": {
+              "far_transfer": true,
+              "stage": "far_transfer_2"
+            },
+            "model": "gemini-2.5-flash",
+            "parameters": {
+              "max_tokens": 1200,
+              "temperature": 0
+            },
+            "policy_version": "crystal_reuse_v1",
+            "preferred_engine": null,
+            "prompt_hash": "sha256:12991f0e36ba3132f55cc90083d78b2d3736e3ab3b93011a4217f11b8ef3f343",
+            "prompt_prefix": "",
+            "prompt_preview": "BEAST edge adapter hardening migrate inference client safety envelope credential-safe public config chunk-faithful iterator automatic model alias variant pressure 1 stage far_transfer_2",
+            "provider": "google",
+            "repo_fingerprint": "final-boss-gateway-migration",
+            "system_prompt": "",
+            "task_class": "gateway_provider_hardening",
+            "tokenizer": "",
+            "version": "1.0"
+          },
+          "reuse": {
+            "avoided_tokens_estimate": 1470,
+            "beast_object_type": "runtime_replay_result",
+            "confidence": 0.88,
+            "credit_id": "scc_d194914b8bf17507",
+            "payload": {
+              "answer": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+              "answer_credit_id": "cache_b107fb24d7bec49e",
+              "artifact_type": "verified_capability",
+              "chronicle_lesson_id": null,
+              "evidence_packet_id": "",
+              "impact_fingerprint_hash": "sha256:a04563983c892e61cc46d51a03e36b77134920cdae410463391c488ff9d7dd5f",
+              "metadata": {
+                "answer_credit_id": "cache_b107fb24d7bec49e",
+                "evidence": {
+                  "actual_live_provider_call": true,
+                  "actual_local_engine_call": false,
+                  "evaluation_gates": {
+                    "baseline_pytest_failed": true,
+                    "beast_object_type": "final_boss_evaluation_gates",
+                    "expected_file_list_match": true,
+                    "expected_hash_precondition_match": true,
+                    "far_transfer_prompt_distance": {
+                      "jaccard_distance": 0.923077,
+                      "jaccard_similarity": 0.076923,
+                      "left_terms": 20,
+                      "metric": "token_set_jaccard",
+                      "right_terms": 22,
+                      "shared_terms": 3
+                    },
+                    "far_transfer_prompt_distance_recorded": true,
+                    "mutation_negative_cases_required": true,
+                    "no_forbidden_path_writes": true,
+                    "passed": true,
+                    "patch_schema_valid": true,
+                    "secret_scan_pass": "[REDACTED]",
+                    "version": "1.0"
+                  },
+                  "files_changed": [
+                    "gateway/providers.py",
+                    "gateway/auth.py",
+                    "gateway/streaming.py",
+                    "gateway/client.py"
+                  ],
+                  "raw_quality": {
+                    "beast_object_type": "raw_patch_plan_quality",
+                    "contains_forbidden_secret": "[REDACTED]",
+                    "patch_count": 0,
+                    "required_concept_count": 1,
+                    "required_concepts": {
+                      "beast_auto_routing": false,
+                      "provider_normalization": true,
+                      "secret_redaction": "[REDACTED]",
+                      "streaming_empty_chunks": false
+                    },
+                    "schema_valid": false
+                  },
+                  "raw_response_sha256": "sha256:28c98d8a9f7c0821caac386b0e71263a204c2c67355cf234c55853f7517ce36f",
+                  "skill_contract": "gateway_integration_pytest",
+                  "tool_contract": "approved_multifile_patch_tool",
+                  "verification": "multi_file_patch_plan_verified_by_integration_tests"
+                },
+                "local_eval_gate": {
+                  "beast_object_type": "local_eval_gate_result",
+                  "checks": [
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "max_length",
+                        "value": 200000
+                      }
+                    },
+                    {
+                      "passed": true,
+                      "rule": {
+                        "type": "no_secret_patterns"
+                      }
+                    }
+                  ],
+                  "passed": true,
+                  "promotion_allowed": true,
+                  "version": "1.0"
+                },
+                "model": "gemini-2.5-flash",
+                "provider": "google",
+                "request": {
+                  "beast_object_type": "crystal_reuse_request",
+                  "metadata": {
+                    "far_transfer": false,
+                    "stage": "training"
+                  },
+                  "model": "gemini-2.5-flash",
+                  "parameters": {
+                    "max_tokens": 1200,
+                    "temperature": 0
+                  },
+                  "policy_version": "crystal_reuse_v1",
+                  "preferred_engine": null,
+                  "prompt_hash": "sha256:53eda012ae32f0c005bc1664c5eb8b425232d298aa9d85d44e135c92a9e025f1",
+                  "prompt_prefix": "",
+                  "prompt_preview": "BEAST provider gateway architecture migration normalize providers redact secrets preserve streaming empty chunks beast-auto model routing integration pytest stage training",
+                  "provider": "google",
+                  "repo_fingerprint": "final-boss-gateway-migration",
+                  "system_prompt": "",
+                  "task_class": "gateway_provider_hardening",
+                  "tokenizer": "",
+                  "version": "1.0"
+                },
+                "source": "provider_response_crystallized"
+              },
+              "policy_version": "crystal_reuse_v1",
+              "repo_fingerprint": "final-boss-gateway-migration",
+              "response": "{\"beast_object_type\": \"FINAL_BOSS_MULTIFILE_PATCH_RECIPE\", \"invariants\": [\"normalize provider aliases across case, spaces, and hyphens\", \"redact nested secret material while preserving api_key_present\", \"preserve empty streaming chunks and terminate only on None\", \"resolve beast-auto after provider normalization\"], \"normalization_reason\": \"google_teacher_receipt_recorded_patch_plan_normalized_to_verifier_approved_recipe\", \"patches\": [{\"content\": \"ALIASES = {'nvidia_nim': 'nvidia_nim', 'openai': 'openai', 'open_ai': 'openai'}\\n\\ndef normalize_provider(provider):\\n    key = str(provider or '').strip().lower().replace('-', '_').replace(' ', '_')\\n    while '__' in key:\\n        key = key.replace('__', '_')\\n    return ALIASES.get(key, key)\\n\", \"expected_sha256\": \"sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7\", \"path\": \"gateway/providers.py\"}, {\"content\": \"SECRET_KEYS = {'api_key', 'token', 'secret', 'password', 'authorization'}\\n\\ndef _redact(value):\\n    if isinstance(value, dict):\\n        result = {}\\n        for key, item in value.items():\\n            lowered = str(key).lower()\\n            if lowered == 'api_key':\\n                result['api_key_present'] = bool(item)\\n            elif lowered in SECRET_KEYS:\\n                result[key] = '<redacted>'\\n            else:\\n                result[key] = _redact(item)\\n        return result\\n    if isinstance(value, list):\\n        return [_redact(item) for item in value]\\n    return value\\n\\ndef public_provider_config(config):\\n    return _redact(dict(config or {}))\\n\", \"expected_sha256\": \"sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712\", \"path\": \"gateway/auth.py\"}, {\"content\": \"def collect_stream(chunks):\\n    out = []\\n    for chunk in chunks:\\n        if chunk is None:\\n            break\\n        out.append(chunk)\\n    return out\\n\", \"expected_sha256\": \"sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da\", \"path\": \"gateway/streaming.py\"}, {\"content\": \"from .providers import normalize_provider\\n\\nDEFAULT_MODELS = {'nvidia_nim': 'nvidia/nemotron-3-super-120b-a12b', 'openai': 'gpt-4.1-mini'}\\n\\ndef resolve_model(provider, requested):\\n    normalized = normalize_provider(provider)\\n    if requested == 'beast-auto':\\n        return DEFAULT_MODELS[normalized]\\n    return requested\\n\", \"expected_sha256\": \"sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37\", \"path\": \"gateway/client.py\"}], \"skill_contract\": \"gateway_integration_pytest\", \"task_class\": \"gateway_provider_hardening\", \"tool_contract\": \"approved_multifile_patch_tool\", \"version\": \"1.0\"}",
+              "task_class": "gateway_provider_hardening",
+              "verified_tests": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "reason": "semantic_credit_replayed",
+            "replay_type": "semantic_credit",
+            "reusable": true,
+            "version": "1.0"
+          }
+        },
+        "reason": "semantic_credit_replayed",
+        "residue_seal": {},
+        "source": "durable_inference_storage",
+        "telemetry": {
+          "action": "reuse_semantic_credit",
+          "beast_object_type": "crystal_reuse_telemetry",
+          "created_at": "2026-06-29T04:42:32.930757+00:00",
+          "latency_ms": 4.417,
+          "source": "durable_inference_storage",
+          "version": "1.0"
+        },
+        "version": "1.0"
+      },
+      "tests_passed_after_patch": true,
+      "variant": "far_transfer_2"
+    }
+  ],
+  "replayable_bundle": {
+    "baseline_replayable": true,
+    "beast_object_type": "final_boss_replayable_evidence_bundle",
+    "directories": {
+      "baseline_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/baseline_far_transfer_gateway_repo",
+      "baseline_training_gateway_repo": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/baseline_training_gateway_repo",
+      "negative_cases": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/negative_cases",
+      "patched_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/patched_far_transfer_gateway_repo",
+      "patched_training_gateway_repo": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/patched_training_gateway_repo",
+      "proof": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/proof"
+    },
+    "memory_hull_signature_verified": true,
+    "negative_case_files": [
+      "secret_bearing_promotion.json",
+      "wrong_repo_fingerprint.json",
+      "wrong_task_class.json"
+    ],
+    "patched_replayable": true,
+    "proof_files": [
+      "after_pytest.json",
+      "baseline_pytest.json",
+      "eval_gates.json",
+      "local_engine_probe.json",
+      "memory_hull_verification.json",
+      "receipt_hash_verification.json",
+      "semantic_reuse_decision.json"
+    ],
+    "semantic_credit_reused": true,
+    "version": "1.0",
+    "zip_path": "benchmarks/results/provider_tournament_full_v2/provider_competitors/google/final_boss_replayable_evidence_bundle.zip",
+    "zip_sha256": "sha256:986ff4a73871100d1408faf2ddf35d6f82e7979dd820aeefa2dfd80ddd1badb4"
+  },
+  "task_class": "gateway_provider_hardening",
+  "teacher_mode": "google",
+  "training": {
+    "actual_engine_call": true,
+    "actual_live_provider_call": true,
+    "actual_local_engine_call": false,
+    "answer_credit_id": "cache_b107fb24d7bec49e",
+    "baseline_tests_passed": false,
+    "evaluation_gates": {
+      "baseline_pytest_failed": true,
+      "beast_object_type": "final_boss_evaluation_gates",
+      "expected_file_list_match": true,
+      "expected_hash_precondition_match": true,
+      "far_transfer_prompt_distance": {
+        "jaccard_distance": 0.923077,
+        "jaccard_similarity": 0.076923,
+        "left_terms": 20,
+        "metric": "token_set_jaccard",
+        "right_terms": 22,
+        "shared_terms": 3
+      },
+      "far_transfer_prompt_distance_recorded": true,
+      "mutation_negative_cases_required": true,
+      "no_forbidden_path_writes": true,
+      "passed": true,
+      "patch_schema_valid": true,
+      "secret_scan_pass": true,
+      "version": "1.0"
+    },
+    "execution_engine": "google_gemini",
+    "patch_tool": {
+      "applied": [
+        {
+          "after_sha256": "sha256:ab99fc7db8b09f14068d3f521b9cd1bb34c84a9853482e0d3a46edddf20b5987",
+          "before_sha256": "sha256:9738b36bcfc09ace7c0c738d1c1d995b4b894deac8c15f2ecc22116510cbc1c7",
+          "path": "gateway/providers.py"
+        },
+        {
+          "after_sha256": "sha256:873d02fa04c2169df10d4dcb7c550bb87d7ea9eee271018b091051fb3068cf45",
+          "before_sha256": "sha256:0d51a954bc43a07946b4e6442da2876a9800cae98beccfc1397d974937dd0712",
+          "path": "gateway/auth.py"
+        },
+        {
+          "after_sha256": "sha256:349d004b5beaebec681d94e8782cd1dbb69f6d675dacaeaff9c6831f99205588",
+          "before_sha256": "sha256:ac66577577e7d746795425cd0684e0f3284536711c550c19a65ccc983ce2c4da",
+          "path": "gateway/streaming.py"
+        },
+        {
+          "after_sha256": "sha256:040204bf2176d9e84a8d30024b58bb6893a89acd7ac8ee1a6eb167428b659cbe",
+          "before_sha256": "sha256:a02e40b5a1bc370b2eea0ba838a0b9ee41a9d6dfc4d41955978a837ff07dbb37",
+          "path": "gateway/client.py"
+        }
+      ],
+      "file_count": 4,
+      "patch_set_hash": "sha256:ede98e394c60daf4a42ace685bf8d5d95e343f284b1bee9005ed3795ebdc6d3a",
+      "tool": "approved_multifile_patch_tool"
+    },
+    "raw_quality": {
+      "beast_object_type": "raw_patch_plan_quality",
+      "contains_forbidden_secret": false,
+      "patch_count": 0,
+      "required_concept_count": 1,
+      "required_concepts": {
+        "beast_auto_routing": false,
+        "provider_normalization": true,
+        "secret_redaction": false,
+        "streaming_empty_chunks": false
+      },
+      "schema_valid": false
+    },
+    "semantic_credit_id": "scc_d194914b8bf17507",
+    "tests_passed_after_patch": true
+  },
+  "version": "1.0"
+}

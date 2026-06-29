@@ -1,0 +1,53 @@
+{
+  "aggregate_transfer_metrics": {
+    "bytes_avoided": 1559802,
+    "bytes_received": 75730,
+    "claim_boundary": "measured received bytes versus signed compressed bundle bytes when present; legacy events may use artifact bytes; no compute credit issued",
+    "early_rejections": 0,
+    "events": 29,
+    "full_bundles_avoided": 28
+  },
+  "beast_object_type": "proof_local_phase12_lab_receipt",
+  "claim_boundary": "CPU Docker LAN evidence; no public internet, cross-OS, financial credit, or production traffic claim",
+  "legacy_federation": {
+    "bundle_imported_or_duplicate": true,
+    "envelope_ingested": true,
+    "reproduced": true
+  },
+  "nodes": {
+    "node_a_spaces": 51,
+    "node_b_allowlisted": true,
+    "node_b_spaces_before": 53,
+    "node_c_allowlisted": true
+  },
+  "ok": true,
+  "phase1": {
+    "bytes_avoided": 3025,
+    "bytes_received": 3673,
+    "credit_eligible": false,
+    "declared_artifact_bytes": 7312,
+    "declared_bundle_bytes": 6698,
+    "full_bundle_avoided": true,
+    "manifest_hash": "sha256:a2c4038aadce5e8000cbaf5fb6d6f1ea8d53ea3ccbecefbfb5917cd9739e7bfd",
+    "node_b_receipt_accepted": true,
+    "node_c_receipt_accepted": true,
+    "packet_id": "prp_44df3a6c4126899c1626ebd7",
+    "privacy_class": "public_metadata_only",
+    "signed_bundle_imported_or_duplicate": true,
+    "staged_stop": "manifest",
+    "tampered_packet_rejected": true
+  },
+  "phase2": {
+    "advertisement_id": "adv_640fc5a21596b8690036f6c7",
+    "fallback": "local_ollama",
+    "node_b_advertisement_accepted": true,
+    "node_c_advertisement_accepted": true,
+    "post_replay_gate": "trusted_lan_replay",
+    "pre_replay_gate": "quarantine_and_replay",
+    "provider_execution_requested": false,
+    "reproduction_evidence_verified": true,
+    "reproduction_id": "repro_0f8d36da63f9083f68b4"
+  },
+  "space_id": "bench_beast_mistral_first_provider_family_anchor_o1_full_gauntlet",
+  "version": "1.0"
+}

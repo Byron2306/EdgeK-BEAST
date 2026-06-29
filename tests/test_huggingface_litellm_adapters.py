@@ -1,10 +1,10 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.deployment import DeploymentManager
-from app.kernel.execute import Executor
-from app.kernel.perceive import EdgeKIR, ProviderType
-from app.kernel.runtime import runtime_governor
+from app.kernel.deployment.deployment import DeploymentManager
+from app.kernel.execution.execute import Executor
+from app.kernel.compute.perceive import EdgeKIR, ProviderType
+from app.kernel.governance.runtime import runtime_governor
 from app.main import app
 
 

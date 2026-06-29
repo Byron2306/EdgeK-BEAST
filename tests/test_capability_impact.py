@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.kernel.capability_impact import CapabilityImpactFingerprint
+from app.kernel.capability.capability_impact import CapabilityImpactFingerprint
 
 
 def _build(engine, root, confidence=0.9, policy="v1", schema="sha256:s1"):

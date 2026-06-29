@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
+from app.kernel.data_processing.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
 
 OUT = ROOT / "benchmarks" / "results"
 

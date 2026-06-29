@@ -1,4 +1,4 @@
-from app.kernel.skill_tree import SkillTree
+from app.kernel.capability.skill_tree import SkillTree
 
 
 def test_skill_tree_mines_generates_validates_and_promotes_candidate(tmp_path):

@@ -2,9 +2,9 @@ import threading
 import time
 from datetime import datetime, timezone
 
-from app.kernel.ablation_harness import AblationHarness, AblationRun
-from app.kernel.incremental_fingerprint import IncrementalFingerprintEngine
-from app.kernel.ollama import OllamaContextBlock, OllamaContextCache
+from app.kernel.compute.ablation_harness import AblationHarness, AblationRun
+from app.kernel.data_processing.incremental_fingerprint import IncrementalFingerprintEngine
+from app.kernel.local.ollama import OllamaContextBlock, OllamaContextCache
 
 
 def test_incremental_fingerprint_rebuilds_for_dependency_test_and_deletion(tmp_path):

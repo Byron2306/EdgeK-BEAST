@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.network_chronicle import NetworkChronicleConnector
-from app.kernel.secret_vault import SecretVault
+from app.kernel.networking.network_chronicle import NetworkChronicleConnector
+from app.kernel.security.secret_vault import SecretVault
 from benchmarks.beast_systems_benchmark import (
     LIVE_PROVIDER_PRESETS,
     LaneResult,

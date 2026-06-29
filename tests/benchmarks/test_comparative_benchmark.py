@@ -1,5 +1,5 @@
-from app.kernel.benchmark import ComparativeBenchmark, MegaGauntlet
-from app.kernel.reason import BudgetLedger, Reasoner
+from app.kernel.compute.benchmark import ComparativeBenchmark, MegaGauntlet
+from app.kernel.governance.reason import BudgetLedger, Reasoner
 
 
 def test_comparative_benchmark_reports_gated_vs_non_gated(tmp_path):

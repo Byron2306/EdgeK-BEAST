@@ -1,0 +1,98 @@
+{
+  "beast_object_type": "final_boss_engine_comparison",
+  "errors": {},
+  "interpretation": "Quality is judged by verified integration repair, replay without engine calls, negative controls, replayable bundle presence, and raw teacher schema/concept quality.",
+  "runs": {
+    "google_gemini": {
+      "claims": {
+        "baseline_replayable": true,
+        "baseline_was_actually_broken": true,
+        "crystal_reuse_decision_used": true,
+        "fresh_far_transfer_repaired": true,
+        "integration_tests_gate": true,
+        "multi_file_architectural_migration": true,
+        "negative_controls_blocked": true,
+        "no_engine_during_far_transfer_replay": true,
+        "no_provider_during_far_transfer_replay": true,
+        "scale_pressure_present": true
+      },
+      "metrics": {
+        "baseline_failures": 4,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 0,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 3
+      },
+      "quality_score": 10,
+      "quality_score_max": 10,
+      "raw_patch_count": 0,
+      "raw_required_concept_count": 1,
+      "raw_schema_valid": false,
+      "receipt_hash": "sha256:8d0e56479e0c28be3d73c75d50a7be4eca3d2686be9782921feedc5eadee28e6",
+      "replayable_bundle_sha256": "sha256:aae60e46e7a91c1472a9ea14d208714cb604d7595b154cd9cbc610c89cc6176f",
+      "replayable_bundle_zip": "benchmarks/results/final_boss_engine_comparison_live/google_gemini/final_boss_replayable_evidence_bundle.zip",
+      "teacher_mode": "google"
+    },
+    "local_ollama": {
+      "claims": {
+        "baseline_replayable": true,
+        "baseline_was_actually_broken": true,
+        "crystal_reuse_decision_used": true,
+        "fresh_far_transfer_repaired": true,
+        "integration_tests_gate": true,
+        "multi_file_architectural_migration": true,
+        "negative_controls_blocked": true,
+        "no_engine_during_far_transfer_replay": true,
+        "no_provider_during_far_transfer_replay": true,
+        "scale_pressure_present": true
+      },
+      "metrics": {
+        "baseline_failures": 4,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 1,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 3
+      },
+      "quality_score": 10,
+      "quality_score_max": 10,
+      "raw_patch_count": 0,
+      "raw_required_concept_count": 2,
+      "raw_schema_valid": true,
+      "receipt_hash": "sha256:b64d97eca3be88d94304e98e67dc6b4dcad122cfdc3cf96700cd4158d1c4f6cf",
+      "replayable_bundle_sha256": "sha256:3c8a38f87f472feee49a3ffd010285111afd713af1fbc9cdabe5bd967ba16ca4",
+      "replayable_bundle_zip": "benchmarks/results/final_boss_engine_comparison_live/local_ollama/final_boss_replayable_evidence_bundle.zip",
+      "teacher_mode": "ollama"
+    }
+  },
+  "version": "1.0",
+  "winner": {
+    "ranking": [
+      {
+        "engine": "local_ollama",
+        "score": 47
+      },
+      {
+        "engine": "google_gemini",
+        "score": 46
+      }
+    ],
+    "status": "ranked",
+    "winner": "local_ollama"
+  }
+}

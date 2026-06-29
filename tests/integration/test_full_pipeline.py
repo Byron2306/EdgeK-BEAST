@@ -1,11 +1,11 @@
 """Integration coverage for the CPU-first forge and crystallization pipeline."""
 
-from app.kernel.ablation_harness import AblationHarness
-from app.kernel.capability_crystallization import CapabilityCrystallizationEngine
-from app.kernel.compute_forge import ComputeForgeNode, ComputeLedger
-from app.kernel.distributed_forge_scheduler import DistributedForgeScheduler
-from app.kernel.durable_inference_storage import DurableInferenceStorage
-from app.kernel.kv_cache_transport import CacheEngine, CacheLocation, CrossEngineKVCacheTransport
+from app.kernel.compute.ablation_harness import AblationHarness
+from app.kernel.capability.capability_crystallization import CapabilityCrystallizationEngine
+from app.kernel.compute.compute_forge import ComputeForgeNode, ComputeLedger
+from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler
+from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
+from app.kernel.compute.kv_cache_transport import CacheEngine, CacheLocation, CrossEngineKVCacheTransport
 
 
 def _write_repo(root):

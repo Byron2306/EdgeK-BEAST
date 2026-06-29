@@ -1,11 +1,11 @@
 from dataclasses import replace
 
-from app.kernel.compute_governor import ComputeGovernor
-from app.kernel.compute_ir import DeterministicDisplacementProof
-from app.kernel.compute_ledger import ComputeLedger
-from app.kernel.deterministic_executor import DeterministicTransformExecutor
-from app.kernel.inference_interceptor import InferenceComputeInterceptor
-from app.kernel.perceive import EdgeKIR
+from app.kernel.governance.compute_governor import ComputeGovernor
+from app.kernel.compute.compute_ir import DeterministicDisplacementProof
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.governance.deterministic_executor import DeterministicTransformExecutor
+from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+from app.kernel.compute.perceive import EdgeKIR
 
 
 def _proof(**overrides):

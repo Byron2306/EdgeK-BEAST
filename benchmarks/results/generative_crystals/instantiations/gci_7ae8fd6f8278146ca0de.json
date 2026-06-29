@@ -1,0 +1,28 @@
+{
+  "action_ir": {
+    "handoff": "compute_governor",
+    "route": "local_verifier_first",
+    "task_family": "route_diagnostics",
+    "task_id": "phase5_task_1"
+  },
+  "approval_required": true,
+  "authority": "proposal_only_until_local_verifiers_pass",
+  "beast_object_type": "generative_crystal_instantiation",
+  "boundary_hash": "sha256:c84cd4eed9bf802b86e7ea85a889a5d222985217d519297000c8af6df74a627d",
+  "context_hash": "sha256:9f61df3c7d65eedd4ab31d929fbd9c2d96e2b9d5f78ed82c8484ea01cb2ac1f8",
+  "created_at": "2026-06-22T20:26:53.440339+00:00",
+  "instantiation_id": "gci_7ae8fd6f8278146ca0de",
+  "risk_class": "medium",
+  "rollback": {
+    "restore": "previous_route_card",
+    "rollback_action": "discard_instantiation",
+    "task_id": "phase5_task_1"
+  },
+  "task_family": "route_diagnostics",
+  "template_id": "gct_4164941bba07227b67d0",
+  "verifier_plan": [
+    "provider_fitness_check",
+    "schema_validation"
+  ],
+  "version": "1.0"
+}

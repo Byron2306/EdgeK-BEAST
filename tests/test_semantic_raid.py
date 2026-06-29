@@ -1,6 +1,6 @@
 import json
 
-from app.kernel.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
+from app.kernel.data_processing.semantic_raid import ArtifactFossilLayerStore, SemanticRaidStore
 
 
 def test_semantic_raid_stores_redundant_shards_and_repairs_corruption(tmp_path):

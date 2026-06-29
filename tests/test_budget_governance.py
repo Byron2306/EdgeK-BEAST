@@ -1,5 +1,5 @@
-from app.kernel.perceive import EdgeKIR
-from app.kernel.reason import BudgetLedger, GovernanceDecision, Reasoner
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.governance.reason import BudgetLedger, GovernanceDecision, Reasoner
 
 
 def test_budget_defer_includes_retry_metadata(tmp_path):

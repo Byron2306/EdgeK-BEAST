@@ -12,8 +12,8 @@ from app.adapters.anthropic_adapter import anthropic_router
 from app.adapters.gemini_adapter import gemini_router
 from app.adapters.huggingface_adapter import _run_prec, huggingface_router
 from app.adapters.openai_adapter import openai_router
-from app.kernel.provider_adapters import ProviderAdapterRegistry
-from app.kernel.provider_registry import ProviderRegistry
+from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
+from app.kernel.registry.provider_registry import ProviderRegistry
 
 proxy_router = APIRouter(tags=["proxy"])
 

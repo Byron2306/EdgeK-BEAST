@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.crystal_forks import TemporalCrystalForkManager
+from app.kernel.compute.crystal_forks import TemporalCrystalForkManager
 
 OUT = ROOT / "benchmarks" / "results"
 

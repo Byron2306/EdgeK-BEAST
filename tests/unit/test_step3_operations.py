@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from app.kernel.beast_config import BeastConfig
-from app.kernel.beast_errors import CircuitBreaker, OllamaUnavailable
-from app.kernel.distributed_forge_scheduler import DistributedForgeScheduler, NodeStatus
+from app.kernel.deployment.beast_config import BeastConfig
+from app.kernel.deployment.beast_errors import CircuitBreaker, OllamaUnavailable
+from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler, NodeStatus
 
 
 def test_config_parses_typed_environment_and_nonduplicated_compute_keys(monkeypatch, tmp_path):

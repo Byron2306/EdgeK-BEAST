@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.capability_crystallization import CapabilityCrystallizationEngine
-from app.kernel.capability_impact import CapabilityImpactFingerprint
+from app.kernel.capability.capability_crystallization import CapabilityCrystallizationEngine
+from app.kernel.capability.capability_impact import CapabilityImpactFingerprint
 
 
 OUT = ROOT / "benchmarks" / "results"

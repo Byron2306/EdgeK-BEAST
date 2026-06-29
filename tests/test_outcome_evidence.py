@@ -1,7 +1,7 @@
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
-from app.kernel.outcome_evidence import NegativeCapabilityStore, OutcomeEvidence
+from app.kernel.storage.outcome_evidence import NegativeCapabilityStore, OutcomeEvidence
 
 
 def failure(provider: str = "nvidia_nim", model: str = "nemotron") -> OutcomeEvidence:

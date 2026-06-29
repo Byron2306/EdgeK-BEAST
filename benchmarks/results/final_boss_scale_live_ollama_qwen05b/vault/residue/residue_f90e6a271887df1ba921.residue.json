@@ -1,0 +1,83 @@
+{
+  "beast_object_type": "memory_hull_sidecar",
+  "markdown_sha256": "sha256:ce684cb16b72a73c3bb5911e9b391bf579eadb31f05849236b2596fe588cf513",
+  "payload": {
+    "beast_object_type": "memory_hull_residue",
+    "beast_systems": {
+      "chronicle_compatible": true,
+      "residue_sealed": true,
+      "vault_editable": true
+    },
+    "caller": "spiffe://beast.local/runtime-governor",
+    "correlation_id": "",
+    "cost_saved": {
+      "avoided_tokens_estimate": 143
+    },
+    "created_at": "2026-06-29T04:09:24.954912+00:00",
+    "decision": "Stored provider response as reusable BEAST crystal.",
+    "evidence": {
+      "actual_live_provider_call": true,
+      "answer_credit_id": "cache_501ad904cfd351c2",
+      "files_changed": [
+        "gateway/providers.py",
+        "gateway/auth.py",
+        "gateway/streaming.py",
+        "gateway/client.py"
+      ],
+      "local_eval_gate": {
+        "beast_object_type": "local_eval_gate_result",
+        "checks": [
+          {
+            "passed": true,
+            "rule": {
+              "type": "max_length",
+              "value": 200000
+            }
+          },
+          {
+            "passed": true,
+            "rule": {
+              "type": "no_secret_patterns"
+            }
+          }
+        ],
+        "passed": true,
+        "promotion_allowed": true,
+        "version": "1.0"
+      },
+      "raw_response_sha256": "sha256:1504239820020eeb6f706b6211d07368b59db8ef58ff91e7abf3a63f21dd310e",
+      "requested_verified": true,
+      "semantic_credit_id": "scc_d194914b8bf17507",
+      "skill_contract": "gateway_integration_pytest",
+      "tool_contract": "approved_multifile_patch_tool",
+      "verification": "multi_file_patch_plan_verified_by_integration_tests",
+      "verified": true
+    },
+    "files_touched": [],
+    "markdown_sha256": "sha256:ce684cb16b72a73c3bb5911e9b391bf579eadb31f05849236b2596fe588cf513",
+    "policy_tags": [
+      "crystal_reuse",
+      "provider_response"
+    ],
+    "provider": "ollama",
+    "residue_id": "residue_f90e6a271887df1ba921",
+    "section": "residue",
+    "task": "Crystallized inference for gateway_provider_hardening",
+    "version": "2.0"
+  },
+  "residue_seal": {
+    "algorithm": "Ed25519",
+    "beast_object_type": "beast_residue_seal",
+    "created_at": "2026-06-29T04:09:24.960081+00:00",
+    "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+    "message_sha256": "sha256:09fd19c0394044d57c0d818ae4ba5087425e8b6f41bec47a11e7ce7b36ea9b11",
+    "payload_sha256": "sha256:608c7eb078b868cdd6d5511b1822b11e14dc970ae2a84ce9f97e98e588308f3b",
+    "provider": "cryptography",
+    "public_key_hash": "sha256:50c40edd4cf5635836c51b951953bc1c20ebe8a51ee6eb92e37c76e2597a3c2c",
+    "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQVJtZWtJNE9ybnpaT1AzejhsT0xrMkU5U2JEQUdOR3JPaXQvRVJPZnJORDA9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+    "purpose": "memory_hull_residue",
+    "signature_b64": "zGzL6Qh8hBDgWzQ3Lv4yIoH20jBDpOPrlQ89/BSzeonqFyaJJ9w6HjyGMGIAhIKr6k/MTg95KPtK1qTpSRShCg==",
+    "version": "2.0"
+  },
+  "version": "2.0"
+}

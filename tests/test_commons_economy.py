@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from app.kernel.commons_economy import ComputeReductionEconomy
-from app.kernel.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
-from app.kernel.commons_space_registry import CommonsSpaceRegistry
-from app.kernel.commons_spaces import package_tiny_llama_case
+from app.kernel.networking.commons_economy import ComputeReductionEconomy
+from app.kernel.networking.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
+from app.kernel.registry.commons_space_registry import CommonsSpaceRegistry
+from app.kernel.networking.commons_spaces import package_tiny_llama_case
 
 
 ROOT = Path(__file__).resolve().parents[1]

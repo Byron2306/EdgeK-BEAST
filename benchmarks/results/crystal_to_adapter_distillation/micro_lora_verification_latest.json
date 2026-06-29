@@ -1,0 +1,35 @@
+{
+  "adapter_dir": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_adapter_latest/adapter",
+  "authority": "verified_artifact_only_not_promoted",
+  "beast_object_type": "micro_lora_adapter_verification_receipt",
+  "checks": [
+    {
+      "check": "receipt_type",
+      "passed": true
+    },
+    {
+      "check": "authority_pending_verifier",
+      "passed": true
+    },
+    {
+      "check": "adapter_config_exists",
+      "passed": true
+    },
+    {
+      "check": "adapter_weights_exist",
+      "passed": true
+    },
+    {
+      "check": "peft_lora_config",
+      "passed": true
+    },
+    {
+      "check": "training_loss_decreased",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "promotion_boundary": "requires behavioral gauntlet against BEAST proposals before adoption",
+  "receipt": "benchmarks/results/crystal_to_adapter_distillation/micro_lora_training_latest.json",
+  "version": "1.0"
+}

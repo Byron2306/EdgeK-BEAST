@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from app.kernel.action_resolver import build_file_references
-from app.kernel.output_governor import (
+from app.kernel.compute.action_resolver import build_file_references
+from app.kernel.governance.output_governor import (
     OutputValidationError,
     compile_provider_output,
     output_contract_schema,

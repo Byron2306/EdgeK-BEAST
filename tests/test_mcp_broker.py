@@ -1,5 +1,5 @@
 from app.mcp.broker import MCPBroker, MCPDecision
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 
 
 POLICIES = {
@@ -143,6 +143,11 @@ def test_mcp_broker_executes_allowed_read_file(tmp_path):
 
     assert result["executed"] is True
     assert result["content"] == "hello edgek"
+    boundary = result["edgek_crystal_tool_boundary"]
+    assert boundary["beast_object_type"] == "crystal_tool_boundary_receipt"
+    assert boundary["executed"] is True
+    assert boundary["promotion_source"]["source"] == "mcp_provider_tool"
+    assert boundary["residue_seal"]["purpose"] == "crystal_tool_boundary_receipt"
     assert broker.stats()["execution_events"] == 1
     execution = broker.recent_execution_events()[0]
     assert execution["executed"] is True
@@ -212,6 +217,7 @@ def test_mcp_broker_blocks_read_file_path_escape(tmp_path):
 
     assert result["executed"] is False
     assert "escapes workspace root" in result["reason"]
+    assert result["edgek_crystal_tool_boundary"]["executed"] is False
     execution = broker.recent_execution_events()[0]
     assert execution["executed"] is False
     assert "escapes workspace root" in execution["reason"]

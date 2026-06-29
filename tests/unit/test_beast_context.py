@@ -1,10 +1,10 @@
 import pytest
 
-from app.kernel.ablation_harness import AblationHarness
-from app.kernel.beast_context import BeastContext
-from app.kernel.distributed_forge_scheduler import DistributedForgeScheduler
-from app.kernel.durable_inference_storage import DurableInferenceStorage
-from app.kernel.kv_cache_transport import CrossEngineKVCacheTransport
+from app.kernel.compute.ablation_harness import AblationHarness
+from app.kernel.deployment.beast_context import BeastContext
+from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler
+from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
+from app.kernel.compute.kv_cache_transport import CrossEngineKVCacheTransport
 
 
 def test_real_cpu_components_satisfy_dependency_protocols(tmp_path):

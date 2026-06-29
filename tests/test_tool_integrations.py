@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.tool_integrations import RequiredIntegrationRegistry, ToolCallInterceptor
-from app.kernel.deployment import DeploymentManager
+from app.kernel.registry.tool_integrations import RequiredIntegrationRegistry, ToolCallInterceptor
+from app.kernel.deployment.deployment import DeploymentManager
 from app.mcp.broker import MCPBroker, MCPDecision
 from app.main import app
 

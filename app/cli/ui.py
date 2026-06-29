@@ -32,9 +32,9 @@ from textual.widgets import Input, Static
 
 from app.cli.api import ActionResult, BeastApiClient, BackendSnapshot, LiveTurnResult
 
-from scripts.beast_economy_dashboard import build_dashboard
+from internal.beast_economy_dashboard import build_dashboard
 from scripts.compute_rollout_monitor import evaluate_rollout
-from scripts.forge_fleet_promote import promote_from_fleet
+from internal.forge_fleet_promote import promote_from_fleet
 
 try:
     from PIL import Image
@@ -921,9 +921,84 @@ SPRITESHEET_BY_STATE = {
 }
 
 
+FRAME_DIR_BY_STATE = {
+    'idle': 'idle',
+    'working': 'working',
+    'alert': 'alert',
+    'finished': 'finished',
+}
+
+
 def _sheet_background_pixel(pixel: tuple[int, int, int] | tuple[int, int, int, int]) -> bool:
     r, g, b = pixel[:3]
     return r > 225 and g > 225 and b > 225 and max(r, g, b) - min(r, g, b) < 16
+
+
+def _transparent_sheet_background(image: Any) -> Any:
+    pixels = image.load()
+    for y in range(image.height):
+        for x in range(image.width):
+            px = pixels[x, y]
+            if _sheet_background_pixel(px):
+                pixels[x, y] = (0, 0, 0, 0)
+    return image
+
+
+@lru_cache(maxsize=32)
+def _individual_frame_images(state: str, target_cells: int = 34, target_rows: int = 14) -> tuple[Any, ...]:
+    """Load true per-frame PNG animation assets for the terminal mascot."""
+    if Image is None:
+        return tuple()
+    normalized = mascot_state_for(state)
+    root = Path(__file__).with_name('assets') / 'sprites' / FRAME_DIR_BY_STATE.get(normalized, 'idle')
+    paths = sorted(root.glob('frame_*.png'))
+    if not paths:
+        return tuple()
+
+    raw_frames = []
+    frame_bboxes: List[tuple[int, int, int, int] | None] = []
+    max_art_w = 1
+    max_art_h = 1
+    for path in paths[:10]:
+        try:
+            frame = _transparent_sheet_background(Image.open(path).convert('RGBA'))
+        except Exception:
+            continue
+        alpha = frame.getchannel('A')
+        bbox = alpha.getbbox()
+        if bbox is None:
+            continue
+        pad = 6
+        bbox = (
+            max(0, bbox[0] - pad),
+            max(0, bbox[1] - pad),
+            min(frame.width, bbox[2] + pad),
+            min(frame.height, bbox[3] + pad),
+        )
+        raw_frames.append(frame)
+        frame_bboxes.append(bbox)
+        max_art_w = max(max_art_w, bbox[2] - bbox[0])
+        max_art_h = max(max_art_h, bbox[3] - bbox[1])
+    if not raw_frames:
+        return tuple()
+
+    target_px_w = target_cells
+    target_px_h = target_rows * 2
+    scale = min(target_px_w / max_art_w, target_px_h / max_art_h)
+    resample = getattr(getattr(Image, 'Resampling', Image), 'LANCZOS', 1)
+    frames = []
+    for frame, bbox in zip(raw_frames, frame_bboxes):
+        if bbox is None:
+            continue
+        art = frame.crop(bbox)
+        new_size = (max(1, int(art.width * scale)), max(1, int(art.height * scale)))
+        art = art.resize(new_size, resample)
+        canvas = Image.new('RGBA', (target_px_w, target_px_h), (0, 0, 0, 0))
+        x = max(0, (target_px_w - art.width) // 2)
+        y = max(0, target_px_h - art.height - 1)
+        canvas.alpha_composite(art, (x, y))
+        frames.append(canvas)
+    return tuple(frames)
 
 
 @lru_cache(maxsize=16)
@@ -948,13 +1023,8 @@ def _spritesheet_frame_images(state: str, target_cells: int = 34, target_rows: i
         x1 = sheet.width if (index % cols) == cols - 1 else x0 + cell_w
         y0 = (index // cols) * cell_h
         y1 = sheet.height if (index // cols) == rows - 1 else y0 + cell_h
-        cell = sheet.crop((x0, y0, x1, y1))
+        cell = _transparent_sheet_background(sheet.crop((x0, y0, x1, y1)))
         pixels = cell.load()
-        for y in range(cell.height):
-            for x in range(cell.width):
-                px = pixels[x, y]
-                if _sheet_background_pixel(px):
-                    pixels[x, y] = (0, 0, 0, 0)
 
         # Sprite sheets sometimes have a few pixels from a neighboring frame at
         # the cell edge. Remove small disconnected islands before alignment.
@@ -1092,6 +1162,20 @@ def sprite_mascot(state: str = 'idle', frame: int = 0, *, target_cells: int = 34
     terminal TUI. The sprite is now large enough to read and no longer emits
     stray glyphs in the left margin.
     """
+    live_frames = _individual_frame_images(mascot_state_for(state), target_cells, target_rows)
+    if live_frames:
+        normalized = mascot_state_for(state)
+        order = {
+            'idle': (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+            'working': (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+            'finished': (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+            'alert': (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+        }.get(normalized, tuple(range(len(live_frames))))
+        index = order[int(frame or 0) % len(order)] if order else int(frame or 0) % len(live_frames)
+        text = _rgba_to_halfblocks(live_frames[clamp(index, 0, len(live_frames) - 1)])
+        text.append(_sprite_status_badge(state, frame))
+        return text
+
     sheet_render = spritesheet_mascot(state, frame, target_cells=target_cells, target_rows=target_rows)
     if sheet_render is not None:
         return sheet_render
@@ -1442,6 +1526,79 @@ def provider_secret_state(snap: BackendSnapshot, provider_id: str) -> str:
     return 'env' if env else 'none'
 
 
+def provider_secrets_operational(snap: BackendSnapshot) -> Dict[str, Any]:
+    """Summarize provider secret readiness without flagging local-only stacks."""
+    secret_count = snap.provider_secret_count()
+    local_routes = 0
+    cloud_routes = 0
+    missing_cloud = 0
+    local_backends = {
+        'litellm', 'ollama', 'llama_cpp', 'local_nim', 'vllm', 'sglang',
+        'tgi', 'tensorrt_llm', 'openai_compatible',
+    }
+    cloud_backends = {
+        'openai', 'anthropic', 'gemini', 'google', 'huggingface', 'replicate',
+        'groq', 'cohere', 'openrouter', 'xai', 'nvidia_nim', 'deepinfra',
+        'cerebras', 'fal', 'hyperbolic', 'novita', 'nscale', 'ovhcloud',
+        'featherless',
+    }
+    for row in _adapter_rows(snap) or _provider_rows(snap):
+        pid = provider_key(row.get('provider_id') or row.get('id') or row.get('name'))
+        backend = provider_key(row.get('backend') or row.get('route_provider') or row.get('adapter_class') or pid)
+        if backend in local_backends or pid in local_backends:
+            local_routes += 1
+            continue
+        if backend in cloud_backends or pid in cloud_backends:
+            cloud_routes += 1
+            if provider_secret_state(snap, pid) == 'none':
+                missing_cloud += 1
+    if secret_count:
+        status = 'OK'
+        detail = f"{secret_count} configured"
+    elif local_routes and not cloud_routes:
+        status = 'OK'
+        detail = f"local/sidecar only; {local_routes} route(s)"
+    elif local_routes and missing_cloud == cloud_routes:
+        status = 'OK'
+        detail = f"local routes active; {cloud_routes} cloud route(s) optional"
+    elif cloud_routes and missing_cloud:
+        status = 'REVIEW'
+        detail = f"{missing_cloud}/{cloud_routes} cloud route(s) missing keys"
+    else:
+        status = 'OK'
+        detail = "no provider secrets required by active snapshot"
+    return {
+        'status': status,
+        'detail': detail,
+        'count': secret_count,
+        'local_routes': local_routes,
+        'cloud_routes': cloud_routes,
+        'missing_cloud': missing_cloud,
+    }
+
+
+def crystal_kv_prefill_counts(snap: BackendSnapshot) -> Dict[str, int]:
+    crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+    storage = crystal_reuse.get('storage') if isinstance(crystal_reuse.get('storage'), dict) else {}
+    stored = storage.get('stored_by_type') if isinstance(storage.get('stored_by_type'), dict) else {}
+    kv_transport = crystal_reuse.get('kv_transport') if isinstance(crystal_reuse.get('kv_transport'), dict) else {}
+    durable_prefills = int(storage.get('kv_prefill_credits') or stored.get('kv_prefill') or 0)
+    live_blocks = max(
+        int(kv_transport.get('total_blocks') or 0),
+        int(snap.kv_cache_state.get('total_blocks') or 0),
+    )
+    operations = max(
+        int(kv_transport.get('operations_logged') or 0),
+        int(snap.kv_cache_state.get('operations_logged') or 0),
+    )
+    return {
+        'durable_prefills': durable_prefills,
+        'live_blocks': live_blocks,
+        'display_blocks': max(live_blocks, durable_prefills),
+        'operations': operations,
+    }
+
+
 def provider_route_summary(snap: BackendSnapshot, provider_id: str, requested_model: str = 'beast-auto') -> Dict[str, str]:
     pid = provider_key(provider_id or 'litellm') or 'litellm'
     record = provider_record(snap, pid)
@@ -1549,6 +1706,15 @@ def intelligence_summary(snap: BackendSnapshot) -> Dict[str, Any]:
     economist = snap.provider_economist or {}
     selected = economist.get('selected') if isinstance(economist.get('selected'), dict) else {}
     swarm = snap.swarm_summary()
+    crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+    crystal_storage = crystal_reuse.get('storage') if isinstance(crystal_reuse.get('storage'), dict) else {}
+    kv_counts = crystal_kv_prefill_counts(snap)
+    integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+    memory_security = snap.memory_security if isinstance(snap.memory_security, dict) else {}
+    memory_hull = memory_security.get('memory_hull') if isinstance(memory_security.get('memory_hull'), dict) else {}
+    residue_seal = memory_security.get('residue_seal') if isinstance(memory_security.get('residue_seal'), dict) else {}
+    passport = memory_security.get('agent_passport') if isinstance(memory_security.get('agent_passport'), dict) else {}
+    passport_lint = passport.get('policy_lint') if isinstance(passport.get('policy_lint'), dict) else {}
     return {
         'online': bool(snap.online),
         'blocker': snapshot_blocker(snap),
@@ -1598,6 +1764,21 @@ def intelligence_summary(snap: BackendSnapshot) -> Dict[str, Any]:
         'weekly_compute_savings_status': str(snap.compute_savings.get('availability') or 'unavailable'),
         'false_suppression_rate': float(snap.compute_metrics.get('false_suppression_rate') or 0.0),
         'compute_enforcement_pause': bool(snap.compute_metrics.get('enforcement_pause_required', False)),
+        'crystal_reuse_credits': int(crystal_storage.get('active_credits') or 0),
+        'crystal_reuse_total': int(crystal_storage.get('total_credits') or 0),
+        'crystal_reuse_hits': int(crystal_storage.get('total_reuse_count') or 0),
+        'crystal_reuse_saved': int(crystal_storage.get('measured_reuse_tokens_saved') or 0),
+        'crystal_integration_count': int(integration_health.get('integration_count') or len(crystal_reuse.get('integrations') or [])),
+        'crystal_integration_configured': int(integration_health.get('configured_count') or 0),
+        'crystal_kv_blocks': kv_counts['display_blocks'],
+        'crystal_kv_live_blocks': kv_counts['live_blocks'],
+        'crystal_kv_durable_prefills': kv_counts['durable_prefills'],
+        'memory_hull_verified': int(memory_hull.get('verified_sidecars') or 0),
+        'memory_hull_failed': int(memory_hull.get('failed_sidecars') or 0),
+        'memory_hull_root': str(memory_hull.get('root') or ''),
+        'residue_key_ready': bool(residue_seal.get('key_exists')),
+        'passport_policy_valid': bool(passport_lint.get('valid')),
+        'passport_policy_count': int(passport_lint.get('policy_count') or 0),
     }
 
 
@@ -3019,13 +3200,13 @@ class PageHost(Static):
         return page
 
     def capabilities(self, snap: BackendSnapshot, index: int):
-        rows = snap.capabilities or [{'capability_id':'no_capabilities_loaded','kind':'empty','risk_level':'low','status':'waiting'}]
+        rows = snap.skill_promotion_candidates or snap.capabilities or [{'capability_id':'no_capabilities_loaded','kind':'empty','risk_level':'low','status':'waiting'}]
         index = clamp(index, 0, len(rows)-1); selected = rows[index]
         table = Table(expand=True, box=box.SIMPLE_HEAVY)
         for col in ['','Skill','Type','Confidence','Source','Status']:
             table.add_column(col)
         for i, cap in enumerate(rows):
-            name = val(cap,'capability_id','name',default='cap')
+            name = val(cap,'candidate_id','capability_id','name',default='cap')
             kind = val(cap,'kind','family',default='utility')
             confidence = confidence_from_item(cap, fallback=max(58, 96 - (i * 7)))
             promoted = 'Promoted' if confidence >= 86 else 'Candidate' if confidence >= 72 else 'Learning'
@@ -3039,7 +3220,7 @@ class PageHost(Static):
                 Text(('♕ ' if promoted == 'Promoted' else '◌ ') + promoted, style=status_style(promoted)),
             )
         kinds = snap.kinds(); families = snap.families()
-        selected_name = val(selected,'capability_id','name',default='capability')
+        selected_name = val(selected,'candidate_id','capability_id','name',default='capability')
         selected_kind = val(selected,'kind','family',default='utility')
         selected_confidence = confidence_from_item(selected, fallback=89)
         confidence_source = next((key for key in ['confidence', 'score', 'fitness_score', 'success_rate'] if selected.get(key) not in (None, '', [])), 'fallback display score')
@@ -3299,6 +3480,12 @@ class PageHost(Static):
         forks = crystal.get('temporal_forks') if isinstance(crystal.get('temporal_forks'), dict) else {}
         raid = crystal.get('semantic_raid') if isinstance(crystal.get('semantic_raid'), dict) else {}
         fossils = crystal.get('artifact_fossils') if isinstance(crystal.get('artifact_fossils'), dict) else {}
+        semantic_pages = snap.proof_local_semantic_pages if isinstance(snap.proof_local_semantic_pages, dict) else {}
+        semantic_exit = semantic_pages.get('exit_criteria') if isinstance(semantic_pages.get('exit_criteria'), dict) else {}
+        distillation = snap.proof_local_distillation if isinstance(snap.proof_local_distillation, dict) else {}
+        adapter_candidate = distillation.get('adapter_candidate') if isinstance(distillation.get('adapter_candidate'), dict) else {}
+        adapter_eval = distillation.get('evaluation') if isinstance(distillation.get('evaluation'), dict) else {}
+        adapter_metrics = adapter_eval.get('metrics') if isinstance(adapter_eval.get('metrics'), dict) else {}
         latest = latest_mega_summary(snap)
         rankings = snap.commons_ranking.get('rankings') if isinstance(snap.commons_ranking.get('rankings'), list) else []
         if not rankings:
@@ -3333,10 +3520,35 @@ class PageHost(Static):
             metric('PHASES 1-6', f"{latest['phase_pass_count']}/{latest['phase_count']}" if latest['phase_count'] else 'LIVE', str(crystal.get('phase6') or 'durable local'), BEAST_GREEN if latest['phase_package_passed'] or crystal else BEAST_WARN),
         )
         metrics.add_row(
+            metric('PHASE 7 LATTICE', distillation.get('signal_count', 0), f"{distillation.get('task_family_count', 0)} family node(s)", BEAST_ACID if distillation.get('signal_count') else BEAST_WARN),
+            metric('ADAPTER CANDIDATE', str((adapter_candidate.get('candidate_id') or 'none'))[:18], str(adapter_eval.get('decision') or 'not built'), BEAST_GREEN if str(adapter_eval.get('decision') or '').startswith('candidate_ready') else BEAST_WARN),
+            metric('DISTILL GAIN', adapter_metrics.get('governed_distillation_gain', 0), 'proposal-only route', BEAST_INFO),
+            metric('PARAM AVOID', adapter_metrics.get('parameter_activation_avoidance_proxy', 0), 'proxy activation saved', BEAST_GREEN if adapter_metrics else BEAST_WARN),
+        )
+        metrics.add_row(
+            metric('SEMANTIC PAGES', semantic_pages.get('active_verified_pages', 0), f"{semantic_pages.get('page_count', 0)} content-addressed", BEAST_ACID if semantic_pages.get('active_verified_pages') else BEAST_WARN),
+            metric('PAGE REUSE', semantic_pages.get('reuse_count', 0), 'verified local hits', BEAST_GREEN if semantic_pages.get('reuse_count') else BEAST_WARN),
+            metric('MUTATION GATE', 'PASS' if semantic_exit.get('identity_mutation_miss') else 'WAIT', 'identity drift must miss', BEAST_GREEN if semantic_exit.get('identity_mutation_miss') else BEAST_WARN),
+            metric('PAGE RECEIPTS', 'READY' if semantic_pages.get('latest_receipt') else 'NONE', 'recompute on stale proof', BEAST_GREEN if semantic_pages.get('latest_receipt') else BEAST_WARN),
+        )
+        metrics.add_row(
             metric('COUNTERFACTUALS', counterfactual.get('total', counterfactual.get('created', 0)), f"{counterfactual.get('resolved', 0)} resolved", BEAST_INFO),
             metric('ESCROW', escrow.get('settled', escrow.get('total', 0)), f"{float(escrow.get('verified_delivery_rate') or 0):.0%} verified", BEAST_GREEN if escrow.get('verified_delivery_rate') else BEAST_WARN),
             metric('FORKS', len(forks.get('forks') or []), ', '.join(f"{k}:{v}" for k, v in (forks.get('channels') or {}).items()) or 'stable/candidate/experimental', BEAST_INFO),
             metric('DURABLE', 'OK' if raid.get('ok') else 'LOCAL', f"{float(raid.get('artifact_integrity_rate') or 0):.0%} integrity / {fossils.get('checkpoint_count', 0)} fossils", BEAST_GREEN if raid.get('ok') else BEAST_WARN),
+        )
+        metrics.add_row(
+            metric('CRYSTAL REUSE', summary['crystal_reuse_credits'], f"{summary['crystal_reuse_total']} total / {summary['crystal_reuse_hits']} hit(s)", BEAST_GREEN if summary['crystal_reuse_credits'] else BEAST_WARN),
+            metric('PUBLIC ADAPTERS', f"{summary['crystal_integration_configured']}/{summary['crystal_integration_count']}", 'LMCache GPTCache LiteLLM OTEL Langfuse TensorZero Promptfoo', BEAST_INFO),
+            metric('MEMORY HULL', summary['memory_hull_verified'], f"{summary['memory_hull_failed']} failed sidecar(s)", BEAST_GREEN if not summary['memory_hull_failed'] else BEAST_DANGER),
+            metric('PASSPORT', 'VALID' if summary['passport_policy_valid'] else 'CHECK', f"{summary['passport_policy_count']} policy rule(s)", BEAST_GREEN if summary['passport_policy_valid'] else BEAST_DANGER),
+        )
+
+        metrics.add_row(
+            metric('MODEL STORAGE', f"{adapter_metrics.get('model_storage_gb', 0)} GB", 'static weights', BEAST_INFO),
+            metric('CRYSTAL MB', f"{adapter_metrics.get('crystal_storage_mb', 0)} MB", 'reusable capability', BEAST_INFO),
+            metric('CAP DENSITY', f"{adapter_metrics.get('verified_capability_density', 0):.2f}", 'density/GB', BEAST_ACID),
+            metric('CRYSTAL YIELD', f"{adapter_metrics.get('crystal_yield_tokens_per_mb', 0):.0f}", 'tokens/MB', BEAST_GREEN),
         )
 
         awareness = Table.grid(expand=True); awareness.add_column(width=24); awareness.add_column(ratio=1)
@@ -3406,6 +3618,43 @@ class PageHost(Static):
         phase_table.add_row(Text('Latest mega receipts', style=BEAST_MUTED), Text(f"{latest['provider_call_receipts']} provider / {latest['compute_governor_receipts']} reuse", style=BEAST_GREEN if latest['provider_call_receipts'] or latest['compute_governor_receipts'] else BEAST_WARN))
         phase_table.add_row(Text('Latest fingerprints', style=BEAST_MUTED), Text(f"{latest['impact_fingerprint_files']} files / integrity {latest['integrity_hash'][:18] or 'n/a'}", style=BEAST_GREEN if latest['impact_fingerprint_files'] else BEAST_WARN))
 
+        crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+        integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+        integration_rows = integration_health.get('integrations') if isinstance(integration_health.get('integrations'), list) else crystal_reuse.get('integrations')
+        integration_rows = [row for row in (integration_rows or []) if isinstance(row, dict)]
+        integration_table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Adapter', 'Configured', 'Role', 'Endpoint / Env', 'Capabilities']:
+            integration_table.add_column(col)
+        for row in integration_rows[:10]:
+            envs = row.get('env_vars') if isinstance(row.get('env_vars'), list) else []
+            caps = row.get('capabilities') if isinstance(row.get('capabilities'), dict) else {}
+            integration_table.add_row(
+                str(row.get('project') or row.get('integration_id') or 'adapter'),
+                status_mark('OK' if row.get('configured') else 'WAIT') + Text(' ' + ('yes' if row.get('configured') else 'no'), style=BEAST_GREEN if row.get('configured') else BEAST_WARN),
+                str(row.get('role') or '')[:42],
+                str(row.get('endpoint') or ', '.join(envs) or 'local contract')[:46],
+                ', '.join(k for k, v in caps.items() if v)[:42],
+            )
+        if not integration_rows:
+            integration_table.add_row('No adapters loaded', 'WAIT', 'gateway offline', '', '')
+
+        memory_security = snap.memory_security if isinstance(snap.memory_security, dict) else {}
+        memory_hull = memory_security.get('memory_hull') if isinstance(memory_security.get('memory_hull'), dict) else {}
+        residue_seal = memory_security.get('residue_seal') if isinstance(memory_security.get('residue_seal'), dict) else {}
+        passport = memory_security.get('agent_passport') if isinstance(memory_security.get('agent_passport'), dict) else {}
+        passport_lint = passport.get('policy_lint') if isinstance(passport.get('policy_lint'), dict) else {}
+        memory_table = Table.grid(expand=True); memory_table.add_column(width=24); memory_table.add_column(ratio=1)
+        memory_table.add_row(Text('Memory Hull root', style=BEAST_MUTED), Text(str(memory_hull.get('root') or summary['memory_hull_root'] or 'not loaded')[:90], style=BEAST_TEXT))
+        memory_table.add_row(Text('Sidecar verification', style=BEAST_MUTED), Text(f"{summary['memory_hull_verified']} verified / {summary['memory_hull_failed']} failed", style=BEAST_GREEN if not summary['memory_hull_failed'] else BEAST_DANGER))
+        memory_table.add_row(Text('Residue key', style=BEAST_MUTED), Text('ready' if summary['residue_key_ready'] else 'missing', style=BEAST_GREEN if summary['residue_key_ready'] else BEAST_DANGER))
+        memory_table.add_row(Text('Residue key mode', style=BEAST_MUTED), Text(str(residue_seal.get('key_mode') or 'n/a'), style=BEAST_TEXT))
+        memory_table.add_row(Text('Passport policy', style=BEAST_MUTED), Text('valid' if summary['passport_policy_valid'] else 'invalid', style=BEAST_GREEN if summary['passport_policy_valid'] else BEAST_DANGER))
+        memory_table.add_row(Text('Passport rules', style=BEAST_MUTED), Text(str(summary['passport_policy_count']), style=BEAST_TEXT))
+        decisions_sample = passport.get('sample_decisions') if isinstance(passport.get('sample_decisions'), dict) else {}
+        for label, decision in list(decisions_sample.items())[:3]:
+            allowed = bool(decision.get('allowed')) if isinstance(decision, dict) else False
+            memory_table.add_row(Text(human_label(label), style=BEAST_MUTED), Text(str(decision.get('reason') if isinstance(decision, dict) else 'unknown'), style=BEAST_GREEN if allowed else BEAST_WARN))
+
         connectors = Table.grid(expand=True); connectors.add_column(width=24); connectors.add_column(ratio=1)
         offline_note = 'backend offline' if not summary['online'] else ''
         connectors.add_row(Text('Capability Exchange', style=BEAST_MUTED), Text('opted in' if summary['exchange_enabled'] else (offline_note or 'local only'), style=BEAST_GREEN if summary['exchange_enabled'] else BEAST_WARN))
@@ -3435,6 +3684,8 @@ class PageHost(Static):
         page.add_row(upper)
         page.add_row(Panel(Group(title_text('META TOOL COMMONS', '⚒'), chip_line('↑↓', 'v INSPECT'), Text(''), rank_table), border_style=BEAST_BORDER))
         page.add_row(Panel(Group(title_text('CRYSTAL COMPUTE PHASES', '◆'), chip_line('P1 EVIDENCE', 'P2 FRICTION', 'P3 COUNTERFACTS', 'P4 ESCROW', 'P5 FORKS', 'P6 RAID'), Text(''), phase_table, Text(''), friction_table), border_style=BEAST_BORDER))
+        page.add_row(Panel(Group(title_text('CRYSTAL REUSE INTEGRATIONS', 'λ'), chip_line('LMCACHE', 'GPTCACHE', 'LITELLM', 'OTEL', 'LANGFUSE', 'TENSORZERO', 'PROMPTFOO'), Text(''), integration_table), border_style=BEAST_JADE))
+        page.add_row(Panel(Group(title_text('MEMORY HULL / RESIDUE SEAL / AGENT PASSPORT', '▥'), chip_line('VAULT', 'SEAL', 'PASSPORT', 'POLICY'), Text(''), memory_table), border_style=BEAST_ACID))
         page.add_row(Panel(Group(title_text('CONNECTORS', '♧'), connectors), border_style=BEAST_BORDER))
         return page
 
@@ -3725,12 +3976,25 @@ class PageHost(Static):
 
     def deployment(self, snap: BackendSnapshot, index: int):
         deploy = snap.deployment_score()
+        crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+        crystal_storage = crystal_reuse.get('storage') if isinstance(crystal_reuse.get('storage'), dict) else {}
+        integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+        memory_security = snap.memory_security if isinstance(snap.memory_security, dict) else {}
+        memory_hull = memory_security.get('memory_hull') if isinstance(memory_security.get('memory_hull'), dict) else {}
+        residue_seal = memory_security.get('residue_seal') if isinstance(memory_security.get('residue_seal'), dict) else {}
+        passport = memory_security.get('agent_passport') if isinstance(memory_security.get('agent_passport'), dict) else {}
+        passport_lint = passport.get('policy_lint') if isinstance(passport.get('policy_lint'), dict) else {}
+        provider_auth = provider_secrets_operational(snap)
+        kv_counts = crystal_kv_prefill_counts(snap)
         rows = [
             {'name':'Nginx config', 'status':'ready' if deploy.get('nginx_ready') else 'waiting', 'value': f"{len(snap.nginx_config.splitlines())} lines", 'action':'render/write guarded'},
             {'name':'LiteLLM sidecar', 'status':'running' if deploy.get('litellm_running') else 'offline', 'value': f"port {deploy.get('litellm_port')}", 'action':'start/status'},
             {'name':'LiteLLM models', 'status':'ready' if deploy.get('litellm_models') else 'waiting', 'value': deploy.get('litellm_models'), 'action':'render config'},
+            {'name':'Crystal reuse gateway', 'status':'ready' if crystal_reuse else 'waiting', 'value': crystal_storage.get('active_credits', 0), 'action':'semantic/KV/export'},
+            {'name':'Crystal integrations', 'status':'ready' if integration_health.get('integration_count') else 'waiting', 'value': f"{integration_health.get('configured_count', 0)}/{integration_health.get('integration_count', 0)} configured", 'action':'LMCache GPTCache telemetry evals'},
+            {'name':'Memory security', 'status':'ready' if memory_hull and residue_seal and passport else 'waiting', 'value': f"{memory_hull.get('verified_sidecars', 0)} sealed residue", 'action':'hull/seal/passport'},
             {'name':'Provider adapters', 'status':'ready' if snap.provider_adapters else 'waiting', 'value': len(snap.provider_adapters), 'action':'sync/test'},
-            {'name':'Provider secrets', 'status':'ready' if snap.provider_secret_count() else 'env', 'value': snap.provider_secret_count(), 'action':'presence only'},
+            {'name':'Provider secrets', 'status':'ready' if provider_auth['status'] == 'OK' else 'review', 'value': provider_auth['detail'], 'action':'presence/local routes'},
         ]
         index = clamp(index, 0, len(rows)-1); selected = rows[index]
         table = Table(expand=True, box=box.SIMPLE_HEAVY)
@@ -3751,9 +4015,20 @@ class PageHost(Static):
             fixed_panel(Group(title_text('NGINX SUMMARY', '⇄'), Text(''), nginx_summary), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,1), box_style=box.ROUNDED),
             fixed_panel(Group(title_text('LITELLM MODELS', 'λ'), Text(''), model_table), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,1), box_style=box.ROUNDED),
         )
+        crystal_table = Table(expand=True, box=box.SIMPLE)
+        crystal_table.add_column('Layer')
+        crystal_table.add_column('State')
+        crystal_table.add_column('Detail')
+        crystal_table.add_row('Crystal reuse gateway', Text('READY' if crystal_reuse else 'WAIT', style=BEAST_GREEN if crystal_reuse else BEAST_WARN), f"{crystal_storage.get('active_credits', 0)} active / {crystal_storage.get('total_reuse_count', 0)} hit(s)")
+        crystal_table.add_row('KV Prefill', Text('READY' if kv_counts['display_blocks'] else 'WAIT', style=BEAST_GREEN if kv_counts['display_blocks'] else BEAST_WARN), f"{kv_counts['durable_prefills']} durable prefill(s); {kv_counts['live_blocks']} live KV block(s)")
+        crystal_table.add_row('Public adapters', Text(str(integration_health.get('integration_count', 0)), style=BEAST_ACID if integration_health.get('integration_count') else BEAST_WARN), f"{integration_health.get('configured_count', 0)} configured live service(s)")
+        crystal_table.add_row('Memory Hull', Text('READY' if memory_hull else 'WAIT', style=BEAST_GREEN if memory_hull else BEAST_WARN), str(memory_hull.get('root') or 'no vault reported')[-90:])
+        crystal_table.add_row('Residue Seal', Text('READY' if residue_seal.get('key_exists') else 'WAIT', style=BEAST_GREEN if residue_seal.get('key_exists') else BEAST_WARN), str(residue_seal.get('key_mode') or 'key mode unknown'))
+        crystal_table.add_row('Agent Passport', Text('VALID' if passport_lint.get('valid') else 'WAIT', style=BEAST_GREEN if passport_lint.get('valid') else BEAST_WARN), f"{passport_lint.get('policy_count', 0)} policy rule(s)")
         page = Table.grid(expand=True); page.add_column(ratio=1)
-        page.add_row(Panel(Group(title_text('DEPLOYMENT', PAGE_SYMBOLS['Deployment']), chip_line('NGINX', 'BEAST', 'LITELLM'), Text(''), table), border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL))
+        page.add_row(Panel(Group(title_text('DEPLOYMENT', PAGE_SYMBOLS['Deployment']), chip_line('NGINX', 'BEAST', 'LITELLM', 'CRYSTAL', 'HULL'), Text(''), table), border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL))
         page.add_row(bottom)
+        page.add_row(Panel(Group(title_text('CRYSTAL + MEMORY LAYERS', '◇'), chip_line('LMCache', 'GPTCache', 'LiteLLM', 'OpenLLMetry', 'Langfuse', 'TensorZero', 'Promptfoo'), Text(''), crystal_table), border_style=BEAST_EMERALD, padding=(1,2), style=BEAST_PANEL))
         return page
 
     def diagnostics(self, snap: BackendSnapshot, index: int):
@@ -3769,6 +4044,16 @@ class PageHost(Static):
         provider_counts = runtime.get('provider_counts') if isinstance(runtime.get('provider_counts'), dict) else {}
         recent_failures = runtime.get('recent_failures') if isinstance(runtime.get('recent_failures'), list) else []
         latest = latest_mega_summary(snap)
+        crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+        crystal_storage = crystal_reuse.get('storage') if isinstance(crystal_reuse.get('storage'), dict) else {}
+        crystal_kv = crystal_reuse.get('kv_transport') if isinstance(crystal_reuse.get('kv_transport'), dict) else {}
+        integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+        memory_security = snap.memory_security if isinstance(snap.memory_security, dict) else {}
+        memory_hull = memory_security.get('memory_hull') if isinstance(memory_security.get('memory_hull'), dict) else {}
+        residue_seal = memory_security.get('residue_seal') if isinstance(memory_security.get('residue_seal'), dict) else {}
+        passport = memory_security.get('agent_passport') if isinstance(memory_security.get('agent_passport'), dict) else {}
+        passport_lint = passport.get('policy_lint') if isinstance(passport.get('policy_lint'), dict) else {}
+        kv_counts = crystal_kv_prefill_counts(snap)
         rows = [
             ('Gateway', snap.gateway, snap.base_url), ('Proxy', snap.proxy, '/proxy/health'), ('MCP HTTP', snap.mcp, '/mcp/health'),
             ('Capabilities', 'OK' if snap.capabilities else 'WARN', f'{len(snap.capabilities)} records'),
@@ -3786,6 +4071,12 @@ class PageHost(Static):
             ('HTTP latency', 'OK' if http_latency else 'WARN', f"avg {http_latency.get('avg', 0)}ms / p95 {http_latency.get('p95', 0)}ms"),
             ('Provider attempts', runtime_status if runtime else 'WARN', f"{runtime.get('sample_size', 0)} sampled; failures {runtime_health.get('failure_count', len(recent_failures))}; rate {runtime_health.get('failure_rate', 0)}"),
             ('Provider latency', 'OK' if runtime_latency else 'WARN', f"avg {runtime_latency.get('avg', 0)}ms / p95 {runtime_latency.get('p95', 0)}ms"),
+            ('Crystal reuse gateway', 'OK' if crystal_reuse else 'WARN', f"{crystal_storage.get('active_credits', 0)} active credits; {crystal_storage.get('total_reuse_count', 0)} hits"),
+            ('Crystal integrations', 'OK' if integration_health.get('integration_count') else 'WARN', f"{integration_health.get('configured_count', 0)} configured / {integration_health.get('integration_count', 0)} contracts"),
+            ('Crystal KV prefill', 'OK' if kv_counts['display_blocks'] else 'WAIT', f"{kv_counts['durable_prefills']} durable prefill(s); {kv_counts['live_blocks']} live block(s); {kv_counts['operations']} op(s)"),
+            ('Memory Hull', 'OK' if memory_hull and not int(memory_hull.get('failed_sidecars') or 0) else 'WARN', f"{memory_hull.get('verified_sidecars', 0)} verified; {memory_hull.get('failed_sidecars', 0)} failed"),
+            ('Residue Seal', 'OK' if residue_seal.get('key_exists') else 'WARN', f"key_exists={residue_seal.get('key_exists')} mode={residue_seal.get('key_mode', 'unknown')}"),
+            ('Agent Passport', 'OK' if passport_lint.get('valid') else 'WARN', f"{passport_lint.get('policy_count', 0)} policies; valid={passport_lint.get('valid')}"),
             ('Latest mega artifact', 'OK' if latest['integrity_hash'] else 'WARN', f"{latest['provider_call_receipts']} call receipts; {latest['impact_fingerprint_files']} fingerprints"),
         ]
         index = clamp(index, 0, len(rows)-1)
@@ -3914,6 +4205,16 @@ class PageHost(Static):
         return page
 
     def settings(self, snap: BackendSnapshot, index: int):
+        crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+        integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+        integration_rows = integration_health.get('integrations') if isinstance(integration_health.get('integrations'), list) else []
+        configured = [row for row in integration_rows if isinstance(row, dict) and row.get('configured')]
+        probed = [
+            row for row in integration_rows
+            if isinstance(row, dict)
+            and isinstance(row.get('live_probe'), dict)
+            and row.get('live_probe', {}).get('status') != 'not_attempted'
+        ]
         rows = [
             ('Gateway URL', snap.base_url, 'BEAST_GATEWAY_URL or --gateway-url'),
             ('Workspace', os.environ.get('BEAST_WORKSPACE', os.getcwd()), 'BEAST_WORKSPACE'),
@@ -3922,7 +4223,9 @@ class PageHost(Static):
             ('Handoff ready', bool_badge(snap.handoff_precheck.get('ready')), 'current task markup rule'),
             ('Capability count', str(len(snap.capabilities)), '/edgek/capabilities'),
             ('Provider count', str(len(snap.providers())), '/edgek/providers/registry'),
-            ('Sprite mode', 'terminal-safe', 'PNG assets reserved for webview/chat'),
+            ('Integration config', f"{len(configured)}/{integration_health.get('integration_count', 0)} configured", '/edgek/crystal-reuse/integrations'),
+            ('Integration probes', f"{len(probed)} attempted", f"timeout {integration_health.get('probe_timeout_seconds', 'n/a')}s"),
+            ('Sprite mode', 'animated PNG frames', 'terminal half-block renderer'),
         ]
         index = clamp(index, 0, len(rows)-1)
         table = Table(expand=True, box=box.SIMPLE_HEAVY)
@@ -4222,15 +4525,15 @@ class BeastMissionConsole(App):
         if self.selected_page == 'PREC': return 4
         if self.selected_page == 'Routing': return max(1, len(snap.provider_adapters or snap.providers()))
         if self.selected_page == 'Providers': return max(1, len(snap.providers()))
-        if self.selected_page == 'Capabilities': return max(1, len(snap.capabilities))
+        if self.selected_page == 'Capabilities': return max(1, len(snap.skill_promotion_candidates or snap.capabilities))
         if self.selected_page == 'Swarm': return max(1, len(snap.swarm_runs))
         if self.selected_page == 'Intelligence': return max(1, int(snap.commons_ranking.get('count') or 0))
         if self.selected_page == 'Spaces': return max(1, int(snap.commons_spaces.get('count') or 0))
         if self.selected_page == 'Economy': return len(economy_action_rows({}))
         if self.selected_page == 'Chronicle': return max(1, len(snap.chronicles))
-        if self.selected_page == 'Deployment': return 5
+        if self.selected_page == 'Deployment': return 8
         if self.selected_page == 'Diagnostics': return len(self.diagnostic_rows(snap))
-        if self.selected_page == 'Settings': return 8
+        if self.selected_page == 'Settings': return 10
         return 1
 
     def diagnostic_rows(self, snap: BackendSnapshot | None = None) -> List[Dict[str, Any]]:
@@ -4239,6 +4542,8 @@ class BeastMissionConsole(App):
         errors = snap.errors if isinstance(snap.errors, dict) else {}
         runtime = snap.runtime_metrics if isinstance(snap.runtime_metrics, dict) else {}
         swarm = snap.swarm_summary()
+        provider_auth = provider_secrets_operational(snap)
+        kv_counts = crystal_kv_prefill_counts(snap)
         return [
             {'name': 'Gateway health', 'status': snap.gateway, 'endpoint': '/health', 'latency_ms': runtime.get('gateway_latency_ms'), 'action': 'refresh', 'detail': 'Refresh gateway, proxy, MCP, providers, deploy, and metrics.'},
             {'name': 'Proxy route', 'status': snap.proxy, 'endpoint': '/proxy/health', 'latency_ms': runtime.get('proxy_latency_ms'), 'action': 'refresh', 'detail': 'Checks BEAST proxy availability and route health.'},
@@ -4247,8 +4552,11 @@ class BeastMissionConsole(App):
             {'name': 'Reuse evidence plane', 'status': 'OK' if swarm.get('evidence_plane_total') else 'WAIT', 'endpoint': '/edgek/meta-tool-commons/evidence-plane', 'count': swarm.get('evidence_plane_total', 0), 'action': 'evidence_plane', 'detail': f"{swarm.get('evidence_plane_count', 0)} active plane(s), hash {str(swarm.get('evidence_plane_hash') or '')[:24] or 'not available'}."},
             {'name': 'OpenClaw preview', 'status': 'OK' if swarm.get('openclaw_ready') else 'WARN', 'endpoint': '/edgek/beast-cli/plan', 'count': swarm.get('openclaw_actions', 0), 'action': 'openclaw_plan', 'detail': f"Mode {swarm.get('openclaw_mode')}; hash {str(swarm.get('openclaw_hash') or '')[:32] or 'not available'}."},
             {'name': 'Ollama scout', 'status': 'OK' if swarm.get('ollama_ready') else 'WARN', 'endpoint': '/edgek/ollama/status', 'count': swarm.get('ollama_models', 0), 'action': 'ollama_status', 'detail': f"Default model {swarm.get('ollama_model') or 'not configured'}."},
-            {'name': 'KV cache transport', 'status': 'OK' if swarm.get('kv_cache_blocks') else 'WAIT', 'endpoint': '/edgek/kv-cache/state', 'count': swarm.get('kv_cache_blocks', 0), 'action': 'kv_cache_state', 'detail': f"{swarm.get('kv_cache_operations', 0)} operation(s), Commons prepared {swarm.get('kv_cache_prepared', 0)} evidence envelope(s)."},
-            {'name': 'Provider secrets', 'status': 'OK' if snap.provider_secret_count() else 'WARN', 'endpoint': '/edgek/providers/secrets', 'count': snap.provider_secret_count(), 'action': 'edit_provider', 'detail': 'Open provider editor to add API keys.'},
+            {'name': 'KV cache transport', 'status': 'OK' if kv_counts['display_blocks'] else 'WAIT', 'endpoint': '/edgek/kv-cache/state', 'count': kv_counts['display_blocks'], 'action': 'kv_cache_state', 'detail': f"{kv_counts['durable_prefills']} durable prefill(s), {kv_counts['live_blocks']} live block(s), {kv_counts['operations']} operation(s)."},
+            {'name': 'Crystal reuse gateway', 'status': 'OK' if snap.crystal_reuse else 'WAIT', 'endpoint': '/edgek/crystal-reuse', 'count': int(((snap.crystal_reuse.get('storage') or {}) if isinstance(snap.crystal_reuse, dict) else {}).get('active_credits') or 0), 'action': 'crystal_reuse', 'detail': 'Checks semantic credit, exact answer, KV prefill, and provider fallback decision state.'},
+            {'name': 'Crystal integrations', 'status': 'OK' if ((snap.crystal_reuse.get('integration_health') or {}) if isinstance(snap.crystal_reuse, dict) else {}).get('integration_count') else 'WAIT', 'endpoint': '/edgek/crystal-reuse/integrations', 'count': int(((snap.crystal_reuse.get('integration_health') or {}) if isinstance(snap.crystal_reuse, dict) else {}).get('integration_count') or 0), 'action': 'crystal_integrations', 'detail': 'Reports LMCache, GPTCache, LiteLLM, OpenLLMetry, Langfuse, TensorZero, Promptfoo, vLLM, and SGLang adapter contracts.'},
+            {'name': 'Memory security', 'status': 'OK' if snap.memory_security else 'WAIT', 'endpoint': '/edgek/memory-security', 'count': int((((snap.memory_security.get('memory_hull') or {}) if isinstance(snap.memory_security, dict) else {}).get('verified_sidecars')) or 0), 'action': 'memory_security', 'detail': 'Checks Memory Hull sidecars, Residue Seal key readiness, and Agent Passport policy lint/sample decisions.'},
+            {'name': 'Provider secrets', 'status': provider_auth['status'], 'endpoint': '/edgek/providers/secrets', 'count': provider_auth['count'], 'action': 'edit_provider', 'detail': provider_auth['detail']},
             {'name': 'Provider diagnostics', 'status': 'OK' if snap.providers() else 'WAIT', 'endpoint': '/edgek/task/provider-diagnostic', 'count': len(snap.providers()), 'action': 'provider_diagnostic', 'detail': 'Run selected provider diagnostic route card.'},
             {'name': 'LiteLLM sidecar', 'status': 'OK' if deploy.get('litellm_running') else 'WARN', 'endpoint': '/edgek/deploy/litellm-sidecar/state', 'port': deploy.get('litellm_port') or 4000, 'action': 'litellm_start_dry_run', 'detail': 'Dry-run or approve LiteLLM sidecar start/stop from Deploy.'},
             {'name': 'LiteLLM models', 'status': 'OK' if deploy.get('litellm_models') else 'WARN', 'endpoint': '/edgek/deploy/litellm-config', 'count': deploy.get('litellm_models'), 'action': 'render_litellm_config', 'detail': 'Inspect generated LiteLLM model registry.'},
@@ -4491,7 +4799,7 @@ class BeastMissionConsole(App):
         rows: List[Dict[str, Any]] = []
         if self.selected_page == 'Providers': rows = snap.providers()
         elif self.selected_page == 'Routing': rows = snap.provider_adapters or snap.providers()
-        elif self.selected_page == 'Capabilities': rows = snap.capabilities
+        elif self.selected_page == 'Capabilities': rows = snap.skill_promotion_candidates or snap.capabilities
         elif self.selected_page == 'Swarm':
             rows = snap.swarm_runs or snap.commons_candidates or [{
                 'summary': snap.swarm_summary(),
@@ -4540,12 +4848,48 @@ class BeastMissionConsole(App):
             except Exception:
                 report = {}
             rows = economy_action_rows(report)
+            crystal_storage = (snap.crystal_reuse.get('storage') if isinstance(snap.crystal_reuse, dict) and isinstance(snap.crystal_reuse.get('storage'), dict) else {})
+            if crystal_storage:
+                rows.insert(1, {
+                    'name': 'Crystal reuse savings',
+                    'status': 'measured',
+                    'value': f"{int(crystal_storage.get('measured_reuse_tokens_saved') or 0)} saved tokens; {int(crystal_storage.get('total_reuse_count') or 0)} avoided provider call(s)",
+                    'action': 'crystal_reuse_savings',
+                    'hint': 'Isolates BEAST crystal reuse savings from generic compute metrics.',
+                    'storage': crystal_storage,
+                })
         elif self.selected_page == 'Diagnostics':
             rows = self.diagnostic_rows(snap)
         elif self.selected_page == 'Settings':
-            rows = [{'name': 'Settings', 'base_url': self.base_url, 'session': self.session_meta}]
+            integration_health = (snap.crystal_reuse.get('integration_health') if isinstance(snap.crystal_reuse, dict) and isinstance(snap.crystal_reuse.get('integration_health'), dict) else {})
+            integrations = integration_health.get('integrations') if isinstance(integration_health.get('integrations'), list) else []
+            rows = [{
+                'name': 'Settings',
+                'base_url': self.base_url,
+                'session': self.session_meta,
+                'integration_config': [
+                    {
+                        'project': row.get('project'),
+                        'configured': bool(row.get('configured')),
+                        'env_vars': row.get('env_vars') or [],
+                        'live_probe': row.get('live_probe') or {'status': 'not_attempted'},
+                    }
+                    for row in integrations if isinstance(row, dict)
+                ],
+            }]
         if self.selected_page == 'Session':
-            rows = self.patch_plans or [{'page': 'Session', 'provider': self.session_meta.get('provider'), 'context_files': self.context_files, 'approval_queue': self.approval_queue, 'latest_diff': self.latest_diff, 'streaming_enabled': self.streaming_enabled, 'turn_cancelled': self.current_turn_cancelled}]
+            rows = self.patch_plans or [{
+                'page': 'Session',
+                'provider': self.session_meta.get('provider'),
+                'context_files': self.context_files,
+                'approval_queue': self.approval_queue,
+                'latest_diff': self.latest_diff,
+                'streaming_enabled': self.streaming_enabled,
+                'turn_cancelled': self.current_turn_cancelled,
+                'tool_events': self.tool_events[-20:],
+                'last_crystal_reuse_decision': self.session_meta.get('last_crystal_reuse_decision') or {},
+                'integration_harness_receipt': self.session_meta.get('last_integration_harness_receipt') or {},
+            }]
         if not rows:
             return {'page': self.selected_page, 'index': index, 'note': 'no selected item available'}
         return rows[clamp(index, 0, len(rows)-1)]
@@ -5034,7 +5378,41 @@ class BeastMissionConsole(App):
         if self.selected_page == 'Session' and self.patch_plans:
             self.action_verify_patch_plan(); return
         if self.selected_page == 'Session':
-            self.open_provider_config(str(self.session_meta.get('provider') or 'litellm')); return
+            receipt = self.session_meta.get('last_integration_harness_receipt') if isinstance(self.session_meta, dict) else {}
+            decision = receipt.get('crystal_reuse_decision') if isinstance(receipt, dict) and isinstance(receipt.get('crystal_reuse_decision'), dict) else {}
+            enterprise = receipt.get('enterprise') if isinstance(receipt, dict) and isinstance(receipt.get('enterprise'), dict) else {}
+            crystal_record = receipt.get('crystal_record') if isinstance(receipt, dict) and isinstance(receipt.get('crystal_record'), dict) else {}
+            memory_hull = crystal_record.get('memory_hull') if isinstance(crystal_record.get('memory_hull'), dict) else {}
+            payload = {
+                'session': {
+                    'provider': self.session_meta.get('provider'),
+                    'model': self.session_meta.get('model') or 'beast-auto',
+                    'streaming_enabled': self.streaming_enabled,
+                    'context_files': self.context_files,
+                    'state': self.session_meta.get('state'),
+                },
+                'recent_tool_events': self.tool_events[-20:],
+                'crystal_decision': {
+                    'crystal_reuse_decision_id': decision.get('decision_id'),
+                    'action': decision.get('action'),
+                    'source': decision.get('source'),
+                    'confidence': decision.get('confidence'),
+                    'reason': decision.get('reason'),
+                },
+                'enterprise_trace': {
+                    'usage': enterprise.get('usage'),
+                    'observability_event': enterprise.get('observability_event'),
+                    'encrypted_trace': enterprise.get('encrypted_trace'),
+                },
+                'memory_hull_sidecar': {
+                    'path': memory_hull.get('sidecar_path'),
+                    'verified': memory_hull.get('verified'),
+                    'reason': memory_hull.get('reason'),
+                },
+                'integration_harness_receipt': receipt or {'status': 'no live harness receipt recorded yet'},
+            }
+            self.push_screen(DetailScreen('Session harness receipt drilldown', payload))
+            return
         if self.selected_page == 'Intelligence':
             snap = self.snapshot or BackendSnapshot(base_url=self.base_url)
             crystal = snap.crystal_compute if isinstance(snap.crystal_compute, dict) else {}
@@ -5376,9 +5754,32 @@ class BeastMissionConsole(App):
             elif action == 'render_litellm_config': result = await api.render_litellm_config()
             elif action == 'write_configs': result = await api.write_deploy_configs()
             else: result = await api.render_nginx_config()
+        elif page == 'Capabilities' and mode == 'approve':
+            candidate_id = str(item.get('candidate_id') or '')
+            if candidate_id:
+                result = await api.action('Promote Skill', '/edgek/skills/promote', {
+                    'candidate_id': candidate_id,
+                    'approved_by': 'beast_tui',
+                    'require_eligible': True,
+                })
+            else:
+                result = ActionResult(False, 'Promote Skill', '', error='Selected capability is not a persisted promotion candidate')
         elif page == 'Capabilities' and mode == 'test':
             name = str(item.get('capability_id') or item.get('name') or 'selected capability')
-            result = await api.compile_insight(f'Test capability {name}', provider=str(self.session_meta.get('provider') or 'litellm'))
+            candidate_id = str(item.get('candidate_id') or '')
+            result = await api.action('Promotion candidate detail', f'/edgek/skills/promotion-candidates/{candidate_id}', method='GET') if candidate_id else await api.compile_insight(f'Test capability {name}', provider=str(self.session_meta.get('provider') or 'litellm'))
+        elif page == 'Intelligence' and mode == 'test':
+            result = await api.action('Tool Laziness schema benchmark', '/edgek/tool-laziness/schema-benchmark', {'tool_count': 72, 'turns': 36, 'relevant_tools_per_turn': 5})
+        elif page == 'Intelligence' and mode in {'approve', 'block'}:
+            tool_name = str(item.get('capability_id') or item.get('name') or 'selected_tui_tool')
+            useful = mode == 'approve'
+            result = await api.action('Record Tool Laziness evidence', '/edgek/tool-laziness/record', {
+                'tool_name': tool_name, 'scenario': 'operator_console', 'called': True,
+                'useful': useful, 'tokens_spent': 250, 'cost_usd': 0.0,
+                'latency_ms': 100.0, 'value_score': 0.8 if useful else 0.0,
+            })
+        elif page == 'Intelligence' and mode == 'view':
+            result = await api.action('Operational BEAST plugins', '/edgek/plugins', method='GET')
         elif page == 'Swarm':
             run_id = str(item.get('run_id') or '')
             candidate_id = str(item.get('candidate_id') or '')
@@ -5548,6 +5949,11 @@ class BeastMissionConsole(App):
                     self.chat_lines.append({'role': 'assistant', 'content': result.assistant_text})
                 if result.tool_events:
                     self.tool_events.extend(result.tool_events)
+                if isinstance(result.data, dict):
+                    receipt = result.data.get('integration_harness_receipt')
+                    if isinstance(receipt, dict):
+                        self.session_meta['last_integration_harness_receipt'] = receipt
+                        self.session_meta['last_crystal_reuse_decision'] = receipt.get('crystal_reuse_decision') or {}
                 if not result.ok and result.error:
                     self.chat_lines.append({'role': 'system', 'content': result.error})
                     turn_ok = False
@@ -5595,6 +6001,10 @@ class BeastMissionConsole(App):
                     if event.get('lifecycle_id'):
                         self.session_meta['lifecycle_id'] = str(event.get('lifecycle_id'))
                     data = event.get('data') if isinstance(event.get('data'), dict) else {}
+                    receipt = data.get('integration_harness_receipt') if isinstance(data, dict) else None
+                    if isinstance(receipt, dict):
+                        self.session_meta['last_integration_harness_receipt'] = receipt
+                        self.session_meta['last_crystal_reuse_decision'] = receipt.get('crystal_reuse_decision') or {}
                     heal_recommended = heal_recommended or bool(data.get('heal_recommended'))
                     self._sync()
 
@@ -5890,6 +6300,12 @@ def visual_intelligence(self: PageHost, snap: BackendSnapshot, index: int):
         widget_card('Tool Laziness', summary['tools_skipped'], f"{summary['tools_observed']} learning", line_graph([2, 4, 5, summary['tools_skipped'], 7, 6], width=20), delta=delta_badge(12.4)),
         widget_card('Compute Avoided', f'{savings_pct:.1f}%', f'{avoidable} tokens', line_graph([1, 3, 4, 8, 7, 10], width=20), delta=delta_badge(savings_pct)),
     )
+    cards.add_row(
+        widget_card('Crystal Reuse', summary.get('crystal_reuse_credits', 0), f"{summary.get('crystal_reuse_hits', 0)} hits / {summary.get('crystal_reuse_saved', 0)} tokens", distribution_ring({'active': int(summary.get('crystal_reuse_credits') or 0), 'total': max(1, int(summary.get('crystal_reuse_total') or 0))})),
+        widget_card('Crystal Adapters', f"{summary.get('crystal_integration_configured', 0)}/{summary.get('crystal_integration_count', 0)}", 'LMCache GPTCache LiteLLM OTEL', distribution_ring({'configured': int(summary.get('crystal_integration_configured') or 0), 'available': max(0, int(summary.get('crystal_integration_count') or 0) - int(summary.get('crystal_integration_configured') or 0))})),
+        widget_card('Memory Hull', summary.get('memory_hull_verified', 0), f"{summary.get('memory_hull_failed', 0)} failed sidecars", circle_meter(100 if not summary.get('memory_hull_failed') else 55, size='small')),
+        widget_card('Agent Passport', 'VALID' if summary.get('passport_policy_valid') else 'WAIT', f"{summary.get('passport_policy_count', 0)} policies / seal {'ready' if summary.get('residue_key_ready') else 'wait'}", toggle_pill(summary.get('passport_policy_valid'))),
+    )
     rank_table = Table(expand=True, box=box.SIMPLE)
     rank_table.add_column('', width=2); rank_table.add_column('Skill', ratio=2); rank_table.add_column('Confidence', width=20); rank_table.add_column('Role', ratio=1); rank_table.add_column('Samples', width=10)
     for i, row in enumerate(rankings):
@@ -5918,11 +6334,29 @@ def visual_intelligence(self: PageHost, snap: BackendSnapshot, index: int):
         widget_card('Telemetry', 'ON' if summary['otel_configured'] else 'OFF', 'OpenTelemetry connector', toggle_pill(summary['otel_configured'])),
         widget_card('Plugins', summary.get('plugin_count', 0), 'local plugin market', distribution_ring({'plugins': int(summary.get('plugin_count') or 0), 'reserve': 1})),
     )
+    integration_table = Table(expand=True, box=box.SIMPLE)
+    integration_table.add_column('Layer')
+    integration_table.add_column('State')
+    integration_table.add_column('Signal')
+    integration_table.add_row('Crystal Reuse Gateway', Text(str(summary.get('crystal_reuse_credits', 0)), style=BEAST_GREEN if summary.get('crystal_reuse_credits') else BEAST_WARN), f"{summary.get('crystal_reuse_hits', 0)} hits; {summary.get('crystal_kv_blocks', 0)} KV block(s)")
+    integration_table.add_row('Public Reuse Adapters', Text(f"{summary.get('crystal_integration_configured', 0)}/{summary.get('crystal_integration_count', 0)}", style=BEAST_ACID if summary.get('crystal_integration_count') else BEAST_WARN), 'LMCache / GPTCache / LiteLLM / OpenLLMetry / Langfuse / TensorZero / Promptfoo')
+    integration_table.add_row('Memory Hull', Text(str(summary.get('memory_hull_verified', 0)), style=BEAST_GREEN if summary.get('memory_hull_verified') else BEAST_WARN), f"root {str(summary.get('memory_hull_root') or '')[-72:] or 'not reported'}")
+    integration_table.add_row('Residue Seal', Text('READY' if summary.get('residue_key_ready') else 'WAIT', style=BEAST_GREEN if summary.get('residue_key_ready') else BEAST_WARN), 'purpose-bound signed residue')
+    integration_table.add_row('Agent Passport', Text('VALID' if summary.get('passport_policy_valid') else 'WAIT', style=BEAST_GREEN if summary.get('passport_policy_valid') else BEAST_WARN), f"{summary.get('passport_policy_count', 0)} policy rule(s)")
+    operations = Table(expand=True, box=box.SIMPLE)
+    operations.add_column('Tool / Plugin', ratio=2); operations.add_column('Decision', width=14); operations.add_column('Evidence', ratio=2)
+    laziness_rows = list(snap.tool_laziness.get('tools_not_to_call') or []) + list(snap.tool_laziness.get('tools_to_call') or []) + list(snap.tool_laziness.get('tools_to_observe') or [])
+    for row in laziness_rows[:8]:
+        operations.add_row(str(row.get('name') or row.get('tool_name')), Text(str(row.get('decision') or 'learn_more'), style=status_style(row.get('decision'))), f"{row.get('samples',0)} samples • {row.get('reason','')}")
+    for plugin in (snap.plugins_state.get('plugins') or [])[:8]:
+        operations.add_row(str(plugin.get('name') or plugin.get('id')), Text('INSTALLED', style=BEAST_GREEN), f"{plugin.get('risk_class','?')} • callable")
     page = Table.grid(expand=True); page.add_column(ratio=1)
     page.add_row(cards)
     page.add_row(Panel(Group(title_text('AGENT SIGNAL MAP', '◎'), Text(''), signal_map), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
     page.add_row(lower)
     page.add_row(Panel(Group(title_text('CONNECTOR FIELD', '♧'), Text(''), connector_map), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
+    page.add_row(Panel(Group(title_text('CRYSTAL REUSE + MEMORY SECURITY', '◇'), chip_line('LMCache', 'GPTCache', 'LiteLLM', 'OpenLLMetry', 'Langfuse', 'TensorZero', 'Promptfoo'), Text(''), integration_table), border_style=BEAST_EMERALD, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
+    page.add_row(Panel(Group(title_text('TOOL LAZINESS + OPERATIONAL PLUGINS', '⚒'), chip_line('t BENCHMARK', 'a USEFUL', 'b LOW VALUE', 'v INVENTORY'), Text(''), operations), border_style=BEAST_JADE, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
     return page
 
 
@@ -5987,12 +6421,13 @@ def visual_chronicle(self: PageHost, snap: BackendSnapshot, index: int):
         widget_card('Selected Confidence', val(selected, 'confidence', default='n/a'), val(selected, 'provider', default='local'), block_meter(confidence_from_item(selected, fallback=78), width=16)),
     )
     timeline = Table(expand=True, box=box.SIMPLE)
-    timeline.add_column('', width=2); timeline.add_column('Record', ratio=2); timeline.add_column('Provider', ratio=1); timeline.add_column('Status', width=14); timeline.add_column('Signal', width=18)
+    timeline.add_column('', width=2); timeline.add_column('Record', ratio=2); timeline.add_column('Provider', ratio=1); timeline.add_column('Status', width=14); timeline.add_column('Hull', width=12); timeline.add_column('Signal', width=18)
     for i, r in enumerate(rows):
         status = val(r, 'status','category', default='done')
-        timeline.add_row(selected_marker(i==index), selected_text(val(r,'task_id','id',default='task'), i==index), val(r,'provider',default='local'), status_mark(status) + Text(' ' + status, style=status_style(status)), block_meter(confidence_from_item(r, fallback=70), width=8))
+        hull_status = 'verified' if r.get('memory_hull_verified') else 'candidate' if r.get('memory_candidate') else 'n/a'
+        timeline.add_row(selected_marker(i==index), selected_text(val(r,'task_id','id',default='task'), i==index), val(r,'provider',default='local'), status_mark(status) + Text(' ' + status, style=status_style(status)), Text(hull_status, style=status_style(hull_status)), block_meter(confidence_from_item(r, fallback=70), width=8))
     detail = Table.grid(expand=True); detail.add_column(width=18); detail.add_column(ratio=1)
-    for key in ['summary','root_cause','confidence','memory_candidate','created_at']:
+    for key in ['summary','root_cause','confidence','memory_candidate','memory_hull_verified','memory_hull_sidecar_path','memory_hull_verification_reason','created_at']:
         detail.add_row(Text(human_label(key), style=BEAST_MUTED), Text(val(selected,key,default=''), style=BEAST_TEXT))
     lower = Table.grid(expand=True); lower.add_column(ratio=2); lower.add_column(ratio=1)
     lower.add_row(Panel(Group(title_text('CHRONICLE TIMELINE', '▦'), Text(''), timeline), border_style=BEAST_ACID, style=BEAST_PANEL, padding=(1,2), box=box.HEAVY_EDGE), Panel(Group(title_text('SELECTED RECORD', '◆'), Text(''), detail), border_style=BEAST_JADE, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
@@ -6003,22 +6438,37 @@ def visual_chronicle(self: PageHost, snap: BackendSnapshot, index: int):
 
 def visual_deployment(self: PageHost, snap: BackendSnapshot, index: int):
     deploy = snap.deployment_score()
+    crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+    integration_health = crystal_reuse.get('integration_health') if isinstance(crystal_reuse.get('integration_health'), dict) else {}
+    memory_security = snap.memory_security if isinstance(snap.memory_security, dict) else {}
+    memory_hull = memory_security.get('memory_hull') if isinstance(memory_security.get('memory_hull'), dict) else {}
+    passport = memory_security.get('agent_passport') if isinstance(memory_security.get('agent_passport'), dict) else {}
+    passport_lint = passport.get('policy_lint') if isinstance(passport.get('policy_lint'), dict) else {}
+    configured_integrations = int(integration_health.get('configured_count') or 0)
+    total_integrations = int(integration_health.get('integration_count') or len(crystal_reuse.get('integrations') or []))
+    memory_failed = int(memory_hull.get('failed_sidecars') or 0)
+    provider_auth = provider_secrets_operational(snap)
+    kv_counts = crystal_kv_prefill_counts(snap)
     rows = [
         ('Nginx config', 'OK' if deploy.get('nginx_ready') else 'WARN', f"{len(snap.nginx_config.splitlines())} lines"),
         ('LiteLLM sidecar', 'OK' if deploy.get('litellm_running') else 'WARN', f"port {deploy.get('litellm_port') or 4000}"),
         ('LiteLLM models', 'OK' if deploy.get('litellm_models') else 'WARN', f"{deploy.get('litellm_models') or len(snap.litellm_models)} models"),
         ('Provider adapters', 'OK' if snap.provider_adapters else 'WARN', f"{len(snap.provider_adapters)} adapters"),
-        ('Provider secrets', 'OK' if snap.provider_secret_count() else 'WARN', f"{snap.provider_secret_count()} configured"),
+        ('Provider secrets', provider_auth['status'], provider_auth['detail']),
+        ('Crystal reuse gateway', 'OK' if crystal_reuse else 'WARN', f"{int((crystal_reuse.get('storage') or {}).get('active_credits') or 0)} active credits"),
+        ('Public reuse adapters', 'OK' if total_integrations else 'WARN', f"{configured_integrations}/{total_integrations} configured"),
+        ('Memory security', 'OK' if memory_security and not memory_failed and passport_lint.get('valid') else 'WARN', f"{memory_failed} failed sidecars"),
     ]
     index = clamp(index, 0, len(rows)-1)
     ok_count = sum(1 for _, status, _ in rows if status == 'OK')
     cards = Table.grid(expand=True)
-    for _ in range(4): cards.add_column(ratio=1)
+    for _ in range(5): cards.add_column(ratio=1)
     cards.add_row(
         widget_card('Deploy Health', f'{ok_count}/{len(rows)}', 'subsystems ready', circle_meter((ok_count / max(1,len(rows))) * 100, size='small')),
         widget_card('Nginx Edge', 'READY' if deploy.get('nginx_ready') else 'WAIT', 'reverse proxy', toggle_pill(deploy.get('nginx_ready'))),
         widget_card('LiteLLM', 'RUN' if deploy.get('litellm_running') else 'OFF', f"port {deploy.get('litellm_port') or 4000}", toggle_pill(deploy.get('litellm_running'))),
         widget_card('Models', deploy.get('litellm_models') or len(snap.litellm_models), 'sidecar registry', distribution_ring({'models': len(snap.litellm_models), 'adapters': len(snap.provider_adapters), 'secrets': snap.provider_secret_count()})),
+        widget_card('Crystal Adapters', f'{configured_integrations}/{total_integrations}', 'LMCache/GPTCache/OTEL/etc', distribution_ring({'configured': configured_integrations, 'available': max(0, total_integrations - configured_integrations)})),
     )
     matrix = dense_status_list(rows, index, max_rows=8)
     config_preview = snap.nginx_config[:1000] if snap.nginx_config else 'No generated Nginx text returned from /edgek/deploy/nginx-config.'
@@ -6028,8 +6478,21 @@ def visual_deployment(self: PageHost, snap: BackendSnapshot, index: int):
         fixed_panel(Group(title_text('DEPLOY MATRIX', '⇄'), Text(''), matrix), border_style=BEAST_ACID, style=BEAST_PANEL, padding=(1,2), box_style=box.ROUNDED),
         fixed_panel(Group(title_text('LITELLM MODELS', 'λ'), Text(''), model_table), border_style=BEAST_JADE, style=BEAST_PANEL, padding=(1,2), box_style=box.ROUNDED),
     )
+    layer_table = Table(expand=True, box=box.SIMPLE)
+    layer_table.add_column('Layer')
+    layer_table.add_column('Deploy state')
+    layer_table.add_column('Contract')
+    layer_table.add_row('Crystal Reuse Gateway', Text('OK' if crystal_reuse else 'WAIT', style=BEAST_GREEN if crystal_reuse else BEAST_WARN), 'semantic credit, exact answer, KV prefill, provider fallback')
+    layer_table.add_row('KV Prefill Store', Text('OK' if kv_counts['display_blocks'] else 'WAIT', style=BEAST_GREEN if kv_counts['display_blocks'] else BEAST_WARN), f"{kv_counts['durable_prefills']} durable prefill(s), {kv_counts['live_blocks']} live block(s)")
+    layer_table.add_row('Public Reuse Adapters', Text(f'{configured_integrations}/{total_integrations}', style=BEAST_ACID if total_integrations else BEAST_WARN), 'LMCache / GPTCache / LiteLLM / OpenLLMetry / Langfuse / TensorZero / Promptfoo')
+    layer_table.add_row('Memory Hull', Text('OK' if memory_hull and not memory_failed else 'WARN', style=BEAST_GREEN if memory_hull and not memory_failed else BEAST_WARN), f"{memory_hull.get('verified_sidecars', 0)} verified sidecar(s)")
+    layer_table.add_row('Residue Seal', Text('OK' if (memory_security.get('residue_seal') or {}).get('key_exists') else 'WARN', style=BEAST_GREEN if (memory_security.get('residue_seal') or {}).get('key_exists') else BEAST_WARN), 'purpose-bound signatures')
+    layer_table.add_row('Agent Passport', Text('OK' if passport_lint.get('valid') else 'WARN', style=BEAST_GREEN if passport_lint.get('valid') else BEAST_WARN), f"{passport_lint.get('policy_count', 0)} identity policy rule(s)")
     page = Table.grid(expand=True); page.add_column(ratio=1)
-    page.add_row(cards); page.add_row(lower); page.add_row(Panel(Group(title_text('NGINX PREVIEW', '▤'), Text(''), Text(config_preview, style=BEAST_MUTED)), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.SQUARE))
+    page.add_row(cards)
+    page.add_row(lower)
+    page.add_row(Panel(Group(title_text('CRYSTAL + MEMORY LAYERS', '◇'), chip_line('CRYSTAL', 'HULL', 'SEAL', 'PASSPORT'), Text(''), layer_table), border_style=BEAST_EMERALD, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
+    page.add_row(Panel(Group(title_text('NGINX PREVIEW', '▤'), Text(''), Text(config_preview, style=BEAST_MUTED)), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.SQUARE))
     return page
 
 
@@ -6231,6 +6694,12 @@ def visual_economy_command_deck(self: PageHost, snap: BackendSnapshot, index: in
     weekly = savings.get('potential_weekly_savings_usd') or savings.get('availability') or 'unavailable'
     evidence = master_evidence_summary(snap)
     latest = latest_mega_summary(snap)
+    crystal_reuse = snap.crystal_reuse if isinstance(snap.crystal_reuse, dict) else {}
+    crystal_storage = crystal_reuse.get('storage') if isinstance(crystal_reuse.get('storage'), dict) else {}
+    crystal_hits = int(crystal_storage.get('total_reuse_count') or 0)
+    crystal_saved_tokens = int(crystal_storage.get('measured_reuse_tokens_saved') or 0)
+    crystal_active = int(crystal_storage.get('active_credits') or 0)
+    kv_counts = crystal_kv_prefill_counts(snap)
 
     cards = Table.grid(expand=True)
     for _ in range(6): cards.add_column(ratio=1)
@@ -6241,6 +6710,14 @@ def visual_economy_command_deck(self: PageHost, snap: BackendSnapshot, index: in
         widget_card('False Suppression', f'{false_supp:.1f}%', 'lower is better', circle_meter(max(0, 100 - false_supp), size='small'), delta=delta_badge(-false_supp, positive_good=False), danger=false_supp > 0),
         widget_card('Crystallization', crystal_observed.get('observed_total', crystal.get('promoted_count', 0)), f"{crystal.get('promoted_count', 0)} promoted / {crystal_observed.get('promotion_candidate_files', 0)} candidates", distribution_ring({'promoted': int(crystal.get('promoted_count') or 0), 'candidates': int(crystal_observed.get('promotion_candidate_files') or 0), 'events': int(crystal_observed.get('evidence_crystallize_events') or 0)})),
         widget_card('Mega Calls', latest['provider_call_receipts'], f"{latest['impact_fingerprint_files']} fingerprints", distribution_ring({'provider': latest['provider_call_receipts'], 'reuse': latest['compute_governor_receipts'], 'fp': latest['impact_fingerprint_files']}), delta=delta_badge(latest['phase_pass_count'])),
+    )
+    cards.add_row(
+        widget_card('Crystal Reuse Saved', crystal_saved_tokens, f'{crystal_hits} reuse hit(s)', line_graph([0, max(1, crystal_saved_tokens * .25), max(1, crystal_saved_tokens * .6), max(1, crystal_saved_tokens)], width=18), delta=delta_badge((crystal_saved_tokens / max(1, observed)) * 100 if observed else 0)),
+        widget_card('Provider Calls Avoided', crystal_hits, f'{crystal_active} active credit(s)', distribution_ring({'hits': crystal_hits, 'active': crystal_active, 'fallback': max(1, receipts - crystal_hits)})),
+        widget_card('KV Prefill Blocks', kv_counts['display_blocks'], f"{kv_counts['durable_prefills']} durable / {kv_counts['live_blocks']} live", circle_meter(96 if kv_counts['display_blocks'] else 55, size='small')),
+        widget_card('Reuse Gateway', 'ON' if crystal_reuse else 'WAIT', 'pre-provider decision plane', toggle_pill(bool(crystal_reuse))),
+        widget_card('Reuse Quality', f"{float(crystal_storage.get('reuse_success_rate') or 1.0 if crystal_hits else 0.0):.0%}", 'verified local residue', circle_meter(96 if crystal_hits else 58, size='small')),
+        widget_card('Reuse Boundary', 'SEALED' if crystal_reuse else 'WAIT', 'policy/signature gated', toggle_pill(bool(crystal_reuse))),
     )
 
     actions = economy_action_rows(report)
@@ -6276,6 +6753,8 @@ def visual_economy_command_deck(self: PageHost, snap: BackendSnapshot, index: in
         ('Promoted', crystal.get('promoted_count', 0)),
         ('Promotion files', crystal_observed.get('promotion_candidate_files', 0)),
         ('Crystallize events', crystal_observed.get('evidence_crystallize_events', 0)),
+        ('Crystal reuse saved', f'{crystal_saved_tokens} tokens'),
+        ('Provider calls avoided', crystal_hits),
         ('Receipt statuses', ', '.join(f'{k}:{v}' for k, v in statuses.items()) or 'none'),
     ]:
         rollup.add_row(Text(label, style=BEAST_MUTED), Text(str(value), style=status_style(value)))

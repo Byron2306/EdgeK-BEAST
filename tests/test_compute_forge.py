@@ -2,8 +2,9 @@
 
 import pytest
 
-from app.kernel.crystal_seal import seal_crystal_payload, verify_crystal_seal
-from app.kernel.compute_forge import ComputeForgeNode, ComputeLedger, ForgeNodeProfile
+from app.kernel.security.crystal_seal import seal_crystal_payload, verify_crystal_seal
+from app.kernel.compute.compute_forge import ComputeForgeNode, ComputeLedger, ForgeNodeProfile
+from app.kernel.compute.local_semantic_cache import LocalSemanticCache
 
 
 def test_forge_node_watches_repo_and_builds_fingerprint():
@@ -28,8 +29,8 @@ def test_forge_node_runs_local_inference_and_earns_credit(monkeypatch, tmp_path)
         def json(self):
             return {"response": "4", "eval_count": 3}
 
-    monkeypatch.setattr("app.kernel.compute_forge.httpx.post", lambda *args, **kwargs: Response())
-    from app.kernel.durable_inference_storage import DurableInferenceStorage
+    monkeypatch.setattr("app.kernel.compute.compute_forge.httpx.post", lambda *args, **kwargs: Response())
+    from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
     node = ComputeForgeNode(
         node_id="cpu_01", node_type="cpu_ollama",
         storage=DurableInferenceStorage(tmp_path / "credits"),
@@ -45,12 +46,43 @@ def test_forge_node_runs_local_inference_and_earns_credit(monkeypatch, tmp_path)
     assert node.profile.total_tokens_displaced > 0
 
 
+def test_forge_node_feeds_local_semantic_cache(monkeypatch, tmp_path):
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"response": "cached forge answer", "eval_count": 5}
+
+    monkeypatch.setattr("app.kernel.compute.compute_forge.httpx.post", lambda *args, **kwargs: Response())
+    from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
+
+    semantic_cache = LocalSemanticCache(tmp_path / "semantic.sqlite")
+    node = ComputeForgeNode(
+        node_id="cpu_cache_01",
+        storage=DurableInferenceStorage(tmp_path / "credits"),
+        local_semantic_cache=semantic_cache,
+    )
+
+    result = node.run_local_inference("forge_seed", "prime the semantic cache")
+    match = semantic_cache.match(
+        prompt="prime semantic cache please",
+        task_class="forge_seed",
+        repo_fingerprint="local_forge_node",
+        threshold=0.35,
+    )
+
+    assert result["credit"]["credit_id"].startswith("scc_")
+    assert match is not None
+    assert match.answer == "cached forge answer"
+
+
 def test_failed_local_inference_earns_no_credit(monkeypatch, tmp_path):
     monkeypatch.setattr(
-        "app.kernel.compute_forge.httpx.post",
+        "app.kernel.compute.compute_forge.httpx.post",
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("offline")),
     )
-    from app.kernel.durable_inference_storage import DurableInferenceStorage
+    from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
     node = ComputeForgeNode("offline", storage=DurableInferenceStorage(tmp_path / "credits"))
     result = node.run_local_inference("test", "prompt")
     assert result["result"]["actual_inference"] is False

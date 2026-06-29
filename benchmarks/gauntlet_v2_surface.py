@@ -97,7 +97,7 @@ TASK_FIXTURE_PROFILES = {
     },
     "fastapi_endpoint_behavior": {
         "repo_fixture": "edgek-beast-api-fixture",
-        "allowed_files": ["app/main.py", "app/cli/api.py", "app/kernel/runtime.py"],
+        "allowed_files": ["app/main.py", "app/cli/api.py", "app.kernel.governance.runtime.py"],
         "visible_tests": ["tests/test_api_endpoints.py"],
         "hidden_tests": ["hidden/http_contract_regression.py"],
     },
@@ -115,7 +115,7 @@ TASK_FIXTURE_PROFILES = {
     },
     "json_yaml_parser_bug": {
         "repo_fixture": "edgek-beast-parser-fixture",
-        "allowed_files": ["app/kernel/output_governor.py", "app/kernel/action_ir.py", "app/kernel/local_patch_compiler.py"],
+        "allowed_files": ["app.kernel.governance.output_governor.py", "app/kernel/action_ir.py", "app/kernel/local_patch_compiler.py"],
         "visible_tests": ["tests/test_output_governor.py"],
         "hidden_tests": ["hidden/yaml_json_edge_cases.py"],
     },

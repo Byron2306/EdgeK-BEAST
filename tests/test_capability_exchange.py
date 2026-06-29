@@ -3,7 +3,7 @@ import json
 import httpx
 import pytest
 
-from app.kernel.capability_exchange import CapabilityExchange
+from app.kernel.capability.capability_exchange import CapabilityExchange
 
 
 def evidence(exchange, capability_id, *, task_class="coding", role="patch", verified=True, useful=True, latency=10, scope="local"):

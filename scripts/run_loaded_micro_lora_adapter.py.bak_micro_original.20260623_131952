@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""Run the verified micro LoRA adapter as a proposal-only runtime lane.
+
+This is the missing Phase 8 harness: it loads the PEFT LoRA adapter, attaches
+it to the tiny local causal LM config used during training, generates a held-out
+proposal, and emits a measurement receipt.  It never executes the proposal.
+BEAST verifiers remain the authority.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+import time
+from pathlib import Path
+from typing import Any, Dict, List
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+def require_deps() -> Dict[str, Any]:
+    missing = []
+    modules: Dict[str, Any] = {}
+    for name in ["torch", "transformers", "peft"]:
+        try:
+            modules[name] = __import__(name)
+        except Exception as exc:  # pragma: no cover - depends on host env
+            missing.append({"module": name, "error": str(exc)})
+    if missing:
+        return {"missing": missing}
+    return modules
+
+
+def encode_bytes_unpadded(text: str, max_length: int) -> List[int]:
+    # Reserve 0 for padding; bytes map to 1..256; 257 is EOS.
+    ids = [b + 1 for b in text.encode("utf-8", errors="ignore")[: max(1, max_length - 1)]]
+    if not ids or ids[-1] != 257:
+        ids.append(257)
+    return ids[:max_length]
+
+
+def decode_bytes(ids: List[int]) -> str:
+    out = bytearray()
+    for token_id in ids:
+        token_id = int(token_id)
+        if token_id in {0, 257}:
+            continue
+        if 1 <= token_id <= 256:
+            out.append(token_id - 1)
+    return out.decode("utf-8", errors="ignore")
+
+
+def build_prompt(task_id: str, task_family: str, required_verifier: str) -> str:
+    target = {
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "task_family": task_family,
+        "task_envelope": {"task_id": task_id, "task_family": task_family},
+        "prec_stage": "reason",
+        "action_ir": {"route": "loaded_lora_adapter_then_local_verifier"},
+        "required_verifiers": [required_verifier],
+        "beast_systems_used": ["task_envelope", "prec_lifecycle", "compute_governor", "chronicle", "local_verifiers"],
+        "agent_awareness": {"linked": True, "authority": "proposal_only", "must_use_beast_systems": True},
+        "risk_notes": ["loaded LoRA may only propose; verifier decides"],
+        "authority": "proposal_only",
+    }
+    return (
+        "system: You are a BEAST proposal adapter. Return raw JSON only. "
+        "No markdown. No tool calls. No execution. BEAST verifiers decide.\n"
+        f"user: Held-out task_id={task_id}; task_family={task_family}; "
+        f"required_verifier={required_verifier}.\n"
+        "assistant: "
+        + json.dumps(target, sort_keys=True)
+    )
+
+
+def default_base_config(transformers: Any, max_length: int) -> Any:
+    return transformers.GPT2Config(
+        vocab_size=258,
+        n_positions=max_length,
+        n_ctx=max_length,
+        bos_token_id=257,
+        eos_token_id=257,
+        pad_token_id=0,
+        n_embd=96,
+        n_layer=2,
+        n_head=4,
+        resid_pdrop=0.05,
+        embd_pdrop=0.05,
+        attn_pdrop=0.05,
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Run loaded BEAST micro LoRA adapter proposal harness")
+    parser.add_argument("--receipt", default="benchmarks/results/crystal_to_adapter_distillation/micro_lora_training_latest.json")
+    parser.add_argument("--task-id", required=True)
+    parser.add_argument("--task-family", required=True)
+    parser.add_argument("--required-verifier", required=True)
+    parser.add_argument("--max-new-tokens", type=int, default=180)
+    parser.add_argument("--temperature", type=float, default=0.0)
+    args = parser.parse_args()
+
+    started = time.perf_counter()
+    deps = require_deps()
+    if "missing" in deps:
+        print(json.dumps({
+            "beast_object_type": "loaded_micro_lora_runtime_receipt",
+            "status": "blocked_missing_dependencies",
+            "missing_dependencies": deps["missing"],
+            "response": "",
+            "tokens_generated": 0,
+            "latency_ms": round((time.perf_counter() - started) * 1000, 3),
+            "authority": "proposal_only_measurement",
+            "promotion_boundary": "adapter may only propose; BEAST verifiers decide",
+        }, sort_keys=True))
+        return 0
+
+    torch = deps["torch"]
+    transformers = deps["transformers"]
+    peft = deps["peft"]
+
+    receipt_path = Path(args.receipt)
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    adapter_dir = Path(str(receipt.get("adapter_dir") or ""))
+    max_length = int(receipt.get("max_length") or 256)
+    seed_present = "seed" in receipt
+    seed = int(receipt.get("seed") or 1337)
+    torch.manual_seed(seed)
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
+    base_config_payload = receipt.get("base_config")
+    if isinstance(base_config_payload, dict):
+        config = transformers.GPT2Config(**base_config_payload)
+    else:
+        config = default_base_config(transformers, max_length)
+    config.n_positions = max(int(getattr(config, "n_positions", max_length)), max_length + int(args.max_new_tokens) + 8)
+    config.n_ctx = max(int(getattr(config, "n_ctx", max_length)), config.n_positions)
+
+    model = transformers.GPT2LMHeadModel(config)
+    if not adapter_dir.is_dir():
+        status = "blocked_adapter_dir_missing"
+        response = ""
+        tokens_generated = 0
+    else:
+        model = peft.PeftModel.from_pretrained(model, adapter_dir)
+        model.eval()
+        prompt = build_prompt(str(args.task_id), str(args.task_family), str(args.required_verifier))
+        input_ids = torch.tensor([encode_bytes_unpadded(prompt, max_length)], dtype=torch.long)
+        generate_kwargs = {
+            "max_new_tokens": max(1, int(args.max_new_tokens)),
+            "pad_token_id": 0,
+            "eos_token_id": 257,
+            "do_sample": bool(float(args.temperature) > 0),
+        }
+        if float(args.temperature) > 0:
+            generate_kwargs["temperature"] = float(args.temperature)
+        with torch.no_grad():
+            generated = model.generate(input_ids=input_ids, **generate_kwargs)
+        new_ids = generated[0][input_ids.shape[1]:].detach().cpu().tolist()
+        response = decode_bytes(new_ids).strip()
+        tokens_generated = len(new_ids)
+        status = "measured" if seed_present else "measured_base_reconstruction_seed_missing"
+
+    report = {
+        "beast_object_type": "loaded_micro_lora_runtime_receipt",
+        "version": "1.0",
+        "status": status,
+        "adapter_dir": str(adapter_dir),
+        "base_model": receipt.get("base_model"),
+        "base_reconstruction_seed_present": seed_present,
+        "task_id": str(args.task_id),
+        "task_family": str(args.task_family),
+        "required_verifier": str(args.required_verifier),
+        "response": response,
+        "tokens_generated": tokens_generated,
+        "latency_ms": round((time.perf_counter() - started) * 1000, 3),
+        "authority": "proposal_only_measurement",
+        "promotion_boundary": "loaded LoRA may only propose; BEAST verifiers decide",
+    }
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

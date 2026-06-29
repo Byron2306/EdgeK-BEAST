@@ -24,11 +24,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.context.economizer import ContextEconomizer
-from app.kernel.ast_compressor import ASTCompressor
-from app.kernel.provider_adapters import ProviderAdapterRegistry
-from app.kernel.provider_registry import ProviderRegistry
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.perceive import EdgeKIR
+from app.kernel.compute.ast_compressor import ASTCompressor
+from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
+from app.kernel.registry.provider_registry import ProviderRegistry
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.compute.perceive import EdgeKIR
 
 
 OUT_DIR = ROOT / "benchmarks" / "results"

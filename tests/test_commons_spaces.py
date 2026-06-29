@@ -3,7 +3,7 @@ import zipfile
 
 import pytest
 
-from app.kernel.commons_spaces import (
+from app.kernel.networking.commons_spaces import (
     BUNDLE_MANIFEST_NAME,
     MANIFEST_NAME,
     build_manifest,
@@ -15,7 +15,7 @@ from app.kernel.commons_spaces import (
     validate_reduction_receipt,
     write_space,
 )
-from app.kernel.crystal_seal import canonical_bytes, verify_crystal_seal
+from app.kernel.security.crystal_seal import canonical_bytes, verify_crystal_seal
 
 
 def test_manifest_hashes_artifacts_and_rejects_private_paths(tmp_path):

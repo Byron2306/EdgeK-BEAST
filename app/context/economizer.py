@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import copy
 import logging
 
-from app.kernel.perceive import EdgeKIR
+from app.kernel.compute.perceive import EdgeKIR
 
 logger = logging.getLogger(__name__)
 

@@ -45,6 +45,7 @@ http://localhost:8005
 | `GET` | `/edgek/chronicle` | Chronicle event list |
 | `POST` | `/edgek/chronicle/publish` | Publish Chronicle evidence |
 | `POST` | `/edgek/session/handshake` | Build the BEAST agent-awareness and local preflight latency contract |
+| `GET` | `/edgek/memory-security` | Report Memory Hull, Residue Seal, and Agent Passport state |
 
 ## Connectors And Marketplace
 
@@ -92,6 +93,13 @@ OTLP export uses `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or `OTEL_EXPORTER_OTLP_END
 | `POST` | `/edgek/crystal-compute/semantic-raid/shards` | Store one durable intelligence shard |
 | `POST` | `/edgek/crystal-compute/semantic-raid/reconstruct` | Repair corrupt or missing shard refs from mirrors |
 | `GET` | `/edgek/crystal-compute/fossils/replay` | Replay fossilized artifact decision lineage |
+| `GET` | `/edgek/crystal-reuse` | Report crystal reuse gateway inventory and public integration adapter state |
+| `GET` | `/edgek/crystal-reuse/integrations` | Report first-class LMCache/GPTCache/LiteLLM/OpenLLMetry/Langfuse/TensorZero/Promptfoo adapter health |
+| `POST` | `/edgek/crystal-reuse/decide` | Decide whether a prompt can reuse a semantic credit, exact answer, KV prefill, or KV transport block before provider execution |
+| `POST` | `/edgek/crystal-reuse/export` | Build integration export envelopes for LMCache, GPTCache, LiteLLM, OpenLLMetry, Langfuse, TensorZero, and Promptfoo |
+| `POST` | `/edgek/crystal-reuse/record` | Store a provider response as an exact answer crystal and optionally a verified semantic crystal |
+| `POST` | `/edgek/crystal-reuse/prefill` | Register a durable prefill identity for model/tokenizer/prompt-prefix reuse |
+| `POST` | `/edgek/crystal-reuse/kv-block` | Register and pin a KV block in the BEAST LMCache-style transport adapter |
 
 ## Providers And Routes
 

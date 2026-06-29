@@ -1,5 +1,5 @@
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 import pytest
 
 

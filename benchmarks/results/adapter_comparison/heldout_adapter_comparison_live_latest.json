@@ -1,0 +1,1427 @@
+{
+  "beast_object_type": "heldout_adapter_comparison_gauntlet",
+  "lanes": [
+    {
+      "kind": "ollama",
+      "lane_id": "baseline_qwen_05b",
+      "model": "qwen2.5:0.5b"
+    },
+    {
+      "kind": "ollama",
+      "lane_id": "beast_modelfile_wrapper",
+      "model": "beast-crystal-qwen25-05b:latest"
+    },
+    {
+      "kind": "loaded_lora_runtime",
+      "lane_id": "trained_beast_lora_adapter",
+      "model": "qwen_lora_fast_smoke"
+    },
+    {
+      "kind": "crystal_only",
+      "lane_id": "crystal_only_route",
+      "model": "crystal_lora_route_head+semantic_pages"
+    },
+    {
+      "kind": "cloud_provider",
+      "lane_id": "cloud_provider_route",
+      "model": "external_provider_fallback"
+    }
+  ],
+  "live_cloud": false,
+  "live_ollama": true,
+  "promotion_rule": {
+    "adapter_can_execute": false,
+    "adapter_may_only_propose": true,
+    "beast_verifiers_decide": true
+  },
+  "promotion_verdict": {
+    "baseline_qwen_05b": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "beast_modelfile_wrapper": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "cloud_provider_route": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "crystal_only_route": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    },
+    "trained_beast_lora_adapter": {
+      "eligible_as_proposal_source": false,
+      "promote_to_execution": false,
+      "reason": "adapters_may_only_propose_beast_verifiers_decide"
+    }
+  },
+  "results": [
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 8613.231,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": false,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"task_family\": \"route_diagnostics\",\n  \"task_id\": \"heldout_route_001\",\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\"provider_fitness_check\"],\n  \"beast_systems_used\": [\n    \"task_envelope\",\n    \"prec_lifecycle\",\n    \"compute_governor\",\n    \"chronicle\",\n    \"local_verifiers\"\n  ],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ],\n  \"authority\": \"proposal_only\"\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_family": "route_diagnostics",
+        "task_id": "heldout_route_001"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 83,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 5236.4,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": false,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"task_family\": \"schema_validation\",\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\n    \"schema_validation\"\n  ],\n  \"beast_systems_used\": [\"task_envelope\"],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ]\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 55,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 6428.759,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": false,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"task_family\": \"secret_redaction\",\n  \"task_id\": \"heldout_secret_003\",\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\"privacy_scan\"],\n  \"beast_systems_used\": [\n    \"task_envelope\",\n    \"prec_lifecycle\",\n    \"compute_governor\",\n    \"chronicle\",\n    \"local_verifiers\"\n  ],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ]\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?202",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "privacy_scan"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_family": "secret_redaction",
+        "task_id": "heldout_secret_003"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 61,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 6201.178,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": false,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"task_family\": \"provider_alias_normalization\",\n  \"task_id\": \"heldout_alias_004\",\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\"provider_fitness_check\"],\n  \"beast_systems_used\": [\n    \"task_envelope\",\n    \"prec_lifecycle\",\n    \"compute_governor\",\n    \"chronicle\"\n  ],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ]\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_family": "provider_alias_normalization",
+        "task_id": "heldout_alias_004"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 61,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 6304.575,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"task_family\": \"patch_compilation\",\n  \"task_envelope\": {\n    \"task_id\": \"heldout_patch_005\"\n  },\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\"py_compile\"],\n  \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ]\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?20",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "py_compile"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_envelope": {
+          "task_id": "heldout_patch_005"
+        },
+        "task_family": "patch_compilation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 63,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "baseline_qwen_05b",
+      "latency_ms": 6639.552,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": false,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "```json\n{\n  \"task_family\": \"phase_package\",\n  \"task_id\": \"heldout_phase_006\",\n  \"beast_object_type\": \"adapter_assisted_local_proposal\",\n  \"prec_stage\": \"reason\",\n  \"action_ir\": {\n    \"route\": \"local_verifier_first\"\n  },\n  \"required_verifiers\": [\"behavior_verifier\"],\n  \"beast_systems_used\": [\n    \"task_envelope\",\n    \"prec_lifecycle\",\n    \"compute_governor\",\n    \"chronicle\",\n    \"local_verifiers\"\n  ],\n  \"agent_awareness\": {\n    \"linked\": true,\n    \"authority\": \"proposal_only\",\n    \"must_use_beast_systems\": true\n  },\n  \"risk_notes\": [\n    \"local verifier required before adoption\"\n  ]\n}\n```\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?20",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "behavior_verifier"
+        ],
+        "risk_notes": [
+          "local verifier required before adoption"
+        ],
+        "task_family": "phase_package",
+        "task_id": "heldout_phase_006"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 63,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 19961.6,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"route_diagnostics\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"provider_fitness_check\"],\"beast_systems_used\":[\"task_envelope\",\"compute_governor\",\"chronicle\",\"local_verifiers\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "route_diagnostics"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 166,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 5953.975,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"schema_validation\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"schema_validation\"],\"beast_systems_used\":[\"task_envelope\",\"compute_governor\",\"chronicle\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "compute_governor",
+          "chronicle"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 29,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 6229.79,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": false,
+        "schema_validity": true,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"schema_validation\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"schema_validation\"],\"beast_systems_used\":[\"task_envelope\",\"compute_governor\",\"commons\",\"forge\",\"skill_tree\",\"chronicle\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "compute_governor",
+          "commons",
+          "forge",
+          "skill_tree",
+          "chronicle"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 29,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 6230.859,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"schema_validation\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"provider_fitness_check\"],\"beast_systems_used\":[\"task_envelope\",\"compute_governor\",\"commons\",\"forge\",\"skill_tree\",\"chronicle\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c ",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "compute_governor",
+          "commons",
+          "forge",
+          "skill_tree",
+          "chronicle"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 29,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 6024.22,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"patch_compilation\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"py_compile\"],\"beast_systems_used\":[\"task_envelope\",\"compute_governor\",\"chronicle\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "compute_governor",
+          "chronicle"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "py_compile"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "patch_compilation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 28,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "beast_modelfile_wrapper",
+      "latency_ms": 6324.842,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"phase_package\",\"task_envelope\":{},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"behavior_verifier\"],\"beast_systems_used\":[\"task_envelope\",\"prec_lifecycle\",\"compute_governor\",\"chronicle\",\"local_verifiers\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[],\"authority\":\"proposal_only\"}\n\n\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2826 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2807 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280f \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u280b \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2839 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2838 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u283c \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[1G\u2834 \u001b[K\u001b[",
+      "parsed": {
+        "action_ir": {
+          "route": "local_verifier_first"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "behavior_verifier"
+        ],
+        "risk_notes": [],
+        "task_envelope": {},
+        "task_family": "phase_package"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 29,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120102.497,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_route_001', '--task-family', 'route_diagnostics', '--required-verifier', 'provider_fitness_check']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120100.167,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_schema_002', '--task-family', 'schema_validation', '--required-verifier', 'schema_validation']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120099.745,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_secret_003', '--task-family', 'secret_redaction', '--required-verifier', 'privacy_scan']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120099.683,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_alias_004', '--task-family', 'provider_alias_normalization', '--required-verifier', 'provider_fitness_check']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120100.2,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_patch_005', '--task-family', 'patch_compilation', '--required-verifier', 'py_compile']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "trained_beast_lora_adapter",
+      "latency_ms": 120045.846,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "Command '['.venv-lora/bin/python', 'scripts/run_loaded_micro_lora_adapter.py', '--task-id', 'heldout_phase_006', '--task-family', 'phase_package', '--required-verifier', 'behavior_verifier']' timed out after 120 seconds",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "blocked_loaded_lora_runtime_unavailable",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.083,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"route_diagnostics\", \"task_id\": \"heldout_route_001\"}, \"task_family\": \"route_diagnostics\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "route_diagnostics",
+          "task_id": "heldout_route_001"
+        },
+        "task_family": "route_diagnostics"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.05,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"schema_validation\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"schema_validation\", \"task_id\": \"heldout_schema_002\"}, \"task_family\": \"schema_validation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "schema_validation",
+          "task_id": "heldout_schema_002"
+        },
+        "task_family": "schema_validation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.042,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"privacy_scan\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"secret_redaction\", \"task_id\": \"heldout_secret_003\"}, \"task_family\": \"secret_redaction\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "privacy_scan"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "secret_redaction",
+          "task_id": "heldout_secret_003"
+        },
+        "task_family": "secret_redaction"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.221,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"provider_fitness_check\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"provider_alias_normalization\", \"task_id\": \"heldout_alias_004\"}, \"task_family\": \"provider_alias_normalization\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "provider_fitness_check"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "provider_alias_normalization",
+          "task_id": "heldout_alias_004"
+        },
+        "task_family": "provider_alias_normalization"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.046,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"py_compile\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"patch_compilation\", \"task_id\": \"heldout_patch_005\"}, \"task_family\": \"patch_compilation\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "py_compile"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "patch_compilation",
+          "task_id": "heldout_patch_005"
+        },
+        "task_family": "patch_compilation"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "crystal_only_route",
+      "latency_ms": 0.026,
+      "metrics": {
+        "beast_object_type_present": true,
+        "hidden_verifier_pass": true,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": true,
+        "raw_json_parse_rate": 1,
+        "required_verifier_present": true,
+        "schema_validity": true,
+        "task_family_match": true,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "{\"action_ir\": {\"route\": \"crystal_only_route_then_local_verifier\"}, \"agent_awareness\": {\"authority\": \"proposal_only\", \"linked\": true, \"must_use_beast_systems\": true}, \"authority\": \"proposal_only\", \"beast_object_type\": \"adapter_assisted_local_proposal\", \"beast_systems_used\": [\"task_envelope\", \"prec_lifecycle\", \"compute_governor\", \"chronicle\", \"local_verifiers\"], \"prec_stage\": \"reason\", \"required_verifiers\": [\"behavior_verifier\"], \"risk_notes\": [\"crystal-only route is deterministic proposal; verifier decides\"], \"task_envelope\": {\"task_family\": \"phase_package\", \"task_id\": \"heldout_phase_006\"}, \"task_family\": \"phase_package\"}",
+      "parsed": {
+        "action_ir": {
+          "route": "crystal_only_route_then_local_verifier"
+        },
+        "agent_awareness": {
+          "authority": "proposal_only",
+          "linked": true,
+          "must_use_beast_systems": true
+        },
+        "authority": "proposal_only",
+        "beast_object_type": "adapter_assisted_local_proposal",
+        "beast_systems_used": [
+          "task_envelope",
+          "prec_lifecycle",
+          "compute_governor",
+          "chronicle",
+          "local_verifiers"
+        ],
+        "prec_stage": "reason",
+        "required_verifiers": [
+          "behavior_verifier"
+        ],
+        "risk_notes": [
+          "crystal-only route is deterministic proposal; verifier decides"
+        ],
+        "task_envelope": {
+          "task_family": "phase_package",
+          "task_id": "heldout_phase_006"
+        },
+        "task_family": "phase_package"
+      },
+      "ram_mb_maxrss": 12.914,
+      "status": "measured",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.005,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.004,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005",
+      "tokens_generated": 0,
+      "vram_mb": null
+    },
+    {
+      "authority": "proposal_only_measurement",
+      "lane_id": "cloud_provider_route",
+      "latency_ms": 0.003,
+      "metrics": {
+        "beast_object_type_present": false,
+        "hidden_verifier_pass": false,
+        "malformed_system_entries": 0,
+        "malformed_verifier_entries": 0,
+        "proposal_only_authority_present": false,
+        "raw_json_parse_rate": 0,
+        "required_verifier_present": false,
+        "schema_validity": false,
+        "task_family_match": false,
+        "unsafe_action_attempts": 0
+      },
+      "output_preview": "",
+      "parsed": {},
+      "ram_mb_maxrss": 12.914,
+      "status": "not_run_live_cloud_disabled",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006",
+      "tokens_generated": 0,
+      "vram_mb": null
+    }
+  ],
+  "run_loaded_lora": true,
+  "summary": {
+    "baseline_qwen_05b": {
+      "avg_latency_ms": 6570.616,
+      "beast_object_type_present": 1.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.914,
+      "proposal_only_authority_present": 0.166667,
+      "raw_json_parse_rate": 1.0,
+      "required_verifier_present": 1.0,
+      "schema_validity": 0.166667,
+      "statuses": [
+        "measured"
+      ],
+      "task_family_match": 1.0,
+      "tasks": 6,
+      "tokens_generated": 386,
+      "unsafe_action_attempts": 0.0
+    },
+    "beast_modelfile_wrapper": {
+      "avg_latency_ms": 8454.214,
+      "beast_object_type_present": 1.0,
+      "hidden_verifier_pass": 0.333333,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.914,
+      "proposal_only_authority_present": 1.0,
+      "raw_json_parse_rate": 1.0,
+      "required_verifier_present": 0.833333,
+      "schema_validity": 1.0,
+      "statuses": [
+        "measured"
+      ],
+      "task_family_match": 0.666667,
+      "tasks": 6,
+      "tokens_generated": 310,
+      "unsafe_action_attempts": 0.0
+    },
+    "cloud_provider_route": {
+      "avg_latency_ms": 0.004,
+      "beast_object_type_present": 0.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.914,
+      "proposal_only_authority_present": 0.0,
+      "raw_json_parse_rate": 0.0,
+      "required_verifier_present": 0.0,
+      "schema_validity": 0.0,
+      "statuses": [
+        "not_run_live_cloud_disabled"
+      ],
+      "task_family_match": 0.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "crystal_only_route": {
+      "avg_latency_ms": 0.078,
+      "beast_object_type_present": 1.0,
+      "hidden_verifier_pass": 1.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.914,
+      "proposal_only_authority_present": 1.0,
+      "raw_json_parse_rate": 1.0,
+      "required_verifier_present": 1.0,
+      "schema_validity": 1.0,
+      "statuses": [
+        "measured"
+      ],
+      "task_family_match": 1.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    },
+    "trained_beast_lora_adapter": {
+      "avg_latency_ms": 120091.356,
+      "beast_object_type_present": 0.0,
+      "hidden_verifier_pass": 0.0,
+      "malformed_system_entries": 0.0,
+      "malformed_verifier_entries": 0.0,
+      "max_ram_mb": 12.914,
+      "proposal_only_authority_present": 0.0,
+      "raw_json_parse_rate": 0.0,
+      "required_verifier_present": 0.0,
+      "schema_validity": 0.0,
+      "statuses": [
+        "blocked_loaded_lora_runtime_unavailable"
+      ],
+      "task_family_match": 0.0,
+      "tasks": 6,
+      "tokens_generated": 0,
+      "unsafe_action_attempts": 0.0
+    }
+  },
+  "tasks": [
+    {
+      "required_verifier": "provider_fitness_check",
+      "task_family": "route_diagnostics",
+      "task_id": "heldout_route_001"
+    },
+    {
+      "required_verifier": "schema_validation",
+      "task_family": "schema_validation",
+      "task_id": "heldout_schema_002"
+    },
+    {
+      "required_verifier": "privacy_scan",
+      "task_family": "secret_redaction",
+      "task_id": "heldout_secret_003"
+    },
+    {
+      "required_verifier": "provider_fitness_check",
+      "task_family": "provider_alias_normalization",
+      "task_id": "heldout_alias_004"
+    },
+    {
+      "required_verifier": "py_compile",
+      "task_family": "patch_compilation",
+      "task_id": "heldout_patch_005"
+    },
+    {
+      "required_verifier": "behavior_verifier",
+      "task_family": "phase_package",
+      "task_id": "heldout_phase_006"
+    }
+  ],
+  "version": "1.1"
+}

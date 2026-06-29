@@ -2,13 +2,13 @@
 
 import pytest
 
-from app.kernel.verified_reuse import VerifiedReuseEngine
-from app.kernel.compute_governor import ComputeGovernor
-from app.kernel.compute_ledger import ComputeLedger
-from app.kernel.inference_interceptor import InferenceComputeInterceptor
-from app.kernel.perceive import EdgeKIR
-from app.kernel.capability_impact import CapabilityImpactFingerprint
-from app.kernel.deterministic_executor import DeterministicTransformExecutor
+from app.kernel.data_processing.verified_reuse import VerifiedReuseEngine
+from app.kernel.governance.compute_governor import ComputeGovernor
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.capability.capability_impact import CapabilityImpactFingerprint
+from app.kernel.governance.deterministic_executor import DeterministicTransformExecutor
 
 
 def test_verified_reuse_engine_matches_task_to_capability():

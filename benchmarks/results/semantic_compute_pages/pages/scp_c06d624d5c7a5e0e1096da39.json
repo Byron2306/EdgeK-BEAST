@@ -1,0 +1,105 @@
+{
+  "beast_object_type": "semantic_compute_page",
+  "behavior_contract_hash": "sha256:e9a3056e2a288cca5dcaa6b8887c501233f983047eff6fb214d49abc9cfb1adb",
+  "content": {
+    "authority": "proposal_only_governor_must_verify",
+    "confidence": 0.673181,
+    "predicted_task_family": "schema_validation",
+    "route": {
+      "action_ir": {
+        "route": "crystal_lora_route_head_then_local_ollama_if_needed"
+      },
+      "agent_awareness": {
+        "authority": "proposal_only",
+        "linked": true,
+        "must_use_beast_systems": true
+      },
+      "authority": "proposal_only",
+      "beast_object_type": "adapter_assisted_local_proposal",
+      "beast_systems_used": [
+        "task_envelope",
+        "prec_lifecycle",
+        "compute_governor",
+        "commons_spaces",
+        "compute_forge",
+        "skill_tree",
+        "chronicle",
+        "crystal_chain",
+        "local_verifiers"
+      ],
+      "prec_stage": "reason",
+      "required_verifiers": [
+        "schema_validation"
+      ],
+      "risk_notes": [
+        "matrix route head is advisory; local verifiers required"
+      ],
+      "task_envelope": {
+        "fingerprint_hash": "sha256:2cba3c0f9afd7a3dbd9a323a51d81d8a61187013197e304c0c3fd97c4cd887fb",
+        "labels": [
+          "schema_validation"
+        ],
+        "positive": true,
+        "provider": "ollama",
+        "required_verifiers": [
+          "schema_validation"
+        ],
+        "task_family": "schema_validation",
+        "task_id": "local_schema_probe"
+      },
+      "task_family": "schema_validation"
+    },
+    "title": "Crystal LoRA route card"
+  },
+  "content_hash": "sha256:a8c0b2cd3215fe5dff7eaf9a996be31981114a25a461523325724a4336798f4e",
+  "created_at": "2026-06-22T20:07:52.567510+00:00",
+  "expires_at": "2026-06-23T20:07:52.567348+00:00",
+  "identity": {
+    "beast_object_type": "semantic_page_identity",
+    "behavior_contract_hash": "sha256:e9a3056e2a288cca5dcaa6b8887c501233f983047eff6fb214d49abc9cfb1adb",
+    "commons_space_id": "local_phase7_crystal_distillation",
+    "identity_hash": "sha256:5a0bf6e3f84190ce1ca4ab50054c69c22accb4ea9f3cc675d03750145cc9ea3d",
+    "inference_identity": {
+      "attention_backend": "unknown",
+      "beast_object_type": "inference_artifact_identity",
+      "engine": "semantic_compute_pages",
+      "engine_version": "phase3",
+      "identity_hash": "sha256:b4f1c487cba5179ec4cd354e658fabcb9bb62baf26df42871197004e4dd0571b",
+      "model": "beast-crystal-qwen25-05b:latest",
+      "model_revision": "local_ollama",
+      "policy_fingerprint": "sha256:22540dcb86fe53768d3f9cba54ebe9624690a6e6c3b5796ccf95cd4877ed74a9",
+      "precision": "cpu",
+      "prompt_prefix_hash": "sha256:5d4e46c3c24e2b5f81498add53fdc8ea9dc2326c87bf8f3aaa77f30b4f22565b",
+      "quantization": "ollama_or_micro_lora",
+      "repository_fingerprint": "sha256:9729e3b17b79a4d92e450c5e5107ab01a7f2a1dee8cf10718784c7c887af5333",
+      "rope_config_hash": "unknown",
+      "skill_tree_fingerprint": "sha256:e9d9991279036fbd87b46abe1787abb487616c61ba1de43d69e14a3be7b07f1f",
+      "system_prompt_hash": "sha256:13a80c7c0bddf1de3cddd1323965b1eedf30b203f97b079982afaf79a006da36",
+      "tenant_privacy_class": "local_metadata_only",
+      "tensor_parallel_size": 1,
+      "tokenizer": "ollama-qwen2.5-local",
+      "tokenizer_revision": "local",
+      "tool_schema_fingerprint": "sha256:4402c1ba13ac699c84c62678f92586f24b50f659458c8a427bab8440e7744e9d",
+      "version": "1.0"
+    },
+    "page_kind": "route_card",
+    "page_version": "1.0",
+    "task_class": "proof_local_phase3",
+    "task_family": "schema_validation",
+    "verifier_fingerprint": "sha256:07e30f6d88b482a7aa234bf954ab29c44ee1326234cbb511805bd05a79b24636",
+    "version": "1.0"
+  },
+  "identity_hash": "sha256:5a0bf6e3f84190ce1ca4ab50054c69c22accb4ea9f3cc675d03750145cc9ea3d",
+  "invalidation_reason": "",
+  "last_reused_at": "2026-06-22T20:07:52.584604+00:00",
+  "page_id": "scp_c06d624d5c7a5e0e1096da39",
+  "page_kind": "route_card",
+  "reuse_count": 3,
+  "state": "active",
+  "verifier_refs": [
+    "schema_validation",
+    "local_behavior_verification",
+    "identity_mutation_miss"
+  ],
+  "version": "1.0"
+}

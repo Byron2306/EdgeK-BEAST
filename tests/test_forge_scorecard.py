@@ -1,7 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.forge_scorecard import ForgeScorecardBuilder
+from app.kernel.data_processing.forge_scorecard import ForgeScorecardBuilder
 from app.main import app
 
 

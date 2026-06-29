@@ -3,9 +3,9 @@ import json
 
 import pytest
 
-from app.kernel.capability_exchange import CapabilityExchange
-from app.kernel.meta_tool_commons import MetaToolCommons
-from app.kernel.skill_registry import SkillRegistry
+from app.kernel.capability.capability_exchange import CapabilityExchange
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.capability.skill_registry import SkillRegistry
 
 
 def _evidence(exchange, capability_id="search", task_class="debug", role="scout", **outcome):

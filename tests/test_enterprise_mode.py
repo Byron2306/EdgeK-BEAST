@@ -1,4 +1,4 @@
-from app.kernel.enterprise import EnterpriseManager
+from app.kernel.compute.enterprise import EnterpriseManager
 
 
 def test_enterprise_manager_creates_team_user_and_virtual_key(tmp_path):

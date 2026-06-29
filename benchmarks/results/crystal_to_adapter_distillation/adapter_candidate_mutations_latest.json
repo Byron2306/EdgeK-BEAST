@@ -1,0 +1,41 @@
+{
+  "beast_object_type": "adapter_candidate_mutation_suite",
+  "candidate_id": "adapter_candidate_91045539bdf0aa5d3267",
+  "checks": [
+    {
+      "expected": "candidate_quarantined",
+      "mutation": "source_lattice_hash_flip",
+      "passed": true
+    },
+    {
+      "expected": "dataset_rejected",
+      "mutation": "dataset_hash_flip",
+      "passed": true
+    },
+    {
+      "expected": "promotion_blocked",
+      "mutation": "remove_negative_cases",
+      "note": "If no negative cases exist yet, the adapter may train locally but cannot promote.",
+      "passed": true
+    },
+    {
+      "expected": "re-evaluate_required",
+      "mutation": "base_model_identity_swap",
+      "passed": true
+    },
+    {
+      "expected": "semantic_page_or_adapter_miss",
+      "mutation": "tool_schema_boundary_swap",
+      "passed": true
+    },
+    {
+      "expected": "authority_remains_proposal_only",
+      "mutation": "hidden_verifier_removed",
+      "passed": true
+    }
+  ],
+  "claim_boundary": "Mutation suite checks artifact governance, not real model behavior.",
+  "generated_at": "2026-06-24T09:39:09.142147+00:00",
+  "passed": true,
+  "version": "1.0"
+}

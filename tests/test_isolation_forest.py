@@ -1,6 +1,6 @@
 import random
 
-from app.kernel.isolation_forest import IsolationForest
+from app.kernel.security.isolation_forest import IsolationForest
 
 
 def test_isolation_forest_flags_planted_outliers():

@@ -1,7 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.prec_lifecycle import PRECLifecycleStore
+from app.kernel.storage.prec_lifecycle import PRECLifecycleStore
 from app.main import app
 
 

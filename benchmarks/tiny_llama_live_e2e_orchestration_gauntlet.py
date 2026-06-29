@@ -21,11 +21,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.beast_cli_executor import BeastCLIExecutor
-from app.kernel.capability_registry import CapabilityRegistry
-from app.kernel.meta_tool_commons import MetaToolCommons
-from app.kernel.session_handshake import SessionHandshakeBuilder
-from app.kernel.swarm import SwarmKernel
+from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
+from app.kernel.capability.capability_registry import CapabilityRegistry
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.execution.session_handshake import SessionHandshakeBuilder
+from app.kernel.networking.swarm import SwarmKernel
 from benchmarks.tiny_llama_agentic_orchestrator_gauntlet import (
     live_prompt,
     normalize_live_response,

@@ -9,18 +9,17 @@ from fastapi.responses import StreamingResponse, JSONResponse
 import json
 import logging
 
-# Import PREC cycle kernel modules
-from app.context.economizer import ContextEconomizer
-from app.kernel.perceive import ProviderType, perceiver
-from app.kernel.reason import GovernanceDecision, reasoner
-from app.kernel.execute import executor
-from app.kernel.crystallize import crystallizer
+from app.kernel.compute.container import container
+from app.kernel.compute.perceive import ProviderType
+from app.kernel.governance.reason import GovernanceDecision
 
 logger = logging.getLogger(__name__)
 
 # Create router for OpenAI endpoints
 openai_router = APIRouter()
-context_economizer = ContextEconomizer(reasoner.policies)
+
+def get_orchestrator():
+    return container.get("prec_orchestrator")
 
 @openai_router.get("/v1/models")
 async def list_models():
@@ -47,33 +46,16 @@ async def list_models():
 async def chat_completions(request: Request):
     """Handle chat completions (OpenAI-compatible) with full PREC cycle"""
     session_id = "default"  # Would come from auth/session management
-    original_request = {}
     
     try:
         body = await request.json()
-        original_request = body.copy()
         logger.info(f"OpenAI chat completion request: {body.get('model', 'unknown')}")
         
         # === PREC CYCLE ===
-        
-        # PERCEIVE: Normalize request to EdgeK IR
-        ir = perceiver.perceive(body, ProviderType.OPENAI)
-        logger.info(f"PREC[PERCEIVE]: Normalized to EdgeK IR for model {ir.model}")
-
-        # ECONOMIZE: Reduce oversized context before governance
-        economy_result = context_economizer.economize(ir)
-        ir = economy_result.ir
-        if economy_result.changed:
-            logger.info(
-                "PREC[ECONOMIZE]: Context reduced from %s to %s estimated tokens",
-                economy_result.original_tokens,
-                economy_result.final_tokens
-            )
-        
-        # REASON: Apply governance policies
-        governance_result = reasoner.reason(ir, session_id)
-        logger.info(f"PREC[REASON]: Decision={governance_result.decision.value}, "
-                   f"Reason={governance_result.reason}")
+        orchestrator = get_orchestrator()
+        governance_result, provider_response, ir = await orchestrator.execute_cycle(
+            body, ProviderType.OPENAI, session_id
+        )
         
         # If governance denied, return error
         if governance_result.decision == GovernanceDecision.DENY:
@@ -101,23 +83,6 @@ async def chat_completions(request: Request):
                     }
                 }
             )
-        
-        # EXECUTE: Route to provider (use modified IR if policy changed it)
-        effective_ir = governance_result.modified_ir or ir
-        provider_response = await executor.execute(effective_ir, governance_result)
-        reasoner.record_usage(effective_ir, session_id, governance_result.budget_impact)
-        logger.info(f"PREC[EXECUTE]: Response received")
-        
-        # CRYSTALLIZE: Archive trace and emit telemetry
-        crystallize_result = await crystallizer.crystallize(
-            original_request=original_request,
-            ir=ir,
-            governance_result=governance_result,
-            provider_response=provider_response,
-            session_id=session_id,
-            provider_type="openai"
-        )
-        logger.info(f"PREC[CRYSTALLIZE]: Trace {crystallize_result['trace_id']} archived")
         
         # === END PREC CYCLE ===
         
@@ -168,33 +133,16 @@ async def chat_completions(request: Request):
 async def completions(request: Request):
     """Handle completions (OpenAI-compatible) with full PREC cycle"""
     session_id = "default"
-    original_request = {}
     
     try:
         body = await request.json()
-        original_request = body.copy()
         logger.info(f"OpenAI completion request: {body.get('model', 'unknown')}")
         
         # === PREC CYCLE ===
-        
-        # PERCEIVE: Normalize request to EdgeK IR
-        ir = perceiver.perceive(body, ProviderType.OPENAI)
-        logger.info(f"PREC[PERCEIVE]: Normalized to EdgeK IR for model {ir.model}")
-
-        # ECONOMIZE: Reduce oversized context before governance
-        economy_result = context_economizer.economize(ir)
-        ir = economy_result.ir
-        if economy_result.changed:
-            logger.info(
-                "PREC[ECONOMIZE]: Context reduced from %s to %s estimated tokens",
-                economy_result.original_tokens,
-                economy_result.final_tokens
-            )
-        
-        # REASON: Apply governance policies
-        governance_result = reasoner.reason(ir, session_id)
-        logger.info(f"PREC[REASON]: Decision={governance_result.decision.value}, "
-                   f"Reason={governance_result.reason}")
+        orchestrator = get_orchestrator()
+        governance_result, provider_response, ir = await orchestrator.execute_cycle(
+            body, ProviderType.OPENAI, session_id
+        )
         
         # If governance denied, return error
         if governance_result.decision == GovernanceDecision.DENY:
@@ -222,23 +170,6 @@ async def completions(request: Request):
                     }
                 }
             )
-        
-        # EXECUTE: Route to provider
-        effective_ir = governance_result.modified_ir or ir
-        provider_response = await executor.execute(effective_ir, governance_result)
-        reasoner.record_usage(effective_ir, session_id, governance_result.budget_impact)
-        logger.info(f"PREC[EXECUTE]: Response received")
-        
-        # CRYSTALLIZE: Archive trace and emit telemetry
-        crystallize_result = await crystallizer.crystallize(
-            original_request=original_request,
-            ir=ir,
-            governance_result=governance_result,
-            provider_response=provider_response,
-            session_id=session_id,
-            provider_type="openai"
-        )
-        logger.info(f"PREC[CRYSTALLIZE]: Trace {crystallize_result['trace_id']} archived")
         
         # === END PREC CYCLE ===
         

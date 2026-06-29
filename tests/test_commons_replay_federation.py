@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from app.kernel.commons_privacy import CommonsPrivacyScrubber
-from app.kernel.commons_replay import CommonsReplayEngine
-from app.kernel.commons_space_registry import CommonsSpaceRegistry
-from app.kernel.commons_spaces import export_space, import_space, package_tiny_llama_case
-from app.kernel.federated_commons import FederatedCommons
+from app.kernel.networking.commons_privacy import CommonsPrivacyScrubber
+from app.kernel.networking.commons_replay import CommonsReplayEngine
+from app.kernel.registry.commons_space_registry import CommonsSpaceRegistry
+from app.kernel.networking.commons_spaces import export_space, import_space, package_tiny_llama_case
+from app.kernel.networking.federated_commons import FederatedCommons
 
 
 ROOT = Path(__file__).resolve().parents[1]

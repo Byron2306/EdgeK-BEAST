@@ -1,0 +1,429 @@
+{
+  "beast_object_type": "capability_lattice",
+  "generated_at": "2026-06-24T09:39:09.079113+00:00",
+  "lattice_hash": "sha256:0909454cc9e701e56aba5bc90c5dcd53afa906a73e6bed34bd1db255e3709da1",
+  "node_count": 16,
+  "nodes": [
+    {
+      "behavior_labels": [
+        "cross_provider_reuse",
+        "schema_validation"
+      ],
+      "fingerprint_hashes": [
+        "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "sha256:aaebf933286292b414fbfc4be91a31a7559b76d06ec7dc0d0f7e45a80cd7b7cc",
+        "sha256:abc"
+      ],
+      "negative_count": 0,
+      "positive_count": 52,
+      "proof_density": 1.0,
+      "providers": [
+        "cohere",
+        "groq",
+        "mistral",
+        "nvidia_nim"
+      ],
+      "signal_count": 52,
+      "task_family": "schema_validation",
+      "training_priority": 0.878998,
+      "verifier_labels": [
+        "provider_fitness_check",
+        "schema_validation"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "cross_provider_reuse",
+        "provider_alias_normalization"
+      ],
+      "fingerprint_hashes": [
+        "sha256:75fc587b03bad31a188f2793876cb4f9348ac956bd04c5a622579a32aadff296",
+        "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70"
+      ],
+      "negative_count": 0,
+      "positive_count": 30,
+      "proof_density": 1.0,
+      "providers": [
+        "cohere",
+        "groq",
+        "mistral",
+        "nvidia_nim"
+      ],
+      "signal_count": 30,
+      "task_family": "provider_alias_normalization",
+      "training_priority": 0.854819,
+      "verifier_labels": [
+        "provider_fitness_check"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "cross_provider_reuse",
+        "secret_redaction"
+      ],
+      "fingerprint_hashes": [
+        "sha256:54be60f47a5b284cf965753ecb64b4b9aa2fd60a54573c661a238834f6857466",
+        "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426"
+      ],
+      "negative_count": 0,
+      "positive_count": 30,
+      "proof_density": 1.0,
+      "providers": [
+        "cohere",
+        "groq",
+        "mistral",
+        "nvidia_nim"
+      ],
+      "signal_count": 30,
+      "task_family": "secret_redaction",
+      "training_priority": 0.854819,
+      "verifier_labels": [
+        "privacy_scan",
+        "provider_fitness_check"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "cross_provider_reuse",
+        "syntax_check"
+      ],
+      "fingerprint_hashes": [
+        "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+        "sha256:7b1902787a256473ce1142a98286db55e0700eaae0a15ae3bc7cb6e50581bfb1"
+      ],
+      "negative_count": 0,
+      "positive_count": 30,
+      "proof_density": 1.0,
+      "providers": [
+        "cohere",
+        "groq",
+        "mistral",
+        "nvidia_nim"
+      ],
+      "signal_count": 30,
+      "task_family": "syntax_check",
+      "training_priority": 0.854819,
+      "verifier_labels": [
+        "provider_fitness_check"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "cross_provider_reuse",
+        "negative_capability",
+        "nim_tests_failed",
+        "patch_compilation"
+      ],
+      "fingerprint_hashes": [
+        "sha256:144bb9188e322a5d3ab3342e89f280254bf0fff992343d17fb62f1bed9dea698",
+        "sha256:267dcfc824a3d1bae6a1d278c0302e250d552e0d4f4076a3a2ea45758dbe88dd",
+        "sha256:4f000903c127133d67e12a0a11f62a8716d8b3218202ce7f0558708dfd1bcbee",
+        "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "sha256:67286306b8c81e6febb2317e45ce20ca476c57abc2255178c613c49bbafb4d10",
+        "sha256:6c2e969772e74db162f39120c31adea64572a0644579c4d7cb8d30483de6e240",
+        "sha256:6dba59567a7ec1cf4cbb44af5ad538bc0cce41b217585f3a7556369f7dd2f575",
+        "sha256:7f08ee4a33f52b06d34b5c2d5946eccd3ddb9895ddc17f0b2e435931a11f15fb",
+        "sha256:82d1c594b1574ec480814346067c568deab05d8fa14b788c94bf1a78bafb31a4",
+        "sha256:87980febe496ced0784915be6a435c30bc7a266569587ea5f4b7eb96f6c22824",
+        "sha256:9823ffbacd6891e6a57b9e2ca26801c21be0f87506803028ef95975416864582",
+        "sha256:9f5f02ff6a0b441a1be985829b4ff889efca1633a2058afd61984f3d0ada1989"
+      ],
+      "negative_count": 14,
+      "positive_count": 30,
+      "proof_density": 0.681818,
+      "providers": [
+        "cohere",
+        "groq",
+        "mistral",
+        "nim",
+        "nvidia",
+        "nvidia_nim",
+        "unknown"
+      ],
+      "signal_count": 44,
+      "task_family": "patch_compilation",
+      "training_priority": 0.70662,
+      "verifier_labels": [
+        "provider_fitness_check",
+        "py_compile"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "phase_package"
+      ],
+      "fingerprint_hashes": [
+        "sha256:3586b1bbf9acbb4527e7300af5bbacef7edc890374089d910ce0efbeef344c5f",
+        "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sha256:5d0b2ddbd6005062efc89f8a8eddfa4462f71f684c0c08d425ad740886ad53fa",
+        "sha256:8e2f879c1d58901d2b78408d8f35f19403a20fe3e14f4ae761a2e1997f9fac2d",
+        "sha256:927ac418aaf896f25e59e82047f656ddef64ef92275d7a15be1a6ed8d5f16829",
+        "sha256:a301ae3529d384e3104f5002741769c00b637b58c8f8b27dcd2f52b1305f7e33"
+      ],
+      "negative_count": 0,
+      "positive_count": 9,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 9,
+      "task_family": "phase_package",
+      "training_priority": 0.70381,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "cyber_defense_orchestration",
+        "fused_component",
+        "meta_tools",
+        "skills",
+        "swarm_recipes"
+      ],
+      "fingerprint_hashes": [
+        "sha256:22013f38a6b5befe73752301ceb697cdb5c4d060e51dbb8a7e690c598658a7b3",
+        "sha256:37b5822515b3179028020a29157d16aaef567c421c53699877c3df08a43a13fe",
+        "sha256:54a4f215e7ef8a4a354161d8e03a19d0075a7820a7890737d08a5617082aad28",
+        "sha256:61306858bb6f46c9d6d4d3edb39baee1b48a942411ca87cf80d370526eaae6dc",
+        "sha256:74c74994b782725acff1088171b54e076c92f98b43474bf569109e18ce3ef7f8",
+        "sha256:7e9035880668596acc3d81ec39ac8145064aedd5d6e62b2d9afe235e5f9261ca",
+        "sha256:d36b8531ec993310d6a9516e211152591ab0f75ab7364a939a9d58f5a51e98f3"
+      ],
+      "negative_count": 0,
+      "positive_count": 7,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 7,
+      "task_family": "cyber_defense_orchestration",
+      "training_priority": 0.69375,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "access_control_review",
+        "crystals",
+        "fused_component"
+      ],
+      "fingerprint_hashes": [
+        "sha256:32aeec102ce2392786015a6797c3b91e1d8ad7b636f44a0e12624da2dd1bd1aa"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "access_control_review",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "data_protection",
+        "fused_component"
+      ],
+      "fingerprint_hashes": [
+        "sha256:8215c65a8cd15db129df5fc0d7c2155094df008083f70a68e88901c5d6dacbae"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "data_protection",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "defensive_ops",
+        "fused_component"
+      ],
+      "fingerprint_hashes": [
+        "sha256:30bef2db63e1ed1514a6520c50e82458db468388af8ec3b8609ebdf4337abf9d"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "defensive_ops",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "defensive_review",
+        "fused_component"
+      ],
+      "fingerprint_hashes": [
+        "sha256:bedd906f167a7d7a3ece17489d0a9d9e4552b1549524c5de7f72d115a00b08b1"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "defensive_review",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "fused_component",
+        "hardening"
+      ],
+      "fingerprint_hashes": [
+        "sha256:7d202decdd38153ea6c3dc988b62dbd9f53d3ccb64483389998221591a762244"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "hardening",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "fused_component",
+        "local_first_plan"
+      ],
+      "fingerprint_hashes": [
+        "sha256:72b5980c922e8c19874f7518d4d1b7f8c335256886ec7cfe0151b72c33dde959"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "local_first_plan",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "fused_component",
+        "planning_only"
+      ],
+      "fingerprint_hashes": [
+        "sha256:809f0b9e5faa04d5c031b7876d7707256e2a299ea4523a5afff65ab8823eaa70"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "planning_only",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "crystals",
+        "fused_component",
+        "supply_chain_defense"
+      ],
+      "fingerprint_hashes": [
+        "sha256:2aa25a1b85ce5dc28fb815b4bd4280187bc159f02b756d17544890f52d48fcc9"
+      ],
+      "negative_count": 0,
+      "positive_count": 1,
+      "proof_density": 1.0,
+      "providers": [
+        "local"
+      ],
+      "signal_count": 1,
+      "task_family": "supply_chain_defense",
+      "training_priority": 0.63125,
+      "verifier_labels": [
+        "behavior_verifier"
+      ]
+    },
+    {
+      "behavior_labels": [
+        "capability_failure",
+        "cross_provider_reuse",
+        "infra_failure",
+        "negative_capability",
+        "route_diagnostics"
+      ],
+      "fingerprint_hashes": [
+        "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "sha256:061e105f7cbed85f0e0563e2f3bb10b40b731df4826f4a721c2a8348e249a0d3",
+        "sha256:07da35de8ae1b50a2bd09a6a037dc65a56e9e0b5df05269192e19ab75952157b",
+        "sha256:0cdd2577bbca83723cd8998c5a15f0a0e10ce668992aaa5315f25757c8ff6e52",
+        "sha256:163cdbd4838931b3801e7c49cb1bf16f2eda876c8d63e99abc6ca74535ebed31",
+        "sha256:17f2405030384d60e51bf33185336b15cf8a5f1754ec6ea9a880432a5d36d861",
+        "sha256:1b3ca7705524405da2c9b44c4c937c85f01bdfe48ff947d389f34f1eacc1034a",
+        "sha256:1b5b6f539146d72f311be84118f37b09c28990acf430311fd52ad3d910279f2f",
+        "sha256:1ba1a98f0a3aeaa337de4e984eb8d621d8a7aa60d3a79a096dd2a8e12b5d3d98",
+        "sha256:1eac973ac29e83e4b55f4a0d2d40c1c1b0f6b4aa553b15ecff6b043f327b49fc",
+        "sha256:270240a2eb88e94bb73728858e13f0d4e561e8a511508ad762ee683f6c29ff73",
+        "sha256:2af6afef2eacd4fd5e43a74aab1b0947a8a1ab0a015645ed1955a134046bf5e0"
+      ],
+      "negative_count": 79,
+      "positive_count": 30,
+      "proof_density": 0.275229,
+      "providers": [
+        "cerebras",
+        "cohere",
+        "gemini",
+        "groq",
+        "mistral",
+        "nim",
+        "nvidia",
+        "nvidia_nim",
+        "unknown"
+      ],
+      "signal_count": 109,
+      "task_family": "route_diagnostics",
+      "training_priority": 0.523294,
+      "verifier_labels": [
+        "provider_fitness_check"
+      ]
+    }
+  ],
+  "privacy_boundary": "metadata_hashes_and_labels_only_no_raw_prompts_source_or_rollbacks",
+  "signal_count": 319,
+  "version": "1.0"
+}

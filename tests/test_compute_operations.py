@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
 
-from app.kernel.capability_impact import CapabilityImpactFingerprint
-from app.kernel.compute_forge import ComputeForgeNode
-from app.kernel.durable_inference_storage import DurableInferenceStorage
-from scripts.beast_economy_dashboard import build_dashboard
+from app.kernel.capability.capability_impact import CapabilityImpactFingerprint
+from app.kernel.compute.compute_forge import ComputeForgeNode
+from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
+from internal.beast_economy_dashboard import build_dashboard
 from scripts.compute_rollout_monitor import evaluate_rollout
-from scripts.forge_fleet_promote import promote_from_fleet
+from internal.forge_fleet_promote import promote_from_fleet
 
 
 def test_forge_snapshot_promotes_candidate_centrally(tmp_path):

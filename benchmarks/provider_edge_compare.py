@@ -30,9 +30,9 @@ from typing import Any, Dict, Iterable, List, Optional
 import httpx
 
 from app.context.economizer import ContextEconomizer
-from app.kernel.ast_compressor import ASTCompressor
-from app.kernel.isolation_forest import IsolationForest
-from app.kernel.perceive import EdgeKIR
+from app.kernel.compute.ast_compressor import ASTCompressor
+from app.kernel.security.isolation_forest import IsolationForest
+from app.kernel.compute.perceive import EdgeKIR
 
 
 ROOT = Path(__file__).resolve().parents[1]

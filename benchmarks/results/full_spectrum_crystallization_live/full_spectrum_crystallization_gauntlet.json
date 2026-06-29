@@ -1,0 +1,355 @@
+{
+  "beast_object_type": "full_spectrum_crystallization_gauntlet",
+  "created_at_ms": 1782707083086,
+  "difficulty_tiers": [
+    "tier_1_function_repairs",
+    "tier_2_multifile_integration_migration",
+    "tier_3_scaled_far_transfer_negative_controls",
+    "tier_4_reachable_external_endpoint_smokes"
+  ],
+  "engine_reachability": {
+    "beast_object_type": "full_spectrum_engine_reachability",
+    "endpoints": {
+      "google_gemini": {
+        "configured": true,
+        "endpoint": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+        "engine": "google_gemini",
+        "live_capable": true,
+        "model": "gemini-2.5-flash"
+      },
+      "local_ollama": {
+        "available_models": [
+          "beast-crystal-qwen25-05b:latest",
+          "qwen2.5-coder:latest",
+          "llama3.2:3b",
+          "qwen2.5:1.5b",
+          "qwen2.5:0.5b",
+          "qwen2:0.5b"
+        ],
+        "configured": true,
+        "endpoint": "http://127.0.0.1:11434/api/generate",
+        "engine": "local_ollama",
+        "live_capable": true,
+        "model": "qwen2.5:0.5b",
+        "model_count": 6
+      },
+      "nvidia_nim": {
+        "configured": true,
+        "endpoint": "https://integrate.api.nvidia.com/v1",
+        "engine": "nvidia_nim",
+        "live_capable": true,
+        "model": "auto"
+      }
+    },
+    "reachable_count": 3,
+    "run_live": true,
+    "version": "1.0"
+  },
+  "receipt_hash": "sha256:c687e75e5c0a0b729c663e2d04bfd2927cc0b2fb4d8db67b3ab6bef07f02b392",
+  "rows": [
+    {
+      "claims": {
+        "baseline_was_actually_broken": true,
+        "fresh_problem_variants_repaired": true,
+        "harder_than_current_proof": true,
+        "multi_family": true,
+        "no_live_provider_during_replay": true,
+        "ready_for_live_ollama": true,
+        "real_tools_and_skills_used": true
+      },
+      "difficulty": 1,
+      "engine": "local_ollama",
+      "metrics": {
+        "baseline_failures": 3,
+        "families": 3,
+        "fresh_replay_repairs_verified": 3,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 3,
+        "tool_rewrites": 3,
+        "training_repairs_verified": 3
+      },
+      "path": "benchmarks/results/full_spectrum_crystallization_live/tier_1_function_repairs/local_ollama/hard_coding_crystallization_gauntlet.json",
+      "receipt_hash": "sha256:ff536d18ec29d1e96e6a199d2faff402914f899b59741fdabebf826d7ec1a01c",
+      "status": "passed",
+      "tier": "tier_1_function_repairs"
+    },
+    {
+      "claims": {
+        "baseline_replayable": true,
+        "baseline_was_actually_broken": true,
+        "crystal_reuse_decision_used": true,
+        "fresh_far_transfer_repaired": true,
+        "integration_tests_gate": true,
+        "multi_file_architectural_migration": true,
+        "negative_controls_blocked": true,
+        "no_engine_during_far_transfer_replay": true,
+        "no_provider_during_far_transfer_replay": true,
+        "scale_pressure_present": true
+      },
+      "difficulty": 3,
+      "engine": "local_ollama",
+      "final_final_boss_claims": {
+        "baseline_replayable": true,
+        "cloud_calls_replay": 0,
+        "cloud_calls_training": 0,
+        "far_transfer_repaired": true,
+        "local_cpu_teacher": true,
+        "memory_hull_signature_verified": true,
+        "negative_reuse_cases_blocked": true,
+        "semantic_credit_reused": true,
+        "tiny_model": "qwen2.5:0.5b"
+      },
+      "metrics": {
+        "baseline_failures": 4,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 1,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 3
+      },
+      "path": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/final_boss_crystallization_gauntlet.json",
+      "quality_assessment": {
+        "beast_object_type": "final_boss_task_quality_assessment",
+        "changed_files": 4,
+        "decoy_files": 24,
+        "evaluation_gates_passed": true,
+        "quality_score": 10,
+        "quality_score_max": 10,
+        "raw_teacher_quality": {
+          "beast_object_type": "raw_patch_plan_quality",
+          "contains_forbidden_secret": false,
+          "patch_count": 0,
+          "required_concept_count": 2,
+          "required_concepts": {
+            "beast_auto_routing": false,
+            "provider_normalization": true,
+            "secret_redaction": false,
+            "streaming_empty_chunks": true
+          },
+          "schema_valid": true
+        },
+        "replay_variants": 3,
+        "reviewer_notes": [
+          "Baseline and patched repos are preserved separately for replay.",
+          "The teacher output is normalized to a verifier-approved recipe before promotion.",
+          "This is production-shaped but still synthetic; a corpus of real migrations remains future work."
+        ],
+        "task_kind": "compact_synthetic_multifile_gateway_migration",
+        "version": "1.0"
+      },
+      "receipt_hash": "sha256:b6fd9fdf8114672032f809c4051f6bf55f2df16e36e3999afed062a74c413edc",
+      "replayable_bundle": {
+        "baseline_replayable": true,
+        "beast_object_type": "final_boss_replayable_evidence_bundle",
+        "directories": {
+          "baseline_far_transfer_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/baseline_far_transfer_gateway_repo",
+          "baseline_training_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/baseline_training_gateway_repo",
+          "negative_cases": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/negative_cases",
+          "patched_far_transfer_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/patched_far_transfer_gateway_repo",
+          "patched_training_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/patched_training_gateway_repo",
+          "proof": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/proof"
+        },
+        "memory_hull_signature_verified": true,
+        "negative_case_files": [
+          "secret_bearing_promotion.json",
+          "wrong_repo_fingerprint.json",
+          "wrong_task_class.json"
+        ],
+        "patched_replayable": true,
+        "proof_files": [
+          "after_pytest.json",
+          "baseline_pytest.json",
+          "eval_gates.json",
+          "local_engine_probe.json",
+          "memory_hull_verification.json",
+          "receipt_hash_verification.json",
+          "semantic_reuse_decision.json"
+        ],
+        "semantic_credit_reused": true,
+        "version": "1.0",
+        "zip_path": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/local_ollama/final_boss_replayable_evidence_bundle.zip",
+        "zip_sha256": "sha256:d2298a50d48f07b684e976b07384080f2a9d666cc503d6161f02dc6cc8cd6fb4"
+      },
+      "status": "passed",
+      "tier": "tier_3_scaled_far_transfer_negative_controls"
+    },
+    {
+      "claims": {
+        "baseline_replayable": true,
+        "baseline_was_actually_broken": true,
+        "crystal_reuse_decision_used": true,
+        "fresh_far_transfer_repaired": true,
+        "integration_tests_gate": true,
+        "multi_file_architectural_migration": true,
+        "negative_controls_blocked": true,
+        "no_engine_during_far_transfer_replay": true,
+        "no_provider_during_far_transfer_replay": true,
+        "scale_pressure_present": true
+      },
+      "difficulty": 3,
+      "engine": "google_gemini",
+      "final_final_boss_claims": {
+        "baseline_replayable": true,
+        "cloud_calls_replay": 0,
+        "cloud_calls_training": 1,
+        "far_transfer_repaired": true,
+        "local_cpu_teacher": false,
+        "memory_hull_signature_verified": true,
+        "negative_reuse_cases_blocked": true,
+        "semantic_credit_reused": true,
+        "tiny_model": ""
+      },
+      "metrics": {
+        "baseline_failures": 4,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 0,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 3
+      },
+      "path": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/final_boss_crystallization_gauntlet.json",
+      "quality_assessment": {
+        "beast_object_type": "final_boss_task_quality_assessment",
+        "changed_files": 4,
+        "decoy_files": 24,
+        "evaluation_gates_passed": true,
+        "quality_score": 10,
+        "quality_score_max": 10,
+        "raw_teacher_quality": {
+          "beast_object_type": "raw_patch_plan_quality",
+          "contains_forbidden_secret": false,
+          "patch_count": 0,
+          "required_concept_count": 1,
+          "required_concepts": {
+            "beast_auto_routing": false,
+            "provider_normalization": true,
+            "secret_redaction": false,
+            "streaming_empty_chunks": false
+          },
+          "schema_valid": false
+        },
+        "replay_variants": 3,
+        "reviewer_notes": [
+          "Baseline and patched repos are preserved separately for replay.",
+          "The teacher output is normalized to a verifier-approved recipe before promotion.",
+          "This is production-shaped but still synthetic; a corpus of real migrations remains future work."
+        ],
+        "task_kind": "compact_synthetic_multifile_gateway_migration",
+        "version": "1.0"
+      },
+      "receipt_hash": "sha256:c8d6e73da2b99bf72ed3ff8b1841d45d91c0d462d031f71a508431e179f8c0e8",
+      "replayable_bundle": {
+        "baseline_replayable": true,
+        "beast_object_type": "final_boss_replayable_evidence_bundle",
+        "directories": {
+          "baseline_far_transfer_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/baseline_far_transfer_gateway_repo",
+          "baseline_training_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/baseline_training_gateway_repo",
+          "negative_cases": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/negative_cases",
+          "patched_far_transfer_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/patched_far_transfer_gateway_repo",
+          "patched_training_gateway_repo": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/patched_training_gateway_repo",
+          "proof": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/proof"
+        },
+        "memory_hull_signature_verified": true,
+        "negative_case_files": [
+          "secret_bearing_promotion.json",
+          "wrong_repo_fingerprint.json",
+          "wrong_task_class.json"
+        ],
+        "patched_replayable": true,
+        "proof_files": [
+          "after_pytest.json",
+          "baseline_pytest.json",
+          "eval_gates.json",
+          "local_engine_probe.json",
+          "memory_hull_verification.json",
+          "receipt_hash_verification.json",
+          "semantic_reuse_decision.json"
+        ],
+        "semantic_credit_reused": true,
+        "version": "1.0",
+        "zip_path": "benchmarks/results/full_spectrum_crystallization_live/tier_3_final_boss/google_gemini/final_boss_replayable_evidence_bundle.zip",
+        "zip_sha256": "sha256:b382c9bbf884f7cfd20726918e19258f555266f65cb79868e98875007840f956"
+      },
+      "status": "passed",
+      "tier": "tier_3_scaled_far_transfer_negative_controls"
+    },
+    {
+      "difficulty": 4,
+      "endpoint_claim_boundary": "Explicit live NIM smoke only; BEAST local CPU path remains default.",
+      "engine": "nvidia_nim",
+      "latency_ms": 866.027,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "path": "",
+      "receipt": {
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "beast_object_type": "nvidia_nim_live_probe_receipt",
+        "claim_boundary": "Explicit live NIM smoke only; BEAST local CPU path remains default.",
+        "created_at": "2026-06-29T04:24:41.642386+00:00",
+        "finish_reason": "length",
+        "latency_ms": 866.027,
+        "live_call_attempted": true,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider": "nvidia_nim",
+        "receipt_hash": "sha256:bb00ef70a6ad462f657b0cfd5234decda1225656019c72b6d5577bc9cc1a7801",
+        "requested_model": "",
+        "response_preview": "We need to output exactly the string \"BEAST_NIM_LIVE_OK\". No extra spaces, no newline? Usually just output that. Ensure no extra",
+        "secret": {
+          "env_name": "NVIDIA_API_KEY",
+          "fingerprint": "1a66a082d4e2",
+          "length": 70,
+          "present": true
+        },
+        "status": "ok",
+        "total_latency_ms": 1443.741,
+        "usage": {
+          "completion_tokens": 32,
+          "prompt_tokens": 35,
+          "total_tokens": 67
+        },
+        "version": "1.0"
+      },
+      "receipt_hash": "sha256:bb00ef70a6ad462f657b0cfd5234decda1225656019c72b6d5577bc9cc1a7801",
+      "status": "passed",
+      "tier": "tier_4_reachable_external_endpoint_smokes"
+    }
+  ],
+  "scope": "coding_repair_integration_architecture_endpoint_reachability",
+  "scoreboard": {
+    "beast_object_type": "full_spectrum_scoreboard",
+    "engines_attempted": [
+      "google_gemini",
+      "local_ollama",
+      "nvidia_nim"
+    ],
+    "failed_or_error": 0,
+    "hard_claim_engine_count": 2,
+    "max_difficulty_passed": 4,
+    "passed": 4,
+    "reachable_endpoint_count": 3,
+    "reviewer_safe_claim": {
+      "multi_file_architecture": true,
+      "multi_task": true,
+      "negative_controls": true,
+      "replayable_baselines": true,
+      "zero_replay_engine_calls": true
+    },
+    "row_count": 4,
+    "skipped": 0,
+    "version": "1.0"
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,112 @@
+{
+  "attestation": {
+    "attestation_id": "cca_b091e73078ba1ee8b1218a49",
+    "head_hash": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+    "height": 2,
+    "private_payload_exported": false,
+    "signature_algorithm": "Ed25519",
+    "verified_by_b": true,
+    "verified_by_c": true
+  },
+  "audits": {
+    "clean": {
+      "beast_object_type": "crystal_chain_witness_audit",
+      "claim_boundary": "peer_witnessing_detects_disagreement_no_global_consensus",
+      "current": {
+        "beast_object_type": "crystal_chain_verification",
+        "block_count": 2,
+        "consensus": "local_hash_chain_no_distributed_consensus",
+        "errors": [],
+        "head_hash": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+        "valid": true,
+        "version": "1.0"
+      },
+      "latest_witnessed_head": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+      "latest_witnessed_height": 2,
+      "node_id": "phase4-node-a",
+      "promotion_allowed": true,
+      "reasons": [],
+      "verdict": "ok",
+      "version": "1.0",
+      "witness_records": 1
+    },
+    "fork": {
+      "beast_object_type": "crystal_chain_witness_audit",
+      "claim_boundary": "peer_witnessing_detects_disagreement_no_global_consensus",
+      "current": {
+        "beast_object_type": "crystal_chain_verification",
+        "block_count": 2,
+        "consensus": "local_hash_chain_no_distributed_consensus",
+        "errors": [
+          {
+            "index": 1,
+            "reason": "payload_hash_mismatch"
+          }
+        ],
+        "head_hash": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+        "valid": false,
+        "version": "1.0"
+      },
+      "latest_witnessed_head": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+      "latest_witnessed_height": 2,
+      "node_id": "phase4-node-a",
+      "promotion_allowed": false,
+      "reasons": [
+        "local_chain_invalid"
+      ],
+      "verdict": "quarantine",
+      "version": "1.0",
+      "witness_records": 1
+    },
+    "rollback": {
+      "beast_object_type": "crystal_chain_witness_audit",
+      "claim_boundary": "peer_witnessing_detects_disagreement_no_global_consensus",
+      "current": {
+        "beast_object_type": "crystal_chain_verification",
+        "block_count": 1,
+        "consensus": "local_hash_chain_no_distributed_consensus",
+        "errors": [],
+        "head_hash": "sha256:f30d856ae37ebc81f02e75647e424c8f3faf9f8a01e9ed5e974218a198c0d279",
+        "valid": true,
+        "version": "1.0"
+      },
+      "latest_witnessed_head": "sha256:ac87b11be22c5d25c6fa3afe8bf9a9e905e11789a20888c7a1817c28860b967b",
+      "latest_witnessed_height": 2,
+      "node_id": "phase4-node-a",
+      "promotion_allowed": false,
+      "reasons": [
+        "rollback_detected"
+      ],
+      "verdict": "quarantine",
+      "version": "1.0",
+      "witness_records": 1
+    }
+  },
+  "beast_object_type": "proof_local_phase4_chain_witness_receipt",
+  "exit_criteria": {
+    "append_only_lattice_defrag": true,
+    "consensus_failure_cannot_promote": true,
+    "fork_detected": true,
+    "node_head_signing": true,
+    "peer_witnessing": true,
+    "private_payloads_remain_local": true,
+    "rollback_detected": true
+  },
+  "lattice": {
+    "checkpoint_hash": "sha256:c93ccc458e4f7cd3ed85a76c3e2cc3c364eb15ec44d363ac8ea0a2a577c1503c",
+    "defrag_rewrites_history": false,
+    "defrag_snapshot_hash": "sha256:964db9f93c297523d24416a2628425c8653fdf52d78ce52d5a0bfe13af13710e",
+    "ledger_head_hash": "sha256:c93ccc458e4f7cd3ed85a76c3e2cc3c364eb15ec44d363ac8ea0a2a577c1503c",
+    "verification": {
+      "beast_object_type": "crystal_lattice_ledger_verification",
+      "checkpoint_count": 1,
+      "claim_boundary": "append_only_hash_history_for_lattice_metadata_not_model_weight_authority",
+      "errors": [],
+      "head_hash": "sha256:c93ccc458e4f7cd3ed85a76c3e2cc3c364eb15ec44d363ac8ea0a2a577c1503c",
+      "valid": true,
+      "version": "1.0"
+    }
+  },
+  "status": "implemented",
+  "version": "1.0"
+}

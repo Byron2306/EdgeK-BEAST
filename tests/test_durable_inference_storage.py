@@ -3,7 +3,7 @@
 import json
 import pytest
 
-from app.kernel.durable_inference_storage import (
+from app.kernel.storage.durable_inference_storage import (
     DurableInferenceStorage,
     RuntimeReplayResult,
     SemanticComputeCredit,
@@ -344,13 +344,13 @@ def test_semantic_compute_credit_example_matches_roadmap():
 
 @pytest.mark.asyncio
 async def test_executor_replays_cached_answer_without_provider(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.compute_governor import ComputeGovernor
-    from app.kernel.compute_ledger import ComputeLedger
-    from app.kernel.execute import Executor
-    from app.kernel.inference_interceptor import InferenceComputeInterceptor
-    from app.kernel.perceive import EdgeKIR
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.governance.compute_governor import ComputeGovernor
+    from app.kernel.compute.compute_ledger import ComputeLedger
+    from app.kernel.execution.execute import Executor
+    from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+    from app.kernel.compute.perceive import EdgeKIR
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     storage = DurableInferenceStorage(tmp_path)
     storage.store_answer("prompt", "gpt-test", {"temperature": 0, "max_tokens": 32}, "cached hello")
@@ -384,13 +384,13 @@ async def test_executor_replays_cached_answer_without_provider(monkeypatch, tmp_
 
 @pytest.mark.asyncio
 async def test_executor_replays_prefill_identity_without_provider(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.compute_governor import ComputeGovernor
-    from app.kernel.compute_ledger import ComputeLedger
-    from app.kernel.execute import Executor
-    from app.kernel.inference_interceptor import InferenceComputeInterceptor
-    from app.kernel.perceive import EdgeKIR
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.governance.compute_governor import ComputeGovernor
+    from app.kernel.compute.compute_ledger import ComputeLedger
+    from app.kernel.execution.execute import Executor
+    from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+    from app.kernel.compute.perceive import EdgeKIR
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     storage = DurableInferenceStorage(tmp_path)
     storage.store_prefill(

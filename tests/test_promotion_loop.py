@@ -1,11 +1,11 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.canon_registry import CanonRegistry
-from app.kernel.promotion_loop import PromotionLoop
-from app.kernel.skill_registry import SkillRegistry
-from app.kernel.task_envelope import TaskEnvelopeBuilder
-from app.kernel.tool_laziness import ToolLazinessLearner
+from app.kernel.registry.canon_registry import CanonRegistry
+from app.kernel.data_processing.promotion_loop import PromotionLoop
+from app.kernel.capability.skill_registry import SkillRegistry
+from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
 from app.main import app
 
 

@@ -1,4 +1,4 @@
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 import pytest
 
 
@@ -14,7 +14,7 @@ def test_workspace_graph_observes_trace_nodes_and_edges(tmp_path):
             "messages": [
                 {
                     "role": "user",
-                    "content": "Please inspect app/kernel/reason.py and app/main.py",
+                    "content": "Please inspect app.kernel.governance.reason.py and app/main.py",
                 }
             ],
             "metadata": {
@@ -41,28 +41,28 @@ def test_workspace_graph_observes_trace_nodes_and_edges(tmp_path):
     assert result["node_count"] >= 6
     assert stats["node_types"]["trace"] == 1
     assert stats["node_types"]["file"] == 2
-    assert "app/kernel/reason.py" in recent_labels
+    assert "app.kernel.governance.reason.py" in recent_labels
     assert "app/main.py" in recent_labels
 
     search_results = graph.search_nodes("reason.py", node_type="file")
-    assert search_results[0]["id"] == "file:app/kernel/reason.py"
+    assert search_results[0]["id"] == "file:app.kernel.governance.reason.py"
 
-    neighborhood = graph.neighborhood("file:app/kernel/reason.py")
+    neighborhood = graph.neighborhood("file:app.kernel.governance.reason.py")
     assert neighborhood["center"]["type"] == "file"
     assert any(edge["relation"] == "mentioned_file" for edge in neighborhood["edges"])
 
     context = graph.context_for_ir({
         "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": "Use app/kernel/reason.py"}],
+        "messages": [{"role": "user", "content": "Use app.kernel.governance.reason.py"}],
     })
     assert context["matched_node_count"] >= 1
-    assert context["matched_nodes"][0]["id"] == "file:app/kernel/reason.py"
+    assert context["matched_nodes"][0]["id"] == "file:app.kernel.governance.reason.py"
 
     exported = graph.export_graph(node_limit=10, edge_limit=20)
     integrity = graph.integrity_report()
 
     assert exported["stats"]["total_nodes"] == stats["total_nodes"]
-    assert any(node["id"] == "file:app/kernel/reason.py" for node in exported["nodes"])
+    assert any(node["id"] == "file:app.kernel.governance.reason.py" for node in exported["nodes"])
     assert any(edge["relation"] == "mentioned_file" for edge in exported["edges"])
     assert integrity["ok"] is True
     assert integrity["orphan_edge_count"] == 0

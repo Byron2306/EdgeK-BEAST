@@ -1,7 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.perceive import ProviderType, perceiver
+from app.kernel.compute.perceive import ProviderType, perceiver
 from app.main import app
 
 

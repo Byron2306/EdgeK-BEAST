@@ -3,10 +3,10 @@ from dataclasses import replace
 
 import pytest
 
-from app.kernel.compute_governor import ComputeGovernor
-from app.kernel.compute_ledger import ComputeLedger
-from app.kernel.inference_interceptor import InferenceComputeInterceptor
-from app.kernel.perceive import EdgeKIR
+from app.kernel.governance.compute_governor import ComputeGovernor
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.compute.inference_interceptor import InferenceComputeInterceptor
+from app.kernel.compute.perceive import EdgeKIR
 
 
 def test_compute_plan_is_privacy_safe_and_hashes_request_content():
@@ -178,9 +178,9 @@ def test_usage_normalizes_xai_first_party_cost_ticks():
 
 @pytest.mark.asyncio
 async def test_executor_attaches_shadow_compute_receipt(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     ledger = ComputeLedger(str(tmp_path / "compute.db"))
     interceptor = InferenceComputeInterceptor(ComputeGovernor(), ledger)
@@ -206,11 +206,11 @@ async def test_executor_attaches_shadow_compute_receipt(monkeypatch, tmp_path):
 
 @pytest.mark.asyncio
 async def test_executor_skips_provider_only_for_verified_complete_phase2_transform(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.compute_ir import DeterministicDisplacementProof
-    from app.kernel.deterministic_executor import DeterministicTransformExecutor
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.compute.compute_ir import DeterministicDisplacementProof
+    from app.kernel.governance.deterministic_executor import DeterministicTransformExecutor
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     transform_executor = DeterministicTransformExecutor()
     work = {"schema_validation": {
@@ -251,10 +251,10 @@ async def test_executor_skips_provider_only_for_verified_complete_phase2_transfo
 
 @pytest.mark.asyncio
 async def test_executor_reuses_promoted_capability_after_fingerprint_and_replay(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.deterministic_executor import DeterministicTransformExecutor
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.governance.deterministic_executor import DeterministicTransformExecutor
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     transform_executor = DeterministicTransformExecutor()
     work = {"schema_validation": {
@@ -320,10 +320,10 @@ async def test_executor_reuses_promoted_capability_after_fingerprint_and_replay(
 
 @pytest.mark.asyncio
 async def test_executor_can_load_promoted_capability_from_persisted_store(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.deterministic_executor import DeterministicTransformExecutor
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.governance.deterministic_executor import DeterministicTransformExecutor
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     transform_executor = DeterministicTransformExecutor()
     work = {"schema_validation": {
@@ -382,9 +382,9 @@ async def test_executor_can_load_promoted_capability_from_persisted_store(monkey
 
 @pytest.mark.asyncio
 async def test_executor_pauses_for_phase4_budget_approval(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     interceptor = InferenceComputeInterceptor(
         ComputeGovernor(mode="phase4_enforce"),
@@ -414,9 +414,9 @@ async def test_executor_pauses_for_phase4_budget_approval(monkeypatch, tmp_path)
 
 @pytest.mark.asyncio
 async def test_executor_intercepts_enabled_provider_stream_and_records_savings(monkeypatch, tmp_path):
-    import app.kernel.execute as execute_module
-    from app.kernel.execute import Executor
-    from app.kernel.reason import GovernanceDecision, GovernanceResult
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 
     ledger = ComputeLedger(str(tmp_path / "compute.db"))
     interceptor = InferenceComputeInterceptor(ComputeGovernor(), ledger)

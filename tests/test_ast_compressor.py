@@ -1,6 +1,6 @@
 import ast
 
-from app.kernel.ast_compressor import ASTCompressor
+from app.kernel.compute.ast_compressor import ASTCompressor
 
 
 def test_json_schema_rows_compression_round_trips():

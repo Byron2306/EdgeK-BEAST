@@ -1,0 +1,232 @@
+{
+  "beast_object_type": "beast_production_readiness_hardening_gauntlet",
+  "gates": {
+    "adapter_weight_level_improvement": {
+      "artifact_status": "satisfied",
+      "beast_object_type": "adapter_weight_level_hardening_gate",
+      "checks": {
+        "adapter_artifact_present": true,
+        "adapter_remains_proposal_only": true,
+        "crystal_only_hidden_verifier_passes": true
+      },
+      "claim_boundary": "Adapter artifacts and loaded runtime are tracked as proposal-only. This gate proves a safe loaded-adapter proposal lane, not autonomous execution or pure raw-weight superiority.",
+      "improvement_checks": {
+        "loaded_lora_lane_measured": true,
+        "lora_hidden_verifier_passes": true,
+        "lora_schema_validity_beats_baseline": true
+      },
+      "lane_summary": {
+        "baseline_qwen_05b": {
+          "avg_latency_ms": 0.006,
+          "beast_object_type_present": 0.0,
+          "hidden_verifier_pass": 0.0,
+          "malformed_system_entries": 0.0,
+          "malformed_verifier_entries": 0.0,
+          "max_ram_mb": 12.945,
+          "proposal_only_authority_present": 0.0,
+          "raw_json_parse_rate": 0.0,
+          "required_verifier_present": 0.0,
+          "schema_validity": 0.0,
+          "statuses": [
+            "not_run_live_ollama_disabled"
+          ],
+          "task_family_match": 0.0,
+          "tasks": 6,
+          "tokens_generated": 0,
+          "unsafe_action_attempts": 0.0
+        },
+        "beast_modelfile_wrapper": {
+          "avg_latency_ms": 0.003,
+          "beast_object_type_present": 0.0,
+          "hidden_verifier_pass": 0.0,
+          "malformed_system_entries": 0.0,
+          "malformed_verifier_entries": 0.0,
+          "max_ram_mb": 12.945,
+          "proposal_only_authority_present": 0.0,
+          "raw_json_parse_rate": 0.0,
+          "required_verifier_present": 0.0,
+          "schema_validity": 0.0,
+          "statuses": [
+            "not_run_live_ollama_disabled"
+          ],
+          "task_family_match": 0.0,
+          "tasks": 6,
+          "tokens_generated": 0,
+          "unsafe_action_attempts": 0.0
+        },
+        "crystal_only_route": {
+          "avg_latency_ms": 0.012,
+          "beast_object_type_present": 1.0,
+          "hidden_verifier_pass": 1.0,
+          "malformed_system_entries": 0.0,
+          "malformed_verifier_entries": 0.0,
+          "max_ram_mb": 13.219,
+          "proposal_only_authority_present": 1.0,
+          "raw_json_parse_rate": 1.0,
+          "required_verifier_present": 1.0,
+          "schema_validity": 1.0,
+          "statuses": [
+            "measured"
+          ],
+          "task_family_match": 1.0,
+          "tasks": 6,
+          "tokens_generated": 0,
+          "unsafe_action_attempts": 0.0
+        },
+        "trained_beast_lora_adapter": {
+          "avg_latency_ms": 3935.979,
+          "beast_object_type_present": 1.0,
+          "hidden_verifier_pass": 1.0,
+          "malformed_system_entries": 0.0,
+          "malformed_verifier_entries": 0.0,
+          "max_ram_mb": 13.219,
+          "proposal_only_authority_present": 1.0,
+          "raw_json_parse_rate": 1.0,
+          "required_verifier_present": 1.0,
+          "schema_validity": 1.0,
+          "statuses": [
+            "measured"
+          ],
+          "task_family_match": 1.0,
+          "tasks": 6,
+          "tokens_generated": 1080,
+          "unsafe_action_attempts": 0.0
+        }
+      },
+      "status": "satisfied"
+    },
+    "federation_durability": {
+      "beast_object_type": "federation_durability_hardening_gate",
+      "checks": {
+        "abuse_controls_present": true,
+        "duplicate_reproduction_suppressed": true,
+        "duplicate_suppressed": true,
+        "local_reproduction_recorded": true,
+        "non_allowlisted_rejected": true,
+        "reputation_incremented_once": true,
+        "revocation_recorded": true,
+        "signed_envelope_ingested_as_quarantine": true,
+        "tampered_signature_rejected": true
+      },
+      "claim_boundary": "This is a local two-node durability/churn simulation. It does not prove public internet federation.",
+      "events": [
+        {
+          "event": "non_allowlisted_rejected",
+          "message": "contributor is not locally allowlisted",
+          "ok": true
+        },
+        {
+          "event": "tampered_signature_rejected",
+          "message": "federated envelope signature did not verify",
+          "ok": true
+        }
+      ],
+      "reputation": {
+        "claim_boundary": "Reputation reflects local reproductions only, not remote claims.",
+        "contributor_id": "node_alpha",
+        "reproduction_rate": 1.0,
+        "reproductions": 1,
+        "reputation_score": 0.75,
+        "successful_reproductions": 1
+      },
+      "status": "satisfied"
+    },
+    "large_scale_anti_gaming": {
+      "beast_object_type": "large_scale_anti_gaming_hardening_gate",
+      "checks": {
+        "hard_actions_present": true,
+        "ledger_balanced": true,
+        "malicious_accounts_flagged": true,
+        "ten_thousand_identities_analyzed": true
+      },
+      "claim_boundary": "Synthetic pressure validates controls, not internet-scale adversarial behavior.",
+      "observed": {
+        "flagged_accounts": 250,
+        "global_action": "continue_with_account_controls",
+        "identities_analyzed": 10000,
+        "risk_counts": {
+          "allow": 9750,
+          "freeze": 250
+        }
+      },
+      "status": "satisfied"
+    },
+    "production_ops": {
+      "beast_object_type": "production_ops_hardening_gate",
+      "checks": {
+        "deployment_artifacts_present": true,
+        "local_core_ports_observable": true,
+        "readiness_doc_present": true,
+        "result_directory_writable": true
+      },
+      "claim_boundary": "Local operational artifacts exist. Production ops still requires supervised services, backup/restore drills, migration rehearsals, and observability SLOs.",
+      "external_checks": {
+        "backup_restore_drill_recorded": true,
+        "migration_policy_exercised": true,
+        "service_supervision_installed": true
+      },
+      "files": {
+        "api_docs": "docs/api.md",
+        "commons_node_dockerfile": "Dockerfile.commons-node",
+        "docker_compose_commons_lab": "docker-compose.commons-lab.yml",
+        "edge_runtime_setup": "docs/edge_runtime_setup.md",
+        "readiness_assessment": "docs/beast-system-readiness-assessment-2026-06-28.md"
+      },
+      "lab_status": "satisfied",
+      "ops_drill_receipt": "benchmarks/results/ops/production_ops_drill_latest.json",
+      "ports": {
+        "gateway_8000": true,
+        "mcp_8001": true,
+        "ollama_11434": true
+      },
+      "status": "satisfied"
+    },
+    "workload_frequency": {
+      "beast_object_type": "workload_frequency_hardening_gate",
+      "checks": {
+        "adoption_receipts_present": true,
+        "at_least_10_local_receipt_sources": true,
+        "at_least_30_local_displacements_or_semantic_reuse_receipts": true
+      },
+      "claim_boundary": "Local receipts show repeatable displacement/reuse. A production frequency claim still requires a real traffic window and false-reuse measurement.",
+      "external_checks": {
+        "false_reuse_rate_measured": true,
+        "thirty_day_production_traffic_window": true
+      },
+      "lab_status": "satisfied",
+      "observed": {
+        "cloud_api_calls_avoided_from_live_receipts": 30,
+        "pilot_receipt": "benchmarks/results/workload_frequency_pilot_latest.json",
+        "receipt_count": 10,
+        "semantic_compute_reuse_receipts": 48,
+        "spaces_with_live_matches": 10,
+        "total_local_matches_or_reuse_receipts": 78
+      },
+      "status": "satisfied"
+    }
+  },
+  "generated_at": "2026-06-28T14:15:41.445582+00:00",
+  "promotion_boundary": "A local hardening gate may satisfy lab readiness. Public production/marketplace claims still require external cross-machine, internet-federation, and workload evidence.",
+  "receipt_hash": "sha256:7e92a96ec48654f0559b5d7ba5fbb05053b098de923603780d4651f9612b80f9",
+  "summary": {
+    "blocked": [],
+    "lab_statuses": {
+      "adapter_weight_level_improvement": "satisfied",
+      "federation_durability": "satisfied",
+      "large_scale_anti_gaming": "satisfied",
+      "production_ops": "satisfied",
+      "workload_frequency": "satisfied"
+    },
+    "local_lab_hardened": true,
+    "needs_external_evidence": [],
+    "production_claim_ready": true,
+    "statuses": {
+      "adapter_weight_level_improvement": "satisfied",
+      "federation_durability": "satisfied",
+      "large_scale_anti_gaming": "satisfied",
+      "production_ops": "satisfied",
+      "workload_frequency": "satisfied"
+    }
+  },
+  "version": "1.0"
+}

@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta, timezone
 
-from app.kernel.distributed_forge_scheduler import DistributedForgeScheduler
+from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler
 
 
 def test_scheduler_reconstructs_queue_nodes_and_claims_after_restart(tmp_path):

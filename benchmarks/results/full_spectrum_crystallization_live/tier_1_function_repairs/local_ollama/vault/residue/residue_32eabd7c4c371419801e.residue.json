@@ -1,0 +1,77 @@
+{
+  "beast_object_type": "memory_hull_sidecar",
+  "markdown_sha256": "sha256:c58b023cbdd4315db41ae4ffdc53da8c90dbc5a3342000f8605f5cc9bc8872c8",
+  "payload": {
+    "beast_object_type": "memory_hull_residue",
+    "beast_systems": {
+      "chronicle_compatible": true,
+      "residue_sealed": true,
+      "vault_editable": true
+    },
+    "caller": "spiffe://beast.local/runtime-governor",
+    "correlation_id": "",
+    "cost_saved": {
+      "avoided_tokens_estimate": 259
+    },
+    "created_at": "2026-06-29T04:24:17.946696+00:00",
+    "decision": "Stored provider response as reusable BEAST crystal.",
+    "evidence": {
+      "actual_live_provider_call": true,
+      "answer_credit_id": "cache_68ecf22589ab96ef",
+      "local_eval_gate": {
+        "beast_object_type": "local_eval_gate_result",
+        "checks": [
+          {
+            "passed": true,
+            "rule": {
+              "type": "max_length",
+              "value": 200000
+            }
+          },
+          {
+            "passed": true,
+            "rule": {
+              "type": "no_secret_patterns"
+            }
+          }
+        ],
+        "passed": true,
+        "promotion_allowed": true,
+        "version": "1.0"
+      },
+      "raw_response_sha256": "sha256:4efa25ad2cd8cf99802b90890e116c2dbd60138871682d92a66adc028e1649be",
+      "requested_verified": true,
+      "semantic_credit_id": "scc_6b6bed222104b438",
+      "skill_contract": "pytest_behavior_verifier",
+      "tool_contract": "python_ast_function_rewriter",
+      "verification": "hard_coding_training_recipe_normalized_and_verified",
+      "verified": true
+    },
+    "files_touched": [],
+    "markdown_sha256": "sha256:c58b023cbdd4315db41ae4ffdc53da8c90dbc5a3342000f8605f5cc9bc8872c8",
+    "policy_tags": [
+      "crystal_reuse",
+      "provider_response"
+    ],
+    "provider": "ollama",
+    "residue_id": "residue_32eabd7c4c371419801e",
+    "section": "residue",
+    "task": "Crystallized inference for retry_after_parser_repair",
+    "version": "2.0"
+  },
+  "residue_seal": {
+    "algorithm": "Ed25519",
+    "beast_object_type": "beast_residue_seal",
+    "created_at": "2026-06-29T04:24:17.947226+00:00",
+    "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+    "message_sha256": "sha256:7145dd8447463b1b6bdfaf73cc6843b5fb23de8dd57258c12aae1a2fec296d20",
+    "payload_sha256": "sha256:2583efc68c0d4e39d80077ea06653d926682172ca424a7fd1bdedd073ed4bd46",
+    "provider": "cryptography",
+    "public_key_hash": "sha256:a01501fa8dace8b596b2fd14a63247a74cc41af4f4b27a52ea61159e6a375a55",
+    "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQXp4OTNiZkhnZTlxUXNoTWtNYnlUUW5RK05uMzlZZFZnaHVvNHBTZC9idTQ9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+    "purpose": "memory_hull_residue",
+    "signature_b64": "qVWSEs1bLK3HmK0sg2yMsD5Zz99NKam+K2xMLFVfTsMLqfiQ/LKXX63oWblf1X3WI0l+irLxJ0gdinpwjRkZDw==",
+    "version": "2.0"
+  },
+  "version": "2.0"
+}

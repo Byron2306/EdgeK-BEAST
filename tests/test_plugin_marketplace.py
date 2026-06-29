@@ -1,5 +1,6 @@
-from app.kernel.plugin_marketplace import PluginMarketplace
+from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 from app.mcp.broker import MCPBroker
+from app.kernel.registry.beast_builtin_plugins import manifests, invoke
 
 
 def sample_manifest():
@@ -124,3 +125,25 @@ def test_marketplace_rejects_unapproved_install_policy_and_mismatched_entrypoint
     assert "BEAST host policy requires approval_policy.install=true" in validation["errors"]
     assert "mcp_stdio entrypoint requires permissions.subprocess=true" in validation["errors"]
     assert "mcp_stdio entrypoint requires high or critical risk_class" in validation["errors"]
+
+
+def test_builtin_plugins_install_with_valid_schema_pins_and_invoke(tmp_path):
+    marketplace = PluginMarketplace(str(tmp_path / "plugins"))
+    installed = marketplace.install_builtins()
+    assert installed["installed"] == 6
+    assert marketplace.list_installed()["count"] == 6
+    assert all(marketplace.validate(item)["valid"] for item in manifests(marketplace))
+
+    class Registry:
+        def list_spaces(self): return {"spaces": [], "scoreboard": {"spaces": 0}}
+        def scale_readiness(self): return {"corpus": {"spaces": 0}}
+        def registration_candidates(self, limit=100): return {"count": 2, "candidates": [{"candidate_kind": "forge_crystal"}, {"candidate_kind": "skill"}]}
+    class Economy:
+        def duplicate_report(self): return {"groups": []}
+    class Scale:
+        def marketplace_catalog(self): return {"listing_count": 0, "public_launch_ready": False, "readiness": {}, "anti_inflation_rules": {}}
+    class Testnet:
+        def audit(self): return {"double_entry_balanced": True}
+
+    result = invoke("beast.context.surgeon", "context_budget_plan", {"token_budget": 4000, "candidate_files": 4}, {"registry": Registry(), "economy": Economy(), "scale": Scale(), "testnet": Testnet()})
+    assert result["per_file_budget"] == 1000

@@ -20,10 +20,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
-from app.kernel.benchmark import MegaGauntlet
-from app.kernel.enterprise import EnterpriseManager
-from app.kernel.ollama_scout import OllamaScout
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.compute.benchmark import MegaGauntlet
+from app.kernel.compute.enterprise import EnterpriseManager
+from app.kernel.local.ollama_scout import OllamaScout
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 
 from benchmarks import edge_metrics_benchmark, provider_edge_compare
 

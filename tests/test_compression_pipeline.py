@@ -3,9 +3,9 @@ import json
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.compression_pipeline import CompressionPipeline
-from app.kernel.evidence_chronicle import EvidenceChronicleWriter
-from app.kernel.insight_compiler import InsightCompiler
+from app.kernel.compute.compression_pipeline import CompressionPipeline
+from app.kernel.storage.evidence_chronicle import EvidenceChronicleWriter
+from app.kernel.data_processing.insight_compiler import InsightCompiler
 from app.main import app
 
 

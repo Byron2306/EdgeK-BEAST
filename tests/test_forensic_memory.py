@@ -1,9 +1,9 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.forensic_memory import ForensicMemory
-from app.kernel.interception_events import InterceptionEventFactory
-from app.kernel.runtime import RuntimeGovernor
+from app.kernel.storage.forensic_memory import ForensicMemory
+from app.kernel.networking.interception_events import InterceptionEventFactory
+from app.kernel.governance.runtime import RuntimeGovernor
 from app.main import app
 
 

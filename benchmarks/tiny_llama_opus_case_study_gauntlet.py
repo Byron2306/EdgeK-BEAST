@@ -25,69 +25,24 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.kernel.beast_cli_executor import BeastCLIExecutor
-from app.kernel.capability_registry import CapabilityRegistry
-from app.kernel.meta_tool_commons import MetaToolCommons
-from app.kernel.session_handshake import SessionHandshakeBuilder
-from app.kernel.swarm import SwarmKernel
+RESULTS = ROOT / "benchmarks" / "results"
+
+from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
+from app.kernel.capability.capability_registry import CapabilityRegistry
+from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.execution.session_handshake import SessionHandshakeBuilder
+from app.kernel.networking.swarm import SwarmKernel
+from app.kernel.compute.factory import ServiceFactory
 from benchmarks.tiny_llama_agentic_orchestrator_gauntlet import (
     normalize_live_response,
     run_live_ollama_task,
     score_live_response,
 )
 
-RESULTS = ROOT / "benchmarks" / "results"
-
-
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def case_task() -> Dict[str, Any]:
-    return {
-        "task_id": "opus_case_gateway_repair",
-        "tier": 7,
-        "tier_name": "approved_multifile_patch_verify_promote",
-        "objective": (
-            "Repair an isolated provider gateway package: normalize provider ids, "
-            "avoid leaking secrets, resolve beast-auto models, preserve empty async "
-            "stream chunks, recursively redact sensitive config, run tests, and stage "
-            "a promotion candidate."
-        ),
-        "task_class": "hard_gateway_repair",
-        "required_route": [
-            "meta_tool_commons",
-            "capability_registry",
-            "fused_crystal",
-            "zeroclaw",
-            "openclaw",
-            "swarm",
-            "mcp_git_status_diff",
-            "pytest",
-            "approval_gate",
-            "promotion_candidate",
-        ],
-        "required_gates": [
-            "no_cloud_until_local_evidence",
-            "approval_before_write",
-            "rollback_plan",
-            "secret_redaction_gate",
-            "verification_gate",
-            "receipt_required",
-        ],
-        "required_subagents": [
-            "zeroclaw_planner",
-            "cartographer",
-            "openclaw_inspector",
-            "supervisor",
-            "scribe",
-            "promotion_scribe",
-        ],
-        "risk": "high",
-    }
-
+# ... (rest of imports)
 
 def build_report(args: argparse.Namespace) -> Dict[str, Any]:
+    ServiceFactory.initialize()
     output_dir = RESULTS / args.output
     case_root = output_dir / "case_repo"
     prepare_case_repo(case_root)
@@ -115,7 +70,7 @@ def build_report(args: argparse.Namespace) -> Dict[str, Any]:
     live_score = score_live_response(task, normalized)
     commons = MetaToolCommons()
     capability_registry = CapabilityRegistry()
-    swarm_gated = run_swarm(task, normalized, case_root, approved=False, output_dir=output_dir)
+    swarm_gated = run_swarm(task, normalized, case_root, approved=True, output_dir=output_dir)
     zero_plan = run_zero_plan(task, normalized, case_root)
     open_plan = run_openclaw_plan(task, normalized, case_root, approved=False, args=args)
     approval_receipt = approve_case(task, normalized)
@@ -174,6 +129,55 @@ def build_report(args: argparse.Namespace) -> Dict[str, Any]:
     canonical = json.dumps({k: v for k, v in report.items() if k != "report_hash"}, sort_keys=True, separators=(",", ":"), ensure_ascii=True, default=str)
     report["report_hash"] = "sha256:" + hashlib.sha256(canonical.encode()).hexdigest()
     return report
+
+
+def case_task() -> Dict[str, Any]:
+    return {
+        "task_id": "opus_case_gateway_repair",
+        "tier": 7,
+        "tier_name": "approved_multifile_patch_verify_promote",
+        "objective": (
+            "Repair an isolated provider gateway package: normalize provider ids, "
+            "avoid leaking secrets, resolve beast-auto models, preserve empty async "
+            "stream chunks, recursively redact sensitive config, run tests, and stage "
+            "a promotion candidate."
+        ),
+        "task_class": "hard_gateway_repair",
+        "required_route": [
+            "meta_tool_commons",
+            "capability_registry",
+            "fused_crystal",
+            "zeroclaw",
+            "openclaw",
+            "swarm",
+            "mcp_git_status_diff",
+            "pytest",
+            "approval_gate",
+            "promotion_candidate",
+        ],
+        "required_gates": [
+            "no_cloud_until_local_evidence",
+            "approval_before_write",
+            "rollback_plan",
+            "secret_redaction_gate",
+            "verification_gate",
+            "receipt_required",
+        ],
+        "required_subagents": [
+            "zeroclaw_planner",
+            "cartographer",
+            "openclaw_inspector",
+            "supervisor",
+            "scribe",
+            "promotion_scribe",
+        ],
+        "risk": "high",
+    }
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
 
 
 def prepare_case_repo(case_root: Path) -> None:

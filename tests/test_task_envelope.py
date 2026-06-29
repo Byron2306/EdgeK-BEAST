@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.runtime import RuntimeGovernor
-from app.kernel.task_envelope import TaskEnvelopeBuilder
+from app.kernel.governance.runtime import RuntimeGovernor
+from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
 from app.main import app
 
 

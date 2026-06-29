@@ -1,0 +1,74 @@
+{
+  "adapter_delta": 0.0,
+  "adapter_model": "beast-crystal-qwen25-05b:latest",
+  "authority": "measurement_only_no_promotion",
+  "base_model": "qwen2.5:0.5b",
+  "beast_object_type": "ollama_crystal_adapter_gauntlet",
+  "rows": [
+    {
+      "model": "beast-crystal-qwen25-05b:latest",
+      "result": {
+        "error": "<urlopen error [Errno 1] Operation not permitted>",
+        "latency_seconds": 0.017,
+        "ok": false
+      },
+      "role": "adapter",
+      "score": {
+        "checks": {
+          "agent_awareness_linked": false,
+          "beast_object_type": false,
+          "parseable_json": false,
+          "proposal_only": false,
+          "required_verifier_present": false,
+          "task_family_match": false
+        },
+        "max_score": 6,
+        "score": 0
+      },
+      "task": {
+        "prompt": "For task_family schema_validation, propose a BEAST adapter-assisted local route. Return raw JSON only. required_verifiers must include schema_validation. agent_awareness.must_use_beast_systems must be true. beast_systems_used must include compute_governor and chronicle.",
+        "required_verifier": "schema_validation",
+        "task_family": "schema_validation"
+      }
+    },
+    {
+      "model": "beast-crystal-qwen25-05b:latest",
+      "result": {
+        "error": "<urlopen error [Errno 1] Operation not permitted>",
+        "latency_seconds": 0.0,
+        "ok": false
+      },
+      "role": "adapter",
+      "score": {
+        "checks": {
+          "agent_awareness_linked": false,
+          "beast_object_type": false,
+          "parseable_json": false,
+          "proposal_only": false,
+          "required_verifier_present": false,
+          "task_family_match": false
+        },
+        "max_score": 6,
+        "score": 0
+      },
+      "task": {
+        "prompt": "For task_family secret_redaction, propose a BEAST adapter-assisted local route. Return raw JSON only. required_verifiers must include privacy_scan. agent_awareness.must_use_beast_systems must be true. beast_systems_used must include compute_governor and chronicle.",
+        "required_verifier": "privacy_scan",
+        "task_family": "secret_redaction"
+      }
+    }
+  ],
+  "summary": {
+    "adapter": {
+      "max": 12,
+      "rate": 0.0,
+      "score": 0
+    },
+    "base": {
+      "max": 0,
+      "rate": 0.0,
+      "score": 0
+    }
+  },
+  "version": "1.0"
+}

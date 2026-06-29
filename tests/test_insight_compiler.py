@@ -3,7 +3,7 @@ import json
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.insight_compiler import InsightCompiler
+from app.kernel.data_processing.insight_compiler import InsightCompiler
 from app.main import app
 
 

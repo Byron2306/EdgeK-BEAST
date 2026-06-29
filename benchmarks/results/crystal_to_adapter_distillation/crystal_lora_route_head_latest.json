@@ -1,0 +1,94 @@
+{
+  "authority": "matrix_advisory_only",
+  "beast_object_type": "crystal_lora_route_head_receipt",
+  "confidence": 0.715639,
+  "input_envelope": {
+    "fingerprint_hash": "sha256:707be551a7505a8ad047d165c3def230554fff4ddc5754bc50c463c48405d101",
+    "labels": [
+      "schema_validation"
+    ],
+    "positive": true,
+    "provider": "local",
+    "required_verifiers": [
+      "schema_validation"
+    ],
+    "task_family": "schema_validation",
+    "task_id": "operator_route"
+  },
+  "predicted_task_family": "schema_validation",
+  "proposal": {
+    "action_ir": {
+      "route": "crystal_lora_route_head_then_local_ollama_if_needed"
+    },
+    "agent_awareness": {
+      "authority": "proposal_only",
+      "linked": true,
+      "must_use_beast_systems": true
+    },
+    "authority": "proposal_only",
+    "beast_object_type": "adapter_assisted_local_proposal",
+    "beast_systems_used": [
+      "task_envelope",
+      "prec_lifecycle",
+      "compute_governor",
+      "commons_spaces",
+      "compute_forge",
+      "skill_tree",
+      "chronicle",
+      "crystal_chain",
+      "local_verifiers"
+    ],
+    "prec_stage": "reason",
+    "required_verifiers": [
+      "schema_validation"
+    ],
+    "risk_notes": [
+      "matrix route head is advisory; local verifiers required"
+    ],
+    "task_envelope": {
+      "fingerprint_hash": "sha256:707be551a7505a8ad047d165c3def230554fff4ddc5754bc50c463c48405d101",
+      "labels": [
+        "schema_validation"
+      ],
+      "positive": true,
+      "provider": "local",
+      "required_verifiers": [
+        "schema_validation"
+      ],
+      "task_family": "schema_validation",
+      "task_id": "operator_route"
+    },
+    "task_family": "schema_validation"
+  },
+  "proposal_validation": {
+    "passed": true,
+    "recognized_systems": [
+      "chronicle",
+      "commons_spaces",
+      "compute_forge",
+      "compute_governor",
+      "crystal_chain",
+      "local_verifiers",
+      "prec_lifecycle",
+      "skill_tree",
+      "task_envelope"
+    ],
+    "violations": []
+  },
+  "top3": [
+    {
+      "score": 0.715639,
+      "task_family": "schema_validation"
+    },
+    {
+      "score": 0.111169,
+      "task_family": "syntax_check"
+    },
+    {
+      "score": 0.075471,
+      "task_family": "provider_alias_normalization"
+    }
+  ],
+  "version": "1.0",
+  "weights": "benchmarks/results/crystal_to_adapter_distillation/crystal_lora_lattice_weights_latest.npz"
+}

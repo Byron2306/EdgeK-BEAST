@@ -1,8 +1,8 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.provider_registry import ProviderRegistry
-from app.kernel.provider_adapters import ProviderAdapterRegistry
+from app.kernel.registry.provider_registry import ProviderRegistry
+from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
 from app.cli.api import BeastApiClient
 from app.main import app
 

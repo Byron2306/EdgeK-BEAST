@@ -3,7 +3,7 @@ import importlib
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.kernel.outcome_evidence import NegativeCapabilityStore
+from app.kernel.storage.outcome_evidence import NegativeCapabilityStore
 
 
 @pytest.mark.asyncio

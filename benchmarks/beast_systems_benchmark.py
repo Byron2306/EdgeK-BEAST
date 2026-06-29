@@ -30,22 +30,22 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.context.economizer import ContextEconomizer
-from app.kernel.ast_compressor import ASTCompressor
-from app.kernel.perceive import EdgeKIR
-from app.kernel.provider_adapters import ProviderAdapterRegistry
-from app.kernel.output_governor import (
+from app.kernel.compute.ast_compressor import ASTCompressor
+from app.kernel.compute.perceive import EdgeKIR
+from app.kernel.adapters.provider_adapters import ProviderAdapterRegistry
+from app.kernel.governance.output_governor import (
     extract_json_object_from_text,
     output_contract_schema,
     output_gate,
     provider_output_profile,
 )
-from app.kernel.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
-from app.kernel.secret_vault import SecretVault
-from app.kernel.tool_integrations import ToolCallInterceptor
-from app.kernel.tool_laziness import ToolLazinessLearner
-from app.kernel.vector_adapters import VectorAdapterRegistry
-from app.kernel.network_chronicle import NetworkChronicleConnector
-from app.kernel.workspace_graph import WorkspaceGraph
+from app.kernel.adapters.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
+from app.kernel.security.secret_vault import SecretVault
+from app.kernel.registry.tool_integrations import ToolCallInterceptor
+from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
+from app.kernel.adapters.vector_adapters import VectorAdapterRegistry
+from app.kernel.networking.network_chronicle import NetworkChronicleConnector
+from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 from app.mcp.broker import MCPBroker, MCPDecision
 from benchmarks.coding_agent_harness import estimate_tokens, pct_reduction
 from benchmarks.coding_task_completion_harness import (
@@ -441,7 +441,7 @@ def call_replicate_prediction_agent(
 
 def provider_wiring_task() -> SuiteTask:
     tests = """from app.cli.api import BeastApiClient
-from app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry
+from app.kernel.registry.provider_registry import ProviderAdapterRegistry, ProviderRegistry
 
 
 def test_codex_and_local_nim_are_routable():
@@ -470,7 +470,7 @@ def test_unknown_provider_fails_closed():
     raise AssertionError("unknown provider should fail closed")
 """
     hidden = """from app.cli.api import BeastApiClient
-from app.kernel.provider_registry import ProviderAdapterRegistry
+from app.kernel.registry.provider_registry import ProviderAdapterRegistry
 
 
 def test_hidden_provider_aliases_resolve_to_same_defaults():
@@ -1024,8 +1024,19 @@ def select_tasks(task_names: Optional[Iterable[str]] = None) -> List[SuiteTask]:
 
 
 def create_workspace(root: Path, task: SuiteTask) -> None:
-    for rel in ["app/__init__.py", "app/cli/__init__.py", "app/kernel/__init__.py", "tests/__init__.py"]:
+    for rel in [
+        "app/__init__.py",
+        "app/cli/__init__.py",
+        "app/kernel/__init__.py",
+        "app/kernel/registry/__init__.py",
+        "tests/__init__.py",
+    ]:
         write_file(root, rel, "")
+    write_file(
+        root,
+        "app/kernel/registry/provider_registry.py",
+        "from app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRecord, ProviderRegistry\n",
+    )
     for rel, text in {**task.files, **task.tests, **task.hidden_tests}.items():
         write_file(root, rel, text)
     write_file(root, "README.md", NOISY_HISTORY)
@@ -1085,6 +1096,8 @@ def retrieve_relevant_files(root: Path, task: SuiteTask, limit: int = 4) -> Dict
     ranked = []
     for item in context.get("results", []):
         rel = item.get("file")
+        if rel and (rel == "README.md" or str(rel).startswith("docs/distractor_")):
+            continue
         if rel and rel not in ranked:
             ranked.append(rel)
     for rel in task.relevant_files:

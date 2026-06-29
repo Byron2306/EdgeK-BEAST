@@ -1,0 +1,174 @@
+{
+  "beast_object_type": "proof_local_phase6_hardware_adapter_report",
+  "cards": [
+    {
+      "adapter_id": "llama_cpp",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {
+        "context_reuse": true,
+        "kv_quantization": true,
+        "streaming": true
+      },
+      "configured": false,
+      "cpu_supported": true,
+      "phase6_role": "cpu_prompt_slots",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "ollama",
+      "authority": "eligible_for_local_probe",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {
+        "context_reuse": true,
+        "continuous_batching": false,
+        "streaming": true
+      },
+      "configured": true,
+      "cpu_supported": true,
+      "phase6_role": "cpu_local_context_reuse",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": true,
+      "reason": "ready",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "vllm",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {
+        "continuous_batching": true,
+        "distributed_tracing": true,
+        "paged_attention": true,
+        "prefix_cache": true,
+        "streaming": true,
+        "tensor_parallelism": true
+      },
+      "configured": false,
+      "cpu_supported": false,
+      "phase6_role": "gpu_prefix_cache_paged_attention",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "sglang",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {
+        "continuous_batching": true,
+        "prefix_cache": true,
+        "streaming": true,
+        "tensor_parallelism": true
+      },
+      "configured": false,
+      "cpu_supported": false,
+      "phase6_role": "gpu_structured_execution",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "tgi",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {
+        "continuous_batching": true,
+        "distributed_tracing": true,
+        "flash_attention": true,
+        "paged_attention": true,
+        "streaming": true,
+        "tensor_parallelism": true
+      },
+      "configured": false,
+      "cpu_supported": true,
+      "phase6_role": "serving_compatibility",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "lmcache",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {},
+      "configured": false,
+      "cpu_supported": false,
+      "phase6_role": "external_kv_backend",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "ray_serve",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {},
+      "configured": false,
+      "cpu_supported": true,
+      "phase6_role": "replica_orchestration",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "nvidia_dynamo",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {},
+      "configured": false,
+      "cpu_supported": false,
+      "phase6_role": "prefill_decode_disaggregation",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    },
+    {
+      "adapter_id": "llm_d",
+      "authority": "metadata_only_not_authoritative",
+      "beast_object_type": "hardware_adapter_card",
+      "capabilities": {},
+      "configured": false,
+      "cpu_supported": false,
+      "phase6_role": "kubernetes_cache_aware_routing",
+      "promotion_allowed": false,
+      "promotion_rule": "requires Forge compatibility, mutation, failure, and reproduction evidence",
+      "ready": false,
+      "reason": "not_configured_or_not_cpu_supported",
+      "version": "1.0"
+    }
+  ],
+  "claim_boundary": "adapter_capability_cards_only_no_scheduler_reimplementation",
+  "exit_criteria": {
+    "cache_backends_are_capability_gated": true,
+    "cpu_llama_or_ollama_profile_present": true,
+    "gpu_engines_do_not_claim_cpu_authority": true,
+    "no_adapter_promoted_without_forge_evidence": true
+  },
+  "host_policy": "cpu_first_capability_gated",
+  "status": "implemented",
+  "summary": {
+    "adapter_count": 9,
+    "cpu_ready": 1,
+    "gpu_or_external_blocked": 5,
+    "promotion_allowed": false
+  },
+  "version": "1.0"
+}
