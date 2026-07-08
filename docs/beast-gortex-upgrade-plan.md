@@ -1699,6 +1699,31 @@ overlay from Code Cortex, and end-to-end VS Code extension tests. The principle
 stays the same: IDE ergonomics improve, but SourcePlan and policy receipts stay
 the mutation authority.
 
+### Full IDE Phase 2: Editor-Native SourcePlan Session
+
+Status: **In progress / first slice implemented.**
+
+The next IDE slice moves SourcePlan visibility from "webview plus diff" toward
+an editor-native patching surface:
+
+- The VS Code extension persists the active BEAST SourcePlan, scorecard, and
+  preview in workspace state, so the operator can reopen Mission Control or the
+  Source Workbench without losing the governed session.
+- The Source Workbench now shows source operations as clickable/selectable
+  cards, with `Select All` and `Clear` actions for source hunks.
+- Selected operation ids are written back into the SourcePlan before preview or
+  apply, preserving BEAST's existing `selected_operations` contract.
+- Active editor ranges are decorated from SourcePlan `changed_ranges`: selected
+  ranges, skipped ranges, and stale ranges are visually distinct beside the
+  code.
+- Apply still routes through `beast_sourceplan_apply_selected`; the extension
+  does not write files directly.
+
+Next Phase 2 slices should add side-by-side virtual documents for old/new file
+content, Code Cortex file/symbol explorer overlays, persisted multi-plan
+sessions, and extension host tests that exercise checkbox selection through the
+webview message contract.
+
 ## Phased Roadmap
 
 ### Phase 0: Stabilize Current SourcePlan Loop
@@ -2517,6 +2542,8 @@ The upgrade is successful when an operator can:
 23. Use a VS Code Mission Control shell that preserves the BEAST TUI look while
     exposing SourcePlan, Evidence Bus, lattice replay, worktrees, Code Cortex,
     and policy state beside the active code editor.
+24. Select SourcePlan operations from an IDE workbench, persist the session, and
+    see pending/stale changed ranges decorated directly in the active editor.
 
 At that point BEAST will have absorbed Gortex's best developer-loop lessons and
 the strongest adjacent agentic IDE/workspace orchestration patterns without

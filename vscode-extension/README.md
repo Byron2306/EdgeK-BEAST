@@ -20,6 +20,8 @@ is an operator cockpit, not a bypass around BEAST mutation rules.
 - `BEAST: Open Mission Control`
 - `BEAST: Refresh IDE Snapshot`
 - `BEAST: Open Source Workbench`
+- `BEAST: Select All Source Hunks`
+- `BEAST: Clear Source Hunk Selection`
 - `BEAST: Show Evidence Bus`
 - `BEAST: Create Worktree Mission`
 - `BEAST: Scaffold Lattice Replay`
@@ -62,13 +64,21 @@ gate decision, lattice replay status, rollback/worktree recommendation, and
 suggested verification commands. Preview and apply buttons still call BEAST MCP
 tools and preserve explicit approval.
 
+The workbench also keeps an active SourcePlan session in VS Code workspace
+state. Source operations are visible as selectable cards, and changed ranges for
+the active file are decorated in the editor:
+
+- green ranges are selected for apply;
+- muted ranges are skipped;
+- red ranges are stale and require plan refresh.
+
 ## SourcePlan Flow
 
 1. Open a source file and optionally select code.
 2. Run `BEAST: SourcePlan from Selection`.
 3. Review policy, lattice, rollback, and test guidance in Source Workbench.
-4. Run `BEAST: Preview Hunks`.
-5. Review the diff.
+4. Select or clear individual source operations in the workbench.
+5. Review editor decorations and the generated diff.
 6. Run `BEAST: Apply Selected Hunks`.
 
 Apply calls BEAST MCP tool `beast_sourceplan_apply_selected` with explicit

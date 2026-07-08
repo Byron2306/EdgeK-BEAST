@@ -11,6 +11,30 @@ let lastChronicles = [];
 let lastFitness = [];
 let lastMaintenance = null;
 let lastIdeSnapshot = null;
+let currentPreview = null;
+let extensionContext = null;
+let sourceWorkbenchPanel = null;
+
+const selectedHunkDecoration = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(166, 255, 63, 0.16)',
+    overviewRulerColor: '#a6ff3f',
+    overviewRulerLane: vscode.OverviewRulerLane.Right,
+    border: '1px solid rgba(166, 255, 63, 0.35)',
+});
+
+const skippedHunkDecoration = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(122, 140, 141, 0.12)',
+    overviewRulerColor: '#7a8c8d',
+    overviewRulerLane: vscode.OverviewRulerLane.Right,
+    border: '1px solid rgba(122, 140, 141, 0.25)',
+});
+
+const staleHunkDecoration = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(255, 77, 109, 0.14)',
+    overviewRulerColor: '#ff4d6d',
+    overviewRulerLane: vscode.OverviewRulerLane.Right,
+    border: '1px solid rgba(255, 77, 109, 0.35)',
+});
 
 function config() {
     return vscode.workspace.getConfiguration('edgekBeast');
@@ -129,6 +153,28 @@ async function promptProvider() {
 
 function actionData(result) {
     return result?.data || result || {};
+}
+
+function sessionPayload() {
+    return {
+        plan: currentPlan,
+        scorecard: currentScorecard,
+        preview: currentPreview,
+        savedAt: Date.now(),
+    };
+}
+
+function saveIdeSession() {
+    if (extensionContext) {
+        extensionContext.workspaceState.update('edgekBeast.ideSession', sessionPayload());
+    }
+}
+
+function restoreIdeSession(context) {
+    const saved = context.workspaceState.get('edgekBeast.ideSession') || {};
+    currentPlan = saved.plan || null;
+    currentScorecard = saved.scorecard || null;
+    currentPreview = saved.preview || null;
 }
 
 async function showVirtualDocument(name, language, content) {
@@ -294,6 +340,11 @@ function tuiCss() {
         button:hover { color:#050607; background:#a6ff3f; border-color:#a6ff3f; }
         .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
         .pill { border:1px solid #1f3a3d; padding:3px 7px; border-radius:999px; color:#33f6ff; }
+        .op { border:1px solid #1f3a3d; background:#050809; padding:10px; border-radius:4px; margin:8px 0; }
+        .op.selected { border-color:#a6ff3f; }
+        .op.skipped { opacity:.72; }
+        .op.stale { border-color:#ff4d6d; }
+        input[type="checkbox"] { accent-color:#a6ff3f; width:16px; height:16px; }
         ul { padding-left:18px; }
     `;
 }
@@ -348,22 +399,48 @@ function sourceWorkbenchHtml(plan, scorecard) {
     const policy = workbench.policy_decision || {};
     const replay = workbench.lattice_replay || {};
     const tests = workbench.verification?.suggested_tests || scorecard?.suggested_tests || [];
+    const preview = currentPreview || {};
+    const operations = preview.operations || [];
+    const sourceOps = operations.filter(op => op.source_edit || !op.beast_managed);
+    const selectedCount = sourceOps.filter(op => op.selected).length;
+    const operationRows = sourceOps.length ? sourceOps.map(op => {
+        const checked = op.selected ? 'checked' : '';
+        const stale = op.stale_reason ? `<div class="danger">${escapeHtml(op.stale_reason)}</div>` : '';
+        const ranges = (op.changed_ranges || []).map(r => `${r.new_start || '?'}-${r.new_end || '?'}`).join(', ');
+        return `<div class="op ${op.selected ? 'selected' : 'skipped'} ${op.stale_reason ? 'stale' : ''}">
+          <label class="row">
+            <input type="checkbox" data-op-id="${escapeHtml(op.op_id)}" ${checked}>
+            <span class="cyan">${escapeHtml(op.op_id)}</span>
+            <span>${escapeHtml(op.path)}</span>
+            <span class="pill">${escapeHtml(op.changed_line_count || 0)} lines</span>
+          </label>
+          <div class="muted">${escapeHtml(op.description || op.op || '')}</div>
+          ${ranges ? `<div class="muted">ranges ${escapeHtml(ranges)}</div>` : ''}
+          ${stale}
+        </div>`;
+    }).join('') : '<div class="muted">Preview the plan to load selectable operations.</div>';
     return `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
     <div class="shell">
       <div class="hero">
         <h1>Source Workbench</h1>
         <div class="muted">${escapeHtml(plan?.plan_id || 'draft')} · ${escapeHtml(plan?.objective || '')}</div>
         <div class="row"><span class="pill">risk ${escapeHtml(scorecard?.risk_level || 'unknown')}</span><span class="pill">decision ${escapeHtml(scorecard?.decision || '')}</span><span class="pill">policy ${escapeHtml(policy.decision || '')}</span></div>
-        <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
+        <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="selectAllHunks">Select All</button><button data-command="clearHunks">Clear</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
       </div>
       <div class="grid">
+        <div class="card"><h2>Selected Hunks</h2><div class="metric">${escapeHtml(selectedCount)}</div><div class="muted">${escapeHtml(sourceOps.length)} source operations · ${escapeHtml(preview.stale_count || 0)} stale</div></div>
         <div class="card"><h2>Policy Gate</h2><div class="${policy.approval_required ? 'warn' : 'cyan'}">${escapeHtml(policy.decision || 'unknown')}</div><div class="muted">approval ${policy.approval_required ? 'required' : 'not required'} · verify ${policy.verification_required !== false}</div></div>
         <div class="card"><h2>Lattice Replay</h2><div class="${replay.visible ? 'cyan' : 'muted'}">${escapeHtml(replay.reuse_mode || 'none')}</div><div class="muted">strength ${escapeHtml(replay.match_strength || 0)}</div></div>
         <div class="card"><h2>Rollback</h2><div class="cyan">${workbench.rollback?.required ? 'required' : 'not required'}</div><div class="muted">worktree ${workbench.rollback?.worktree_recommended ? 'recommended' : 'optional'}</div></div>
       </div>
+      <div class="card" style="margin-top:12px"><h2>Selectable Operations</h2>${operationRows}</div>
       <div class="card" style="margin-top:12px"><h2>Suggested Tests</h2>${tests.length ? `<ul>${tests.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : '<div class="muted">No targeted tests suggested yet.</div>'}</div>
       <div class="card" style="margin-top:12px"><h2>Raw Scorecard</h2><pre>${escapeHtml(JSON.stringify(scorecard || {}, null, 2))}</pre></div>
-    </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
+    </div><script>
+      const vscode = acquireVsCodeApi();
+      document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));
+      document.querySelectorAll('input[data-op-id]').forEach(input=>input.addEventListener('change',()=>vscode.postMessage({command:'toggleOperation', opId: input.dataset.opId, selected: input.checked})));
+    </script></body></html>`;
 }
 
 async function runMaintenanceCascade({ showReport = true } = {}) {
@@ -444,6 +521,9 @@ async function prepareSourcePlan() {
         return;
     }
     currentPlan = actionData(result);
+    currentScorecard = null;
+    currentPreview = null;
+    saveIdeSession();
     vscode.window.showInformationMessage(`BEAST SourcePlan ready: ${result.summary || currentPlan.plan_id || 'draft'}`);
 }
 
@@ -465,8 +545,11 @@ async function sourcePlanFromSelection() {
     }
     currentPlan = actionData(result);
     currentScorecard = null;
+    currentPreview = null;
+    saveIdeSession();
     vscode.window.showInformationMessage(`BEAST SourcePlan ready: ${result.summary || currentPlan.plan_id || 'draft'}`);
     await scoreCurrentPlan({ quiet: true });
+    await previewCurrentPlan({ quiet: true });
     await openSourceWorkbench();
 }
 
@@ -484,10 +567,118 @@ async function scoreCurrentPlan({ quiet = false } = {}) {
         return null;
     }
     currentScorecard = actionData(result);
+    saveIdeSession();
     if (!quiet) {
         vscode.window.showInformationMessage(`BEAST scorecard ready: ${currentScorecard.decision || currentScorecard.risk_level || 'review'}`);
     }
     return currentScorecard;
+}
+
+function selectedOperationIdsFromPreview() {
+    const ops = currentPreview?.operations || [];
+    return ops.filter(op => op.selected).map(op => String(op.op_id || '')).filter(Boolean);
+}
+
+function syncPlanSelectionFromPreview() {
+    if (!currentPlan || !currentPreview) {
+        return;
+    }
+    currentPlan = {
+        ...currentPlan,
+        selected_operations: selectedOperationIdsFromPreview(),
+    };
+}
+
+async function previewCurrentPlan({ quiet = false } = {}) {
+    if (!currentPlan) {
+        return null;
+    }
+    const result = await callMcpTool('beast_sourceplan_preview_hunks', { plan: currentPlan });
+    const data = actionData(result);
+    currentPreview = data;
+    syncPlanSelectionFromPreview();
+    applyPreviewDecorations();
+    saveIdeSession();
+    if (!quiet) {
+        vscode.window.showInformationMessage(result.summary || `BEAST preview ready: ${data.selected_count || 0} selected hunk(s).`);
+    }
+    return data;
+}
+
+function updateSourceWorkbenchHtml() {
+    if (sourceWorkbenchPanel) {
+        sourceWorkbenchPanel.webview.html = sourceWorkbenchHtml(currentPlan || {}, currentScorecard || {});
+    }
+}
+
+function setOperationSelected(opId, selected) {
+    if (!currentPreview?.operations?.length) {
+        return;
+    }
+    currentPreview.operations = currentPreview.operations.map(op => {
+        if (String(op.op_id || '') === String(opId || '')) {
+            return { ...op, selected: Boolean(selected) };
+        }
+        return op;
+    });
+    currentPreview.selected_count = currentPreview.operations.filter(op => op.ok !== false && op.selected).length;
+    syncPlanSelectionFromPreview();
+    applyPreviewDecorations();
+    saveIdeSession();
+    updateSourceWorkbenchHtml();
+}
+
+function setAllSourceOperations(selected) {
+    if (!currentPreview?.operations?.length) {
+        return;
+    }
+    currentPreview.operations = currentPreview.operations.map(op => {
+        if (op.source_edit || !op.beast_managed) {
+            return { ...op, selected: Boolean(selected) };
+        }
+        return op;
+    });
+    currentPreview.selected_count = currentPreview.operations.filter(op => op.ok !== false && op.selected).length;
+    syncPlanSelectionFromPreview();
+    applyPreviewDecorations();
+    saveIdeSession();
+    updateSourceWorkbenchHtml();
+}
+
+function applyPreviewDecorations() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+    const rel = workspaceRelative(editor.document.uri.fsPath);
+    const selectedRanges = [];
+    const skippedRanges = [];
+    const staleRanges = [];
+    for (const op of currentPreview?.operations || []) {
+        if (op.path !== rel) {
+            continue;
+        }
+        for (const changed of op.changed_ranges || []) {
+            const start = Math.max(0, Number(changed.new_start || changed.old_start || 1) - 1);
+            const endLine = Math.min(
+                Math.max(start, Number(changed.new_end || changed.old_end || start + 1) - 1),
+                Math.max(0, editor.document.lineCount - 1),
+            );
+            const endCharacter = editor.document.lineAt(endLine).text.length;
+            const range = new vscode.Range(Math.min(start, endLine), 0, endLine, endCharacter);
+            const decoration = { range, hoverMessage: `BEAST ${op.op_id || 'hunk'}: ${op.selected ? 'selected' : 'skipped'}${op.stale_reason ? ` (${op.stale_reason})` : ''}` };
+            if (op.stale_reason) {
+                staleRanges.push(decoration);
+            } else if (op.selected) {
+                selectedRanges.push(decoration);
+            } else {
+                skippedRanges.push(decoration);
+            }
+        }
+    }
+    editor.setDecorations(selectedHunkDecoration, selectedRanges);
+    editor.setDecorations(skippedHunkDecoration, skippedRanges);
+    editor.setDecorations(staleHunkDecoration, staleRanges);
 }
 
 async function openMissionControl(ideProvider) {
@@ -500,7 +691,7 @@ async function openMissionControl(ideProvider) {
     );
     panel.webview.html = missionControlHtml(snapshot);
     panel.webview.onDidReceiveMessage(async message => {
-        await handleIdeWebviewCommand(message.command, ideProvider);
+        await handleIdeWebviewCommand(message, ideProvider);
     });
 }
 
@@ -512,15 +703,24 @@ async function openSourceWorkbench() {
     if (!currentScorecard) {
         await scoreCurrentPlan({ quiet: true });
     }
+    if (!currentPreview) {
+        await previewCurrentPlan({ quiet: true });
+    }
     const panel = vscode.window.createWebviewPanel(
         'beastSourceWorkbench',
         'BEAST Source Workbench',
         vscode.ViewColumn.Beside,
         { enableScripts: true },
     );
+    sourceWorkbenchPanel = panel;
     panel.webview.html = sourceWorkbenchHtml(currentPlan, currentScorecard || {});
     panel.webview.onDidReceiveMessage(async message => {
-        await handleIdeWebviewCommand(message.command);
+        await handleIdeWebviewCommand(message);
+    });
+    panel.onDidDispose(() => {
+        if (sourceWorkbenchPanel === panel) {
+            sourceWorkbenchPanel = null;
+        }
     });
 }
 
@@ -575,7 +775,8 @@ async function replayLatticeCandidate() {
     await showVirtualDocument('BEAST-Lattice-Replay.json', 'json', JSON.stringify(result, null, 2));
 }
 
-async function handleIdeWebviewCommand(command, ideProvider) {
+async function handleIdeWebviewCommand(message, ideProvider) {
+    const command = typeof message === 'string' ? message : message?.command;
     if (command === 'sourcePlanFromSelection') {
         return sourcePlanFromSelection();
     }
@@ -594,6 +795,15 @@ async function handleIdeWebviewCommand(command, ideProvider) {
     if (command === 'previewHunks') {
         return previewHunks();
     }
+    if (command === 'selectAllHunks') {
+        return setAllSourceOperations(true);
+    }
+    if (command === 'clearHunks') {
+        return setAllSourceOperations(false);
+    }
+    if (command === 'toggleOperation') {
+        return setOperationSelected(message.opId, message.selected);
+    }
     if (command === 'applySelectedHunks') {
         return applySelectedHunks();
     }
@@ -610,9 +820,9 @@ async function previewHunks() {
     if (!currentPlan) {
         return;
     }
-    const result = await callMcpTool('beast_sourceplan_preview_hunks', { plan: currentPlan });
-    const data = actionData(result);
-    await showVirtualDocument(`BEAST-${currentPlan.plan_id || 'sourceplan'}.diff`, 'diff', data.diff || result.summary || result.error || '');
+    const data = await previewCurrentPlan({ quiet: true });
+    updateSourceWorkbenchHtml();
+    await showVirtualDocument(`BEAST-${currentPlan.plan_id || 'sourceplan'}.diff`, 'diff', data?.diff || 'No BEAST diff returned.');
 }
 
 async function applySelectedHunks() {
@@ -634,6 +844,10 @@ async function applySelectedHunks() {
         return;
     }
     currentPlan = actionData(result).plan || currentPlan;
+    currentPreview = null;
+    currentScorecard = null;
+    saveIdeSession();
+    updateSourceWorkbenchHtml();
     vscode.window.showInformationMessage(result.summary || 'BEAST apply completed');
     await runMaintenanceCascade({ showReport: false });
 }
@@ -761,6 +975,8 @@ function registerBeastChatParticipant(context) {
 }
 
 function activate(context) {
+    extensionContext = context;
+    restoreIdeSession(context);
     const statusProvider = new BeastStatusProvider();
     const chronicleProvider = new ChronicleProvider();
     const routeFitnessProvider = new RouteFitnessProvider();
@@ -779,7 +995,7 @@ function activate(context) {
                     beastCommand(),
                     ['mcp', '--workspace', folder || '.'],
                     { BEAST_WORKSPACE: folder || '.' },
-                    '1.3.0',
+                    '1.4.0',
                 )
             ];
         },
@@ -810,6 +1026,8 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.sourcePlanFromSelection', sourcePlanFromSelection),
         vscode.commands.registerCommand('edgekBeast.scoreCurrentPlan', () => scoreCurrentPlan()),
         vscode.commands.registerCommand('edgekBeast.openSourceWorkbench', openSourceWorkbench),
+        vscode.commands.registerCommand('edgekBeast.selectAllHunks', () => setAllSourceOperations(true)),
+        vscode.commands.registerCommand('edgekBeast.clearHunks', () => setAllSourceOperations(false)),
         vscode.commands.registerCommand('edgekBeast.showEvidence', showEvidence),
         vscode.commands.registerCommand('edgekBeast.createWorktreeMission', createWorktreeMission),
         vscode.commands.registerCommand('edgekBeast.replayLatticeCandidate', replayLatticeCandidate),
@@ -852,8 +1070,14 @@ function activate(context) {
         statusProvider.refresh();
         vscode.window.showInformationMessage('BEAST: workspace changed; MCP definitions will refresh on next agent session.');
     }));
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => applyPreviewDecorations()));
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => applyPreviewDecorations()));
+    context.subscriptions.push(selectedHunkDecoration, skippedHunkDecoration, staleHunkDecoration);
+    applyPreviewDecorations();
 }
 
-function deactivate() {}
+function deactivate() {
+    saveIdeSession();
+}
 
 module.exports = { activate, deactivate };
