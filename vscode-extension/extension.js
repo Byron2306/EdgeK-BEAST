@@ -55,6 +55,27 @@ function workspaceFolderPath() {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
 }
 
+function findBeastRepoRoot(startPath) {
+    let current = startPath ? path.resolve(startPath) : '';
+    for (let i = 0; current && i < 8; i += 1) {
+        const beastBin = path.join(current, 'bin', 'beast');
+        const appMain = path.join(current, 'app', 'main.py');
+        if (fs.existsSync(beastBin) && fs.existsSync(appMain)) {
+            return current;
+        }
+        const next = path.dirname(current);
+        if (!next || next === current) {
+            break;
+        }
+        current = next;
+    }
+    return startPath || '';
+}
+
+function beastWorkspaceRoot() {
+    return findBeastRepoRoot(workspaceFolderPath());
+}
+
 function workspaceRelative(filePath) {
     const folder = workspaceFolderPath();
     if (!folder || !filePath) {
@@ -68,9 +89,9 @@ function beastCommand() {
     if (configured && configured !== 'beast') {
         return configured;
     }
-    const folder = workspaceFolderPath();
-    if (folder) {
-        const local = path.join(folder, 'bin', 'beast');
+    const root = beastWorkspaceRoot();
+    if (root) {
+        const local = path.join(root, 'bin', 'beast');
         if (fs.existsSync(local)) {
             return local;
         }
@@ -112,21 +133,44 @@ async function isGatewayRunning() {
     }
 }
 
+function gatewayCommandLine() {
+    return `"${beastCommand()}" gateway --host 127.0.0.1 --port 8000`;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function ensureGateway() {
     if (await isGatewayRunning()) {
         return true;
     }
 
-    const cwd = workspaceFolderPath();
+    const cwd = beastWorkspaceRoot() || workspaceFolderPath();
     const terminal = beastTerminal(cwd);
     terminal.show();
-    terminal.sendText(`"${beastCommand()}" gateway --host 127.0.0.1 --port 8000`);
+    terminal.sendText(gatewayCommandLine());
     vscode.window.showInformationMessage('BEAST: starting gateway on http://127.0.0.1:8000');
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+        await sleep(500);
+        if (await isGatewayRunning()) {
+            return true;
+        }
+    }
+    vscode.window.showWarningMessage('BEAST gateway did not answer /health yet. Opening IDE Doctor.', 'Open Doctor')
+        .then(choice => {
+            if (choice === 'Open Doctor') {
+                showIdeDoctor();
+            }
+        });
     return false;
 }
 
 async function callMcpTool(name, args = {}) {
-    await ensureGateway();
+    const ready = await ensureGateway();
+    if (!ready) {
+        throw new Error(`BEAST gateway is not reachable at ${gatewayUrl()}. Run BEAST: Diagnose IDE Shell for details.`);
+    }
     const payload = await postJson('/mcp/tools/call', { name, arguments: args });
     const text = payload?.content?.[0]?.text || '{}';
     try {
@@ -219,6 +263,8 @@ class BeastStatusProvider {
     getChildren() {
         return [
             new vscode.TreeItem(`Gateway: ${gatewayUrl()}`),
+            new vscode.TreeItem(`BEAST Root: ${beastWorkspaceRoot() || 'not detected'}`),
+            new vscode.TreeItem(`Start: ${gatewayCommandLine()}`),
             new vscode.TreeItem(`Provider: ${config().get('provider') || 'litellm'}`),
             new vscode.TreeItem(`Role: ${config().get('providerRole') || 'rescued_patch_provider'}`),
             new vscode.TreeItem('MCP Lane: stdio + HTTP facade'),
@@ -296,6 +342,7 @@ class BeastIdeProvider {
                 this.section('Agent Sessions', `${snap.agent_sessions?.count || 0} sessions`, 'edgekBeast.showAgentSessions'),
                 this.section('Worktrees', `${snap.worktrees?.count || 0} active`, 'edgekBeast.showWorktrees'),
                 this.section('Policy Gate', snap.policy?.mode_route?.selected_mode || 'mode ready', 'edgekBeast.showPolicyGate'),
+                this.section('IDE Doctor', snap.gateway_url || gatewayUrl(), 'edgekBeast.diagnoseIdeShell'),
                 this.section('Lattice', `${snap.mission_lattice?.cell_count || 0} cells`, 'edgekBeast.replayLatticeCandidate'),
                 this.section('Live Events', latestIdeEvents.connected ? 'connected' : 'start stream', 'edgekBeast.startIdeEventBus'),
             ];
@@ -570,6 +617,105 @@ async function openMaintenanceReport() {
     }
     lines.push('', '## Raw JSON', '', '```json', JSON.stringify(lastMaintenance, null, 2), '```', '');
     await showVirtualDocument('BEAST-Maintenance.md', 'markdown', lines.join('\n'));
+}
+
+async function ideDoctorSnapshot() {
+    const health = { ok: false, error: '' };
+    try {
+        const response = await fetch(`${gatewayUrl()}/health`);
+        health.ok = response.ok;
+        health.status = response.status;
+        health.statusText = response.statusText;
+        if (response.ok) {
+            try {
+                health.payload = await response.json();
+            } catch {
+                health.payload = await response.text();
+            }
+        }
+    } catch (error) {
+        health.error = error.message;
+    }
+    return {
+        beast_object_type: 'beast_vscode_ide_doctor',
+        version: '1.0',
+        extension_version: '1.6.1',
+        gateway_url: gatewayUrl(),
+        workspace_folder: workspaceFolderPath(),
+        detected_beast_root: beastWorkspaceRoot(),
+        beast_command: beastCommand(),
+        gateway_command: gatewayCommandLine(),
+        gateway_health: health,
+        mcp_registration_supported: Boolean(vscode.lm?.registerMcpServerDefinitionProvider && vscode.McpStdioServerDefinition),
+        next_actions: health.ok ? [
+            'Run BEAST: Open Mission Control.',
+            'Run BEAST: Start Live IDE Event Bus for live cockpit updates.',
+        ] : [
+            'Run BEAST: Start Local Governor.',
+            'If the terminal shows an old serve command, reload the window or reinstall edgek-beast-1.6.1.vsix.',
+            'Confirm the terminal starts from the BEAST repo root, not only vscode-extension/.',
+            `Manual fallback: ${gatewayCommandLine()}`,
+        ],
+    };
+}
+
+async function showIdeDoctor() {
+    const snapshot = await ideDoctorSnapshot();
+    const ok = snapshot.gateway_health?.ok;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>BEAST IDE Doctor</h1><div class="muted">Bootstrap, gateway, extension, and workspace diagnostics.</div>
+          <div class="row" style="margin-top:10px"><button data-command="start">Start Gateway</button><button data-command="refreshDoctor">Refresh</button><button data-command="openMissionControl">Mission Control</button></div>
+        </div></div>
+        <div class="grid">
+          <div class="card"><h2>Gateway</h2><div class="${ok ? 'cyan' : 'danger'}">${ok ? 'healthy' : 'offline'}</div><div class="muted">${escapeHtml(snapshot.gateway_url)}</div></div>
+          <div class="card"><h2>Extension</h2><div class="cyan">${escapeHtml(snapshot.extension_version)}</div><div class="muted">MCP registration ${snapshot.mcp_registration_supported ? 'supported' : 'fallback mode'}</div></div>
+          <div class="card"><h2>BEAST Root</h2><div class="cyan">${escapeHtml(snapshot.detected_beast_root || 'not found')}</div><div class="muted">workspace ${escapeHtml(snapshot.workspace_folder || 'none')}</div></div>
+          <div class="card"><h2>Command</h2><div class="cyan">${escapeHtml(snapshot.beast_command)}</div><div class="muted">${escapeHtml(snapshot.gateway_command)}</div></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h2>Next Actions</h2><ul>${snapshot.next_actions.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>
+        <div class="card" style="margin-top:12px"><h2>Raw Doctor Snapshot</h2><pre>${escapeHtml(JSON.stringify(snapshot, null, 2))}</pre></div>
+      </div><script>
+        const vscode = acquireVsCodeApi();
+        document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));
+      </script></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastIdeDoctor', 'BEAST IDE Doctor', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+    panel.webview.onDidReceiveMessage(async message => {
+        if (message?.command === 'start') {
+            await ensureGateway();
+            panel.webview.html = (await doctorHtml()).html;
+        } else if (message?.command === 'refreshDoctor') {
+            panel.webview.html = (await doctorHtml()).html;
+        } else if (message?.command === 'openMissionControl') {
+            await openMissionControl(ideEventProvider);
+        }
+    });
+}
+
+async function doctorHtml() {
+    const snapshot = await ideDoctorSnapshot();
+    const ok = snapshot.gateway_health?.ok;
+    return {
+        snapshot,
+        html: `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+          <div class="shell">
+            <div class="hero">${mascotHtml()}<div class="hero-content"><h1>BEAST IDE Doctor</h1><div class="muted">Bootstrap, gateway, extension, and workspace diagnostics.</div>
+              <div class="row" style="margin-top:10px"><button data-command="start">Start Gateway</button><button data-command="refreshDoctor">Refresh</button><button data-command="openMissionControl">Mission Control</button></div>
+            </div></div>
+            <div class="grid">
+              <div class="card"><h2>Gateway</h2><div class="${ok ? 'cyan' : 'danger'}">${ok ? 'healthy' : 'offline'}</div><div class="muted">${escapeHtml(snapshot.gateway_url)}</div></div>
+              <div class="card"><h2>Extension</h2><div class="cyan">${escapeHtml(snapshot.extension_version)}</div><div class="muted">MCP registration ${snapshot.mcp_registration_supported ? 'supported' : 'fallback mode'}</div></div>
+              <div class="card"><h2>BEAST Root</h2><div class="cyan">${escapeHtml(snapshot.detected_beast_root || 'not found')}</div><div class="muted">workspace ${escapeHtml(snapshot.workspace_folder || 'none')}</div></div>
+              <div class="card"><h2>Command</h2><div class="cyan">${escapeHtml(snapshot.beast_command)}</div><div class="muted">${escapeHtml(snapshot.gateway_command)}</div></div>
+            </div>
+            <div class="card" style="margin-top:12px"><h2>Next Actions</h2><ul>${snapshot.next_actions.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>
+            <div class="card" style="margin-top:12px"><h2>Raw Doctor Snapshot</h2><pre>${escapeHtml(JSON.stringify(snapshot, null, 2))}</pre></div>
+          </div><script>
+            const vscode = acquireVsCodeApi();
+            document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));
+          </script></body></html>`
+    };
 }
 
 async function prepareSourcePlan() {
@@ -1706,6 +1852,7 @@ function activate(context) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('edgekBeast.start', ensureGateway),
+        vscode.commands.registerCommand('edgekBeast.diagnoseIdeShell', showIdeDoctor),
         vscode.commands.registerCommand('edgekBeast.sourcePlan', prepareSourcePlan),
         vscode.commands.registerCommand('edgekBeast.previewHunks', previewHunks),
         vscode.commands.registerCommand('edgekBeast.applySelectedHunks', applySelectedHunks),

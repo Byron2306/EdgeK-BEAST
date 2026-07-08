@@ -66,6 +66,7 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
             "beast_object_type": "beast_ide_snapshot",
             "version": "1.0",
             "phase": "phase_1_vscode_shell",
+            "gateway_url": "http://127.0.0.1:8000",
             "ide_capabilities": [
                 "mission_control",
                 "source_workbench",

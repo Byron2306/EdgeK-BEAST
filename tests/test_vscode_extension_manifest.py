@@ -7,6 +7,7 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
     commands = {item["command"] for item in manifest["contributes"]["commands"]}
     expected = {
         "edgekBeast.openMissionControl",
+        "edgekBeast.diagnoseIdeShell",
         "edgekBeast.openSourceWorkbench",
         "edgekBeast.showEvidence",
         "edgekBeast.showCodeCortex",

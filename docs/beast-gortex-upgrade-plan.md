@@ -1802,6 +1802,29 @@ Next Phase 5 slices should add SourcePlan-from-worktree-diff scaffolding,
 promotion previews, branch cleanup helpers, and extension-host tests around the
 open/test/promote/close flow.
 
+### Full IDE Phase 5.5: IDE Doctor and Self-Healing Bootstrap
+
+Status: **Started with gateway bootstrap diagnostics.**
+
+This slice addresses the first real operator friction from the VS Code shell:
+when the backend is not reachable, the extension should not just say "fetch
+failed."
+
+- The extension now detects the BEAST repo root by walking upward from the open
+  workspace folder, so opening `vscode-extension/` still finds `bin/beast`.
+- Gateway startup uses the canonical `beast gateway --host 127.0.0.1 --port
+  8000` command from the detected repo root.
+- `ensureGateway()` waits for `/health` before continuing and opens IDE Doctor
+  if the gateway does not answer.
+- `BEAST: Diagnose IDE Shell` opens a TUI-styled panel showing extension
+  version, gateway URL, detected BEAST root, exact command, health result, MCP
+  registration support, and next actions.
+- The sidebar status exposes the detected root and gateway command so a wrong
+  workspace folder is visible immediately.
+
+Next Phase 5.5 slices should add extension-host automation for startup failure,
+gateway port selection, and one-click log capture from the integrated terminal.
+
 ## Phased Roadmap
 
 ### Phase 0: Stabilize Current SourcePlan Loop

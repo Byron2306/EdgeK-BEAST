@@ -31,6 +31,7 @@ Then reload VS Code/Cursor, open the command palette, and run
 ## Commands
 
 - `BEAST: Start Local Governor`
+- `BEAST: Diagnose IDE Shell`
 - `BEAST: SourcePlan Current File`
 - `BEAST: SourcePlan from Selection`
 - `BEAST: Score Current SourcePlan`
