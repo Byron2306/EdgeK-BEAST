@@ -1,0 +1,95 @@
+# BEAST Residue: Crystallized inference for gateway_provider_hardening
+
+- Residue ID: `residue_71dbbcaaa28ee41a3a49`
+- Created: `2026-06-29T15:16:38.889577+00:00`
+- Section: `residue`
+- Caller: `spiffe://beast.local/runtime-governor`
+- Provider: `ollama`
+- Cost saved: `{'avoided_tokens_estimate': 143}`
+- Policy tags: `crystal_reuse, provider_response`
+
+## Files touched
+
+- none
+
+## Decision
+
+Stored provider response as reusable BEAST crystal.
+
+## Evidence
+
+```json
+{
+  "actual_live_provider_call": true,
+  "actual_local_engine_call": true,
+  "answer_credit_id": "cache_501ad904cfd351c2",
+  "evaluation_gates": {
+    "baseline_pytest_failed": true,
+    "beast_object_type": "final_boss_evaluation_gates",
+    "expected_file_list_match": true,
+    "expected_hash_precondition_match": true,
+    "far_transfer_prompt_distance": {
+      "jaccard_distance": 0.923077,
+      "jaccard_similarity": 0.076923,
+      "left_terms": 20,
+      "metric": "token_set_jaccard",
+      "right_terms": 22,
+      "shared_terms": 3
+    },
+    "far_transfer_prompt_distance_recorded": true,
+    "mutation_negative_cases_required": true,
+    "no_forbidden_path_writes": true,
+    "passed": true,
+    "patch_schema_valid": true,
+    "secret_scan_pass": true,
+    "version": "1.0"
+  },
+  "files_changed": [
+    "gateway/providers.py",
+    "gateway/auth.py",
+    "gateway/streaming.py",
+    "gateway/client.py"
+  ],
+  "local_eval_gate": {
+    "beast_object_type": "local_eval_gate_result",
+    "checks": [
+      {
+        "passed": true,
+        "rule": {
+          "type": "max_length",
+          "value": 200000
+        }
+      },
+      {
+        "passed": true,
+        "rule": {
+          "type": "no_secret_patterns"
+        }
+      }
+    ],
+    "passed": true,
+    "promotion_allowed": true,
+    "version": "1.0"
+  },
+  "raw_quality": {
+    "beast_object_type": "raw_patch_plan_quality",
+    "contains_forbidden_secret": false,
+    "patch_count": 0,
+    "required_concept_count": 2,
+    "required_concepts": {
+      "beast_auto_routing": false,
+      "provider_normalization": true,
+      "secret_redaction": false,
+      "streaming_empty_chunks": true
+    },
+    "schema_valid": true
+  },
+  "raw_response_sha256": "sha256:1504239820020eeb6f706b6211d07368b59db8ef58ff91e7abf3a63f21dd310e",
+  "requested_verified": true,
+  "semantic_credit_id": "scc_d194914b8bf17507",
+  "skill_contract": "gateway_integration_pytest",
+  "tool_contract": "approved_multifile_patch_tool",
+  "verification": "multi_file_patch_plan_verified_by_integration_tests",
+  "verified": true
+}
+```

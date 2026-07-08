@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, Mapping, Optional
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_ENV_PATH = ROOT / ".beast" / "beast.env"
 
 

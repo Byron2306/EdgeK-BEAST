@@ -33,6 +33,13 @@
       { "command": "edgekBeast.configureGateway", "title": "BEAST: Configure Integrated Terminal Gateway" },
       { "command": "edgekBeast.installMcpConfig", "title": "BEAST: Install Workspace MCP Config" }
     ],
+    "chatParticipants": [
+      {
+        "id": "edgekBeast.beast",
+        "name": "BEAST",
+        "description": "Route Copilot Chat prompts through the governed BEAST provider plane."
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -83,8 +90,18 @@
         },
         "edgekBeast.provider": {
           "type": "string",
-          "default": "litellm",
+          "default": "nvidia_nim",
           "description": "Default provider used for BEAST SourcePlan requests"
+        },
+        "edgekBeast.model": {
+          "type": "string",
+          "default": "beast-auto",
+          "description": "Model alias for BEAST chat participant requests; beast-auto resolves through the selected governed provider"
+        },
+        "edgekBeast.maxTokens": {
+          "type": "number",
+          "default": 4000,
+          "description": "Maximum output tokens for BEAST chat participant requests"
         },
         "edgekBeast.providerRole": {
           "type": "string",

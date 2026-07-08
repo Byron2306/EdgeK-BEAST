@@ -66,6 +66,17 @@ from app.kernel.local.ollama_scout import OllamaScout
 from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
 from app.kernel.storage.memory_stack import MemoryStack
 from app.kernel.data_processing.context_packet import ContextPacketBuilder
+from app.kernel.data_processing.code_cortex import CodeCortexRouter
+from app.kernel.agents.mode_router import ModeRouter
+from app.kernel.compute.agent_scheduler import AgentScheduler
+from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
+from app.kernel.evidence.evidence_bus import EvidenceBus
+from app.kernel.policy.spec_covenant import SpecCovenantCompiler
+from app.kernel.security.safety_governor import SafetyGovernor
+from app.kernel.workspaces.mission_cockpit import MissionCockpit
+from app.kernel.workspaces.worktree_forge import WorktreeForge
+from app.kernel.data_processing.workspace_graph_service import WorkspaceGraphService
+from app.kernel.data_processing.workspace_registry import WorkspaceRegistry, repo_id_for_root
 from app.kernel.data_processing.forge_scorecard import ForgeScorecardBuilder
 from app.kernel.execution.conductor_workflow import ConductorWorkflowBuilder
 from app.kernel.registry.canon_registry import CanonRegistry
@@ -74,6 +85,7 @@ from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
 from app.kernel.security.secret_vault import PROVIDER_ENV, SecretVault
 from app.kernel.data_processing.insight_compiler import InsightCompiler
 from app.kernel.capability.capability_registry import CapabilityRegistry
+from app.kernel.capability.capability_plane import CapabilityPlane
 from app.kernel.storage.evidence_scoring import EvidenceScorer
 from app.kernel.compute.compression_pipeline import CompressionPipeline
 from app.kernel.networking.interception_events import InterceptionEventFactory
@@ -117,6 +129,12 @@ from app.kernel.networking.commons_economy import ComputeReductionEconomy
 from app.kernel.networking.commons_scale_economics import CommonsScaleEconomics, ScaleEconomicsAssumptions
 from app.kernel.networking.commons_testnet import CommonsTestnet
 from app.kernel.networking.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
+from app.routes.cockpit import build_cockpit_router
+from app.routes.commons import build_commons_router
+from app.routes.compute import build_compute_router
+from app.routes.policy import build_policy_router
+from app.routes.sourceplan import build_sourceplan_router
+from app.routes.workspace import build_workspace_router
 from app.kernel.compute.crystal_distillation import CrystalToAdapterDistiller
 from app.kernel.data_processing.semantic_compute_pages import SemanticComputePageStore, build_phase3_semantic_pages
 from app.kernel.security.crystal_chain_witness import CrystalChainWitnessStore
@@ -258,7 +276,17 @@ integration_registry = RequiredIntegrationRegistry(reasoner.policies)
 tool_call_interceptor = ToolCallInterceptor(crystallizer.workspace_graph, reasoner.policies)
 ollama_scout = OllamaScout(crystallizer.workspace_graph, mcp_broker, reasoner.policies)
 task_envelope_builder = TaskEnvelopeBuilder(reasoner.policies, runtime_governor=runtime_governor)
-context_packet_builder = ContextPacketBuilder(workspace_graph=crystallizer.workspace_graph)
+code_cortex_router = CodeCortexRouter()
+context_packet_builder = ContextPacketBuilder(
+    workspace_graph=crystallizer.workspace_graph,
+    code_cortex=code_cortex_router,
+)
+workspace_graph_service = WorkspaceGraphService(
+    crystallizer.workspace_graph,
+    default_root=Path(__file__).resolve().parents[1],
+)
+mode_router = ModeRouter()
+workspace_registry = WorkspaceRegistry.for_anchor_root(Path(__file__).resolve().parents[1])
 forge_scorecard_builder = ForgeScorecardBuilder()
 conductor_workflow_builder = ConductorWorkflowBuilder(swarm_kernel=swarm_kernel)
 canon_registry = CanonRegistry()
@@ -281,6 +309,14 @@ promotion_loop = PromotionLoop(
 )
 insight_compiler = InsightCompiler(policies=reasoner.policies)
 capability_registry = CapabilityRegistry(reasoner.policies, skill_tree=skill_tree)
+capability_plane = CapabilityPlane(
+    workspace_root=str(Path(__file__).resolve().parents[1]),
+    registry=capability_registry,
+    skill_tree=skill_tree,
+    plugin_marketplace=plugin_marketplace,
+    exchange=capability_exchange,
+    commons=meta_tool_commons,
+)
 evidence_scorer = EvidenceScorer(reasoner.policies)
 compression_pipeline = CompressionPipeline(reasoner.policies)
 interception_event_factory = InterceptionEventFactory(reasoner.policies)
@@ -365,6 +401,33 @@ app.include_router(gemini_router)
 app.include_router(mcp_router)
 app.include_router(proxy_router, prefix="/proxy")
 app.include_router(huggingface_router)
+app.include_router(build_sourceplan_router(Path(__file__).resolve().parents[1]))
+app.include_router(build_compute_router(
+    compute_ledger=compute_ledger,
+    crystal_compute_store=crystal_compute_store,
+    crystal_fork_manager=crystal_fork_manager,
+    semantic_raid_store=semantic_raid_store,
+    artifact_fossil_store=artifact_fossil_store,
+    commons_crystal_promoter=commons_crystal_promoter,
+))
+app.include_router(build_workspace_router(
+    Path(__file__).resolve().parents[1],
+    workspace_graph_service=workspace_graph_service,
+    workspace_graph=crystallizer.workspace_graph,
+    workspace_registry=workspace_registry,
+    code_cortex_router=code_cortex_router,
+))
+app.include_router(build_commons_router(
+    meta_tool_commons=meta_tool_commons,
+    swarm_kernel=swarm_kernel,
+    kv_cache_transport=kv_cache_transport,
+    commons_space_registry=commons_space_registry,
+    commons_economy=commons_economy,
+    commons_policy_learner=commons_policy_learner,
+    federated_commons=federated_commons,
+))
+app.include_router(build_cockpit_router(Path(__file__).resolve().parents[1]))
+app.include_router(build_policy_router(Path(__file__).resolve().parents[1], mode_router))
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 cli_assets_dir = Path(__file__).parent / "cli" / "assets"
@@ -463,11 +526,28 @@ async def root_info():
             "health": "/health",
             "edgek_state": "/edgek/state",
             "edgek_workspace": "/edgek/workspace",
+            "edgek_workspace_service": "/edgek/workspace/service",
+            "edgek_workspace_graph_stats": "/edgek/workspace/graph/stats",
             "edgek_workspace_index": "/edgek/workspace/index",
+            "edgek_workspace_poll": "/edgek/workspace/poll",
+            "edgek_workspace_files": "/edgek/workspace/files",
+            "edgek_workspace_file": "/edgek/workspace/file",
+            "edgek_workspace_symbols": "/edgek/workspace/symbols",
+            "edgek_workspace_registry": "/edgek/workspace/registry",
+            "edgek_workspace_register": "/edgek/workspace/register",
+            "edgek_workspace_context_pack": "/edgek/workspace/context-pack",
+            "edgek_workspace_validate_scope": "/edgek/workspace/validate-sourceplan-scope",
+            "edgek_workspace_contract_mismatch": "/edgek/workspace/contract-mismatch",
             "edgek_workspace_rebuild": "/edgek/workspace/rebuild",
             "edgek_workspace_export": "/edgek/workspace/export",
             "edgek_workspace_integrity": "/edgek/workspace/integrity",
             "edgek_workspace_search": "/edgek/workspace/search",
+            "edgek_workspace_file_status": "/edgek/workspace/file-status",
+            "edgek_workspace_changed_since": "/edgek/workspace/changed-since",
+            "edgek_workspace_context": "/edgek/workspace/context",
+            "edgek_workspace_context_consumption": "/edgek/workspace/context-consumption",
+            "edgek_workspace_stale_context": "/edgek/workspace/stale-context",
+            "edgek_workspace_index_benchmark": "/edgek/workspace/index-benchmark",
             "edgek_workspace_semantic_index": "/edgek/workspace/semantic-index",
             "edgek_workspace_semantic_context": "/edgek/workspace/semantic-context",
             "edgek_workspace_node": "/edgek/workspace/nodes/{node_id}",
@@ -1886,6 +1966,27 @@ async def edgek_capability_families():
     """Return capability families for routing and prioritization."""
     return capability_registry.list_families()
 
+@app.get("/edgek/capability-plane/summary")
+async def edgek_capability_plane_summary(limit: int = 100):
+    """Return the unified read-only capability plane across BEAST capability surfaces."""
+    return capability_plane.summary(limit=max(1, min(int(limit), 500)))
+
+@app.post("/edgek/capability-plane/query")
+async def edgek_capability_plane_query(payload: Dict[str, Any] = None):
+    """Query the unified read-only capability plane."""
+    payload = payload or {}
+    return capability_plane.query(
+        text=str(payload.get("text") or ""),
+        kind=str(payload.get("kind") or ""),
+        family=str(payload.get("family") or ""),
+        source=str(payload.get("source") or ""),
+        risk=str(payload.get("risk") or ""),
+        local=payload.get("local") if isinstance(payload.get("local"), bool) else None,
+        reusable=payload.get("reusable") if isinstance(payload.get("reusable"), bool) else None,
+        verified=payload.get("verified") if isinstance(payload.get("verified"), bool) else None,
+        limit=max(1, min(int(payload.get("limit") or 50), 500)),
+    )
+
 @app.get("/edgek/capabilities/discovery-sources")
 async def edgek_capability_discovery_sources(include_inventory: bool = True, include_open_source_mcp: bool = True):
     """Export local and generic MCP capabilities as Commons discovery sources."""
@@ -2531,9 +2632,9 @@ async def edgek_commons_space_reproductions(space_id: str):
 
 
 @app.get("/edgek/commons-economy")
-async def edgek_commons_economy_state():
+async def edgek_commons_economy_state(full: bool = False):
     """Return non-financial credits, duplicate checks, and verified adoptions."""
-    return commons_economy.state()
+    return commons_economy.state(full=bool(full))
 
 
 @app.get("/edgek/commons-economy/proof/{space_id}")
@@ -2550,7 +2651,8 @@ async def edgek_commons_economy_simulate(payload: Dict[str, Any] = None):
     """Simulate capped Commons credits with no financial or transfer value."""
     payload = payload or {}
     try:
-        return commons_economy.simulate(str(payload.get("space_id"))) if payload.get("space_id") else commons_economy.simulate()
+        limit = max(1, min(int(payload.get("limit", 10)), 100))
+        return commons_economy.simulate(str(payload.get("space_id")), limit=limit) if payload.get("space_id") else commons_economy.simulate(limit=limit)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -4159,9 +4261,20 @@ async def edgek_skills_promote_candidate(candidate_id: str, payload: Dict[str, A
 async def edgek_workspace(limit: int = 20):
     """Expose recent workspace graph nodes for local inspection."""
     return {
+        "service": workspace_graph_service.status(),
         "stats": crystallizer.workspace_graph.stats(),
         "recent_nodes": crystallizer.workspace_graph.recent_nodes(limit=max(1, min(limit, 100)))
     }
+
+@app.get("/edgek/workspace/service")
+async def edgek_workspace_service(root_path: str = None):
+    """Return in-process workspace graph service status."""
+    return workspace_graph_service.status(root_path)
+
+@app.get("/edgek/workspace/graph/stats")
+async def edgek_workspace_graph_stats():
+    """Return workspace graph node/edge/cache statistics."""
+    return workspace_graph_service.status()
 
 @app.post("/edgek/workspace/index")
 async def edgek_workspace_index(payload: Dict[str, Any] = None):
@@ -4169,12 +4282,282 @@ async def edgek_workspace_index(payload: Dict[str, Any] = None):
     payload = payload or {}
     root_path = payload.get("root_path") or str(Path(__file__).resolve().parents[1])
     max_files = int(payload.get("max_files", 1000))
-    return crystallizer.workspace_graph.index_repository(
+    return workspace_graph_service.index(
         root_path=root_path,
         max_files=max(1, min(max_files, 5000)),
         include_patterns=payload.get("include_patterns"),
         exclude_dirs=payload.get("exclude_dirs"),
     )
+
+@app.post("/edgek/workspace/poll")
+async def edgek_workspace_poll(payload: Dict[str, Any] = None):
+    """Poll workspace changes, emit stale-context events, and optionally re-index."""
+    payload = payload or {}
+    root_path = payload.get("root_path") or str(Path(__file__).resolve().parents[1])
+    return workspace_graph_service.poll(
+        root_path=root_path,
+        max_files=max(1, min(int(payload.get("max_files", 1000)), 5000)),
+        reindex=bool(payload.get("reindex", True)),
+    )
+
+@app.post("/edgek/workspace/index-benchmark")
+async def edgek_workspace_index_benchmark(payload: Dict[str, Any] = None):
+    """Benchmark repository indexing against the Workstream 1 local target."""
+    payload = payload or {}
+    root_path = payload.get("root_path") or str(Path(__file__).resolve().parents[1])
+    max_files = int(payload.get("max_files", 5000))
+    return crystallizer.workspace_graph.benchmark_index_repository(
+        root_path=root_path,
+        max_files=max(1, min(max_files, 20000)),
+        target_seconds=float(payload.get("target_seconds", 15.0)),
+        include_patterns=payload.get("include_patterns"),
+        exclude_dirs=payload.get("exclude_dirs"),
+    )
+
+@app.get("/edgek/workspace/file-status")
+async def edgek_workspace_file_status(path: str, root_path: str = None):
+    """Return indexed/current hash and drift state for a workspace file."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return crystallizer.workspace_graph.file_status(root_path, path)
+
+@app.get("/edgek/workspace/files")
+async def edgek_workspace_files(root_path: str = None, limit: int = 200):
+    """Return indexed file nodes for the active workspace root."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return workspace_graph_service.files(root_path, limit=max(1, min(limit, 1000)))
+
+@app.get("/edgek/workspace/file")
+async def edgek_workspace_file(path: str, root_path: str = None, max_chars: int = 12000):
+    """Return a bounded file read plus indexed/current status."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return workspace_graph_service.file(root_path, path, max_chars=max(1, min(max_chars, 100000)))
+
+@app.get("/edgek/workspace/symbols")
+async def edgek_workspace_symbols(root_path: str = None, q: str = "", limit: int = 100):
+    """Return indexed symbols for the active workspace root."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return workspace_graph_service.symbols(root_path, q=q, limit=max(1, min(limit, 1000)))
+
+@app.get("/edgek/code-cortex/status")
+async def edgek_code_cortex_status(root_path: str = None):
+    """Return optional Code Cortex adapter availability and capabilities."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return code_cortex_router.status(root)
+
+@app.get("/edgek/code-cortex/symbols")
+async def edgek_code_cortex_symbols(q: str = "", root_path: str = None, limit: int = 50):
+    """Search symbols through optional Code Cortex adapters with local fallback."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return code_cortex_router.search_symbols(root, q, limit=max(1, min(int(limit), 500)))
+
+@app.get("/edgek/code-cortex/file-summary")
+async def edgek_code_cortex_file_summary(path: str, root_path: str = None):
+    """Return a normalized file summary from Code Cortex adapters."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return code_cortex_router.get_file_summary(root, path)
+
+@app.get("/edgek/code-cortex/dependents")
+async def edgek_code_cortex_dependents(path: str, root_path: str = None, limit: int = 80):
+    """Return files importing/depending on a workspace path."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return code_cortex_router.get_dependents(root, path, limit=max(1, min(int(limit), 500)))
+
+@app.get("/edgek/code-cortex/editing-context")
+async def edgek_code_cortex_editing_context(q: str, root_path: str = None, limit: int = 12):
+    """Return graph/symbol/search context for an edit objective."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return code_cortex_router.get_editing_context(root, q, limit=max(1, min(int(limit), 100)))
+
+@app.post("/edgek/code-cortex/symbol-plan")
+async def edgek_code_cortex_symbol_plan(payload: Dict[str, Any] = None):
+    """Build a governed SourcePlan from a symbol-scoped replacement."""
+    payload = payload or {}
+    root = Path(payload.get("root_path") or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    from app.cli.api import BeastApiClient
+
+    result = BeastApiClient("http://gateway-local", workspace=root).build_symbol_surgeon_plan(
+        str(payload.get("path") or ""),
+        str(payload.get("symbol") or ""),
+        str(payload.get("replacement") or ""),
+        objective=str(payload.get("objective") or ""),
+        provider=str(payload.get("provider") or "local_symbol_surgeon"),
+    )
+    if not result.ok:
+        raise HTTPException(status_code=400, detail=result.error or result.summary or "symbol plan failed")
+    return result.data
+
+@app.get("/edgek/worktree-forge/list")
+async def edgek_worktree_forge_list(root_path: str = None):
+    """List BEAST worktree mission records."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return WorktreeForge(root).list()
+
+@app.post("/edgek/worktree-forge/create")
+async def edgek_worktree_forge_create(payload: Dict[str, Any] = None):
+    """Create a git worktree for an isolated BEAST mission."""
+    payload = payload or {}
+    root = Path(payload.get("root_path") or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return WorktreeForge(root).create(
+        objective=str(payload.get("objective") or "BEAST isolated mission"),
+        risk=str(payload.get("risk") or "medium"),
+        provider=str(payload.get("provider") or ""),
+        mode=str(payload.get("mode") or "implementer"),
+        base_ref=str(payload.get("base_ref") or "HEAD"),
+        task_id=str(payload.get("task_id") or ""),
+    )
+
+@app.get("/edgek/worktree-forge/status")
+async def edgek_worktree_forge_status(task_id: str, root_path: str = None):
+    """Return worktree mission status and dirty files."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return WorktreeForge(root).status(task_id)
+
+@app.get("/edgek/worktree-forge/diff")
+async def edgek_worktree_forge_diff(task_id: str, root_path: str = None, max_chars: int = 40000):
+    """Return a bounded diff for a worktree mission."""
+    root = Path(root_path or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    return WorktreeForge(root).diff(task_id, max_chars=max(1, min(int(max_chars), 200000)))
+
+@app.post("/edgek/worktree-forge/test")
+async def edgek_worktree_forge_test(payload: Dict[str, Any] = None):
+    """Run an explicit verifier command inside a worktree mission."""
+    payload = payload or {}
+    root = Path(payload.get("root_path") or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    task_id = str(payload.get("task_id") or "")
+    if not task_id:
+        raise HTTPException(status_code=400, detail="task_id is required")
+    command = payload.get("command") if isinstance(payload.get("command"), list) else None
+    return WorktreeForge(root).test(
+        task_id,
+        command=[str(item) for item in command] if command else None,
+        timeout=float(payload.get("timeout", 120.0)),
+    )
+
+@app.post("/edgek/worktree-forge/promote")
+async def edgek_worktree_forge_promote(payload: Dict[str, Any] = None):
+    """Promote an approved, verified worktree branch back to the main workspace."""
+    payload = payload or {}
+    root = Path(payload.get("root_path") or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    task_id = str(payload.get("task_id") or "")
+    if not task_id:
+        raise HTTPException(status_code=400, detail="task_id is required")
+    return WorktreeForge(root).promote(
+        task_id,
+        approved=bool(payload.get("approved", False)),
+        require_tests=bool(payload.get("require_tests", True)),
+    )
+
+@app.post("/edgek/worktree-forge/archive")
+async def edgek_worktree_forge_archive(payload: Dict[str, Any] = None):
+    """Mark a worktree mission archived without deleting files."""
+    payload = payload or {}
+    root = Path(payload.get("root_path") or Path(__file__).resolve().parents[1]).expanduser().resolve()
+    task_id = str(payload.get("task_id") or "")
+    if not task_id:
+        raise HTTPException(status_code=400, detail="task_id is required")
+    return WorktreeForge(root).archive(task_id, reason=str(payload.get("reason") or ""))
+
+@app.get("/edgek/workspace/registry")
+async def edgek_workspace_registry():
+    """Return the multi-repo workspace registry."""
+    return workspace_registry.list()
+
+@app.post("/edgek/workspace/register")
+async def edgek_workspace_register(payload: Dict[str, Any] = None):
+    """Register a repo for active editing or read-only cross-repo context."""
+    payload = payload or {}
+    root_path = payload.get("root_path") or str(Path(__file__).resolve().parents[1])
+    graph_stats = {}
+    if bool(payload.get("index", False)):
+        graph_stats = workspace_graph_service.index(
+            root_path=root_path,
+            max_files=max(1, min(int(payload.get("max_files", 1000)), 5000)),
+        )
+    return workspace_registry.register(
+        root_path=root_path,
+        trust_level=str(payload.get("trust_level") or "local"),
+        allowed_edit_scope=str(payload.get("allowed_edit_scope") or "read_write"),
+        role=str(payload.get("role") or "primary"),
+        graph_stats=graph_stats,
+        contract_scan=bool(payload.get("contract_scan", True)),
+    )
+
+@app.post("/edgek/workspace/context-pack")
+async def edgek_workspace_context_pack(payload: Dict[str, Any] = None):
+    """Build a multi-repo context pack with reference repos marked read-only."""
+    payload = payload or {}
+    edit_root = payload.get("edit_root_path")
+    edit_repo_id = str(payload.get("edit_repo_id") or (repo_id_for_root(edit_root) if edit_root else ""))
+    files_by_repo = payload.get("files_by_repo") if isinstance(payload.get("files_by_repo"), dict) else {}
+    return workspace_registry.build_context_pack(
+        edit_repo_id=edit_repo_id,
+        reference_repo_ids=[str(item) for item in (payload.get("reference_repo_ids") or [])],
+        files_by_repo={str(key): [str(item) for item in value] for key, value in files_by_repo.items() if isinstance(value, list)},
+        max_chars_each=max(1, min(int(payload.get("max_chars_each", 4000)), 50000)),
+    )
+
+@app.post("/edgek/workspace/contract-mismatch")
+async def edgek_workspace_contract_mismatch(payload: Dict[str, Any] = None):
+    """Return advisory cross-repo contract mismatch evidence."""
+    payload = payload or {}
+    provider_repo_id = str(payload.get("provider_repo_id") or "")
+    consumer_repo_id = str(payload.get("consumer_repo_id") or "")
+    if not provider_repo_id or not consumer_repo_id:
+        raise HTTPException(status_code=400, detail="provider_repo_id and consumer_repo_id are required")
+    return workspace_registry.contract_mismatch_receipt(provider_repo_id, consumer_repo_id)
+
+@app.post("/edgek/workspace/validate-sourceplan-scope")
+async def edgek_workspace_validate_sourceplan_scope(payload: Dict[str, Any] = None):
+    """Validate that a SourcePlan edits only approved workspace repos."""
+    payload = payload or {}
+    plan = payload.get("plan") if isinstance(payload.get("plan"), dict) else payload
+    edit_repo_id = str(payload.get("edit_repo_id") or plan.get("edit_repo_id") or "")
+    if not edit_repo_id and payload.get("edit_root_path"):
+        edit_repo_id = repo_id_for_root(payload.get("edit_root_path"))
+    if not edit_repo_id:
+        raise HTTPException(status_code=400, detail="edit_repo_id or edit_root_path is required")
+    return workspace_registry.validate_sourceplan_scope(
+        plan,
+        edit_repo_id=edit_repo_id,
+        approved_multi_repo=bool(payload.get("approved_multi_repo") or plan.get("approved_multi_repo")),
+    )
+
+@app.get("/edgek/workspace/changed-since")
+async def edgek_workspace_changed_since(root_path: str = None, timestamp_ns: int = 0):
+    """Return indexed files that changed on disk since a nanosecond timestamp."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return crystallizer.workspace_graph.changed_since(root_path, timestamp_ns=timestamp_ns)
+
+@app.post("/edgek/workspace/context")
+async def edgek_workspace_context(payload: Dict[str, Any] = None):
+    """Build graph-ranked context for a task objective and selected files."""
+    payload = payload or {}
+    return workspace_graph_service.context(
+        objective=str(payload.get("objective") or payload.get("query") or ""),
+        root_path=payload.get("root_path") or str(Path(__file__).resolve().parents[1]),
+        selected_files=[str(item) for item in (payload.get("selected_files") or payload.get("files") or [])],
+        token_budget=max(256, min(int(payload.get("token_budget", 3000)), 32000)),
+        limit=max(1, min(int(payload.get("limit", 8)), 50)),
+        session_id=str(payload.get("session_id") or "") or None,
+    )
+
+@app.post("/edgek/workspace/context-consumption")
+async def edgek_workspace_context_consumption(payload: Dict[str, Any] = None):
+    """Record files consumed by a session so drift can produce stale warnings."""
+    payload = payload or {}
+    root_path = payload.get("root_path") or str(Path(__file__).resolve().parents[1])
+    return crystallizer.workspace_graph.record_context_consumption(
+        session_id=str(payload.get("session_id") or "default"),
+        root_path=root_path,
+        paths=[str(item) for item in (payload.get("paths") or payload.get("files") or [])],
+        objective=str(payload.get("objective") or ""),
+    )
+
+@app.get("/edgek/workspace/stale-context")
+async def edgek_workspace_stale_context(root_path: str = None, session_id: str = None):
+    """Return stale-context warnings for session-consumed workspace files."""
+    root_path = root_path or str(Path(__file__).resolve().parents[1])
+    return crystallizer.workspace_graph.stale_context_events(root_path, session_id=session_id)
 
 @app.post("/edgek/workspace/rebuild")
 async def edgek_workspace_rebuild(payload: Dict[str, Any] = None):
@@ -4489,6 +4872,27 @@ async def count_requests(request: Request, call_next):
             "tx_bytes": response_bytes,
             "completed_at_epoch": time.time(),
         })
+
+def _dedupe_routes_keep_first() -> None:
+    """Keep module-mounted routes active while legacy inline handlers retire.
+
+    The extracted route families are mounted before the historical inline
+    handlers. Keeping the first matching path/method preserves API stability
+    and prevents old bodies from quietly shadowing the new ownership modules.
+    """
+    seen = set()
+    deduped = []
+    for route in app.router.routes:
+        methods = tuple(sorted(getattr(route, "methods", []) or []))
+        key = (getattr(route, "path", ""), methods)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(route)
+    app.router.routes = deduped
+
+
+_dedupe_routes_keep_first()
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -16,8 +16,11 @@ from app.cli.ui import (
     DiffPreviewScreen,
     HEADER_TILE_HEIGHT,
     METRIC_CARD_HEIGHT,
+    MissionCockpitScreen,
     PAGES,
     PageHost,
+    SourceWorkbenchScreen,
+    WorkspaceRegistryScreen,
     crystal_kv_prefill_counts,
     economy_action_rows,
     intelligence_summary,
@@ -26,6 +29,7 @@ from app.cli.ui import (
     provider_secrets_operational,
     structured_payload,
 )
+from app.kernel.data_processing.workspace_registry import WorkspaceRegistry
 
 
 def test_intelligence_summary_surfaces_governed_runtime_state():
@@ -189,6 +193,10 @@ def test_economy_page_renders_first_class_operations():
         "start_forge_node",
         "promote_fleet",
         "refresh_economy",
+        "commons_economy_state",
+        "simulate_commons_economy",
+        "issue_commons_credit",
+        "commons_economy_proof",
     ]
 
 
@@ -367,6 +375,148 @@ def test_structured_payload_renders_tables_instead_of_json():
     assert "Metrics" in output
     assert "Models" in output
     assert '"provider": "groq"' not in output
+
+
+def test_providers_page_surfaces_sourceplan_edit_fitness():
+    snap = BackendSnapshot(
+        base_url="offline",
+        provider_registry={"providers": [{"provider_id": "huggingface", "backend": "cloud", "enabled": True}]},
+        provider_edit_fitness={
+            "providers": {
+                "huggingface": {
+                    "recommended_role": "primary_patch_provider",
+                    "edit_fitness_score": 0.84,
+                    "attempts": 3,
+                    "verified_applies": 2,
+                    "failed_attempts": 1,
+                    "rollback_count": 0,
+                    "route_explanation": "huggingface: score 0.84, strong verified SourcePlan outcomes",
+                }
+            }
+        },
+    )
+    console = Console(record=True, width=160)
+
+    console.print(PageHost().providers(snap, 0))
+    output = console.export_text()
+
+    assert "SourcePlan edit role" in output
+    assert "primary_patch_provider" in output
+    assert "SourcePlan edit score" in output
+    assert "0.84" in output
+    assert "3 attempts; verified=2 failed=1 rollback=0" in output
+
+
+def test_workspace_registry_tui_candidates_and_context_refs_are_readable(tmp_path: Path):
+    active = tmp_path / "active"
+    reference = tmp_path / "reference"
+    active.mkdir()
+    reference.mkdir()
+    (active / "app.py").write_text("value = 1\n", encoding="utf-8")
+    (reference / "contract.md").write_text("# API Contract\nRead only.\n", encoding="utf-8")
+    client = BeastApiClient("http://offline", workspace=active)
+    registry = WorkspaceRegistry.for_anchor_root(active)
+    active_id = registry.register(active, role="primary", allowed_edit_scope="read_write")["workspace"]["repo_id"]
+    ref_id = registry.register(reference, role="reference", allowed_edit_scope="read_only")["workspace"]["repo_id"]
+
+    candidates = client.workspace_registry_file_candidates(limit_each=10)
+    active_row = next(row for row in candidates if row["repo_id"] == active_id and row["path"] == "app.py")
+    ref_row = next(row for row in candidates if row["repo_id"] == ref_id and row["path"] == "contract.md")
+    ref_read = client.read_workspace_file(ref_row["context_ref"])
+
+    assert active_row["read_only"] is False
+    assert active_row["context_ref"] == "app.py"
+    assert ref_row["read_only"] is True
+    assert ref_row["context_ref"].startswith(ref_id + "::")
+    assert ref_read["ok"] is True
+    assert ref_read["read_only"] is True
+    assert "API Contract" in ref_read["preview"]
+
+
+def test_workspace_registry_screen_renders_clickable_read_only_information():
+    registry = {
+        "workspaces": [
+            {"repo_id": "repo:/active", "name": "active"},
+            {"repo_id": "repo:/reference", "name": "reference"},
+        ]
+    }
+    files = [
+        {
+            "context_ref": "app.py",
+            "path": "app.py",
+            "display_path": "active/app.py",
+            "repo_name": "active",
+            "read_only": False,
+            "contract_counts": {"routes": 1, "env_vars": 0, "openapi_files": 0},
+        },
+        {
+            "context_ref": "repo:/reference::contract.md",
+            "path": "contract.md",
+            "display_path": "reference/contract.md",
+            "repo_name": "reference",
+            "read_only": True,
+            "contract_counts": {"routes": 0, "env_vars": 2, "openapi_files": 1},
+        },
+    ]
+    screen = WorkspaceRegistryScreen(registry, files, ["repo:/reference::contract.md"])
+    console = Console(record=True, width=140)
+
+    console.print(screen.render_registry())
+    output = console.export_text()
+
+    assert "BEAST WORKSPACE REGISTRY" in output
+    assert "EDIT" in output
+    assert "READ" in output
+    assert "reference/contract.md" in output
+    assert "r0 e2 o1" in output
+
+
+def test_mission_cockpit_screen_surfaces_governance_and_evidence():
+    summary = {
+        "workspace_root": "/tmp/beast-demo",
+        "phase": "implement",
+        "risk": "medium",
+        "cards": [
+            {"card_id": "mode", "title": "Agent Mode", "value": "implementer", "detail": "source changes allowed", "status": "ok"},
+            {"card_id": "safety", "title": "Safety Governor", "value": "require_approval", "detail": "1 finding(s)", "status": "warn"},
+            {"card_id": "code_cortex", "title": "Code Cortex", "value": "gortex", "detail": "context adapters", "status": "ok"},
+        ],
+        "blockers": [
+            {"card_id": "safety", "title": "Safety Governor", "value": "require_approval", "detail": "network setup command", "status": "warn"},
+        ],
+        "worktrees": {"count": 1, "worktrees": [{"task_id": "task-1", "branch": "beast/task-1", "status": "active", "path": "/tmp/wt"}]},
+        "sourceplan_queue": [{"plan_id": "plan_1", "status": "draft_requires_approval", "provider": "local", "objective": "repair route"}],
+        "evidence_stream": [{"plan_id": "plan_1", "stage": "apply", "promotion_candidate": True, "evidence_hash": "sha256:abc"}],
+        "mode_route": {"selected_mode": "implementer", "why": "phase allows edits"},
+        "spec_covenant": {"included_count": 2, "covenant_hash": "sha256:rules"},
+        "safety": {"decision": "require_approval", "finding_count": 1},
+        "scheduler": {"recent_count": 3, "local_lane_total": 2, "cloud_lane_total": 1},
+        "mission_lattice": {"cell_count": 2, "verified_cell_count": 1, "promotion_cell_count": 1},
+        "code_cortex": {"active_adapter": "gortex", "adapters": ["gortex", "local"]},
+    }
+    screen = MissionCockpitScreen(summary)
+    console = Console(record=True, width=160)
+
+    console.print(screen.render_cockpit())
+    output = console.export_text()
+
+    assert "BEAST MISSION COCKPIT" in output
+    assert "Safety Governor" in output
+    assert "require_approval" in output
+    assert "plan_1" in output
+    assert "beast/task-1" in output
+    assert "Mission Lattice" in output
+    assert "Code Cortex" in output
+
+
+def test_mission_cockpit_navigation_changes_selected_section():
+    screen = MissionCockpitScreen({"cards": [], "sourceplan_queue": [], "evidence_stream": [], "worktrees": {"worktrees": []}})
+
+    screen.action_move_down()
+    screen.action_move_down()
+    screen.action_move_up()
+
+    assert screen.SECTIONS[screen.index] == "blockers"
 
 
 @pytest.mark.asyncio
@@ -674,6 +824,49 @@ async def test_economy_navigation_and_enter_are_first_class(monkeypatch):
         assert calls == ["economy_dashboard"]
 
 
+@pytest.mark.asyncio
+async def test_page_scroll_bounds_recompute_after_terminal_resize(monkeypatch):
+    async def load_snapshot(self):
+        self.snapshot = BackendSnapshot(
+            base_url=self.base_url,
+            online=False,
+            compute_metrics={"sample_size": 12, "observed_total_tokens": 2000, "estimated_avoidable_total_tokens": 900},
+            compute_savings={"potential_weekly_savings_usd": 0.42},
+            crystal_reuse={"storage": {"active_credits": 3, "total_reuse_count": 4, "measured_reuse_tokens_saved": 512}},
+        )
+        self._sync()
+
+    monkeypatch.setattr(BeastMissionConsole, "fetch_backend", load_snapshot)
+    app = BeastMissionConsole(base_url="http://offline")
+
+    async with app.run_test(size=(150, 42)) as pilot:
+        await pilot.press("e")
+        await pilot.pause()
+        scroll = app.query_one("#page-scroll")
+        scroll.scroll_end(animate=False, force=True)
+        await pilot.pause()
+        before_max = int(getattr(scroll, "max_scroll_y", 0) or 0)
+
+        await pilot.resize_terminal(92, 30)
+        await pilot.pause()
+        after_small = app.query_one("#page-scroll")
+        small_max = int(getattr(after_small, "max_scroll_y", 0) or 0)
+        small_y = int(getattr(after_small, "scroll_y", 0) or 0)
+
+        await pilot.resize_terminal(160, 44)
+        await pilot.pause()
+        after_large = app.query_one("#page-scroll")
+        large_max = int(getattr(after_large, "max_scroll_y", 0) or 0)
+        large_y = int(getattr(after_large, "scroll_y", 0) or 0)
+
+        assert before_max >= 0
+        assert small_max >= 0
+        assert large_max >= 0
+        assert small_y <= small_max
+        assert large_y <= large_max
+        assert after_large.region.height > 0
+
+
 def test_inner_menu_arrow_actions_are_clamped_and_predictable():
     palette = CommandPaletteScreen([
         {"id": "one", "label": "One"},
@@ -725,6 +918,213 @@ def test_tiny_llama_demo_prepares_previewable_case_plan():
     assert result.data["apply_policy"]["test_args"] == ["tests", "-q"]
     assert diff.ok is True
     assert "gateway/config.py" in diff.data["diff"]
+    first = diff.data["operations"][0]
+    assert "old_text" in first
+    assert "new_text" in first
+    assert first["new_hash"]
+    assert isinstance(first["changed_ranges"], list)
+    assert diff.data["preview_hash"]
+    assert diff.data["shadow_buffers"]
+    assert first["can_apply"] is True
+
+
+def test_source_workbench_renders_code_panes_and_moves_between_hunks():
+    diff = {
+        "plan_id": "plan_ui_workbench",
+        "operation_count": 2,
+        "selected_count": 1,
+        "errors": [],
+        "operations": [
+            {
+                "op_id": "op_001",
+                "path": "app/service.py",
+                "selected": True,
+                "source_edit": True,
+                "old_text": "def value():\n    return 1\n",
+                "new_text": "def value():\n    return 2\n",
+                "new_hash": "abc123",
+                "can_apply": True,
+                "changed_ranges": [{"old_start": 2, "old_end": 2, "new_start": 2, "new_end": 2}],
+            },
+            {
+                "op_id": "op_002",
+                "path": "tests/test_service.py",
+                "selected": False,
+                "source_edit": True,
+                "old_text": "def test_value():\n    assert value() == 1\n",
+                "new_text": "def test_value():\n    assert value() == 2\n",
+                "new_hash": "def456",
+                "can_apply": False,
+                "stale_reason": "current file hash changed since plan was created",
+                "changed_ranges": [{"old_start": 2, "old_end": 2, "new_start": 2, "new_end": 2}],
+            },
+        ],
+    }
+
+    screen = SourceWorkbenchScreen(diff)
+    rendered = screen.render_workbench()
+    screen.action_move_down()
+    screen.action_next_pane()
+
+    assert rendered is not None
+    assert screen.index == 1
+    assert screen.PANES[screen.pane] == "before"
+
+
+def test_patch_preview_shadow_buffer_recomputes_when_hunk_toggled(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    client = BeastApiClient("http://offline", workspace=repo)
+    old_hash = client._file_hash_text(target.read_text(encoding="utf-8"))
+    plan = {
+        "plan_id": "plan_shadow",
+        "workspace": str(repo),
+        "files_allowed": ["module.py"],
+        "selected_operations": ["op_001"],
+        "operations": [
+            {
+                "op_id": "op_001",
+                "op": "create_or_replace",
+                "path": "module.py",
+                "content": "def value():\n    return 2\n",
+                "selected": True,
+                "expected_hash": old_hash,
+            }
+        ],
+    }
+
+    selected = client.preview_patch_plan(plan)
+    plan["selected_operations"] = []
+    unselected = client.preview_patch_plan(plan)
+    saved = client.save_patch_plan(plan)
+
+    assert selected.ok is True
+    assert selected.data["selected_count"] == 1
+    assert len(selected.data["shadow_buffers"]) == 1
+    assert unselected.data["selected_count"] == 0
+    assert unselected.data["shadow_buffers"] == []
+    assert selected.data["preview_hash"] != unselected.data["preview_hash"]
+    assert saved.ok is True
+    assert saved.data["plan"]["preview_hash"] == unselected.data["preview_hash"]
+
+
+def test_stale_patch_plan_fails_before_disk_write(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    client = BeastApiClient("http://offline", workspace=repo)
+    old_hash = client._file_hash_text(target.read_text(encoding="utf-8"))
+    plan = {
+        "plan_id": "plan_stale",
+        "workspace": str(repo),
+        "files_allowed": ["module.py"],
+        "selected_operations": ["op_001"],
+        "operations": [
+            {
+                "op_id": "op_001",
+                "op": "create_or_replace",
+                "path": "module.py",
+                "content": "def value():\n    return 2\n",
+                "selected": True,
+                "expected_hash": old_hash,
+            }
+        ],
+    }
+    target.write_text("def value():\n    return 99\n", encoding="utf-8")
+
+    preview = client.preview_patch_plan(plan)
+    applied = client.apply_patch_plan(plan, approved=True)
+
+    assert preview.ok is False
+    assert preview.data["stale_count"] == 1
+    assert preview.data["operations"][0]["stale_reason"]
+    assert applied.ok is False
+    assert "current file hash changed" in str(applied.error)
+    assert "return 99" in target.read_text(encoding="utf-8")
+
+
+def test_sourceplan_scorecard_suggests_tests_and_blocks_stale(tmp_path):
+    repo = tmp_path / "repo"
+    tests = repo / "tests"
+    tests.mkdir(parents=True)
+    target = repo / "service.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    (tests / "test_service.py").write_text("from service import value\n\ndef test_value():\n    assert value() == 1\n", encoding="utf-8")
+    client = BeastApiClient("http://offline", workspace=repo)
+    old_hash = client._file_hash_path(target)
+    plan = {
+        "plan_id": "plan_scorecard",
+        "files_allowed": ["service.py"],
+        "selected_operations": ["op_001"],
+        "operations": [{
+            "op_id": "op_001",
+            "op": "replace_exact",
+            "path": "service.py",
+            "old": "return 1",
+            "new": "return 2",
+            "selected": True,
+            "expected_hash": old_hash,
+        }],
+    }
+
+    scorecard = client.sourceplan_scorecard(plan).data
+    target.write_text("def value():\n    return 99\n", encoding="utf-8")
+    stale = client.sourceplan_scorecard(plan).data
+
+    assert scorecard["risk_level"] == "medium"
+    assert scorecard["graph_impact"]["dependent_count"] == 1
+    assert "tests/test_service.py" in scorecard["graph_impact"]["dependent_files"]
+    assert "python -m pytest tests/test_service.py -q" in scorecard["suggested_tests"]
+    assert stale["risk_level"] == "high"
+    assert stale["decision"] == "block_until_resolved"
+
+
+def test_sourceplan_scorecard_flags_sensitive_paths(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "settings.py"
+    target.write_text("API_KEY = 'old'\n", encoding="utf-8")
+    client = BeastApiClient("http://offline", workspace=repo)
+    old_hash = client._file_hash_path(target)
+    plan = {
+        "plan_id": "plan_sensitive",
+        "files_allowed": ["settings.py"],
+        "selected_operations": ["op_001"],
+        "operations": [{
+            "op_id": "op_001",
+            "op": "replace_exact",
+            "path": "settings.py",
+            "old": "API_KEY = 'old'",
+            "new": "API_KEY = 'new-token'",
+            "selected": True,
+            "expected_hash": old_hash,
+        }],
+    }
+
+    scorecard = client.sourceplan_scorecard(plan).data
+
+    assert scorecard["risk_level"] == "high"
+    assert scorecard["graph_impact"]["sensitive_files"] == ["settings.py"]
+    assert "secret/auth-sensitive path or content touched" in scorecard["reasons"]
+
+
+def test_source_workbench_post_apply_panel_includes_disk_readback():
+    screen = SourceWorkbenchScreen({"operations": []})
+    screen.apply_result = {
+        "applied": ["app/service.py"],
+        "rollback_path": ".beast/rollback/plan/rollback.json",
+        "verification": {"ok": True},
+    }
+    screen.disk_confirmations = [
+        {"path": "app/service.py", "ok": True, "hash": "abcdef1234567890", "preview": "def value(): pass"}
+    ]
+
+    panel = screen._post_apply_panel()
+
+    assert panel is not None
 
 
 def test_tiny_llama_demo_apply_runs_pytest_in_case_root(monkeypatch):

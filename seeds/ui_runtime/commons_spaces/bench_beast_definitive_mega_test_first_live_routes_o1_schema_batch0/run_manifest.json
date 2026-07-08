@@ -1,0 +1,132 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": false,
+    "live_verified": false,
+    "matrix_planned": true,
+    "secret_scan_required_before_claim": true
+  },
+  "batch": {
+    "batch_index": 0,
+    "end": 15,
+    "families": [
+      "schema_validation"
+    ],
+    "lanes": [
+      "beast_no_compute_governor",
+      "full_beast_compute_governor",
+      "raw"
+    ],
+    "observations": 15,
+    "occurrences": [
+      1
+    ],
+    "providers": [
+      "cohere",
+      "gemini",
+      "groq",
+      "mistral",
+      "nvidia_nim"
+    ],
+    "start": 0,
+    "total_batches": 1
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "families": [
+    "schema_validation"
+  ],
+  "full_plan_summary": {
+    "by_family": {
+      "schema_validation": 15
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 5,
+      "full_beast_compute_governor": 5,
+      "raw": 5
+    },
+    "by_provider": {
+      "cohere": 3,
+      "gemini": 3,
+      "groq": 3,
+      "mistral": 3,
+      "nvidia_nim": 3
+    },
+    "observations": 15
+  },
+  "generated_at": "2026-06-21T05:07:33Z",
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live": false,
+  "mode": "controlled",
+  "occurrences": [
+    1
+  ],
+  "plan_summary": {
+    "by_family": {
+      "schema_validation": 15
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 5,
+      "full_beast_compute_governor": 5,
+      "raw": 5
+    },
+    "by_provider": {
+      "cohere": 3,
+      "gemini": 3,
+      "groq": 3,
+      "mistral": 3,
+      "nvidia_nim": 3
+    },
+    "observations": 15
+  },
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "cohere": {
+      "api_key_env": "COHERE_API_KEY",
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "mistral": {
+      "api_key_env": "MISTRAL_API_KEY",
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "nvidia_nim",
+    "mistral",
+    "gemini",
+    "cohere",
+    "groq"
+  ],
+  "python": "3.13.5",
+  "route_set": "first-live"
+}

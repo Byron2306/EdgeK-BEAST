@@ -1,7 +1,7 @@
 {
   "claim": "BEAST efficiency is supported when scoped BEAST lanes complete more verified tasks with fewer prompt tokens, and subsystem probes show compression, RAG, interception, tool laziness, MCP governance, provider contracts, and agent-loop verification working.",
   "deterministic_results": [],
-  "generated_at": "2026-06-20T20:58:00Z",
+  "generated_at": "2026-06-29T13:39:08Z",
   "lane_summary": {
     "context_only": {
       "completed": 0,
@@ -199,7 +199,7 @@
       "patches/",
       "rollback_snapshots/"
     ],
-    "output_dir": "/home/byron/Hivenance/edgek_beast_gateway/edgek-beast/benchmarks/results/beast_provider_model_fitness_live_free_gauntlet",
+    "output_dir": "/home/byron/EdgeK-BEAST/benchmarks/results/beast_provider_model_fitness_live_free_gauntlet",
     "result_count": 10
   },
   "live_provider_fitness": {
@@ -449,6 +449,13 @@
       "name": "cerebras",
       "timeout": 180.0
     },
+    "cerebras_native": {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "name": "cerebras_native",
+      "timeout": 180.0
+    },
     "cloudflare": {
       "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
       "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
@@ -590,9 +597,9 @@
       "timeout": 180.0
     },
     "ovhcloud": {
-      "api_key_env": "HF_TOKEN",
-      "base_url": "https://router.huggingface.co/v1",
-      "model": "openai/gpt-oss-120b:ovhcloud",
+      "api_key_env": "OVHCLOUD_API_KEY,OVHCLOUD_APP_KEY",
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Meta-Llama-3_1-8B-Instruct",
       "name": "ovhcloud",
       "timeout": 180.0
     },
@@ -646,7 +653,7 @@
         },
         "local_verifier_repair": false
       },
-      "prompt_tokens": 1020,
+      "prompt_tokens": 1023,
       "provider": "huggingface",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
@@ -658,7 +665,7 @@
     },
     {
       "completed": true,
-      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.registry.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
       "files_changed": [
         "app/cli/api.py",
         "app/kernel/provider_registry.py"
@@ -685,13 +692,13 @@
         "local_verifier_repair_ok": true,
         "local_verifier_repair_reason": "output gate/provider failure: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
       },
-      "prompt_tokens": 4281,
+      "prompt_tokens": 3717,
       "provider": "huggingface",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.02s\n",
+      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n",
       "task": "provider_model_wiring",
       "usage": {}
     },
@@ -715,7 +722,7 @@
         },
         "local_verifier_repair": false
       },
-      "prompt_tokens": 1020,
+      "prompt_tokens": 1023,
       "provider": "groq",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit: Client error '401 Unauthorized' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
@@ -727,7 +734,7 @@
     },
     {
       "completed": true,
-      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.registry.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
       "files_changed": [
         "app/cli/api.py",
         "app/kernel/provider_registry.py"
@@ -754,13 +761,13 @@
         "local_verifier_repair_ok": true,
         "local_verifier_repair_reason": "output gate/provider failure: Client error '401 Unauthorized' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
       },
-      "prompt_tokens": 4276,
+      "prompt_tokens": 3712,
       "provider": "groq",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '401 Unauthorized' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.03s\n",
+      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n",
       "task": "provider_model_wiring",
       "usage": {}
     },
@@ -784,7 +791,7 @@
         },
         "local_verifier_repair": false
       },
-      "prompt_tokens": 1020,
+      "prompt_tokens": 1023,
       "provider": "cerebras",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
@@ -796,7 +803,7 @@
     },
     {
       "completed": true,
-      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.registry.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
       "files_changed": [
         "app/cli/api.py",
         "app/kernel/provider_registry.py"
@@ -823,13 +830,13 @@
         "local_verifier_repair_ok": true,
         "local_verifier_repair_reason": "output gate/provider failure: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
       },
-      "prompt_tokens": 4279,
+      "prompt_tokens": 3715,
       "provider": "cerebras",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '401 Unauthorized' for url 'https://router.huggingface.co/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.02s\n",
+      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n",
       "task": "provider_model_wiring",
       "usage": {}
     },
@@ -853,7 +860,7 @@
         },
         "local_verifier_repair": false
       },
-      "prompt_tokens": 1020,
+      "prompt_tokens": 1023,
       "provider": "gemini",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit: Client error '400 Bad Request' for url 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
@@ -865,7 +872,7 @@
     },
     {
       "completed": true,
-      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.registry.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
       "files_changed": [
         "app/cli/api.py",
         "app/kernel/provider_registry.py"
@@ -892,13 +899,13 @@
         "local_verifier_repair_ok": true,
         "local_verifier_repair_reason": "output gate/provider failure: Client error '400 Bad Request' for url 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
       },
-      "prompt_tokens": 4278,
+      "prompt_tokens": 3713,
       "provider": "gemini",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '400 Bad Request' for url 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.02s\n",
+      "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n",
       "task": "provider_model_wiring",
       "usage": {}
     },
@@ -922,19 +929,19 @@
         },
         "local_verifier_repair": false
       },
-      "prompt_tokens": 1020,
+      "prompt_tokens": 1023,
       "provider": "openrouter_gptoss",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit: Client error '401 Unauthorized' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
       "returncode": 1,
       "stderr_tail": "",
-      "stdout_tail": "s_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n____________ test_hidden_provider_aliases_resolve_to_same_defaults _____________\n\n    def test_hidden_provider_aliases_resolve_to_same_defaults():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"nvidia_nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\nE       AssertionError: assert '' == 'nvidia/nemot...per-120b-a12b'\nE         \nE         - nvidia/nemotron-3-super-120b-a12b\n\ntests/test_provider_contracts_hidden.py:8: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\nFAILED tests/test_provider_contracts_hidden.py::test_hidden_provider_aliases_resolve_to_same_defaults\n3 failed, 1 passed in 0.04s\n",
+      "stdout_tail": "s_concrete_models ___________________\n\n    def test_beast_auto_resolves_concrete_models():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\nE       AssertionError: assert '' == 'gpt-5-codex'\nE         \nE         - gpt-5-codex\n\ntests/test_provider_contracts.py:16: AssertionError\n____________ test_hidden_provider_aliases_resolve_to_same_defaults _____________\n\n    def test_hidden_provider_aliases_resolve_to_same_defaults():\n        api = BeastApiClient()\n    \n>       assert api._chat_model_for_provider(\"nvidia_nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\nE       AssertionError: assert '' == 'nvidia/nemot...per-120b-a12b'\nE         \nE         - nvidia/nemotron-3-super-120b-a12b\n\ntests/test_provider_contracts_hidden.py:8: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_contracts.py::test_codex_and_local_nim_are_routable\nFAILED tests/test_provider_contracts.py::test_beast_auto_resolves_concrete_models\nFAILED tests/test_provider_contracts_hidden.py::test_hidden_provider_aliases_resolve_to_same_defaults\n3 failed, 1 passed in 0.03s\n",
       "task": "provider_model_wiring",
       "usage": {}
     },
     {
       "completed": true,
-      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
+      "diff_excerpt": "--- a/app/cli/api.py\n+++ b/app/cli/api.py\n@@ -1,4 +1,6 @@\n-\"\"\"Mini TUI API model mapper with the same empty beast-auto bug.\"\"\"\n+\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n+\n+from app.kernel.registry.provider_registry import ProviderAdapterRegistry\n \n \n class BeastApiClient:\n@@ -6,8 +8,9 @@\n         provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n         if model and model != \"beast-auto\":\n             return model\n-        if provider_id in {\"litellm\", \"auto\", \"beast_auto\"}:\n-            return \"ollama\"\n-        if provider_id == \"ollama\":\n-            return \"llama3.2:3b\"\n-        return \"\" if model == \"beast-auto\" else model\n+        if provider_id in {\"auto\", \"beast_auto\"}:\n+            provider_id = \"litellm\"\n+        record = ProviderAdapterRegistry().adapter_for(provider_id)\n+        if provider_id == \"litellm\":\n+            return \"litellm/\" + record.default_model\n+        return record.default_model\n--- a/app/kernel/provider_registry.py\n+++ b/app/kernel/provider_registry.py\n@@ -1,4 +1,4 @@\n-\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n+\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n \n from dataclasses import dataclass\n \n@@ -13,8 +13,14 @@\n \n class ProviderRegistry:\n     DEFAULTS = {\n+        \"codex\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-5-codex\",\n+            \"env\": [\"OPENAI_API_KEY\"],\n+        },\n         \"openai\": {\n             \"backend\": \"openai_compatible\",\n+            \"default_model\": \"gpt-4o-mini\",\n             \"env\": [\"OPENAI_API_KEY\"],\n         },\n         \"litellm\": {\n@@ -26,6 +32,16 @@\n             \"backend\": \"openai_compatible\",\n             \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n             \"env\": [\"NVIDIA_API_KEY\"],\n+        },\n+        \"local_nim\": {\n+            \"backend\": \"openai_compatible\",\n+            \"default_model\": \"local-nim-model\",\n+            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n+        },\n+        \"ollama\": {\n+            \"backend\": \"ollama\",\n+            \"default_model\": \"llama3.2:3b\",\n+            \"env\": [\"OLLAMA_BASE_URL\"],\n         },\n     }\n \n@@ -43,6 +59,7 @@\n \n class ProviderAdapterRegistry:\n     def adapter_for(self, provider_id):\n+        provider_id = str(provider_id).replace(\"-\", \"_\")\n         for record in ProviderRegistry().records():\n             if record.provider_id == provider_id:\n                 return record\n",
       "files_changed": [
         "app/cli/api.py",
         "app/kernel/provider_registry.py"
@@ -961,7 +968,7 @@
         "local_verifier_repair_ok": true,
         "local_verifier_repair_reason": "output gate/provider failure: Client error '401 Unauthorized' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"
       },
-      "prompt_tokens": 4286,
+      "prompt_tokens": 3721,
       "provider": "openrouter_gptoss",
       "provider_text_excerpt": "",
       "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '401 Unauthorized' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
@@ -991,7 +998,7 @@
       "python_indentation_preserved",
       "out_of_scope_refusal"
     ],
-    "generated_at": "2026-06-20T20:58:00Z",
+    "generated_at": "2026-06-29T13:39:08Z",
     "infra_gate_steps": [
       "api_key_present",
       "models_route_works",
@@ -1022,7 +1029,7 @@
           "strict_json_works": "covered_by_output_gate",
           "timeout_under_threshold": true
         },
-        "timeout_seconds": 60.0
+        "timeout_seconds": 90.0
       },
       {
         "api_key_env": "GROQ_API_KEY",
@@ -1039,7 +1046,7 @@
           "strict_json_works": "covered_by_output_gate",
           "timeout_under_threshold": true
         },
-        "timeout_seconds": 60.0
+        "timeout_seconds": 90.0
       },
       {
         "api_key_env": "HF_TOKEN",
@@ -1056,7 +1063,7 @@
           "strict_json_works": "covered_by_output_gate",
           "timeout_under_threshold": true
         },
-        "timeout_seconds": 60.0
+        "timeout_seconds": 90.0
       },
       {
         "api_key_env": "GEMINI_API_KEY",
@@ -1073,7 +1080,7 @@
           "strict_json_works": "covered_by_output_gate",
           "timeout_under_threshold": true
         },
-        "timeout_seconds": 60.0
+        "timeout_seconds": 90.0
       },
       {
         "api_key_env": "OPENROUTER_API_KEY",
@@ -1090,7 +1097,7 @@
           "strict_json_works": "covered_by_output_gate",
           "timeout_under_threshold": true
         },
-        "timeout_seconds": 60.0
+        "timeout_seconds": 90.0
       }
     ],
     "separation_rule": {
@@ -1139,7 +1146,7 @@
     "max_tasks": 1,
     "max_tokens": 96,
     "prompt_mode": "compact",
-    "timeout_seconds": 60.0
+    "timeout_seconds": 90.0
   },
   "live_summary": {
     "cerebras": {
@@ -1361,11 +1368,11 @@
         "app/kernel/provider_registry.py": "\"\"\"Mini provider registry with the same bug shape as the BEAST TUI wiring issue.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
       },
       "fixed_files": {
-        "app/cli/api.py": "\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"auto\", \"beast_auto\"}:\n            provider_id = \"litellm\"\n        record = ProviderAdapterRegistry().adapter_for(provider_id)\n        if provider_id == \"litellm\":\n            return \"litellm/\" + record.default_model\n        return record.default_model\n",
+        "app/cli/api.py": "\"\"\"Fixed mini TUI API model mapper used by the task completion harness.\"\"\"\n\nfrom app.kernel.registry.provider_registry import ProviderAdapterRegistry\n\n\nclass BeastApiClient:\n    def _chat_model_for_provider(self, provider, model=\"beast-auto\"):\n        provider_id = str(provider or \"\").lower().replace(\"-\", \"_\")\n        if model and model != \"beast-auto\":\n            return model\n        if provider_id in {\"auto\", \"beast_auto\"}:\n            provider_id = \"litellm\"\n        record = ProviderAdapterRegistry().adapter_for(provider_id)\n        if provider_id == \"litellm\":\n            return \"litellm/\" + record.default_model\n        return record.default_model\n",
         "app/kernel/provider_registry.py": "\"\"\"Fixed mini provider registry used by the task completion harness.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"codex\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-5-codex\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"gpt-4o-mini\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n        \"local_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"local-nim-model\",\n            \"env\": [\"LOCAL_NIM_BASE_URL\", \"LOCAL_NIM_API_KEY\"],\n        },\n        \"ollama\": {\n            \"backend\": \"ollama\",\n            \"default_model\": \"llama3.2:3b\",\n            \"env\": [\"OLLAMA_BASE_URL\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        provider_id = str(provider_id).replace(\"-\", \"_\")\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n"
       },
       "hidden_tests": {
-        "tests/test_provider_contracts_hidden.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry\n\n\ndef test_hidden_provider_aliases_resolve_to_same_defaults():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"nvidia_nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"beast_auto\", \"beast-auto\").startswith(\"litellm/\")\n    assert ProviderAdapterRegistry().adapter_for(\"nvidia-nim\").provider_id == \"nvidia_nim\"\n"
+        "tests/test_provider_contracts_hidden.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.registry.provider_registry import ProviderAdapterRegistry\n\n\ndef test_hidden_provider_aliases_resolve_to_same_defaults():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"nvidia_nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"beast_auto\", \"beast-auto\").startswith(\"litellm/\")\n    assert ProviderAdapterRegistry().adapter_for(\"nvidia-nim\").provider_id == \"nvidia_nim\"\n"
       },
       "name": "provider_model_wiring",
       "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
@@ -1375,7 +1382,7 @@
         "tests/test_provider_contracts.py"
       ],
       "tests": {
-        "tests/test_provider_contracts.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.provider_registry import ProviderAdapterRegistry, ProviderRegistry\n\n\ndef test_codex_and_local_nim_are_routable():\n    records = {record.provider_id: record for record in ProviderRegistry().records()}\n\n    assert records[\"codex\"].backend == \"openai_compatible\"\n    assert records[\"codex\"].default_model == \"gpt-5-codex\"\n    assert records[\"local_nim\"].default_model == \"local-nim-model\"\n\n\ndef test_beast_auto_resolves_concrete_models():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\n    assert api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"\n    assert api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"\n    assert api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\"\n\n\ndef test_unknown_provider_fails_closed():\n    try:\n        ProviderAdapterRegistry().adapter_for(\"not_a_provider\")\n    except KeyError:\n        return\n    raise AssertionError(\"unknown provider should fail closed\")\n"
+        "tests/test_provider_contracts.py": "from app.cli.api import BeastApiClient\nfrom app.kernel.registry.provider_registry import ProviderAdapterRegistry, ProviderRegistry\n\n\ndef test_codex_and_local_nim_are_routable():\n    records = {record.provider_id: record for record in ProviderRegistry().records()}\n\n    assert records[\"codex\"].backend == \"openai_compatible\"\n    assert records[\"codex\"].default_model == \"gpt-5-codex\"\n    assert records[\"local_nim\"].default_model == \"local-nim-model\"\n\n\ndef test_beast_auto_resolves_concrete_models():\n    api = BeastApiClient()\n\n    assert api._chat_model_for_provider(\"codex\", \"beast-auto\") == \"gpt-5-codex\"\n    assert api._chat_model_for_provider(\"openai\", \"beast-auto\") == \"gpt-4o-mini\"\n    assert api._chat_model_for_provider(\"nvidia-nim\", \"beast-auto\") == \"nvidia/nemotron-3-super-120b-a12b\"\n    assert api._chat_model_for_provider(\"local-nim\", \"beast-auto\") == \"local-nim-model\"\n    assert api._chat_model_for_provider(\"litellm\", \"beast-auto\") == \"litellm/ollama\"\n\n\ndef test_unknown_provider_fails_closed():\n    try:\n        ProviderAdapterRegistry().adapter_for(\"not_a_provider\")\n    except KeyError:\n        return\n    raise AssertionError(\"unknown provider should fail closed\")\n"
       }
     },
     {

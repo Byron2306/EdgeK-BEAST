@@ -1,22 +1,19 @@
 # Compute Governor Free-Provider Live Evidence
 
-- Selected providers: `nvidia_nim`
-- Provider calls: `3`
-- Successful calls: `3`
-- Compute receipts: `3`
-- Receipt coverage: `100.0%`
-- Observed tokens: `421`
-- Candidate avoidable tokens: `123` (counterfactual)
-- Phase 1 free live: `PASS`
-- Phase 2 free live shadow: `PASS`
+- Selected providers: `none`
+- Provider calls: `0`
+- Successful calls: `0`
+- Compute receipts: `0`
+- Receipt coverage: `0.0%`
+- Observed tokens: `0`
+- Candidate avoidable tokens: `0` (counterfactual)
+- Phase 1 free live: `FAIL`
+- Phase 2 free live shadow: `FAIL`
 
 ## Rows
 
 | Provider | Task class | Status | Verified | Agreement | Tokens | Latency ms |
 | --- | --- | --- | --- | --- | ---: | ---: |
-| `nvidia_nim` | `schema_validation` | `succeeded` | True | True | 139 | 3208.739 |
-| `nvidia_nim` | `syntax_check` | `succeeded` | True | True | 141 | 17299.882 |
-| `nvidia_nim` | `test_execution` | `succeeded` | True | True | 141 | 1944.319 |
 
 ## Claim Boundary
 

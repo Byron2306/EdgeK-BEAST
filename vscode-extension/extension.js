@@ -109,6 +109,10 @@ function activeContextFiles() {
     return rel ? [rel] : [];
 }
 
+function chatModel() {
+    return String(config().get('model') || 'beast-auto');
+}
+
 async function promptObjective(defaultObjective) {
     return vscode.window.showInputBox({
         title: 'BEAST SourcePlan Objective',
@@ -349,6 +353,91 @@ async function refreshRouteFitness(provider) {
     vscode.window.showInformationMessage(`BEAST route fitness loaded ${lastFitness.length} provider(s).`);
 }
 
+function extractAssistantText(payload) {
+    const choice = payload?.choices?.[0] || {};
+    if (choice.message?.content) {
+        return String(choice.message.content);
+    }
+    if (choice.text) {
+        return String(choice.text);
+    }
+    if (payload?.response) {
+        return String(payload.response);
+    }
+    return JSON.stringify(payload, null, 2);
+}
+
+async function beastChatCompletion(prompt, history = []) {
+    await ensureGateway();
+    const provider = await promptProvider();
+    const messages = [];
+    for (const item of history.slice(-8)) {
+        const text = item?.content || item?.message || '';
+        if (text) {
+            messages.push({ role: item?.role === 'user' ? 'user' : 'assistant', content: String(text).slice(0, 4000) });
+        }
+    }
+    messages.push({
+        role: 'system',
+        content: 'You are BEAST inside VS Code Chat. Route advice through BEAST governance. For file writes, instruct Copilot agent mode to use the BEAST MCP SourcePlan tools or the explicit BEAST SourcePlan/apply commands.',
+    });
+    messages.push({ role: 'user', content: prompt });
+    const response = await fetch(`${gatewayUrl()}/proxy/v1/chat/completions?provider=${encodeURIComponent(provider)}`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'X-EdgeK-Provider': provider,
+        },
+        body: JSON.stringify({
+            model: chatModel(),
+            messages,
+            stream: false,
+            max_tokens: Number(config().get('maxTokens') || 4000),
+            temperature: 0.2,
+            metadata: {
+                edgek_surface: 'vscode_copilot_chat_participant',
+                edgek_provider: provider,
+                context_files: activeContextFiles(),
+                workspace_root: workspaceFolderPath(),
+                governance_level: 'governed',
+            },
+        }),
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`${response.status} ${response.statusText}: ${text.slice(0, 500)}`);
+    }
+    return response.json();
+}
+
+function registerBeastChatParticipant(context) {
+    if (!vscode.chat?.createChatParticipant) {
+        return;
+    }
+    const participant = vscode.chat.createChatParticipant('edgekBeast.beast', async (request, chatContext, stream) => {
+        const prompt = String(request.prompt || '').trim();
+        if (!prompt) {
+            stream.markdown('Give BEAST a prompt, or ask Copilot agent mode to call the BEAST MCP SourcePlan tools for governed edits.');
+            return;
+        }
+        stream.progress('Routing through BEAST governance...');
+        try {
+            const payload = await beastChatCompletion(prompt, chatContext.history || []);
+            stream.markdown(extractAssistantText(payload));
+        } catch (error) {
+            stream.markdown(`BEAST route failed: ${error.message}`);
+        }
+    });
+    participant.iconPath = vscode.Uri.file(path.join(context.extensionPath, 'media', 'beast-icon.svg'));
+    participant.followupProvider = {
+        provideFollowups: () => [
+            { prompt: 'Prepare a governed SourcePlan for the active file', label: 'Prepare SourcePlan' },
+            { prompt: 'Review the current route and explain whether Nemotron is selected', label: 'Check route' },
+        ],
+    };
+    context.subscriptions.push(participant);
+}
+
 function activate(context) {
     const statusProvider = new BeastStatusProvider();
     const chronicleProvider = new ChronicleProvider();
@@ -380,6 +469,7 @@ function activate(context) {
         },
     });
     context.subscriptions.push(provider);
+    registerBeastChatParticipant(context);
 
     context.subscriptions.push(
         vscode.commands.registerCommand('edgekBeast.start', ensureGateway),

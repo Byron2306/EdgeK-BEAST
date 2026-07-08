@@ -1,0 +1,167 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-21T05:08:08Z",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "raw",
+    "full_beast"
+  ],
+  "planned_run_count": 24,
+  "providers": [
+    {
+      "api_key_env": "NVIDIA_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "provider": "nvidia_nim",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 150.0
+    },
+    {
+      "api_key_env": "MISTRAL_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "provider": "mistral",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 150.0
+    },
+    {
+      "api_key_env": "GEMINI_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "provider": "gemini",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 150.0
+    },
+    {
+      "api_key_env": "COHERE_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "provider": "cohere",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 150.0
+    }
+  ],
+  "separation_rule": {
+    "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+    "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+    "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+  },
+  "tasks": [
+    {
+      "allowed_files": [
+        "app/output_guard.py"
+      ],
+      "hidden_tests": [
+        "tests/test_output_guard_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "output_governance_malformed_json",
+      "task_id": "output_governance_malformed_json",
+      "visible_tests": [
+        "tests/test_output_guard_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_parser.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_parser_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_id_parser",
+      "task_id": "provider_id_parser",
+      "visible_tests": [
+        "tests/test_provider_parser.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_config.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_config_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_config_secret_redaction",
+      "task_id": "provider_config_secret_redaction",
+      "visible_tests": [
+        "tests/test_provider_config.py"
+      ]
+    }
+  ],
+  "trials": 1
+}

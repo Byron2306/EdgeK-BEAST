@@ -4,6 +4,7 @@ from app.cli.api import (
     ActionResult,
     BeastApiClient,
     classify_stream_failure,
+    provider_stream_continuations,
     provider_stream_read_timeout,
 )
 
@@ -11,6 +12,10 @@ from app.cli.api import (
 def test_nvidia_stream_gets_longer_idle_timeout():
     assert provider_stream_read_timeout("nvidia_nim") == 210.0
     assert provider_stream_read_timeout("groq") == 90.0
+
+
+def test_stream_continuations_default_to_bounded_recovery():
+    assert provider_stream_continuations("nvidia_nim") == 2
 
 
 def test_stream_failure_classification_separates_provider_timeout_from_stack_death():
@@ -57,3 +62,64 @@ async def test_partial_provider_stream_is_preserved_and_recovered_locally(monkey
     assert done["data"]["provider_completed"] is False
     assert done["data"]["provider_recovered"] is True
     assert done["data"]["heal_recommended"] is True
+
+
+@pytest.mark.asyncio
+async def test_stream_chat_completion_continues_after_length_finish(monkeypatch):
+    client = BeastApiClient("http://gateway")
+    calls = []
+
+    class FakeResponse:
+        status_code = 200
+        headers = {"content-type": "text/event-stream"}
+
+        def __init__(self, attempt):
+            self.attempt = attempt
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def aiter_lines(self):
+            if self.attempt == 1:
+                yield 'data: {"choices":[{"delta":{"content":"first "}}]}'
+                yield 'data: {"choices":[{"delta":{},"finish_reason":"length"}]}'
+            else:
+                yield 'data: {"choices":[{"delta":{"content":"second"}}]}'
+                yield 'data: {"choices":[{"delta":{},"finish_reason":"stop"}]}'
+                yield "data: [DONE]"
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        def stream(self, *args, **kwargs):
+            calls.append(kwargs.get("json") or {})
+            return FakeResponse(len(calls))
+
+    monkeypatch.setattr("app.cli.api.httpx.AsyncClient", FakeClient)
+    monkeypatch.setenv("BEAST_TUI_STREAM_CONTINUATIONS", "1")
+
+    events = [
+        event async for event in client.stream_chat_completion(
+            "nvidia_nim",
+            [{"role": "user", "content": "long answer"}],
+        )
+    ]
+    text = "".join(str(event.get("text") or "") for event in events if event.get("type") == "token")
+    done = events[-1]
+
+    assert text == "first second"
+    assert done["type"] == "provider_done"
+    assert done["completed"] is True
+    assert done["finish_reason"] == "stop"
+    assert len(calls) == 2
+    assert calls[1]["messages"][-1]["content"].startswith("Continue the previous answer directly")

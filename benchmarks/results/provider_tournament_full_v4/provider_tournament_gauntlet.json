@@ -1,0 +1,1945 @@
+{
+  "beast_object_type": "provider_tournament_gauntlet",
+  "claim": "Ollama BEAST challenger is compared against every configured provider lane with explicit reachability/test receipts.",
+  "created_at_ms": 1782746341819,
+  "ollama_beast_challenger": {
+    "model": "qwen2.5:0.5b",
+    "provider_id": "ollama",
+    "role": "local_cpu_first_challenger"
+  },
+  "provider_inventory_rows": [
+    {
+      "adapter_plan": {
+        "adapter_class": "native_anthropic",
+        "backend": "native_anthropic",
+        "base_url": null,
+        "env": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "anthropic",
+        "provider_id": "anthropic",
+        "proxy_path": "/proxy/anthropic",
+        "route_provider": "anthropic"
+      },
+      "backend": "native_anthropic",
+      "base_url": "",
+      "configured": false,
+      "default_model": "claude-3-5-haiku-latest",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "native_adapter": true,
+      "openai_compatible": false,
+      "planned_tournament_test": "anthropic_native_messages_smoke",
+      "present_env": [],
+      "provider_id": "anthropic",
+      "proxy_path": "/proxy/anthropic",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "CEREBRAS_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/cerebras/cerebras",
+        "provider_id": "cerebras",
+        "proxy_path": "/proxy/cerebras",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "default_model": "cerebras",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "CEREBRAS_API_KEY"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [],
+      "provider_id": "cerebras",
+      "proxy_path": "/proxy/cerebras",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-5-codex",
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.openai.com/v1",
+      "configured": true,
+      "default_model": "gpt-5-codex",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [
+        "OPENAI_API_KEY"
+      ],
+      "provider_id": "codex",
+      "proxy_path": "/proxy/codex",
+      "requires_approval": false,
+      "risk_level": "high"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "COHERE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/cohere/cohere",
+        "provider_id": "cohere",
+        "proxy_path": "/proxy/cohere",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "cohere",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "COHERE_API_KEY"
+      ],
+      "provider_id": "cohere",
+      "proxy_path": "/proxy/cohere",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "DEEPINFRA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/deepinfra/deepinfra",
+        "provider_id": "deepinfra",
+        "proxy_path": "/proxy/deepinfra",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "deepinfra",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "DEEPINFRA_API_KEY"
+      ],
+      "provider_id": "deepinfra",
+      "proxy_path": "/proxy/deepinfra",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "FAL_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/fal/fal",
+        "provider_id": "fal",
+        "proxy_path": "/proxy/fal",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "fal",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "FAL_KEY"
+      ],
+      "provider_id": "fal",
+      "proxy_path": "/proxy/fal",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "FEATHERLESS_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/featherless_ai/featherless",
+        "provider_id": "featherless",
+        "proxy_path": "/proxy/featherless",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "featherless",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "FEATHERLESS_API_KEY"
+      ],
+      "provider_id": "featherless",
+      "proxy_path": "/proxy/featherless",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_gemini",
+        "backend": "native_gemini",
+        "base_url": null,
+        "env": [
+          "GEMINI_API_KEY",
+          "GOOGLE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "google",
+        "provider_id": "google",
+        "proxy_path": "/proxy/gemini",
+        "route_provider": "gemini"
+      },
+      "backend": "native_gemini",
+      "base_url": "",
+      "configured": true,
+      "default_model": "gemini-2.5-flash",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "GOOGLE_API_KEY"
+      ],
+      "native_adapter": true,
+      "openai_compatible": false,
+      "planned_tournament_test": "google_deep_crystallization",
+      "present_env": [
+        "GEMINI_API_KEY"
+      ],
+      "provider_id": "google",
+      "proxy_path": "/proxy/gemini",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "GROQ_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/groq/groq",
+        "provider_id": "groq",
+        "proxy_path": "/proxy/groq",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "groq",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "GROQ_API_KEY"
+      ],
+      "provider_id": "groq",
+      "proxy_path": "/proxy/groq",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_huggingface",
+        "backend": "native_huggingface",
+        "base_url": null,
+        "env": [
+          "HF_TOKEN",
+          "HUGGINGFACE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "hf/huggingface",
+        "provider_id": "huggingface",
+        "proxy_path": "/proxy/huggingface",
+        "route_provider": "huggingface"
+      },
+      "backend": "native_huggingface",
+      "base_url": "",
+      "configured": true,
+      "default_model": "huggingface",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "HUGGINGFACE_API_KEY"
+      ],
+      "native_adapter": true,
+      "openai_compatible": false,
+      "planned_tournament_test": "no_direct_tournament_probe_implemented",
+      "present_env": [
+        "HF_TOKEN"
+      ],
+      "provider_id": "huggingface",
+      "proxy_path": "/proxy/huggingface",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "HYPERBOLIC_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/hyperbolic/hyperbolic",
+        "provider_id": "hyperbolic",
+        "proxy_path": "/proxy/hyperbolic",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "hyperbolic",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "HYPERBOLIC_API_KEY"
+      ],
+      "provider_id": "hyperbolic",
+      "proxy_path": "/proxy/hyperbolic",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ollama",
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "http://127.0.0.1:4000/v1",
+      "configured": false,
+      "default_model": "ollama",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast_managed_backend_lane",
+      "missing_env": [
+        "LITELLM_API_KEY",
+        "LITELLM_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "litellm",
+      "proxy_path": "/proxy/huggingface/litellm",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "LLAMA_CPP_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama_cpp",
+        "provider_id": "llama_cpp",
+        "proxy_path": "/proxy/llama-cpp",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8080/v1",
+      "configured": true,
+      "default_model": "llama_cpp",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "LLAMA_CPP_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "llama_cpp",
+      "proxy_path": "/proxy/llama-cpp",
+      "requires_approval": false,
+      "risk_level": "local"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "local-nim-model",
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": true,
+      "default_model": "local-nim-model",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "LOCAL_NIM_BASE_URL",
+        "LOCAL_NIM_API_KEY"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "local_nim",
+      "proxy_path": "/proxy/local-nim",
+      "requires_approval": false,
+      "risk_level": "local"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "NOVITA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/novita/novita",
+        "provider_id": "novita",
+        "proxy_path": "/proxy/novita",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "novita",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "NOVITA_API_KEY"
+      ],
+      "provider_id": "novita",
+      "proxy_path": "/proxy/novita",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "NSCALE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/nscale/nscale",
+        "provider_id": "nscale",
+        "proxy_path": "/proxy/nscale",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "default_model": "nscale",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [
+        "NSCALE_API_KEY"
+      ],
+      "provider_id": "nscale",
+      "proxy_path": "/proxy/nscale",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "configured": true,
+      "default_model": "nvidia/nemotron-3-super-120b-a12b",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "nvidia_nim_live_probe",
+      "present_env": [
+        "NVIDIA_API_KEY"
+      ],
+      "provider_id": "nvidia_nim",
+      "proxy_path": "/proxy/nvidia-nim",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "ollama",
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama3.2:3b",
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "route_provider": "ollama"
+      },
+      "backend": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "configured": true,
+      "default_model": "qwen2.5:0.5b",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "OLLAMA_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": false,
+      "planned_tournament_test": "ollama_beast_deep_crystallization",
+      "present_env": [],
+      "provider_id": "ollama",
+      "proxy_path": "/proxy/ollama",
+      "requires_approval": false,
+      "risk_level": "local"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-4o-mini",
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.openai.com/v1",
+      "configured": true,
+      "default_model": "gpt-4o-mini",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": true,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [
+        "OPENAI_API_KEY"
+      ],
+      "provider_id": "openai",
+      "proxy_path": "/proxy/openai",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/openrouter/auto",
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "default_model": "openrouter/auto",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "OPENROUTER_API_KEY"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [],
+      "provider_id": "openrouter",
+      "proxy_path": "/proxy/openrouter",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OVHCLOUD_APP_KEY",
+          "OVHCLOUD_APP_SECRET",
+          "OVHCLOUD_CONSUMER_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ovhcloud/ovhcloud",
+        "provider_id": "ovhcloud",
+        "proxy_path": "/proxy/ovhcloud",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "default_model": "ovhcloud",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "OVHCLOUD_APP_KEY",
+        "OVHCLOUD_APP_SECRET",
+        "OVHCLOUD_CONSUMER_KEY"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "litellm_completion_smoke",
+      "present_env": [],
+      "provider_id": "ovhcloud",
+      "proxy_path": "/proxy/ovhcloud",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_replicate",
+        "backend": "native_replicate",
+        "base_url": null,
+        "env": [
+          "REPLICATE_API_TOKEN",
+          "REPLICATE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "meta/meta-llama-3-70b-instruct",
+        "provider_id": "replicate",
+        "proxy_path": "/proxy/replicate",
+        "route_provider": "replicate_prediction"
+      },
+      "backend": "native_replicate",
+      "base_url": "",
+      "configured": true,
+      "default_model": "meta/meta-llama-3-70b-instruct",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "REPLICATE_API_KEY"
+      ],
+      "native_adapter": false,
+      "openai_compatible": false,
+      "planned_tournament_test": "no_direct_tournament_probe_implemented",
+      "present_env": [
+        "REPLICATE_API_TOKEN"
+      ],
+      "provider_id": "replicate",
+      "proxy_path": "/proxy/replicate",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "SGLANG_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "sglang",
+        "provider_id": "sglang",
+        "proxy_path": "/proxy/sglang",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:30000/v1",
+      "configured": false,
+      "default_model": "sglang",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "SGLANG_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "sglang",
+      "proxy_path": "/proxy/sglang",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "TENSORRT_LLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "tensorrt_llm",
+        "provider_id": "tensorrt_llm",
+        "proxy_path": "/proxy/tensorrt-llm",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": false,
+      "default_model": "tensorrt_llm",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "TENSORRT_LLM_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "tensorrt_llm",
+      "proxy_path": "/proxy/tensorrt-llm",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "TGI_BASE_URL",
+          "HF_TOKEN"
+        ],
+        "governed_by_beast": true,
+        "model": "tgi",
+        "provider_id": "tgi",
+        "proxy_path": "/proxy/huggingface/tgi",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "",
+      "configured": true,
+      "default_model": "tgi",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "TGI_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "no_direct_tournament_probe_implemented",
+      "present_env": [
+        "HF_TOKEN"
+      ],
+      "provider_id": "tgi",
+      "proxy_path": "/proxy/huggingface/tgi",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "VLLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "vllm",
+        "provider_id": "vllm",
+        "proxy_path": "/proxy/vllm",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": false,
+      "default_model": "vllm",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [
+        "VLLM_BASE_URL"
+      ],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [],
+      "provider_id": "vllm",
+      "proxy_path": "/proxy/vllm",
+      "requires_approval": false,
+      "risk_level": "medium"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.x.ai/v1",
+        "env": [
+          "XAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "grok-build-0.1",
+        "provider_id": "xai",
+        "proxy_path": "/proxy/xai",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.x.ai/v1",
+      "configured": true,
+      "default_model": "grok-build-0.1",
+      "enabled": true,
+      "gateway_lane": "provider_explicit",
+      "managed_by": "beast",
+      "missing_env": [],
+      "native_adapter": false,
+      "openai_compatible": true,
+      "planned_tournament_test": "openai_compatible_chat_completions_smoke",
+      "present_env": [
+        "XAI_API_KEY"
+      ],
+      "provider_id": "xai",
+      "proxy_path": "/proxy/xai",
+      "requires_approval": false,
+      "risk_level": "medium"
+    }
+  ],
+  "receipt_hash": "sha256:2c9a2e3b2779eb5f2c65bc1988336bd9f2d7d38762bca07c158d71ddf5fb4636",
+  "run_deep_crystallization": true,
+  "run_live": true,
+  "scoreboard": {
+    "beast_object_type": "provider_tournament_scoreboard",
+    "competitor_failed_or_error": [
+      "codex",
+      "deepinfra",
+      "fal",
+      "featherless",
+      "hyperbolic",
+      "llama_cpp",
+      "local_nim",
+      "nscale",
+      "openai",
+      "xai"
+    ],
+    "competitor_passed": [
+      "cohere",
+      "google",
+      "groq",
+      "novita",
+      "nvidia_nim"
+    ],
+    "configured_count": 19,
+    "covered_provider_count": 27,
+    "errors": 5,
+    "failed": 5,
+    "live_tests_attempted": 16,
+    "missing_inventory_providers": [],
+    "missing_tournament_providers": [],
+    "ollama_beast_status": "passed",
+    "passed": 6,
+    "provider_count": 27,
+    "reviewer_safe_claims": {
+      "all_registry_providers_have_inventory_rows": true,
+      "all_registry_providers_have_tournament_rows": true,
+      "ollama_beast_is_explicit_challenger": true,
+      "secrets_not_written_to_receipt": true
+    },
+    "skipped": 11
+  },
+  "tournament_rows": [
+    {
+      "adapter_plan": {
+        "adapter_class": "native_anthropic",
+        "backend": "native_anthropic",
+        "base_url": null,
+        "env": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "anthropic",
+        "provider_id": "anthropic",
+        "proxy_path": "/proxy/anthropic",
+        "route_provider": "anthropic"
+      },
+      "backend": "native_anthropic",
+      "base_url": "",
+      "configured": false,
+      "latency_ms": null,
+      "model": "claude-3-5-haiku-latest",
+      "present_env": [],
+      "provider_id": "anthropic",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "anthropic_native_messages_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "CEREBRAS_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/cerebras/cerebras",
+        "provider_id": "cerebras",
+        "proxy_path": "/proxy/cerebras",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "latency_ms": null,
+      "model": "cerebras",
+      "present_env": [],
+      "provider_id": "cerebras",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-5-codex",
+        "provider_id": "codex",
+        "proxy_path": "/proxy/codex",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.openai.com/v1",
+      "configured": true,
+      "error_preview": "Incorrect API key provided: csk-redacted. You can find your API key at https://platform.openai.com/account/api-keys.",
+      "latency_ms": 268.573,
+      "model": "gpt-5-codex",
+      "present_env": [
+        "OPENAI_API_KEY"
+      ],
+      "provider_id": "codex",
+      "reason": "http_error",
+      "response_preview": "",
+      "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "failed",
+      "status_code": 401,
+      "test": "openai_compatible_chat_completions_smoke",
+      "usage": {}
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "COHERE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/cohere/cohere",
+        "provider_id": "cohere",
+        "proxy_path": "/proxy/cohere",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": 2324.27,
+      "model": "cohere",
+      "present_env": [
+        "COHERE_API_KEY"
+      ],
+      "provider_id": "cohere",
+      "reason": "litellm_completion",
+      "response_preview": "BEAST_PROVIDER_TOURNAMENT_OK:cohere:return a + b",
+      "response_sha256": "sha256:83620d6bc423306d83468bb06f33e7e26825c16ae303f53469d482ee06ac183f",
+      "status": "passed",
+      "test": "litellm_completion_smoke",
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 548,
+        "total_tokens": 569
+      }
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "DEEPINFRA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/deepinfra/deepinfra",
+        "provider_id": "deepinfra",
+        "proxy_path": "/proxy/deepinfra",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "error": "APIError",
+      "latency_ms": 1076.959,
+      "message": "litellm.APIError: APIError: DeepinfraException - Error code: 402 - {'detail': {'error': 'You need positive balance to do inference. Please add balance manually or setup top-up'}}",
+      "model": "deepinfra",
+      "present_env": [
+        "DEEPINFRA_API_KEY"
+      ],
+      "provider_id": "deepinfra",
+      "status": "error",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "FAL_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/fal/fal",
+        "provider_id": "fal",
+        "proxy_path": "/proxy/fal",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "error": "BadRequestError",
+      "latency_ms": 6.208,
+      "message": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=fal/fal\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+      "model": "fal",
+      "present_env": [
+        "FAL_KEY"
+      ],
+      "provider_id": "fal",
+      "status": "error",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "FEATHERLESS_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/featherless_ai/featherless",
+        "provider_id": "featherless",
+        "proxy_path": "/proxy/featherless",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "error": "BadRequestError",
+      "latency_ms": 1022.525,
+      "message": "litellm.BadRequestError: Featherless_aiException - This model is gated. Connect HuggingFace for this organization at https://featherless.ai/models/meta-llama/Meta-Llama-3.1-8B-Instruct to verify access.",
+      "model": "featherless",
+      "present_env": [
+        "FEATHERLESS_API_KEY"
+      ],
+      "provider_id": "featherless",
+      "status": "error",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_gemini",
+        "backend": "native_gemini",
+        "base_url": null,
+        "env": [
+          "GEMINI_API_KEY",
+          "GOOGLE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "google",
+        "provider_id": "google",
+        "proxy_path": "/proxy/gemini",
+        "route_provider": "gemini"
+      },
+      "backend": "native_gemini",
+      "base_url": "",
+      "configured": true,
+      "final_final_boss_claims": {
+        "baseline_replayable": true,
+        "cloud_calls_replay": 0,
+        "cloud_calls_training": 1,
+        "far_transfer_repaired": true,
+        "local_cpu_teacher": false,
+        "memory_hull_signature_verified": true,
+        "negative_reuse_cases_blocked": true,
+        "semantic_credit_reused": true,
+        "tiny_model": ""
+      },
+      "latency_ms": null,
+      "metrics": {
+        "baseline_failures": 3,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 0,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 2
+      },
+      "model": "gemini-2.5-flash",
+      "path": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/final_boss_crystallization_gauntlet.json",
+      "present_env": [
+        "GEMINI_API_KEY"
+      ],
+      "provider_id": "google",
+      "quality_assessment": {
+        "beast_object_type": "final_boss_task_quality_assessment",
+        "changed_files": 4,
+        "decoy_files": 24,
+        "evaluation_gates_passed": true,
+        "quality_score": 10,
+        "quality_score_max": 10,
+        "raw_teacher_quality": {
+          "beast_object_type": "raw_patch_plan_quality",
+          "contains_forbidden_secret": false,
+          "patch_count": 0,
+          "required_concept_count": 1,
+          "required_concepts": {
+            "beast_auto_routing": false,
+            "provider_normalization": true,
+            "secret_redaction": false,
+            "streaming_empty_chunks": false
+          },
+          "schema_valid": false
+        },
+        "replay_variants": 2,
+        "reviewer_notes": [
+          "Baseline and patched repos are preserved separately for replay.",
+          "The teacher output is normalized to a verifier-approved recipe before promotion.",
+          "This is production-shaped but still synthetic; a corpus of real migrations remains future work."
+        ],
+        "task_kind": "compact_synthetic_multifile_gateway_migration",
+        "version": "1.0"
+      },
+      "reason": "google_deep_crystallization_completed",
+      "receipt_hash": "sha256:1b5ce2bcf1a5888cab7905eead8c75c85f4d804864b671247b9a74177ddac5bd",
+      "replayable_bundle": {
+        "baseline_replayable": true,
+        "beast_object_type": "final_boss_replayable_evidence_bundle",
+        "directories": {
+          "baseline_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/baseline_far_transfer_gateway_repo",
+          "baseline_training_gateway_repo": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/baseline_training_gateway_repo",
+          "negative_cases": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/negative_cases",
+          "patched_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/patched_far_transfer_gateway_repo",
+          "patched_training_gateway_repo": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/patched_training_gateway_repo",
+          "proof": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/proof"
+        },
+        "memory_hull_signature_verified": true,
+        "negative_case_files": [
+          "secret_bearing_promotion.json",
+          "wrong_repo_fingerprint.json",
+          "wrong_task_class.json"
+        ],
+        "patched_replayable": true,
+        "proof_files": [
+          "after_pytest.json",
+          "baseline_pytest.json",
+          "eval_gates.json",
+          "local_engine_probe.json",
+          "memory_hull_verification.json",
+          "receipt_hash_verification.json",
+          "semantic_reuse_decision.json"
+        ],
+        "semantic_credit_reused": true,
+        "version": "1.0",
+        "zip_path": "benchmarks/results/provider_tournament_full_v4/provider_competitors/google/final_boss_replayable_evidence_bundle.zip",
+        "zip_sha256": "sha256:a2d8262947c51557134924e2cb1721a9231489263ad36c3d51f6f2291f07aa94"
+      },
+      "status": "passed",
+      "test": "google_deep_crystallization"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "GROQ_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/groq/groq",
+        "provider_id": "groq",
+        "proxy_path": "/proxy/groq",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": 249.835,
+      "model": "groq",
+      "present_env": [
+        "GROQ_API_KEY"
+      ],
+      "provider_id": "groq",
+      "reason": "litellm_completion",
+      "response_preview": "BEAST_PROVIDER_TOURNAMENT_OK:groq:return a + b",
+      "response_sha256": "sha256:22d4689c4ccf144822cb1dd6b494c977db24670b86a614874d8664292508d450",
+      "status": "passed",
+      "test": "litellm_completion_smoke",
+      "usage": {
+        "completion_tokens": 16,
+        "prompt_tokens": 81,
+        "total_tokens": 97
+      }
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_huggingface",
+        "backend": "native_huggingface",
+        "base_url": null,
+        "env": [
+          "HF_TOKEN",
+          "HUGGINGFACE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "hf/huggingface",
+        "provider_id": "huggingface",
+        "proxy_path": "/proxy/huggingface",
+        "route_provider": "huggingface"
+      },
+      "backend": "native_huggingface",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": null,
+      "model": "huggingface",
+      "present_env": [
+        "HF_TOKEN"
+      ],
+      "provider_id": "huggingface",
+      "reason": "no_direct_tournament_probe_implemented",
+      "status": "skipped",
+      "test": "no_direct_tournament_probe_implemented"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "HYPERBOLIC_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/hyperbolic/hyperbolic",
+        "provider_id": "hyperbolic",
+        "proxy_path": "/proxy/hyperbolic",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "error": "APIError",
+      "latency_ms": 1422.63,
+      "message": "litellm.APIError: APIError: HyperbolicException - Error code: 402 - {'detail': 'Insufficient funds, please see https://docs.hyperbolic.xyz/docs/hyperbolic-pricing'}",
+      "model": "hyperbolic",
+      "present_env": [
+        "HYPERBOLIC_API_KEY"
+      ],
+      "provider_id": "hyperbolic",
+      "status": "error",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "LITELLM_API_KEY",
+          "LITELLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ollama",
+        "provider_id": "litellm",
+        "proxy_path": "/proxy/huggingface/litellm",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "http://127.0.0.1:4000/v1",
+      "configured": false,
+      "latency_ms": null,
+      "model": "ollama",
+      "present_env": [],
+      "provider_id": "litellm",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "openai_compatible_chat_completions_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "LLAMA_CPP_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama_cpp",
+        "provider_id": "llama_cpp",
+        "proxy_path": "/proxy/llama-cpp",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8080/v1",
+      "configured": true,
+      "failure_detail": "response_did_not_match_tournament_probe",
+      "latency_ms": 146.23,
+      "model": "llama_cpp",
+      "present_env": [],
+      "provider_body_shape": {
+        "keys": [
+          "error"
+        ]
+      },
+      "provider_id": "llama_cpp",
+      "reason": "http_ok",
+      "response_preview": "",
+      "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "failed",
+      "status_code": 200,
+      "test": "openai_compatible_chat_completions_smoke",
+      "usage": {}
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "http://127.0.0.1:8000/v1",
+        "env": [
+          "LOCAL_NIM_BASE_URL",
+          "LOCAL_NIM_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "local-nim-model",
+        "provider_id": "local_nim",
+        "proxy_path": "/proxy/local-nim",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": true,
+      "failure_detail": "response_did_not_match_tournament_probe",
+      "latency_ms": 84.648,
+      "model": "local-nim-model",
+      "present_env": [],
+      "provider_body_shape": {
+        "keys": [
+          "error"
+        ]
+      },
+      "provider_id": "local_nim",
+      "reason": "http_ok",
+      "response_preview": "",
+      "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "failed",
+      "status_code": 200,
+      "test": "openai_compatible_chat_completions_smoke",
+      "usage": {}
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "NOVITA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/novita/novita",
+        "provider_id": "novita",
+        "proxy_path": "/proxy/novita",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": 1083.327,
+      "model": "novita",
+      "present_env": [
+        "NOVITA_API_KEY"
+      ],
+      "provider_id": "novita",
+      "reason": "litellm_completion",
+      "response_preview": "BEAST_PROVIDER_TOURNAMENT_OK:novita:return a + b",
+      "response_sha256": "sha256:faac12806fa87737c9f5c5cc04d556127995a9c2c77b74aee8be1c0a08941ee5",
+      "status": "passed",
+      "test": "litellm_completion_smoke",
+      "usage": {
+        "completion_tokens": 16,
+        "prompt_tokens": 81,
+        "total_tokens": 97
+      }
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "NSCALE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/nscale/nscale",
+        "provider_id": "nscale",
+        "proxy_path": "/proxy/nscale",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": true,
+      "error": "RateLimitError",
+      "latency_ms": 3979.435,
+      "message": "litellm.RateLimitError: RateLimitError: NscaleException - You have insufficient credit to run this request",
+      "model": "nscale",
+      "present_env": [
+        "NSCALE_API_KEY"
+      ],
+      "provider_id": "nscale",
+      "status": "error",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "env": [
+          "NVIDIA_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "provider_id": "nvidia_nim",
+        "proxy_path": "/proxy/nvidia-nim",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "configured": true,
+      "latency_ms": 1088.984,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "present_env": [
+        "NVIDIA_API_KEY"
+      ],
+      "provider_id": "nvidia_nim",
+      "reason": "ok",
+      "receipt_hash": "sha256:ee03b1b82f0e87075e421fd66374c1e4fecaf61a9f1c250e3b68fd311212b8fe",
+      "response_preview": "We need to output exactly: BEAST_PROVIDER_TOURNAMENT_OK:nvidia_nim:return a + b\n\nNo extra spaces, no",
+      "response_sha256": "sha256:68fb30005ecf6509fb831ed7a06e2c167e868c86687ca21f1d3709e62cdc25cc",
+      "status": "passed",
+      "test": "nvidia_nim_live_probe",
+      "usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 75,
+        "total_tokens": 107
+      }
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "ollama",
+        "backend": "ollama",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "env": [
+          "OLLAMA_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "llama3.2:3b",
+        "provider_id": "ollama",
+        "proxy_path": "/proxy/ollama",
+        "route_provider": "ollama"
+      },
+      "backend": "ollama",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "configured": true,
+      "final_final_boss_claims": {
+        "baseline_replayable": true,
+        "cloud_calls_replay": 0,
+        "cloud_calls_training": 0,
+        "far_transfer_repaired": true,
+        "local_cpu_teacher": true,
+        "memory_hull_signature_verified": true,
+        "negative_reuse_cases_blocked": true,
+        "semantic_credit_reused": true,
+        "tiny_model": "qwen2.5:0.5b"
+      },
+      "latency_ms": null,
+      "metrics": {
+        "baseline_failures": 3,
+        "decoy_files": 24,
+        "engine_calls_replay": 0,
+        "engine_calls_training": 1,
+        "far_transfer_prompt_mode": "low_surface_overlap_same_lattice",
+        "files_changed": 4,
+        "integration_tests_passed": true,
+        "live_local_engine_training_calls": 1,
+        "live_provider_replay_calls": 0,
+        "live_provider_training_calls": 1,
+        "negative_control_count": 3,
+        "negative_controls_blocked": 3,
+        "replay_variants": 2
+      },
+      "model": "qwen2.5:0.5b",
+      "path": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/final_boss_crystallization_gauntlet.json",
+      "present_env": [],
+      "provider_id": "ollama",
+      "quality_assessment": {
+        "beast_object_type": "final_boss_task_quality_assessment",
+        "changed_files": 4,
+        "decoy_files": 24,
+        "evaluation_gates_passed": true,
+        "quality_score": 10,
+        "quality_score_max": 10,
+        "raw_teacher_quality": {
+          "beast_object_type": "raw_patch_plan_quality",
+          "contains_forbidden_secret": false,
+          "patch_count": 0,
+          "required_concept_count": 2,
+          "required_concepts": {
+            "beast_auto_routing": false,
+            "provider_normalization": true,
+            "secret_redaction": false,
+            "streaming_empty_chunks": true
+          },
+          "schema_valid": true
+        },
+        "replay_variants": 2,
+        "reviewer_notes": [
+          "Baseline and patched repos are preserved separately for replay.",
+          "The teacher output is normalized to a verifier-approved recipe before promotion.",
+          "This is production-shaped but still synthetic; a corpus of real migrations remains future work."
+        ],
+        "task_kind": "compact_synthetic_multifile_gateway_migration",
+        "version": "1.0"
+      },
+      "reachability": {
+        "available_models": [
+          "beast-crystal-qwen25-05b:latest",
+          "qwen2.5-coder:latest",
+          "llama3.2:3b",
+          "qwen2.5:1.5b",
+          "qwen2.5:0.5b",
+          "qwen2:0.5b"
+        ],
+        "latency_ms": 3.833,
+        "live_capable": true,
+        "model_count": 6,
+        "status": "ok",
+        "status_code": 200
+      },
+      "reason": "deep_crystallization_completed",
+      "receipt_hash": "sha256:6776e785a28378cf22fbfcd99fd0188be0c0cbb4b71ee4c059a37ecc45c1beb3",
+      "replayable_bundle": {
+        "baseline_replayable": true,
+        "beast_object_type": "final_boss_replayable_evidence_bundle",
+        "directories": {
+          "baseline_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/baseline_far_transfer_gateway_repo",
+          "baseline_training_gateway_repo": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/baseline_training_gateway_repo",
+          "negative_cases": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/negative_cases",
+          "patched_far_transfer_gateway_repo": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/patched_far_transfer_gateway_repo",
+          "patched_training_gateway_repo": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/patched_training_gateway_repo",
+          "proof": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/proof"
+        },
+        "memory_hull_signature_verified": true,
+        "negative_case_files": [
+          "secret_bearing_promotion.json",
+          "wrong_repo_fingerprint.json",
+          "wrong_task_class.json"
+        ],
+        "patched_replayable": true,
+        "proof_files": [
+          "after_pytest.json",
+          "baseline_pytest.json",
+          "eval_gates.json",
+          "local_engine_probe.json",
+          "memory_hull_verification.json",
+          "receipt_hash_verification.json",
+          "semantic_reuse_decision.json"
+        ],
+        "semantic_credit_reused": true,
+        "version": "1.0",
+        "zip_path": "benchmarks/results/provider_tournament_full_v4/ollama_beast_challenger/final_boss_replayable_evidence_bundle.zip",
+        "zip_sha256": "sha256:a4928972c49eba8bb1e704943fe24e6d546fdd9bb23d7e186f3fc3a88821b94c"
+      },
+      "status": "passed",
+      "test": "ollama_beast_deep_crystallization"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "OPENAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "gpt-4o-mini",
+        "provider_id": "openai",
+        "proxy_path": "/proxy/openai",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.openai.com/v1",
+      "configured": true,
+      "error_preview": "Incorrect API key provided: csk-redacted. You can find your API key at https://platform.openai.com/account/api-keys.",
+      "latency_ms": 331.347,
+      "model": "gpt-4o-mini",
+      "present_env": [
+        "OPENAI_API_KEY"
+      ],
+      "provider_id": "openai",
+      "reason": "http_error",
+      "response_preview": "",
+      "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "failed",
+      "status_code": 401,
+      "test": "openai_compatible_chat_completions_smoke",
+      "usage": {}
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OPENROUTER_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/openrouter/auto",
+        "provider_id": "openrouter",
+        "proxy_path": "/proxy/openrouter",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "latency_ms": null,
+      "model": "openrouter/auto",
+      "present_env": [],
+      "provider_id": "openrouter",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "litellm",
+        "backend": "litellm",
+        "base_url": null,
+        "env": [
+          "OVHCLOUD_APP_KEY",
+          "OVHCLOUD_APP_SECRET",
+          "OVHCLOUD_CONSUMER_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "litellm/ovhcloud/ovhcloud",
+        "provider_id": "ovhcloud",
+        "proxy_path": "/proxy/ovhcloud",
+        "route_provider": "litellm"
+      },
+      "backend": "litellm",
+      "base_url": "",
+      "configured": false,
+      "latency_ms": null,
+      "model": "ovhcloud",
+      "present_env": [],
+      "provider_id": "ovhcloud",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "litellm_completion_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "native_replicate",
+        "backend": "native_replicate",
+        "base_url": null,
+        "env": [
+          "REPLICATE_API_TOKEN",
+          "REPLICATE_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "meta/meta-llama-3-70b-instruct",
+        "provider_id": "replicate",
+        "proxy_path": "/proxy/replicate",
+        "route_provider": "replicate_prediction"
+      },
+      "backend": "native_replicate",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": null,
+      "model": "meta/meta-llama-3-70b-instruct",
+      "present_env": [
+        "REPLICATE_API_TOKEN"
+      ],
+      "provider_id": "replicate",
+      "reason": "no_direct_tournament_probe_implemented",
+      "status": "skipped",
+      "test": "no_direct_tournament_probe_implemented"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "SGLANG_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "sglang",
+        "provider_id": "sglang",
+        "proxy_path": "/proxy/sglang",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:30000/v1",
+      "configured": false,
+      "latency_ms": null,
+      "model": "sglang",
+      "present_env": [],
+      "provider_id": "sglang",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "openai_compatible_chat_completions_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "TENSORRT_LLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "tensorrt_llm",
+        "provider_id": "tensorrt_llm",
+        "proxy_path": "/proxy/tensorrt-llm",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": false,
+      "latency_ms": null,
+      "model": "tensorrt_llm",
+      "present_env": [],
+      "provider_id": "tensorrt_llm",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "openai_compatible_chat_completions_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "TGI_BASE_URL",
+          "HF_TOKEN"
+        ],
+        "governed_by_beast": true,
+        "model": "tgi",
+        "provider_id": "tgi",
+        "proxy_path": "/proxy/huggingface/tgi",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "",
+      "configured": true,
+      "latency_ms": null,
+      "model": "tgi",
+      "present_env": [
+        "HF_TOKEN"
+      ],
+      "provider_id": "tgi",
+      "reason": "no_direct_tournament_probe_implemented",
+      "status": "skipped",
+      "test": "no_direct_tournament_probe_implemented"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": null,
+        "env": [
+          "VLLM_BASE_URL"
+        ],
+        "governed_by_beast": true,
+        "model": "vllm",
+        "provider_id": "vllm",
+        "proxy_path": "/proxy/vllm",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "configured": false,
+      "latency_ms": null,
+      "model": "vllm",
+      "present_env": [],
+      "provider_id": "vllm",
+      "reason": "missing_required_endpoint_or_secret",
+      "status": "skipped",
+      "test": "openai_compatible_chat_completions_smoke"
+    },
+    {
+      "adapter_plan": {
+        "adapter_class": "openai_compatible",
+        "backend": "openai_compatible",
+        "base_url": "https://api.x.ai/v1",
+        "env": [
+          "XAI_API_KEY"
+        ],
+        "governed_by_beast": true,
+        "model": "grok-build-0.1",
+        "provider_id": "xai",
+        "proxy_path": "/proxy/xai",
+        "route_provider": "openai_compatible"
+      },
+      "backend": "openai_compatible",
+      "base_url": "https://api.x.ai/v1",
+      "configured": true,
+      "error_preview": "provider_error",
+      "latency_ms": 409.351,
+      "model": "grok-build-0.1",
+      "present_env": [
+        "XAI_API_KEY"
+      ],
+      "provider_id": "xai",
+      "reason": "http_error",
+      "response_preview": "",
+      "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "failed",
+      "status_code": 403,
+      "test": "openai_compatible_chat_completions_smoke",
+      "usage": {}
+    }
+  ],
+  "version": "1.0"
+}

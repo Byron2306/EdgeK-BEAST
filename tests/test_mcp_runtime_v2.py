@@ -13,6 +13,10 @@ def test_runtime_exposes_v2_mcp_tools():
     assert "beast_sourceplan_prepare" in names
     assert "beast_sourceplan_preview_hunks" in names
     assert "beast_sourceplan_apply_selected" in names
+    assert "beast_code_cortex_status" in names
+    assert "beast_code_cortex_search_symbols" in names
+    assert "beast_code_cortex_editing_context" in names
+    assert "beast_symbol_surgeon_plan" in names
     assert "beast_provider_fitness" in names
     assert "beast_provider_economist_select" in names
     assert "beast_tool_laziness_record" in names
@@ -22,6 +26,8 @@ def test_runtime_exposes_v2_mcp_tools():
     assert "beast_plugin_marketplace_install" in names
     assert "beast_session_handshake" in names
     assert "beast_capability_exchange" in names
+    assert "beast_capability_plane_summary" in names
+    assert "beast_capability_plane_query" in names
     assert "beast_run_maintenance_cascade" in names
     assert "beast_attach_network_chronicle" in names
     assert "beast_github_pr_ingest" in names
@@ -29,8 +35,63 @@ def test_runtime_exposes_v2_mcp_tools():
     assert "beast_score_forge" in names
     assert "beast_plan_workflow" in names
     assert "beast_openclaw_plan" in names
+    assert "beast_mission_lattice_replay_scaffold" in names
     assert "beast_mcp_status" in names
     assert "beast_crystal_compute" in names
+
+
+def test_mcp_readonly_profile_hides_and_blocks_mutating_tools(monkeypatch):
+    monkeypatch.setenv("BEAST_MCP_TOOLS", "readonly")
+    runtime = BeastToolRuntime()
+    names = {tool["name"] for tool in runtime.tool_definitions()}
+    profile = runtime.call_tool("beast_tool_profile")
+    blocked = runtime.call_tool("beast_sourceplan_apply_selected", {"plan": {}, "approved": True})
+
+    assert "beast_tool_profile" in names
+    assert "beast_prepare_handoff" in names
+    assert "beast_code_cortex_search_symbols" in names
+    assert "beast_symbol_surgeon_plan" not in names
+    assert "beast_sourceplan_apply_selected" not in names
+    assert profile["profile"] == "readonly"
+    assert blocked["ok"] is False
+    assert blocked["profile"] == "readonly"
+
+
+def test_mcp_allow_list_profile_exposes_only_named_tools(monkeypatch):
+    monkeypatch.setenv("BEAST_MCP_TOOLS", "full")
+    monkeypatch.setenv("BEAST_MCP_TOOLS_ALLOW", "beast_prepare_task,beast_sourceplan_preview_hunks")
+    runtime = BeastToolRuntime()
+    names = {tool["name"] for tool in runtime.tool_definitions()}
+
+    assert names == {"beast_tool_profile", "beast_prepare_task", "beast_sourceplan_preview_hunks"}
+
+
+def test_mcp_sourceplan_scorecard_tool():
+    runtime = BeastToolRuntime()
+    result = runtime.call_tool("beast_sourceplan_scorecard", {"plan": {"plan_id": "empty"}})
+
+    assert result["ok"] is True
+    assert result["data"]["beast_object_type"] == "sourceplan_preapply_scorecard"
+
+
+def test_mcp_symbol_surgeon_plan_tool(tmp_path):
+    target = tmp_path / "service.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    runtime = BeastToolRuntime()
+
+    result = runtime.call_tool(
+        "beast_symbol_surgeon_plan",
+        {
+            "workspace_root": str(tmp_path),
+            "path": "service.py",
+            "symbol": "value",
+            "replacement": "def value():\n    return 2\n",
+        },
+    )
+
+    assert result["ok"] is True
+    assert result["data"]["kind"] == "beast_symbol_surgeon_source_patch_plan"
+    assert result["data"]["operations"][0]["action_ir_type"] == "modify_symbol"
 
 
 def test_crystal_compute_mcp_tool_exposes_failure_and_friction_state():
@@ -67,6 +128,7 @@ def test_prepare_handoff_uses_current_context_packet_signature(tmp_path):
 
     assert packet["beast_object_type"] == "context_packet"
     assert packet["context_budget"]["max_tokens"] == 4096
+    assert packet["workspace_context"]["code_cortex"]["front_door"] == "code_cortex"
 
 
 def test_mcp_status_and_catalog_include_audit_metadata():
@@ -126,6 +188,18 @@ def test_session_handshake_and_capability_exchange_mcp_tools():
     assert handshake["latency_budget"]["preflight_budget_ms"] == 100
     assert evidence["privacy"]["contains_source_code"] is False
     assert ranking["count"] == 1
+
+
+def test_capability_plane_mcp_tools_are_read_only_facade():
+    runtime = BeastToolRuntime()
+
+    summary = runtime.call_tool("beast_capability_plane_summary", {"limit": 20})
+    query = runtime.call_tool("beast_capability_plane_query", {"text": "mcp", "local": True, "limit": 5})
+
+    assert summary["beast_object_type"] == "capability_plane"
+    assert summary["authority"] == "read_only_facade_no_execution_no_install"
+    assert query["beast_object_type"] == "capability_plane_query"
+    assert query["query"]["local"] is True
 
 
 def test_sourceplan_mcp_tools_prepare_and_preview(tmp_path, monkeypatch):

@@ -366,6 +366,110 @@ def pgrep(pattern: str) -> list[int]:
     return pids
 
 
+def parse_host_port(value: str, default_port: int) -> tuple[str, int]:
+    raw = str(value or "").strip()
+    if "://" in raw:
+        raw = raw.split("://", 1)[1]
+    raw = raw.split("/", 1)[0]
+    if raw.startswith("[") and "]" in raw:
+        host, _, tail = raw[1:].partition("]")
+        port = tail[1:] if tail.startswith(":") else str(default_port)
+        return host or "127.0.0.1", int(port)
+    if ":" in raw:
+        host, port = raw.rsplit(":", 1)
+        return host or "127.0.0.1", int(port)
+    return raw or "127.0.0.1", int(default_port)
+
+
+def listening_pids_on_port(port: int) -> list[int]:
+    pids: set[int] = set()
+    commands = [
+        ["ss", "-ltnp", f"sport = :{int(port)}"],
+        ["lsof", f"-iTCP:{int(port)}", "-sTCP:LISTEN", "-P", "-n", "-t"],
+    ]
+    for command in commands:
+        try:
+            completed = subprocess.run(command, capture_output=True, text=True, timeout=4, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        text = (completed.stdout or "") + "\n" + (completed.stderr or "")
+        if command[0] == "lsof":
+            for line in text.splitlines():
+                try:
+                    pids.add(int(line.strip()))
+                except ValueError:
+                    pass
+            continue
+        for match in re_findall_pid(text):
+            pids.add(match)
+    return sorted(pid for pid in pids if pid > 1 and pid != os.getpid())
+
+
+def re_findall_pid(text: str) -> list[int]:
+    import re
+
+    found: list[int] = []
+    for pattern in (r"pid=(\d+)", r",pid=(\d+),", r"users:\(\(\"[^\"]+\",pid=(\d+)"):
+        for match in re.findall(pattern, text or ""):
+            try:
+                found.append(int(match))
+            except ValueError:
+                pass
+    return found
+
+
+def kill_pids(pids: list[int], timeout_seconds: float = 5.0) -> Dict[str, Any]:
+    unique = sorted({pid for pid in pids if pid > 1 and pid != os.getpid()})
+    result: Dict[str, Any] = {"pids": unique, "terminated": [], "killed": [], "missing": [], "errors": []}
+    for pid in unique:
+        try:
+            os.kill(pid, signal.SIGTERM)
+            result["terminated"].append(pid)
+        except ProcessLookupError:
+            result["missing"].append(pid)
+        except OSError as exc:
+            result["errors"].append({"pid": pid, "error": str(exc)})
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        alive = []
+        for pid in unique:
+            try:
+                os.kill(pid, 0)
+                alive.append(pid)
+            except OSError:
+                pass
+        if not alive:
+            break
+        time.sleep(0.2)
+    for pid in unique:
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            continue
+        try:
+            os.kill(pid, signal.SIGKILL)
+            result["killed"].append(pid)
+        except OSError as exc:
+            result["errors"].append({"pid": pid, "error": str(exc)})
+    return result
+
+
+def kill_listeners_on_port(service: str, host: str, port: int, dry_run: bool = False) -> Dict[str, Any]:
+    pids = listening_pids_on_port(port)
+    payload: Dict[str, Any] = {
+        "service": service,
+        "address": f"{host}:{int(port)}",
+        "port": int(port),
+        "pids": pids,
+    }
+    if dry_run:
+        return {**payload, "status": "would_kill" if pids else "would_check_no_listener"}
+    if not pids:
+        return {**payload, "status": "no_listener"}
+    killed = kill_pids(pids)
+    return {**payload, "status": "killed_address_pids", "kill": killed}
+
+
 def http_json(method: str, gateway: str, path: str, payload: Optional[Dict[str, Any]] = None, timeout: float = 2.0) -> Dict[str, Any]:
     url = gateway.rstrip("/") + path
     data = None
@@ -491,7 +595,7 @@ def command_doctor(args: argparse.Namespace) -> Dict[str, Any]:
 
 
 def local_integrations() -> Dict[str, Any]:
-    from app.kernel.tool_integrations import RequiredIntegrationRegistry
+    from app.kernel.registry.tool_integrations import RequiredIntegrationRegistry
 
     return RequiredIntegrationRegistry().status()
 
@@ -577,16 +681,78 @@ def _atomic_json(path: Path, payload: Dict[str, Any]) -> None:
 
 
 def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
-    """Probe the local stack and selectively recover failed managed services."""
+    """Probe the local stack and recover BEAST services.
+
+    By default this is a real reset button: kill listeners on the configured
+    service ports, clear stale pid files, and restart the whole local stack.
+    Pass --restart-all false for the older selective recovery behavior.
+    """
     host = str(args.host)
     gateway_port = int(args.gateway_port)
     mcp_port = int(args.mcp_port)
     litellm_port = int(args.litellm_port)
     nginx_port = int(args.nginx_port)
     ollama_host = str(args.ollama_host)
+    ollama_listen_host, ollama_port = parse_host_port(ollama_host, 11434)
     dry_run = bool_value(getattr(args, "dry_run", "false"))
+    restart_all = bool_value(getattr(args, "restart_all", "true"))
+    kill_address_pids = bool_value(getattr(args, "kill_address_pids", "true"))
     before = stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
     actions: list[Dict[str, Any]] = []
+
+    def stop_known_managed() -> None:
+        for service, pid_name in (
+            ("gateway", "gateway.pid"),
+            ("mcp_http", "mcp-http.pid"),
+            ("litellm", "litellm.pid"),
+            ("ollama", "ollama.pid"),
+        ):
+            if dry_run:
+                actions.append({"service": service, "status": "would_stop_managed", "pid_file": str(run_dir() / pid_name)})
+            else:
+                actions.append(stop_managed_process(run_dir() / pid_name, service))
+
+    def kill_known_addresses() -> None:
+        for service, listen_host, port in (
+            ("gateway", host, gateway_port),
+            ("mcp_http", host, mcp_port),
+            ("litellm", "127.0.0.1", litellm_port),
+            ("nginx", "127.0.0.1", nginx_port),
+            ("ollama", ollama_listen_host, ollama_port),
+        ):
+            actions.append(kill_listeners_on_port(service, listen_host, port, dry_run=dry_run))
+
+    def start_everything() -> None:
+        if dry_run:
+            for service in ("ollama", "litellm", "gateway", "mcp_http", "nginx"):
+                actions.append({"service": service, "status": "would_restart"})
+            return
+        actions.append(start_ollama_daemon(ollama_host))
+        actions.append(start_litellm_daemon(litellm_port))
+        actions.append(start_gateway_daemon(host, gateway_port))
+        actions.append(start_mcp_http_daemon(host, mcp_port))
+        actions.append(ensure_nginx(nginx_port, apply=True))
+
+    if restart_all:
+        stop_known_managed()
+        if kill_address_pids:
+            kill_known_addresses()
+        start_everything()
+        after = before if dry_run else stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
+        ready = all(item.get("ok") for item in after.values())
+        payload = {
+            "command": "heal",
+            "mode": "full_restart",
+            "status": "dry_run" if dry_run else "healed" if ready else "attention",
+            "before": before,
+            "actions": actions,
+            "after": after,
+            "changed": bool(actions),
+            "timestamp": time.time(),
+        }
+        if not dry_run:
+            _atomic_json(run_dir() / "heal-report.json", payload)
+        return payload
 
     def recover(name: str, starter: Any, pid_name: Optional[str] = None) -> None:
         if before.get(name, {}).get("ok"):
@@ -1818,7 +1984,7 @@ def build_parser() -> argparse.ArgumentParser:
     up_parser.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
     up_parser.add_argument("--force-gateway", default="false", help="true/false; stop managed gateway before starting")
 
-    heal_parser = subparsers.add_parser("heal", help="Probe and selectively restore unhealthy BEAST services")
+    heal_parser = subparsers.add_parser("heal", help="Kill configured listeners and restart BEAST services")
     heal_parser.set_defaults(handler=command_heal)
     heal_parser.add_argument("--host", default="127.0.0.1")
     heal_parser.add_argument("--gateway-port", type=int, default=8000)
@@ -1827,6 +1993,8 @@ def build_parser() -> argparse.ArgumentParser:
     heal_parser.add_argument("--nginx-port", type=int, default=8080)
     heal_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
     heal_parser.add_argument("--dry-run", default="false", help="true/false; report recovery actions without changing processes")
+    heal_parser.add_argument("--restart-all", default="true", help="true/false; restart the whole stack instead of only unhealthy services")
+    heal_parser.add_argument("--kill-address-pids", default="true", help="true/false; kill any process listening on configured service ports before restart")
 
     start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
     start_parser.set_defaults(handler=command_start)

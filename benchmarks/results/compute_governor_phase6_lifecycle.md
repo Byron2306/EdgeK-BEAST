@@ -1,6 +1,6 @@
 # Compute Governor Phase 6 Lifecycle Evidence
 
-- Persisted state: `/tmp/beast-phase6-lifecycle-z1ytytr8/state/capability_crystallization_state.json`
+- Persisted state: `/tmp/beast-phase6-lifecycle-1x7kxyli/state/capability_crystallization_state.json`
 - Promoted proof emitted: `True`
 - Flaky candidate blocked: `True`
 - Active boundary reusable: `True`

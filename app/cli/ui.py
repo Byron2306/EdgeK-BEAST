@@ -67,6 +67,63 @@ BEAST_GRAPH_MID = '#1D6B46'
 BEAST_GRAPH_HIGH = '#2ECA7F'
 BEAST_GRAPH_PEAK = '#C2FF4D'
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def resolve_active_workspace(workspace: str | Path | None = None) -> Path:
+    """Resolve the repo whose files the TUI should show in context tools."""
+    def _argv_value() -> str:
+        args = list(sys.argv or [])
+        for index, arg in enumerate(args):
+            if arg.startswith(("--workspace=", "--repo=")):
+                return arg.split("=", 1)[1].strip()
+            if arg in {"--workspace", "--repo", "--cwd"} and index + 1 < len(args):
+                return str(args[index + 1]).strip()
+        return ""
+
+    def _git_root(path: Path) -> Path:
+        try:
+            process = subprocess.run(
+                ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=0.7,
+                check=False,
+            )
+            out = process.stdout.strip()
+            if process.returncode == 0 and out:
+                candidate = Path(out).expanduser().resolve()
+                if candidate.exists() and candidate.is_dir():
+                    return candidate
+        except Exception:
+            pass
+        return path
+
+    explicit_candidates = [
+        str(workspace or ""),
+        _argv_value(),
+        os.environ.get("BEAST_ACTIVE_WORKSPACE", ""),
+        os.environ.get("BEAST_CONTEXT_WORKSPACE", ""),
+        os.environ.get("BEAST_TUI_WORKSPACE", ""),
+    ]
+    launch_candidates = [
+        os.environ.get("PWD", ""),
+        os.getcwd(),
+        os.environ.get("INIT_CWD", ""),
+        os.environ.get("VSCODE_CWD", ""),
+        os.environ.get("BEAST_WORKSPACE", ""),
+    ]
+    for raw in [*explicit_candidates, *launch_candidates]:
+        if not raw:
+            continue
+        try:
+            candidate = Path(str(raw)).expanduser().resolve()
+            if candidate.exists() and candidate.is_dir():
+                return _git_root(candidate)
+        except Exception:
+            continue
+    return Path.cwd().resolve()
+
 HEADER_PANEL_HEIGHT = 20
 HEADER_PANEL_HEIGHT_SHORT = 15
 HEADER_TILE_HEIGHT = 4
@@ -74,6 +131,7 @@ HEADER_TILE_LARGE_HEIGHT = 7
 METRIC_CARD_HEIGHT = 8
 VISUAL_TILE_HEIGHT = 11
 SESSION_SIDE_CARD_HEIGHT = 8
+CONTROL_STRIP_HEIGHT = 5
 
 PAGES = ['Mission','Session','PREC','Routing','Providers','Capabilities','Swarm','Intelligence','Spaces','Economy','Chronicle','Deployment','Diagnostics','Settings']
 PAGE_LABELS = {
@@ -523,10 +581,60 @@ def structured_payload(payload: Any) -> Group:
     return Group(*sections)
 
 
+def compact_commons_economy_payload(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Keep heavyweight economy receipts readable inside the TUI modal."""
+    if not isinstance(data, dict):
+        return {}
+    credits = data.get('credits') if isinstance(data.get('credits'), list) else []
+    adoption = data.get('adoption_history') if isinstance(data.get('adoption_history'), dict) else {}
+    duplicates = data.get('duplicates') if isinstance(data.get('duplicates'), dict) else {}
+    preview = []
+    for row in credits[:8]:
+        if isinstance(row, dict):
+            preview.append({
+                'space_id': row.get('space_id'),
+                'credit_id': row.get('credit_id') or row.get('id'),
+                'units': row.get('units') or row.get('issued_units'),
+                'status': row.get('status') or row.get('state'),
+                'sealed': row.get('sealed'),
+                'issued_at': row.get('issued_at') or row.get('created_at'),
+            })
+    adoptions = adoption.get('adoptions') if isinstance(adoption.get('adoptions'), list) else []
+    return {
+        'beast_object_type': 'compute_reduction_economy_tui_summary',
+        'mode': data.get('mode') or data.get('economy_mode'),
+        'credit_count': data.get('credit_count') or len(credits),
+        'issued_units': data.get('issued_units'),
+        'duplicate_spaces': duplicates.get('duplicate_spaces') or duplicates.get('count') or 0,
+        'adoption_count': adoption.get('count') or len(adoptions),
+        'verified_adoptions': adoption.get('verified_count') or adoption.get('verified') or 0,
+        'credit_preview': preview,
+        'credits_truncated': max(0, len(credits) - len(preview)),
+    }
+
+
 def economy_result_payload(action: str, data: Dict[str, Any]) -> Group:
     action = str(action or '')
     if not isinstance(data, dict):
         return structured_payload(data)
+    if action in {'refresh_economy', 'commons_economy_state', 'simulate_commons_economy', 'issue_commons_credit', 'commons_economy_proof'}:
+        economy_data = data.get('commons_economy') if isinstance(data.get('commons_economy'), dict) else data
+        summary_data = compact_commons_economy_payload(economy_data)
+        if action == 'commons_economy_proof':
+            summary_data.update({
+                'space_id': data.get('space_id'),
+                'eligible': data.get('eligible'),
+                'reason': data.get('reason'),
+                'verified_reproductions': data.get('verified_reproductions'),
+            })
+        if action == 'issue_commons_credit':
+            summary_data.update({
+                'space_id': data.get('space_id'),
+                'issued': data.get('issued'),
+                'reason': data.get('reason'),
+                'credit_id': data.get('credit_id') or (data.get('credit') or {}).get('credit_id') if isinstance(data.get('credit'), dict) else data.get('credit_id'),
+            })
+        return structured_payload(summary_data)
     rollout = data.get('rollout') if isinstance(data.get('rollout'), dict) else data
     forge = data.get('forge') if isinstance(data.get('forge'), dict) else {}
     crystal = data.get('crystallization') if isinstance(data.get('crystallization'), dict) else {}
@@ -598,6 +706,34 @@ def economy_action_rows(report: Dict[str, Any] | None = None) -> List[Dict[str, 
             'value': 'backend + local files',
             'action': 'refresh_economy',
             'hint': 'Refresh the TUI snapshot and local economy report.',
+        },
+        {
+            'name': 'Commons economy state',
+            'status': 'backend',
+            'value': 'sealed credits',
+            'action': 'commons_economy_state',
+            'hint': 'Fetch the live Commons economy endpoint and summarize credits/adoptions.',
+        },
+        {
+            'name': 'Simulate Commons credits',
+            'status': 'dry_run',
+            'value': 'no transfer value',
+            'action': 'simulate_commons_economy',
+            'hint': 'Run the capped non-financial credit simulation against the backend.',
+        },
+        {
+            'name': 'Issue approved credit',
+            'status': 'approved',
+            'value': 'first eligible space',
+            'action': 'issue_commons_credit',
+            'hint': 'Issue one explicit local Commons credit for the first available Space.',
+        },
+        {
+            'name': 'Credit proof',
+            'status': 'proof',
+            'value': 'reproduction backed',
+            'action': 'commons_economy_proof',
+            'hint': 'Build a reproduction-backed proof for the first available Space.',
         },
     ]
 
@@ -1697,6 +1833,15 @@ def provider_fitness_score(snap: BackendSnapshot, provider_id: str) -> Dict[str,
     }
 
 
+def provider_edit_fitness_record(snap: BackendSnapshot, provider_id: str) -> Dict[str, Any]:
+    wanted = provider_key(provider_id)
+    records = snap.provider_edit_fitness.get('providers') if isinstance(snap.provider_edit_fitness.get('providers'), dict) else {}
+    for key, row in records.items():
+        if provider_key(key) == wanted and isinstance(row, dict):
+            return row
+    return {}
+
+
 def intelligence_summary(snap: BackendSnapshot) -> Dict[str, Any]:
     handshake = snap.session_handshake or {}
     budget = handshake.get('latency_budget') if isinstance(handshake.get('latency_budget'), dict) else {}
@@ -2274,6 +2419,7 @@ class DiffPreviewScreen(ModalScreen):
         Binding('escape','app.pop_screen','Close'), Binding('q','app.pop_screen','Close'),
         Binding('up','move_up','Prev hunk', priority=True), Binding('down','move_down','Next hunk', priority=True),
         Binding('space','toggle_hunk','Toggle hunk'), Binding('f','refresh_diff','Refresh diff'),
+        Binding('w','workbench','Workbench'),
         Binding('y','approve','Approve plan'), Binding('u','apply','Apply selected'), Binding('z','rollback','Rollback'),
     ]
     def __init__(self, diff: Dict[str, Any]):
@@ -2371,6 +2517,9 @@ class DiffPreviewScreen(ModalScreen):
         except Exception: pass
         self.refresh_view()
     def action_refresh_diff(self): self.refresh_view()
+    def action_workbench(self):
+        try: self.app.open_source_workbench(self.diff)
+        except Exception: pass
     def action_approve(self):
         try: self.app.approve_current_patch_plan()
         except Exception: pass
@@ -2381,6 +2530,546 @@ class DiffPreviewScreen(ModalScreen):
     def action_rollback(self):
         try: self.app.rollback_latest_patch()
         except Exception: pass
+
+
+def _numbered_code(text: str, *, changed_ranges: List[Dict[str, Any]] | None = None, side: str = 'new', max_lines: int = 90) -> Text:
+    changed_ranges = changed_ranges or []
+    lines = text.splitlines() or ['']
+    out = Text()
+    shown = lines[:max_lines]
+    for index, line in enumerate(shown, start=1):
+        changed = any(
+            int(item.get(f'{side}_start') or 0) <= index <= int(item.get(f'{side}_end') or 0)
+            for item in changed_ranges
+        )
+        prefix_style = BEAST_ACID if changed else BEAST_MUTED
+        line_style = BEAST_TEXT if not changed else BEAST_GREEN
+        out.append(f'{index:>4} ', style=prefix_style)
+        out.append((line[:180] if line else ' ') + '\n', style=line_style)
+    if len(lines) > max_lines:
+        out.append(f'... {len(lines) - max_lines} more line(s) hidden ...\n', style=BEAST_MUTED)
+    return out
+
+
+class SourceWorkbenchScreen(ModalScreen):
+    BINDINGS = [
+        Binding('escape','app.pop_screen','Close'), Binding('q','app.pop_screen','Close'),
+        Binding('tab','next_pane','Next pane'),
+        Binding('up','move_up','Prev hunk', priority=True), Binding('down','move_down','Next hunk', priority=True),
+        Binding('space','toggle_hunk','Toggle hunk'), Binding('v','verify','Verify'),
+        Binding('y','approve','Approve plan'), Binding('u','apply','Apply selected'),
+        Binding('z','rollback','Rollback'), Binding('r','refresh','Refresh'),
+    ]
+    PANES = ['hunks', 'before', 'after']
+
+    def __init__(self, diff: Dict[str, Any]):
+        super().__init__(); self.diff = diff; self.index = 0; self.pane = 0; self.apply_result: Dict[str, Any] = {}; self.disk_confirmations: List[Dict[str, Any]] = []
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id='modal-scroll'):
+            yield Static(self.render_workbench(), id='source-workbench')
+
+    async def on_key(self, event: events.Key) -> None:
+        if modal_scroll_key(self, event):
+            return
+        if event.key == 'up':
+            event.stop(); self.action_move_up()
+        elif event.key == 'down':
+            event.stop(); self.action_move_down()
+        elif event.key in {'space', 'enter'}:
+            event.stop(); self.action_toggle_hunk()
+        elif event.key == 'tab':
+            event.stop(); self.action_next_pane()
+        elif event.character == 'q':
+            event.stop(); self.app.pop_screen()
+
+    async def on_click(self, event: events.Click) -> None:
+        try:
+            widget = self.query_one('#source-workbench', Static)
+            operations = self._operations()
+            self.index = modal_row_from_click(widget, event, len(operations), table_top=9, max_rows=80)
+            if int(getattr(event, 'chain', 1) or 1) > 1:
+                self.action_toggle_hunk()
+            else:
+                self.refresh_view()
+            event.stop()
+        except Exception:
+            pass
+
+    def _operations(self) -> List[Dict[str, Any]]:
+        return [op for op in (self.diff.get('operations') or []) if isinstance(op, dict)]
+
+    def _current_operation(self) -> Dict[str, Any]:
+        operations = self._operations()
+        if not operations:
+            return {}
+        self.index = clamp(self.index, 0, max(0, len(operations)-1))
+        return operations[self.index]
+
+    def _refresh_diff(self) -> None:
+        try:
+            plan = self.app.current_patch_plan()
+            if plan:
+                self.diff = BeastApiClient(self.app.base_url).render_patch_diff(plan).data
+        except Exception:
+            pass
+
+    def _hunk_table(self) -> Table:
+        operations = self._operations()
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['', 'Use', 'Hunk', 'Path', 'Lines', 'Hash', 'State']:
+            table.add_column(col)
+        if not operations:
+            table.add_row('', '', 'none', 'No operations', '', '', '')
+        for index, op in enumerate(operations[:80]):
+            ranges = op.get('changed_ranges') or []
+            line_summary = ', '.join(
+                f"{item.get('new_start')}-{item.get('new_end')}" for item in ranges[:3]
+            ) or 'no change'
+            state = 'stale' if op.get('stale_reason') else 'ready' if op.get('can_apply', True) else 'blocked'
+            state_style = BEAST_DANGER if state == 'stale' else BEAST_GREEN if state == 'ready' else BEAST_WARN
+            table.add_row(
+                selected_marker(index == self.index),
+                Text('●' if op.get('selected') else '○', style=BEAST_GREEN if op.get('selected') else BEAST_MUTED),
+                str(op.get('op_id') or f'op_{index+1:03d}'),
+                selected_text(op.get('path',''), index == self.index),
+                line_summary,
+                str(op.get('new_hash') or '')[:12],
+                Text(state, style=state_style),
+            )
+        return table
+
+    def _post_apply_panel(self) -> Panel:
+        result = self.apply_result or {}
+        if not result:
+            return Panel(Text('No apply result yet.', style=BEAST_MUTED), title='Disk confirmation', border_style=BEAST_BORDER)
+        applied = result.get('applied') or []
+        verification = result.get('verification') if isinstance(result.get('verification'), dict) else {}
+        lines = Text()
+        lines.append(f"Applied files: {len(applied)}\n", style=BEAST_GREEN if applied else BEAST_MUTED)
+        for path in applied[:8]:
+            lines.append(f"  {path}\n", style=BEAST_TEXT)
+        lines.append(f"Verification OK: {verification.get('ok')}\n", style=BEAST_GREEN if verification.get('ok') else BEAST_WARN)
+        lines.append(f"Rollback: {result.get('rollback_path') or 'n/a'}", style=BEAST_MUTED)
+        if self.disk_confirmations:
+            lines.append('\nDisk readback:\n', style=BEAST_ACID)
+            for item in self.disk_confirmations[:4]:
+                status = 'ok' if item.get('ok') else 'error'
+                lines.append(f"  {item.get('path')}  {status}  {str(item.get('hash') or item.get('content_hash') or '')[:12]}\n", style=BEAST_GREEN if item.get('ok') else BEAST_WARN)
+        return Panel(lines, title='Disk confirmation', border_style=BEAST_GREEN if verification.get('ok') else BEAST_WARN)
+
+    def _scorecard_panel(self, plan: Dict[str, Any]) -> Panel:
+        try:
+            workspace = plan.get('workspace') or getattr(self.app, 'active_workspace_root', lambda: None)()
+            result = BeastApiClient(self.app.base_url, workspace=workspace).sourceplan_scorecard(plan)
+            scorecard = result.data if result.ok else {}
+        except Exception:
+            scorecard = {}
+        if not scorecard:
+            return Panel(Text('Scorecard unavailable.', style=BEAST_MUTED), title='Pre-apply risk', border_style=BEAST_BORDER)
+        risk = str(scorecard.get('risk_level') or 'unknown')
+        workbench = scorecard.get('source_workbench') if isinstance(scorecard.get('source_workbench'), dict) else {}
+        lines = Text()
+        lines.append(f"Risk: {risk}  Decision: {scorecard.get('decision')}\n", style=status_style(risk))
+        lines.append(f"Selected: {scorecard.get('selected_count')}  Stale: {scorecard.get('stale_count')}  Preview: {str(scorecard.get('preview_hash') or '')[:12]}\n", style=BEAST_MUTED)
+        replay = workbench.get('lattice_replay') if isinstance(workbench.get('lattice_replay'), dict) else {}
+        if replay and replay.get('visible'):
+            best = replay.get('best_match') if isinstance(replay.get('best_match'), dict) else {}
+            lines.append('Lattice replay:\n', style=BEAST_ACID)
+            lines.append(
+                f"  {replay.get('reuse_mode')}  strength {replay.get('match_strength')}  cell {str(best.get('cell_id') or '')[:18]}\n",
+                style=BEAST_GREEN if float(replay.get('match_strength') or 0) >= 0.88 else BEAST_WARN,
+            )
+            blockers = replay.get('blockers') if isinstance(replay.get('blockers'), list) else []
+            if blockers:
+                lines.append(f"  blockers: {', '.join(str(item) for item in blockers[:3])}\n", style=BEAST_WARN)
+        policy = workbench.get('policy_decision') if isinstance(workbench.get('policy_decision'), dict) else {}
+        if policy:
+            lines.append('Policy gate:\n', style=BEAST_ACID)
+            lines.append(
+                f"  {policy.get('decision')}  approval={policy.get('approval_required')}  verify={policy.get('verification_required')}\n",
+                style=BEAST_WARN if policy.get('approval_required') else BEAST_GREEN,
+            )
+        verification = workbench.get('verification') if isinstance(workbench.get('verification'), dict) else {}
+        if verification:
+            lines.append(
+                f"Verification: {verification.get('status')}  failed={verification.get('failed_count') or 0}\n",
+                style=BEAST_DANGER if verification.get('status') == 'blocked' else BEAST_INFO,
+            )
+        rollback = workbench.get('rollback') if isinstance(workbench.get('rollback'), dict) else {}
+        evidence = workbench.get('evidence_closure') if isinstance(workbench.get('evidence_closure'), dict) else {}
+        if rollback or evidence:
+            lines.append(
+                f"Rollback required={rollback.get('required', True)}  worktree={rollback.get('worktree_recommended', False)}  evidence={evidence.get('bus_artifact_type', 'sourceplan')}\n",
+                style=BEAST_MUTED,
+            )
+        impact = scorecard.get('graph_impact') if isinstance(scorecard.get('graph_impact'), dict) else {}
+        if impact:
+            lines.append(
+                f"Impact: dependents {impact.get('dependent_count') or 0}  routes {impact.get('route_count') or 0}  symbols {len(impact.get('touched_symbols') or [])}\n",
+                style=BEAST_INFO if impact.get('dependent_count') or impact.get('route_count') else BEAST_MUTED,
+            )
+            cortex = impact.get('code_cortex') if isinstance(impact.get('code_cortex'), dict) else {}
+            if cortex:
+                adapters = ', '.join(cortex.get('adapters') or ['unknown'])
+                fallback = ', '.join(cortex.get('fallback_from') or [])
+                suffix = f"  fallback {fallback}" if fallback else ''
+                lines.append(
+                    f"Code Cortex: {adapters}  dependents {cortex.get('dependent_count') or 0}{suffix}\n",
+                    style=BEAST_INFO if cortex.get('dependent_count') else BEAST_MUTED,
+                )
+        route = str(scorecard.get('provider_route_explanation') or '')
+        if route:
+            lines.append('Provider route:\n', style=BEAST_ACID)
+            lines.append(f"  {route}\n", style=BEAST_INFO)
+            fitness = scorecard.get('provider_edit_fitness') if isinstance(scorecard.get('provider_edit_fitness'), dict) else {}
+            if fitness:
+                lines.append(f"  role {fitness.get('recommended_role')}  attempts {fitness.get('attempts')}  score {fitness.get('edit_fitness_score')}\n", style=BEAST_MUTED)
+        tests = scorecard.get('suggested_tests') or []
+        if tests:
+            lines.append('Tests:\n', style=BEAST_ACID)
+            for item in tests[:3]:
+                lines.append(f"  {item}\n", style=BEAST_TEXT)
+        reasons = scorecard.get('reasons') or []
+        if reasons:
+            lines.append('Reasons:\n', style=BEAST_ACID)
+            for item in reasons[:4]:
+                lines.append(f"  {item}\n", style=BEAST_WARN if risk == 'high' else BEAST_MUTED)
+        border = BEAST_DANGER if risk == 'high' else BEAST_WARN if risk == 'medium' else BEAST_GREEN
+        return Panel(lines, title='Pre-apply risk', border_style=border)
+
+    def render_workbench(self):
+        self._refresh_diff()
+        op = self._current_operation()
+        ranges = op.get('changed_ranges') or []
+        plan = {}
+        try:
+            plan = self.app.current_patch_plan() or {}
+        except Exception:
+            plan = {}
+        summary = current_plan_summary(plan)
+        active_pane = self.PANES[self.pane % len(self.PANES)]
+        meta = (
+            f"Plan={self.diff.get('plan_id','n/a')}  pane={active_pane}  "
+            f"selected={self.diff.get('selected_count','?')}/{self.diff.get('operation_count','?')}  "
+            f"stale={self.diff.get('stale_count', 0)}  preview={str(self.diff.get('preview_hash') or '')[:12]}  "
+            f"gate={summary.get('gate_status')}  errors={len(self.diff.get('errors') or [])}"
+        )
+        stale_reason = str(op.get('stale_reason') or '')
+        hash_line = (
+            f"old={str(op.get('old_hash') or '')[:12]}  "
+            f"new={str(op.get('new_hash') or '')[:12]}  "
+            f"expected={str(op.get('expected_hash') or '')[:12] or 'n/a'}"
+        )
+        before_title = f"Before: {op.get('path') or 'no file'}"
+        after_title = f"After: {op.get('path') or 'no file'}"
+        code_grid = Table.grid(expand=True)
+        code_grid.add_column(ratio=1)
+        code_grid.add_column(ratio=1)
+        code_grid.add_row(
+            Panel(_numbered_code(str(op.get('old_text') or ''), changed_ranges=ranges, side='old'), title=before_title, border_style=BEAST_ACID if active_pane == 'before' else BEAST_BORDER),
+            Panel(_numbered_code(str(op.get('new_text') or ''), changed_ranges=ranges, side='new'), title=after_title, border_style=BEAST_ACID if active_pane == 'after' else BEAST_BORDER),
+        )
+        return Panel(
+            Group(
+                Text('BEAST SOURCE WORKBENCH', style=f'bold {BEAST_ACID}'),
+                Text('Tab pane  ↑↓/click hunk  Space/Enter/double-click toggle  v verify  y approve  u apply  z rollback  r refresh  Esc/q close', style=BEAST_MUTED),
+                Text(meta, style=BEAST_GREEN if summary.get('diff_compiled') else BEAST_WARN),
+                Text(''),
+                Panel(self._hunk_table(), title='Hunks', border_style=BEAST_ACID if active_pane == 'hunks' else BEAST_BORDER),
+                Text(hash_line, style=BEAST_WARN if stale_reason else BEAST_MUTED),
+                Text(stale_reason, style=BEAST_DANGER) if stale_reason else Text('Shadow buffer is current for selected hunks.', style=BEAST_MUTED),
+                Text(''),
+                code_grid,
+                Text(''),
+                self._scorecard_panel(plan),
+                Text(''),
+                self._post_apply_panel(),
+            ),
+            border_style=BEAST_ACID,
+            padding=(1,2),
+            style=BEAST_PANEL,
+        )
+
+    def refresh_view(self):
+        try: self.query_one('#source-workbench', Static).update(self.render_workbench())
+        except Exception: pass
+
+    def action_next_pane(self):
+        self.pane = (self.pane + 1) % len(self.PANES); self.refresh_view()
+    def action_move_up(self):
+        self.index = max(0, self.index - 1); self.refresh_view()
+    def action_move_down(self):
+        self.index = min(max(0, len(self._operations())-1), self.index + 1); self.refresh_view()
+    def action_toggle_hunk(self):
+        op = self._current_operation()
+        try: self.app.toggle_patch_hunk(str(op.get('op_id') or ''))
+        except Exception: pass
+        self.refresh_view()
+    def action_refresh(self): self.refresh_view()
+    def action_verify(self):
+        try: self.app.action_verify_patch_plan()
+        except Exception: pass
+        self.refresh_view()
+    def action_approve(self):
+        try: self.app.approve_current_patch_plan()
+        except Exception: pass
+        self.refresh_view()
+    def action_apply(self):
+        try:
+            result = self.app.apply_current_patch_plan()
+            if isinstance(result, dict):
+                self.apply_result = result
+                confirmations = []
+                client = BeastApiClient(self.app.base_url)
+                for path in (result.get('applied') or [])[:8]:
+                    record = client.read_workspace_file(str(path), max_chars=1200)
+                    if record.get('ok'):
+                        content = str(record.get('content') or '')
+                        record['hash'] = str(record.get('hash') or record.get('content_hash') or '')
+                        record['preview'] = content[:400]
+                    confirmations.append(record)
+                self.disk_confirmations = confirmations
+        except Exception: pass
+        self.refresh_view()
+    def action_rollback(self):
+        try: self.app.rollback_latest_patch()
+        except Exception: pass
+        self.refresh_view()
+
+
+def _mission_status_text(value: Any) -> Text:
+    status = str(value or '').strip().lower()
+    if status in {'ok', 'allow', 'ready', 'healthy'}:
+        return Text('OK', style=BEAST_GREEN)
+    if status in {'warn', 'require_approval', 'sandbox/worktree_only'} or 'warn' in status:
+        return Text('WARN', style=BEAST_WARN)
+    if status in {'block', 'blocked', 'error', 'failed'}:
+        return Text('BLOCK', style=BEAST_DANGER)
+    return Text(str(value or 'WAIT').upper(), style=BEAST_MUTED)
+
+
+class MissionCockpitScreen(ModalScreen):
+    BINDINGS = [
+        Binding('escape','app.pop_screen','Close'), Binding('q','app.pop_screen','Close'),
+        Binding('up','move_up','Prev section', priority=True), Binding('down','move_down','Next section', priority=True),
+        Binding('r','refresh','Refresh'), Binding('enter','open_selected','Inspect'),
+    ]
+    SECTIONS = ['overview', 'blockers', 'worktrees', 'sourceplans', 'evidence', 'receipts']
+
+    def __init__(self, summary: Dict[str, Any] | None = None, *, objective: str = '', phase: str = 'scout', risk: str = ''):
+        super().__init__()
+        self.summary = summary or {}
+        self.objective = objective
+        self.phase = phase
+        self.risk = risk
+        self.index = 0
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id='modal-scroll'):
+            yield Static(self.render_cockpit(), id='mission-cockpit')
+
+    async def on_key(self, event: events.Key) -> None:
+        if modal_scroll_key(self, event):
+            return
+        if event.key == 'up':
+            event.stop(); self.action_move_up()
+        elif event.key == 'down':
+            event.stop(); self.action_move_down()
+        elif event.character == 'r':
+            event.stop(); self.action_refresh()
+        elif event.key == 'enter':
+            event.stop(); self.action_open_selected()
+        elif event.key == 'escape' or event.character == 'q':
+            event.stop(); self.app.pop_screen()
+
+    async def on_click(self, event: events.Click) -> None:
+        try:
+            widget = self.query_one('#mission-cockpit', Static)
+            self.index = modal_row_from_click(widget, event, len(self.SECTIONS), table_top=4, max_rows=len(self.SECTIONS))
+            self.refresh_view()
+            event.stop()
+        except Exception:
+            pass
+
+    def _refresh_summary(self) -> None:
+        try:
+            workspace = getattr(self.app, 'active_workspace_root', lambda: resolve_active_workspace())()
+            objective = self.objective or str((getattr(self.app, 'chat_lines', []) or [{}])[-1].get('content') or '')
+            result = BeastApiClient(self.app.base_url, workspace=workspace).mission_cockpit_summary(
+                objective=objective,
+                phase=self.phase,
+                risk=self.risk,
+            )
+            if isinstance(result, dict):
+                self.summary = result
+        except Exception:
+            pass
+
+    def _section_table(self) -> Table:
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['', 'Section', 'Signal', 'Detail']:
+            table.add_column(col)
+        cards = {str(card.get('card_id')): card for card in (self.summary.get('cards') or []) if isinstance(card, dict)}
+        rows = [
+            ('overview', 'Overview', f"{len(self.summary.get('cards') or [])} cards", self.summary.get('workspace_root') or 'workspace unknown'),
+            ('blockers', 'Blockers', f"{len(self.summary.get('blockers') or [])} warning(s)", 'approval, safety, worktree, and evidence attention'),
+            ('worktrees', 'Worktrees', str((self.summary.get('worktrees') or {}).get('count') or 0), 'isolated task branches'),
+            ('sourceplans', 'SourcePlans', str(len(self.summary.get('sourceplan_queue') or [])), 'queued, approved, and applied plans'),
+            ('evidence', 'Evidence', str(len(self.summary.get('evidence_stream') or [])), 'recent SourcePlan evidence packets'),
+            ('receipts', 'Receipts', str(cards.get('code_cortex', {}).get('value') or 'advisory'), 'mode, spec, safety, scheduler, Code Cortex'),
+        ]
+        for row_index, (section, label, signal, detail) in enumerate(rows):
+            table.add_row(
+                selected_marker(row_index == self.index),
+                selected_text(label, row_index == self.index),
+                str(signal),
+                str(detail)[:90],
+            )
+        return table
+
+    def _cards_panel(self) -> Panel:
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Status', 'Card', 'Value', 'Detail']:
+            table.add_column(col)
+        cards = [card for card in (self.summary.get('cards') or []) if isinstance(card, dict)]
+        if not cards:
+            table.add_row('WAIT', 'No cockpit summary loaded', '', 'Press r to refresh.')
+        for card in cards:
+            table.add_row(
+                _mission_status_text(card.get('status')),
+                str(card.get('title') or card.get('card_id') or ''),
+                str(card.get('value') or ''),
+                str(card.get('detail') or '')[:100],
+            )
+        return Panel(table, title='Mission Cards', border_style=BEAST_ACID)
+
+    def _blockers_panel(self) -> Panel:
+        blockers = [row for row in (self.summary.get('blockers') or []) if isinstance(row, dict)]
+        text = Text()
+        if not blockers:
+            text.append('No cockpit blockers reported.\n', style=BEAST_GREEN)
+        for row in blockers[:12]:
+            text.append(f"{row.get('title') or row.get('card_id')}: ", style=BEAST_WARN)
+            text.append(f"{row.get('value')}  {row.get('detail')}\n", style=BEAST_TEXT)
+        return Panel(text, title='Blockers', border_style=BEAST_WARN if blockers else BEAST_GREEN)
+
+    def _worktree_table(self) -> Table:
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Task', 'Branch', 'Status', 'Path']:
+            table.add_column(col)
+        rows = (self.summary.get('worktrees') or {}).get('worktrees') or []
+        if not rows:
+            table.add_row('none', '', 'primary workspace only', '')
+        for row in rows[:10]:
+            table.add_row(str(row.get('task_id') or row.get('id') or ''), str(row.get('branch') or ''), str(row.get('status') or ''), str(row.get('path') or '')[-70:])
+        return table
+
+    def _sourceplan_table(self) -> Table:
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Plan', 'Status', 'Provider', 'Objective']:
+            table.add_column(col)
+        rows = self.summary.get('sourceplan_queue') or []
+        if not rows:
+            table.add_row('none', 'empty', '', 'No recent patch plans.')
+        for row in rows[:12]:
+            table.add_row(str(row.get('plan_id') or ''), str(row.get('status') or ''), str(row.get('provider') or ''), str(row.get('objective') or '')[:95])
+        return table
+
+    def _evidence_table(self) -> Table:
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Plan', 'Stage', 'Promotion', 'Hash']:
+            table.add_column(col)
+        rows = self.summary.get('evidence_stream') or []
+        if not rows:
+            table.add_row('none', 'missing', 'no', '')
+        for row in rows[:12]:
+            table.add_row(str(row.get('plan_id') or ''), str(row.get('stage') or row.get('type') or ''), bool_badge(row.get('promotion_candidate')), str(row.get('evidence_hash') or '')[:18])
+        return table
+
+    def _receipts_panel(self) -> Panel:
+        mode = self.summary.get('mode_route') if isinstance(self.summary.get('mode_route'), dict) else {}
+        spec = self.summary.get('spec_covenant') if isinstance(self.summary.get('spec_covenant'), dict) else {}
+        safety = self.summary.get('safety') if isinstance(self.summary.get('safety'), dict) else {}
+        scheduler = self.summary.get('scheduler') if isinstance(self.summary.get('scheduler'), dict) else {}
+        mission_lattice = self.summary.get('mission_lattice') if isinstance(self.summary.get('mission_lattice'), dict) else {}
+        evidence_bus = self.summary.get('evidence_bus') if isinstance(self.summary.get('evidence_bus'), dict) else {}
+        cortex = self.summary.get('code_cortex') if isinstance(self.summary.get('code_cortex'), dict) else {}
+        table = Table(expand=True, box=box.SIMPLE_HEAVY)
+        for col in ['Receipt', 'Value', 'Detail']:
+            table.add_column(col)
+        table.add_row('Mode', str(mode.get('selected_mode') or ''), str(mode.get('why') or '')[:90])
+        table.add_row('Spec Covenant', str(spec.get('included_count') or 0), str(spec.get('covenant_hash') or '')[:32])
+        table.add_row('Safety', str(safety.get('decision') or ''), f"{safety.get('finding_count') or 0} finding(s)")
+        table.add_row('Scheduler', str(scheduler.get('recent_count') or 0), f"local {scheduler.get('local_lane_total') or 0} / cloud {scheduler.get('cloud_lane_total') or 0}")
+        table.add_row('Mission Lattice', str(mission_lattice.get('cell_count') or 0), f"{mission_lattice.get('verified_cell_count') or 0} verified / {mission_lattice.get('promotion_cell_count') or 0} promotion")
+        table.add_row('Evidence Bus', str(evidence_bus.get('receipt_count') or 0), safe_join(evidence_bus.get('by_type') or {}, 3))
+        table.add_row('Code Cortex', str(cortex.get('active_adapter') or ''), safe_join(cortex.get('adapters') or [], 4))
+        return Panel(table, title='Governance Receipts', border_style=BEAST_BORDER)
+
+    def render_cockpit(self):
+        if not self.summary:
+            self._refresh_summary()
+        selected = self.SECTIONS[self.index % len(self.SECTIONS)]
+        meta = (
+            f"Workspace={self.summary.get('workspace_root') or 'unknown'}  "
+            f"phase={self.summary.get('phase') or self.phase}  risk={self.summary.get('risk') or self.risk or 'n/a'}  "
+            f"selected={selected}"
+        )
+        body = Group(
+            Text('BEAST MISSION COCKPIT', style=f'bold {BEAST_ACID}'),
+            Text('↑↓ select section  Enter inspect  r refresh  Esc/q close', style=BEAST_MUTED),
+            Text(meta, style=BEAST_INFO),
+            Text(''),
+            self._section_table(),
+            Text(''),
+            self._cards_panel(),
+            Text(''),
+            self._blockers_panel(),
+            Text(''),
+            Panel(self._worktree_table(), title='Worktree Forge', border_style=BEAST_BORDER),
+            Text(''),
+            Panel(self._sourceplan_table(), title='SourcePlan Queue', border_style=BEAST_BORDER),
+            Text(''),
+            Panel(self._evidence_table(), title='Evidence Stream', border_style=BEAST_BORDER),
+            Text(''),
+            self._receipts_panel(),
+        )
+        return Panel(body, border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL)
+
+    def refresh_view(self):
+        try:
+            self.query_one('#mission-cockpit', Static).update(self.render_cockpit())
+        except Exception:
+            pass
+
+    def action_move_up(self):
+        self.index = clamp(self.index - 1, 0, len(self.SECTIONS) - 1); self.refresh_view()
+    def action_move_down(self):
+        self.index = clamp(self.index + 1, 0, len(self.SECTIONS) - 1); self.refresh_view()
+    def action_refresh(self):
+        self._refresh_summary(); self.refresh_view()
+    def action_open_selected(self):
+        selected = self.SECTIONS[self.index % len(self.SECTIONS)]
+        payload = {
+            'section': selected,
+            'workspace_root': self.summary.get('workspace_root'),
+            'cards': self.summary.get('cards') if selected == 'overview' else None,
+            'blockers': self.summary.get('blockers') if selected == 'blockers' else None,
+            'worktrees': self.summary.get('worktrees') if selected == 'worktrees' else None,
+            'sourceplan_queue': self.summary.get('sourceplan_queue') if selected == 'sourceplans' else None,
+            'evidence_stream': self.summary.get('evidence_stream') if selected == 'evidence' else None,
+            'receipts': {
+                'mode_route': self.summary.get('mode_route'),
+                'spec_covenant': self.summary.get('spec_covenant'),
+                'safety': self.summary.get('safety'),
+                'scheduler': self.summary.get('scheduler'),
+                'mission_lattice': self.summary.get('mission_lattice'),
+                'evidence_bus': self.summary.get('evidence_bus'),
+                'code_cortex': self.summary.get('code_cortex'),
+            } if selected == 'receipts' else None,
+        }
+        self.app.push_screen(DetailScreen(f'Mission cockpit: {selected}', {k: v for k, v in payload.items() if v is not None}))
 
 
 class ApprovalQueueScreen(ModalScreen):
@@ -3096,6 +3785,7 @@ class PageHost(Static):
             enabled = row.get('enabled', row.get('status','available'))
             route = provider_route_summary(snap, pid)
             benchmark_fitness = model_fitness.get(provider_key(pid))
+            edit_fitness = provider_edit_fitness_record(snap, pid)
             fitness = provider_fitness_score(snap, pid)
             if benchmark_fitness:
                 fitness = {
@@ -3115,15 +3805,19 @@ class PageHost(Static):
                 model_count = len(snap.litellm_models) if provider_key(pid) in {'litellm', 'ollama'} and snap.litellm_models else val(row, 'models_count', default='—')
             base_url = route.get('base_url') or val(row, 'base_url', 'endpoint', default=route.get('proxy_path', ''))
             policy = 'Governed' if str(route.get('governed_by_beast')).lower() in {'yes', 'true'} else 'Manual'
+            edit_role = str(edit_fitness.get('recommended_role') or '')
+            if edit_role:
+                policy = f"{policy} / {edit_role.replace('_', ' ')}"
             base = [selected_marker(i==index), selected_text(pid, i==index), Text('● ', style=status_style(status)) + Text(str(status), style=status_style(status))]
             if compact:
-                table.add_row(*base, route.get('route_provider',''), Text(str(model_count), style=BEAST_GREEN), Text(policy, style=BEAST_GREEN if policy == 'Governed' else BEAST_WARN))
+                table.add_row(*base, route.get('route_provider',''), Text(str(model_count), style=BEAST_GREEN), Text(policy, style=BEAST_GREEN if policy.startswith('Governed') else BEAST_WARN))
             else:
-                table.add_row(*base, route.get('route_provider',''), Text(str(base_url)[:56], style='#AAB8B2'), Text(str(model_count), style=BEAST_GREEN), Text(policy, style=BEAST_GREEN if policy == 'Governed' else BEAST_WARN))
+                table.add_row(*base, route.get('route_provider',''), Text(str(base_url)[:56], style='#AAB8B2'), Text(str(model_count), style=BEAST_GREEN), Text(policy, style=BEAST_GREEN if policy.startswith('Governed') else BEAST_WARN))
         selected_pid = val(selected,'provider_id','id','name',default='provider')
         route_detail = provider_route_summary(snap, selected_pid)
         fitness_detail = provider_fitness_score(snap, selected_pid)
         benchmark_detail = model_fitness.get(provider_key(selected_pid)) or {}
+        edit_detail = provider_edit_fitness_record(snap, selected_pid)
         if benchmark_detail:
             fitness_detail = {
                 **fitness_detail,
@@ -3150,6 +3844,17 @@ class PageHost(Static):
         detail.add_row(Text('Fallback Path', style=BEAST_MUTED), Text(str(fallback), style=BEAST_ACID))
         detail.add_row(Text('Last Error', style=BEAST_MUTED), Text('none' if not snap.errors else next(iter(snap.errors.values()))[:120], style=BEAST_GREEN if not snap.errors else BEAST_WARN))
         detail.add_row(Text('Fitness sample', style=BEAST_MUTED), Text(f"{fitness_detail.get('sample_size')} records; clean={fitness_detail.get('clean')} rescued={fitness_detail.get('rescued')}", style=BEAST_TEXT))
+        if edit_detail:
+            try:
+                edit_score = float(edit_detail.get('edit_fitness_score') or 0)
+            except Exception:
+                edit_score = 0.0
+            detail.add_row(Text('SourcePlan edit role', style=BEAST_MUTED), Text(str(edit_detail.get('recommended_role') or 'unknown'), style=status_style(edit_detail.get('recommended_role'))))
+            detail.add_row(Text('SourcePlan edit score', style=BEAST_MUTED), Text(f"{edit_score:.2f}", style=BEAST_GREEN if edit_score >= 0.78 else BEAST_WARN))
+            detail.add_row(Text('Edit attempts', style=BEAST_MUTED), Text(f"{edit_detail.get('attempts', 0)} attempts; verified={edit_detail.get('verified_applies', 0)} failed={edit_detail.get('failed_attempts', 0)} rollback={edit_detail.get('rollback_count', 0)}", style=BEAST_TEXT))
+            route_note = str(edit_detail.get('route_explanation') or '')
+            if route_note:
+                detail.add_row(Text('Edit route reason', style=BEAST_MUTED), Text(route_note[:120], style=BEAST_INFO))
         if benchmark_detail:
             detail.add_row(Text('Benchmarked model', style=BEAST_MUTED), Text(str(benchmark_detail.get('model') or route_detail.get('resolved_model')), style=BEAST_INFO))
             detail.add_row(Text('Completion rate', style=BEAST_MUTED), Text(f"{float(benchmark_detail.get('completion_rate') or 0):.0%}", style=BEAST_TEXT))
@@ -3200,16 +3905,17 @@ class PageHost(Static):
         return page
 
     def capabilities(self, snap: BackendSnapshot, index: int):
-        rows = snap.skill_promotion_candidates or snap.capabilities or [{'capability_id':'no_capabilities_loaded','kind':'empty','risk_level':'low','status':'waiting'}]
+        plane_rows = snap.capability_plane.get('capabilities') if isinstance(snap.capability_plane, dict) else []
+        rows = plane_rows or snap.skill_promotion_candidates or snap.capabilities or [{'capability_id':'no_capabilities_loaded','kind':'empty','risk_level':'low','status':'waiting'}]
         index = clamp(index, 0, len(rows)-1); selected = rows[index]
         table = Table(expand=True, box=box.SIMPLE_HEAVY)
-        for col in ['','Skill','Type','Confidence','Source','Status']:
+        for col in ['','Capability','Type','Confidence','Source','Status']:
             table.add_column(col)
         for i, cap in enumerate(rows):
             name = val(cap,'candidate_id','capability_id','name',default='cap')
             kind = val(cap,'kind','family',default='utility')
             confidence = confidence_from_item(cap, fallback=max(58, 96 - (i * 7)))
-            promoted = 'Promoted' if confidence >= 86 else 'Candidate' if confidence >= 72 else 'Learning'
+            promoted = 'Verified' if cap.get('verified') else 'Reusable' if cap.get('reusable') else 'Learning'
             source = val(cap, 'source', 'family', 'managed_by', default='traces')
             table.add_row(
                 selected_marker(i==index),
@@ -3217,7 +3923,7 @@ class PageHost(Static):
                 Text(kind, style=BEAST_INFO if kind not in {'utility', 'empty'} else BEAST_WARN),
                 percent_bar(confidence, width=12),
                 Text(source[:26], style='#AAB8B2'),
-                Text(('♕ ' if promoted == 'Promoted' else '◌ ') + promoted, style=status_style(promoted)),
+                Text(('♕ ' if promoted == 'Verified' else '◌ ') + promoted, style=status_style('Promoted' if promoted == 'Verified' else promoted)),
             )
         kinds = snap.kinds(); families = snap.families()
         selected_name = val(selected,'candidate_id','capability_id','name',default='capability')
@@ -4329,7 +5035,7 @@ class BeastMissionConsole(App):
         padding: 0 2;
     }
 
-    #help-panel, #detail-panel, #command-palette, #context-picker, #patch-plan-viewer, #diff-preview, #approval-queue {
+    #help-panel, #detail-panel, #command-palette, #context-picker, #workspace-registry, #patch-plan-viewer, #diff-preview, #approval-queue, #mission-cockpit {
         width: 92%;
         height: auto;
         margin: 2 4;
@@ -4363,10 +5069,10 @@ class BeastMissionConsole(App):
         Binding('home','scroll_home','Top', priority=True), Binding('end','scroll_end','Bottom', priority=True),
         Binding('left','previous_page','Prev', priority=True), Binding('right','next_page','Next', priority=True), Binding('up','move_up','Up', priority=True), Binding('down','move_down','Down', priority=True),
         Binding('1','mission','Mission'), Binding('2','session','Session'), Binding('3','prec','PREC'), Binding('4','routing','Routing'), Binding('5','providers','Providers'), Binding('6','capabilities','Capabilities'), Binding('j','intelligence','Intelligence'), Binding('e','economy','Economy'), Binding('7','chronicle','Chronicle'), Binding('8','deployment','Deployment'), Binding('9','diagnostics','Diagnostics'), Binding('0','settings','Settings'),
-        Binding('s','start_session','Start'), Binding('p','prepare_handoff','Handoff'), Binding('g','refresh_backend','Gateway'), Binding('m','refresh_backend','MCP'), Binding('x','refresh_backend','Proxy'),
+        Binding('s','start_session','Start'), Binding('p','prepare_handoff','Handoff'), Binding('g','refresh_backend','Gateway'), Binding('m','refresh_backend','MCP'), Binding('x','refresh_backend','Proxy'), Binding('ctrl+o','mission_cockpit','Cockpit'),
         Binding('enter','view_selected','Open'), Binding('t','test_selected','Test'), Binding('v','view_selected','View'), Binding('ctrl+e','edit_selected','Edit'),
         Binding('n','next_provider','Provider'), Binding(']','next_provider','Next provider'), Binding('[','previous_provider','Prev provider'), Binding('w','toggle_streaming','Streaming'), Binding('k','cancel_turn','Cancel'),
-        Binding('c','context_picker','Context'), Binding('o','build_patch_plan','Source patch'), Binding('f','preview_diff','Diff/hunks'), Binding('u','apply_patch_plan','Apply selected'), Binding('z','rollback_patch','Rollback'), Binding('l','approval_queue','Approvals'), Binding('y','approve_patch_plan','Approve plan'), Binding('a','approve_selected','Approve'), Binding('b','block_selected','Block'), Binding('ctrl+t','prepare_tiny_llama_demo','Tiny demo'), Binding('ctrl+k','command_palette','Command'),
+        Binding('c','context_picker','Context'), Binding('o','build_patch_plan','Source patch'), Binding('shift+o','upgrade_patch_plan','Upgrade patch'), Binding('f','preview_diff','Diff/hunks'), Binding('u','apply_patch_plan','Apply selected'), Binding('z','rollback_patch','Rollback'), Binding('l','approval_queue','Approvals'), Binding('y','approve_patch_plan','Approve plan'), Binding('a','approve_selected','Approve'), Binding('b','block_selected','Block'), Binding('ctrl+t','prepare_tiny_llama_demo','Tiny demo'), Binding('ctrl+k','command_palette','Command'),
     ]
     selected_page: reactive[str] = reactive('Mission')
     input_mode: reactive[bool] = reactive(False)
@@ -4378,7 +5084,14 @@ class BeastMissionConsole(App):
         self.base_url = base_url or os.environ.get('BEAST_GATEWAY_URL','http://127.0.0.1:8000')
         self.chat_lines: List[Dict[str, str]] = []
         self.tool_events: List[str] = []
-        self.session_meta: Dict[str, Any] = {'state': 'idle', 'provider': provider_key(os.environ.get('BEAST_PROVIDER', 'litellm'))}
+        self.session_meta: Dict[str, Any] = {
+            'state': 'idle',
+            'provider': provider_key(os.environ.get('BEAST_PROVIDER', 'litellm')),
+            'source_edit_mode': 'governed_patch_upgrade',
+            'allow_source_edits': True,
+            'allow_upgrade_edits': True,
+            'patch_apply_policy': 'preview_approve_verify_rollback_chronicle',
+        }
         self.context_files: List[str] = []
         self.context_candidates: List[Dict[str, Any]] = []
         self.patch_plans: List[Dict[str, Any]] = []
@@ -4405,7 +5118,7 @@ class BeastMissionConsole(App):
                     with VerticalScroll(id='page-scroll'):
                         yield PageHost(id='page-host')
                     yield Input(placeholder='NAV MODE: press Enter or i to type. Press / for slash commands. Esc returns to navigation.', id='chat-input')
-            yield Static('  BEAST: Connected   ? Help   Ctrl+T TinyDemo   ←→ Pages   ↑↓ Select   s Start   c Context   o SourcePlan   f Diff   y Approve   u Apply   z Rollback   q Quit', id='terminal-strip')
+            yield Static('  BEAST: Connected   ? Help   Ctrl+T TinyDemo   ←→ Pages   ↑↓ Select   s Start   c Context   o SourcePlan   O UpgradePlan   f Diff   y Approve   u Apply   z Rollback   q Quit', id='terminal-strip')
 
     async def on_mount(self) -> None:
         self.title = 'BEAST Mission Console'
@@ -4438,11 +5151,35 @@ class BeastMissionConsole(App):
             self.terminal_width = int(event.size.width)
         except Exception:
             pass
+        self._sync()
+        self._refresh_scroll_layout(preserve=True)
+
+    def _refresh_scroll_layout(self, *, preserve: bool = True) -> None:
+        """Force Textual to recalculate scroll bounds after dynamic page changes."""
         try:
-            self.query_one('#page-scroll', VerticalScroll).scroll_home(animate=False)
+            scroll = self.query_one('#page-scroll', VerticalScroll)
+            host = self.query_one('#page-host', PageHost)
+            current_y = int(getattr(scroll, 'scroll_y', 0) or 0)
+            host.refresh(repaint=True, layout=True)
+            scroll.refresh(repaint=True, layout=True)
+            if preserve:
+                scroll.scroll_to(y=max(0, current_y), animate=False, force=True, immediate=True)
+            try:
+                self.call_after_refresh(lambda: self._clamp_page_scroll())
+            except Exception:
+                self._clamp_page_scroll()
         except Exception:
             pass
-        self._sync()
+
+    def _clamp_page_scroll(self) -> None:
+        try:
+            scroll = self.query_one('#page-scroll', VerticalScroll)
+            current_y = int(getattr(scroll, 'scroll_y', 0) or 0)
+            max_y = int(getattr(scroll, 'max_scroll_y', 0) or 0)
+            if current_y > max_y:
+                scroll.scroll_to(y=max(0, max_y), animate=False, force=True, immediate=True)
+        except Exception:
+            pass
 
     def _sync(self) -> None:
         try:
@@ -4487,7 +5224,7 @@ class BeastMissionConsole(App):
             header.refresh()
             try:
                 scroll = self.query_one('#page-scroll', VerticalScroll)
-                scroll.refresh()
+                scroll.refresh(repaint=True, layout=True)
             except Exception:
                 pass
         except Exception:
@@ -4573,6 +5310,7 @@ class BeastMissionConsole(App):
             self.query_one('#page-scroll', VerticalScroll).scroll_home(animate=False)
         except Exception:
             pass
+        self._refresh_scroll_layout(preserve=False)
         self.notify(f'{PAGE_LABELS.get(page,page)} page active.', title='BEAST')
 
     async def on_click(self, event: events.Click) -> None:
@@ -4598,6 +5336,28 @@ class BeastMissionConsole(App):
             event.stop()
 
     def action_help(self): self.push_screen(HelpScreen())
+    def action_mission_cockpit(self):
+        try:
+            workspace = getattr(self, 'active_workspace_root', lambda: resolve_active_workspace())()
+            objective = str((self.chat_lines or [{}])[-1].get('content') or 'Mission cockpit orientation')
+            summary = BeastApiClient(self.base_url, workspace=workspace).mission_cockpit_summary(objective=objective)
+        except Exception as exc:
+            summary = {
+                'workspace_root': str(resolve_active_workspace()),
+                'phase': 'scout',
+                'risk': '',
+                'cards': [{'card_id': 'error', 'title': 'Cockpit unavailable', 'value': 'offline', 'detail': str(exc), 'status': 'warn'}],
+                'blockers': [{'card_id': 'error', 'title': 'Cockpit unavailable', 'value': 'offline', 'detail': str(exc), 'status': 'warn'}],
+                'worktrees': {'count': 0, 'worktrees': []},
+                'sourceplan_queue': [],
+                'evidence_stream': [],
+                'mode_route': {},
+                'spec_covenant': {},
+                'safety': {},
+                'scheduler': {},
+                'code_cortex': {},
+            }
+        self.push_screen(MissionCockpitScreen(summary))
     def action_refresh_backend(self): self.run_worker(self.fetch_backend(), exclusive=True)
     def action_heal_services(self): self.run_worker(self._heal_services(force=True), exclusive=False)
 
@@ -4625,6 +5385,7 @@ class BeastMissionConsole(App):
         try:
             process = await asyncio.create_subprocess_exec(
                 sys.executable, str(ROOT / 'bin' / 'beast'), '--agent', 'heal',
+                '--restart-all', 'true', '--kill-address-pids', 'true',
                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
                 cwd=str(ROOT),
             )
@@ -5190,11 +5951,20 @@ class BeastMissionConsole(App):
         self.set_page('Session')
         self.run_worker(self._build_source_patch_plan(), exclusive=False)
 
-    async def _build_source_patch_plan(self):
+    def action_upgrade_patch_plan(self):
+        self.session_meta['source_edit_mode'] = 'governed_upgrade_patch'
+        self.session_meta['allow_upgrade_edits'] = True
+        self.set_page('Session')
+        self.run_worker(self._build_source_patch_plan(upgrade=True), exclusive=False)
+
+    async def _build_source_patch_plan(self, upgrade: bool = False):
         objective = self.chat_lines[-1]['content'] if self.chat_lines else 'Prepare a governed source patch from selected BEAST context.'
+        if upgrade and 'upgrade' not in objective.lower():
+            objective = f'Prepare a governed upgrade patch: {objective}'
         provider = str(self.session_meta.get('provider') or 'litellm')
         self._set_mascot_state('working')
-        self.tool_events.append(f'source patch draft requested via {provider}')
+        mode = 'upgrade patch' if upgrade else 'source patch'
+        self.tool_events.append(f'{mode} draft requested via {provider}')
         self._sync()
         if self.tiny_demo.get('active'):
             result = self._build_tiny_demo_patch_plan()
@@ -5202,6 +5972,13 @@ class BeastMissionConsole(App):
             result = await BeastApiClient(self.base_url).draft_source_patch_plan(objective, self.context_files, provider=provider)
         if result.ok:
             plan = result.data
+            if upgrade:
+                plan['intent'] = 'upgrade_edit'
+                plan['source_edit_mode'] = 'governed_upgrade_patch'
+                plan['write_policy'] = (
+                    str(plan.get('write_policy') or '') +
+                    ' Upgrade edits are allowed only through selected hunks, approval, verification, rollback, and Chronicle evidence.'
+                ).strip()
             self.patch_plans.append(plan)
             self.approval_queue.append(plan)
             self.tool_events.append(result.brief(260))
@@ -5279,7 +6056,7 @@ class BeastMissionConsole(App):
             self.latest_diff = result.data
             self.tool_events.append(result.brief(280))
             self.chat_lines.append({'role': 'tool', 'content': result.brief(1200)})
-            self.push_screen(DiffPreviewScreen(self.latest_diff))
+            self.push_screen(SourceWorkbenchScreen(self.latest_diff))
             self._set_mascot_state('finished', hold_ticks=10)
         else:
             self.latest_diff = result.data or {}
@@ -5287,16 +6064,27 @@ class BeastMissionConsole(App):
             self.chat_lines.append({'role': 'tool', 'content': result.brief(1200)})
             self.notify(result.error or 'Could not render diff', title='BEAST diff', severity='warning')
             if self.latest_diff:
-                self.push_screen(DiffPreviewScreen(self.latest_diff))
+                self.push_screen(SourceWorkbenchScreen(self.latest_diff))
             self._set_mascot_state('alert', hold_ticks=18)
         self._sync()
+
+    def open_source_workbench(self, diff: Dict[str, Any] | None = None):
+        if diff is None:
+            plan = self.current_patch_plan()
+            if not plan:
+                self.notify('No patch plan available. Press o to build one first.', title='BEAST workbench', severity='warning')
+                return
+            result = BeastApiClient(self.base_url).render_patch_diff(plan)
+            diff = result.data if result.ok else (result.data or {})
+        self.latest_diff = diff or {}
+        self.push_screen(SourceWorkbenchScreen(self.latest_diff))
 
     def apply_current_patch_plan(self):
         plan = self.current_patch_plan()
         if not plan:
             self.notify('No patch plan is queued for apply.', title='BEAST apply', severity='warning')
             self._set_mascot_state('alert', hold_ticks=12)
-            return
+            return {}
         self._set_mascot_state('working')
         result = BeastApiClient(self.base_url).apply_patch_plan(plan, approved=True)
         if result.ok:
@@ -5310,12 +6098,15 @@ class BeastMissionConsole(App):
             self._record_tiny_demo_verification(saved, result)
             self.notify(result.summary, title='BEAST patch applied')
             self._set_mascot_state('finished', hold_ticks=16)
+            self._sync()
+            return result.data
         else:
             self.tool_events.append(result.brief(320))
             self.chat_lines.append({'role': 'tool', 'content': result.brief(1200)})
             self.notify(result.error, title='BEAST patch apply', severity='warning')
             self._set_mascot_state('alert', hold_ticks=20)
         self._sync()
+        return result.data or {}
 
     def action_apply_patch_plan(self):
         self.apply_current_patch_plan()
@@ -5600,7 +6391,9 @@ class BeastMissionConsole(App):
             {'id': 'refresh', 'label': 'Refresh backend state', 'scope': 'Gateway', 'key': 'r'},
             {'id': 'start_session', 'label': 'Start live coding session', 'scope': 'Session', 'key': 's'},
             {'id': 'prepare_handoff', 'label': 'Prepare provider handoff', 'scope': 'Output governance', 'key': 'p'},
+            {'id': 'mission_cockpit', 'label': 'Open mission cockpit', 'scope': 'Governance', 'key': 'ctrl+o'},
             {'id': 'sourceplan', 'label': 'Build governed source patch plan', 'scope': 'SourcePlan', 'key': 'o'},
+            {'id': 'upgrade_patch', 'label': 'Build governed upgrade patch plan', 'scope': 'SourcePlan', 'key': 'O'},
             {'id': 'preview_diff', 'label': 'Preview/select patch hunks', 'scope': 'SourcePlan', 'key': 'f'},
             {'id': 'apply_patch', 'label': 'Apply selected patch hunks', 'scope': 'SourcePlan', 'key': 'u'},
             {'id': 'rollback', 'label': 'Rollback latest patch apply', 'scope': 'SourcePlan', 'key': 'z'},
@@ -5624,7 +6417,9 @@ class BeastMissionConsole(App):
             'refresh': self.action_refresh_backend,
             'start_session': self.action_start_session,
             'prepare_handoff': self.action_prepare_handoff,
+            'mission_cockpit': self.action_mission_cockpit,
             'sourceplan': self.action_build_patch_plan,
+            'upgrade_patch': self.action_upgrade_patch_plan,
             'preview_diff': self.action_preview_diff,
             'apply_patch': self.action_apply_patch_plan,
             'rollback': self.action_rollback_patch,
@@ -5656,7 +6451,7 @@ class BeastMissionConsole(App):
         objective = 'BEAST live coding session from CLI/TUI'
         provider = str(self.session_meta.get('provider') or 'litellm')
         self._set_mascot_state('working')
-        result = await BeastApiClient(self.base_url).start_live_session(objective, provider=provider, workspace=os.environ.get('BEAST_WORKSPACE', os.getcwd()))
+        result = await BeastApiClient(self.base_url).start_live_session(objective, provider=provider, workspace=str(self.active_workspace_root()))
         if result.ok:
             lifecycle_id = str(result.data.get('lifecycle_id') or result.data.get('id') or '')
             self.session_meta.update({'state': 'active', 'provider': provider, 'lifecycle_id': lifecycle_id})
@@ -5908,6 +6703,8 @@ class BeastMissionConsole(App):
             self.build_metadata_patch_plan(); return
         if text.lower().startswith(('/plan', '/sourceplan', '/patch')):
             self.action_build_patch_plan(); return
+        if text.lower().startswith(('/upgrade', '/upgradeplan', '/patch-upgrade')):
+            self.action_upgrade_patch_plan(); return
         if text.lower() in {'/diff', '/preview', '/hunks'}:
             self.action_preview_diff(); return
         if text.lower() in {'/verify', '/check'}:
@@ -5944,6 +6741,10 @@ class BeastMissionConsole(App):
                     lifecycle_id=str(self.session_meta.get('lifecycle_id') or ''),
                     context_files=list(self.context_files),
                     model=str(self.session_meta.get('model') or 'beast-auto'),
+                    max_tokens=int(self.session_meta.get('stream_max_tokens') or 2000),
+                    context_max_files=int(self.session_meta.get('context_file_max_selected') or 64),
+                    context_max_chars_each=int(self.session_meta.get('context_chars_each') or 4200),
+                    governance_level=str(self.session_meta.get('governance_level') or 'governed'),
                 )
                 if result.assistant_text:
                     self.chat_lines.append({'role': 'assistant', 'content': result.assistant_text})
@@ -5970,6 +6771,11 @@ class BeastMissionConsole(App):
                 lifecycle_id=str(self.session_meta.get('lifecycle_id') or ''),
                 context_files=list(self.context_files),
                 model=str(self.session_meta.get('model') or 'beast-auto'),
+                max_tokens=int(self.session_meta.get('stream_max_tokens') or 2000),
+                max_continuations=int(self.session_meta.get('stream_continuations') or 2),
+                context_max_files=int(self.session_meta.get('context_file_max_selected') or 64),
+                context_max_chars_each=int(self.session_meta.get('context_chars_each') or 4200),
+                governance_level=str(self.session_meta.get('governance_level') or 'governed'),
             ):
                 if self.current_turn_cancelled:
                     self.tool_events.append('stream cancelled at safe checkpoint')
@@ -5983,6 +6789,7 @@ class BeastMissionConsole(App):
                     self.chat_lines[assistant_index]['content'] = accumulated + '▌'
                     if token_count % 3 == 0:
                         self._sync()
+                        self._scroll_stream_tail()
                 elif event_type in {'tool', 'stage'}:
                     self.tool_events.append(str(event.get('text') or event_type))
                     self._sync()
@@ -6007,6 +6814,7 @@ class BeastMissionConsole(App):
                         self.session_meta['last_crystal_reuse_decision'] = receipt.get('crystal_reuse_decision') or {}
                     heal_recommended = heal_recommended or bool(data.get('heal_recommended'))
                     self._sync()
+                    self._scroll_stream_tail()
 
             if self.current_turn_cancelled:
                 self.chat_lines[assistant_index]['content'] = (accumulated or '') + '\n\n[stream cancelled]'
@@ -6627,6 +7435,10 @@ def economy_action_icon(action: str) -> str:
         'start_forge_node': '⚙',
         'promote_fleet': '♕',
         'refresh_economy': '↻',
+        'commons_economy_state': '◫',
+        'simulate_commons_economy': '∑',
+        'issue_commons_credit': '◇',
+        'commons_economy_proof': '□',
     }.get(action, '▷')
 
 
@@ -6643,6 +7455,8 @@ def economy_action_meter(row: Dict[str, Any]) -> int:
             return min(100, 50 + int(status.split(':')[-1]) * 10)
         except Exception:
             return pct_from_status(status, fallback=72)
+    if action in {'commons_economy_state', 'simulate_commons_economy', 'issue_commons_credit', 'commons_economy_proof'}:
+        return pct_from_status(status, fallback=84)
     return pct_from_status(status, fallback=78)
 
 
@@ -6867,10 +7681,32 @@ class EconomyActionResultScreen(ModalScreen):
         return Panel(body, border_style=accent, style=BEAST_PANEL, padding=(1,2), box=box.HEAVY_EDGE)
 
 
+def _first_commons_space_id(payloads: Iterable[Dict[str, Any]]) -> str:
+    for payload in payloads:
+        if not isinstance(payload, dict):
+            continue
+        spaces = payload.get('spaces') or payload.get('items')
+        if isinstance(spaces, list):
+            for row in spaces:
+                if isinstance(row, dict):
+                    space_id = row.get('space_id') or row.get('id') or row.get('name')
+                    if space_id:
+                        return str(space_id)
+        credits = payload.get('credits')
+        if isinstance(credits, list):
+            for row in credits:
+                if isinstance(row, dict) and row.get('space_id'):
+                    return str(row.get('space_id'))
+        if payload.get('space_id'):
+            return str(payload.get('space_id'))
+    return ''
+
+
 async def _run_economy_action_visual(self: BeastMissionConsole, action: str | None = None) -> None:
     self._set_mascot_state('working')
     action = action or str(self.selected_item().get('action') or 'economy_dashboard')
     try:
+        api = BeastApiClient(self.base_url, timeout=8.0)
         if action == 'rollout_monitor':
             report = evaluate_rollout()
             ok = not bool(report.get('redlines'))
@@ -6883,6 +7719,44 @@ async def _run_economy_action_visual(self: BeastMissionConsole, action: str | No
             result = ActionResult(True, 'Forge fleet promotions', f"{len(report.get('promoted') or [])} promoted; {len(report.get('blocked') or [])} blocked", report)
         elif action == 'start_forge_node':
             result = self._start_local_forge_node()
+        elif action == 'refresh_economy':
+            await self.fetch_backend()
+            snap = self.snapshot or BackendSnapshot(base_url=self.base_url)
+            data = {
+                'beast_object_type': 'beast_tui_economy_refresh',
+                'commons_economy': compact_commons_economy_payload(snap.commons_economy if isinstance(snap.commons_economy, dict) else {}),
+                'compute_state': snap.compute_state,
+                'compute_metrics': snap.compute_metrics,
+                'compute_savings': snap.compute_savings,
+                'kv_cache_state': snap.kv_cache_state,
+                'crystal_reuse': snap.crystal_reuse,
+            }
+            credits = data['commons_economy'].get('credit_count') if isinstance(data['commons_economy'], dict) else 0
+            result = ActionResult(True, 'Refresh economy state', f"snapshot refreshed; commons credits={credits}", data)
+        elif action == 'commons_economy_state':
+            data = await api.get_json('/edgek/commons-economy')
+            summary = compact_commons_economy_payload(data)
+            result = ActionResult(True, 'Commons economy state', f"{summary.get('credit_count', 0)} credit(s); {summary.get('issued_units') or 0} issued units", data)
+        elif action == 'simulate_commons_economy':
+            data = await api.post_json('/edgek/commons-economy/simulate', {'limit': 10})
+            summary = compact_commons_economy_payload(data)
+            result = ActionResult(True, 'Commons economy simulation', f"{summary.get('credit_count', 0)} simulated credit(s); {summary.get('issued_units') or 0} issued units", data)
+        elif action in {'issue_commons_credit', 'commons_economy_proof'}:
+            spaces = await api.get_json('/edgek/commons-spaces')
+            economy = await api.get_json('/edgek/commons-economy')
+            space_id = _first_commons_space_id([economy, spaces] if action == 'issue_commons_credit' else [spaces, economy])
+            if not space_id:
+                result = ActionResult(False, 'Commons economy', '', error='No Commons Space found for economy action')
+            elif action == 'commons_economy_proof':
+                data = await api.get_json(f'/edgek/commons-economy/proof/{space_id}')
+                result = ActionResult(True, 'Commons credit proof', f"proof built for {space_id}", data)
+            else:
+                data = await api.post_json(f'/edgek/commons-economy/credits/{space_id}', {
+                    'approved': True,
+                    'approved_by': 'beast_tui_operator',
+                    'reason': 'operator-triggered TUI Commons economy action',
+                })
+                result = ActionResult(True, 'Issue approved Commons credit', f"credit action completed for {space_id}", data)
         else:
             report = build_dashboard()
             result = ActionResult(True, 'Economy dashboard', str((report.get('rollout') or {}).get('readiness') or 'ready'), report)
@@ -6916,7 +7790,7 @@ async def _modal_mouse_scroll_up(self, event: events.MouseScrollUp) -> None:
 
 for _screen in [
     HelpScreen, DetailScreen, CommandPaletteScreen, ContextPickerScreen,
-    PatchPlanScreen, DiffPreviewScreen, ApprovalQueueScreen, EconomyActionResultScreen,
+    PatchPlanScreen, DiffPreviewScreen, SourceWorkbenchScreen, MissionCockpitScreen, ApprovalQueueScreen, EconomyActionResultScreen,
 ]:
     _screen.on_mouse_scroll_down = _modal_mouse_scroll_down
     _screen.on_mouse_scroll_up = _modal_mouse_scroll_up
@@ -6927,6 +7801,1439 @@ PageHost.prec_lifecycle = visual_prec_lifecycle_deck
 PageHost.economy = visual_economy_command_deck
 BeastMissionConsole._run_economy_action = _run_economy_action_visual
 
+
+
+# ---------------------------------------------------------------------------
+# Operator cockpit refit: page control strip, session levers, full context list,
+# and scroll-safe streamed transcript.
+# ---------------------------------------------------------------------------
+
+
+def _tui_int(value: Any, default: int, lo: int = 0, hi: int = 10_000_000) -> int:
+    try:
+        return max(lo, min(int(value), hi))
+    except Exception:
+        return default
+
+
+def _tui_bool(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return str(value).strip().lower() not in {'0', 'false', 'no', 'off', 'disabled'}
+
+
+def _session_lever(meta: Dict[str, Any], key: str, default: Any) -> Any:
+    value = meta.get(key) if isinstance(meta, dict) else None
+    return default if value in (None, '') else value
+
+
+class SessionLeversScreen(ModalScreen):
+    """Edit the knobs that were previously scattered across env vars/API defaults."""
+
+    BINDINGS = [
+        Binding('escape', 'close', 'Close'), Binding('q', 'close', 'Close'),
+        Binding('ctrl+s', 'save', 'Save'), Binding('enter', 'save', 'Save', priority=True),
+    ]
+
+    def __init__(self, values: Dict[str, Any]):
+        super().__init__()
+        self.values = dict(values or {})
+
+    def compose(self) -> ComposeResult:
+        rows = Table.grid(expand=True)
+        rows.add_column(width=24)
+        rows.add_column(ratio=1)
+        for key, label in [
+            ('workspace_root', 'Workspace root'), ('provider', 'Provider'), ('model', 'Model'), ('governance_level', 'Governance level'),
+            ('stream_max_tokens', 'Stream max tokens'), ('stream_continuations', 'Continuations'),
+            ('workspace_file_limit', 'Workspace files shown'), ('context_file_max_selected', 'Max selected context files'),
+            ('context_chars_each', 'Chars per context file'), ('transcript_lines', 'Transcript turns shown'),
+            ('transcript_chars', 'Chars per transcript turn'), ('auto_scroll_stream', 'Auto-scroll during stream'),
+        ]:
+            rows.add_row(Text(label, style=BEAST_MUTED), Text(str(self.values.get(key, '')), style=BEAST_GREEN))
+        with VerticalScroll(id='modal-scroll'):
+            yield Static(
+                Panel(
+                    Group(
+                        title_text('SESSION LEVERS', '⚙'),
+                        Text('Enter/Ctrl+S saves. Use 0 for workspace files shown when you want the full safe workspace inventory.', style=BEAST_MUTED),
+                        Text(''),
+                        Panel(Group(title_text('CURRENT VALUES', '▤'), Text(''), rows), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED),
+                        Text(''),
+                    ),
+                    border_style=BEAST_ACID,
+                    padding=(1, 2),
+                    style=BEAST_PANEL,
+                ),
+                id='detail-panel',
+            )
+            yield Input(value=str(self.values.get('workspace_root', '')), placeholder='workspace root for context files, e.g. /home/byron/my-repo', id='lever-workspace-root')
+            yield Input(value=str(self.values.get('provider', 'litellm')), placeholder='provider id, e.g. litellm, openai, ollama', id='lever-provider')
+            yield Input(value=str(self.values.get('model', 'beast-auto')), placeholder='model alias, e.g. beast-auto or provider/model', id='lever-model')
+            yield Input(value=str(self.values.get('governance_level', 'governed')), placeholder='relaxed | governed | strict | lockdown', id='lever-governance')
+            yield Input(value=str(self.values.get('stream_max_tokens', 4000)), placeholder='max streamed output tokens, 128-16000', id='lever-max-tokens')
+            yield Input(value=str(self.values.get('stream_continuations', 2)), placeholder='continuations after finish_reason=length, 0-5', id='lever-continuations')
+            yield Input(value=str(self.values.get('workspace_file_limit', 0)), placeholder='workspace file list limit; 0 = entire safe inventory', id='lever-workspace-limit')
+            yield Input(value=str(self.values.get('context_file_max_selected', 64)), placeholder='max context files sent to backend', id='lever-context-max')
+            yield Input(value=str(self.values.get('context_chars_each', 4200)), placeholder='characters read from each selected file', id='lever-context-chars')
+            yield Input(value=str(self.values.get('transcript_lines', 24)), placeholder='visible transcript turns on Session page', id='lever-transcript-lines')
+            yield Input(value=str(self.values.get('transcript_chars', 6000)), placeholder='visible chars per transcript turn', id='lever-transcript-chars')
+            yield Input(value='yes' if _tui_bool(self.values.get('auto_scroll_stream'), True) else 'no', placeholder='yes/no auto-scroll stream tail', id='lever-auto-scroll')
+            yield Static(
+                Panel(
+                    Group(
+                        Text('Lever effects', style=f'bold {BEAST_ACID}'),
+                        Text('Token and continuation values are passed into provider streaming. Context caps are passed into workspace reads instead of being silently hard-coded.', style=BEAST_TEXT),
+                    ),
+                    border_style=BEAST_JADE,
+                    padding=(1,2),
+                    style=BEAST_PANEL,
+                )
+            )
+
+    async def on_mount(self) -> None:
+        try:
+            self.query_one('#lever-max-tokens', Input).focus()
+        except Exception:
+            pass
+
+    async def on_key(self, event: events.Key) -> None:
+        if event.key in {'escape', 'q'}:
+            event.stop(); self.action_close(); return
+        if modal_scroll_key(self, event):
+            return
+
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
+        event.stop(); self.action_save()
+
+    def action_close(self) -> None:
+        try:
+            self.app.pop_screen()
+        except Exception:
+            pass
+
+    def action_save(self) -> None:
+        try:
+            values = {
+                'workspace_root': self.query_one('#lever-workspace-root', Input).value.strip(),
+                'provider': self.query_one('#lever-provider', Input).value.strip() or 'litellm',
+                'model': self.query_one('#lever-model', Input).value.strip() or 'beast-auto',
+                'governance_level': self.query_one('#lever-governance', Input).value.strip() or 'governed',
+                'stream_max_tokens': _tui_int(self.query_one('#lever-max-tokens', Input).value, 4000, 128, 16000),
+                'stream_continuations': _tui_int(self.query_one('#lever-continuations', Input).value, 2, 0, 5),
+                'workspace_file_limit': _tui_int(self.query_one('#lever-workspace-limit', Input).value, 0, 0, 1_000_000),
+                'context_file_max_selected': _tui_int(self.query_one('#lever-context-max', Input).value, 64, 1, 4096),
+                'context_chars_each': _tui_int(self.query_one('#lever-context-chars', Input).value, 4200, 800, 50000),
+                'transcript_lines': _tui_int(self.query_one('#lever-transcript-lines', Input).value, 24, 4, 200),
+                'transcript_chars': _tui_int(self.query_one('#lever-transcript-chars', Input).value, 6000, 500, 50000),
+                'auto_scroll_stream': _tui_bool(self.query_one('#lever-auto-scroll', Input).value, True),
+            }
+            self.app.save_session_levers(values)
+            self.app.pop_screen()
+        except Exception as exc:
+            self.app.notify(str(exc), title='Session levers', severity='warning')
+
+
+_OLD_BEAST_INIT = BeastMissionConsole.__init__
+
+def _refit_init(self: BeastMissionConsole, base_url: str | None = None):
+    _OLD_BEAST_INIT(self, base_url=base_url)
+    workspace = resolve_active_workspace()
+    self.workspace_root_path = workspace
+    os.environ['BEAST_ACTIVE_WORKSPACE'] = str(workspace)
+    os.environ['BEAST_WORKSPACE'] = str(workspace)
+    defaults = {
+        'workspace_root': str(workspace),
+        'model': os.environ.get('BEAST_TUI_MODEL', 'beast-auto'),
+        'governance_level': os.environ.get('BEAST_TUI_GOVERNANCE_LEVEL', 'governed'),
+        'stream_max_tokens': _tui_int(os.environ.get('BEAST_TUI_STREAM_MAX_TOKENS') or os.environ.get('BEAST_TUI_MAX_TOKENS'), 4000, 128, 16000),
+        'stream_continuations': _tui_int(os.environ.get('BEAST_TUI_STREAM_CONTINUATIONS'), 2, 0, 5),
+        'workspace_file_limit': _tui_int(os.environ.get('BEAST_TUI_WORKSPACE_FILE_LIMIT'), 0, 0, 1_000_000),
+        'context_file_max_selected': _tui_int(os.environ.get('BEAST_TUI_CONTEXT_MAX_FILES'), 64, 1, 4096),
+        'context_chars_each': _tui_int(os.environ.get('BEAST_TUI_CONTEXT_CHARS_EACH'), 4200, 800, 50000),
+        'transcript_lines': _tui_int(os.environ.get('BEAST_TUI_TRANSCRIPT_LINES'), 24, 4, 200),
+        'transcript_chars': _tui_int(os.environ.get('BEAST_TUI_TRANSCRIPT_CHARS'), 6000, 500, 50000),
+        'auto_scroll_stream': _tui_bool(os.environ.get('BEAST_TUI_AUTO_SCROLL_STREAM'), True),
+    }
+    for key, value in defaults.items():
+        self.session_meta.setdefault(key, value)
+
+BeastMissionConsole.__init__ = _refit_init
+
+
+def _open_session_levers(self: BeastMissionConsole) -> None:
+    values = dict(getattr(self, 'session_meta', {}) or {})
+    values.setdefault('workspace_root', str(getattr(self, 'workspace_root_path', resolve_active_workspace())))
+    values.setdefault('stream_max_tokens', 4000)
+    values.setdefault('stream_continuations', 2)
+    values.setdefault('workspace_file_limit', 0)
+    values.setdefault('context_file_max_selected', 64)
+    values.setdefault('context_chars_each', 4200)
+    values.setdefault('transcript_lines', 24)
+    values.setdefault('transcript_chars', 6000)
+    values.setdefault('auto_scroll_stream', True)
+    self.push_screen(SessionLeversScreen(values))
+
+
+def _save_session_levers(self: BeastMissionConsole, values: Dict[str, Any]) -> None:
+    provider = provider_key(values.get('provider') or self.session_meta.get('provider') or 'litellm')
+    workspace_value = str(values.get('workspace_root') or self.session_meta.get('workspace_root') or '').strip()
+    if workspace_value:
+        self.set_workspace_root(workspace_value, clear_context=False)
+        values['workspace_root'] = str(self.active_workspace_root())
+    self.session_meta.update(values)
+    self.session_meta['provider'] = provider
+    self.session_meta['model'] = str(values.get('model') or 'beast-auto')
+    self.streaming_enabled = _tui_bool(values.get('streaming_enabled'), self.streaming_enabled)
+    self.tool_events.append(
+        f"session levers saved: workspace={Path(str(self.session_meta.get('workspace_root') or '')).name} gov={self.session_meta.get('governance_level')} max_tokens={self.session_meta.get('stream_max_tokens')} ctx={self.session_meta.get('context_file_max_selected')} files"
+    )
+    self.notify('Session levers updated.', title='BEAST config')
+    self._sync()
+
+
+def _workspace_candidate_limit(self: BeastMissionConsole) -> int:
+    return _tui_int((self.session_meta or {}).get('workspace_file_limit'), 0, 0, 1_000_000)
+
+
+def _context_file_cap(self: BeastMissionConsole) -> int:
+    return _tui_int((self.session_meta or {}).get('context_file_max_selected'), 64, 1, 4096)
+
+
+
+def _active_workspace_root(self: BeastMissionConsole) -> Path:
+    current = getattr(self, 'workspace_root_path', None) or (self.session_meta or {}).get('workspace_root')
+    workspace = resolve_active_workspace(current)
+    self.workspace_root_path = workspace
+    return workspace
+
+
+def _set_workspace_root(self: BeastMissionConsole, path: str | Path, clear_context: bool = True) -> Path:
+    workspace = resolve_active_workspace(path)
+    self.workspace_root_path = workspace
+    os.environ['BEAST_ACTIVE_WORKSPACE'] = str(workspace)
+    os.environ['BEAST_WORKSPACE'] = str(workspace)
+    self.session_meta['workspace_root'] = str(workspace)
+    self.context_candidates = []
+    if clear_context:
+        self.context_files = []
+        self.session_meta['context_files'] = []
+    self.tool_events.append(f'workspace switched: {workspace}')
+    try:
+        self.notify(str(workspace), title='BEAST workspace')
+    except Exception:
+        pass
+    self._sync()
+    return workspace
+
+
+def _beast_api(self: BeastMissionConsole, timeout: float | None = None) -> BeastApiClient:
+    kwargs = {'workspace': self.active_workspace_root()}
+    if timeout is not None:
+        kwargs['timeout'] = timeout
+    return BeastApiClient(self.base_url, **kwargs)
+
+def _scroll_stream_tail(self: BeastMissionConsole) -> None:
+    try:
+        if self.selected_page != 'Session' or not _tui_bool((self.session_meta or {}).get('auto_scroll_stream'), True):
+            return
+        scroll = self.query_one('#page-scroll', VerticalScroll)
+        self.call_after_refresh(lambda: scroll.scroll_end(animate=False, force=True))
+    except Exception:
+        pass
+
+
+def _action_session_levers(self: BeastMissionConsole):
+    self.open_session_levers()
+
+BeastMissionConsole.open_session_levers = _open_session_levers
+BeastMissionConsole.save_session_levers = _save_session_levers
+BeastMissionConsole.workspace_candidate_limit = _workspace_candidate_limit
+BeastMissionConsole.context_file_cap = _context_file_cap
+BeastMissionConsole.active_workspace_root = _active_workspace_root
+BeastMissionConsole.set_workspace_root = _set_workspace_root
+BeastMissionConsole.beast_api = _beast_api
+BeastMissionConsole._scroll_stream_tail = _scroll_stream_tail
+BeastMissionConsole.action_session_levers = _action_session_levers
+BeastMissionConsole.BINDINGS = [*BeastMissionConsole.BINDINGS, Binding('ctrl+g', 'session_levers', 'Levers')]
+
+
+_OLD_COMMAND_PALETTE_ITEMS = BeastMissionConsole.command_palette_items
+
+def _command_palette_items_refit(self: BeastMissionConsole) -> List[Dict[str, Any]]:
+    items = _OLD_COMMAND_PALETTE_ITEMS(self)
+    items.insert(3, {'id': 'session_levers', 'label': 'Edit token/context/governance/workspace levers', 'scope': 'Config', 'key': 'ctrl+g'})
+    items.insert(4, {'id': 'workspace_show', 'label': 'Show active workspace', 'scope': 'Context', 'key': '/workspace'})
+    return items
+
+BeastMissionConsole.command_palette_items = _command_palette_items_refit
+
+
+_OLD_EXECUTE_PALETTE_COMMAND = BeastMissionConsole.execute_palette_command
+
+def _execute_palette_command_refit(self: BeastMissionConsole, command_id: str) -> None:
+    if command_id == 'session_levers':
+        self.open_session_levers(); return
+    if command_id == 'workspace_show':
+        workspace = self.active_workspace_root()
+        self.chat_lines.append({'role': 'system', 'content': f'Active workspace: {workspace}\nUse /workspace /path/to/repo to switch.'})
+        self.tool_events.append(f'active workspace: {workspace}')
+        self.set_page('Session')
+        self._sync(); return
+    _OLD_EXECUTE_PALETTE_COMMAND(self, command_id)
+
+BeastMissionConsole.execute_palette_command = _execute_palette_command_refit
+
+
+_OLD_ON_INPUT_SUBMITTED_WORKSPACE = BeastMissionConsole.on_input_submitted
+
+async def _on_input_submitted_workspace(self: BeastMissionConsole, event: Input.Submitted) -> None:
+    if event.input.id == 'chat-input':
+        text = event.value.strip()
+        lower = text.lower()
+        if lower in {'/workspace', '/ws'}:
+            event.stop()
+            event.input.value = ''
+            self.input_mode = False
+            workspace = self.active_workspace_root()
+            self.chat_lines.append({'role': 'system', 'content': f'Active workspace: {workspace}\nUse /workspace /path/to/repo to switch the context picker.'})
+            self.tool_events.append(f'active workspace: {workspace}')
+            self._sync()
+            return
+        if lower.startswith('/workspace ') or lower.startswith('/ws '):
+            event.stop()
+            event.input.value = ''
+            self.input_mode = False
+            target = text.split(maxsplit=1)[1].strip().strip('"\'')
+            workspace = self.set_workspace_root(target, clear_context=True)
+            self.chat_lines.append({'role': 'system', 'content': f'Workspace switched to: {workspace}\nContext selection was cleared so old-repo files cannot leak into the next run.'})
+            self._sync()
+            return
+    return await _OLD_ON_INPUT_SUBMITTED_WORKSPACE(self, event)
+
+BeastMissionConsole.on_input_submitted = _on_input_submitted_workspace
+
+
+_OLD_SET_CONTEXT_FILES = BeastMissionConsole.set_context_files
+
+def _set_context_files_refit(self: BeastMissionConsole, files: List[str]) -> None:
+    cap = self.context_file_cap()
+    clean: List[str] = []
+    for path in files:
+        path = str(path)
+        if path and path not in clean:
+            clean.append(path)
+    if cap > 0:
+        clean = clean[:cap]
+    self.context_files = clean
+    self.session_meta['context_files'] = list(self.context_files)
+    self.tool_events.append(f'context selected: {len(self.context_files)} file(s); cap={cap}')
+    self._sync()
+
+BeastMissionConsole.set_context_files = _set_context_files_refit
+
+
+_OLD_CONTEXT_PICKER_ACTION = BeastMissionConsole.action_context_picker
+
+def _action_context_picker_refit(self: BeastMissionConsole):
+    self.set_page('Session')
+    if self.tiny_demo.get('active'):
+        self.context_candidates = self._tiny_demo_context_rows()
+        if not self.context_files:
+            self.context_files = [str(row['path']) for row in self.context_candidates]
+    else:
+        try:
+            workspace = self.active_workspace_root()
+            self.context_candidates = BeastApiClient(self.base_url, workspace=workspace).workspace_file_candidates(limit=self.workspace_candidate_limit())
+            self.tool_events.append(f'context inventory loaded from {workspace} ({len(self.context_candidates)} files)')
+        except Exception:
+            self.context_candidates = []
+    self.push_screen(ContextPickerScreen(self.context_candidates, self.context_files))
+
+BeastMissionConsole.action_context_picker = _action_context_picker_refit
+
+
+_OLD_EDIT_SELECTED = BeastMissionConsole.action_edit_selected
+
+def _action_edit_selected_refit(self: BeastMissionConsole):
+    if self.selected_page in {'Session', 'Settings'}:
+        self.open_session_levers(); return
+    _OLD_EDIT_SELECTED(self)
+
+BeastMissionConsole.action_edit_selected = _action_edit_selected_refit
+
+
+# Context picker: paged, selectable, and able to traverse the full safe workspace inventory.
+ContextPickerScreen.BINDINGS = [
+    *ContextPickerScreen.BINDINGS,
+    Binding('space', 'toggle_file', 'Toggle'), Binding('[', 'page_up', 'Prev page'), Binding(']', 'page_down', 'Next page'),
+    Binding('ctrl+a', 'select_visible', 'Select page'), Binding('x', 'clear_selected', 'Clear'),
+]
+
+
+def _ctx_visible(self: ContextPickerScreen) -> List[Dict[str, Any]]:
+    page_size = _tui_int(getattr(self, 'page_size', 40), 40, 10, 200)
+    offset = _tui_int(getattr(self, 'offset', 0), 0, 0, max(0, len(self.files) - 1))
+    self.offset = min(offset, max(0, len(self.files) - page_size)) if self.files else 0
+    return self.files[self.offset:self.offset + page_size]
+
+
+def _ctx_render_picker(self: ContextPickerScreen):
+    if not hasattr(self, 'offset'):
+        self.offset = 0
+    if not hasattr(self, 'page_size'):
+        self.page_size = 40
+    visible = _ctx_visible(self)
+    selected_count = len(self.selected_files)
+    table = Table(expand=True, box=box.SIMPLE_HEAVY, header_style=f'bold {BEAST_ACID}', border_style=BEAST_BORDER)
+    for col in ['','Use','#','File','Size','Type']:
+        table.add_column(col)
+    if not self.files:
+        table.add_row('','', '0', 'No file candidates found', '', '')
+    for visible_i, item in enumerate(visible):
+        absolute_i = self.offset + visible_i
+        path = str(item.get('path') or '')
+        table.add_row(
+            selected_marker(absolute_i == self.index),
+            Text('●' if path in self.selected_files else '○', style=BEAST_GREEN if path in self.selected_files else BEAST_MUTED),
+            str(absolute_i + 1),
+            selected_text(path, absolute_i == self.index),
+            fmt_bytes(item.get('size') or 0),
+            str(item.get('ext') or ''),
+        )
+    page_no = (self.offset // max(1, self.page_size)) + 1
+    page_count = max(1, ((len(self.files) - 1) // max(1, self.page_size)) + 1)
+    return Panel(
+        Group(
+            Text('BEAST CONTEXT PICKER', style=f'bold {BEAST_ACID}'),
+            Text('↑↓ select  Space/Enter toggle  [/]-page  Ctrl+A select visible  x clear  c/Esc close.', style=BEAST_MUTED),
+            Text(f'Showing {self.offset + 1 if self.files else 0}-{min(len(self.files), self.offset + self.page_size)} of {len(self.files)} safe workspace file(s). Selected: {selected_count}.', style=BEAST_INFO),
+            Text(''), table,
+        ),
+        border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL,
+    )
+
+
+def _ctx_refresh_view(self: ContextPickerScreen):
+    try:
+        self.query_one('#context-picker', Static).update(_ctx_render_picker(self))
+    except Exception:
+        pass
+
+
+def _ctx_ensure_visible(self: ContextPickerScreen):
+    if not hasattr(self, 'page_size'):
+        self.page_size = 40
+    if self.index < getattr(self, 'offset', 0):
+        self.offset = self.index
+    elif self.index >= getattr(self, 'offset', 0) + self.page_size:
+        self.offset = max(0, self.index - self.page_size + 1)
+
+
+def _ctx_move_up(self: ContextPickerScreen):
+    self.index = clamp(self.index - 1, 0, max(0, len(self.files)-1))
+    _ctx_ensure_visible(self); _ctx_refresh_view(self)
+
+
+def _ctx_move_down(self: ContextPickerScreen):
+    self.index = clamp(self.index + 1, 0, max(0, len(self.files)-1))
+    _ctx_ensure_visible(self); _ctx_refresh_view(self)
+
+
+def _ctx_page_up(self: ContextPickerScreen):
+    self.page_size = getattr(self, 'page_size', 40)
+    self.index = clamp(self.index - self.page_size, 0, max(0, len(self.files)-1))
+    _ctx_ensure_visible(self); _ctx_refresh_view(self)
+
+
+def _ctx_page_down(self: ContextPickerScreen):
+    self.page_size = getattr(self, 'page_size', 40)
+    self.index = clamp(self.index + self.page_size, 0, max(0, len(self.files)-1))
+    _ctx_ensure_visible(self); _ctx_refresh_view(self)
+
+
+def _ctx_select_visible(self: ContextPickerScreen):
+    for item in _ctx_visible(self):
+        path = str(item.get('path') or '')
+        if path:
+            self.selected_files.add(path)
+    try:
+        self.app.set_context_files(sorted(self.selected_files))
+    except Exception:
+        pass
+    _ctx_refresh_view(self)
+
+
+def _ctx_clear_selected(self: ContextPickerScreen):
+    self.selected_files.clear()
+    try:
+        self.app.set_context_files([])
+    except Exception:
+        pass
+    _ctx_refresh_view(self)
+
+
+def _ctx_toggle_file(self: ContextPickerScreen):
+    if not self.files:
+        return
+    self.index = clamp(self.index, 0, len(self.files)-1)
+    path = str(self.files[self.index].get('path') or '')
+    if not path:
+        return
+    if path in self.selected_files:
+        self.selected_files.remove(path)
+    else:
+        self.selected_files.add(path)
+    try:
+        self.app.set_context_files(sorted(self.selected_files))
+    except Exception:
+        pass
+    _ctx_refresh_view(self)
+
+
+async def _ctx_on_key(self: ContextPickerScreen, event: events.Key) -> None:
+    if event.key == 'up': event.stop(); _ctx_move_up(self); return
+    if event.key == 'down': event.stop(); _ctx_move_down(self); return
+    if event.key in {'pageup', '['}: event.stop(); _ctx_page_up(self); return
+    if event.key in {'pagedown', ']'}: event.stop(); _ctx_page_down(self); return
+    if event.key in {'enter', 'space'}: event.stop(); _ctx_toggle_file(self); return
+    if event.key == 'ctrl+a': event.stop(); _ctx_select_visible(self); return
+    if event.character == 'x': event.stop(); _ctx_clear_selected(self); return
+    if event.key in {'escape'} or event.character in {'q', 'c'}: event.stop(); self.action_close_picker(); return
+    modal_scroll_key(self, event)
+
+
+async def _ctx_on_click(self: ContextPickerScreen, event: events.Click) -> None:
+    try:
+        widget = self.query_one('#context-picker', Static)
+        local_y = max(0, int(event.screen_y - widget.region.y))
+        visible = _ctx_visible(self)
+        row = modal_row_from_click(widget, event, len(visible), table_top=7, max_rows=len(visible))
+        self.index = clamp(getattr(self, 'offset', 0) + row, 0, max(0, len(self.files)-1))
+        if local_y >= 7:
+            _ctx_toggle_file(self)
+        else:
+            _ctx_refresh_view(self)
+        event.stop()
+    except Exception:
+        pass
+
+ContextPickerScreen.render_picker = _ctx_render_picker
+ContextPickerScreen.refresh_view = _ctx_refresh_view
+ContextPickerScreen.action_move_up = _ctx_move_up
+ContextPickerScreen.action_move_down = _ctx_move_down
+ContextPickerScreen.action_toggle_file = _ctx_toggle_file
+ContextPickerScreen.action_page_up = _ctx_page_up
+ContextPickerScreen.action_page_down = _ctx_page_down
+ContextPickerScreen.action_select_visible = _ctx_select_visible
+ContextPickerScreen.action_clear_selected = _ctx_clear_selected
+ContextPickerScreen.on_key = _ctx_on_key
+ContextPickerScreen.on_click = _ctx_on_click
+
+
+def _control_strip(self: PageHost, snap: BackendSnapshot, index: int):
+    rows = 1
+    try:
+        rows = max(1, int(self.app.page_rows()))
+    except Exception:
+        rows = 1
+    meta = getattr(self, 'session_meta', {}) or {}
+    current = f'{index + 1}/{rows}' if rows else '0/0'
+    controls = Table.grid(expand=True)
+    for _ in range(6):
+        controls.add_column(ratio=1)
+    controls.add_row(
+        button_card('← Page', icon='←'),
+        button_card('Open/View', active=True, icon='⏎'),
+        button_card('Edit Levers', icon='⚙'),
+        button_card('Context', icon='▱'),
+        button_card('Action/Test', icon='⚡'),
+        button_card('Page →', icon='→'),
+    )
+    status = chip_line(
+        f'{PAGE_LABELS.get(self.page, self.page)} {current}',
+        f"gov {meta.get('governance_level', 'governed')}",
+        f"max {meta.get('stream_max_tokens', 4000)} tok",
+        f"ctx {len(getattr(self, 'context_files', []) or [])}/{meta.get('context_file_max_selected', 64)}",
+        'Ctrl+G levers',
+    )
+    return Panel(Group(title_text('PAGE CONTROLS', '⌘'), status, Text(''), controls), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED)
+
+
+_OLD_PAGEHOST_RENDER = PageHost.render
+
+def _pagehost_render_refit(self: PageHost):
+    snap = self.snapshot or BackendSnapshot(base_url='offline')
+    index = self.selected_indices.get(self.page, 0)
+    return Group(_control_strip(self, snap, index), Text(''), _OLD_PAGEHOST_RENDER(self))
+
+PageHost.render = _pagehost_render_refit
+
+
+async def _pagehost_on_click_refit(self: PageHost, event: events.Click) -> None:
+    try:
+        local_y = max(0, int(event.screen_y - self.region.y))
+        local_x = max(0, int(event.screen_x - self.region.x))
+        width = int(self.region.width or 1)
+        if local_y < CONTROL_STRIP_HEIGHT:
+            slot = clamp(local_x // max(1, width // 6), 0, 5)
+            if slot == 0: self.app.action_previous_page()
+            elif slot == 1: self.app.action_view_selected()
+            elif slot == 2: self.app.open_session_levers()
+            elif slot == 3: self.app.action_context_picker()
+            elif slot == 4: self.app.action_test_selected()
+            else: self.app.action_next_page()
+            event.stop(); return
+        local_y -= CONTROL_STRIP_HEIGHT
+        if self.page == 'Session':
+            if local_y < 10:
+                self.app.open_session_levers()
+            elif local_y < 22:
+                third = width // 3
+                if local_x < third:
+                    self.app.action_start_session()
+                elif local_x < third * 2:
+                    self.app.action_prepare_handoff()
+                else:
+                    self.app.action_doctor()
+            else:
+                self.app.enter_input_mode()
+            event.stop(); return
+        content_height = max(1, int(self.region.height or 1) - CONTROL_STRIP_HEIGHT)
+        if self.page == 'Providers' and local_y >= max(0, content_height - 9):
+            quarter = max(1, width // 4)
+            slot = clamp(local_x // quarter, 0, 3)
+            if slot == 0: self.app.action_test_selected()
+            elif slot == 1: self.app.run_worker(self.app._run_selected_action('models'), exclusive=False)
+            elif slot == 2: self.app.action_test_selected()
+            else: self.app.action_edit_selected()
+            event.stop(); return
+        if self.page == 'Capabilities' and local_y >= max(0, content_height - 9):
+            half = max(1, width // 2)
+            slot = (1 if local_x >= half else 0) + (2 if local_y >= max(0, content_height - 5) else 0)
+            if slot == 0: self.app.action_approve_selected()
+            elif slot == 1: self.app.action_view_selected()
+            elif slot == 2: self.app.action_test_selected()
+            else: self.app.push_screen(DetailScreen('Skill export payload', self.app.selected_item()))
+            event.stop(); return
+        row_count = max(1, int(self.app.page_rows()))
+        row = self.click_row_for(local_y, local_x, width, row_count)
+        self.app.select_page_row(self.page, row)
+        event.stop()
+    except Exception:
+        pass
+
+PageHost.on_click = _pagehost_on_click_refit
+
+
+# Session visual: no tiny 7-line/1100-char guillotine; obeys transcript levers.
+def _session_launcher_visual_refit(self: PageHost, snap: BackendSnapshot):
+    meta = getattr(self, 'session_meta', {}) or {}
+    provider = meta.get('provider', 'litellm')
+    route = provider_route_summary(snap, provider, str(meta.get('model') or 'beast-auto'))
+    model = route.get('resolved_model') or meta.get('model') or 'beast-auto'
+    form = Table.grid(expand=True)
+    form.add_column(ratio=1); form.add_column(ratio=1)
+    form.add_row(field_box('Workspace', Path(os.environ.get('BEAST_WORKSPACE', os.getcwd())).name, '▱'), field_box('Governance', str(meta.get('governance_level', 'governed')).title(), '⬡'))
+    form.add_row(field_box('Provider', provider, 'AI'), field_box('Max Output', f"{meta.get('stream_max_tokens', 4000)} tokens", '◌'))
+    form.add_row(field_box('Model', str(model)[:38], 'λ'), field_box('Continuations', meta.get('stream_continuations', 2), '↻'))
+    form.add_row(field_box('Context Cap', f"{len(getattr(self, 'context_files', []) or [])}/{meta.get('context_file_max_selected', 64)} files", '▱'), field_box('Auto-scroll', 'On' if _tui_bool(meta.get('auto_scroll_stream'), True) else 'Off', '⇣'))
+    buttons = Table.grid(expand=True)
+    buttons.add_column(ratio=1); buttons.add_column(ratio=1); buttons.add_column(ratio=1); buttons.add_column(ratio=1)
+    buttons.add_row(button_card('Start Session', active=True, icon='▷'), button_card('Prepare Handoff', icon='↥'), button_card('Run Diagnostics', icon='⚡'), button_card('Edit Levers', icon='⚙'))
+    return Panel(Group(title_text('SESSION LAUNCHER', PAGE_SYMBOLS['Session']), chip_line('s START', 'c CONTEXT', 'Ctrl+G LEVERS', 'i CHAT'), Text(''), form, Text(''), buttons), border_style=BEAST_ACID, style=BEAST_PANEL, padding=(1,2), box=box.HEAVY_EDGE)
+
+
+def _visual_live_session_preview_refit(self: PageHost, snap: BackendSnapshot):
+    meta = getattr(self, 'session_meta', {}) or {}
+    provider = str(meta.get('provider') or 'litellm')
+    state = str(meta.get('state') or 'idle')
+    chat_lines = getattr(self, 'chat_lines', [])
+    tool_events = getattr(self, 'tool_events', [])
+    context_files = getattr(self, 'context_files', [])
+    patch_plans = getattr(self, 'patch_plans', [])
+    route = provider_route_summary(snap, provider, str(meta.get('model') or 'beast-auto'))
+    current_plan = (getattr(self, 'approval_queue', []) or patch_plans or [{}])[-1] if (getattr(self, 'approval_queue', []) or patch_plans) else {}
+    plan = current_plan_summary(current_plan)
+    transcript_lines = _tui_int(meta.get('transcript_lines'), 24, 4, 200)
+    transcript_chars = _tui_int(meta.get('transcript_chars'), 6000, 500, 50000)
+
+    active = Table.grid(expand=True)
+    active.add_column(ratio=1); active.add_column(ratio=1); active.add_column(ratio=1); active.add_column(ratio=1)
+    active.add_row(
+        widget_card('Session State', state, f'{provider} • {route.get("route_provider")}', line_graph([4, 6, 8, 7, 9, 10, 8], width=20), delta=delta_badge(8.0)),
+        widget_card('Output Budget', meta.get('stream_max_tokens', 4000), f"continuations {meta.get('stream_continuations', 2)}", block_meter(min(100, int(meta.get('stream_max_tokens', 4000)) / 160), width=16)),
+        widget_card('Governance', str(meta.get('governance_level', 'governed')).title(), f'{plan.get("gate_status", "not run")}', circle_meter(94 if snap.handoff_precheck.get('ready') else 62, size='small')),
+        widget_card('Workspace Context', len(context_files), f"cap {meta.get('context_file_max_selected', 64)} / list {meta.get('workspace_file_limit', 0)}", distribution_ring({'selected': max(1, len(context_files)), 'remaining': max(1, int(meta.get('context_file_max_selected', 64)) - len(context_files))}, title='ctx')),
+    )
+
+    transcript = Text()
+    lines = chat_lines[-transcript_lines:] if chat_lines else [
+        {'role':'system', 'content':'s start  c context  Ctrl+G levers  n provider  / commands'},
+        {'role':'system', 'content':'/sourceplan  /diff  /verify  /apply  /rollback'},
+    ]
+    for line in lines:
+        role = line.get('role', 'system')
+        style = BEAST_GREEN if role == 'assistant' else BEAST_TEXT if role == 'user' else BEAST_INFO if role == 'tool' else BEAST_MUTED
+        prefix = 'YOU' if role == 'user' else 'BEAST' if role == 'assistant' else 'TOOL' if role == 'tool' else 'SYS'
+        content = str(line.get('content', ''))
+        truncated = len(content) > transcript_chars
+        transcript.append(f'{prefix}: ', style=f'bold {style}')
+        transcript.append(content[:transcript_chars] + ('\n[…continued in full session detail; raise transcript chars with Ctrl+G…]' if truncated else '') + '\n\n', style=style)
+
+    context_table = Table(expand=True, box=box.SIMPLE)
+    for col in ['#', 'Selected context file']:
+        context_table.add_column(col)
+    if not context_files:
+        context_table.add_row('0', 'No files selected. Press c for the full safe workspace inventory.')
+    for i, path in enumerate(context_files[:80], 1):
+        context_table.add_row(str(i), Text(str(path), style=BEAST_GREEN))
+    if len(context_files) > 80:
+        context_table.add_row('…', f'+{len(context_files) - 80} more selected; v opens full session detail')
+
+    events = Table.grid(expand=True)
+    events.add_column(ratio=1); events.add_column(width=14); events.add_column(width=16)
+    event_rows = tool_events[-12:] or ['context ready', 'governed handoff waiting', 'local scout armed']
+    for ev in event_rows:
+        evs = str(ev)
+        ok = not any(x in evs.lower() for x in ['error', 'fail', 'reject'])
+        events.add_row(status_mark('OK' if ok else 'ERROR'), Text(evs[:72], style=BEAST_TEXT), delta_badge(2.8 if ok else -6.0))
+
+    lower = Table.grid(expand=True)
+    lower.add_column(ratio=3); lower.add_column(ratio=1)
+    lower.add_row(
+        Panel(Group(title_text('LIVE CHAT / CODING TRANSCRIPT', '▷'), chip_line(f'{len(lines)} turns visible', f'{transcript_chars} chars/turn', 'PageDown scrolls'), Text(''), transcript), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,1), box=box.SQUARE),
+        Panel(Group(title_text('EVENT STREAM', '⚒'), chip_line(f'{len(context_files)} ctx', f'{len(patch_plans)} plans'), Text(''), events, Text(''), toggle_pill(_tui_bool(meta.get('auto_scroll_stream'), True), 'auto-scroll')), border_style=BEAST_JADE, style=BEAST_PANEL, padding=(1,1), box=box.ROUNDED),
+    )
+    page = Table.grid(expand=True); page.add_column(ratio=1)
+    page.add_row(_session_launcher_visual_refit(self, snap))
+    page.add_row(active)
+    page.add_row(Panel(Group(title_text('SELECTED WORKSPACE CONTEXT', '▱'), chip_line('c PICK', 'v DETAIL', 'Ctrl+G CAP'), Text(''), context_table), border_style=BEAST_BORDER, style=BEAST_PANEL, padding=(1,2), box=box.ROUNDED))
+    page.add_row(lower)
+    return page
+
+PageHost.live_session_preview = _visual_live_session_preview_refit
+
+
+_OLD_SETTINGS = PageHost.settings
+
+def _settings_refit(self: PageHost, snap: BackendSnapshot, index: int):
+    meta = getattr(self, 'session_meta', {}) or {}
+    levers = [
+        ('Governance level', meta.get('governance_level', 'governed'), 'Ctrl+G / Settings edit'),
+        ('Stream max tokens', meta.get('stream_max_tokens', 4000), 'provider payload max_tokens'),
+        ('Stream continuations', meta.get('stream_continuations', 2), 'after finish_reason=length'),
+        ('Workspace files shown', meta.get('workspace_file_limit', 0), '0 = entire safe inventory'),
+        ('Context selected cap', meta.get('context_file_max_selected', 64), 'files sent to backend'),
+        ('Context chars each', meta.get('context_chars_each', 4200), 'read per selected file'),
+        ('Transcript turns', meta.get('transcript_lines', 24), 'Session page visible turns'),
+        ('Transcript chars', meta.get('transcript_chars', 6000), 'Session page visible chars/turn'),
+        ('Auto-scroll stream', 'yes' if _tui_bool(meta.get('auto_scroll_stream'), True) else 'no', 'keeps streamed response tail visible'),
+    ]
+    table = Table(expand=True, box=box.SIMPLE_HEAVY)
+    for col in ['', 'Lever', 'Value', 'Effect']:
+        table.add_column(col)
+    for i, row in enumerate(levers):
+        value = toggle_switch(str(row[1]).lower() in {'yes', 'true', 'on'}, '', self.frame) if row[0] == 'Auto-scroll stream' else Text(str(row[1]), style=BEAST_GREEN)
+        table.add_row(selected_marker(i == index), selected_text(row[0], i == index), value, Text(row[2], style=BEAST_MUTED))
+    return Panel(Group(title_text('SETTINGS / OPERATOR LEVERS', PAGE_SYMBOLS['Settings']), chip_line('Ctrl+G EDIT', '↑↓ SELECT', 'v VIEW'), Text(''), table), border_style=BEAST_ACID, padding=(1,2), style=BEAST_PANEL)
+
+PageHost.settings = _settings_refit
+
+# Add scroll hooks to the new modal.
+SessionLeversScreen.on_mouse_scroll_down = _modal_mouse_scroll_down
+SessionLeversScreen.on_mouse_scroll_up = _modal_mouse_scroll_up
+
+
+# --- BEAST TUI HOTFIX: ContextPicker compose safety -------------------------
+# Some Textual/Rich combinations wrap any TypeError raised while compose()
+# builds a ModalScreen as "compose() returned an invalid result".  The context
+# picker previously rendered the whole Rich table inside compose(), so a render-
+# time padding/table incompatibility could stop the screen before it mounted.
+# Keep compose() widget-only and render the picker after mount instead.
+def _ctx_compose_hotfix(self: ContextPickerScreen) -> ComposeResult:
+    yield Static(Text('Loading BEAST context picker…', style=BEAST_MUTED), id='context-picker')
+
+
+def _ctx_safe_picker_render(self: ContextPickerScreen):
+    try:
+        return _ctx_render_picker(self)
+    except Exception as exc:
+        fallback = Table.grid(expand=True)
+        fallback.add_column(ratio=1)
+        fallback.add_row(Text('BEAST CONTEXT PICKER', style=f'bold {BEAST_ACID}'))
+        fallback.add_row(Text('The picker renderer tripped, but the modal stayed alive.', style=BEAST_WARN))
+        fallback.add_row(Text(str(exc), style=BEAST_DANGER))
+        fallback.add_row(Text('Press Esc/q/c to close, then reduce terminal width or reopen after this hotfix.', style=BEAST_MUTED))
+        return Panel(fallback, border_style=BEAST_DANGER, padding=(1, 2), style=BEAST_PANEL)
+
+
+async def _ctx_on_mount_hotfix(self: ContextPickerScreen) -> None:
+    if not hasattr(self, 'offset'):
+        self.offset = 0
+    if not hasattr(self, 'page_size'):
+        self.page_size = 40
+    try:
+        self.query_one('#context-picker', Static).update(_ctx_safe_picker_render(self))
+    except Exception:
+        pass
+
+
+def _ctx_refresh_view_hotfix(self: ContextPickerScreen):
+    try:
+        self.query_one('#context-picker', Static).update(_ctx_safe_picker_render(self))
+    except Exception:
+        pass
+
+
+ContextPickerScreen.compose = _ctx_compose_hotfix
+ContextPickerScreen.on_mount = _ctx_on_mount_hotfix
+ContextPickerScreen.refresh_view = _ctx_refresh_view_hotfix
+
+
+
+# --- BEAST TUI HOTFIX 2: table-free context picker renderer -----------------
+# The previous hotfix kept the modal alive, but the Rich Table renderer can
+# still trip in some terminal/Textual builds with "cannot unpack non-iterable
+# int object".  Use a table-free, plain Text renderer for the picker.  This is
+# much harder to break with narrow terminals or unusual file metadata.
+def _ctx_plain_line(text: Text, left: str, value: Any, *, style: str = BEAST_TEXT, width: int = 0) -> None:
+    label = str(left)
+    body = str(value)
+    if width > 0 and len(body) > width:
+        body = '…' + body[-max(1, width - 1):]
+    text.append(label, style=BEAST_MUTED)
+    text.append(body, style=style)
+    text.append('\n')
+
+
+def _ctx_text_picker_render(self: ContextPickerScreen):
+    if not hasattr(self, 'offset'):
+        self.offset = 0
+    if not hasattr(self, 'page_size'):
+        self.page_size = 40
+    try:
+        visible = _ctx_visible(self)
+    except Exception:
+        visible = []
+    try:
+        selected_count = len(self.selected_files)
+    except Exception:
+        selected_count = 0
+    page_no = (int(getattr(self, 'offset', 0)) // max(1, int(getattr(self, 'page_size', 40)))) + 1
+    page_count = max(1, ((len(getattr(self, 'files', []) or []) - 1) // max(1, int(getattr(self, 'page_size', 40)))) + 1)
+
+    width = 88
+    try:
+        width = max(54, min(160, int(getattr(getattr(self, 'app', None), 'size', None).width or 100) - 10))
+    except Exception:
+        pass
+    path_width = max(22, width - 34)
+
+    body = Text()
+    body.append('BEAST CONTEXT PICKER\n', style=f'bold {BEAST_ACID}')
+    body.append('↑↓ select  Space/Enter toggle  [ prev  / or ] next  ? prev  Ctrl+A select page  x clear  c/Esc close\n', style=BEAST_MUTED)
+    body.append(
+        f"Showing {getattr(self, 'offset', 0) + 1 if getattr(self, 'files', []) else 0}-{min(len(getattr(self, 'files', []) or []), getattr(self, 'offset', 0) + getattr(self, 'page_size', 40))} "
+        f"of {len(getattr(self, 'files', []) or [])} safe file(s) | page {page_no}/{page_count} | selected {selected_count}\n",
+        style=BEAST_INFO,
+    )
+    body.append('─' * width + '\n', style=BEAST_BORDER)
+    body.append('   Use  #      Size      Type   File\n', style=f'bold {BEAST_ACID}')
+    body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+
+    if not getattr(self, 'files', []):
+        body.append('   ○    0      0 B       -      No safe workspace files found\n', style=BEAST_WARN)
+    for visible_i, item in enumerate(visible):
+        if not isinstance(item, dict):
+            item = {'path': str(item), 'size': 0, 'ext': ''}
+        absolute_i = int(getattr(self, 'offset', 0)) + visible_i
+        path = str(item.get('path') or '')
+        selected = path in getattr(self, 'selected_files', set())
+        cursor = '▸' if absolute_i == getattr(self, 'index', 0) else ' '
+        use = '●' if selected else '○'
+        try:
+            size = fmt_bytes(item.get('size') or 0)
+        except Exception:
+            size = str(item.get('size') or '0 B')
+        ext = str(item.get('ext') or '-')[:7]
+        style = f'bold {BEAST_ACID}' if absolute_i == getattr(self, 'index', 0) else BEAST_TEXT
+        body.append(f'{cursor}  ', style=BEAST_ACID)
+        body.append(f'{use}   ', style=BEAST_GREEN if selected else BEAST_MUTED)
+        body.append(f'{absolute_i + 1:<6} ', style=BEAST_MUTED)
+        body.append(f'{size:<9.9} ', style=BEAST_STEEL)
+        body.append(f'{ext:<7.7} ', style=BEAST_MUTED)
+        shown_path = path
+        if len(shown_path) > path_width:
+            shown_path = '…' + shown_path[-max(1, path_width - 1):]
+        body.append(shown_path + '\n', style=style)
+
+    body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+    body.append('Click a file row to toggle it. Use Ctrl+G outside this picker to raise/lower the context cap.\n', style=BEAST_MUTED)
+    return Panel(body, border_style=BEAST_ACID, padding=(1, 2), style=BEAST_PANEL)
+
+
+def _ctx_safe_picker_render(self: ContextPickerScreen):
+    try:
+        return _ctx_text_picker_render(self)
+    except Exception as exc:
+        fallback = Text()
+        fallback.append('BEAST CONTEXT PICKER\n', style=f'bold {BEAST_ACID}')
+        fallback.append('Renderer fallback engaged. The modal is still alive.\n', style=BEAST_WARN)
+        fallback.append(str(exc), style=BEAST_DANGER)
+        fallback.append('\nPress Esc/q/c to close.\n', style=BEAST_MUTED)
+        return Panel(fallback, border_style=BEAST_DANGER, padding=(1, 2), style=BEAST_PANEL)
+
+
+async def _ctx_on_click_hotfix2(self: ContextPickerScreen, event: events.Click) -> None:
+    try:
+        widget = self.query_one('#context-picker', Static)
+        local_y = max(0, int(event.screen_y - widget.region.y))
+        # Panel top + heading/control/status/separator/header/separator = row data around line 8.
+        row = row_from_click_band(local_y, len(_ctx_visible(self)), top=8, row_height=1)
+        self.index = clamp(int(getattr(self, 'offset', 0)) + row, 0, max(0, len(getattr(self, 'files', []) or []) - 1))
+        if local_y >= 8 and getattr(self, 'files', []):
+            _ctx_toggle_file(self)
+        else:
+            _ctx_refresh_view_hotfix(self)
+        event.stop()
+    except Exception:
+        pass
+
+
+ContextPickerScreen.render_picker = _ctx_text_picker_render
+ContextPickerScreen.on_click = _ctx_on_click_hotfix2
+
+# --- BEAST TUI HOTFIX 3: avoid Textual Widget.offset collision -------------
+# Textual widgets already expose an ``offset`` property whose value is a
+# geometry Offset object.  Earlier picker paging reused ``self.offset`` for the
+# file-list page offset, which made int(self.offset) explode on some builds.
+# Keep all picker paging state under a private BEAST name and render with only
+# primitive ints.
+def _ctx_hp3_int(value: Any, default: int = 0, lo: int = 0, hi: int = 10_000_000) -> int:
+    if isinstance(value, bool):
+        return max(lo, min(int(value), hi))
+    if isinstance(value, (int, float, str)):
+        try:
+            return max(lo, min(int(value), hi))
+        except Exception:
+            return default
+    return default
+
+
+def _ctx_hp3_files(self: ContextPickerScreen) -> List[Dict[str, Any]]:
+    rows = getattr(self, 'files', []) or []
+    out: List[Dict[str, Any]] = []
+    for row in rows:
+        if isinstance(row, dict):
+            out.append(row)
+        else:
+            out.append({'path': str(row), 'size': 0, 'ext': ''})
+    return out
+
+
+def _ctx_hp3_page_size(self: ContextPickerScreen) -> int:
+    return _ctx_hp3_int(getattr(self, '_beast_picker_page_size', getattr(self, 'page_size', 40)), 40, 10, 200)
+
+
+def _ctx_hp3_offset(self: ContextPickerScreen) -> int:
+    return _ctx_hp3_int(getattr(self, '_beast_picker_offset', 0), 0, 0, max(0, len(_ctx_hp3_files(self)) - 1))
+
+
+def _ctx_hp3_set_offset(self: ContextPickerScreen, value: Any) -> int:
+    files = _ctx_hp3_files(self)
+    page_size = _ctx_hp3_page_size(self)
+    max_start = max(0, len(files) - page_size)
+    clean = _ctx_hp3_int(value, 0, 0, max_start)
+    setattr(self, '_beast_picker_offset', clean)
+    setattr(self, '_beast_picker_page_size', page_size)
+    return clean
+
+
+def _ctx_hp3_visible(self: ContextPickerScreen) -> List[Dict[str, Any]]:
+    files = _ctx_hp3_files(self)
+    page_size = _ctx_hp3_page_size(self)
+    offset = _ctx_hp3_set_offset(self, _ctx_hp3_offset(self))
+    return files[offset:offset + page_size]
+
+
+def _ctx_hp3_ensure_visible(self: ContextPickerScreen) -> None:
+    files = _ctx_hp3_files(self)
+    page_size = _ctx_hp3_page_size(self)
+    index = _ctx_hp3_int(getattr(self, 'index', 0), 0, 0, max(0, len(files) - 1))
+    setattr(self, 'index', index)
+    offset = _ctx_hp3_offset(self)
+    if index < offset:
+        _ctx_hp3_set_offset(self, index)
+    elif index >= offset + page_size:
+        _ctx_hp3_set_offset(self, index - page_size + 1)
+    else:
+        _ctx_hp3_set_offset(self, offset)
+
+
+def _ctx_hp3_terminal_width(self: ContextPickerScreen) -> int:
+    width_value: Any = 100
+    try:
+        size = getattr(getattr(self, 'app', None), 'size', None)
+        width_value = getattr(size, 'width', 100)
+    except Exception:
+        width_value = 100
+    width = _ctx_hp3_int(width_value, 100, 54, 180)
+    return max(54, min(160, width - 10))
+
+
+def _ctx_hp3_compose(self: ContextPickerScreen) -> ComposeResult:
+    yield Static(Text('Loading BEAST context picker…', style=BEAST_MUTED), id='context-picker')
+
+
+def _ctx_hp3_render(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    visible = _ctx_hp3_visible(self)
+    offset = _ctx_hp3_offset(self)
+    page_size = _ctx_hp3_page_size(self)
+    selected_files = getattr(self, 'selected_files', set()) or set()
+    selected_count = len(selected_files)
+    page_no = (offset // max(1, page_size)) + 1
+    page_count = max(1, ((len(files) - 1) // max(1, page_size)) + 1)
+    width = _ctx_hp3_terminal_width(self)
+    path_width = max(22, width - 34)
+
+    body = Text()
+    body.append('BEAST CONTEXT PICKER\n', style=f'bold {BEAST_ACID}')
+    body.append('↑↓ select  Space/Enter toggle  [ prev  / or ] next  ? prev  Ctrl+A select page  x clear  c/Esc close\n', style=BEAST_MUTED)
+    body.append(
+        f"Showing {offset + 1 if files else 0}-{min(len(files), offset + page_size)} "
+        f"of {len(files)} safe file(s) | page {page_no}/{page_count} | selected {selected_count}\n",
+        style=BEAST_INFO,
+    )
+    body.append('─' * width + '\n', style=BEAST_BORDER)
+    body.append('   Use  #      Size      Type   File\n', style=f'bold {BEAST_ACID}')
+    body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+
+    if not files:
+        body.append('   ○    0      0 B       -      No safe workspace files found\n', style=BEAST_WARN)
+    for visible_i, item in enumerate(visible):
+        absolute_i = offset + visible_i
+        path = str(item.get('path') or '')
+        selected = path in selected_files
+        cursor = '▸' if absolute_i == _ctx_hp3_int(getattr(self, 'index', 0), 0, 0, max(0, len(files) - 1)) else ' '
+        use = '●' if selected else '○'
+        try:
+            size = fmt_bytes(item.get('size') or 0)
+        except Exception:
+            size = str(item.get('size') or '0 B')
+        ext = str(item.get('ext') or '-')[:7]
+        style = f'bold {BEAST_ACID}' if cursor == '▸' else BEAST_TEXT
+        shown_path = path
+        if len(shown_path) > path_width:
+            shown_path = '…' + shown_path[-max(1, path_width - 1):]
+        body.append(f'{cursor}  ', style=BEAST_ACID)
+        body.append(f'{use}   ', style=BEAST_GREEN if selected else BEAST_MUTED)
+        body.append(f'{absolute_i + 1:<6} ', style=BEAST_MUTED)
+        body.append(f'{size:<9.9} ', style=BEAST_STEEL)
+        body.append(f'{ext:<7.7} ', style=BEAST_MUTED)
+        body.append(shown_path + '\n', style=style)
+
+    body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+    body.append('Private paging state uses _beast_picker_offset, not Textual\'s Widget.offset. Click a file row to toggle it.\n', style=BEAST_MUTED)
+    return Panel(body, border_style=BEAST_ACID, padding=(1, 2), style=BEAST_PANEL)
+
+
+def _ctx_hp3_safe_render(self: ContextPickerScreen):
+    try:
+        return _ctx_hp3_render(self)
+    except Exception as exc:
+        fallback = Text()
+        fallback.append('BEAST CONTEXT PICKER\n', style=f'bold {BEAST_ACID}')
+        fallback.append('Renderer fallback engaged. The modal is still alive.\n', style=BEAST_WARN)
+        fallback.append(str(exc), style=BEAST_DANGER)
+        fallback.append('\nPress Esc/q/c to close.\n', style=BEAST_MUTED)
+        return Panel(fallback, border_style=BEAST_DANGER, padding=(1, 2), style=BEAST_PANEL)
+
+
+async def _ctx_hp3_on_mount(self: ContextPickerScreen) -> None:
+    _ctx_hp3_set_offset(self, 0)
+    setattr(self, 'index', _ctx_hp3_int(getattr(self, 'index', 0), 0, 0, max(0, len(_ctx_hp3_files(self)) - 1)))
+    try:
+        self.query_one('#context-picker', Static).update(_ctx_hp3_safe_render(self))
+    except Exception:
+        pass
+
+
+def _ctx_hp3_refresh(self: ContextPickerScreen) -> None:
+    try:
+        self.query_one('#context-picker', Static).update(_ctx_hp3_safe_render(self))
+    except Exception:
+        pass
+
+
+def _ctx_hp3_move_up(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    self.index = clamp(_ctx_hp3_int(getattr(self, 'index', 0), 0) - 1, 0, max(0, len(files) - 1))
+    _ctx_hp3_ensure_visible(self)
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_move_down(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    self.index = clamp(_ctx_hp3_int(getattr(self, 'index', 0), 0) + 1, 0, max(0, len(files) - 1))
+    _ctx_hp3_ensure_visible(self)
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_page_up(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    page_size = _ctx_hp3_page_size(self)
+    self.index = clamp(_ctx_hp3_int(getattr(self, 'index', 0), 0) - page_size, 0, max(0, len(files) - 1))
+    _ctx_hp3_ensure_visible(self)
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_page_down(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    page_size = _ctx_hp3_page_size(self)
+    self.index = clamp(_ctx_hp3_int(getattr(self, 'index', 0), 0) + page_size, 0, max(0, len(files) - 1))
+    _ctx_hp3_ensure_visible(self)
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_toggle_file(self: ContextPickerScreen):
+    files = _ctx_hp3_files(self)
+    if not files:
+        return
+    self.index = clamp(_ctx_hp3_int(getattr(self, 'index', 0), 0), 0, max(0, len(files) - 1))
+    path = str(files[self.index].get('path') or '')
+    if not path:
+        return
+    selected_files = getattr(self, 'selected_files', set()) or set()
+    if path in selected_files:
+        selected_files.remove(path)
+    else:
+        selected_files.add(path)
+    self.selected_files = selected_files
+    try:
+        self.app.set_context_files(sorted(selected_files))
+    except Exception:
+        pass
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_select_visible(self: ContextPickerScreen):
+    selected_files = getattr(self, 'selected_files', set()) or set()
+    for item in _ctx_hp3_visible(self):
+        path = str(item.get('path') or '')
+        if path:
+            selected_files.add(path)
+    self.selected_files = selected_files
+    try:
+        self.app.set_context_files(sorted(selected_files))
+    except Exception:
+        pass
+    _ctx_hp3_refresh(self)
+
+
+def _ctx_hp3_clear_selected(self: ContextPickerScreen):
+    self.selected_files = set()
+    try:
+        self.app.set_context_files([])
+    except Exception:
+        pass
+    _ctx_hp3_refresh(self)
+
+
+async def _ctx_hp3_on_key(self: ContextPickerScreen, event: events.Key) -> None:
+    key = str(getattr(event, 'key', '') or '')
+    char = str(getattr(event, 'character', '') or '')
+    if key == 'up': event.stop(); _ctx_hp3_move_up(self); return
+    if key == 'down': event.stop(); _ctx_hp3_move_down(self); return
+    if key == 'pageup' or key in {'left'} or char in {'[', '?'}: event.stop(); _ctx_hp3_page_up(self); return
+    if key == 'pagedown' or key in {'right', 'slash'} or char in {']', '/'}: event.stop(); _ctx_hp3_page_down(self); return
+    if key in {'enter', 'space'} or char == ' ': event.stop(); _ctx_hp3_toggle_file(self); return
+    if key == 'ctrl+a': event.stop(); _ctx_hp3_select_visible(self); return
+    if char == 'x': event.stop(); _ctx_hp3_clear_selected(self); return
+    if key == 'escape' or char in {'q', 'c'}: event.stop(); self.action_close_picker(); return
+    modal_scroll_key(self, event)
+
+
+async def _ctx_hp3_on_click(self: ContextPickerScreen, event: events.Click) -> None:
+    try:
+        widget = self.query_one('#context-picker', Static)
+        screen_y = _ctx_hp3_int(getattr(event, 'screen_y', 0), 0)
+        region_y = _ctx_hp3_int(getattr(getattr(widget, 'region', None), 'y', 0), 0)
+        local_y = max(0, screen_y - region_y)
+        visible_count = len(_ctx_hp3_visible(self))
+        row = row_from_click_band(local_y, visible_count, top=8, row_height=1)
+        files = _ctx_hp3_files(self)
+        self.index = clamp(_ctx_hp3_offset(self) + row, 0, max(0, len(files) - 1))
+        if local_y >= 8 and files:
+            _ctx_hp3_toggle_file(self)
+        else:
+            _ctx_hp3_refresh(self)
+        event.stop()
+    except Exception:
+        pass
+
+
+ContextPickerScreen.compose = _ctx_hp3_compose
+ContextPickerScreen.on_mount = _ctx_hp3_on_mount
+ContextPickerScreen.render_picker = _ctx_hp3_render
+ContextPickerScreen.refresh_view = _ctx_hp3_refresh
+ContextPickerScreen.action_move_up = _ctx_hp3_move_up
+ContextPickerScreen.action_move_down = _ctx_hp3_move_down
+ContextPickerScreen.action_toggle_file = _ctx_hp3_toggle_file
+ContextPickerScreen.action_page_up = _ctx_hp3_page_up
+ContextPickerScreen.action_page_down = _ctx_hp3_page_down
+ContextPickerScreen.action_select_visible = _ctx_hp3_select_visible
+ContextPickerScreen.action_clear_selected = _ctx_hp3_clear_selected
+ContextPickerScreen.on_key = _ctx_hp3_on_key
+ContextPickerScreen.on_click = _ctx_hp3_on_click
+
+
+class WorkspaceRegistryScreen(ModalScreen):
+    """Clickable multi-repo context picker with explicit read-only labels."""
+
+    BINDINGS = [
+        Binding('escape', 'close', 'Close'), Binding('q', 'close', 'Close'),
+        Binding('up', 'move_up', 'Up', priority=True), Binding('down', 'move_down', 'Down', priority=True),
+        Binding('enter', 'toggle_file', 'Toggle'), Binding('space', 'toggle_file', 'Toggle'),
+        Binding('ctrl+a', 'select_visible', 'Select page'), Binding('x', 'clear_selected', 'Clear'),
+        Binding('[', 'page_up', 'Prev page'), Binding(']', 'page_down', 'Next page'),
+    ]
+
+    def __init__(self, registry: Dict[str, Any], files: List[Dict[str, Any]], selected_files: List[str]):
+        super().__init__()
+        self.registry = registry or {}
+        self.files = [row for row in (files or []) if isinstance(row, dict)]
+        self.selected_files = set(selected_files or [])
+        self.index = 0
+        self._beast_picker_offset = 0
+        self._beast_picker_page_size = 32
+
+    def compose(self) -> ComposeResult:
+        yield Static(Text('Loading BEAST workspace registry…', style=BEAST_MUTED), id='workspace-registry')
+
+    async def on_mount(self) -> None:
+        self.refresh_view()
+
+    def _page_size(self) -> int:
+        return _ctx_hp3_int(getattr(self, '_beast_picker_page_size', 32), 32, 8, 120)
+
+    def _offset(self) -> int:
+        return _ctx_hp3_int(getattr(self, '_beast_picker_offset', 0), 0, 0, max(0, len(self.files) - 1))
+
+    def _set_offset(self, value: int) -> None:
+        self._beast_picker_offset = _ctx_hp3_int(value, 0, 0, max(0, len(self.files) - self._page_size()))
+
+    def _visible(self) -> List[Dict[str, Any]]:
+        offset = self._offset()
+        return self.files[offset:offset + self._page_size()]
+
+    def _ensure_visible(self) -> None:
+        self.index = clamp(_ctx_hp3_int(self.index, 0), 0, max(0, len(self.files) - 1))
+        offset = self._offset()
+        page_size = self._page_size()
+        if self.index < offset:
+            self._set_offset(self.index)
+        elif self.index >= offset + page_size:
+            self._set_offset(self.index - page_size + 1)
+
+    def render_registry(self):
+        width = 100
+        try:
+            width = max(70, min(170, int(getattr(self.app.size, 'width', 120)) - 10))
+        except Exception:
+            pass
+        path_width = max(24, width - 66)
+        workspaces = self.registry.get('workspaces') if isinstance(self.registry.get('workspaces'), list) else []
+        read_only = sum(1 for row in self.files if row.get('read_only'))
+        editable = len(self.files) - read_only
+        offset = self._offset()
+        page_size = self._page_size()
+        page_no = (offset // max(1, page_size)) + 1
+        page_count = max(1, ((len(self.files) - 1) // max(1, page_size)) + 1)
+
+        body = Text()
+        body.append('BEAST WORKSPACE REGISTRY\n', style=f'bold {BEAST_ACID}')
+        body.append('Click or Enter toggles context. Reference repos are read-only; SourcePlan writes stay in the active edit repo unless multi-repo approval exists.\n', style=BEAST_MUTED)
+        body.append(f'{len(workspaces)} repo(s) registered | {editable} editable file candidate(s) | {read_only} read-only reference candidate(s) | selected {len(self.selected_files)} | page {page_no}/{page_count}\n', style=BEAST_INFO)
+        body.append('─' * width + '\n', style=BEAST_BORDER)
+        body.append('   Use  Scope     Repo              Contracts        File\n', style=f'bold {BEAST_ACID}')
+        body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+        if not self.files:
+            body.append('   ○    -         no registry files  -                Register a workspace or open the normal context picker first.\n', style=BEAST_WARN)
+        for visible_i, item in enumerate(self._visible()):
+            absolute_i = offset + visible_i
+            context_ref = str(item.get('context_ref') or item.get('path') or '')
+            selected = context_ref in self.selected_files
+            cursor = '▸' if absolute_i == self.index else ' '
+            use = '●' if selected else '○'
+            scope = 'READ' if item.get('read_only') else 'EDIT'
+            repo = str(item.get('repo_name') or Path(str(item.get('root_path') or '')).name or 'repo')[:16]
+            contracts = item.get('contract_counts') if isinstance(item.get('contract_counts'), dict) else {}
+            contract_text = f"r{contracts.get('routes', 0)} e{contracts.get('env_vars', 0)} o{contracts.get('openapi_files', 0)}"
+            display = str(item.get('display_path') or item.get('path') or '')
+            if len(display) > path_width:
+                display = '…' + display[-max(1, path_width - 1):]
+            row_style = f'bold {BEAST_ACID}' if cursor == '▸' else BEAST_STEEL if item.get('read_only') else BEAST_TEXT
+            body.append(f'{cursor}  ', style=BEAST_ACID)
+            body.append(f'{use}   ', style=BEAST_GREEN if selected else BEAST_MUTED)
+            body.append(f'{scope:<8} ', style=BEAST_WARN if item.get('read_only') else BEAST_GREEN)
+            body.append(f'{repo:<17} ', style=BEAST_TEXT)
+            body.append(f'{contract_text:<16} ', style=BEAST_MUTED)
+            body.append(display + '\n', style=row_style)
+        body.append('─' * width + '\n', style=BEAST_BORDER_DIM)
+        body.append('Keys: ↑↓ move  Enter/Space toggle  Ctrl+A select visible  x clear  [/] page  q/Esc close\n', style=BEAST_MUTED)
+        return Panel(body, border_style=BEAST_ACID, padding=(1, 2), style=BEAST_PANEL)
+
+    def refresh_view(self) -> None:
+        try:
+            self.query_one('#workspace-registry', Static).update(self.render_registry())
+        except Exception:
+            pass
+
+    def action_move_up(self) -> None:
+        self.index = clamp(self.index - 1, 0, max(0, len(self.files) - 1))
+        self._ensure_visible(); self.refresh_view()
+
+    def action_move_down(self) -> None:
+        self.index = clamp(self.index + 1, 0, max(0, len(self.files) - 1))
+        self._ensure_visible(); self.refresh_view()
+
+    def action_page_up(self) -> None:
+        self.index = clamp(self.index - self._page_size(), 0, max(0, len(self.files) - 1))
+        self._ensure_visible(); self.refresh_view()
+
+    def action_page_down(self) -> None:
+        self.index = clamp(self.index + self._page_size(), 0, max(0, len(self.files) - 1))
+        self._ensure_visible(); self.refresh_view()
+
+    def action_toggle_file(self) -> None:
+        if not self.files:
+            return
+        self.index = clamp(self.index, 0, max(0, len(self.files) - 1))
+        ref = str(self.files[self.index].get('context_ref') or self.files[self.index].get('path') or '')
+        if not ref:
+            return
+        if ref in self.selected_files:
+            self.selected_files.remove(ref)
+        else:
+            self.selected_files.add(ref)
+        try:
+            self.app.set_context_files(sorted(self.selected_files))
+        except Exception:
+            pass
+        self.refresh_view()
+
+    def action_select_visible(self) -> None:
+        for item in self._visible():
+            ref = str(item.get('context_ref') or item.get('path') or '')
+            if ref:
+                self.selected_files.add(ref)
+        try:
+            self.app.set_context_files(sorted(self.selected_files))
+        except Exception:
+            pass
+        self.refresh_view()
+
+    def action_clear_selected(self) -> None:
+        self.selected_files.clear()
+        try:
+            self.app.set_context_files([])
+        except Exception:
+            pass
+        self.refresh_view()
+
+    def action_close(self) -> None:
+        try:
+            self.app.pop_screen()
+        except Exception:
+            pass
+
+    async def on_key(self, event: events.Key) -> None:
+        key = str(getattr(event, 'key', '') or '')
+        char = str(getattr(event, 'character', '') or '')
+        if key == 'up': event.stop(); self.action_move_up(); return
+        if key == 'down': event.stop(); self.action_move_down(); return
+        if key == 'pageup' or char == '[': event.stop(); self.action_page_up(); return
+        if key == 'pagedown' or char == ']': event.stop(); self.action_page_down(); return
+        if key in {'enter', 'space'} or char == ' ': event.stop(); self.action_toggle_file(); return
+        if key == 'ctrl+a': event.stop(); self.action_select_visible(); return
+        if char == 'x': event.stop(); self.action_clear_selected(); return
+        if key == 'escape' or char == 'q': event.stop(); self.action_close(); return
+        modal_scroll_key(self, event)
+
+    async def on_click(self, event: events.Click) -> None:
+        try:
+            widget = self.query_one('#workspace-registry', Static)
+            local_y = max(0, _ctx_hp3_int(getattr(event, 'screen_y', 0), 0) - _ctx_hp3_int(getattr(getattr(widget, 'region', None), 'y', 0), 0))
+            row = row_from_click_band(local_y, len(self._visible()), top=8, row_height=1)
+            self.index = clamp(self._offset() + row, 0, max(0, len(self.files) - 1))
+            if local_y >= 8 and self.files:
+                self.action_toggle_file()
+            else:
+                self.refresh_view()
+            event.stop()
+        except Exception:
+            pass
+
+
+def _workspace_registry_candidates_for_tui(client: BeastApiClient) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    try:
+        active = client.workspace_root()
+        client.register_workspace_local(active, role='primary', allowed_edit_scope='read_write', contract_scan=True)
+    except Exception:
+        pass
+    registry = client.workspace_registry()
+    files = client.workspace_registry_file_candidates(limit_each=80)
+    workspaces_by_id = {
+        str(item.get('repo_id') or ''): item
+        for item in (registry.get('workspaces') or [])
+        if isinstance(item, dict)
+    }
+    for row in files:
+        workspace = workspaces_by_id.get(str(row.get('repo_id') or '')) or {}
+        contracts = workspace.get('contract_artifacts') if isinstance(workspace.get('contract_artifacts'), dict) else {}
+        row['contract_counts'] = contracts.get('counts') if isinstance(contracts.get('counts'), dict) else {}
+    return registry, files
+
+
+def _action_workspace_registry(self: BeastMissionConsole):
+    self.set_page('Session')
+    try:
+        client = BeastApiClient(self.base_url, workspace=self.active_workspace_root())
+        registry, files = _workspace_registry_candidates_for_tui(client)
+        self.tool_events.append(f"workspace registry loaded: {len(registry.get('workspaces') or [])} repo(s), {len(files)} file candidate(s)")
+    except Exception as exc:
+        registry, files = {"workspaces": []}, []
+        self.tool_events.append(f"workspace registry unavailable: {exc}")
+    self.push_screen(WorkspaceRegistryScreen(registry, files, self.context_files))
+
+
+BeastMissionConsole.action_workspace_registry = _action_workspace_registry
+BeastMissionConsole.BINDINGS = [
+    *BeastMissionConsole.BINDINGS,
+    Binding('ctrl+w', 'workspace_registry', 'Workspaces'),
+]
+
+_OLD_COMMAND_ITEMS_WORKSPACES = BeastMissionConsole.command_palette_items
+
+def _command_palette_items_workspaces(self: BeastMissionConsole) -> List[Dict[str, Any]]:
+    items = _OLD_COMMAND_ITEMS_WORKSPACES(self)
+    if not any(item.get('id') == 'workspace_registry' for item in items):
+        items.insert(4, {'id': 'workspace_registry', 'label': 'Open multi-repo workspace registry', 'scope': 'Context', 'key': 'ctrl+w'})
+    return items
+
+BeastMissionConsole.command_palette_items = _command_palette_items_workspaces
+
+_OLD_EXECUTE_PALETTE_COMMAND_WORKSPACES = BeastMissionConsole.execute_palette_command
+
+def _execute_palette_command_workspaces(self: BeastMissionConsole, command_id: str) -> None:
+    if command_id == 'workspace_registry':
+        self.action_workspace_registry()
+        return
+    _OLD_EXECUTE_PALETTE_COMMAND_WORKSPACES(self, command_id)
+
+BeastMissionConsole.execute_palette_command = _execute_palette_command_workspaces
 
 def run() -> None:
     BeastMissionConsole().run()

@@ -29,7 +29,7 @@ class CapabilityExchange:
         opt_in = os.environ.get("BEAST_CAPABILITY_EXCHANGE_OPT_IN", "0").lower() in {"1", "true", "yes", "on"}
         self.enabled = opt_in if enabled is None else bool(enabled)
         self.endpoint = str(endpoint or os.environ.get("BEAST_CAPABILITY_EXCHANGE_ENDPOINT") or "").rstrip("/")
-        root = Path(__file__).resolve().parents[2]
+        root = Path(__file__).resolve().parents[3]
         self.data_dir = Path(data_dir) if data_dir else root / ".beast" / "capability_exchange"
         self.client = client or httpx.Client(timeout=10.0)
         self.signing_key = os.environ.get("BEAST_CAPABILITY_EXCHANGE_SIGNING_KEY", "")

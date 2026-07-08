@@ -611,11 +611,19 @@ server {{
         }.get(provider, f"{provider.upper()}_API_KEY")
 
     def _litellm_executable(self) -> str:
+        roots = []
+        for parent in Path(__file__).resolve().parents:
+            roots.append(parent)
+            if (parent / "bin" / "beast").exists():
+                break
         candidates = [
             Path(sys.executable).resolve().parent / "litellm",
-            Path(__file__).resolve().parents[2] / "venv" / "bin" / "litellm",
-            Path(__file__).resolve().parents[2] / ".venv" / "bin" / "litellm",
         ]
+        for root in roots:
+            candidates.extend([
+                root / ".venv" / "bin" / "litellm",
+                root / "venv" / "bin" / "litellm",
+            ])
         for local_bin in candidates:
             if local_bin.exists():
                 return str(local_bin)

@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional
 
 from app.kernel.security.residue_seal import ResidueSeal
+from app.kernel.policy.policy_gate import from_agent_passport_decision
 
 
 BEAST_TRUST_DOMAIN = "beast.local"
@@ -329,8 +330,9 @@ class AgentPassportPolicy:
         return decision
 
     def _seal_decision(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+        decision = dict(decision)
+        decision["policy_gate"] = from_agent_passport_decision(decision)
         if self.sign_decisions and self.seal is not None:
-            decision = dict(decision)
             decision["residue_seal"] = self.seal.sign(decision, purpose="agent_passport_policy_decision")
         return decision
 

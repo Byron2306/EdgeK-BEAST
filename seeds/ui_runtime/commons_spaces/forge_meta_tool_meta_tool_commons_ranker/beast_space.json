@@ -1,0 +1,57 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "meta_tool",
+      "bytes": 752,
+      "path": "forge_candidate.json",
+      "sha256": "sha256:196dc791a4507fcb1e3e7a9ccfeb573f31036e221ded55085756edaf1152d657"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:36:53.992992+00:00",
+  "hardware_profile": {
+    "execution_class": "metadata_hypothesis",
+    "gpu_required": false
+  },
+  "lineage": {
+    "candidate_kind": "meta_tool",
+    "case_study": "forge_candidate_meta_tool_commons_ranker",
+    "source_snapshot_hash": "sha256:363154ef0396b97c11b341af1e99e585d6a81f83e5ef662094669006c61f99ce"
+  },
+  "manifest_hash": "sha256:d2542ef83574a168266b83c7516fc00c1c803a550fdc1c7cd1572bfed7d2621c",
+  "name": "meta_tool_commons_ranker",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "none_pending_live_replay",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "forge_meta_tool_meta_tool_commons_ranker",
+  "task_class": "commons_space_registration",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only",
+      "bundle_id": "pending_candidate_specific_verifier",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

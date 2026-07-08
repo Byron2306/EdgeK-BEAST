@@ -1,0 +1,235 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST Gauntlet v2",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-17T16:49:18Z",
+  "goal": "Verified multi-repo code editing and provider fitness benchmark",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "raw-small-with-tests",
+    "full-beast",
+    "full-beast-provider-fitness"
+  ],
+  "planned_run_count": 90,
+  "preset_notes": [
+    "Run Stage 0 provider preflight before scoring coding capability.",
+    "Use NVIDIA /v1/models as source of truth before calling the Nemotron model hint.",
+    "This preset is diagnostic, not a statistically meaningful leaderboard."
+  ],
+  "provider_model_hints": {
+    "nvidia-nim-nemotron-super": "nvidia/nemotron-3-super-120b-a12b"
+  },
+  "providers": [
+    "huggingface-best-coding",
+    "openrouter-best-coding",
+    "nvidia-nim-nemotron-super"
+  ],
+  "separation_rule": {
+    "capability_failure": "Route works, but the model failed JSON, patch, scope, or verifier contracts.",
+    "infra_failure": "Provider is excluded before coding results are scored."
+  },
+  "tasks": [
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic provider registry model mapping task.",
+      "expected_blast_radius": "multi-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "provider_registry_model_mapping",
+      "task_id": "gv2-001",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic config generator cleanup task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "config_generator_cleanup",
+      "task_id": "gv2-002",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic fastapi endpoint behavior task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "fastapi_endpoint_behavior",
+      "task_id": "gv2-003",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic textual ui key handling task.",
+      "expected_blast_radius": "multi-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "textual_ui_key_handling",
+      "task_id": "gv2-004",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic streaming response plumbing task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "streaming_response_plumbing",
+      "task_id": "gv2-005",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic json yaml parser bug task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "json_yaml_parser_bug",
+      "task_id": "gv2-006",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic cli argument bug task.",
+      "expected_blast_radius": "multi-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "cli_argument_bug",
+      "task_id": "gv2-007",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic regression test creation task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "regression_test_creation",
+      "task_id": "gv2-008",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic multi file import refactor task.",
+      "expected_blast_radius": "single-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "multi_file_import_refactor",
+      "task_id": "gv2-009",
+      "visible_tests": []
+    },
+    {
+      "allowed_files": [],
+      "bug_description": "Deterministic async timeout fallback task.",
+      "expected_blast_radius": "multi-file",
+      "forbidden_files": [
+        "tests/**"
+      ],
+      "hidden_tests": [],
+      "repo_fixture": "edgek-beast-mini",
+      "success_criteria": [
+        "patch applies",
+        "visible tests pass",
+        "hidden tests pass when present"
+      ],
+      "task_class": "async_timeout_fallback",
+      "task_id": "gv2-010",
+      "visible_tests": []
+    }
+  ],
+  "trials": 1
+}

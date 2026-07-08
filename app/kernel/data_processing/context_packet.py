@@ -26,9 +26,11 @@ class ContextPacketBuilder:
     def __init__(
         self,
         workspace_graph: Any = None,
+        code_cortex: Any = None,
         max_file_chars: int = DEFAULT_MAX_FILE_CHARS,
     ):
         self.workspace_graph = workspace_graph
+        self.code_cortex = code_cortex
         self.max_file_chars = max_file_chars
 
     def build(
@@ -50,6 +52,9 @@ class ContextPacketBuilder:
         query_text = self._query_text(envelope)
         ir = self._ir_for_envelope(envelope, query_text)
         workspace_context = self._workspace_context(ir, semantic_limit)
+        code_context = self._code_cortex_context(root, query_text, semantic_limit)
+        if code_context:
+            workspace_context["code_cortex"] = code_context
 
         included: List[Dict[str, Any]] = []
         excluded: List[Dict[str, Any]] = []
@@ -151,6 +156,59 @@ class ContextPacketBuilder:
                 "semantic_available": False,
                 "error": str(exc),
             }
+
+    def _code_cortex_context(self, root: Path, query_text: str, semantic_limit: int) -> Dict[str, Any]:
+        if not self.code_cortex:
+            return {
+                "front_door": "code_cortex",
+                "available": False,
+                "reason": "not_configured",
+                "files": [],
+                "symbols": [],
+                "result_count": 0,
+            }
+        try:
+            result = self.code_cortex.get_editing_context(
+                str(root),
+                query_text,
+                limit=max(1, min(int(semantic_limit or 5), 50)),
+            )
+        except Exception as exc:
+            return {
+                "front_door": "code_cortex",
+                "available": False,
+                "reason": "error",
+                "error": str(exc),
+                "files": [],
+                "symbols": [],
+                "result_count": 0,
+            }
+        files = []
+        for item in result.get("files") or []:
+            if isinstance(item, dict):
+                path = item.get("path") or item.get("file") or item.get("source")
+                if path:
+                    files.append(str(path))
+            elif item:
+                files.append(str(item))
+        symbols = result.get("symbols") or []
+        return {
+            "front_door": "code_cortex",
+            "available": True,
+            "adapter": result.get("adapter"),
+            "fallback_from": result.get("fallback_from") or [],
+            "receipt": self._stable_code_cortex_receipt(result.get("receipt")),
+            "files": self._dedupe(files),
+            "symbols": symbols,
+            "result_count": int(result.get("result_count") or len(files) + len(symbols)),
+        }
+
+    def _stable_code_cortex_receipt(self, receipt: Any) -> Dict[str, Any]:
+        if not isinstance(receipt, dict):
+            return {}
+        stable = dict(receipt)
+        stable.pop("latency_ms", None)
+        return stable
 
     def _file_evidence(
         self,
@@ -277,6 +335,13 @@ class ContextPacketBuilder:
         for node in workspace_context.get("matched_nodes") or []:
             if node.get("type") == "file" and node.get("label"):
                 files.append(str(node["label"]))
+        code_context = workspace_context.get("code_cortex") if isinstance(workspace_context.get("code_cortex"), dict) else {}
+        files.extend(code_context.get("files") or [])
+        for symbol in code_context.get("symbols") or []:
+            if isinstance(symbol, dict):
+                path = symbol.get("file") or symbol.get("path") or symbol.get("source")
+                if path:
+                    files.append(str(path))
         return self._dedupe(files)
 
     def _paths_from_text(self, text: str) -> List[str]:

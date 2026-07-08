@@ -1,4 +1,6 @@
 from app.kernel.data_processing.workspace_graph import WorkspaceGraph
+from app.kernel.data_processing.workspace_graph_service import WorkspaceGraphService
+from app.cli.api import BeastApiClient
 import pytest
 
 
@@ -92,6 +94,221 @@ def test_workspace_graph_indexes_repository_files_and_symbols(tmp_path):
     assert graph.search_nodes("run_sample", node_type="symbol")[0]["label"] == "run_sample"
 
 
+def test_workspace_graph_indexes_richer_file_import_and_test_metadata(tmp_path):
+    repo = tmp_path / "repo"
+    package = repo / "app"
+    tests = repo / "tests"
+    package.mkdir(parents=True)
+    tests.mkdir(parents=True)
+    (package / "service.py").write_text(
+        "import json\n"
+        "from pathlib import Path\n\n"
+        "class Service:\n"
+        "    def run(self):\n"
+        "        return Path(json.dumps({'ok': True}))\n",
+        encoding="utf-8",
+    )
+    (tests / "test_service.py").write_text(
+        "from app.service import Service\n\n"
+        "def test_service_runs():\n"
+        "    assert Service().run()\n",
+        encoding="utf-8",
+    )
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    result = graph.index_repository(str(repo), max_files=10)
+    service_node = graph.search_nodes("app/service.py", node_type="file")[0]
+    test_node = graph.search_nodes("tests/test_service.py", node_type="file")[0]
+    imports = graph.search_nodes("pathlib", node_type="import")
+    tests_nodes = graph.search_nodes("test_service.py", node_type="test")
+
+    assert result["indexed_files"] == 2
+    assert result["indexed_imports"] >= 3
+    assert result["indexed_tests"] == 1
+    assert service_node["properties"]["language"] == "python"
+    assert service_node["properties"]["line_count"] >= 5
+    assert service_node["properties"]["content_hash"]
+    assert test_node["properties"]["is_test"] is True
+    assert test_node["properties"]["test_runner"] == "pytest"
+    assert imports
+    assert tests_nodes
+
+
+def test_workspace_graph_indexes_routes_and_local_dependency_edges(tmp_path):
+    repo = tmp_path / "repo"
+    app = repo / "app"
+    app.mkdir(parents=True)
+    (app / "service.py").write_text(
+        "def get_value():\n"
+        "    return 42\n",
+        encoding="utf-8",
+    )
+    (app / "api.py").write_text(
+        "from app.service import get_value\n\n"
+        "@router.get('/health')\n"
+        "def health():\n"
+        "    return {'value': get_value()}\n",
+        encoding="utf-8",
+    )
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    result = graph.index_repository(str(repo), max_files=10)
+    api_node = graph.search_nodes("app/api.py", node_type="file")[0]
+    service_node = graph.search_nodes("app/service.py", node_type="file")[0]
+    api_neighborhood = graph.neighborhood(api_node["id"])
+    service_neighborhood = graph.neighborhood(service_node["id"])
+
+    assert result["indexed_routes"] == 1
+    assert result["indexed_dependencies"] == 1
+    assert graph.search_nodes("/health", node_type="route")
+    assert any(edge["relation"] == "depends_on" for edge in api_neighborhood["edges"])
+    assert any(edge["relation"] == "used_by" for edge in service_neighborhood["edges"])
+
+
+def test_workspace_graph_file_status_and_changed_since_detect_drift(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    graph.index_repository(str(repo), max_files=10)
+    before = graph.file_status(str(repo), "module.py")
+
+    target.write_text("def value():\n    return 2\n", encoding="utf-8")
+    after = graph.file_status(str(repo), "module.py")
+    changed = graph.changed_since(str(repo), timestamp_ns=before["indexed_mtime_ns"])
+
+    assert before["indexed"] is True
+    assert before["changed"] is False
+    assert after["changed"] is True
+    assert after["indexed_hash"] != after["current_hash"]
+    assert changed["changed_count"] >= 1
+    assert changed["changed"][0]["path"] == "module.py"
+
+
+def test_workspace_graph_records_consumed_context_and_stale_events(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    graph.index_repository(str(repo), max_files=10)
+    recorded = graph.record_context_consumption("session-a", str(repo), ["module.py"], objective="inspect value")
+
+    target.write_text("def value():\n    return 2\n", encoding="utf-8")
+    status = graph.file_status(str(repo), "module.py")
+    stale = graph.stale_context_events(str(repo), session_id="session-a")
+
+    assert recorded["recorded"] == 1
+    assert status["changed"] is True
+    assert status["stale_context_warning"] is True
+    assert stale["event_count"] == 1
+    assert stale["events"][0]["path"] == "module.py"
+
+
+def test_workspace_graph_service_indexes_polls_and_serves_files(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    service = WorkspaceGraphService(graph, default_root=repo)
+
+    indexed = service.index(max_files=10)
+    files = service.files(limit=20)
+    file_payload = service.file(None, "module.py")
+    symbols = service.symbols(q="value", limit=10)
+
+    target.write_text("def value():\n    return 2\n", encoding="utf-8")
+    poll = service.poll(reindex=True, max_files=10)
+    status = service.status()
+
+    assert indexed["indexed_files"] == 1
+    assert files["count"] >= 1
+    assert file_payload["ok"] is True
+    assert "return 1" in file_payload["content"]
+    assert symbols["count"] >= 1
+    assert poll["event_count"] >= 1
+    assert poll["reindexed"] is True
+    assert status["state"]["poll_count"] == 1
+
+
+def test_workspace_graph_service_emits_stale_context_events(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    service = WorkspaceGraphService(graph, default_root=repo)
+    service.index(max_files=10)
+    graph.record_context_consumption("session-a", str(repo), ["module.py"], objective="inspect value")
+
+    target.write_text("def value():\n    return 2\n", encoding="utf-8")
+    poll = service.poll(reindex=False, max_files=10)
+
+    assert any(event["event"] == "stale_context_warning" for event in poll["events"])
+
+
+
+
+def test_workspace_graph_task_context_packs_selected_and_ranked_nodes(tmp_path):
+    repo = tmp_path / "repo"
+    app = repo / "app"
+    app.mkdir(parents=True)
+    (app / "router.py").write_text(
+        "def route_request(provider):\n"
+        "    return {'provider': provider, 'route': 'local'}\n",
+        encoding="utf-8",
+    )
+    (app / "budget.py").write_text(
+        "def enforce_budget(tokens):\n"
+        "    return tokens < 1000\n",
+        encoding="utf-8",
+    )
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    graph.index_repository(str(repo), max_files=10)
+    context = graph.graph_context_for_task(
+        "repair provider route budget handling",
+        selected_files=["app/router.py"],
+        token_budget=600,
+        limit=5,
+    )
+
+    reasons = {item["reason"] for item in context["results"]}
+    labels = {item["label"] for item in context["results"]}
+    assert context["beast_object_type"] == "workspace_graph_task_context"
+    assert context["result_count"] >= 1
+    assert "selected_file" in reasons
+    assert "app/router.py" in labels
+    assert context["estimated_tokens"] <= 600
+
+
+def test_workspace_graph_task_context_can_record_session_consumption(tmp_path):
+    repo = tmp_path / "repo"
+    app = repo / "app"
+    app.mkdir(parents=True)
+    (app / "router.py").write_text(
+        "def route_request(provider):\n"
+        "    return {'provider': provider, 'route': 'local'}\n",
+        encoding="utf-8",
+    )
+
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    graph.index_repository(str(repo), max_files=10)
+    context = graph.graph_context_for_task(
+        "route provider",
+        selected_files=["app/router.py"],
+        token_budget=600,
+        limit=3,
+        session_id="session-ctx",
+    )
+
+    assert context["context_consumption"]["recorded"] >= 1
+
+
 def test_workspace_graph_indexes_javascript_symbols_with_multilanguage_parser(tmp_path):
     repo = tmp_path / "repo"
     src = repo / "src"
@@ -131,6 +348,48 @@ def test_workspace_graph_tree_sitter_helper_extracts_symbols_or_falls_back(tmp_p
     names = {symbol["name"] for symbol in symbols}
     assert {"Helper", "run", "build_helper"}.issubset(names)
     assert all(symbol["file"] == "helpers.py" for symbol in symbols)
+
+
+def test_sourceplan_apply_and_rollback_refresh_workspace_graph(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    target = repo / "module.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    graph = WorkspaceGraph(str(tmp_path / "workspace_graph.db"))
+    graph.index_repository(str(repo), max_files=10)
+    client = BeastApiClient("http://offline", workspace=repo, workspace_graph=graph)
+    plan = {
+        "plan_id": "plan_graph_refresh",
+        "objective": "update value",
+        "provider": "local",
+        "files_allowed": ["module.py"],
+        "operations": [
+            {
+                "op_id": "op_001",
+                "op": "create_or_replace",
+                "path": "module.py",
+                "content": "def value():\n    return 2\n",
+                "selected": True,
+            }
+        ],
+    }
+
+    monkeypatch.delenv("BEAST_PATCH_RUN_TESTS", raising=False)
+    applied = client.apply_patch_plan(plan, approved=True)
+    rollback = client.rollback_last_patch()
+    sourceplans = graph.search_nodes("plan_graph_refresh", node_type="sourceplan")
+    rollbacks = graph.search_nodes("plan_graph_refresh", node_type="rollback")
+    file_node = graph.search_nodes("module.py", node_type="file")[0]
+    neighborhood = graph.neighborhood(file_node["id"])
+
+    assert applied.ok is True
+    assert applied.data["workspace_graph_refresh"]["ok"] is True
+    assert rollback.ok is True
+    assert rollback.data["workspace_graph_refresh"]["ok"] is True
+    assert sourceplans
+    assert rollbacks
+    assert any(edge["relation"] == "changed_by" for edge in neighborhood["edges"])
+    assert any(edge["relation"] == "verified_by" for edge in neighborhood["edges"])
 
 
 def test_workspace_graph_semantic_index_context_and_dedupe(tmp_path):

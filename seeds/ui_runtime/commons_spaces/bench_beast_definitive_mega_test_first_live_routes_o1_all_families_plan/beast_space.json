@@ -1,0 +1,104 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 696,
+      "path": "README.md",
+      "sha256": "sha256:e510d98d4e1213cbb2248d47412e280890cfe765783b8b44a60fa600ae0f6e84"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 2208,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:799a1701bbf7d919f15ca200d4a50efdcc604186d2971f7a8673220a39a97441"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 3575,
+      "path": "run_manifest.json",
+      "sha256": "sha256:4dbd69f807c743a5e2fa1043fb7ecabf6ea1072917fddfbdcda3b19397c7e9e9"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 52,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:564c4a89650c2f82f2ad451d4245d67dcd042fa33273222eea8a6440e7c40925"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "live_verifier_contract",
+      "bytes": 977,
+      "path": "live_verifier_contract.json",
+      "sha256": "sha256:f54c63fffce24aae73c3b51ea516b506b003e2008ba3666f6256be81e9d14853"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T08:43:52.727391+00:00",
+  "hardware_profile": {
+    "execution_class": "cpu_only_live_evidence_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_first_live_routes_o1_all_families_plan",
+    "promoted_from_manifest_hash": "sha256:22d384fc5c3816df3a20a32aadbcaa58ea44b0db7438afb631deb39faaa0550c",
+    "proof_mode": "three_distinct_live_verifier_reproductions",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_first_live_routes_o1_all_families_plan"
+  },
+  "manifest_hash": "sha256:b85de5883ea76f86a0739553ceb7da243e7765417a32a0b20a08d4557c6e368e",
+  "name": "Beast Definitive Mega Test First Live Routes O1 All Families Plan",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": true,
+    "cloud_calls_avoided": 1,
+    "cloud_calls_evidence": "local_route_policy_counterfactual",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "approved_candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_first_live_routes_o1_all_families_plan",
+  "task_class": "local_benchmark_evidence_reuse",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "space_local_hashed_benchmark_evidence",
+      "bundle_id": "live_evidence_bench_beast_definitive_mega_test_first_live_routes_o1_all_families_plan",
+      "commands": [
+        "python -m pytest tests/test_commons_promoted_space_verifiers.py -q -k bench_beast_definitive_mega_test_first_live_routes_o1_all_families_plan"
+      ],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

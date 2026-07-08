@@ -1,16 +1,14 @@
 {
   "beast_object_type": "compute_governor_phase3_live_false_reuse",
-  "behavior_preserved_against_live_baseline": false,
+  "behavior_preserved_against_live_baseline": null,
   "claim_boundary": "This is an intentionally adversarial live observation: Groq supplies one baseline answer, then an isolated stale promoted capability is reused without another provider call. A false reuse is counted only when the parsed live baseline disagrees with the reused result.",
   "impact_reusable_at_boundary": true,
   "ledger_metrics": {
-    "average_latency_ms": 0.032,
-    "avoidable_token_mean_absolute_error": null,
-    "beast_object_type": "compute_governor_metrics",
-    "claim_boundary": "Shadow estimates are hypotheses until verified by a behavior-preserving ablation.",
+    "avoidable_token_mean_absolute_error": 0.0,
+    "beast_object_type": "compute_ledger_metrics",
+    "claim_boundary": "Shadow estimates and measured receipts describe local counterfactual compute; they are not production savings until cost and volume are observed.",
     "cost_coverage_rate": 0.0,
-    "cost_observation_count": 0,
-    "deterministic_shadow_agreement_rate": null,
+    "deterministic_shadow_agreement_rate": 0.0,
     "deterministic_shadow_agreements": 0,
     "deterministic_shadow_attempts": 1,
     "deterministic_shadow_calibrated": 0,
@@ -18,19 +16,63 @@
     "deterministic_shadow_verified": 0,
     "enforced_suppression_count": 0,
     "enforcement_pause_required": false,
-    "estimated_avoidable_input_tokens": 14,
-    "estimated_avoidable_output_tokens": 19,
     "estimated_avoidable_total_tokens": 33,
     "false_suppression_count": 0,
     "false_suppression_rate": 0.0,
     "false_suppression_redline": false,
-    "mode": "shadow",
     "observed_cost_usd": null,
     "observed_total_tokens": 0,
+    "plan_count": 1,
+    "predicted_savings_usd": null,
     "predicted_savings_usd_observed": null,
-    "recommended_rungs": {
-      "verified_reuse": 1
-    },
+    "recent_plans": [
+      {
+        "beast_object_type": "compute_plan",
+        "budgets": {
+          "cloud_calls": 1,
+          "cost_usd": null,
+          "input_tokens": 41,
+          "latency_ms": 120000,
+          "output_tokens": 96
+        },
+        "created_at": "2026-06-29T13:39:01.414954+00:00",
+        "deterministic_candidates": [
+          "schema_validation"
+        ],
+        "displacement_proofs": [],
+        "enforceable_displacements": [],
+        "escalation_ladder": [
+          "chronicle",
+          "deterministic_transform",
+          "ollama_scout",
+          "micro_model",
+          "selected_provider"
+        ],
+        "estimated_input_tokens": 41,
+        "input_chars": 161,
+        "message_count": 1,
+        "mode": "phase3_enforce",
+        "model": "llama-3.1-8b-instant",
+        "payload_json": "{\"beast_object_type\": \"compute_plan\", \"budgets\": {\"cloud_calls\": 1, \"cost_usd\": null, \"input_tokens\": 41, \"latency_ms\": 120000, \"output_tokens\": 96}, \"created_at\": \"2026-06-29T13:39:01.414954+00:00\", \"deterministic_candidates\": [\"schema_validation\"], \"displacement_proofs\": [], \"enforceable_displacements\": [], \"escalation_ladder\": [\"chronicle\", \"deterministic_transform\", \"ollama_scout\", \"micro_model\", \"selected_provider\"], \"estimated_input_tokens\": 41, \"input_chars\": 161, \"message_count\": 1, \"mode\": \"phase3_enforce\", \"model\": \"llama-3.1-8b-instant\", \"plan_hash\": \"sha256:a631415f8b89758f359396d46afb40421de4429985c565b118ca916518501a34\", \"plan_id\": \"cmp_66e775891b1a45628d6e\", \"privacy\": {\"contains_prompt\": false, \"contains_source_code\": false, \"content_fingerprints_only\": true}, \"provider\": \"groq\", \"request_fingerprint\": \"sha256:4f7780aa739abfad79dfc5a405390f2a1f1c7fb26c897f8a6080191ab643ca20\", \"requested_output_tokens\": 96, \"reuse_candidates\": [], \"task_class\": \"contract\", \"unresolved_work\": [\"response_generation\", \"separate_semantic_decision_from_deterministic_execution\"], \"version\": \"1.0\"}",
+        "plan_hash": "sha256:a631415f8b89758f359396d46afb40421de4429985c565b118ca916518501a34",
+        "plan_id": "cmp_66e775891b1a45628d6e",
+        "privacy": {
+          "contains_prompt": false,
+          "contains_source_code": false,
+          "content_fingerprints_only": true
+        },
+        "provider": "groq",
+        "request_fingerprint": "sha256:4f7780aa739abfad79dfc5a405390f2a1f1c7fb26c897f8a6080191ab643ca20",
+        "requested_output_tokens": 96,
+        "reuse_candidates": [],
+        "task_class": "contract",
+        "unresolved_work": [
+          "response_generation",
+          "separate_semantic_decision_from_deterministic_execution"
+        ],
+        "version": "1.0"
+      }
+    ],
     "sample_size": 1,
     "statuses": {
       "reuse_succeeded": 1
@@ -43,40 +85,33 @@
     "token_calibration_coverage_rate": 0.0,
     "version": "1.0"
   },
-  "live_latency_ms": 1885.224,
-  "live_payload": {
-    "error_paths": [
-      "$.ok"
-    ],
-    "valid": false
-  },
+  "live_latency_ms": null,
+  "live_payload": null,
   "live_provider_call_attempted": true,
-  "live_provider_call_succeeded": true,
-  "live_response_id": "chatcmpl-818a7a5351b9946c",
-  "live_usage": {
-    "completion_tokens": 48,
-    "prompt_tokens": 117,
-    "prompt_tokens_details": null,
-    "total_tokens": 165
-  },
-  "live_valid": false,
+  "live_provider_call_succeeded": false,
+  "live_response_id": null,
+  "live_usage": {},
+  "live_valid": null,
   "matched_capability": "phase3-stale-schema-reuse",
-  "model": "nvidia/nemotron-3-super-120b-a12b",
-  "observed_false_reuse": true,
-  "phase3_live_false_reuse_passed": true,
-  "provider": "nvidia_nim",
-  "provider_error": null,
+  "model": "llama-3.1-8b-instant",
+  "observed_false_reuse": false,
+  "phase3_live_false_reuse_passed": false,
+  "provider": "groq",
+  "provider_error": {
+    "error": "Client error '401 Unauthorized' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+    "error_type": "HTTPStatusError"
+  },
   "receipt": {
     "avoidable_token_estimation_error": null,
     "avoided_tokens_estimate": 33,
     "beast_object_type": "compute_receipt",
-    "behavior_preserved": false,
+    "behavior_preserved": null,
     "calibration_source": "",
     "candidate_decision": "reuse",
     "cost_observation_available": false,
     "cost_usd": null,
     "counterfactual_estimates": true,
-    "created_at": "2026-06-20T21:05:13.878857+00:00",
+    "created_at": "2026-06-29T13:39:01.423951+00:00",
     "deterministic_shadow_agreements": 0,
     "deterministic_shadow_attempts": 1,
     "deterministic_shadow_calibrated": 0,
@@ -87,7 +122,7 @@
         "candidate_name": "schema_validation",
         "checks": {},
         "complete_task": false,
-        "duration_ms": 0.006,
+        "duration_ms": 0.018,
         "error_type": "structured_work_missing",
         "expected_output_sha256": "",
         "output_sha256": "",
@@ -103,21 +138,21 @@
     "estimated_avoidable_input_tokens": 14,
     "estimated_avoidable_output_tokens": 19,
     "gate_decision": "reuse",
-    "gate_id": "cgate_0d35a4b4d9fb42b29506",
+    "gate_id": "cgate_bff8817ebee64b00a768",
     "input_tokens": 0,
-    "latency_ms": 0.032,
+    "latency_ms": 0.026,
     "mode": "phase3_enforce",
-    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "model": "llama-3.1-8b-instant",
     "observed_avoidable_tokens": null,
     "output_tokens": 0,
-    "plan_id": "cmp_38ab068cb88a40eebeba",
+    "plan_id": "cmp_66e775891b1a45628d6e",
     "predicted_avoidable_work": [
       "schema_validation"
     ],
     "predicted_savings_usd": null,
-    "provider": "nvidia_nim",
+    "provider": "groq",
     "provider_execution_requested": false,
-    "receipt_id": "crec_f33c25f52db34f94aaff",
+    "receipt_id": "crec_7d5f134e12e840c99fd3",
     "recommended_rung": "verified_reuse",
     "runtime_attempt_id": "phase3-live-false-reuse-replay",
     "selected_rung": "verified_reuse",
@@ -135,8 +170,8 @@
     "avoided_calls_estimate": 1,
     "beast_object_type": "verified_reuse_metrics",
     "claim_boundary": "Metrics are internal counters; false_reuse requires external behavior verification.",
-    "false_reuse_count": 1,
-    "false_reuse_rate": 1.0,
+    "false_reuse_count": 0,
+    "false_reuse_rate": 0.0,
     "reuse_approved": 1,
     "reuse_escalated": 0,
     "reuse_fallback_to_cloud": 0,
@@ -146,11 +181,11 @@
   },
   "reuse_observation": {
     "beast_object_type": "verified_reuse_observation",
-    "behavior_preserved": false,
-    "false_reuse": true,
+    "behavior_preserved": null,
+    "false_reuse": false,
     "matched_capability": "phase3-stale-schema-reuse",
-    "observed_at": "2026-06-20T21:05:13.879381+00:00",
-    "receipt_id": "crec_f33c25f52db34f94aaff",
+    "observed_at": "2026-06-29T13:39:01.425215+00:00",
+    "receipt_id": "crec_7d5f134e12e840c99fd3",
     "version": "1.0"
   },
   "reuse_result": {
@@ -159,5 +194,5 @@
   },
   "reuse_valid": true,
   "version": "1.0",
-  "wall_time_ms": 1894.237
+  "wall_time_ms": 239.176
 }

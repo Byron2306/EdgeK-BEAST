@@ -13,6 +13,7 @@ from app.kernel.governance.runtime import runtime_governor
 from app.kernel.execution.crystallize import crystallizer
 from app.kernel.execution.task_envelope import TaskEnvelopeBuilder
 from app.kernel.data_processing.context_packet import ContextPacketBuilder
+from app.kernel.data_processing.code_cortex import CodeCortexRouter
 from app.kernel.registry.canon_registry import CanonRegistry
 from app.kernel.data_processing.forge_scorecard import ForgeScorecardBuilder
 from app.kernel.execution.conductor_workflow import ConductorWorkflowBuilder
@@ -24,10 +25,12 @@ from app.kernel.capability.skill_tree import skill_tree
 from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
 from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
 from app.kernel.adapters.provider_economist import EconomistPolicy, ProviderEconomist
+from app.kernel.local.local_config import load_local_env
 from app.kernel.networking.otel_connector import OpenTelemetryConnector
 from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 from app.kernel.execution.session_handshake import SessionHandshakeBuilder
 from app.kernel.capability.capability_exchange import CapabilityExchange
+from app.kernel.capability.capability_plane import CapabilityPlane
 from app.kernel.networking.meta_tool_commons import MetaToolCommons
 from app.kernel.compute.inference_interceptor import compute_ledger
 from app.kernel.storage.outcome_evidence import default_outcome_store
@@ -37,6 +40,8 @@ from app.cli.api import BeastApiClient
 from app.mcp.broker import MCPBroker
 
 logger = logging.getLogger(__name__)
+
+load_local_env()
 
 
 class BeastToolRuntime:
@@ -48,8 +53,10 @@ class BeastToolRuntime:
         )
         self.network_chronicle_connector = NetworkChronicleConnector()
         self.github_pr_connector = GitHubPRConnector(task_envelope_builder=self.task_envelope_builder)
+        self.code_cortex_router = CodeCortexRouter()
         self.context_packet_builder = ContextPacketBuilder(
             workspace_graph=crystallizer.workspace_graph,
+            code_cortex=self.code_cortex_router,
         )
         self.canon_registry = CanonRegistry()
         self.forge_scorecard_builder = ForgeScorecardBuilder()
@@ -64,6 +71,13 @@ class BeastToolRuntime:
         self.capability_exchange = CapabilityExchange()
         self.meta_tool_commons = MetaToolCommons(
             exchange=self.capability_exchange, skill_registry=skill_tree.skill_registry
+        )
+        self.capability_plane = CapabilityPlane(
+            workspace_root=self.workspace_root,
+            skill_tree=skill_tree,
+            plugin_marketplace=self.plugin_marketplace,
+            exchange=self.capability_exchange,
+            commons=self.meta_tool_commons,
         )
         self.mcp_broker = MCPBroker(reasoner.policies, workspace_graph=crystallizer.workspace_graph)
         self.ollama_scout = OllamaScout(crystallizer.workspace_graph, self.mcp_broker, reasoner.policies)
@@ -90,8 +104,13 @@ class BeastToolRuntime:
         value = override or self.workspace_root or "."
         return str(Path(value).resolve())
 
-    def tool_definitions(self) -> List[Dict[str, Any]]:
+    def _raw_tool_definitions(self) -> List[Dict[str, Any]]:
         return [
+            {
+                "name": "beast_tool_profile",
+                "description": "Explain the active BEAST MCP tool profile, visible tools, hidden tools, and blocked mutations.",
+                "inputSchema": {"type": "object", "properties": {}},
+            },
             {
                 "name": "beast_prepare_task",
                 "description": "Prepare a canonical BEAST task envelope from a user request.",
@@ -171,6 +190,349 @@ class BeastToolRuntime:
                     "type": "object",
                     "properties": {"plan": {"type": "object"}},
                     "required": ["plan"],
+                },
+            },
+            {
+                "name": "beast_sourceplan_scorecard",
+                "description": "Build a pre-apply SourcePlan risk, impact, and test-targeting scorecard.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"plan": {"type": "object"}},
+                    "required": ["plan"],
+                },
+            },
+            {
+                "name": "beast_code_cortex_status",
+                "description": "Report Code Cortex adapter availability, including optional Gortex and local fallback.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"workspace_root": {"type": "string"}},
+                },
+            },
+            {
+                "name": "beast_code_cortex_search_symbols",
+                "description": "Search workspace symbols through Code Cortex adapters with local fallback.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 20},
+                    },
+                    "required": ["query"],
+                },
+            },
+            {
+                "name": "beast_code_cortex_dependents",
+                "description": "Find files that import/depend on a workspace path through Code Cortex adapters.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 80},
+                    },
+                    "required": ["path"],
+                },
+            },
+            {
+                "name": "beast_code_cortex_editing_context",
+                "description": "Select edit-relevant files and symbols through Code Cortex as BEAST's code-context front door.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 12},
+                    },
+                    "required": ["query"],
+                },
+            },
+            {
+                "name": "beast_mode_router_select",
+                "description": "Select and explain a BEAST role mode for a task phase, risk, provider, or SourcePlan.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "phase": {"type": "string"},
+                        "risk": {"type": "string"},
+                        "requested_mode": {"type": "string"},
+                        "provider": {"type": "string"},
+                        "sourceplan": {"type": "object"},
+                    },
+                },
+            },
+            {
+                "name": "beast_worktree_list",
+                "description": "List BEAST Worktree Forge mission records for a workspace.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"workspace_root": {"type": "string"}},
+                },
+            },
+            {
+                "name": "beast_worktree_create",
+                "description": "Create an isolated git worktree for a BEAST mission.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "objective": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "risk": {"type": "string"},
+                        "provider": {"type": "string"},
+                        "mode": {"type": "string"},
+                        "base_ref": {"type": "string"},
+                        "task_id": {"type": "string"},
+                    },
+                    "required": ["objective"],
+                },
+            },
+            {
+                "name": "beast_worktree_status",
+                "description": "Return dirty-file status for a BEAST worktree mission.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                    },
+                    "required": ["task_id"],
+                },
+            },
+            {
+                "name": "beast_worktree_diff",
+                "description": "Return a bounded diff for a BEAST worktree mission.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "max_chars": {"type": "integer", "default": 40000},
+                    },
+                    "required": ["task_id"],
+                },
+            },
+            {
+                "name": "beast_worktree_test",
+                "description": "Run an explicit verifier command inside a BEAST worktree mission.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "command": {"type": "array", "items": {"type": "string"}},
+                        "timeout": {"type": "number", "default": 120},
+                    },
+                    "required": ["task_id"],
+                },
+            },
+            {
+                "name": "beast_worktree_promote",
+                "description": "Promote an approved and verified BEAST worktree branch back to the workspace.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "approved": {"type": "boolean", "default": False},
+                        "require_tests": {"type": "boolean", "default": True},
+                    },
+                    "required": ["task_id", "approved"],
+                },
+            },
+            {
+                "name": "beast_worktree_archive",
+                "description": "Mark a BEAST worktree mission archived without deleting files.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "reason": {"type": "string"},
+                    },
+                    "required": ["task_id"],
+                },
+            },
+            {
+                "name": "beast_spec_covenant_compile",
+                "description": "Compile scoped project instructions into a hashed BEAST Spec Covenant.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "objective": {"type": "string"},
+                        "files": {"type": "array", "items": {"type": "string"}},
+                        "workspace_root": {"type": "string"},
+                        "mode": {"type": "string"},
+                        "operator_notes": {"type": "string"},
+                        "max_rules": {"type": "integer", "default": 18},
+                    },
+                    "required": ["objective"],
+                },
+            },
+            {
+                "name": "beast_safety_classify_command",
+                "description": "Classify a shell/setup command before execution and return a safety receipt.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "command": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "mode": {"type": "string"},
+                        "task_id": {"type": "string"},
+                        "operator_override": {"type": "string"},
+                    },
+                    "required": ["command"],
+                },
+            },
+            {
+                "name": "beast_safety_scan_workspace",
+                "description": "Scan selected files or bootstrap/package files for setup and execution risks.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "files": {"type": "array", "items": {"type": "string"}},
+                        "max_files": {"type": "integer", "default": 250},
+                    },
+                },
+            },
+            {
+                "name": "beast_agent_scheduler_plan",
+                "description": "Plan local/provider BEAST agent lanes for a mission without executing them.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "objective": {"type": "string"},
+                        "workspace_root": {"type": "string"},
+                        "phase": {"type": "string"},
+                        "risk": {"type": "string"},
+                        "graph_confidence": {"type": "number"},
+                        "provider_fitness": {"type": "number"},
+                        "crystal_match": {"type": "boolean"},
+                        "verification_failed": {"type": "boolean"},
+                        "high_value": {"type": "boolean"},
+                    },
+                    "required": ["objective"],
+                },
+            },
+            {
+                "name": "beast_agent_scheduler_summary",
+                "description": "Summarize recent BEAST agent scheduler receipts and local/cloud split.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 20},
+                    },
+                },
+            },
+            {
+                "name": "beast_mission_cockpit_summary",
+                "description": "Return a compact mission cockpit summary across modes, worktrees, safety, compute, Code Cortex, and rules.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "objective": {"type": "string"},
+                        "phase": {"type": "string"},
+                        "risk": {"type": "string"},
+                    },
+                },
+            },
+            {
+                "name": "beast_mission_lattice_summary",
+                "description": "Summarize proof-carrying mission lattice cells learned from verified SourcePlan evidence.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 8},
+                    },
+                },
+            },
+            {
+                "name": "beast_mission_lattice_lookup",
+                "description": "Look up verified mission lattice cells for a proposed SourcePlan without applying edits.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "plan": {"type": "object"},
+                        "scorecard": {"type": "object"},
+                        "limit": {"type": "integer", "default": 5},
+                    },
+                    "required": ["plan"],
+                },
+            },
+            {
+                "name": "beast_mission_lattice_replay_scaffold",
+                "description": "Create a gated lattice replay workflow: match, SourcePlan scaffold, policy gate, verification plan, and evidence closure. Never applies edits.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "plan": {"type": "object"},
+                        "scorecard": {"type": "object"},
+                        "limit": {"type": "integer", "default": 5},
+                    },
+                    "required": ["plan"],
+                },
+            },
+            {
+                "name": "beast_evidence_bus_summary",
+                "description": "Summarize BEAST's canonical evidence pointer index for the workspace.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "limit": {"type": "integer", "default": 20},
+                    },
+                },
+            },
+            {
+                "name": "beast_evidence_bus_query",
+                "description": "Filter BEAST's canonical evidence pointer index by task, type, source, status, plan id, or receipt id.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "task_id": {"type": "string"},
+                        "artifact_type": {"type": "string"},
+                        "source": {"type": "string"},
+                        "status": {"type": "string"},
+                        "plan_id": {"type": "string"},
+                        "receipt_id": {"type": "string"},
+                        "limit": {"type": "integer", "default": 50},
+                    },
+                },
+            },
+            {
+                "name": "beast_evidence_bus_related",
+                "description": "Find all Evidence Bus receipts related to a task, SourcePlan id, hash, path, or receipt id.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_root": {"type": "string"},
+                        "key": {"type": "string"},
+                        "limit": {"type": "integer", "default": 50},
+                    },
+                    "required": ["key"],
+                },
+            },
+            {
+                "name": "beast_symbol_surgeon_plan",
+                "description": "Build a governed SourcePlan by replacing one locally resolved symbol block.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string"},
+                        "symbol": {"type": "string"},
+                        "replacement": {"type": "string"},
+                        "objective": {"type": "string"},
+                        "provider": {"type": "string", "default": "local_symbol_surgeon"},
+                        "workspace_root": {"type": "string"},
+                    },
+                    "required": ["path", "symbol", "replacement"],
                 },
             },
             {
@@ -311,6 +673,32 @@ class BeastToolRuntime:
                         "persist_local": {"type": "boolean", "default": True},
                     },
                     "required": ["action"],
+                },
+            },
+            {
+                "name": "beast_capability_plane_summary",
+                "description": "Summarize BEAST's unified read-only capability plane across registry, skills, plugins, exchange, and commons.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"limit": {"type": "integer", "default": 100}},
+                },
+            },
+            {
+                "name": "beast_capability_plane_query",
+                "description": "Query available, verified, local, reusable, or risky BEAST capabilities through one facade.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string"},
+                        "kind": {"type": "string"},
+                        "family": {"type": "string"},
+                        "source": {"type": "string"},
+                        "risk": {"type": "string"},
+                        "local": {"type": "boolean"},
+                        "reusable": {"type": "boolean"},
+                        "verified": {"type": "boolean"},
+                        "limit": {"type": "integer", "default": 50},
+                    },
                 },
             },
             {
@@ -698,11 +1086,101 @@ class BeastToolRuntime:
             ],
         }
 
+    def _active_tool_profile(self) -> str:
+        profile = str(os.environ.get("BEAST_MCP_TOOLS") or "full").strip().lower()
+        return profile if profile in {"readonly", "edit", "ops", "evidence", "full"} else "full"
+
+    def _profile_allowed_categories(self, profile: str) -> set[str]:
+        if profile == "readonly":
+            return {"context", "audit", "task", "planning"}
+        if profile == "edit":
+            return {"context", "audit", "task", "planning", "sourceplan"}
+        if profile == "ops":
+            return {"audit", "observability", "planning", "execution", "extension", "governance"}
+        if profile == "evidence":
+            return {"audit", "governance", "observability"}
+        return {"context", "audit", "task", "planning", "sourceplan", "execution", "extension", "governance", "observability"}
+
+    def _env_tool_set(self, name: str) -> set[str]:
+        raw = os.environ.get(name) or ""
+        return {item.strip() for item in raw.split(",") if item.strip()}
+
+    def _mutating_tools(self) -> set[str]:
+        return {
+            "beast_sourceplan_apply_selected",
+            "beast_sourceplan_rollback_latest",
+            "beast_worktree_create",
+            "beast_worktree_promote",
+            "beast_worktree_archive",
+            "beast_openclaw_execute",
+            "beast_publish_chronicle",
+            "beast_check_promotion",
+            "beast_tool_laziness_record",
+            "beast_otel_export",
+            "beast_plugin_marketplace_install",
+            "beast_capability_exchange",
+        }
+
+    def _tool_visible(self, name: str) -> bool:
+        if name == "beast_tool_profile":
+            return True
+        profile = self._active_tool_profile()
+        allow = self._env_tool_set("BEAST_MCP_TOOLS_ALLOW")
+        deny = self._env_tool_set("BEAST_MCP_TOOLS_DENY")
+        if name in deny:
+            return False
+        if allow:
+            return name in allow
+        category = self._tool_category(name)
+        if category not in self._profile_allowed_categories(profile):
+            return False
+        if profile == "readonly" and name in self._mutating_tools():
+            return False
+        return True
+
+    def tool_definitions(self) -> List[Dict[str, Any]]:
+        return [tool for tool in self._raw_tool_definitions() if self._tool_visible(str(tool.get("name") or ""))]
+
+    def _tool_profile_state(self) -> Dict[str, Any]:
+        raw = self._raw_tool_definitions()
+        visible = self.tool_definitions()
+        visible_names = {str(item.get("name") or "") for item in visible}
+        hidden = [str(item.get("name") or "") for item in raw if str(item.get("name") or "") not in visible_names]
+        profile = self._active_tool_profile()
+        return {
+            "beast_object_type": "beast_mcp_tool_profile",
+            "profile": profile,
+            "allow": sorted(self._env_tool_set("BEAST_MCP_TOOLS_ALLOW")),
+            "deny": sorted(self._env_tool_set("BEAST_MCP_TOOLS_DENY")),
+            "visible_count": len(visible),
+            "hidden_count": len(hidden),
+            "visible_tools": sorted(visible_names),
+            "hidden_tools": hidden,
+            "mutating_tools": sorted(self._mutating_tools()),
+            "allowed_categories": sorted(self._profile_allowed_categories(profile)),
+        }
+
+    def _blocked_by_profile(self, name: str) -> Optional[Dict[str, Any]]:
+        if self._tool_visible(name):
+            return None
+        return {
+            "beast_object_type": "beast_mcp_tool_profile_block",
+            "ok": False,
+            "tool": name,
+            "profile": self._active_tool_profile(),
+            "reason": "tool hidden or blocked by BEAST_MCP_TOOLS profile",
+            "profile_state": self._tool_profile_state(),
+        }
+
     def call_tool(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         arguments = arguments or {}
         logger.info("MCP tool call: %s", name)
 
-        if name == "beast_prepare_task":
+        if name == "beast_tool_profile":
+            result = self._tool_profile_state()
+        elif blocked := self._blocked_by_profile(name):
+            return blocked
+        elif name == "beast_prepare_task":
             result = self.task_envelope_builder.build(arguments, dry_run=arguments.get("dry_run", True))
         elif name == "beast_run_quality_cascade":
             envelope = arguments["envelope"]
@@ -742,6 +1220,165 @@ class BeastToolRuntime:
             result = self._action_result(action)
         elif name == "beast_sourceplan_preview_hunks":
             action = self.beast_api.render_patch_diff(arguments.get("plan") or {})
+            result = self._action_result(action)
+        elif name == "beast_sourceplan_scorecard":
+            action = self.beast_api.sourceplan_scorecard(arguments.get("plan") or {})
+            result = self._action_result(action)
+        elif name == "beast_code_cortex_status":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.code_cortex_status()
+        elif name == "beast_code_cortex_search_symbols":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.code_cortex_search_symbols(
+                str(arguments.get("query") or ""),
+                limit=int(arguments.get("limit", 20)),
+            )
+        elif name == "beast_code_cortex_dependents":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.code_cortex_dependents(
+                str(arguments.get("path") or ""),
+                limit=int(arguments.get("limit", 80)),
+            )
+        elif name == "beast_code_cortex_editing_context":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.code_cortex_editing_context(
+                str(arguments.get("query") or ""),
+                limit=int(arguments.get("limit", 12)),
+            )
+        elif name == "beast_mode_router_select":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.mode_route(
+                phase=str(arguments.get("phase") or ""),
+                risk=str(arguments.get("risk") or ""),
+                requested_mode=str(arguments.get("requested_mode") or ""),
+                provider=str(arguments.get("provider") or ""),
+                sourceplan=arguments.get("sourceplan") if isinstance(arguments.get("sourceplan"), dict) else {},
+            )
+        elif name == "beast_worktree_list":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_list()
+        elif name == "beast_worktree_create":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_create(
+                str(arguments.get("objective") or "BEAST isolated mission"),
+                risk=str(arguments.get("risk") or "medium"),
+                provider=str(arguments.get("provider") or ""),
+                mode=str(arguments.get("mode") or "implementer"),
+                base_ref=str(arguments.get("base_ref") or "HEAD"),
+                task_id=str(arguments.get("task_id") or ""),
+            )
+        elif name == "beast_worktree_status":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_status(str(arguments.get("task_id") or ""))
+        elif name == "beast_worktree_diff":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_diff(str(arguments.get("task_id") or ""), max_chars=int(arguments.get("max_chars", 40000)))
+        elif name == "beast_worktree_test":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            command = arguments.get("command") if isinstance(arguments.get("command"), list) else None
+            result = client.worktree_test(
+                str(arguments.get("task_id") or ""),
+                command=[str(item) for item in command] if command else None,
+                timeout=float(arguments.get("timeout", 120.0)),
+            )
+        elif name == "beast_worktree_promote":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_promote(
+                str(arguments.get("task_id") or ""),
+                approved=bool(arguments.get("approved", False)),
+                require_tests=bool(arguments.get("require_tests", True)),
+            )
+        elif name == "beast_worktree_archive":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.worktree_archive(str(arguments.get("task_id") or ""), reason=str(arguments.get("reason") or ""))
+        elif name == "beast_spec_covenant_compile":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.spec_covenant_compile(
+                str(arguments.get("objective") or ""),
+                files=[str(item) for item in (arguments.get("files") or [])],
+                mode=str(arguments.get("mode") or ""),
+                operator_notes=str(arguments.get("operator_notes") or ""),
+                max_rules=int(arguments.get("max_rules", 18)),
+            )
+        elif name == "beast_safety_classify_command":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.safety_classify_command(
+                str(arguments.get("command") or ""),
+                mode=str(arguments.get("mode") or ""),
+                task_id=str(arguments.get("task_id") or ""),
+                operator_override=str(arguments.get("operator_override") or ""),
+            )
+        elif name == "beast_safety_scan_workspace":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.safety_scan_workspace(
+                files=[str(item) for item in (arguments.get("files") or [])] or None,
+                max_files=int(arguments.get("max_files", 250)),
+            )
+        elif name == "beast_agent_scheduler_plan":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.agent_scheduler_plan(
+                str(arguments.get("objective") or ""),
+                phase=str(arguments.get("phase") or ""),
+                risk=str(arguments.get("risk") or ""),
+                graph_confidence=float(arguments.get("graph_confidence") or 0.0),
+                provider_fitness=float(arguments.get("provider_fitness") or 0.0),
+                crystal_match=bool(arguments.get("crystal_match", False)),
+                verification_failed=bool(arguments.get("verification_failed", False)),
+                high_value=bool(arguments.get("high_value", False)),
+            )
+        elif name == "beast_agent_scheduler_summary":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.agent_scheduler_summary(limit=int(arguments.get("limit", 20)))
+        elif name == "beast_mission_cockpit_summary":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.mission_cockpit_summary(
+                objective=str(arguments.get("objective") or ""),
+                phase=str(arguments.get("phase") or "scout"),
+                risk=str(arguments.get("risk") or ""),
+            )
+        elif name == "beast_mission_lattice_summary":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.mission_lattice_summary(limit=int(arguments.get("limit", 8)))
+        elif name == "beast_mission_lattice_lookup":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.mission_lattice_lookup(
+                arguments.get("plan") if isinstance(arguments.get("plan"), dict) else {},
+                scorecard=arguments.get("scorecard") if isinstance(arguments.get("scorecard"), dict) else None,
+                limit=int(arguments.get("limit", 5)),
+            )
+        elif name == "beast_mission_lattice_replay_scaffold":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.mission_lattice_replay_scaffold(
+                arguments.get("plan") if isinstance(arguments.get("plan"), dict) else {},
+                scorecard=arguments.get("scorecard") if isinstance(arguments.get("scorecard"), dict) else None,
+                limit=int(arguments.get("limit", 5)),
+            )
+        elif name == "beast_evidence_bus_summary":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.evidence_bus_summary(limit=int(arguments.get("limit", 20)))
+        elif name == "beast_evidence_bus_query":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.evidence_bus_query(
+                task_id=str(arguments.get("task_id") or ""),
+                artifact_type=str(arguments.get("artifact_type") or ""),
+                source=str(arguments.get("source") or ""),
+                status=str(arguments.get("status") or ""),
+                plan_id=str(arguments.get("plan_id") or ""),
+                receipt_id=str(arguments.get("receipt_id") or ""),
+                limit=int(arguments.get("limit", 50)),
+            )
+        elif name == "beast_evidence_bus_related":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            result = client.evidence_bus_related(str(arguments.get("key") or ""), limit=int(arguments.get("limit", 50)))
+        elif name == "beast_symbol_surgeon_plan":
+            client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
+            action = client.build_symbol_surgeon_plan(
+                str(arguments.get("path") or ""),
+                str(arguments.get("symbol") or ""),
+                str(arguments.get("replacement") or ""),
+                objective=str(arguments.get("objective") or ""),
+                provider=str(arguments.get("provider") or "local_symbol_surgeon"),
+            )
             result = self._action_result(action)
         elif name == "beast_sourceplan_apply_selected":
             action = self.beast_api.apply_patch_plan(
@@ -838,6 +1475,20 @@ class BeastToolRuntime:
                 )
             else:
                 raise ValueError(f"unsupported capability exchange action: {action}")
+        elif name == "beast_capability_plane_summary":
+            result = self.capability_plane.summary(limit=int(arguments.get("limit", 100)))
+        elif name == "beast_capability_plane_query":
+            result = self.capability_plane.query(
+                text=str(arguments.get("text") or ""),
+                kind=str(arguments.get("kind") or ""),
+                family=str(arguments.get("family") or ""),
+                source=str(arguments.get("source") or ""),
+                risk=str(arguments.get("risk") or ""),
+                local=arguments.get("local") if isinstance(arguments.get("local"), bool) else None,
+                reusable=arguments.get("reusable") if isinstance(arguments.get("reusable"), bool) else None,
+                verified=arguments.get("verified") if isinstance(arguments.get("verified"), bool) else None,
+                limit=int(arguments.get("limit", 50)),
+            )
         elif name == "beast_meta_tool_commons":
             action = str(arguments.get("action") or "state")
             if action == "state":
@@ -1163,8 +1814,24 @@ class BeastToolRuntime:
             return "observability"
         if "plugin" in name:
             return "extension"
-        if "capability_exchange" in name:
+        if "capability_exchange" in name or "capability_plane" in name:
             return "governance"
+        if "symbol_surgeon" in name:
+            return "sourceplan"
+        if "code_cortex" in name:
+            return "context"
+        if "mode_router" in name:
+            return "planning"
+        if "worktree_create" in name or "worktree_promote" in name or "worktree_archive" in name:
+            return "sourceplan"
+        if "worktree" in name:
+            return "planning"
+        if "spec_covenant" in name:
+            return "planning"
+        if name in {"beast_safety_classify_command", "beast_safety_scan_workspace"}:
+            return "planning"
+        if "agent_scheduler" in name or "mission_cockpit" in name or "mission_lattice" in name or "evidence_bus" in name:
+            return "planning"
         if "sourceplan" in name:
             return "sourceplan"
         if "policy" in name or "canon" in name or "promotion" in name or "economist" in name or "laziness" in name:
@@ -1186,6 +1853,8 @@ class BeastToolRuntime:
             return "trusted_with_explicit_approval"
         if name == "beast_capability_exchange":
             return "trusted_with_opt_in_and_approval"
+        if name in {"beast_capability_plane_summary", "beast_capability_plane_query"}:
+            return "trusted"
         if name in {"beast_publish_chronicle", "beast_check_promotion", "beast_provider_economist_select", "beast_tool_laziness_record", "beast_tool_laziness_recommend"}:
             return "trusted"
         return "degraded"

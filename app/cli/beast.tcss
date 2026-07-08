@@ -129,3 +129,26 @@ Screen {
     scrollbar-color-hover: #A7FF57;
     scrollbar-color-active: #A7FF57;
 }
+
+/* Operator cockpit refit */
+#detail-panel Input,
+#context-picker Input {
+    height: 3;
+    margin: 0 4 1 4;
+    background: #06110F;
+    color: #EAF8F1;
+    border: solid #26724E;
+}
+
+#detail-panel Input:focus,
+#context-picker Input:focus {
+    border: solid #74FF8B;
+}
+
+#page-scroll {
+    scrollbar-gutter: stable;
+    scrollbar-background: #06110F;
+    scrollbar-color: #74FF8B;
+    scrollbar-color-hover: #A7FF57;
+    scrollbar-color-active: #C2FF4D;
+}

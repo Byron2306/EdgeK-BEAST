@@ -38,7 +38,7 @@ OPENAI_COMPAT_BASE_URLS = {
 
 LITELLM_SMOKE_MODELS = {
     "cerebras": "cerebras/llama3.1-8b",
-    "cohere": "cohere/command-r",
+    "cohere": "cohere/command-a-03-2025",
     "deepinfra": "deepinfra/meta-llama/Meta-Llama-3.1-8B-Instruct",
     "featherless": "featherless_ai/meta-llama/Meta-Llama-3.1-8B-Instruct",
     "groq": "groq/llama-3.1-8b-instant",

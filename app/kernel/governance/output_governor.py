@@ -13,6 +13,7 @@ from app.kernel.compute.action_ir import ACTION_IR_KIND, ActionIR, action_ir_sch
 from app.kernel.compute.action_resolver import build_file_references, resolve_action_ir
 from app.kernel.local.local_patch_compiler import compile_resolved_actions
 from app.kernel.data_processing.output_evidence import base_output_evidence
+from app.kernel.policy.policy_gate import from_output_gate_result
 
 
 @dataclass(frozen=True)
@@ -239,11 +240,15 @@ def output_gate(
             "compiled_operation_count": len(operations),
             "final_status": "compiled",
         })
-        return OutputGateResult(True, operations, evidence, non_mutating_requests=[item.to_dict() for item in non_mutating])
+        result = OutputGateResult(True, operations, evidence, non_mutating_requests=[item.to_dict() for item in non_mutating])
+        result.evidence["policy_gate"] = from_output_gate_result(result)
+        return result
     except Exception as exc:
         evidence["final_status"] = "output_validation_failed"
         evidence["error"] = str(exc)
-        return OutputGateResult(False, [], evidence, error=str(exc))
+        result = OutputGateResult(False, [], evidence, error=str(exc))
+        result.evidence["policy_gate"] = from_output_gate_result(result)
+        return result
 
 
 def compile_provider_output(

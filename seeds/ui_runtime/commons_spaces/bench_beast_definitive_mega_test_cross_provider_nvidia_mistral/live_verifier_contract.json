@@ -1,0 +1,29 @@
+{
+  "beast_object_type": "commons_live_verifier_contract",
+  "checks": [
+    "manifest_artifact_hashes_and_sizes",
+    "json_evidence_parseability",
+    "archived_integrity_hashes",
+    "definitive_benchmark_report_contract"
+  ],
+  "claim_boundary": "This verifier proves repeatable local reuse of the published benchmark evidence. It does not re-run the original provider benchmark or claim production frequency.",
+  "integrity_targets": [
+    "README.md",
+    "cost_latency_summary.md",
+    "failures_by_bucket.json",
+    "provider_fitness.json",
+    "run_manifest.json"
+  ],
+  "raw_private_data_required": false,
+  "required_artifacts": [
+    "README.md",
+    "cost_latency_summary.md",
+    "failures_by_bucket.json",
+    "integrity_manifest.json",
+    "provider_fitness.json",
+    "run_manifest.json"
+  ],
+  "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_mistral",
+  "version": "1.0",
+  "workload_boundary": "local_benchmark_evidence_reuse"
+}

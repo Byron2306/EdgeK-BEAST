@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 724,
+      "path": "README.md",
+      "sha256": "sha256:0549808ea34ebeee8272db67cf59ad5e5b84457b7460a756a5d2f20be7f8bfaa"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 4895,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:1241f6919faa689383a5e0b2afd4837f3396202b6fbd25fca923e32f780961e2"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2506,
+      "path": "run_manifest.json",
+      "sha256": "sha256:b0b39ff3daf54b5d761dc74de113c16b0d543fb00a8a0c20be7e9ad92a819e70"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 101,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:a626bd888db546405d03c45dd98b772d4066628fcf6ed637729cd3944ac748ca"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.241502+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_nvidia_smoke",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_nvidia_smoke"
+  },
+  "manifest_hash": "sha256:a626f37e9a42ddcee1a2cd2c44a31b7123938c89710677c2597e56be651b96c5",
+  "name": "Beast Definitive Mega Test Nvidia Smoke",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_nvidia_smoke",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

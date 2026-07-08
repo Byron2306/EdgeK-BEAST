@@ -6,6 +6,24 @@ from app.kernel.data_processing.workspace_graph import WorkspaceGraph
 from app.main import app
 
 
+class FakeCodeCortex:
+    def get_editing_context(self, root, query, limit=12):
+        return {
+            "ok": True,
+            "adapter": "fake_cortex",
+            "files": [{"path": "app/main.py", "preview": "def hello(): pass"}],
+            "symbols": [{"name": "hello", "kind": "function", "file": "app/main.py"}],
+            "receipt": {
+                "beast_object_type": "code_cortex_adapter_receipt",
+                "adapter": "fake_cortex",
+                "method": "get_editing_context",
+                "ok": True,
+                "latency_ms": 123.45,
+                "result_count": 2,
+            },
+        }
+
+
 def test_context_packet_includes_bounded_files_and_excludes_sensitive_paths(tmp_path):
     repo = tmp_path / "repo"
     (repo / "app").mkdir(parents=True)
@@ -42,6 +60,30 @@ def test_context_packet_includes_bounded_files_and_excludes_sensitive_paths(tmp_
     assert "def hello" in snippet["content"]
     assert "SECRET_TOKEN" not in str(packet)
     assert {"source": "config/.env", "reason": "sensitive_or_blocked"} in packet["excluded_evidence"]
+
+
+def test_context_packet_routes_context_selection_through_code_cortex(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "app").mkdir(parents=True)
+    (repo / "app" / "main.py").write_text("def hello():\n    return 'cortex'\n", encoding="utf-8")
+    builder = ContextPacketBuilder(code_cortex=FakeCodeCortex(), max_file_chars=120)
+    envelope = {
+        "task_id": "tsk_cortex",
+        "intent": "Edit hello",
+        "task_class": "small_patch",
+        "privacy_class": "internal",
+        "inputs": {"user_request": "Edit hello"},
+        "context_budget": {"max_tokens": 4000, "max_files": 4, "allow_full_files": False},
+    }
+
+    packet = builder.build(envelope, workspace_root=str(repo), semantic_limit=3)
+
+    cortex = packet["workspace_context"]["code_cortex"]
+    assert cortex["front_door"] == "code_cortex"
+    assert cortex["adapter"] == "fake_cortex"
+    assert cortex["receipt"]["adapter"] == "fake_cortex"
+    assert "latency_ms" not in cortex["receipt"]
+    assert any(item["source"] == "app/main.py" for item in packet["included_evidence"])
 
 
 def test_context_packet_hash_is_stable_for_identical_evidence(tmp_path):

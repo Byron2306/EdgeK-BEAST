@@ -3,9 +3,9 @@
     "beast_object_type": "capability_validity_decision",
     "confidence": 0.97,
     "critical_changes": [],
-    "current_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "current_fingerprint_hash": "sha256:67e9e42b3b0f0f2f6311206a95f0aa61863cff5d6c1305f11f3336ddba9a4982",
     "nonsemantic_changes": [],
-    "previous_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "previous_fingerprint_hash": "sha256:67e9e42b3b0f0f2f6311206a95f0aa61863cff5d6c1305f11f3336ddba9a4982",
     "reasons": [
       "impact_fingerprint_unchanged"
     ],
@@ -52,21 +52,22 @@
     "beast_object_type": "deterministic_displacement_proof",
     "candidate_name": "phase6_schema_cap",
     "confidence": 0.95,
-    "created_at": "2026-06-20T21:05:35.980657+00:00",
+    "created_at": "2026-06-29T13:39:02.578632+00:00",
     "expected_output_sha256": "",
     "hidden_tests_equal_or_better": true,
     "impact_fingerprint": {
       "beast_object_type": "capability_impact_fingerprint",
       "confidence": 0.97,
+      "crystal_chain_block_hash": "sha256:82cf991822b3b3a65cfeb15a9d6fa3c27b4447af937fdc9d5a9c5c5f19f8656c",
       "dependencies": {},
-      "fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+      "fingerprint_hash": "sha256:67e9e42b3b0f0f2f6311206a95f0aa61863cff5d6c1305f11f3336ddba9a4982",
       "policy_version": "phase6_lifecycle_v1",
       "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
       "targets": {
         "app/phase6_contract.py": {
           "exists": true,
           "file_hash": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
-          "semantic_hash": "sha256:2c62876ead30a38e0b951e08b17a0b118075155ed02cfb6aab77bb76ca242bbf",
+          "semantic_hash": "sha256:88f5a324813f101601e3bb8feb24d9fad5ddfcac4e4f8ea99b696deb94104c40",
           "symbol_hashes": {}
         }
       },
@@ -74,9 +75,9 @@
         "tests/test_phase6_contract.py": {
           "exists": true,
           "file_hash": "sha256:deb22a8dcf2d38aed20a69016b83c4596f06b390b59eb3b0b99e0d66ba737376",
-          "semantic_hash": "sha256:9664ef443921132f3bc36e4586576fbbdda9cec966032cc8b89f3966eb7a7738",
+          "semantic_hash": "sha256:daa89ce6f7b193d28d62be62299ef373d2a725bf75bc01fac06c8ff0e8a80f7b",
           "symbol_hashes": {
-            "test_ok": "sha256:e1dff3444ce8147572c6898c32836a7abff66a204a564b1ae899870fd6a6c52c"
+            "test_ok": "sha256:d454a45b2af1adc3a813e828a4056c3e14b8c9598e95e21c06909bab14893f63"
           }
         }
       },
@@ -101,9 +102,9 @@
     "critical_changes": [
       "targets:app/phase6_contract.py:semantic_change"
     ],
-    "current_fingerprint_hash": "sha256:faf791e1d68436f99e2ed8d23e83eb175cf3e72e5fe970d82190fdf13026dfe1",
+    "current_fingerprint_hash": "sha256:46df5c6de7e67460510710fab59f3ac074eb4edc33fb48d981d7d559252f3c99",
     "nonsemantic_changes": [],
-    "previous_fingerprint_hash": "sha256:e01eb81d0984d6f88b394a066f7c904f404bbf044c788ff66890dd0ff8f4617b",
+    "previous_fingerprint_hash": "sha256:67e9e42b3b0f0f2f6311206a95f0aa61863cff5d6c1305f11f3336ddba9a4982",
     "reasons": [
       "targets:app/phase6_contract.py:semantic_change"
     ],
@@ -112,7 +113,7 @@
     "tiebreaker_policy": "shadow_revalidation_on_uncertain_repository_impact",
     "version": "1.0"
   },
-  "state_path": "/tmp/beast-phase6-lifecycle-z1ytytr8/state/capability_crystallization_state.json",
+  "state_path": "/tmp/beast-phase6-lifecycle-1x7kxyli/state/capability_crystallization_state.json",
   "version": "1.0",
-  "wall_time_ms": 3.29
+  "wall_time_ms": 6.644
 }

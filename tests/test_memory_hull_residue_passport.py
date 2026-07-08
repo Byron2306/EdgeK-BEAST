@@ -66,6 +66,7 @@ def test_agent_passport_policy_prevents_unapproved_cloud_calls():
     denied = policy.evaluate(caller=proxy, target="spiffe://beast.local/provider/cloud", action="call")
     assert denied["allowed"] is False
     assert denied["reason"] == "explicit_deny"
+    assert denied["policy_gate"]["decision"] == "block"
 
     approved = policy.evaluate(
         caller=governor,
@@ -74,6 +75,7 @@ def test_agent_passport_policy_prevents_unapproved_cloud_calls():
         facts={"quality_cascade": {"approved": True}},
     )
     assert approved["allowed"] is True
+    assert approved["policy_gate"]["decision"] == "allow"
 
     memory = policy.evaluate(caller=scout, target="spiffe://beast.local/memory/vault", action="append")
     assert memory["allowed"] is True
@@ -91,6 +93,7 @@ def test_agent_passport_decisions_can_be_sealed_and_expiry_is_enforced(tmp_path)
         facts={"quality_cascade": {"approved": True}},
     )
     assert decision["allowed"] is True
+    assert decision["policy_gate"]["decision"] == "allow"
     assert seal.verify(decision, decision["residue_seal"], expected_purpose="agent_passport_policy_decision")["verified"] is True
 
     expired = AgentPassport(

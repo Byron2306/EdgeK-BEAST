@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1449,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:c5dd976367010f3a6fea1043e42430a97ebedad5911989021cad6b4871b8c91b"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2352,
+      "path": "run_manifest.json",
+      "sha256": "sha256:df89a84d0deb30ee0af398fc5e96a072ecb8705599415998219ae679726c9087"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 676,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:03d1959483cc795b2d4e52dd76faa9ea86aa2a40b219a3273cea08dce657f13c"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 420,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:d138787cef73b08dbd9443950c63df1bf184f2dcc8d017ab28906b01d55f659c"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.620616+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_cerebras_native_smoke_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_cerebras_native_smoke_gauntlet"
+  },
+  "manifest_hash": "sha256:46fa25dcd6fb3492f34a2eaddbdc691ce78176c01e4ce4ae857450b6aa4fc438",
+  "name": "Beast Cerebras Native Smoke Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_cerebras_native_smoke_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

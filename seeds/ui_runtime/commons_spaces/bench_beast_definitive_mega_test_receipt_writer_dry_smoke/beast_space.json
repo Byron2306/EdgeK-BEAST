@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 623,
+      "path": "README.md",
+      "sha256": "sha256:7b7fe7b0219296fbb400c8e9d5d1a497f48c4d6a6d5384ddefb1ab1217561e1d"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 3009,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:7b59fbb9dbed60d8e17d9af23250186d4dafda03eb81440c74a5a62ae369b1d6"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 14178,
+      "path": "run_manifest.json",
+      "sha256": "sha256:5524cfd4cdb47c708b60dcfe60173edd218911e8112c5c583b5e0a2a86c60d86"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 52,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:564c4a89650c2f82f2ad451d4245d67dcd042fa33273222eea8a6440e7c40925"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.265718+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_receipt_writer_dry_smoke",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_receipt_writer_dry_smoke"
+  },
+  "manifest_hash": "sha256:2a19b3b2e3b6c2f0154d40de93ca6ac912c99bab96a866aaf4b3fe70861d1223",
+  "name": "Beast Definitive Mega Test Receipt Writer Dry Smoke",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_receipt_writer_dry_smoke",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

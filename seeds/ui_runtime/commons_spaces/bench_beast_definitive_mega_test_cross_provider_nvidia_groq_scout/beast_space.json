@@ -1,0 +1,104 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 833,
+      "path": "README.md",
+      "sha256": "sha256:dbf8c8553a64a03030e8ecc192713fd09eb4294c3c21c0b370e747dfa932c47b"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 5047,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:91ae01d8b25f01980a2bdb521fe11eba56afc54f91d86aa5c8a14aeebd18d8e7"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2253,
+      "path": "run_manifest.json",
+      "sha256": "sha256:67173c653b1ba8916aafa69036ecf93e5a04cc860cdb8f40b501a82583bb9ee8"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 98,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:d66f9e258c6b77285f2126e0d0c0c9655c5c4c693f206d9af0c727947b5ca241"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "live_verifier_contract",
+      "bytes": 971,
+      "path": "live_verifier_contract.json",
+      "sha256": "sha256:bb6d09ad0f7c784827f90064abe66dab106100ee2ee30d2a5660dd526274c9aa"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T08:43:52.612844+00:00",
+  "hardware_profile": {
+    "execution_class": "cpu_only_live_evidence_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+    "promoted_from_manifest_hash": "sha256:3f826bfa374ce0e17ac6d856ae508bb09c59b836bb9522bf1f8dbf2e882b81e4",
+    "proof_mode": "three_distinct_live_verifier_reproductions",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_cross_provider_nvidia_groq_scout"
+  },
+  "manifest_hash": "sha256:24438f99a0cc7524ab9bb5fa79cbecd1851864e779e4dc9aa41b846473e6b2fb",
+  "name": "Beast Definitive Mega Test Cross Provider Nvidia Groq Scout",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": true,
+    "cloud_calls_avoided": 1,
+    "cloud_calls_evidence": "local_route_policy_counterfactual",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "approved_candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+  "task_class": "local_benchmark_evidence_reuse",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "space_local_hashed_benchmark_evidence",
+      "bundle_id": "live_evidence_bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout",
+      "commands": [
+        "python -m pytest tests/test_commons_promoted_space_verifiers.py -q -k bench_beast_definitive_mega_test_cross_provider_nvidia_groq_scout"
+      ],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

@@ -22,11 +22,14 @@ class ComputeReductionEconomy:
         self.root.mkdir(parents=True, exist_ok=True)
         self.ledger_path = self.root / "credits.json"
 
-    def duplicate_report(self) -> Dict[str, Any]:
+    def duplicate_report(self, *, max_spaces: Optional[int] = None) -> Dict[str, Any]:
         groups: Dict[str, List[str]] = {}
-        for row in self.registry.list_spaces().get("spaces") or []:
-            if not row.get("valid"):
-                continue
+        rows = [row for row in self.registry.list_spaces().get("spaces") or [] if row.get("valid")]
+        truncated = False
+        if max_spaces is not None and len(rows) > max_spaces:
+            rows = rows[:max(0, int(max_spaces))]
+            truncated = True
+        for row in rows:
             detail = self.registry.get(str(row["space_id"]))
             fingerprint = self._semantic_fingerprint(detail)
             groups.setdefault(fingerprint, []).append(str(row["space_id"]))
@@ -40,6 +43,8 @@ class ComputeReductionEconomy:
             "groups": duplicates,
             "duplicate_spaces": sum(len(item["space_ids"]) - 1 for item in duplicates),
             "policy": "exact semantic evidence duplicates receive zero additional credit",
+            "truncated": truncated,
+            "scanned_spaces": len(rows),
         }
 
     def adoption_history(self, space_id: Optional[str] = None) -> Dict[str, Any]:
@@ -168,11 +173,13 @@ class ComputeReductionEconomy:
             "claim_boundary": "Value derives from local reproduction and adoption; claimed or counterfactual tokens earn no observed-token credit.",
         }
 
-    def simulate(self, space_id: Optional[str] = None) -> Dict[str, Any]:
+    def simulate(self, space_id: Optional[str] = None, *, limit: int = 10) -> Dict[str, Any]:
         ids = [space_id] if space_id else [str(item["space_id"]) for item in self.registry.list_spaces().get("spaces") or [] if item.get("valid")]
+        ids = ids[: max(1, min(int(limit), 100))]
+        duplicate_report = self.duplicate_report(max_spaces=max(25, len(ids)))
         rows = []
         for current in ids:
-            proof = self.proof(current)
+            proof = self.proof(current, duplicate_report=duplicate_report)
             rows.append({
                 "space_id": current,
                 "eligible": proof["eligible"],
@@ -189,6 +196,7 @@ class ComputeReductionEconomy:
             "redeemable": False,
             "financial_value": None,
             "spaces": rows,
+            "returned_spaces": len(rows),
             "total_simulated_units": sum(item["simulated_credit_units"] for item in rows),
             "backtest_boundary": "Point-in-time local evidence only; simulation is not a guarantee of future compute reduction.",
         }
@@ -224,9 +232,11 @@ class ComputeReductionEconomy:
         self._save(state)
         return credit
 
-    def state(self) -> Dict[str, Any]:
+    def state(self, *, full: bool = False) -> Dict[str, Any]:
         state = self._load()
         credits = list(state["by_evidence"].values())
+        adoption_history = self.adoption_history() if full else self._adoption_summary()
+        duplicate_report = self.duplicate_report() if full else self._duplicate_summary_from_credits(credits)
         return {
             "beast_object_type": "compute_reduction_economy_state",
             "version": "1.0",
@@ -234,8 +244,9 @@ class ComputeReductionEconomy:
             "credits": credits,
             "credit_count": len(credits),
             "issued_units": sum(int(item.get("credit_units") or 0) for item in credits),
-            "duplicates": self.duplicate_report(),
-            "adoption_history": self.adoption_history(),
+            "duplicates": duplicate_report,
+            "adoption_history": adoption_history,
+            "full_analysis": bool(full),
             "anti_gaming_rules": [
                 "local live reproduction required",
                 "verified local adoption required",
@@ -244,6 +255,39 @@ class ComputeReductionEconomy:
                 "one issuance per evidence fingerprint",
                 "credits are capped, non-transferable, and non-redeemable",
             ],
+        }
+
+    def _adoption_summary(self) -> Dict[str, Any]:
+        rows = self.registry.adoptions()
+        return {
+            "beast_object_type": "verified_commons_adoption_history",
+            "version": "1.0",
+            "count": len(rows),
+            "verified_count": sum(1 for item in rows if item.get("adopted")),
+            "adoptions": rows[:8],
+            "truncated": len(rows) > 8,
+        }
+
+    @staticmethod
+    def _duplicate_summary_from_credits(credits: List[Dict[str, Any]]) -> Dict[str, Any]:
+        seen: Dict[str, List[str]] = {}
+        for credit in credits:
+            fingerprint = str(credit.get("evidence_fingerprint") or "")
+            if not fingerprint:
+                continue
+            seen.setdefault(fingerprint, []).append(str(credit.get("space_id") or "unknown"))
+        duplicates = [
+            {"fingerprint": fingerprint, "canonical_space_id": sorted(ids)[0], "space_ids": sorted(ids)}
+            for fingerprint, ids in seen.items() if len(set(ids)) > 1
+        ]
+        return {
+            "beast_object_type": "compute_reduction_duplicate_report",
+            "version": "1.0",
+            "groups": duplicates,
+            "duplicate_spaces": sum(len(set(item["space_ids"])) - 1 for item in duplicates),
+            "policy": "exact semantic evidence duplicates receive zero additional credit",
+            "fast_summary": True,
+            "source": "issued_credit_evidence_fingerprints",
         }
 
     @staticmethod

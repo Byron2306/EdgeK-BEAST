@@ -4,9 +4,13 @@ This router mounts provider-compatible HTTP surfaces under /proxy/* while keepin
 BEAST governance in the provider adapters themselves.
 """
 
-from typing import Any, Dict
+import json
+import os
+from typing import Any, AsyncIterator, Dict
 
+import httpx
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 
 from app.adapters.anthropic_adapter import anthropic_router
 from app.adapters.gemini_adapter import gemini_router
@@ -63,7 +67,82 @@ async def _registry_chat(provider: str, request: Request):
         body["metadata"]["edgek_provider_backend"] = adapter_plan.backend
         body["metadata"]["route_provider"] = adapter_plan.route_provider
         body["metadata"]["provider_config"] = adapter_plan.to_dict()
+    if _should_direct_sse(body, adapter_plan.to_dict()):
+        return StreamingResponse(
+            _openai_compatible_sse(body, adapter_plan.to_dict()),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                "X-EdgeK-Provider": adapter_plan.provider_id,
+                "X-EdgeK-Stream-Path": "registry_openai_compatible_direct_sse",
+            },
+        )
     return await _run_prec(body, provider=adapter_plan.provider_id)
+
+
+def _should_direct_sse(body: Dict[str, Any], adapter_plan: Dict[str, Any]) -> bool:
+    enabled = os.environ.get("BEAST_PROXY_DIRECT_PROVIDER_SSE", "1").strip().lower() not in {"0", "false", "no", "off"}
+    if not enabled or body.get("stream") is not True:
+        return False
+    if str(adapter_plan.get("backend") or "") != "openai_compatible":
+        return False
+    env_names = adapter_plan.get("env") if isinstance(adapter_plan.get("env"), list) else []
+    if not env_names:
+        return False
+    return bool(os.environ.get(str(env_names[0])))
+
+
+async def _openai_compatible_sse(body: Dict[str, Any], adapter_plan: Dict[str, Any]) -> AsyncIterator[str]:
+    provider_id = str(adapter_plan.get("provider_id") or "openai_compatible")
+    env_names = adapter_plan.get("env") if isinstance(adapter_plan.get("env"), list) else []
+    api_key = os.environ.get(str(env_names[0])) if env_names else ""
+    base_url = str(adapter_plan.get("base_url") or "").rstrip("/")
+    if not api_key or not base_url:
+        yield _sse_error(provider_id, "Provider credentials/base URL are not loaded for direct SSE.")
+        return
+
+    payload = dict(body)
+    payload["stream"] = True
+    payload["model"] = str(adapter_plan.get("model") or payload.get("model") or "")
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream",
+    }
+    timeout = httpx.Timeout(connect=15.0, read=None, write=60.0, pool=15.0)
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream("POST", f"{base_url}/chat/completions", headers=headers, json=payload) as response:
+                if response.status_code >= 400:
+                    body_bytes = await response.aread()
+                    detail = body_bytes.decode("utf-8", errors="replace")[:1200]
+                    yield _sse_error(provider_id, f"HTTP {response.status_code}: {detail}")
+                    return
+                async for line in response.aiter_lines():
+                    if line is None:
+                        continue
+                    stripped = line.strip()
+                    if not stripped:
+                        yield "\n"
+                        continue
+                    if stripped.startswith("data:"):
+                        yield f"{stripped}\n\n"
+                    else:
+                        yield f"data: {stripped}\n\n"
+    except Exception as exc:
+        yield _sse_error(provider_id, str(exc)[:1200])
+
+
+def _sse_error(provider_id: str, message: str) -> str:
+    payload = {
+        "error": {
+            "message": message,
+            "type": "provider_stream_error",
+            "provider": provider_id,
+        }
+    }
+    return "data: " + json.dumps(payload, separators=(",", ":")) + "\n\n"
 
 
 @proxy_router.post("/v1/chat/completions")

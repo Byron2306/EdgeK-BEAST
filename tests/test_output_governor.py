@@ -165,6 +165,7 @@ def test_output_gate_records_contract_evidence(tmp_path: Path):
     assert result.evidence["json_parse_ok"] is True
     assert result.evidence["diff_compiled"] is True
     assert result.evidence["anchor_match_rate"] == 1.0
+    assert result.evidence["policy_gate"]["decision"] == "allow"
     assert result.operations[0]["content"] == "value = 'new'\n"
 
 
@@ -183,6 +184,7 @@ def test_refs_only_output_gate_requires_action_ir(tmp_path: Path):
 
     assert result.ok is False
     assert "must return BEAST Action IR" in result.error
+    assert result.evidence["policy_gate"]["decision"] == "block"
 
 
 def test_output_gate_compiles_action_ir(tmp_path: Path):

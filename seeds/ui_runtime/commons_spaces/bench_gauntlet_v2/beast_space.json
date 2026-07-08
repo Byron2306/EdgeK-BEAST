@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 4738,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:2be24cbf08abae2f7dffca64e396db485230a8425f4a279af284dc9b7006d5ae"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 17120,
+      "path": "run_manifest.json",
+      "sha256": "sha256:91949ca473761457fa70d57b1ddb2c3d663c15bfcf1db05300abc2a6671a0aec"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 140,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:f40a480637d4363b80da814d8b89a1e8231d843abba06f76d1c789bcb808f756"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 398,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:e3184c8a1d616c79698ae713025e7e0ef418fc242e54d31a12f12c3068fe68e4"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:21.008626+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "gauntlet_v2",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/gauntlet_v2"
+  },
+  "manifest_hash": "sha256:48bc1976bb90cef0cdab6c6f58536ee49ca54656652d1b0af18997019b739931",
+  "name": "Gauntlet V2",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_gauntlet_v2",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

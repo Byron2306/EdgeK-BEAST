@@ -1,0 +1,104 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 638,
+      "path": "README.md",
+      "sha256": "sha256:6e321af591121b58033f9a366fba1caa5c0edc39af28ca70495ad11f096fd940"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 2915,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:4f0e4ce183cee07e0abd622f926c6cf75937b954d49fc93d9b4ba1780cfbc1a5"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1422,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:dd98146d066644cf2d2832bea7e96140e58ef023da95cd78a022d53170603654"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 1841,
+      "path": "run_manifest.json",
+      "sha256": "sha256:b338d446e630564eb265536d23c922fc26282710fac3b42b854fd9c7cc7d35dc"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 98,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:a4124b1e03a2f250073070c0bb5281a3becfe877a64073b88828172fb6c136fa"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 30,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:43f52c24bb67a36c602fb94dc3299361ba93b6582ed5c769c1a00a408c1b0804"
+    },
+    {
+      "artifact_type": "live_verifier_contract",
+      "bytes": 968,
+      "path": "live_verifier_contract.json",
+      "sha256": "sha256:c879fa1a2dd31e7a6886d0ed7bd798a3a297d3bab4b0bb9769d186172bc27b67"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T08:43:52.626204+00:00",
+  "hardware_profile": {
+    "execution_class": "cpu_only_live_evidence_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_cross_provider_nvidia_mistral",
+    "promoted_from_manifest_hash": "sha256:cb850cb9d72cf2427eccc147990880799e250854654edcbac1e8e1dd9bd3d1a0",
+    "proof_mode": "three_distinct_live_verifier_reproductions",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_cross_provider_nvidia_mistral"
+  },
+  "manifest_hash": "sha256:fb5e209fa4588c0f8ce49f50e1f50004fe7f2fa9cba2afb2fe1fe78ae32a5608",
+  "name": "Beast Definitive Mega Test Cross Provider Nvidia Mistral",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": true,
+    "cloud_calls_avoided": 1,
+    "cloud_calls_evidence": "local_route_policy_counterfactual",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "approved_candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_cross_provider_nvidia_mistral",
+  "task_class": "local_benchmark_evidence_reuse",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "space_local_hashed_benchmark_evidence",
+      "bundle_id": "live_evidence_bench_beast_definitive_mega_test_cross_provider_nvidia_mistral",
+      "commands": [
+        "python -m pytest tests/test_commons_promoted_space_verifiers.py -q -k bench_beast_definitive_mega_test_cross_provider_nvidia_mistral"
+      ],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}
