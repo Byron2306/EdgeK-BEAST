@@ -16,6 +16,8 @@ let extensionContext = null;
 let sourceWorkbenchPanel = null;
 let ideEventAbort = null;
 let ideEventProvider = null;
+let agentSessionsProvider = null;
+let worktreeMissionsProvider = null;
 let latestIdeEvents = {};
 let beastDiagnostics = null;
 let currentAgentSession = null;
@@ -226,6 +228,12 @@ function saveIdeSession() {
     }
 }
 
+function refreshMissionTrees() {
+    if (ideEventProvider) ideEventProvider.refresh();
+    if (agentSessionsProvider) agentSessionsProvider.refresh();
+    if (worktreeMissionsProvider) worktreeMissionsProvider.refresh();
+}
+
 function restoreIdeSession(context) {
     const saved = context.workspaceState.get('edgekBeast.ideSession') || {};
     currentPlan = saved.plan || null;
@@ -355,6 +363,90 @@ class BeastIdeProvider {
         item.tooltip = description;
         item.command = { command, title: label };
         return item;
+    }
+}
+
+class AgentSessionsProvider {
+    constructor() {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
+    refresh() { this._onDidChangeTreeData.fire(); }
+    getTreeItem(element) { return element; }
+    async getChildren() {
+        try {
+            const data = await fetchAgentSessions();
+            const sessions = data.sessions || [];
+            const create = new vscode.TreeItem('Create Agent Session', vscode.TreeItemCollapsibleState.None);
+            create.iconPath = new vscode.ThemeIcon('add');
+            create.command = { command: 'edgekBeast.createAgentSession', title: 'Create Agent Session' };
+            if (!sessions.length) {
+                const empty = new vscode.TreeItem('No active sessions', vscode.TreeItemCollapsibleState.None);
+                empty.description = 'mode/budget/evidence/tools/files';
+                return [create, empty];
+            }
+            return [create, ...sessions.map(session => {
+                const item = new vscode.TreeItem(session.agent_id || session.session_id, vscode.TreeItemCollapsibleState.None);
+                item.description = `${session.status || 'unknown'} · ${session.mode || 'mode'}`;
+                item.tooltip = JSON.stringify({
+                    objective: session.objective,
+                    budget: session.budget,
+                    tools: session.tools,
+                    files: session.files,
+                    evidence_count: (session.evidence || []).length,
+                }, null, 2);
+                item.iconPath = new vscode.ThemeIcon(session.status === 'paused' ? 'debug-pause' : session.status === 'cancelled' ? 'circle-slash' : 'account');
+                item.contextValue = 'beastAgentSession';
+                item.command = { command: 'edgekBeast.showAgentSessions', title: 'Show Agent Sessions' };
+                return item;
+            })];
+        } catch (error) {
+            const item = new vscode.TreeItem(`Gateway unavailable: ${error.message}`, vscode.TreeItemCollapsibleState.None);
+            item.command = { command: 'edgekBeast.diagnoseIdeShell', title: 'Diagnose IDE Shell' };
+            return [item];
+        }
+    }
+}
+
+class WorktreeMissionsProvider {
+    constructor() {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
+    refresh() { this._onDidChangeTreeData.fire(); }
+    getTreeItem(element) { return element; }
+    async getChildren() {
+        try {
+            const result = await callMcpTool('beast_worktree_list', { workspace_root: workspaceFolderPath() });
+            const tasks = actionData(result).tasks || [];
+            const create = new vscode.TreeItem('Create Mission Worktree', vscode.TreeItemCollapsibleState.None);
+            create.iconPath = new vscode.ThemeIcon('git-branch-create');
+            create.command = { command: 'edgekBeast.createWorktreeMission', title: 'Create Mission Worktree' };
+            if (!tasks.length) {
+                const empty = new vscode.TreeItem('No worktree missions', vscode.TreeItemCollapsibleState.None);
+                empty.description = 'isolated edits and verification';
+                return [create, empty];
+            }
+            return [create, ...tasks.map(task => {
+                const item = new vscode.TreeItem(task.task_id || task.branch || 'mission', vscode.TreeItemCollapsibleState.None);
+                item.description = `${task.status || 'unknown'} · ${task.risk || 'risk'}`;
+                item.tooltip = JSON.stringify({
+                    objective: task.objective,
+                    branch: task.branch,
+                    worktree_path: task.worktree_path,
+                    last_test: task.last_test,
+                    last_sourceplan_draft: task.last_sourceplan_draft,
+                }, null, 2);
+                item.iconPath = new vscode.ThemeIcon(task.status === 'promoted' ? 'pass' : task.status === 'archived' ? 'archive' : 'repo');
+                item.contextValue = 'beastWorktreeMission';
+                item.command = { command: 'edgekBeast.showWorktrees', title: 'Show Worktree Missions' };
+                return item;
+            })];
+        } catch (error) {
+            const item = new vscode.TreeItem(`Gateway unavailable: ${error.message}`, vscode.TreeItemCollapsibleState.None);
+            item.command = { command: 'edgekBeast.diagnoseIdeShell', title: 'Diagnose IDE Shell' };
+            return [item];
+        }
     }
 }
 
@@ -1289,6 +1381,7 @@ async function createAgentSession() {
     });
     currentAgentSession = result.session || null;
     vscode.window.showInformationMessage(`BEAST agent session created: ${currentAgentSession?.session_id || 'session'}`);
+    refreshMissionTrees();
     await showAgentSessions();
 }
 
@@ -1319,6 +1412,7 @@ async function agentSessionAction(action, sessionId) {
     }
     const result = await postJson(`/edgek/ide/agent-sessions/${action}`, payload);
     currentAgentSession = result.session || currentAgentSession;
+    refreshMissionTrees();
     vscode.window.showInformationMessage(`BEAST agent session ${action}: ${session.session_id}`);
     return result;
 }
@@ -1344,6 +1438,7 @@ async function agentSessionToSourcePlan(sessionId) {
     currentScorecard = null;
     currentPreview = null;
     saveIdeSession();
+    refreshMissionTrees();
     vscode.window.showInformationMessage(`BEAST SourcePlan draft ready: ${currentPlan.plan_id}`);
     await openSourceWorkbench();
 }
@@ -1361,7 +1456,7 @@ async function showWorktrees() {
         <div class="row" style="margin-top:10px">
           <button data-command="openWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Open</button>
           <button data-command="runWorktreeVerifier" data-task-id="${escapeHtml(task.task_id)}">Verify</button>
-          <button data-command="promoteWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Promote</button>
+          <button data-command="promoteWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">SourcePlan Promote</button>
           <button data-command="closeWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Close</button>
         </div>
       </div>`).join('')}</div>` : '<div class="card" style="margin-top:12px"><h2>No Worktree Missions</h2><div class="muted">Create a mission worktree to isolate risky or parallel edits.</div></div>';
@@ -1403,6 +1498,7 @@ async function createWorktreeMission() {
     } else {
         await showVirtualDocument('BEAST-Worktree-Mission.json', 'json', JSON.stringify(result, null, 2));
     }
+    refreshMissionTrees();
 }
 
 async function pickWorktreeTask(title = 'BEAST Worktree Mission') {
@@ -1454,25 +1550,29 @@ async function runWorktreeVerifier(taskId) {
         command: commandText.split(/\s+/).filter(Boolean),
         timeout: 120,
     });
+    refreshMissionTrees();
     await showVirtualDocument('BEAST-Worktree-Verifier.json', 'json', JSON.stringify(result, null, 2));
 }
 
 async function promoteWorktreeMission(taskId) {
-    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('Promote BEAST Worktree Mission');
+    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('SourcePlan Promote BEAST Worktree Mission');
     if (!task?.task_id) return;
-    const answer = await vscode.window.showWarningMessage(
-        'Promote this worktree? BEAST requires explicit approval and passing verifier evidence.',
-        { modal: true },
-        'Promote',
-    );
-    if (answer !== 'Promote') return;
-    const result = await postJson('/edgek/ide/worktree-mission/promote', {
+    const result = await postJson('/edgek/ide/worktree-mission/sourceplan-draft', {
         root_path: workspaceFolderPath(),
         task_id: task.task_id,
-        approved: true,
-        require_tests: true,
+        max_chars: 60000,
     });
-    await showVirtualDocument('BEAST-Worktree-Promotion.json', 'json', JSON.stringify(result, null, 2));
+    if (!result.ok) {
+        vscode.window.showWarningMessage(`BEAST worktree SourcePlan draft failed: ${result.error || 'unknown error'}`);
+        return;
+    }
+    currentPlan = result.plan;
+    currentScorecard = null;
+    currentPreview = null;
+    saveIdeSession();
+    refreshMissionTrees();
+    vscode.window.showInformationMessage(`BEAST worktree SourcePlan draft ready: ${currentPlan.plan_id}`);
+    await openSourceWorkbench();
 }
 
 async function closeWorktreeMission(taskId) {
@@ -1485,6 +1585,7 @@ async function closeWorktreeMission(taskId) {
         task_id: task.task_id,
         reason,
     });
+    refreshMissionTrees();
     await showVirtualDocument('BEAST-Worktree-Closure.json', 'json', JSON.stringify(result, null, 2));
 }
 
@@ -1526,6 +1627,8 @@ async function startIdeEventBus(provider) {
                         updateBeastDiagnostics();
                     }
                     if (provider) provider.refresh();
+                    if (event.event_type === 'agent_session' && agentSessionsProvider) agentSessionsProvider.refresh();
+                    if (event.event_type === 'worktree' && worktreeMissionsProvider) worktreeMissionsProvider.refresh();
                 }
             }
         })
@@ -1816,10 +1919,14 @@ function activate(context) {
     const chronicleProvider = new ChronicleProvider();
     const routeFitnessProvider = new RouteFitnessProvider();
     const ideProvider = new BeastIdeProvider();
+    agentSessionsProvider = new AgentSessionsProvider();
+    worktreeMissionsProvider = new WorktreeMissionsProvider();
     ideEventProvider = ideProvider;
     beastDiagnostics = vscode.languages.createDiagnosticCollection('BEAST');
     vscode.window.registerTreeDataProvider('beastStatus', statusProvider);
     vscode.window.registerTreeDataProvider('beastDashboard', ideProvider);
+    vscode.window.registerTreeDataProvider('beastAgentSessions', agentSessionsProvider);
+    vscode.window.registerTreeDataProvider('beastWorktreeMissions', worktreeMissionsProvider);
     vscode.window.registerTreeDataProvider('beastChronicle', chronicleProvider);
     vscode.window.registerTreeDataProvider('beastRouteFitness', routeFitnessProvider);
 

@@ -73,6 +73,7 @@ class WorktreeForge:
         task_id = f"{task_id}-{unique}"
         branch = f"beast/{task_id}"
         worktree_path = (self.store_dir / task_id).resolve()
+        base_commit = self._git(["rev-parse", base_ref], cwd=self.workspace_root)
         record = {
             "beast_object_type": "beast_worktree_task",
             "version": "1.0",
@@ -83,6 +84,7 @@ class WorktreeForge:
             "active_mode": mode,
             "branch": branch,
             "base_ref": base_ref,
+            "base_commit": base_commit.stdout if base_commit.ok else "",
             "workspace_root": str(self.workspace_root),
             "worktree_path": str(worktree_path),
             "status": "creating",
@@ -146,6 +148,64 @@ class WorktreeForge:
             "truncated": len(patch.stdout) > max_chars,
             "commands": [result.to_dict(), patch.to_dict()],
         }
+
+    def sourceplan_draft_from_diff(self, task_id: str, max_chars: int = 60000) -> Dict[str, Any]:
+        """Create an advisory SourcePlan draft from the worktree branch diff.
+
+        This is deliberately not an apply operation. It gives IDE operators a
+        governed promotion handoff that can be reviewed, translated into
+        explicit operations, verified, and closed with evidence.
+        """
+        record = self._find(task_id)
+        if not record:
+            return {"ok": False, "error": f"unknown worktree task: {task_id}"}
+        path = Path(str(record.get("worktree_path") or ""))
+        if not path.exists():
+            return {"ok": False, "error": "worktree path missing"}
+        base_ref = str(record.get("base_commit") or record.get("base_ref") or "HEAD")
+        branch = str(record.get("branch") or "")
+        diff_range = f"{base_ref}...HEAD"
+        stat = self._git(["diff", "--stat", diff_range], cwd=path)
+        patch = self._git(["diff", diff_range], cwd=path)
+        if not patch.stdout:
+            stat = self._git(["diff", "--stat"], cwd=path)
+            patch = self._git(["diff"], cwd=path)
+            diff_range = "worktree"
+        changed = self._git(["diff", "--name-only", diff_range], cwd=path) if diff_range != "worktree" else self._git(["diff", "--name-only"], cwd=path)
+        files = [line.strip() for line in changed.stdout.splitlines() if line.strip()]
+        plan_id = f"worktree-promotion-{task_id}"
+        plan = {
+            "beast_object_type": "sourceplan",
+            "version": "1.0",
+            "plan_id": plan_id,
+            "objective": f"Promote verified worktree mission: {record.get('objective') or task_id}",
+            "status": "draft",
+            "source": "worktree_native_mission",
+            "worktree_task_id": task_id,
+            "worktree_path": str(path),
+            "branch": branch,
+            "base_ref": base_ref,
+            "base_label": str(record.get("base_ref") or ""),
+            "diff_range": diff_range,
+            "files": files,
+            "selected_files": files,
+            "diff_stat": stat.stdout,
+            "worktree_diff": patch.stdout[:max_chars],
+            "diff_truncated": len(patch.stdout) > max_chars,
+            "operations": [],
+            "requires_operator_translation": True,
+            "governance_note": "Worktree promotion is advisory until translated into explicit SourcePlan operations, previewed, approved, verified, and closed with evidence.",
+        }
+        receipt = self._receipt("sourceplan_draft", record, True)
+        receipt["plan_id"] = plan_id
+        receipt["diff_range"] = diff_range
+        record = dict(record)
+        record["last_sourceplan_draft"] = receipt
+        record["updated_at"] = _now()
+        record.setdefault("evidence", []).append(receipt)
+        self._upsert(record)
+        self._register_receipt(receipt)
+        return {"ok": True, "plan": plan, "receipt": receipt, "task": record}
 
     def test(self, task_id: str, command: Optional[List[str]] = None, timeout: float = 120.0) -> Dict[str, Any]:
         record = self._find(task_id)

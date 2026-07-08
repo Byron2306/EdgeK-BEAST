@@ -64,6 +64,13 @@ def test_worktree_forge_create_status_and_archive(tmp_path):
     listed = forge.list()
     status = forge.status(task_id)
     tested = forge.test(task_id, command=["python3", "-c", "print('ok')"])
+    worktree_path = created["task"]["worktree_path"]
+    (tmp_path / ".beast" / "worktrees").mkdir(parents=True, exist_ok=True)
+    with open(f"{worktree_path}/app.py", "w", encoding="utf-8") as handle:
+        handle.write("value = 2\n")
+    subprocess.run(["git", "add", "app.py"], cwd=worktree_path, check=True)
+    subprocess.run(["git", "commit", "-m", "change value"], cwd=worktree_path, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    draft = forge.sourceplan_draft_from_diff(task_id)
     promote_blocked = forge.promote(task_id, approved=False, require_tests=False)
     archived = forge.archive(task_id, reason="test done")
     evidence = EvidenceBus(tmp_path).summary()
@@ -72,10 +79,15 @@ def test_worktree_forge_create_status_and_archive(tmp_path):
     assert listed["count"] == 1
     assert status["exists"] is True
     assert tested["ok"] is True
+    assert draft["ok"] is True
+    assert draft["plan"]["source"] == "worktree_native_mission"
+    assert draft["plan"]["requires_operator_translation"] is True
+    assert "app.py" in draft["plan"]["files"]
+    assert "value = 2" in draft["plan"]["worktree_diff"]
     assert promote_blocked["decision"] == "blocked"
     assert "approval" in promote_blocked["reason"]
     assert archived["task"]["status"] == "archived"
-    assert evidence["by_type"]["beast_worktree_forge_receipt"] == 2
+    assert evidence["by_type"]["beast_worktree_forge_receipt"] == 3
     assert evidence["by_type"]["beast_worktree_test_receipt"] == 1
 
 

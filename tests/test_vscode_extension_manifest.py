@@ -34,6 +34,8 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
     assert manifest["version"] == "1.6.1"
     assert manifest["icon"] == "media/beast-dragon-extension-icon.png"
     assert manifest["contributes"]["viewsContainers"]["activitybar"][0]["icon"] == "media/beast-dragon-activity.svg"
+    view_ids = {item["id"] for item in manifest["contributes"]["views"]["beastSidebar"]}
+    assert {"beastAgentSessions", "beastWorktreeMissions"}.issubset(view_ids)
 
 
 def test_vscode_extension_dragon_assets_are_packaged():

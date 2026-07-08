@@ -1762,7 +1762,7 @@ context refresh prompts.
 
 ### Full IDE Phase 4: Agent Session Workspace
 
-Status: **Started with persistent session registry and VS Code controls.**
+Status: **Complete for persistent session registry, sidebar visibility, lifecycle controls, and SourcePlan draft conversion.**
 
 Phase 4 turns agent work from one-off prompts into resumable governed
 workspaces:
@@ -1775,32 +1775,47 @@ workspaces:
 - The IDE snapshot and live event bus now include agent-session state.
 - The VS Code extension adds an Agent Session Workspace panel with TUI-styled
   cards, pause/resume/cancel controls, and SourcePlan draft conversion.
+- The BEAST sidebar now has a dedicated Agent Sessions tree that lists sessions
+  with mode, status, budget, files, tools, and evidence count summaries.
 - Agent-output conversion is advisory only: it creates a governed SourcePlan
   draft with no operations and requires operator translation, preview, approval,
   verification, and rollback before any write.
 
-Next Phase 4 slices should attach live provider run ids, token/cost metering,
-tool-call receipts, and per-session evidence drilldown from the panel.
+Next Phase 4 polish should attach live provider run ids, token/cost metering,
+tool-call receipts, and richer per-session evidence drilldown from the panel.
 
 ### Full IDE Phase 5: Worktree-Native Missions
 
-Status: **Started with one-click mission cards over Worktree Forge.**
+Status: **Complete for one-click worktree create/open/verify/SourcePlan-promotion/close workflow.**
 
 Phase 5 makes isolated missions feel native inside the IDE:
 
-- Worktree Mission cards now appear in the VS Code worktree panel instead of raw
-  JSON only.
+- Worktree Mission cards now appear in the VS Code worktree panel and the BEAST
+  sidebar instead of raw JSON only.
 - Operators can create a mission worktree, open it in the current or a new VS
-  Code window, run an explicit verifier command, promote with approval and
-  passing-test evidence, and close/archive with an evidence reason.
-- `/edgek/ide/worktree-mission/*` provides IDE-friendly create, test, promote,
-  and close façades over Worktree Forge.
+  Code window, run an explicit verifier command, scaffold a SourcePlan
+  promotion draft from the worktree diff, and close/archive with an evidence
+  reason.
+- `/edgek/ide/worktree-mission/*` provides IDE-friendly create, test,
+  SourcePlan-draft, promote, and close façades over Worktree Forge.
 - Worktree creation can also seed an agent session so isolated work, mode,
   tools, evidence, and SourcePlan conversion stay linked.
+- `WorktreeForge.sourceplan_draft_from_diff()` captures branch diff stat,
+  changed files, bounded patch text, evidence receipt, and an explicit note that
+  operator translation/preview/approval/verification are still required.
 
-Next Phase 5 slices should add SourcePlan-from-worktree-diff scaffolding,
-promotion previews, branch cleanup helpers, and extension-host tests around the
-open/test/promote/close flow.
+Next Phase 5 polish should add branch cleanup helpers, richer promotion
+previews, and extension-host tests around the open/test/SourcePlan/close flow.
+
+### Full IDE Phase 6: BEAST Web IDE
+
+Status: **Deferred until the VS Code workflow proves itself.**
+
+The web IDE remains intentionally later. Building it means owning editor,
+terminal, filesystem, authentication, extension-like layout, logs, and local
+process orchestration. The VS Code extension is the proving ground for the
+governed SourcePlan, session, worktree, evidence, and cockpit workflows before
+BEAST takes on that larger surface area.
 
 ### Full IDE Phase 5.5: IDE Doctor and Self-Healing Bootstrap
 

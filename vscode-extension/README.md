@@ -60,7 +60,7 @@ Then reload VS Code/Cursor, open the command palette, and run
 - `BEAST: Create Worktree Mission`
 - `BEAST: Open Worktree Mission`
 - `BEAST: Run Worktree Verifier`
-- `BEAST: Promote Worktree Mission`
+- `BEAST: SourcePlan Promote Worktree Mission`
 - `BEAST: Close Worktree Mission`
 - `BEAST: Scaffold Lattice Replay`
 - `BEAST: Select Provider Role`
@@ -114,8 +114,9 @@ rollback.
 
 `BEAST: Show Worktrees` opens mission cards for isolated worktrees. A mission can
 be opened in the current or a new VS Code window, verified with an explicit
-command, promoted only with approval and passing verifier evidence, and closed
-with an evidence receipt.
+command, converted into a SourcePlan promotion draft from the worktree diff, and
+closed with an evidence receipt. The extension does not directly merge worktree
+changes as a shortcut around SourcePlan governance.
 
 ## Source Workbench
 

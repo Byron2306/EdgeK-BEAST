@@ -308,6 +308,14 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
             require_tests=bool(payload.get("require_tests", True)),
         )
 
+    @router.post("/edgek/ide/worktree-mission/sourceplan-draft")
+    async def edgek_ide_worktree_mission_sourceplan_draft(payload: dict[str, Any] = None):
+        payload = payload or {}
+        return WorktreeForge(_root(payload.get("root_path"))).sourceplan_draft_from_diff(
+            str(payload.get("task_id") or ""),
+            max_chars=max(1000, min(int(payload.get("max_chars", 60000)), 200000)),
+        )
+
     @router.post("/edgek/ide/worktree-mission/close")
     async def edgek_ide_worktree_mission_close(payload: dict[str, Any] = None):
         payload = payload or {}

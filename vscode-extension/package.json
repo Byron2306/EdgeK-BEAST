@@ -54,7 +54,7 @@
       { "command": "edgekBeast.createWorktreeMission", "title": "BEAST: Create Worktree Mission" },
       { "command": "edgekBeast.openWorktreeMission", "title": "BEAST: Open Worktree Mission" },
       { "command": "edgekBeast.runWorktreeVerifier", "title": "BEAST: Run Worktree Verifier" },
-      { "command": "edgekBeast.promoteWorktreeMission", "title": "BEAST: Promote Worktree Mission" },
+      { "command": "edgekBeast.promoteWorktreeMission", "title": "BEAST: SourcePlan Promote Worktree Mission" },
       { "command": "edgekBeast.closeWorktreeMission", "title": "BEAST: Close Worktree Mission" },
       { "command": "edgekBeast.replayLatticeCandidate", "title": "BEAST: Scaffold Lattice Replay" },
       { "command": "edgekBeast.prepareHandoff", "title": "BEAST: Prepare Handoff Packet" },
@@ -84,13 +84,21 @@
           "id": "beastStatus",
           "name": "BEAST Status"
         },
-        {
-          "id": "beastDashboard",
-          "name": "Mission Control"
-        },
-        {
-          "id": "beastChronicle",
-          "name": "Chronicle"
+                {
+                  "id": "beastDashboard",
+                  "name": "Mission Control"
+                },
+                {
+                  "id": "beastAgentSessions",
+                  "name": "Agent Sessions"
+                },
+                {
+                  "id": "beastWorktreeMissions",
+                  "name": "Worktree Missions"
+                },
+                {
+                  "id": "beastChronicle",
+                  "name": "Chronicle"
         },
         {
           "id": "beastRouteFitness",
