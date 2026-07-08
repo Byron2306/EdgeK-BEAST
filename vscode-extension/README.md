@@ -13,6 +13,21 @@ BEAST remains governance-first: edits still flow through SourcePlan, policy
 gates, verification, rollback, Chronicle, and evidence receipts. The extension
 is an operator cockpit, not a bypass around BEAST mutation rules.
 
+## Install In This Workspace
+
+From the repository root:
+
+```bash
+cd vscode-extension
+npm install
+npx @vscode/vsce package
+code --install-extension edgek-beast-1.6.0.vsix --force
+```
+
+Then reload VS Code/Cursor, open the command palette, and run
+`BEAST: Open Mission Control`. If the gateway is not running, run
+`BEAST: Start Local Governor` first.
+
 ## Commands
 
 - `BEAST: Start Local Governor`
@@ -29,6 +44,12 @@ is an operator cockpit, not a bypass around BEAST mutation rules.
 - `BEAST: Show Evidence Bus`
 - `BEAST: Show Code Cortex`
 - `BEAST: Show Policy Gate`
+- `BEAST: Show Agent Sessions`
+- `BEAST: Create Agent Session`
+- `BEAST: Pause Agent Session`
+- `BEAST: Resume Agent Session`
+- `BEAST: Cancel Agent Session`
+- `BEAST: Convert Agent Session to SourcePlan`
 - `BEAST: Show Worktrees`
 - `BEAST: Start Live IDE Event Bus`
 - `BEAST: Jump to Related Tests or Routes`
@@ -36,6 +57,10 @@ is an operator cockpit, not a bypass around BEAST mutation rules.
 - `BEAST: Switch SourcePlan Session`
 - `BEAST: Refresh SourcePlan Preview`
 - `BEAST: Create Worktree Mission`
+- `BEAST: Open Worktree Mission`
+- `BEAST: Run Worktree Verifier`
+- `BEAST: Promote Worktree Mission`
+- `BEAST: Close Worktree Mission`
 - `BEAST: Scaffold Lattice Replay`
 - `BEAST: Select Provider Role`
 - `BEAST: Refresh Chronicle`
@@ -68,10 +93,28 @@ The webview can:
 - Show Evidence Bus receipts.
 - Show Code Cortex context, file summary, and dependents.
 - Show the unified Policy Gate state.
+- Show persistent agent sessions.
 - Show worktree missions.
 - Subscribe to the live BEAST IDE event stream.
+- Create a persistent agent session.
 - Create an isolated worktree mission.
 - Scaffold a gated lattice replay candidate.
+
+## Agent Sessions
+
+`BEAST: Show Agent Sessions` opens a persistent session workspace. Each session
+tracks objective, mode, budget, tools, files, evidence, outputs, and status.
+Operators can pause, resume, cancel, and convert advisory agent output into a
+SourcePlan draft. Conversion does not apply edits; it creates a governed draft
+that still requires explicit operations, preview, approval, verification, and
+rollback.
+
+## Worktree Missions
+
+`BEAST: Show Worktrees` opens mission cards for isolated worktrees. A mission can
+be opened in the current or a new VS Code window, verified with an explicit
+command, promoted only with approval and passing verifier evidence, and closed
+with an evidence receipt.
 
 ## Source Workbench
 

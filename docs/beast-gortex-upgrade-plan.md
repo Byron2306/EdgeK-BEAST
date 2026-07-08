@@ -1760,6 +1760,48 @@ Next Phase 3 slices should add symbol-level CodeLens from Code Cortex, policy
 gate quick-fixes, richer route/test dependency labels, and automatic stale
 context refresh prompts.
 
+### Full IDE Phase 4: Agent Session Workspace
+
+Status: **Started with persistent session registry and VS Code controls.**
+
+Phase 4 turns agent work from one-off prompts into resumable governed
+workspaces:
+
+- `AgentSessionStore` persists each agent session under `.beast/agent_sessions`
+  with objective, mode, provider, budget, tools, files, evidence, outputs, and
+  status.
+- `/edgek/ide/agent-sessions/*` exposes create, update, pause, resume, cancel,
+  list, and SourcePlan-draft conversion routes.
+- The IDE snapshot and live event bus now include agent-session state.
+- The VS Code extension adds an Agent Session Workspace panel with TUI-styled
+  cards, pause/resume/cancel controls, and SourcePlan draft conversion.
+- Agent-output conversion is advisory only: it creates a governed SourcePlan
+  draft with no operations and requires operator translation, preview, approval,
+  verification, and rollback before any write.
+
+Next Phase 4 slices should attach live provider run ids, token/cost metering,
+tool-call receipts, and per-session evidence drilldown from the panel.
+
+### Full IDE Phase 5: Worktree-Native Missions
+
+Status: **Started with one-click mission cards over Worktree Forge.**
+
+Phase 5 makes isolated missions feel native inside the IDE:
+
+- Worktree Mission cards now appear in the VS Code worktree panel instead of raw
+  JSON only.
+- Operators can create a mission worktree, open it in the current or a new VS
+  Code window, run an explicit verifier command, promote with approval and
+  passing-test evidence, and close/archive with an evidence reason.
+- `/edgek/ide/worktree-mission/*` provides IDE-friendly create, test, promote,
+  and close façades over Worktree Forge.
+- Worktree creation can also seed an agent session so isolated work, mode,
+  tools, evidence, and SourcePlan conversion stay linked.
+
+Next Phase 5 slices should add SourcePlan-from-worktree-diff scaffolding,
+promotion previews, branch cleanup helpers, and extension-host tests around the
+open/test/promote/close flow.
+
 ## Phased Roadmap
 
 ### Phase 0: Stabilize Current SourcePlan Loop

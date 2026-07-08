@@ -18,6 +18,7 @@ let ideEventAbort = null;
 let ideEventProvider = null;
 let latestIdeEvents = {};
 let beastDiagnostics = null;
+let currentAgentSession = null;
 const virtualDocuments = new Map();
 let dragonMascotDataUri = null;
 
@@ -119,7 +120,7 @@ async function ensureGateway() {
     const cwd = workspaceFolderPath();
     const terminal = beastTerminal(cwd);
     terminal.show();
-    terminal.sendText(`"${beastCommand()}" serve --host 127.0.0.1 --port 8000`);
+    terminal.sendText(`"${beastCommand()}" gateway --host 127.0.0.1 --port 8000`);
     vscode.window.showInformationMessage('BEAST: starting gateway on http://127.0.0.1:8000');
     return false;
 }
@@ -292,6 +293,7 @@ class BeastIdeProvider {
                 this.section('SourcePlans', `${snap.sourceplan_queue?.length || 0} queued`, 'edgekBeast.openSourceWorkbench'),
                 this.section('Evidence', `${snap.evidence_bus?.total || snap.evidence_bus?.count || 0} receipts`, 'edgekBeast.showEvidence'),
                 this.section('Code Cortex', snap.code_cortex?.adapter || snap.code_cortex?.front_door || 'ready', 'edgekBeast.showCodeCortex'),
+                this.section('Agent Sessions', `${snap.agent_sessions?.count || 0} sessions`, 'edgekBeast.showAgentSessions'),
                 this.section('Worktrees', `${snap.worktrees?.count || 0} active`, 'edgekBeast.showWorktrees'),
                 this.section('Policy Gate', snap.policy?.mode_route?.selected_mode || 'mode ready', 'edgekBeast.showPolicyGate'),
                 this.section('Lattice', `${snap.mission_lattice?.cell_count || 0} cells`, 'edgekBeast.replayLatticeCandidate'),
@@ -406,6 +408,7 @@ function missionControlHtml(snapshot) {
     const queue = snapshot?.sourceplan_queue || [];
     const evidence = snapshot?.evidence_bus || {};
     const lattice = snapshot?.mission_lattice || {};
+    const sessions = snapshot?.agent_sessions || {};
     const mode = snapshot?.policy?.mode_route?.selected_mode || 'scout';
     const actionScript = `
         const vscode = acquireVsCodeApi();
@@ -431,8 +434,10 @@ function missionControlHtml(snapshot) {
           <button data-command="showEvidence">Evidence</button>
           <button data-command="showCodeCortex">Code Cortex</button>
           <button data-command="showPolicyGate">Policy Gate</button>
+          <button data-command="showAgentSessions">Agent Sessions</button>
           <button data-command="showWorktrees">Worktrees</button>
           <button data-command="startIdeEventBus">Live Events</button>
+          <button data-command="createAgentSession">New Agent Session</button>
           <button data-command="createWorktreeMission">Create Worktree</button>
           <button data-command="replayLatticeCandidate">Replay Lattice</button>
         </div>
@@ -442,6 +447,7 @@ function missionControlHtml(snapshot) {
         <div class="card"><h2>SourcePlans</h2><div class="metric">${queue.length}</div><div class="muted">queued plans</div></div>
         <div class="card"><h2>Evidence</h2><div class="metric">${evidence.total || evidence.count || 0}</div><div class="muted">indexed receipts</div></div>
         <div class="card"><h2>Lattice</h2><div class="metric">${lattice.cell_count || 0}</div><div class="muted">verified edit cells</div></div>
+        <div class="card"><h2>Agent Sessions</h2><div class="metric">${sessions.count || 0}</div><div class="muted">mode, budget, evidence, tools</div></div>
         <div class="card"><h2>Worktrees</h2><div class="metric">${snapshot?.worktrees?.count || 0}</div><div class="muted">mission sandboxes</div></div>
       </div>
       <div class="grid">
@@ -1073,16 +1079,154 @@ async function showPolicyGate() {
     panel.webview.html = html;
 }
 
+async function fetchAgentSessions() {
+    await ensureGateway();
+    const params = new URLSearchParams();
+    const root = workspaceFolderPath();
+    if (root) params.set('root_path', root);
+    return getJson(`/edgek/ide/agent-sessions?${params.toString()}`);
+}
+
+function agentSessionCardsHtml(data) {
+    const sessions = data.sessions || [];
+    if (!sessions.length) {
+        return '<div class="card" style="margin-top:12px"><h2>No Agent Sessions</h2><div class="muted">Create a session to track mode, budget, tools, files, evidence, and outputs.</div></div>';
+    }
+    return `<div class="grid">${sessions.map(session => `
+      <div class="card">
+        <h2>${escapeHtml(session.agent_id || session.session_id)}</h2>
+        <div class="row"><span class="pill">${escapeHtml(session.status || 'unknown')}</span><span class="pill">${escapeHtml(session.mode || 'mode')}</span><span class="pill">${escapeHtml(session.provider || 'local')}</span></div>
+        <div class="muted" style="margin-top:6px">${escapeHtml(session.objective || '')}</div>
+        <div class="muted">files ${(session.files || []).length} · tools ${(session.tools || []).length} · evidence ${(session.evidence || []).length}</div>
+        <div class="row" style="margin-top:10px">
+          <button data-command="pauseAgentSession" data-session-id="${escapeHtml(session.session_id)}">Pause</button>
+          <button data-command="resumeAgentSession" data-session-id="${escapeHtml(session.session_id)}">Resume</button>
+          <button data-command="agentSessionToSourcePlan" data-session-id="${escapeHtml(session.session_id)}">SourcePlan</button>
+          <button data-command="cancelAgentSession" data-session-id="${escapeHtml(session.session_id)}">Cancel</button>
+        </div>
+      </div>`).join('')}</div>`;
+}
+
+async function showAgentSessions() {
+    const data = await fetchAgentSessions();
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Agent Session Workspace</h1><div class="muted">Persistent agent mode, budget, evidence, tools, files, and SourcePlan conversion.</div>
+          <div class="row" style="margin-top:10px"><button data-command="createAgentSession">Create Session</button><button data-command="refreshIdeSnapshot">Refresh</button></div>
+        </div></div>
+        ${agentSessionCardsHtml(data)}
+        <div class="card" style="margin-top:12px"><h2>Registry</h2><pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
+      </div><script>
+        const vscode = acquireVsCodeApi();
+        document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command, sessionId:b.dataset.sessionId})));
+      </script></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastAgentSessions', 'BEAST Agent Sessions', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+    panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
+}
+
+async function createAgentSession() {
+    const objective = await promptObjective(activeObjective());
+    if (!objective) return;
+    const mode = await vscode.window.showQuickPick(['architect', 'implementer', 'reviewer', 'scout', 'evidence'], {
+        title: 'BEAST Agent Session Mode',
+        placeHolder: 'Modes are permission boundaries',
+    }) || 'architect';
+    const result = await postJson('/edgek/ide/agent-sessions/create', {
+        root_path: workspaceFolderPath(),
+        objective,
+        mode,
+        provider: await promptProvider(),
+        files: activeContextFiles(),
+        tools: mode === 'implementer' ? ['sourceplan', 'code_cortex', 'evidence_bus'] : ['code_cortex', 'evidence_bus'],
+        budget: { tokens: Number(config().get('maxTokens') || 4000), seconds: 0, cost_usd: 0.0 },
+    });
+    currentAgentSession = result.session || null;
+    vscode.window.showInformationMessage(`BEAST agent session created: ${currentAgentSession?.session_id || 'session'}`);
+    await showAgentSessions();
+}
+
+async function pickAgentSession(title = 'BEAST Agent Session') {
+    const data = await fetchAgentSessions();
+    const sessions = data.sessions || [];
+    if (!sessions.length) {
+        vscode.window.showInformationMessage('BEAST: no agent sessions yet.');
+        return null;
+    }
+    const picked = await vscode.window.showQuickPick(sessions.map(session => ({
+        label: session.agent_id || session.session_id,
+        description: `${session.status || 'unknown'} · ${session.mode || 'mode'}`,
+        detail: session.objective || '',
+        session,
+    })), { title });
+    return picked?.session || null;
+}
+
+async function agentSessionAction(action, sessionId) {
+    const session = sessionId ? { session_id: sessionId } : await pickAgentSession(`BEAST ${action} Agent Session`);
+    if (!session?.session_id) return null;
+    let payload = { root_path: workspaceFolderPath(), session_id: session.session_id };
+    if (action === 'cancel') {
+        const reason = await vscode.window.showInputBox({ title: 'Cancel BEAST Agent Session', prompt: 'Reason for evidence receipt', value: 'operator cancelled from VS Code' });
+        if (!reason) return null;
+        payload.reason = reason;
+    }
+    const result = await postJson(`/edgek/ide/agent-sessions/${action}`, payload);
+    currentAgentSession = result.session || currentAgentSession;
+    vscode.window.showInformationMessage(`BEAST agent session ${action}: ${session.session_id}`);
+    return result;
+}
+
+async function agentSessionToSourcePlan(sessionId) {
+    const session = sessionId ? { session_id: sessionId } : await pickAgentSession('Convert Agent Session to SourcePlan');
+    if (!session?.session_id) return;
+    const output = await vscode.window.showInputBox({
+        title: 'BEAST Agent Output Summary',
+        prompt: 'Optional: paste/summarize the agent output. BEAST will create an advisory SourcePlan draft, not apply edits.',
+        value: '',
+    });
+    const result = await postJson('/edgek/ide/agent-sessions/sourceplan-draft', {
+        root_path: workspaceFolderPath(),
+        session_id: session.session_id,
+        output: output || '',
+    });
+    if (!result.ok) {
+        vscode.window.showWarningMessage(`BEAST SourcePlan draft failed: ${result.error || 'unknown error'}`);
+        return;
+    }
+    currentPlan = result.plan;
+    currentScorecard = null;
+    currentPreview = null;
+    saveIdeSession();
+    vscode.window.showInformationMessage(`BEAST SourcePlan draft ready: ${currentPlan.plan_id}`);
+    await openSourceWorkbench();
+}
+
 async function showWorktrees() {
     const result = await callMcpTool('beast_worktree_list', { workspace_root: workspaceFolderPath() });
     const data = actionData(result);
+    const tasks = data.tasks || data.worktrees || [];
+    const cards = tasks.length ? `<div class="grid">${tasks.map(task => `
+      <div class="card">
+        <h2>${escapeHtml(task.task_id || task.branch || 'mission')}</h2>
+        <div class="row"><span class="pill">${escapeHtml(task.status || 'unknown')}</span><span class="pill">${escapeHtml(task.active_mode || task.mode || 'mode')}</span><span class="pill">${escapeHtml(task.risk || 'risk')}</span></div>
+        <div class="muted" style="margin-top:6px">${escapeHtml(task.objective || '')}</div>
+        <div class="muted">${escapeHtml(task.branch || '')}</div>
+        <div class="row" style="margin-top:10px">
+          <button data-command="openWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Open</button>
+          <button data-command="runWorktreeVerifier" data-task-id="${escapeHtml(task.task_id)}">Verify</button>
+          <button data-command="promoteWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Promote</button>
+          <button data-command="closeWorktreeMission" data-task-id="${escapeHtml(task.task_id)}">Close</button>
+        </div>
+      </div>`).join('')}</div>` : '<div class="card" style="margin-top:12px"><h2>No Worktree Missions</h2><div class="muted">Create a mission worktree to isolate risky or parallel edits.</div></div>';
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
       <div class="shell">
         <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Worktrees</h1><div class="muted">Isolated BEAST missions and promotion surfaces.</div>
           <div class="row" style="margin-top:10px"><button data-command="createWorktreeMission">Create Worktree</button></div>
         </div></div>
+        ${cards}
         <div class="card" style="margin-top:12px"><h2>Worktree Registry</h2><pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
-      </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
+      </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command, taskId:b.dataset.taskId})));</script></body></html>`;
     const panel = vscode.window.createWebviewPanel('beastWorktrees', 'BEAST Worktrees', vscode.ViewColumn.Beside, { enableScripts: true });
     panel.webview.html = html;
     panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
@@ -1100,7 +1244,102 @@ async function createWorktreeMission() {
         mode: 'implementer',
         provider: await promptProvider(),
     });
-    await showVirtualDocument('BEAST-Worktree-Mission.json', 'json', JSON.stringify(result, null, 2));
+    const task = actionData(result).task || result.task || {};
+    const open = await vscode.window.showInformationMessage(
+        `BEAST worktree mission created: ${task.task_id || 'mission'}`,
+        'Open Worktree',
+        'Show Missions',
+    );
+    if (open === 'Open Worktree') {
+        await openWorktreeMission(task.task_id);
+    } else if (open === 'Show Missions') {
+        await showWorktrees();
+    } else {
+        await showVirtualDocument('BEAST-Worktree-Mission.json', 'json', JSON.stringify(result, null, 2));
+    }
+}
+
+async function pickWorktreeTask(title = 'BEAST Worktree Mission') {
+    const result = await callMcpTool('beast_worktree_list', { workspace_root: workspaceFolderPath() });
+    const tasks = (actionData(result).tasks || []).filter(task => task.task_id);
+    if (!tasks.length) {
+        vscode.window.showInformationMessage('BEAST: no worktree missions yet.');
+        return null;
+    }
+    const picked = await vscode.window.showQuickPick(tasks.map(task => ({
+        label: task.task_id,
+        description: `${task.status || 'unknown'} · ${task.risk || 'risk'} · ${task.active_mode || 'mode'}`,
+        detail: task.objective || task.worktree_path || '',
+        task,
+    })), { title });
+    return picked?.task || null;
+}
+
+async function openWorktreeMission(taskId) {
+    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('Open BEAST Worktree Mission');
+    if (!task?.task_id) return;
+    const result = await callMcpTool('beast_worktree_status', { workspace_root: workspaceFolderPath(), task_id: task.task_id });
+    const data = actionData(result);
+    const target = data.worktree_path || data.task?.worktree_path || '';
+    if (!target) {
+        vscode.window.showWarningMessage('BEAST: worktree path unavailable.');
+        return;
+    }
+    const choice = await vscode.window.showInformationMessage(`Open worktree ${task.task_id}?`, 'Open Current Window', 'Open New Window');
+    if (choice === 'Open Current Window') {
+        await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(target), false);
+    } else if (choice === 'Open New Window') {
+        await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(target), true);
+    }
+}
+
+async function runWorktreeVerifier(taskId) {
+    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('Verify BEAST Worktree Mission');
+    if (!task?.task_id) return;
+    const commandText = await vscode.window.showInputBox({
+        title: 'BEAST Worktree Verifier',
+        prompt: 'Command to run in the mission worktree',
+        value: 'python3 -m pytest -q',
+    });
+    if (!commandText) return;
+    const result = await postJson('/edgek/ide/worktree-mission/test', {
+        root_path: workspaceFolderPath(),
+        task_id: task.task_id,
+        command: commandText.split(/\s+/).filter(Boolean),
+        timeout: 120,
+    });
+    await showVirtualDocument('BEAST-Worktree-Verifier.json', 'json', JSON.stringify(result, null, 2));
+}
+
+async function promoteWorktreeMission(taskId) {
+    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('Promote BEAST Worktree Mission');
+    if (!task?.task_id) return;
+    const answer = await vscode.window.showWarningMessage(
+        'Promote this worktree? BEAST requires explicit approval and passing verifier evidence.',
+        { modal: true },
+        'Promote',
+    );
+    if (answer !== 'Promote') return;
+    const result = await postJson('/edgek/ide/worktree-mission/promote', {
+        root_path: workspaceFolderPath(),
+        task_id: task.task_id,
+        approved: true,
+        require_tests: true,
+    });
+    await showVirtualDocument('BEAST-Worktree-Promotion.json', 'json', JSON.stringify(result, null, 2));
+}
+
+async function closeWorktreeMission(taskId) {
+    const task = taskId ? { task_id: taskId } : await pickWorktreeTask('Close BEAST Worktree Mission');
+    if (!task?.task_id) return;
+    const reason = await vscode.window.showInputBox({ title: 'Close BEAST Worktree Mission', prompt: 'Evidence closure reason', value: 'closed from VS Code mission panel' });
+    if (!reason) return;
+    const result = await postJson('/edgek/ide/worktree-mission/close', {
+        root_path: workspaceFolderPath(),
+        task_id: task.task_id,
+        reason,
+    });
+    await showVirtualDocument('BEAST-Worktree-Closure.json', 'json', JSON.stringify(result, null, 2));
 }
 
 async function startIdeEventBus(provider) {
@@ -1187,6 +1426,24 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     if (command === 'showPolicyGate') {
         return showPolicyGate();
     }
+    if (command === 'showAgentSessions') {
+        return showAgentSessions();
+    }
+    if (command === 'createAgentSession') {
+        return createAgentSession();
+    }
+    if (command === 'pauseAgentSession') {
+        return agentSessionAction('pause', message?.sessionId);
+    }
+    if (command === 'resumeAgentSession') {
+        return agentSessionAction('resume', message?.sessionId);
+    }
+    if (command === 'cancelAgentSession') {
+        return agentSessionAction('cancel', message?.sessionId);
+    }
+    if (command === 'agentSessionToSourcePlan') {
+        return agentSessionToSourcePlan(message?.sessionId);
+    }
     if (command === 'showWorktrees') {
         return showWorktrees();
     }
@@ -1207,6 +1464,18 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     }
     if (command === 'createWorktreeMission') {
         return createWorktreeMission();
+    }
+    if (command === 'openWorktreeMission') {
+        return openWorktreeMission(message?.taskId);
+    }
+    if (command === 'runWorktreeVerifier') {
+        return runWorktreeVerifier(message?.taskId);
+    }
+    if (command === 'promoteWorktreeMission') {
+        return promoteWorktreeMission(message?.taskId);
+    }
+    if (command === 'closeWorktreeMission') {
+        return closeWorktreeMission(message?.taskId);
     }
     if (command === 'replayLatticeCandidate') {
         return replayLatticeCandidate();
@@ -1408,29 +1677,31 @@ function activate(context) {
     vscode.window.registerTreeDataProvider('beastChronicle', chronicleProvider);
     vscode.window.registerTreeDataProvider('beastRouteFitness', routeFitnessProvider);
 
-    const provider = vscode.lm.registerMcpServerDefinitionProvider('edgekBeast', {
-        provideMcpServerDefinitions: async () => {
-            const folder = workspaceFolderPath();
-            return [
-                new vscode.McpStdioServerDefinition(
-                    'EdgeK BEAST',
-                    beastCommand(),
-                    ['mcp', '--workspace', folder || '.'],
-                    { BEAST_WORKSPACE: folder || '.' },
-                    '1.6.0',
-                )
-            ];
-        },
-        resolveMcpServerDefinition: async (server) => {
-            const folder = workspaceFolderPath();
-            if (folder) {
-                server.cwd = vscode.Uri.file(folder);
-                server.env = { ...(server.env || {}), BEAST_WORKSPACE: folder };
-            }
-            return server;
-        },
-    });
-    context.subscriptions.push(provider);
+    if (vscode.lm?.registerMcpServerDefinitionProvider && vscode.McpStdioServerDefinition) {
+        const provider = vscode.lm.registerMcpServerDefinitionProvider('edgekBeast', {
+            provideMcpServerDefinitions: async () => {
+                const folder = workspaceFolderPath();
+                return [
+                    new vscode.McpStdioServerDefinition(
+                        'EdgeK BEAST',
+                        beastCommand(),
+                        ['mcp', '--workspace', folder || '.'],
+                        { BEAST_WORKSPACE: folder || '.' },
+                        '1.6.0',
+                    )
+                ];
+            },
+            resolveMcpServerDefinition: async (server) => {
+                const folder = workspaceFolderPath();
+                if (folder) {
+                    server.cwd = vscode.Uri.file(folder);
+                    server.env = { ...(server.env || {}), BEAST_WORKSPACE: folder };
+                }
+                return server;
+            },
+        });
+        context.subscriptions.push(provider);
+    }
     registerBeastChatParticipant(context);
 
     context.subscriptions.push(
@@ -1453,6 +1724,12 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.showEvidence', showEvidence),
         vscode.commands.registerCommand('edgekBeast.showCodeCortex', showCodeCortex),
         vscode.commands.registerCommand('edgekBeast.showPolicyGate', showPolicyGate),
+        vscode.commands.registerCommand('edgekBeast.showAgentSessions', showAgentSessions),
+        vscode.commands.registerCommand('edgekBeast.createAgentSession', createAgentSession),
+        vscode.commands.registerCommand('edgekBeast.pauseAgentSession', () => agentSessionAction('pause')),
+        vscode.commands.registerCommand('edgekBeast.resumeAgentSession', () => agentSessionAction('resume')),
+        vscode.commands.registerCommand('edgekBeast.cancelAgentSession', () => agentSessionAction('cancel')),
+        vscode.commands.registerCommand('edgekBeast.agentSessionToSourcePlan', () => agentSessionToSourcePlan()),
         vscode.commands.registerCommand('edgekBeast.showWorktrees', showWorktrees),
         vscode.commands.registerCommand('edgekBeast.startIdeEventBus', () => startIdeEventBus(ideProvider)),
         vscode.commands.registerCommand('edgekBeast.jumpRelatedContext', jumpRelatedContext),
@@ -1460,6 +1737,10 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.switchSourcePlanSession', switchSourcePlanSession),
         vscode.commands.registerCommand('edgekBeast.refreshSourcePlanPreview', refreshSourcePlanPreview),
         vscode.commands.registerCommand('edgekBeast.createWorktreeMission', createWorktreeMission),
+        vscode.commands.registerCommand('edgekBeast.openWorktreeMission', () => openWorktreeMission()),
+        vscode.commands.registerCommand('edgekBeast.runWorktreeVerifier', () => runWorktreeVerifier()),
+        vscode.commands.registerCommand('edgekBeast.promoteWorktreeMission', () => promoteWorktreeMission()),
+        vscode.commands.registerCommand('edgekBeast.closeWorktreeMission', () => closeWorktreeMission()),
         vscode.commands.registerCommand('edgekBeast.replayLatticeCandidate', replayLatticeCandidate),
         vscode.commands.registerCommand('edgekBeast.openChronicleRecord', item => showVirtualDocument('BEAST-Chronicle.json', 'json', JSON.stringify(item, null, 2))),
         vscode.commands.registerCommand('edgekBeast.prepareHandoff', async () => {
