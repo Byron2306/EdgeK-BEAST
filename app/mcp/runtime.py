@@ -816,11 +816,13 @@ class BeastToolRuntime:
             },
             {
                 "name": "beast_get_workspace_graph",
-                "description": "Return a lightweight view of the workspace graph/dependencies.",
+                "description": "Return a lightweight Code Cortex-fronted view of workspace graph/dependency context.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "depth": {"type": "integer", "default": 2},
+                        "workspace_root": {"type": "string"},
+                        "query": {"type": "string", "default": ""},
                     },
                 },
             },
@@ -1582,16 +1584,30 @@ class BeastToolRuntime:
             )
         elif name == "beast_get_workspace_graph":
             depth = int(arguments.get("depth", 2))
+            workspace_root = self._workspace_root(arguments.get("workspace_root"))
+            query = str(arguments.get("query") or "")
+            client = BeastApiClient(workspace=workspace_root)
+            cortex_status = client.code_cortex_status()
+            cortex_context = client.code_cortex_editing_context(query, limit=max(1, min(depth * 4, 24))) if query else {}
             graph = getattr(crystallizer, "workspace_graph", None)
             if graph and hasattr(graph, "summary"):
-                result = graph.summary(depth=depth)  # type: ignore[arg-type]
+                graph_summary = graph.summary(depth=depth)  # type: ignore[arg-type]
             else:
-                result = {
-                    "workspace_root": self._workspace_root(),
+                graph_summary = {
                     "depth": depth,
                     "nodes": [{"id": "root", "type": "directory", "name": Path(self._workspace_root()).name or "."}],
                     "edges": [],
                 }
+            result = {
+                "beast_object_type": "code_cortex_workspace_graph_view",
+                "context_front_door": "code_cortex",
+                "workspace_root": workspace_root,
+                "depth": depth,
+                "query": query,
+                "code_cortex": cortex_status,
+                "editing_context": cortex_context,
+                "workspace_graph_adapter": graph_summary,
+            }
         elif name == "beast_build_context_packet":
             result = self.context_packet_builder.build(
                 arguments["envelope"],

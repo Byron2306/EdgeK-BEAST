@@ -2241,8 +2241,11 @@ Legacy/proof systems       -> adapters, inputs, or archived harnesses
    - ~~Route TUI/MCP context selection through Code Cortex by default.~~
    - ~~Route `/edgek/workspace/context` through Code Cortex as the context front
      door while preserving graph-context payloads.~~
-   - Continue migrating lower-level semantic/artifact helper endpoints into Code
-     Cortex adapter calls.
+   - ~~Migrate lower-level workspace search, vector search, semantic context,
+     and legacy MCP graph lookup surfaces so they present Code Cortex as the
+     context front door while preserving graph adapters underneath.~~
+   - Continue migrating artifact-memory helper endpoints into Code Cortex
+     adapter calls.
 
 6. **Policy Gate Normalization**
    - ~~Add shared `PolicyGateResult` schema/helper.~~
@@ -2285,7 +2288,20 @@ Legacy/proof systems       -> adapters, inputs, or archived harnesses
      federated Commons surfaces into `app/routes/commons.py`.~~
    - ~~Deduplicate active route table so mounted route modules own stable paths
      ahead of inline compatibility shadows.~~
+   - ~~Retire migrated inline workspace, Code Cortex, worktree, compute, and
+     Crystal Compute route bodies from `app/main.py`; those paths now resolve
+     directly through route modules.~~
    - Preserve route paths for compatibility.
+
+11. **Final Replay Gauntlet**
+   - ~~Add an end-to-end replay proof that seeds verified SourcePlan evidence,
+     requests a SourcePlan scorecard over HTTP, builds Code Cortex-fronted
+     workspace context over HTTP, scaffolds Mission Lattice replay over HTTP,
+     scaffolds the same replay over MCP, and renders the Source Workbench
+     replay/policy panel in the TUI path.~~
+   - ~~Assert replay remains non-destructive (`no_auto_apply`) while evidence,
+     policy, verification, and operator-visible lattice context remain
+     connected.~~
 
 9. **Worktree Enforcement**
    - ~~Upgrade worktree recommendations into hard gates for high-risk edits

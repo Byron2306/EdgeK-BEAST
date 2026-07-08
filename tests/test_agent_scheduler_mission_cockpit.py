@@ -1,7 +1,9 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
+from rich.console import Console
 
 from app.cli.api import BeastApiClient
+from app.cli.ui import SourceWorkbenchScreen
 from app.main import app
 from app.kernel.compute.agent_scheduler import AgentScheduler
 from app.kernel.workspaces.mission_cockpit import MissionCockpit
@@ -233,3 +235,109 @@ def test_modularized_route_families_own_active_paths():
     }
     for path, module_name in expected_modules.items():
         assert active[path] == module_name
+
+
+@pytest.mark.asyncio
+async def test_final_replay_gauntlet_crosses_http_mcp_and_tui(tmp_path, monkeypatch):
+    target = tmp_path / "service.py"
+    original = "def value():\n    return 1\n"
+    target.write_text(original, encoding="utf-8")
+    offline = BeastApiClient("http://offline", workspace=tmp_path)
+    seed_plan = {
+        "plan_id": "final_gauntlet_seed",
+        "objective": "Repair service value",
+        "provider": "local",
+        "files_allowed": ["service.py"],
+        "operations": [{
+            "op_id": "op_seed",
+            "op": "replace_exact",
+            "path": "service.py",
+            "old": "return 1",
+            "new": "return 2",
+            "expected_hash": offline._file_hash_text(original),
+            "selected": True,
+            "source_edit": True,
+            "action_ir_type": "replace_exact",
+        }],
+    }
+    assert offline.apply_patch_plan(seed_plan, approved=True).ok is True
+    future_plan = {
+        **seed_plan,
+        "plan_id": "final_gauntlet_replay",
+        "objective": "Replay the verified service value repair pattern",
+        "operations": [{
+            **seed_plan["operations"][0],
+            "op_id": "op_replay",
+            "old": "return 2",
+            "new": "return 3",
+            "expected_hash": offline._file_hash_text(target.read_text(encoding="utf-8")),
+        }],
+    }
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as http:
+        scorecard_response = await http.post(
+            "/edgek/sourceplan/scorecard",
+            json={"root_path": str(tmp_path), "plan": future_plan},
+        )
+        context_response = await http.post(
+            "/edgek/workspace/context",
+            json={"root_path": str(tmp_path), "objective": future_plan["objective"], "selected_files": ["service.py"]},
+        )
+        search_response = await http.get(
+            "/edgek/workspace/search",
+            params={"q": "service value", "limit": 5},
+        )
+        replay_response = await http.post(
+            "/edgek/mission-lattice/replay-scaffold",
+            json={"root_path": str(tmp_path), "plan": future_plan, "scorecard": scorecard_response.json()},
+        )
+
+    scorecard = scorecard_response.json()
+    context = context_response.json()
+    search = search_response.json()
+    replay = replay_response.json()
+    runtime = BeastToolRuntime()
+    mcp_graph = runtime.call_tool(
+        "beast_get_workspace_graph",
+        {"workspace_root": str(tmp_path), "query": future_plan["objective"], "depth": 2},
+    )
+    mcp_replay = runtime.call_tool(
+        "beast_mission_lattice_replay_scaffold",
+        {"workspace_root": str(tmp_path), "plan": future_plan, "scorecard": scorecard},
+    )
+
+    class _ScorecardResult:
+        ok = True
+        data = scorecard
+
+    monkeypatch.setattr(
+        "app.cli.ui.BeastApiClient.sourceplan_scorecard",
+        lambda self, plan: _ScorecardResult(),
+    )
+    monkeypatch.setattr(
+        SourceWorkbenchScreen,
+        "app",
+        property(lambda self: type("_DummyApp", (), {"base_url": "http://offline"})()),
+    )
+    screen = SourceWorkbenchScreen({"operations": []})
+    panel = screen._scorecard_panel({**future_plan, "workspace": str(tmp_path)})
+    console = Console(record=True, width=120)
+    console.print(panel)
+    rendered = console.export_text()
+
+    assert scorecard_response.status_code == 200
+    assert context_response.status_code == 200
+    assert search_response.status_code == 200
+    assert replay_response.status_code == 200
+    assert scorecard["source_workbench"]["lattice_replay"]["visible"] is True
+    assert context["context_front_door"] == "code_cortex"
+    assert search["context_front_door"] == "code_cortex"
+    assert replay["beast_object_type"] == "mission_lattice_replay_closure"
+    assert replay["no_auto_apply"] is True
+    assert mcp_graph["context_front_door"] == "code_cortex"
+    assert mcp_graph["beast_object_type"] == "code_cortex_workspace_graph_view"
+    assert mcp_replay["beast_object_type"] == "mission_lattice_replay_closure"
+    assert mcp_replay["no_auto_apply"] is True
+    assert "Lattice replay" in rendered
+    assert "Policy gate" in rendered

@@ -19,6 +19,7 @@ def build_workspace_router(
     workspace_graph: Any,
     workspace_registry: Any,
     code_cortex_router: Any,
+    trace_path: str | Path | None = None,
 ) -> APIRouter:
     router = APIRouter()
     fallback_root = Path(default_root).expanduser().resolve()
@@ -51,6 +52,30 @@ def build_workspace_router(
             include_patterns=payload.get("include_patterns"),
             exclude_dirs=payload.get("exclude_dirs"),
         )
+
+    @router.post("/edgek/workspace/poll")
+    async def edgek_workspace_poll(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        return workspace_graph_service.poll(
+            root_path=payload.get("root_path") or str(fallback_root),
+            max_files=max(1, min(int(payload.get("max_files", 1000)), 5000)),
+            reindex=bool(payload.get("reindex", True)),
+        )
+
+    @router.post("/edgek/workspace/index-benchmark")
+    async def edgek_workspace_index_benchmark(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        return workspace_graph.benchmark_index_repository(
+            root_path=payload.get("root_path") or str(fallback_root),
+            max_files=max(1, min(int(payload.get("max_files", 5000)), 20000)),
+            target_seconds=float(payload.get("target_seconds", 15.0)),
+            include_patterns=payload.get("include_patterns"),
+            exclude_dirs=payload.get("exclude_dirs"),
+        )
+
+    @router.get("/edgek/workspace/file-status")
+    async def edgek_workspace_file_status(path: str, root_path: str = None):
+        return workspace_graph.file_status(str(_root(root_path)), path)
 
     @router.get("/edgek/workspace/files")
     async def edgek_workspace_files(root_path: str = None, limit: int = 200):
@@ -143,6 +168,32 @@ def build_workspace_router(
             contract_scan=bool(payload.get("contract_scan", True)),
         )
 
+    @router.post("/edgek/workspace/context-pack")
+    async def edgek_workspace_context_pack(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        edit_root = payload.get("edit_root_path")
+        edit_repo_id = str(payload.get("edit_repo_id") or (repo_id_for_root(edit_root) if edit_root else ""))
+        files_by_repo = payload.get("files_by_repo") if isinstance(payload.get("files_by_repo"), dict) else {}
+        return workspace_registry.build_context_pack(
+            edit_repo_id=edit_repo_id,
+            reference_repo_ids=[str(item) for item in (payload.get("reference_repo_ids") or [])],
+            files_by_repo={
+                str(key): [str(item) for item in value]
+                for key, value in files_by_repo.items()
+                if isinstance(value, list)
+            },
+            max_chars_each=max(1, min(int(payload.get("max_chars_each", 4000)), 50000)),
+        )
+
+    @router.post("/edgek/workspace/contract-mismatch")
+    async def edgek_workspace_contract_mismatch(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        provider_repo_id = str(payload.get("provider_repo_id") or "")
+        consumer_repo_id = str(payload.get("consumer_repo_id") or "")
+        if not provider_repo_id or not consumer_repo_id:
+            raise HTTPException(status_code=400, detail="provider_repo_id and consumer_repo_id are required")
+        return workspace_registry.contract_mismatch_receipt(provider_repo_id, consumer_repo_id)
+
     @router.post("/edgek/workspace/validate-sourceplan-scope")
     async def edgek_workspace_validate_sourceplan_scope(payload: Dict[str, Any] = None):
         payload = payload or {}
@@ -157,6 +208,108 @@ def build_workspace_router(
             edit_repo_id=edit_repo_id,
             approved_multi_repo=bool(payload.get("approved_multi_repo") or plan.get("approved_multi_repo")),
         )
+
+    @router.get("/edgek/workspace/changed-since")
+    async def edgek_workspace_changed_since(root_path: str = None, timestamp_ns: int = 0):
+        return workspace_graph.changed_since(str(_root(root_path)), timestamp_ns=timestamp_ns)
+
+    @router.post("/edgek/workspace/context-consumption")
+    async def edgek_workspace_context_consumption(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        return workspace_graph.record_context_consumption(
+            session_id=str(payload.get("session_id") or "default"),
+            root_path=str(_root(payload.get("root_path"))),
+            paths=[str(item) for item in (payload.get("paths") or payload.get("files") or [])],
+            objective=str(payload.get("objective") or ""),
+        )
+
+    @router.get("/edgek/workspace/stale-context")
+    async def edgek_workspace_stale_context(root_path: str = None, session_id: str = None):
+        return workspace_graph.stale_context_events(str(_root(root_path)), session_id=session_id)
+
+    @router.post("/edgek/workspace/rebuild")
+    async def edgek_workspace_rebuild(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        return workspace_graph.rebuild_from_traces(
+            trace_path=payload.get("trace_path") or str(trace_path or fallback_root / "app" / "data" / "traces.jsonl"),
+            clear_existing=bool(payload.get("clear_existing", False)),
+        )
+
+    @router.get("/edgek/workspace/export")
+    async def edgek_workspace_export(node_limit: int = 1000, edge_limit: int = 2000):
+        return workspace_graph.export_graph(
+            node_limit=max(1, min(node_limit, 5000)),
+            edge_limit=max(1, min(edge_limit, 10000)),
+        )
+
+    @router.get("/edgek/workspace/integrity")
+    async def edgek_workspace_integrity(sample_limit: int = 20):
+        return workspace_graph.integrity_report(sample_limit=max(1, min(sample_limit, 100)))
+
+    @router.get("/edgek/workspace/search")
+    async def edgek_workspace_search(q: str, node_type: str = None, limit: int = 20):
+        return {
+            "query": q,
+            "node_type": node_type,
+            "context_front_door": "code_cortex",
+            "code_cortex": code_cortex_router.get_editing_context(_root(), q, limit=max(1, min(limit, 50))),
+            "results": workspace_graph.search_nodes(
+                query=q,
+                node_type=node_type,
+                limit=max(1, min(limit, 100)),
+            ),
+        }
+
+    @router.get("/edgek/workspace/vector_search")
+    async def edgek_workspace_vector_search(q: str, limit: int = 10):
+        return {
+            "query": q,
+            "limit": limit,
+            "context_front_door": "code_cortex",
+            "code_cortex": code_cortex_router.get_editing_context(_root(), q, limit=max(1, min(limit, 50))),
+            "results": workspace_graph.vector_search(
+                query_text=q,
+                limit=max(1, min(limit, 50)),
+            ),
+        }
+
+    @router.post("/edgek/workspace/semantic-index")
+    async def edgek_workspace_semantic_index(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        return workspace_graph.semantic_index_repository(
+            root_path=payload.get("root_path") or str(fallback_root),
+            max_files=max(1, min(int(payload.get("max_files", 200)), 2000)),
+            max_chunks=max(1, min(int(payload.get("max_chunks", 1000)), 10000)),
+            include_patterns=payload.get("include_patterns"),
+            exclude_dirs=payload.get("exclude_dirs"),
+        )
+
+    @router.get("/edgek/workspace/semantic-context")
+    async def edgek_workspace_semantic_context(
+        q: str,
+        limit: int = 8,
+        include_content: bool = True,
+        file_glob: str = None,
+        node_type: str = None,
+    ):
+        return {
+            "context_front_door": "code_cortex",
+            "code_cortex": code_cortex_router.get_editing_context(_root(), q, limit=max(1, min(limit, 50))),
+            "semantic_context": workspace_graph.semantic_context(
+                query_text=q,
+                limit=max(1, min(limit, 50)),
+                include_content=include_content,
+                file_glob=file_glob,
+                node_types=[node_type] if node_type else None,
+            ),
+        }
+
+    @router.get("/edgek/workspace/nodes/{node_id:path}")
+    async def edgek_workspace_node(node_id: str):
+        node = workspace_graph.get_node(node_id)
+        if not node:
+            raise HTTPException(status_code=404, detail=f"Workspace graph node not found: {node_id}")
+        return workspace_graph.neighborhood(node_id)
 
     @router.get("/edgek/worktree-forge/list")
     async def edgek_worktree_forge_list(root_path: str = None):
@@ -181,5 +334,38 @@ def build_workspace_router(
             base_ref=str(payload.get("base_ref") or "HEAD"),
             task_id=str(payload.get("task_id") or ""),
         )
+
+    @router.post("/edgek/worktree-forge/test")
+    async def edgek_worktree_forge_test(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        task_id = str(payload.get("task_id") or "")
+        if not task_id:
+            raise HTTPException(status_code=400, detail="task_id is required")
+        command = payload.get("command") if isinstance(payload.get("command"), list) else None
+        return WorktreeForge(_root(payload.get("root_path"))).test(
+            task_id,
+            command=[str(item) for item in command] if command else None,
+            timeout=float(payload.get("timeout", 120.0)),
+        )
+
+    @router.post("/edgek/worktree-forge/promote")
+    async def edgek_worktree_forge_promote(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        task_id = str(payload.get("task_id") or "")
+        if not task_id:
+            raise HTTPException(status_code=400, detail="task_id is required")
+        return WorktreeForge(_root(payload.get("root_path"))).promote(
+            task_id,
+            approved=bool(payload.get("approved", False)),
+            require_tests=bool(payload.get("require_tests", True)),
+        )
+
+    @router.post("/edgek/worktree-forge/archive")
+    async def edgek_worktree_forge_archive(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        task_id = str(payload.get("task_id") or "")
+        if not task_id:
+            raise HTTPException(status_code=400, detail="task_id is required")
+        return WorktreeForge(_root(payload.get("root_path"))).archive(task_id, reason=str(payload.get("reason") or ""))
 
     return router
