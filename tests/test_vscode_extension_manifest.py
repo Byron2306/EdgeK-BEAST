@@ -8,6 +8,7 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
     expected = {
         "edgekBeast.openMissionControl",
         "edgekBeast.diagnoseIdeShell",
+        "edgekBeast.openIdeLog",
         "edgekBeast.openSourceWorkbench",
         "edgekBeast.showEvidence",
         "edgekBeast.showCodeCortex",
@@ -57,3 +58,7 @@ def test_vscode_extension_starts_beast_gateway_command():
     source = Path("vscode-extension/extension.js").read_text(encoding="utf-8")
     assert " gateway --host 127.0.0.1 --port 8000" in source
     assert " serve --host 127.0.0.1 --port 8000" not in source
+    assert "lastGatewayStart" in source
+    assert "openIdeLog" in source
+    assert "copyDoctor" in source
+    assert "BEAST IDE Doctor report copied" in source

@@ -1819,7 +1819,7 @@ BEAST takes on that larger surface area.
 
 ### Full IDE Phase 5.5: IDE Doctor and Self-Healing Bootstrap
 
-Status: **Started with gateway bootstrap diagnostics.**
+Status: **Complete for bootstrap trace, copyable diagnostics, and operator log access.**
 
 This slice addresses the first real operator friction from the VS Code shell:
 when the backend is not reachable, the extension should not just say "fetch
@@ -1836,9 +1836,34 @@ failed."
   registration support, and next actions.
 - The sidebar status exposes the detected root and gateway command so a wrong
   workspace folder is visible immediately.
+- The extension now keeps an in-memory bootstrap log and a `BEAST IDE` output
+  channel for startup, health, and fetch failures.
+- IDE Doctor shows the last gateway start attempt, parsed host/port hint,
+  recent log entries, and raw JSON.
+- IDE Doctor can copy the report, open the raw JSON, and open the bootstrap log
+  without leaving VS Code.
 
-Next Phase 5.5 slices should add extension-host automation for startup failure,
-gateway port selection, and one-click log capture from the integrated terminal.
+Next Phase 5.5 polish should add gateway port selection and deeper integrated
+terminal transcript capture.
+
+### Full IDE Phase 7: Extension-Host Proof Harness
+
+Status: **Started with static command-surface and Doctor bootstrap guards.**
+
+Phase 7 proves the VS Code shell under realistic operator flows:
+
+- Manifest guards now cover Mission Control, Agent Sessions, Worktree Missions,
+  IDE Doctor, bootstrap log, and SourcePlan promotion commands.
+- Static extension checks verify the installed shell starts `beast gateway`, not
+  the old invalid `serve` command.
+- The next test layer should use `@vscode/test-electron` to activate the
+  extension in an extension host, run `BEAST: Diagnose IDE Shell`, and assert
+  that Mission Control, session sidebars, worktree sidebars, and Source
+  Workbench commands are callable.
+
+Next Phase 7 slices should add extension-host tests around startup failure,
+gateway health, session lifecycle, worktree SourcePlan promotion, and persisted
+SourcePlan selection state.
 
 ## Phased Roadmap
 
