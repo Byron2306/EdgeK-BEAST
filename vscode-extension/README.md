@@ -21,7 +21,7 @@ From the repository root:
 cd vscode-extension
 npm install
 npx @vscode/vsce package
-code --install-extension edgek-beast-1.6.0.vsix --force
+code --install-extension edgek-beast-1.6.1.vsix --force
 ```
 
 Then reload VS Code/Cursor, open the command palette, and run

@@ -1687,7 +1687,7 @@ function activate(context) {
                         beastCommand(),
                         ['mcp', '--workspace', folder || '.'],
                         { BEAST_WORKSPACE: folder || '.' },
-                        '1.6.0',
+                        '1.6.1',
                     )
                 ];
             },

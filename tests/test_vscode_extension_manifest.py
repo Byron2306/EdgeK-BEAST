@@ -30,7 +30,7 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
         "edgekBeast.closeWorktreeMission",
     }
     assert expected.issubset(commands)
-    assert manifest["version"] == "1.6.0"
+    assert manifest["version"] == "1.6.1"
     assert manifest["icon"] == "media/beast-dragon-extension-icon.png"
     assert manifest["contributes"]["viewsContainers"]["activitybar"][0]["icon"] == "media/beast-dragon-activity.svg"
 
