@@ -2341,7 +2341,7 @@ and cockpit visibility for architectural drift.
 
 ### ADR-001: BEAST remains governance-first
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: BEAST will not become a pure code graph engine. It will add
 graph-native context and edit ergonomics while preserving SourcePlan,
@@ -2353,7 +2353,7 @@ BEAST keeps stronger operator control and auditability.
 
 ### ADR-002: Workspace graph is advisory, receipts are authoritative
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: The graph can accelerate context selection and risk scoring, but
 append-only receipts and rollback snapshots remain the source of truth.
@@ -2363,7 +2363,7 @@ checks and verification block stale writes.
 
 ### ADR-003: Optional Code Cortex adapters, no hard dependency
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: BEAST may call Gortex, Serena-style symbol servers, local search
 engines, or repo-bundle exporters for richer graph/symbol/semantic context when
@@ -2375,7 +2375,7 @@ dependent on a separate binary or a single code-intelligence project.
 
 ### ADR-004: Action IR becomes the primary provider edit contract
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: Providers should return compact Action IR rather than full-file patch
 prose. BEAST compiles Action IR into explicit operations after validation.
@@ -2386,7 +2386,7 @@ visible, targeted, and reversible edits.
 
 ### ADR-005: Agent modes are permission boundaries
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: BEAST modes are not cosmetic labels. Each mode defines available tools,
 mutation permissions, context budgets, escalation thresholds, and evidence
@@ -2398,7 +2398,7 @@ planning, review, or evidence phases.
 
 ### ADR-006: Risky edits default to worktree isolation
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: BEAST should automatically route high-risk, multi-file, dependency,
 bootstrap, cross-repo, and parallel-provider tasks into isolated worktrees before
@@ -2409,7 +2409,7 @@ parallelism, cleaner rollback, and auditable promotion.
 
 ### ADR-007: Project instructions are compiled, not pasted
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: AGENTS.md, BEAST rules, and task notes must be linted, scoped, and
 compiled into a digest before provider handoff. Providers receive the relevant
@@ -2421,13 +2421,34 @@ edit.
 
 ### ADR-008: No implicit trust in setup/bootstrap commands
 
-Status: Proposed.
+Status: Accepted/Implemented.
 
 Decision: Any setup, install, bootstrap, package hook, or networked shell command
 suggested by a repo or agent must pass Safety Governor checks before execution.
 
 Trade-off: Some legitimate commands require approval. The payoff is preventing
 agent-assisted workspace compromise before it happens.
+
+### ADR Enforcement Surface
+
+These ADRs are now implemented as runtime-visible contracts:
+
+- `app/kernel/policy/architecture_decisions.py` exposes the accepted ADR
+  register and per-surface architecture contract receipts.
+- `/edgek/architecture-decisions` and MCP `beast_architecture_decisions` expose
+  the accepted/implemented decision register.
+- SourcePlan scorecards and Source Workbench views include
+  `architecture_contract` receipts covering governance-first mutation,
+  receipt authority, optional Code Cortex adapters, Action IR, mode boundaries,
+  worktree isolation, compiled Spec Covenant instructions, and Safety Governor
+  bootstrap checks.
+- Provider handoffs instruct models to return compact Action IR and preserve
+  SourcePlan as the local mutation compiler.
+- Positive and negative SourcePlan evidence packets include the architecture
+  contract through `sourceplan_governance_receipts`.
+- Safety Governor command/workspace receipts attach ADR-008 so setup,
+  bootstrap, install, package-hook, and networked command checks are explicitly
+  tied to the no-implicit-trust decision.
 
 ## Definition of Done
 

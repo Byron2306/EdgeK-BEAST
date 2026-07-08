@@ -28,6 +28,7 @@ def test_runtime_exposes_v2_mcp_tools():
     assert "beast_capability_exchange" in names
     assert "beast_capability_plane_summary" in names
     assert "beast_capability_plane_query" in names
+    assert "beast_architecture_decisions" in names
     assert "beast_run_maintenance_cascade" in names
     assert "beast_attach_network_chronicle" in names
     assert "beast_github_pr_ingest" in names

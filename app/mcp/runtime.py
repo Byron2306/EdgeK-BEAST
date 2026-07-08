@@ -31,6 +31,7 @@ from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 from app.kernel.execution.session_handshake import SessionHandshakeBuilder
 from app.kernel.capability.capability_exchange import CapabilityExchange
 from app.kernel.capability.capability_plane import CapabilityPlane
+from app.kernel.policy.architecture_decisions import architecture_decision_register
 from app.kernel.networking.meta_tool_commons import MetaToolCommons
 from app.kernel.compute.inference_interceptor import compute_ledger
 from app.kernel.storage.outcome_evidence import default_outcome_store
@@ -736,6 +737,11 @@ class BeastToolRuntime:
                 }
             },
             {
+                "name": "beast_architecture_decisions",
+                "description": "Return accepted/implemented BEAST architecture decisions and enforcement invariants.",
+                "inputSchema": {"type": "object", "properties": {}},
+            },
+            {
                 "name": "beast_check_policy",
                 "description": "Check whether an action is allowed under current governance rules.",
                 "inputSchema": {
@@ -1226,6 +1232,8 @@ class BeastToolRuntime:
         elif name == "beast_sourceplan_scorecard":
             action = self.beast_api.sourceplan_scorecard(arguments.get("plan") or {})
             result = self._action_result(action)
+        elif name == "beast_architecture_decisions":
+            result = architecture_decision_register()
         elif name == "beast_code_cortex_status":
             client = BeastApiClient(workspace=self._workspace_root(arguments.get("workspace_root")))
             result = client.code_cortex_status()
@@ -1830,7 +1838,7 @@ class BeastToolRuntime:
             return "observability"
         if "plugin" in name:
             return "extension"
-        if "capability_exchange" in name or "capability_plane" in name:
+        if "capability_exchange" in name or "capability_plane" in name or "architecture_decisions" in name:
             return "governance"
         if "symbol_surgeon" in name:
             return "sourceplan"

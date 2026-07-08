@@ -208,6 +208,8 @@ def build_provider_handoff(
             "local_transforms": _local_transform_menu(profile),
             "rules": [
                 "Return only the output.schema object, not this handoff object.",
+                "Return compact BEAST Action IR for edits; do not return full-file patch prose.",
+                "All source mutation is compiled locally into SourcePlan operations before approval.",
                 "Use refs and local_transforms before source-shaped snippets.",
                 "Do not mention files outside task.allowed_paths.",
             ],

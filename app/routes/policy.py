@@ -8,6 +8,7 @@ from typing import Any, Dict
 from fastapi import APIRouter
 
 from app.kernel.agents.mode_router import ModeRouter
+from app.kernel.policy.architecture_decisions import architecture_decision_register
 from app.kernel.policy.spec_covenant import SpecCovenantCompiler
 from app.kernel.security.safety_governor import SafetyGovernor
 
@@ -18,6 +19,10 @@ def build_policy_router(default_root: str | Path, mode_router: ModeRouter) -> AP
 
     def _root(value: Any = None) -> Path:
         return Path(value or fallback_root).expanduser().resolve()
+
+    @router.get("/edgek/architecture-decisions")
+    async def edgek_architecture_decisions():
+        return architecture_decision_register()
 
     @router.get("/edgek/mode-router/catalog")
     async def edgek_mode_router_catalog():

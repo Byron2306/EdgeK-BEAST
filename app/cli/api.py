@@ -36,6 +36,7 @@ from app.kernel.data_processing.code_indexers import extract_imports, extract_ro
 from app.kernel.data_processing.workspace_registry import WorkspaceRegistry
 from app.kernel.policy.spec_covenant import SpecCovenantCompiler
 from app.kernel.policy.policy_gate import combine_policy_gates
+from app.kernel.policy.architecture_decisions import architecture_contract_receipt
 from app.kernel.security.safety_governor import SafetyGovernor
 from app.kernel.workspaces.mission_cockpit import MissionCockpit
 from app.kernel.workspaces.worktree_forge import WorktreeForge
@@ -2973,6 +2974,18 @@ class BeastApiClient:
                 "findings": (safety.get("findings") or [])[:12],
                 "timestamp": safety.get("timestamp"),
             }
+            governance["architecture_contract"] = architecture_contract_receipt(
+                surface="provider_handoff",
+                provider_handoff=enriched,
+                safety_receipt=safety,
+                scorecard={
+                    "spec_covenant": {
+                        "covenant_hash": covenant.get("covenant_hash"),
+                        "receipt": covenant.get("receipt") or {},
+                    },
+                    "safety_governor": safety,
+                },
+            )
             enriched["governance"] = governance
             enriched.setdefault("rules", [])
             if isinstance(enriched["rules"], list):
@@ -3640,6 +3653,18 @@ class BeastApiClient:
                 "policy_gate_result": policy_gate,
             },
         }
+        scorecard["architecture_contract"] = architecture_contract_receipt(
+            surface="sourceplan_scorecard",
+            sourceplan=plan,
+            scorecard=scorecard,
+            safety_receipt=safety_receipt,
+        )
+        source_workbench["architecture_contract"] = {
+            "status": "accepted_implemented",
+            "adr_count": len(scorecard["architecture_contract"].get("adr_status") or {}),
+            "governance_first": True,
+            "receipt_authority": True,
+        }
         return ActionResult(True, "SourcePlan scorecard", f"{risk} risk; {len(scorecard['suggested_tests'])} suggested test command(s)", scorecard)
 
     def _sourceplan_provider_edit_fitness_for(self, provider: str) -> Dict[str, Any]:
@@ -3884,6 +3909,9 @@ class BeastApiClient:
             },
             "worktree_recommendation": worktree,
             "code_cortex": code_cortex,
+            "architecture_contract": scorecard.get("architecture_contract")
+            if isinstance(scorecard.get("architecture_contract"), dict)
+            else architecture_contract_receipt(surface="sourceplan_evidence", sourceplan=plan, scorecard=scorecard, safety_receipt=safety),
             "provider_handoff_governance": handoff_governance,
         }
 

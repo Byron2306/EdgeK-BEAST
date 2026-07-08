@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from app.kernel.policy.architecture_decisions import architecture_contract_receipt
 from app.kernel.policy.policy_gate import from_safety_receipt
 
 
@@ -92,6 +93,10 @@ class SafetyGovernor:
             "operator_override": operator_override,
             "timestamp": time.time(),
         }
+        receipt["architecture_contract"] = architecture_contract_receipt(
+            surface="safety_command",
+            safety_receipt=receipt,
+        )
         receipt["policy_gate"] = from_safety_receipt(receipt)
         if record:
             self._persist_and_register(receipt)
@@ -114,6 +119,10 @@ class SafetyGovernor:
             "scanned_files": [path.relative_to(self.workspace_root).as_posix() for path in target_files if path.exists()][:max_files],
             "timestamp": time.time(),
         }
+        receipt["architecture_contract"] = architecture_contract_receipt(
+            surface="safety_workspace",
+            safety_receipt=receipt,
+        )
         receipt["policy_gate"] = from_safety_receipt(receipt)
         self._persist_and_register(receipt)
         return receipt
