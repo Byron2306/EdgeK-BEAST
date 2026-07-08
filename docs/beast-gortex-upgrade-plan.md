@@ -1670,7 +1670,7 @@ the next action.
 
 ### Full IDE Phase 1: VS Code Shell With TUI Look
 
-Status: **In progress / first slice implemented.**
+Status: **Substantially complete for the first IDE shell.**
 
 BEAST's first full IDE step is not a separate editor rewrite. It is a VS Code
 operator shell that preserves the BEAST TUI visual language while placing the
@@ -1692,16 +1692,17 @@ governed workflow beside the code:
 - `BEAST: Show Evidence Bus`, `BEAST: Create Worktree Mission`, and
   `BEAST: Scaffold Lattice Replay` expose the newly integrated BEAST layers
   directly from the IDE.
+- The sidebar and Mission Control now expose Code Cortex, worktree, and unified
+  Policy Gate panels as first-class IDE surfaces.
 
-Next IDE slices should add real diff decoration inside editor buffers,
-clickable hunk selection, persistent SourcePlan sessions, a file explorer
-overlay from Code Cortex, and end-to-end VS Code extension tests. The principle
-stays the same: IDE ergonomics improve, but SourcePlan and policy receipts stay
-the mutation authority.
+Remaining Phase 1 polish is mostly packaging and extension-host automation:
+webview screenshot tests, VSIX packaging cleanup, and richer icons/menus. The
+principle stays the same: IDE ergonomics improve, but SourcePlan and policy
+receipts stay the mutation authority.
 
 ### Full IDE Phase 2: Editor-Native SourcePlan Session
 
-Status: **In progress / first slice implemented.**
+Status: **Substantially complete for live request/response plus event stream.**
 
 The next IDE slice moves SourcePlan visibility from "webview plus diff" toward
 an editor-native patching surface:
@@ -1718,11 +1719,35 @@ an editor-native patching surface:
   code.
 - Apply still routes through `beast_sourceplan_apply_selected`; the extension
   does not write files directly.
+- `/edgek/ide/events` now exposes a live Server-Sent Events stream for
+  SourcePlan, policy, evidence, context/index, worktree, and lattice events.
+- The VS Code extension can subscribe to that event stream and refresh live
+  cockpit state while preserving request/response fallback.
 
 Next Phase 2 slices should add side-by-side virtual documents for old/new file
-content, Code Cortex file/symbol explorer overlays, persisted multi-plan
-sessions, and extension host tests that exercise checkbox selection through the
-webview message contract.
+content, persisted multi-plan sessions, and extension-host tests that exercise
+checkbox selection and event streaming through the webview message contract.
+
+### Full IDE Phase 3: Inline Editor Intelligence
+
+Status: **Started.**
+
+Phase 3 moves BEAST from panels beside the editor into useful signals inside
+the editor:
+
+- CodeLens actions appear in source files for SourcePlan from selection,
+  related tests/routes, current hunk selection count, and stale context warning.
+- Hovers over BEAST-decorated ranges summarize the SourcePlan operation and
+  link back to Source Workbench.
+- Diagnostics warn when selected SourcePlan context is stale.
+- `BEAST: Jump to Related Tests or Routes` uses Code Cortex dependents to open
+  likely tests, specs, routes, controllers, APIs, or pages.
+- SourcePlan from selection remains the inline mutation entry point, and apply
+  still routes through governed SourcePlan approval.
+
+Next Phase 3 slices should add symbol-level CodeLens from Code Cortex, richer
+diagnostics for risky paths and policy gates, route/test classification in the
+backend context packet, and automatic stale-context refresh prompts.
 
 ## Phased Roadmap
 
@@ -2544,6 +2569,10 @@ The upgrade is successful when an operator can:
     and policy state beside the active code editor.
 24. Select SourcePlan operations from an IDE workbench, persist the session, and
     see pending/stale changed ranges decorated directly in the active editor.
+25. Subscribe the IDE to a live BEAST event stream for SourcePlan, policy,
+    evidence, context/index, worktree, and lattice changes.
+26. Use inline CodeLens, hovers, diagnostics, related-test/route jumps, and
+    SourcePlan-from-selection actions directly inside source files.
 
 At that point BEAST will have absorbed Gortex's best developer-loop lessons and
 the strongest adjacent agentic IDE/workspace orchestration patterns without

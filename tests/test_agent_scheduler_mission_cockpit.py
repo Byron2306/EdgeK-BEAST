@@ -227,6 +227,32 @@ async def test_ide_snapshot_is_phase_one_vscode_shell_contract(tmp_path):
     assert "edgekBeast.openSourceWorkbench" in payload["operator_actions"]
 
 
+@pytest.mark.asyncio
+async def test_ide_event_stream_emits_phase_two_event_contract(tmp_path):
+    (tmp_path / "service.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(
+            "/edgek/ide/events",
+            params={
+                "root_path": str(tmp_path),
+                "active_file": "service.py",
+                "objective": "Repair service value",
+                "once": "true",
+            },
+        )
+
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+    text = response.text
+    assert "event: sourceplan" in text
+    assert "event: policy" in text
+    assert "event: evidence" in text
+    assert "event: context" in text
+    assert "event: worktree" in text
+    assert "beast_ide_event" in text
+
+
 def test_modularized_routes_are_not_active_duplicates():
     seen = {}
     duplicates = []

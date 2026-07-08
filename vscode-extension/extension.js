@@ -14,6 +14,10 @@ let lastIdeSnapshot = null;
 let currentPreview = null;
 let extensionContext = null;
 let sourceWorkbenchPanel = null;
+let ideEventAbort = null;
+let ideEventProvider = null;
+let latestIdeEvents = {};
+let beastDiagnostics = null;
 
 const selectedHunkDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(166, 255, 63, 0.16)',
@@ -268,8 +272,11 @@ class BeastIdeProvider {
                 this.section('Mission', `${snap.mission_cockpit?.cards?.length || 0} cards`, 'edgekBeast.openMissionControl'),
                 this.section('SourcePlans', `${snap.sourceplan_queue?.length || 0} queued`, 'edgekBeast.openSourceWorkbench'),
                 this.section('Evidence', `${snap.evidence_bus?.total || snap.evidence_bus?.count || 0} receipts`, 'edgekBeast.showEvidence'),
-                this.section('Code Cortex', snap.code_cortex?.adapter || snap.code_cortex?.front_door || 'ready', 'edgekBeast.refreshIdeSnapshot'),
+                this.section('Code Cortex', snap.code_cortex?.adapter || snap.code_cortex?.front_door || 'ready', 'edgekBeast.showCodeCortex'),
+                this.section('Worktrees', `${snap.worktrees?.count || 0} active`, 'edgekBeast.showWorktrees'),
+                this.section('Policy Gate', snap.policy?.mode_route?.selected_mode || 'mode ready', 'edgekBeast.showPolicyGate'),
                 this.section('Lattice', `${snap.mission_lattice?.cell_count || 0} cells`, 'edgekBeast.replayLatticeCandidate'),
+                this.section('Live Events', latestIdeEvents.connected ? 'connected' : 'start stream', 'edgekBeast.startIdeEventBus'),
             ];
         }
         return [];
@@ -375,6 +382,10 @@ function missionControlHtml(snapshot) {
           <button data-command="sourcePlanFromSelection">SourcePlan from Selection</button>
           <button data-command="openSourceWorkbench">Source Workbench</button>
           <button data-command="showEvidence">Evidence</button>
+          <button data-command="showCodeCortex">Code Cortex</button>
+          <button data-command="showPolicyGate">Policy Gate</button>
+          <button data-command="showWorktrees">Worktrees</button>
+          <button data-command="startIdeEventBus">Live Events</button>
           <button data-command="createWorktreeMission">Create Worktree</button>
           <button data-command="replayLatticeCandidate">Replay Lattice</button>
         </div>
@@ -598,6 +609,7 @@ async function previewCurrentPlan({ quiet = false } = {}) {
     currentPreview = data;
     syncPlanSelectionFromPreview();
     applyPreviewDecorations();
+    updateBeastDiagnostics();
     saveIdeSession();
     if (!quiet) {
         vscode.window.showInformationMessage(result.summary || `BEAST preview ready: ${data.selected_count || 0} selected hunk(s).`);
@@ -624,6 +636,7 @@ function setOperationSelected(opId, selected) {
     currentPreview.selected_count = currentPreview.operations.filter(op => op.ok !== false && op.selected).length;
     syncPlanSelectionFromPreview();
     applyPreviewDecorations();
+    updateBeastDiagnostics();
     saveIdeSession();
     updateSourceWorkbenchHtml();
 }
@@ -641,6 +654,7 @@ function setAllSourceOperations(selected) {
     currentPreview.selected_count = currentPreview.operations.filter(op => op.ok !== false && op.selected).length;
     syncPlanSelectionFromPreview();
     applyPreviewDecorations();
+    updateBeastDiagnostics();
     saveIdeSession();
     updateSourceWorkbenchHtml();
 }
@@ -679,6 +693,134 @@ function applyPreviewDecorations() {
     editor.setDecorations(selectedHunkDecoration, selectedRanges);
     editor.setDecorations(skippedHunkDecoration, skippedRanges);
     editor.setDecorations(staleHunkDecoration, staleRanges);
+}
+
+function activeDocumentRelative(document) {
+    if (!document || document.uri.scheme !== 'file') {
+        return '';
+    }
+    return workspaceRelative(document.uri.fsPath);
+}
+
+function previewOperationsForDocument(document) {
+    const rel = activeDocumentRelative(document);
+    if (!rel) {
+        return [];
+    }
+    return (currentPreview?.operations || []).filter(op => op.path === rel);
+}
+
+function updateBeastDiagnostics() {
+    if (!beastDiagnostics) {
+        return;
+    }
+    beastDiagnostics.clear();
+    for (const document of vscode.workspace.textDocuments) {
+        const diagnostics = [];
+        for (const op of previewOperationsForDocument(document)) {
+            if (!op.stale_reason) {
+                continue;
+            }
+            const changed = (op.changed_ranges || [])[0] || {};
+            const start = Math.max(0, Number(changed.new_start || changed.old_start || 1) - 1);
+            const line = Math.min(start, Math.max(0, document.lineCount - 1));
+            const range = new vscode.Range(line, 0, line, document.lineAt(line).text.length);
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                `BEAST stale SourcePlan context: ${op.stale_reason}`,
+                vscode.DiagnosticSeverity.Warning,
+            );
+            diagnostic.source = 'BEAST';
+            diagnostic.code = 'stale-sourceplan-context';
+            diagnostics.push(diagnostic);
+        }
+        if (diagnostics.length) {
+            beastDiagnostics.set(document.uri, diagnostics);
+        }
+    }
+}
+
+class BeastCodeLensProvider {
+    provideCodeLenses(document) {
+        if (document.uri.scheme !== 'file' || !workspaceFolderPath()) {
+            return [];
+        }
+        const top = new vscode.Range(0, 0, 0, 0);
+        const lenses = [
+            new vscode.CodeLens(top, { title: 'BEAST: SourcePlan from selection', command: 'edgekBeast.sourcePlanFromSelection' }),
+            new vscode.CodeLens(top, { title: 'BEAST: Related tests/routes', command: 'edgekBeast.jumpRelatedContext' }),
+        ];
+        const ops = previewOperationsForDocument(document);
+        const selected = ops.filter(op => op.selected).length;
+        if (ops.length) {
+            lenses.push(new vscode.CodeLens(top, { title: `BEAST: ${selected}/${ops.length} hunks selected`, command: 'edgekBeast.openSourceWorkbench' }));
+        }
+        if (ops.some(op => op.stale_reason)) {
+            lenses.push(new vscode.CodeLens(top, { title: 'BEAST: stale context warning', command: 'edgekBeast.openSourceWorkbench' }));
+        }
+        return lenses;
+    }
+}
+
+class BeastHoverProvider {
+    provideHover(document, position) {
+        const hits = [];
+        for (const op of previewOperationsForDocument(document)) {
+            for (const changed of op.changed_ranges || []) {
+                const start = Math.max(0, Number(changed.new_start || changed.old_start || 1) - 1);
+                const end = Math.max(start, Number(changed.new_end || changed.old_end || start + 1) - 1);
+                if (position.line >= start && position.line <= end) {
+                    hits.push(op);
+                }
+            }
+        }
+        if (!hits.length) {
+            return undefined;
+        }
+        const md = new vscode.MarkdownString();
+        md.isTrusted = true;
+        md.appendMarkdown('**BEAST SourcePlan**\n\n');
+        for (const op of hits.slice(0, 4)) {
+            md.appendMarkdown(`- \`${op.op_id || 'hunk'}\` ${op.selected ? 'selected' : 'skipped'}: ${op.description || op.op || 'operation'}\n`);
+            if (op.stale_reason) {
+                md.appendMarkdown(`  - stale: ${op.stale_reason}\n`);
+            }
+        }
+        md.appendMarkdown('\n[Open Source Workbench](command:edgekBeast.openSourceWorkbench)');
+        return new vscode.Hover(md);
+    }
+}
+
+async function jumpRelatedContext() {
+    const file = activeContextFiles()[0];
+    if (!file) {
+        vscode.window.showWarningMessage('BEAST: open a workspace file before asking Code Cortex for related context.');
+        return;
+    }
+    const params = new URLSearchParams();
+    const root = workspaceFolderPath();
+    if (root) params.set('root_path', root);
+    params.set('path', file);
+    params.set('limit', '80');
+    const data = await getJson(`/edgek/code-cortex/dependents?${params.toString()}`);
+    const raw = data.dependents || data.related_files || data.files || [];
+    const candidates = raw.map(item => typeof item === 'string' ? item : (item.path || item.file || item.dependent || '')).filter(Boolean);
+    const likely = candidates.filter(item => /test|spec|route|api|controller|view|page/i.test(item));
+    const choices = (likely.length ? likely : candidates).slice(0, 40);
+    if (!choices.length) {
+        await showVirtualDocument('BEAST-Related-Context.json', 'json', JSON.stringify(data, null, 2));
+        return;
+    }
+    const picked = await vscode.window.showQuickPick(choices, {
+        title: 'BEAST Related Tests / Routes',
+        placeHolder: 'Choose a related file from Code Cortex',
+    });
+    if (!picked) {
+        return;
+    }
+    const full = path.join(workspaceFolderPath(), picked);
+    const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(full));
+    await vscode.window.showTextDocument(doc, { preview: true });
 }
 
 async function openMissionControl(ideProvider) {
@@ -744,6 +886,75 @@ async function showEvidence() {
     panel.webview.html = html;
 }
 
+async function showCodeCortex() {
+    const root = workspaceFolderPath();
+    const file = activeContextFiles()[0] || '';
+    const query = activeObjective();
+    const params = new URLSearchParams();
+    if (root) params.set('root_path', root);
+    params.set('q', query);
+    params.set('limit', '20');
+    const context = await getJson(`/edgek/code-cortex/editing-context?${params.toString()}`);
+    let fileSummary = {};
+    let dependents = {};
+    if (file) {
+        const fileParams = new URLSearchParams();
+        if (root) fileParams.set('root_path', root);
+        fileParams.set('path', file);
+        fileSummary = await getJson(`/edgek/code-cortex/file-summary?${fileParams.toString()}`);
+        dependents = await getJson(`/edgek/code-cortex/dependents?${fileParams.toString()}&limit=30`);
+    }
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero"><h1>Code Cortex</h1><div class="muted">${escapeHtml(file || query)}</div>
+          <div class="row" style="margin-top:10px"><button data-command="jumpRelatedContext">Related Tests/Routes</button><button data-command="sourcePlanFromSelection">SourcePlan from Selection</button></div>
+        </div>
+        <div class="grid">
+          <div class="card"><h2>Front Door</h2><div class="cyan">${escapeHtml(context.front_door || context.context_front_door || 'code_cortex')}</div><div class="muted">${escapeHtml(context.adapter || '')}</div></div>
+          <div class="card"><h2>Dependents</h2><div class="metric">${escapeHtml(dependents.dependent_count || (dependents.dependents || []).length || 0)}</div><div class="muted">related files</div></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h2>File Summary</h2><pre>${escapeHtml(JSON.stringify(fileSummary, null, 2))}</pre></div>
+        <div class="card" style="margin-top:12px"><h2>Editing Context</h2><pre>${escapeHtml(JSON.stringify(context, null, 2))}</pre></div>
+      </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastCodeCortex', 'BEAST Code Cortex', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+    panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
+}
+
+async function showPolicyGate() {
+    if (currentPlan && !currentScorecard) {
+        await scoreCurrentPlan({ quiet: true });
+    }
+    const policy = currentScorecard?.policy_gate_result || currentScorecard?.source_workbench?.policy_decision || lastIdeSnapshot?.policy || {};
+    const mode = lastIdeSnapshot?.policy?.mode_route || currentScorecard?.mode_route || {};
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero"><h1>Policy Gate</h1><div class="muted">One decision surface for mode, SourcePlan, safety, and ADR state.</div></div>
+        <div class="grid">
+          <div class="card"><h2>Decision</h2><div class="cyan">${escapeHtml(policy.decision || mode.decision || 'not scored')}</div><div class="muted">approval ${policy.approval_required ? 'required' : 'not required'}</div></div>
+          <div class="card"><h2>Mode</h2><div class="cyan">${escapeHtml(mode.selected_mode || mode.mode || 'unknown')}</div><div class="muted">${escapeHtml(mode.why || '')}</div></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h2>Policy Details</h2><pre>${escapeHtml(JSON.stringify({ policy, mode, architecture: lastIdeSnapshot?.policy?.architecture_decisions || {} }, null, 2))}</pre></div>
+      </div></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastPolicyGate', 'BEAST Policy Gate', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+}
+
+async function showWorktrees() {
+    const result = await callMcpTool('beast_worktree_list', { workspace_root: workspaceFolderPath() });
+    const data = actionData(result);
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero"><h1>Worktrees</h1><div class="muted">Isolated BEAST missions and promotion surfaces.</div>
+          <div class="row" style="margin-top:10px"><button data-command="createWorktreeMission">Create Worktree</button></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h2>Worktree Registry</h2><pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
+      </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastWorktrees', 'BEAST Worktrees', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+    panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
+}
+
 async function createWorktreeMission() {
     const objective = await promptObjective(activeObjective());
     if (!objective) {
@@ -757,6 +968,57 @@ async function createWorktreeMission() {
         provider: await promptProvider(),
     });
     await showVirtualDocument('BEAST-Worktree-Mission.json', 'json', JSON.stringify(result, null, 2));
+}
+
+async function startIdeEventBus(provider) {
+    await ensureGateway();
+    if (ideEventAbort) {
+        ideEventAbort.abort();
+    }
+    ideEventAbort = new AbortController();
+    latestIdeEvents = { connected: true, startedAt: Date.now() };
+    if (provider) provider.refresh();
+    const params = new URLSearchParams();
+    const root = workspaceFolderPath();
+    const file = activeContextFiles()[0] || '';
+    if (root) params.set('root_path', root);
+    if (file) params.set('active_file', file);
+    params.set('objective', activeObjective());
+    fetch(`${gatewayUrl()}/edgek/ide/events?${params.toString()}`, { signal: ideEventAbort.signal })
+        .then(async response => {
+            if (!response.ok || !response.body) {
+                throw new Error(`${response.status} ${response.statusText}`);
+            }
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const chunks = buffer.split('\n\n');
+                buffer = chunks.pop() || '';
+                for (const chunk of chunks) {
+                    const line = chunk.split('\n').find(item => item.startsWith('data: '));
+                    if (!line) continue;
+                    const event = JSON.parse(line.slice(6));
+                    latestIdeEvents[event.event_type] = event;
+                    latestIdeEvents.connected = true;
+                    if (event.event_type === 'policy' || event.event_type === 'context') {
+                        updateBeastDiagnostics();
+                    }
+                    if (provider) provider.refresh();
+                }
+            }
+        })
+        .catch(error => {
+            if (error.name !== 'AbortError') {
+                latestIdeEvents = { ...latestIdeEvents, connected: false, error: error.message };
+                if (provider) provider.refresh();
+                vscode.window.showWarningMessage(`BEAST live event bus stopped: ${error.message}`);
+            }
+        });
+    vscode.window.showInformationMessage('BEAST IDE live event bus connected.');
 }
 
 async function replayLatticeCandidate() {
@@ -785,6 +1047,21 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     }
     if (command === 'showEvidence') {
         return showEvidence();
+    }
+    if (command === 'showCodeCortex') {
+        return showCodeCortex();
+    }
+    if (command === 'showPolicyGate') {
+        return showPolicyGate();
+    }
+    if (command === 'showWorktrees') {
+        return showWorktrees();
+    }
+    if (command === 'startIdeEventBus') {
+        return startIdeEventBus(ideEventProvider);
+    }
+    if (command === 'jumpRelatedContext') {
+        return jumpRelatedContext();
     }
     if (command === 'createWorktreeMission') {
         return createWorktreeMission();
@@ -847,6 +1124,7 @@ async function applySelectedHunks() {
     currentPreview = null;
     currentScorecard = null;
     saveIdeSession();
+    updateBeastDiagnostics();
     updateSourceWorkbenchHtml();
     vscode.window.showInformationMessage(result.summary || 'BEAST apply completed');
     await runMaintenanceCascade({ showReport: false });
@@ -981,6 +1259,8 @@ function activate(context) {
     const chronicleProvider = new ChronicleProvider();
     const routeFitnessProvider = new RouteFitnessProvider();
     const ideProvider = new BeastIdeProvider();
+    ideEventProvider = ideProvider;
+    beastDiagnostics = vscode.languages.createDiagnosticCollection('BEAST');
     vscode.window.registerTreeDataProvider('beastStatus', statusProvider);
     vscode.window.registerTreeDataProvider('beastDashboard', ideProvider);
     vscode.window.registerTreeDataProvider('beastChronicle', chronicleProvider);
@@ -995,7 +1275,7 @@ function activate(context) {
                     beastCommand(),
                     ['mcp', '--workspace', folder || '.'],
                     { BEAST_WORKSPACE: folder || '.' },
-                    '1.4.0',
+                    '1.5.0',
                 )
             ];
         },
@@ -1029,6 +1309,11 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.selectAllHunks', () => setAllSourceOperations(true)),
         vscode.commands.registerCommand('edgekBeast.clearHunks', () => setAllSourceOperations(false)),
         vscode.commands.registerCommand('edgekBeast.showEvidence', showEvidence),
+        vscode.commands.registerCommand('edgekBeast.showCodeCortex', showCodeCortex),
+        vscode.commands.registerCommand('edgekBeast.showPolicyGate', showPolicyGate),
+        vscode.commands.registerCommand('edgekBeast.showWorktrees', showWorktrees),
+        vscode.commands.registerCommand('edgekBeast.startIdeEventBus', () => startIdeEventBus(ideProvider)),
+        vscode.commands.registerCommand('edgekBeast.jumpRelatedContext', jumpRelatedContext),
         vscode.commands.registerCommand('edgekBeast.createWorktreeMission', createWorktreeMission),
         vscode.commands.registerCommand('edgekBeast.replayLatticeCandidate', replayLatticeCandidate),
         vscode.commands.registerCommand('edgekBeast.openChronicleRecord', item => showVirtualDocument('BEAST-Chronicle.json', 'json', JSON.stringify(item, null, 2))),
@@ -1071,12 +1356,21 @@ function activate(context) {
         vscode.window.showInformationMessage('BEAST: workspace changed; MCP definitions will refresh on next agent session.');
     }));
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => applyPreviewDecorations()));
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => applyPreviewDecorations()));
-    context.subscriptions.push(selectedHunkDecoration, skippedHunkDecoration, staleHunkDecoration);
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => {
+        applyPreviewDecorations();
+        updateBeastDiagnostics();
+    }));
+    context.subscriptions.push(vscode.languages.registerCodeLensProvider({ scheme: 'file' }, new BeastCodeLensProvider()));
+    context.subscriptions.push(vscode.languages.registerHoverProvider({ scheme: 'file' }, new BeastHoverProvider()));
+    context.subscriptions.push(selectedHunkDecoration, skippedHunkDecoration, staleHunkDecoration, beastDiagnostics);
     applyPreviewDecorations();
+    updateBeastDiagnostics();
 }
 
 function deactivate() {
+    if (ideEventAbort) {
+        ideEventAbort.abort();
+    }
     saveIdeSession();
 }
 

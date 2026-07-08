@@ -23,6 +23,11 @@ is an operator cockpit, not a bypass around BEAST mutation rules.
 - `BEAST: Select All Source Hunks`
 - `BEAST: Clear Source Hunk Selection`
 - `BEAST: Show Evidence Bus`
+- `BEAST: Show Code Cortex`
+- `BEAST: Show Policy Gate`
+- `BEAST: Show Worktrees`
+- `BEAST: Start Live IDE Event Bus`
+- `BEAST: Jump to Related Tests or Routes`
 - `BEAST: Create Worktree Mission`
 - `BEAST: Scaffold Lattice Replay`
 - `BEAST: Select Provider Role`
@@ -54,6 +59,10 @@ The webview can:
 - Prepare a SourcePlan from the active editor selection.
 - Open the Source Workbench.
 - Show Evidence Bus receipts.
+- Show Code Cortex context, file summary, and dependents.
+- Show the unified Policy Gate state.
+- Show worktree missions.
+- Subscribe to the live BEAST IDE event stream.
 - Create an isolated worktree mission.
 - Scaffold a gated lattice replay candidate.
 
@@ -71,6 +80,23 @@ the active file are decorated in the editor:
 - green ranges are selected for apply;
 - muted ranges are skipped;
 - red ranges are stale and require plan refresh.
+
+## Inline Intelligence
+
+The extension contributes lightweight inline IDE affordances:
+
+- CodeLens actions for SourcePlan from selection, related tests/routes, current
+  hunk selection count, and stale context warnings.
+- Hovers over BEAST-decorated ranges with hunk status and SourcePlan summary.
+- Diagnostics for stale SourcePlan context.
+- `BEAST: Jump to Related Tests or Routes`, powered by Code Cortex dependents.
+
+## Live Event Bus
+
+`BEAST: Start Live IDE Event Bus` connects to `/edgek/ide/events` and listens
+for SourcePlan, policy, evidence, context/index, worktree, and lattice events.
+The IDE remains usable if the stream stops; BEAST falls back to request/response
+commands and snapshot refresh.
 
 ## SourcePlan Flow
 

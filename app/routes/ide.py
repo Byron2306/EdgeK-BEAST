@@ -7,10 +7,14 @@ Code Cortex, Evidence Bus, and ADR state by hand.
 
 from __future__ import annotations
 
+import asyncio
+import json
+import time
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 
 from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
 from app.kernel.evidence.evidence_bus import EvidenceBus
@@ -84,5 +88,60 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 "edgekBeast.replayLatticeCandidate",
             ],
         }
+
+    def _event(event_type: str, payload: dict[str, Any]) -> str:
+        data = {
+            "beast_object_type": "beast_ide_event",
+            "version": "1.0",
+            "event_type": event_type,
+            "created_at": int(time.time()),
+            "payload": payload,
+        }
+        return f"event: {event_type}\ndata: {json.dumps(data, sort_keys=True)}\n\n"
+
+    @router.get("/edgek/ide/events")
+    async def edgek_ide_events(
+        root_path: str = None,
+        active_file: str = "",
+        objective: str = "",
+        phase: str = "scout",
+        risk: str = "",
+        interval: float = 2.0,
+        once: bool = False,
+    ):
+        async def generate():
+            root = _root(root_path)
+            query = objective or active_file or "BEAST IDE mission"
+            last_payloads: dict[str, str] = {}
+            while True:
+                cockpit = MissionCockpit(root).summary(objective=query, phase=phase, risk=risk)
+                code_cortex = code_cortex_router.get_editing_context(root, query, limit=12)
+                if isinstance(code_cortex, dict):
+                    code_cortex = {"front_door": "code_cortex", **code_cortex}
+                evidence = EvidenceBus(root).summary(limit=12)
+                lattice = MissionCrystalLattice(root).summary(limit=8)
+                policy = {
+                    "mode_route": cockpit.get("mode_route") if isinstance(cockpit.get("mode_route"), dict) else {},
+                    "reintegration_health": cockpit.get("reintegration_health") if isinstance(cockpit.get("reintegration_health"), dict) else {},
+                    "architecture_decisions": architecture_decision_register(),
+                }
+                events = {
+                    "sourceplan": {"queue": cockpit.get("sourceplan_queue") or []},
+                    "policy": policy,
+                    "evidence": evidence,
+                    "context": {"active_file": active_file, "objective": query, "code_cortex": code_cortex},
+                    "worktree": cockpit.get("worktrees") if isinstance(cockpit.get("worktrees"), dict) else {},
+                    "lattice": lattice,
+                }
+                for event_type, payload in events.items():
+                    encoded = json.dumps(payload, sort_keys=True, default=str)
+                    if once or last_payloads.get(event_type) != encoded:
+                        last_payloads[event_type] = encoded
+                        yield _event(event_type, payload)
+                if once:
+                    break
+                await asyncio.sleep(max(0.5, min(float(interval), 30.0)))
+
+        return StreamingResponse(generate(), media_type="text/event-stream")
 
     return router
