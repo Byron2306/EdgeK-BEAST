@@ -6,9 +6,11 @@ const { execFile } = require('child_process');
 const DEFAULT_PROXY = 'http://127.0.0.1:8000';
 
 let currentPlan = null;
+let currentScorecard = null;
 let lastChronicles = [];
 let lastFitness = [];
 let lastMaintenance = null;
+let lastIdeSnapshot = null;
 
 function config() {
     return vscode.workspace.getConfiguration('edgekBeast');
@@ -200,6 +202,170 @@ class RouteFitnessProvider {
     }
 }
 
+class BeastIdeProvider {
+    constructor() {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
+    refresh() { this._onDidChangeTreeData.fire(); }
+    getTreeItem(element) { return element; }
+    getChildren(element) {
+        const snap = lastIdeSnapshot;
+        if (!snap) {
+            const item = new vscode.TreeItem('Open Mission Control', vscode.TreeItemCollapsibleState.None);
+            item.description = 'Phase 1 IDE shell';
+            item.command = { command: 'edgekBeast.openMissionControl', title: 'Open Mission Control' };
+            return [item];
+        }
+        if (!element) {
+            return [
+                this.section('Mission', `${snap.mission_cockpit?.cards?.length || 0} cards`, 'edgekBeast.openMissionControl'),
+                this.section('SourcePlans', `${snap.sourceplan_queue?.length || 0} queued`, 'edgekBeast.openSourceWorkbench'),
+                this.section('Evidence', `${snap.evidence_bus?.total || snap.evidence_bus?.count || 0} receipts`, 'edgekBeast.showEvidence'),
+                this.section('Code Cortex', snap.code_cortex?.adapter || snap.code_cortex?.front_door || 'ready', 'edgekBeast.refreshIdeSnapshot'),
+                this.section('Lattice', `${snap.mission_lattice?.cell_count || 0} cells`, 'edgekBeast.replayLatticeCandidate'),
+            ];
+        }
+        return [];
+    }
+    section(label, description, command) {
+        const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
+        item.description = description;
+        item.tooltip = description;
+        item.command = { command, title: label };
+        return item;
+    }
+}
+
+function activeObjective() {
+    const editor = vscode.window.activeTextEditor;
+    const selection = editor && !editor.selection.isEmpty ? editor.document.getText(editor.selection).trim() : '';
+    const rel = editor ? workspaceRelative(editor.document.uri.fsPath) : '';
+    if (selection) {
+        return `Update selected code in ${rel}: ${selection.slice(0, 160)}`;
+    }
+    return rel ? `Work on ${rel}` : 'BEAST IDE mission';
+}
+
+async function refreshIdeSnapshot(provider, { quiet = false } = {}) {
+    await ensureGateway();
+    const params = new URLSearchParams();
+    const root = workspaceFolderPath();
+    const files = activeContextFiles();
+    if (root) params.set('root_path', root);
+    if (files[0]) params.set('active_file', files[0]);
+    params.set('objective', activeObjective());
+    const snapshot = await getJson(`/edgek/ide/snapshot?${params.toString()}`);
+    lastIdeSnapshot = snapshot;
+    if (provider) {
+        provider.refresh();
+    }
+    if (!quiet) {
+        vscode.window.showInformationMessage('BEAST IDE snapshot refreshed.');
+    }
+    return snapshot;
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function tuiCss() {
+    return `
+        body { background:#050607; color:#d7fbe8; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; padding:18px; }
+        .shell { max-width: 1180px; margin:0 auto; }
+        .hero { border:1px solid #1f3a3d; background:#071012; padding:16px; box-shadow:0 0 24px rgba(51,246,255,.08); }
+        h1 { color:#a6ff3f; font-size:22px; margin:0 0 6px; letter-spacing:0; }
+        h2 { color:#33f6ff; font-size:14px; margin:0 0 10px; }
+        .muted { color:#7a8c8d; }
+        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:12px; }
+        .card { border:1px solid #1f3a3d; background:#0b1113; padding:12px; border-radius:6px; min-height:82px; }
+        .metric { color:#a6ff3f; font-size:24px; font-weight:700; }
+        .warn { color:#ffd166; }
+        .danger { color:#ff4d6d; }
+        .cyan { color:#33f6ff; }
+        pre { white-space:pre-wrap; background:#030506; border:1px solid #1f3a3d; padding:12px; overflow:auto; }
+        button { background:#0b1113; color:#d7fbe8; border:1px solid #33f6ff; padding:7px 10px; border-radius:4px; margin:3px 5px 3px 0; cursor:pointer; }
+        button:hover { color:#050607; background:#a6ff3f; border-color:#a6ff3f; }
+        .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+        .pill { border:1px solid #1f3a3d; padding:3px 7px; border-radius:999px; color:#33f6ff; }
+        ul { padding-left:18px; }
+    `;
+}
+
+function missionControlHtml(snapshot) {
+    const cards = snapshot?.mission_cockpit?.cards || [];
+    const queue = snapshot?.sourceplan_queue || [];
+    const evidence = snapshot?.evidence_bus || {};
+    const lattice = snapshot?.mission_lattice || {};
+    const mode = snapshot?.policy?.mode_route?.selected_mode || 'scout';
+    const actionScript = `
+        const vscode = acquireVsCodeApi();
+        document.querySelectorAll('[data-command]').forEach(button => {
+            button.addEventListener('click', () => vscode.postMessage({ command: button.dataset.command }));
+        });
+    `;
+    return `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+    <div class="shell">
+      <div class="hero">
+        <h1>BEAST Mission Control</h1>
+        <div class="muted">Phase 1 VS Code shell · TUI look and feel · ${escapeHtml(snapshot?.workspace_root || '')}</div>
+        <div class="row">
+          <span class="pill">mode ${escapeHtml(mode)}</span>
+          <span class="pill">Code Cortex ${escapeHtml(snapshot?.code_cortex?.front_door || 'code_cortex')}</span>
+          <span class="pill">ADR ${escapeHtml(snapshot?.policy?.architecture_decisions?.status || 'accepted_implemented')}</span>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button data-command="sourcePlanFromSelection">SourcePlan from Selection</button>
+          <button data-command="openSourceWorkbench">Source Workbench</button>
+          <button data-command="showEvidence">Evidence</button>
+          <button data-command="createWorktreeMission">Create Worktree</button>
+          <button data-command="replayLatticeCandidate">Replay Lattice</button>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card"><h2>SourcePlans</h2><div class="metric">${queue.length}</div><div class="muted">queued plans</div></div>
+        <div class="card"><h2>Evidence</h2><div class="metric">${evidence.total || evidence.count || 0}</div><div class="muted">indexed receipts</div></div>
+        <div class="card"><h2>Lattice</h2><div class="metric">${lattice.cell_count || 0}</div><div class="muted">verified edit cells</div></div>
+        <div class="card"><h2>Worktrees</h2><div class="metric">${snapshot?.worktrees?.count || 0}</div><div class="muted">mission sandboxes</div></div>
+      </div>
+      <div class="grid">
+        ${cards.slice(0, 12).map(card => `<div class="card"><h2>${escapeHtml(card.title || card.card_id)}</h2><div class="cyan">${escapeHtml(card.value ?? card.status ?? '')}</div><div class="muted">${escapeHtml(card.detail || card.summary || '')}</div></div>`).join('')}
+      </div>
+      <div class="card" style="margin-top:12px"><h2>SourcePlan Queue</h2>
+        ${queue.length ? `<ul>${queue.slice(0, 8).map(plan => `<li><span class="cyan">${escapeHtml(plan.plan_id || 'plan')}</span> <span class="muted">${escapeHtml(plan.status || '')}</span></li>`).join('')}</ul>` : '<div class="muted">No queued SourcePlans yet.</div>'}
+      </div>
+    </div><script>${actionScript}</script></body></html>`;
+}
+
+function sourceWorkbenchHtml(plan, scorecard) {
+    const workbench = scorecard?.source_workbench || {};
+    const policy = workbench.policy_decision || {};
+    const replay = workbench.lattice_replay || {};
+    const tests = workbench.verification?.suggested_tests || scorecard?.suggested_tests || [];
+    return `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+    <div class="shell">
+      <div class="hero">
+        <h1>Source Workbench</h1>
+        <div class="muted">${escapeHtml(plan?.plan_id || 'draft')} · ${escapeHtml(plan?.objective || '')}</div>
+        <div class="row"><span class="pill">risk ${escapeHtml(scorecard?.risk_level || 'unknown')}</span><span class="pill">decision ${escapeHtml(scorecard?.decision || '')}</span><span class="pill">policy ${escapeHtml(policy.decision || '')}</span></div>
+        <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
+      </div>
+      <div class="grid">
+        <div class="card"><h2>Policy Gate</h2><div class="${policy.approval_required ? 'warn' : 'cyan'}">${escapeHtml(policy.decision || 'unknown')}</div><div class="muted">approval ${policy.approval_required ? 'required' : 'not required'} · verify ${policy.verification_required !== false}</div></div>
+        <div class="card"><h2>Lattice Replay</h2><div class="${replay.visible ? 'cyan' : 'muted'}">${escapeHtml(replay.reuse_mode || 'none')}</div><div class="muted">strength ${escapeHtml(replay.match_strength || 0)}</div></div>
+        <div class="card"><h2>Rollback</h2><div class="cyan">${workbench.rollback?.required ? 'required' : 'not required'}</div><div class="muted">worktree ${workbench.rollback?.worktree_recommended ? 'recommended' : 'optional'}</div></div>
+      </div>
+      <div class="card" style="margin-top:12px"><h2>Suggested Tests</h2>${tests.length ? `<ul>${tests.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : '<div class="muted">No targeted tests suggested yet.</div>'}</div>
+      <div class="card" style="margin-top:12px"><h2>Raw Scorecard</h2><pre>${escapeHtml(JSON.stringify(scorecard || {}, null, 2))}</pre></div>
+    </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
+}
+
 async function runMaintenanceCascade({ showReport = true } = {}) {
     const result = await callMcpTool('beast_run_maintenance_cascade', {
         workspace_root: workspaceFolderPath(),
@@ -279,6 +445,162 @@ async function prepareSourcePlan() {
     }
     currentPlan = actionData(result);
     vscode.window.showInformationMessage(`BEAST SourcePlan ready: ${result.summary || currentPlan.plan_id || 'draft'}`);
+}
+
+async function sourcePlanFromSelection() {
+    const objective = await promptObjective(activeObjective());
+    if (!objective) {
+        return;
+    }
+    const files = activeContextFiles();
+    if (!files.length) {
+        vscode.window.showWarningMessage('BEAST: open a workspace file before preparing a SourcePlan.');
+        return;
+    }
+    const provider = await promptProvider();
+    const result = await callMcpTool('beast_sourceplan_prepare', { objective, files, provider });
+    if (!result.ok) {
+        vscode.window.showWarningMessage(`BEAST SourcePlan failed: ${result.error || result.summary || 'unknown error'}`);
+        return;
+    }
+    currentPlan = actionData(result);
+    currentScorecard = null;
+    vscode.window.showInformationMessage(`BEAST SourcePlan ready: ${result.summary || currentPlan.plan_id || 'draft'}`);
+    await scoreCurrentPlan({ quiet: true });
+    await openSourceWorkbench();
+}
+
+async function scoreCurrentPlan({ quiet = false } = {}) {
+    if (!currentPlan) {
+        vscode.window.showWarningMessage('BEAST: prepare a SourcePlan before scoring.');
+        return null;
+    }
+    const result = await callMcpTool('beast_sourceplan_scorecard', {
+        workspace_root: workspaceFolderPath(),
+        plan: currentPlan,
+    });
+    if (!result.ok) {
+        vscode.window.showWarningMessage(`BEAST scorecard failed: ${result.error || result.summary || 'unknown error'}`);
+        return null;
+    }
+    currentScorecard = actionData(result);
+    if (!quiet) {
+        vscode.window.showInformationMessage(`BEAST scorecard ready: ${currentScorecard.decision || currentScorecard.risk_level || 'review'}`);
+    }
+    return currentScorecard;
+}
+
+async function openMissionControl(ideProvider) {
+    const snapshot = await refreshIdeSnapshot(ideProvider, { quiet: true });
+    const panel = vscode.window.createWebviewPanel(
+        'beastMissionControl',
+        'BEAST Mission Control',
+        vscode.ViewColumn.Beside,
+        { enableScripts: true },
+    );
+    panel.webview.html = missionControlHtml(snapshot);
+    panel.webview.onDidReceiveMessage(async message => {
+        await handleIdeWebviewCommand(message.command, ideProvider);
+    });
+}
+
+async function openSourceWorkbench() {
+    if (!currentPlan) {
+        await sourcePlanFromSelection();
+        return;
+    }
+    if (!currentScorecard) {
+        await scoreCurrentPlan({ quiet: true });
+    }
+    const panel = vscode.window.createWebviewPanel(
+        'beastSourceWorkbench',
+        'BEAST Source Workbench',
+        vscode.ViewColumn.Beside,
+        { enableScripts: true },
+    );
+    panel.webview.html = sourceWorkbenchHtml(currentPlan, currentScorecard || {});
+    panel.webview.onDidReceiveMessage(async message => {
+        await handleIdeWebviewCommand(message.command);
+    });
+}
+
+async function showEvidence() {
+    const root = workspaceFolderPath();
+    const params = new URLSearchParams();
+    if (root) {
+        params.set('root_path', root);
+    }
+    params.set('limit', '30');
+    const data = await getJson(`/edgek/evidence-bus/summary?${params.toString()}`);
+    const rows = data.items || data.receipts || data.records || data.recent || [];
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero"><h1>Evidence Bus</h1><div class="muted">${escapeHtml(root || 'workspace')} · ${escapeHtml(data.total || data.count || rows.length)} receipt(s)</div></div>
+        <div class="card" style="margin-top:12px"><h2>Recent Receipts</h2>
+          ${rows.length ? rows.slice(0, 30).map(item => `<pre>${escapeHtml(JSON.stringify(item, null, 2))}</pre>`).join('') : '<div class="muted">No evidence receipts returned by the gateway.</div>'}
+        </div>
+      </div></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastEvidenceBus', 'BEAST Evidence Bus', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+}
+
+async function createWorktreeMission() {
+    const objective = await promptObjective(activeObjective());
+    if (!objective) {
+        return;
+    }
+    const result = await callMcpTool('beast_worktree_create', {
+        workspace_root: workspaceFolderPath(),
+        objective,
+        risk: 'medium',
+        mode: 'implementer',
+        provider: await promptProvider(),
+    });
+    await showVirtualDocument('BEAST-Worktree-Mission.json', 'json', JSON.stringify(result, null, 2));
+}
+
+async function replayLatticeCandidate() {
+    if (!currentPlan) {
+        vscode.window.showWarningMessage('BEAST: prepare a SourcePlan before scaffolding lattice replay.');
+        return;
+    }
+    if (!currentScorecard) {
+        await scoreCurrentPlan({ quiet: true });
+    }
+    const result = await callMcpTool('beast_mission_lattice_replay_scaffold', {
+        workspace_root: workspaceFolderPath(),
+        plan: currentPlan,
+        scorecard: currentScorecard || {},
+    });
+    await showVirtualDocument('BEAST-Lattice-Replay.json', 'json', JSON.stringify(result, null, 2));
+}
+
+async function handleIdeWebviewCommand(command, ideProvider) {
+    if (command === 'sourcePlanFromSelection') {
+        return sourcePlanFromSelection();
+    }
+    if (command === 'openSourceWorkbench') {
+        return openSourceWorkbench();
+    }
+    if (command === 'showEvidence') {
+        return showEvidence();
+    }
+    if (command === 'createWorktreeMission') {
+        return createWorktreeMission();
+    }
+    if (command === 'replayLatticeCandidate') {
+        return replayLatticeCandidate();
+    }
+    if (command === 'previewHunks') {
+        return previewHunks();
+    }
+    if (command === 'applySelectedHunks') {
+        return applySelectedHunks();
+    }
+    if (command === 'refreshIdeSnapshot') {
+        return refreshIdeSnapshot(ideProvider);
+    }
+    return undefined;
 }
 
 async function previewHunks() {
@@ -442,7 +764,9 @@ function activate(context) {
     const statusProvider = new BeastStatusProvider();
     const chronicleProvider = new ChronicleProvider();
     const routeFitnessProvider = new RouteFitnessProvider();
+    const ideProvider = new BeastIdeProvider();
     vscode.window.registerTreeDataProvider('beastStatus', statusProvider);
+    vscode.window.registerTreeDataProvider('beastDashboard', ideProvider);
     vscode.window.registerTreeDataProvider('beastChronicle', chronicleProvider);
     vscode.window.registerTreeDataProvider('beastRouteFitness', routeFitnessProvider);
 
@@ -455,7 +779,7 @@ function activate(context) {
                     beastCommand(),
                     ['mcp', '--workspace', folder || '.'],
                     { BEAST_WORKSPACE: folder || '.' },
-                    '1.2.0',
+                    '1.3.0',
                 )
             ];
         },
@@ -481,13 +805,19 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.refreshRouteFitness', () => refreshRouteFitness(routeFitnessProvider)),
         vscode.commands.registerCommand('edgekBeast.runMaintenance', () => runMaintenanceCascade({ showReport: true })),
         vscode.commands.registerCommand('edgekBeast.openMaintenanceReport', openMaintenanceReport),
+        vscode.commands.registerCommand('edgekBeast.refreshIdeSnapshot', () => refreshIdeSnapshot(ideProvider)),
+        vscode.commands.registerCommand('edgekBeast.openMissionControl', () => openMissionControl(ideProvider)),
+        vscode.commands.registerCommand('edgekBeast.sourcePlanFromSelection', sourcePlanFromSelection),
+        vscode.commands.registerCommand('edgekBeast.scoreCurrentPlan', () => scoreCurrentPlan()),
+        vscode.commands.registerCommand('edgekBeast.openSourceWorkbench', openSourceWorkbench),
+        vscode.commands.registerCommand('edgekBeast.showEvidence', showEvidence),
+        vscode.commands.registerCommand('edgekBeast.createWorktreeMission', createWorktreeMission),
+        vscode.commands.registerCommand('edgekBeast.replayLatticeCandidate', replayLatticeCandidate),
         vscode.commands.registerCommand('edgekBeast.openChronicleRecord', item => showVirtualDocument('BEAST-Chronicle.json', 'json', JSON.stringify(item, null, 2))),
         vscode.commands.registerCommand('edgekBeast.prepareHandoff', async () => {
             vscode.window.showInformationMessage('BEAST: use beast_prepare_handoff or beast_sourceplan_prepare from MCP agent mode.');
         }),
-        vscode.commands.registerCommand('edgekBeast.openDashboard', async () => {
-            await vscode.env.openExternal(vscode.Uri.parse(`${gatewayUrl()}/`));
-        }),
+        vscode.commands.registerCommand('edgekBeast.openDashboard', () => openMissionControl(ideProvider)),
         vscode.commands.registerCommand('edgekBeast.configureGateway', async () => {
             const cwd = workspaceFolderPath();
             const terminal = beastTerminal(cwd);
@@ -514,7 +844,7 @@ function activate(context) {
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBarItem.text = '$(pulse) BEAST';
     statusBarItem.tooltip = 'EdgeK BEAST Mission Control';
-    statusBarItem.command = 'edgekBeast.openDashboard';
+    statusBarItem.command = 'edgekBeast.openMissionControl';
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
 

@@ -1668,6 +1668,37 @@ or use the command palette to see modes, worktrees, risk, safety, compute,
 Code Cortex, SourcePlan queue, evidence, and blocked states before approving
 the next action.
 
+### Full IDE Phase 1: VS Code Shell With TUI Look
+
+Status: **In progress / first slice implemented.**
+
+BEAST's first full IDE step is not a separate editor rewrite. It is a VS Code
+operator shell that preserves the BEAST TUI visual language while placing the
+governed workflow beside the code:
+
+- `/edgek/ide/snapshot` now provides a presentation-friendly IDE contract over
+  Mission Cockpit, Code Cortex, Evidence Bus, Mission Lattice, worktrees, and
+  ADR state.
+- The VS Code extension registers a `Mission Control` view backed by that
+  snapshot instead of manually rebuilding cockpit state.
+- `BEAST: Open Mission Control` opens an in-editor webview using the TUI
+  palette, compact cards, explicit operator actions, and the same
+  governance-first flow.
+- `BEAST: SourcePlan from Selection` turns the current editor selection into a
+  governed SourcePlan objective, then opens the Source Workbench.
+- `BEAST: Open Source Workbench` shows policy gate decision, risk, lattice
+  replay status, rollback/worktree recommendation, and suggested verification
+  before preview/apply.
+- `BEAST: Show Evidence Bus`, `BEAST: Create Worktree Mission`, and
+  `BEAST: Scaffold Lattice Replay` expose the newly integrated BEAST layers
+  directly from the IDE.
+
+Next IDE slices should add real diff decoration inside editor buffers,
+clickable hunk selection, persistent SourcePlan sessions, a file explorer
+overlay from Code Cortex, and end-to-end VS Code extension tests. The principle
+stays the same: IDE ergonomics improve, but SourcePlan and policy receipts stay
+the mutation authority.
+
 ## Phased Roadmap
 
 ### Phase 0: Stabilize Current SourcePlan Loop
@@ -2483,6 +2514,9 @@ The upgrade is successful when an operator can:
     crystal, and Commons evidence pointers.
 22. See reintegration health in the Mission Cockpit, including orphaned route
     families, duplicate shim imports, and engines not feeding canonical owners.
+23. Use a VS Code Mission Control shell that preserves the BEAST TUI look while
+    exposing SourcePlan, Evidence Bus, lattice replay, worktrees, Code Cortex,
+    and policy state beside the active code editor.
 
 At that point BEAST will have absorbed Gortex's best developer-loop lessons and
 the strongest adjacent agentic IDE/workspace orchestration patterns without

@@ -201,6 +201,32 @@ async def test_modular_sourceplan_compute_workspace_commons_routes_are_mounted(t
     assert commons.status_code == 200
 
 
+@pytest.mark.asyncio
+async def test_ide_snapshot_is_phase_one_vscode_shell_contract(tmp_path):
+    (tmp_path / "service.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(
+            "/edgek/ide/snapshot",
+            params={
+                "root_path": str(tmp_path),
+                "active_file": "service.py",
+                "objective": "Repair service value",
+            },
+        )
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["beast_object_type"] == "beast_ide_snapshot"
+    assert payload["phase"] == "phase_1_vscode_shell"
+    assert payload["look_and_feel"]["source"] == "beast_tui"
+    assert payload["mission_cockpit"]["beast_object_type"] == "beast_mission_cockpit_summary"
+    assert payload["code_cortex"]["front_door"] == "code_cortex"
+    assert payload["policy"]["architecture_decisions"]["decision_count"] == 8
+    assert "edgekBeast.openSourceWorkbench" in payload["operator_actions"]
+
+
 def test_modularized_routes_are_not_active_duplicates():
     seen = {}
     duplicates = []

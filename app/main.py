@@ -132,6 +132,7 @@ from app.kernel.networking.commons_prototype import CommonsCrystalPromoter, Firs
 from app.routes.cockpit import build_cockpit_router
 from app.routes.commons import build_commons_router
 from app.routes.compute import build_compute_router
+from app.routes.ide import build_ide_router
 from app.routes.policy import build_policy_router
 from app.routes.sourceplan import build_sourceplan_router
 from app.routes.workspace import build_workspace_router
@@ -429,6 +430,7 @@ app.include_router(build_commons_router(
 ))
 app.include_router(build_cockpit_router(Path(__file__).resolve().parents[1]))
 app.include_router(build_policy_router(Path(__file__).resolve().parents[1], mode_router))
+app.include_router(build_ide_router(Path(__file__).resolve().parents[1], code_cortex_router=code_cortex_router))
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 cli_assets_dir = Path(__file__).parent / "cli" / "assets"

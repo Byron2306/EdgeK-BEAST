@@ -1,8 +1,8 @@
 {
   "name": "edgek-beast",
   "displayName": "EdgeK BEAST",
-  "description": "EdgeK BEAST VS Code integration for SourcePlan, MCP governance, Chronicle, and provider fitness",
-  "version": "1.2.0",
+  "description": "EdgeK BEAST IDE shell for Mission Control, SourcePlan, Evidence Bus, MCP governance, Chronicle, and provider fitness",
+  "version": "1.3.0",
   "publisher": "edgek",
   "icon": "media/beast-icon-source.png",
   "engines": {
@@ -28,6 +28,14 @@
       { "command": "edgekBeast.refreshRouteFitness", "title": "BEAST: Refresh Route Fitness" },
       { "command": "edgekBeast.runMaintenance", "title": "BEAST: Run Maintenance Cascade" },
       { "command": "edgekBeast.openMaintenanceReport", "title": "BEAST: Open Maintenance Report" },
+      { "command": "edgekBeast.refreshIdeSnapshot", "title": "BEAST: Refresh IDE Snapshot" },
+      { "command": "edgekBeast.openMissionControl", "title": "BEAST: Open Mission Control" },
+      { "command": "edgekBeast.sourcePlanFromSelection", "title": "BEAST: SourcePlan from Selection" },
+      { "command": "edgekBeast.scoreCurrentPlan", "title": "BEAST: Score Current SourcePlan" },
+      { "command": "edgekBeast.openSourceWorkbench", "title": "BEAST: Open Source Workbench" },
+      { "command": "edgekBeast.showEvidence", "title": "BEAST: Show Evidence Bus" },
+      { "command": "edgekBeast.createWorktreeMission", "title": "BEAST: Create Worktree Mission" },
+      { "command": "edgekBeast.replayLatticeCandidate", "title": "BEAST: Scaffold Lattice Replay" },
       { "command": "edgekBeast.prepareHandoff", "title": "BEAST: Prepare Handoff Packet" },
       { "command": "edgekBeast.openDashboard", "title": "BEAST: Open Mission Control" },
       { "command": "edgekBeast.configureGateway", "title": "BEAST: Configure Integrated Terminal Gateway" },
@@ -57,7 +65,7 @@
         },
         {
           "id": "beastDashboard",
-          "name": "BEAST Dashboard"
+          "name": "Mission Control"
         },
         {
           "id": "beastChronicle",
