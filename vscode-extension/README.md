@@ -5,6 +5,10 @@ terminal-native look of the BEAST TUI while bringing Mission Control, governed
 SourcePlan editing, Evidence Bus lookup, lattice replay scaffolding, worktree
 missions, MCP governance, Chronicle, and provider fitness into VS Code.
 
+The VSIX uses the little BEAST dragon mascot throughout the IDE panels. The
+marketplace/extension icon is a restrained grey dragon treatment so it fits VS
+Code chrome while still matching the TUI identity.
+
 BEAST remains governance-first: edits still flow through SourcePlan, policy
 gates, verification, rollback, Chronicle, and evidence receipts. The extension
 is an operator cockpit, not a bypass around BEAST mutation rules.

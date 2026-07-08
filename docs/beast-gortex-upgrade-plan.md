@@ -1695,11 +1695,12 @@ governed workflow beside the code:
 - The sidebar and Mission Control now expose Code Cortex, worktree, and unified
   Policy Gate panels as first-class IDE surfaces.
 
-Remaining Phase 1 polish is now mostly VSIX packaging cleanup, richer icons,
-menus, and full extension-host UI automation. A manifest guard test verifies the
-core command surface stays exposed. The principle stays the same: IDE
-ergonomics improve, but SourcePlan and policy receipts stay the mutation
-authority.
+Remaining Phase 1 polish is now mostly menus and full extension-host UI
+automation. VSIX packaging has been cleaned so stale extracted packages are not
+tracked, the extension uses the little BEAST dragon mascot, the marketplace icon
+uses a grey dragon treatment, and a manifest guard test verifies the command and
+asset surface stays exposed. The principle stays the same: IDE ergonomics
+improve, but SourcePlan and policy receipts stay the mutation authority.
 
 ### Full IDE Phase 2: Editor-Native SourcePlan Session
 

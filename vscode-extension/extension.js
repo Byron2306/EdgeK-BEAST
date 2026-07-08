@@ -19,6 +19,7 @@ let ideEventProvider = null;
 let latestIdeEvents = {};
 let beastDiagnostics = null;
 const virtualDocuments = new Map();
+let dragonMascotDataUri = null;
 
 const selectedHunkDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(166, 255, 63, 0.16)',
@@ -346,11 +347,36 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function mascotDataUri() {
+    if (dragonMascotDataUri) {
+        return dragonMascotDataUri;
+    }
+    if (!extensionContext) {
+        return '';
+    }
+    try {
+        const file = path.join(extensionContext.extensionPath, 'media', 'beast-dragon-mascot.png');
+        const encoded = fs.readFileSync(file).toString('base64');
+        dragonMascotDataUri = `data:image/png;base64,${encoded}`;
+    } catch {
+        dragonMascotDataUri = '';
+    }
+    return dragonMascotDataUri;
+}
+
+function mascotHtml(label = 'BEAST dragon mascot') {
+    const src = mascotDataUri();
+    return src ? `<img class="mascot" src="${src}" alt="${escapeHtml(label)}">` : '';
+}
+
 function tuiCss() {
     return `
         body { background:#050607; color:#d7fbe8; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; padding:18px; }
         .shell { max-width: 1180px; margin:0 auto; }
         .hero { border:1px solid #1f3a3d; background:#071012; padding:16px; box-shadow:0 0 24px rgba(51,246,255,.08); }
+        .hero { position:relative; overflow:hidden; }
+        .hero .mascot { position:absolute; right:14px; top:10px; width:112px; max-height:82px; object-fit:contain; opacity:.92; filter: drop-shadow(0 0 10px rgba(166,255,63,.22)); }
+        .hero-content { padding-right:132px; min-height:74px; }
         h1 { color:#a6ff3f; font-size:22px; margin:0 0 6px; letter-spacing:0; }
         h2 { color:#33f6ff; font-size:14px; margin:0 0 10px; }
         .muted { color:#7a8c8d; }
@@ -370,6 +396,7 @@ function tuiCss() {
         .op.skipped { opacity:.72; }
         .op.stale { border-color:#ff4d6d; }
         input[type="checkbox"] { accent-color:#a6ff3f; width:16px; height:16px; }
+        @media (max-width: 720px) { .hero .mascot { position:static; display:block; width:96px; margin:0 0 8px auto; } .hero-content { padding-right:0; } }
         ul { padding-left:18px; }
     `;
 }
@@ -389,6 +416,8 @@ function missionControlHtml(snapshot) {
     return `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
     <div class="shell">
       <div class="hero">
+        ${mascotHtml()}
+        <div class="hero-content">
         <h1>BEAST Mission Control</h1>
         <div class="muted">Phase 1 VS Code shell · TUI look and feel · ${escapeHtml(snapshot?.workspace_root || '')}</div>
         <div class="row">
@@ -406,6 +435,7 @@ function missionControlHtml(snapshot) {
           <button data-command="startIdeEventBus">Live Events</button>
           <button data-command="createWorktreeMission">Create Worktree</button>
           <button data-command="replayLatticeCandidate">Replay Lattice</button>
+        </div>
         </div>
       </div>
       <div class="grid">
@@ -451,10 +481,13 @@ function sourceWorkbenchHtml(plan, scorecard) {
     return `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
     <div class="shell">
       <div class="hero">
+        ${mascotHtml()}
+        <div class="hero-content">
         <h1>Source Workbench</h1>
         <div class="muted">${escapeHtml(plan?.plan_id || 'draft')} · ${escapeHtml(plan?.objective || '')}</div>
         <div class="row"><span class="pill">risk ${escapeHtml(scorecard?.risk_level || 'unknown')}</span><span class="pill">decision ${escapeHtml(scorecard?.decision || '')}</span><span class="pill">policy ${escapeHtml(policy.decision || '')}</span></div>
         <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="openSideBySidePreview">Side-by-Side</button><button data-command="switchSourcePlanSession">Sessions</button><button data-command="selectAllHunks">Select All</button><button data-command="clearHunks">Clear</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
+        </div>
       </div>
       <div class="grid">
         <div class="card"><h2>Selected Hunks</h2><div class="metric">${escapeHtml(selectedCount)}</div><div class="muted">${escapeHtml(sourceOps.length)} source operations · ${escapeHtml(preview.stale_count || 0)} stale</div></div>
@@ -977,7 +1010,7 @@ async function showEvidence() {
     const rows = data.items || data.receipts || data.records || data.recent || [];
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
       <div class="shell">
-        <div class="hero"><h1>Evidence Bus</h1><div class="muted">${escapeHtml(root || 'workspace')} · ${escapeHtml(data.total || data.count || rows.length)} receipt(s)</div></div>
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Evidence Bus</h1><div class="muted">${escapeHtml(root || 'workspace')} · ${escapeHtml(data.total || data.count || rows.length)} receipt(s)</div></div></div>
         <div class="card" style="margin-top:12px"><h2>Recent Receipts</h2>
           ${rows.length ? rows.slice(0, 30).map(item => `<pre>${escapeHtml(JSON.stringify(item, null, 2))}</pre>`).join('') : '<div class="muted">No evidence receipts returned by the gateway.</div>'}
         </div>
@@ -1006,9 +1039,9 @@ async function showCodeCortex() {
     }
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
       <div class="shell">
-        <div class="hero"><h1>Code Cortex</h1><div class="muted">${escapeHtml(file || query)}</div>
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Code Cortex</h1><div class="muted">${escapeHtml(file || query)}</div>
           <div class="row" style="margin-top:10px"><button data-command="jumpRelatedContext">Related Tests/Routes</button><button data-command="sourcePlanFromSelection">SourcePlan from Selection</button></div>
-        </div>
+        </div></div>
         <div class="grid">
           <div class="card"><h2>Front Door</h2><div class="cyan">${escapeHtml(context.front_door || context.context_front_door || 'code_cortex')}</div><div class="muted">${escapeHtml(context.adapter || '')}</div></div>
           <div class="card"><h2>Dependents</h2><div class="metric">${escapeHtml(dependents.dependent_count || (dependents.dependents || []).length || 0)}</div><div class="muted">related files</div></div>
@@ -1029,7 +1062,7 @@ async function showPolicyGate() {
     const mode = lastIdeSnapshot?.policy?.mode_route || currentScorecard?.mode_route || {};
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
       <div class="shell">
-        <div class="hero"><h1>Policy Gate</h1><div class="muted">One decision surface for mode, SourcePlan, safety, and ADR state.</div></div>
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Policy Gate</h1><div class="muted">One decision surface for mode, SourcePlan, safety, and ADR state.</div></div></div>
         <div class="grid">
           <div class="card"><h2>Decision</h2><div class="cyan">${escapeHtml(policy.decision || mode.decision || 'not scored')}</div><div class="muted">approval ${policy.approval_required ? 'required' : 'not required'}</div></div>
           <div class="card"><h2>Mode</h2><div class="cyan">${escapeHtml(mode.selected_mode || mode.mode || 'unknown')}</div><div class="muted">${escapeHtml(mode.why || '')}</div></div>
@@ -1045,9 +1078,9 @@ async function showWorktrees() {
     const data = actionData(result);
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
       <div class="shell">
-        <div class="hero"><h1>Worktrees</h1><div class="muted">Isolated BEAST missions and promotion surfaces.</div>
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Worktrees</h1><div class="muted">Isolated BEAST missions and promotion surfaces.</div>
           <div class="row" style="margin-top:10px"><button data-command="createWorktreeMission">Create Worktree</button></div>
-        </div>
+        </div></div>
         <div class="card" style="margin-top:12px"><h2>Worktree Registry</h2><pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
       </div><script>const vscode = acquireVsCodeApi(); document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command})));</script></body></html>`;
     const panel = vscode.window.createWebviewPanel('beastWorktrees', 'BEAST Worktrees', vscode.ViewColumn.Beside, { enableScripts: true });
@@ -1351,7 +1384,7 @@ function registerBeastChatParticipant(context) {
             stream.markdown(`BEAST route failed: ${error.message}`);
         }
     });
-    participant.iconPath = vscode.Uri.file(path.join(context.extensionPath, 'media', 'beast-icon.svg'));
+    participant.iconPath = vscode.Uri.file(path.join(context.extensionPath, 'media', 'beast-dragon-mascot.png'));
     participant.followupProvider = {
         provideFollowups: () => [
             { prompt: 'Prepare a governed SourcePlan for the active file', label: 'Prepare SourcePlan' },
