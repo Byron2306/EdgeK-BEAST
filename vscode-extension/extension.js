@@ -18,6 +18,7 @@ let ideEventAbort = null;
 let ideEventProvider = null;
 let latestIdeEvents = {};
 let beastDiagnostics = null;
+const virtualDocuments = new Map();
 
 const selectedHunkDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(166, 255, 63, 0.16)',
@@ -171,6 +172,11 @@ function sessionPayload() {
 function saveIdeSession() {
     if (extensionContext) {
         extensionContext.workspaceState.update('edgekBeast.ideSession', sessionPayload());
+        if (currentPlan?.plan_id) {
+            const sessions = extensionContext.workspaceState.get('edgekBeast.planSessions') || {};
+            sessions[currentPlan.plan_id] = sessionPayload();
+            extensionContext.workspaceState.update('edgekBeast.planSessions', sessions);
+        }
     }
 }
 
@@ -187,6 +193,18 @@ async function showVirtualDocument(name, language, content) {
     const editor = await vscode.window.showTextDocument(doc, { preview: true });
     await editor.edit(edit => edit.insert(new vscode.Position(0, 0), content || ''));
     await vscode.languages.setTextDocumentLanguage(doc, language);
+}
+
+class BeastVirtualDocumentProvider {
+    provideTextDocumentContent(uri) {
+        return virtualDocuments.get(uri.toString()) || '';
+    }
+}
+
+function virtualDocumentUri(label, content) {
+    const uri = vscode.Uri.parse(`beast-preview:/${encodeURIComponent(label)}`);
+    virtualDocuments.set(uri.toString(), content || '');
+    return uri;
 }
 
 class BeastStatusProvider {
@@ -436,7 +454,7 @@ function sourceWorkbenchHtml(plan, scorecard) {
         <h1>Source Workbench</h1>
         <div class="muted">${escapeHtml(plan?.plan_id || 'draft')} · ${escapeHtml(plan?.objective || '')}</div>
         <div class="row"><span class="pill">risk ${escapeHtml(scorecard?.risk_level || 'unknown')}</span><span class="pill">decision ${escapeHtml(scorecard?.decision || '')}</span><span class="pill">policy ${escapeHtml(policy.decision || '')}</span></div>
-        <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="selectAllHunks">Select All</button><button data-command="clearHunks">Clear</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
+        <div class="row" style="margin-top:10px"><button data-command="previewHunks">Preview Hunks</button><button data-command="openSideBySidePreview">Side-by-Side</button><button data-command="switchSourcePlanSession">Sessions</button><button data-command="selectAllHunks">Select All</button><button data-command="clearHunks">Clear</button><button data-command="applySelectedHunks">Apply Selected</button><button data-command="showEvidence">Evidence</button><button data-command="replayLatticeCandidate">Replay Lattice</button></div>
       </div>
       <div class="grid">
         <div class="card"><h2>Selected Hunks</h2><div class="metric">${escapeHtml(selectedCount)}</div><div class="muted">${escapeHtml(sourceOps.length)} source operations · ${escapeHtml(preview.stale_count || 0)} stale</div></div>
@@ -717,6 +735,27 @@ function updateBeastDiagnostics() {
     beastDiagnostics.clear();
     for (const document of vscode.workspace.textDocuments) {
         const diagnostics = [];
+        const rel = activeDocumentRelative(document);
+        if (rel && currentScorecard?.risk_level === 'high') {
+            const risk = new vscode.Diagnostic(
+                new vscode.Range(0, 0, 0, document.lineAt(0).text.length),
+                'BEAST high-risk SourcePlan: review Policy Gate and consider worktree isolation before apply.',
+                vscode.DiagnosticSeverity.Information,
+            );
+            risk.source = 'BEAST';
+            risk.code = 'high-risk-sourceplan';
+            diagnostics.push(risk);
+        }
+        if (rel && currentScorecard?.worktree_recommendation?.recommended) {
+            const worktree = new vscode.Diagnostic(
+                new vscode.Range(0, 0, 0, document.lineAt(0).text.length),
+                'BEAST recommends an isolated worktree for this SourcePlan.',
+                vscode.DiagnosticSeverity.Information,
+            );
+            worktree.source = 'BEAST';
+            worktree.code = 'worktree-recommended';
+            diagnostics.push(worktree);
+        }
         for (const op of previewOperationsForDocument(document)) {
             if (!op.stale_reason) {
                 continue;
@@ -749,14 +788,16 @@ class BeastCodeLensProvider {
         const lenses = [
             new vscode.CodeLens(top, { title: 'BEAST: SourcePlan from selection', command: 'edgekBeast.sourcePlanFromSelection' }),
             new vscode.CodeLens(top, { title: 'BEAST: Related tests/routes', command: 'edgekBeast.jumpRelatedContext' }),
+            new vscode.CodeLens(top, { title: 'BEAST: switch plan session', command: 'edgekBeast.switchSourcePlanSession' }),
         ];
         const ops = previewOperationsForDocument(document);
         const selected = ops.filter(op => op.selected).length;
         if (ops.length) {
             lenses.push(new vscode.CodeLens(top, { title: `BEAST: ${selected}/${ops.length} hunks selected`, command: 'edgekBeast.openSourceWorkbench' }));
+            lenses.push(new vscode.CodeLens(top, { title: 'BEAST: side-by-side preview', command: 'edgekBeast.openSideBySidePreview' }));
         }
         if (ops.some(op => op.stale_reason)) {
-            lenses.push(new vscode.CodeLens(top, { title: 'BEAST: stale context warning', command: 'edgekBeast.openSourceWorkbench' }));
+            lenses.push(new vscode.CodeLens(top, { title: 'BEAST: refresh stale preview', command: 'edgekBeast.refreshSourcePlanPreview' }));
         }
         return lenses;
     }
@@ -802,11 +843,13 @@ async function jumpRelatedContext() {
     if (root) params.set('root_path', root);
     params.set('path', file);
     params.set('limit', '80');
-    const data = await getJson(`/edgek/code-cortex/dependents?${params.toString()}`);
-    const raw = data.dependents || data.related_files || data.files || [];
-    const candidates = raw.map(item => typeof item === 'string' ? item : (item.path || item.file || item.dependent || '')).filter(Boolean);
-    const likely = candidates.filter(item => /test|spec|route|api|controller|view|page/i.test(item));
-    const choices = (likely.length ? likely : candidates).slice(0, 40);
+    const data = await getJson(`/edgek/ide/related-context?${params.toString()}`);
+    const candidates = (data.related || []).map(item => ({
+        label: item.path,
+        description: item.relationship_kind || 'related',
+        detail: item.summary || item.reason || '',
+    })).filter(item => item.label);
+    const choices = candidates.slice(0, 40);
     if (!choices.length) {
         await showVirtualDocument('BEAST-Related-Context.json', 'json', JSON.stringify(data, null, 2));
         return;
@@ -818,9 +861,66 @@ async function jumpRelatedContext() {
     if (!picked) {
         return;
     }
-    const full = path.join(workspaceFolderPath(), picked);
+    const full = path.join(workspaceFolderPath(), picked.label);
     const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(full));
     await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+async function openSideBySidePreview() {
+    if (!currentPreview) {
+        await previewCurrentPlan({ quiet: true });
+    }
+    const file = activeContextFiles()[0];
+    const op = (currentPreview?.operations || []).find(item => item.path === file && item.selected)
+        || (currentPreview?.operations || []).find(item => item.path === file)
+        || (currentPreview?.operations || []).find(item => item.source_edit || !item.beast_managed);
+    if (!op) {
+        vscode.window.showWarningMessage('BEAST: no preview operation is available for side-by-side view.');
+        return;
+    }
+    const label = `${op.op_id || 'hunk'}-${path.basename(op.path || 'preview')}`;
+    const oldUri = virtualDocumentUri(`${label}.old`, op.old_text || '');
+    const newUri = virtualDocumentUri(`${label}.new`, op.new_text || op.next_text || '');
+    await vscode.commands.executeCommand('vscode.diff', oldUri, newUri, `BEAST Preview: ${op.path || label}`);
+}
+
+async function switchSourcePlanSession() {
+    const sessions = extensionContext?.workspaceState.get('edgekBeast.planSessions') || {};
+    const choices = Object.entries(sessions).map(([planId, session]) => ({
+        label: planId,
+        description: session?.plan?.objective || '',
+        detail: session?.savedAt ? new Date(session.savedAt).toLocaleString() : '',
+        session,
+    }));
+    if (!choices.length) {
+        vscode.window.showInformationMessage('BEAST: no saved SourcePlan sessions yet.');
+        return;
+    }
+    const picked = await vscode.window.showQuickPick(choices, {
+        title: 'BEAST SourcePlan Sessions',
+        placeHolder: 'Switch active governed edit session',
+    });
+    if (!picked) {
+        return;
+    }
+    currentPlan = picked.session.plan || null;
+    currentScorecard = picked.session.scorecard || null;
+    currentPreview = picked.session.preview || null;
+    applyPreviewDecorations();
+    updateBeastDiagnostics();
+    updateSourceWorkbenchHtml();
+    vscode.window.showInformationMessage(`BEAST SourcePlan session restored: ${picked.label}`);
+}
+
+async function refreshSourcePlanPreview() {
+    if (!currentPlan) {
+        vscode.window.showWarningMessage('BEAST: no active SourcePlan session to refresh.');
+        return;
+    }
+    await scoreCurrentPlan({ quiet: true });
+    await previewCurrentPlan({ quiet: true });
+    updateSourceWorkbenchHtml();
+    vscode.window.showInformationMessage('BEAST SourcePlan scorecard and preview refreshed.');
 }
 
 async function openMissionControl(ideProvider) {
@@ -1063,6 +1163,15 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     if (command === 'jumpRelatedContext') {
         return jumpRelatedContext();
     }
+    if (command === 'openSideBySidePreview') {
+        return openSideBySidePreview();
+    }
+    if (command === 'switchSourcePlanSession') {
+        return switchSourcePlanSession();
+    }
+    if (command === 'refreshSourcePlanPreview') {
+        return refreshSourcePlanPreview();
+    }
     if (command === 'createWorktreeMission') {
         return createWorktreeMission();
     }
@@ -1275,7 +1384,7 @@ function activate(context) {
                     beastCommand(),
                     ['mcp', '--workspace', folder || '.'],
                     { BEAST_WORKSPACE: folder || '.' },
-                    '1.5.0',
+                    '1.6.0',
                 )
             ];
         },
@@ -1314,6 +1423,9 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.showWorktrees', showWorktrees),
         vscode.commands.registerCommand('edgekBeast.startIdeEventBus', () => startIdeEventBus(ideProvider)),
         vscode.commands.registerCommand('edgekBeast.jumpRelatedContext', jumpRelatedContext),
+        vscode.commands.registerCommand('edgekBeast.openSideBySidePreview', openSideBySidePreview),
+        vscode.commands.registerCommand('edgekBeast.switchSourcePlanSession', switchSourcePlanSession),
+        vscode.commands.registerCommand('edgekBeast.refreshSourcePlanPreview', refreshSourcePlanPreview),
         vscode.commands.registerCommand('edgekBeast.createWorktreeMission', createWorktreeMission),
         vscode.commands.registerCommand('edgekBeast.replayLatticeCandidate', replayLatticeCandidate),
         vscode.commands.registerCommand('edgekBeast.openChronicleRecord', item => showVirtualDocument('BEAST-Chronicle.json', 'json', JSON.stringify(item, null, 2))),
@@ -1362,6 +1474,7 @@ function activate(context) {
     }));
     context.subscriptions.push(vscode.languages.registerCodeLensProvider({ scheme: 'file' }, new BeastCodeLensProvider()));
     context.subscriptions.push(vscode.languages.registerHoverProvider({ scheme: 'file' }, new BeastHoverProvider()));
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('beast-preview', new BeastVirtualDocumentProvider()));
     context.subscriptions.push(selectedHunkDecoration, skippedHunkDecoration, staleHunkDecoration, beastDiagnostics);
     applyPreviewDecorations();
     updateBeastDiagnostics();

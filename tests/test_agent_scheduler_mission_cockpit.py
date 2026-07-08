@@ -253,6 +253,26 @@ async def test_ide_event_stream_emits_phase_two_event_contract(tmp_path):
     assert "beast_ide_event" in text
 
 
+@pytest.mark.asyncio
+async def test_ide_related_context_contract_classifies_related_files(tmp_path):
+    (tmp_path / "service.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+    (tmp_path / "test_service.py").write_text("from service import value\n\ndef test_value():\n    assert value() == 1\n", encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(
+            "/edgek/ide/related-context",
+            params={"root_path": str(tmp_path), "path": "service.py", "limit": "20"},
+        )
+
+    payload = response.json()
+    assert response.status_code == 200
+    assert payload["beast_object_type"] == "beast_ide_related_context"
+    assert payload["path"] == "service.py"
+    assert isinstance(payload["related"], list)
+    for item in payload["related"]:
+        assert item["relationship_kind"] in {"test", "route", "surface", "model", "related"}
+
+
 def test_modularized_routes_are_not_active_duplicates():
     seen = {}
     duplicates = []

@@ -28,6 +28,9 @@ is an operator cockpit, not a bypass around BEAST mutation rules.
 - `BEAST: Show Worktrees`
 - `BEAST: Start Live IDE Event Bus`
 - `BEAST: Jump to Related Tests or Routes`
+- `BEAST: Open Side-by-Side Preview`
+- `BEAST: Switch SourcePlan Session`
+- `BEAST: Refresh SourcePlan Preview`
 - `BEAST: Create Worktree Mission`
 - `BEAST: Scaffold Lattice Replay`
 - `BEAST: Select Provider Role`
@@ -80,6 +83,10 @@ the active file are decorated in the editor:
 - green ranges are selected for apply;
 - muted ranges are skipped;
 - red ranges are stale and require plan refresh.
+- side-by-side preview opens BEAST virtual old/new documents without writing
+  files.
+- multi-plan sessions are persisted in VS Code workspace state and can be
+  switched from CodeLens or the Source Workbench.
 
 ## Inline Intelligence
 
@@ -89,7 +96,9 @@ The extension contributes lightweight inline IDE affordances:
   hunk selection count, and stale context warnings.
 - Hovers over BEAST-decorated ranges with hunk status and SourcePlan summary.
 - Diagnostics for stale SourcePlan context.
+- Diagnostics for high-risk plans and worktree recommendations.
 - `BEAST: Jump to Related Tests or Routes`, powered by Code Cortex dependents.
+- Stale preview refresh from CodeLens or command palette.
 
 ## Live Event Bus
 

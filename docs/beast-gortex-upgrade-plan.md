@@ -1695,10 +1695,11 @@ governed workflow beside the code:
 - The sidebar and Mission Control now expose Code Cortex, worktree, and unified
   Policy Gate panels as first-class IDE surfaces.
 
-Remaining Phase 1 polish is mostly packaging and extension-host automation:
-webview screenshot tests, VSIX packaging cleanup, and richer icons/menus. The
-principle stays the same: IDE ergonomics improve, but SourcePlan and policy
-receipts stay the mutation authority.
+Remaining Phase 1 polish is now mostly VSIX packaging cleanup, richer icons,
+menus, and full extension-host UI automation. A manifest guard test verifies the
+core command surface stays exposed. The principle stays the same: IDE
+ergonomics improve, but SourcePlan and policy receipts stay the mutation
+authority.
 
 ### Full IDE Phase 2: Editor-Native SourcePlan Session
 
@@ -1723,10 +1724,14 @@ an editor-native patching surface:
   SourcePlan, policy, evidence, context/index, worktree, and lattice events.
 - The VS Code extension can subscribe to that event stream and refresh live
   cockpit state while preserving request/response fallback.
+- Side-by-side old/new preview uses BEAST virtual documents, so operators can
+  inspect file-level changes without writing files.
+- Multi-plan SourcePlan sessions are persisted in VS Code workspace state and
+  can be restored from the workbench or CodeLens.
 
-Next Phase 2 slices should add side-by-side virtual documents for old/new file
-content, persisted multi-plan sessions, and extension-host tests that exercise
-checkbox selection and event streaming through the webview message contract.
+Next Phase 2 slices should add extension-host tests that exercise checkbox
+selection, event streaming, virtual diff documents, and multi-session restore
+through the real VS Code APIs.
 
 ### Full IDE Phase 3: Inline Editor Intelligence
 
@@ -1744,10 +1749,15 @@ the editor:
   likely tests, specs, routes, controllers, APIs, or pages.
 - SourcePlan from selection remains the inline mutation entry point, and apply
   still routes through governed SourcePlan approval.
+- `/edgek/ide/related-context` classifies related files as test, route,
+  surface, model, or related before the IDE presents jump targets.
+- Diagnostics now also surface high-risk plans and worktree recommendations.
+- Stale SourcePlan previews can be refreshed directly from CodeLens or command
+  palette.
 
-Next Phase 3 slices should add symbol-level CodeLens from Code Cortex, richer
-diagnostics for risky paths and policy gates, route/test classification in the
-backend context packet, and automatic stale-context refresh prompts.
+Next Phase 3 slices should add symbol-level CodeLens from Code Cortex, policy
+gate quick-fixes, richer route/test dependency labels, and automatic stale
+context refresh prompts.
 
 ## Phased Roadmap
 
