@@ -12,11 +12,13 @@ def test_agent_session_store_lifecycle_and_sourceplan_draft(tmp_path):
         files=["app/main.py"],
         agent_id="planner",
         provider="local",
+        model="local-test-model",
     )
 
     assert created["ok"] is True
     session_id = created["session"]["session_id"]
     assert created["session"]["status"] == "active"
+    assert created["session"]["model"] == "local-test-model"
 
     paused = store.pause(session_id)
     assert paused["session"]["status"] == "paused"
@@ -37,6 +39,7 @@ def test_agent_session_store_lifecycle_and_sourceplan_draft(tmp_path):
     draft = store.sourceplan_draft(session_id)
     assert draft["ok"] is True
     assert draft["plan"]["agent_session_id"] == session_id
+    assert draft["plan"]["provider"] == "local"
     assert draft["plan"]["requires_operator_translation"] is True
     assert draft["plan"]["operations"] == []
 

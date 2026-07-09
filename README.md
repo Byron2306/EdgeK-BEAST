@@ -387,6 +387,14 @@ controls when running in stricter modes.
 BEAST keeps local benchmark and proof artifacts under `benchmarks/results/` and
 `.beast/evidence/`.
 
+Current deterministic benchmark verdict surfaces:
+
+- `benchmarks/results/full_blind_test_packet/provisional_verdict.json`: verifier-seeded preliminary verdict.
+- `benchmarks/results/full_blind_test_packet/structural_verdict.json`: deterministic structure-and-evidence verdict.
+- `benchmarks/results/full_blind_test_packet/grading_daemon_run.json`: latest grading daemon receipt.
+
+The current full packet reports `supported` on both provisional and structural lanes, but that is still weaker than independent blind human grading and should be treated as machine-generated evidence rather than final proof.
+
 Useful checks:
 
 ```bash

@@ -242,7 +242,7 @@ function activeContextFiles() {
 }
 
 function chatModel() {
-    return String(config().get('model') || 'beast-auto');
+    return String(config().get('model') || 'nvidia/nemotron-3-super-120b-a12b');
 }
 
 async function promptObjective(defaultObjective) {
@@ -656,6 +656,14 @@ function sourceWorkbenchHtml(plan, scorecard) {
     const policy = workbench.policy_decision || {};
     const replay = workbench.lattice_replay || {};
     const tests = workbench.verification?.suggested_tests || scorecard?.suggested_tests || [];
+    const promotion = plan?.source === 'worktree_native_mission' ? {
+        taskId: plan.worktree_task_id || '',
+        branch: plan.branch || '',
+        fileCount: (plan.files || []).length,
+        operationCount: (plan.operations || []).length,
+        needsTranslation: Boolean(plan.requires_operator_translation),
+        notes: plan.translation_notes || [],
+    } : null;
     const preview = currentPreview || {};
     const operations = preview.operations || [];
     const sourceOps = operations.filter(op => op.source_edit || !op.beast_managed);
@@ -692,7 +700,9 @@ function sourceWorkbenchHtml(plan, scorecard) {
         <div class="card"><h2>Policy Gate</h2><div class="${policy.approval_required ? 'warn' : 'cyan'}">${escapeHtml(policy.decision || 'unknown')}</div><div class="muted">approval ${policy.approval_required ? 'required' : 'not required'} · verify ${policy.verification_required !== false}</div></div>
         <div class="card"><h2>Lattice Replay</h2><div class="${replay.visible ? 'cyan' : 'muted'}">${escapeHtml(replay.reuse_mode || 'none')}</div><div class="muted">strength ${escapeHtml(replay.match_strength || 0)}</div></div>
         <div class="card"><h2>Rollback</h2><div class="cyan">${workbench.rollback?.required ? 'required' : 'not required'}</div><div class="muted">worktree ${workbench.rollback?.worktree_recommended ? 'recommended' : 'optional'}</div></div>
+        ${promotion ? `<div class="card"><h2>Worktree Promotion</h2><div class="${promotion.needsTranslation ? 'warn' : 'cyan'}">${promotion.needsTranslation ? 'translation needed' : 'structured operations'}</div><div class="muted">${escapeHtml(promotion.operationCount)} op(s) · ${escapeHtml(promotion.fileCount)} file(s) · ${escapeHtml(promotion.branch)}</div></div>` : ''}
       </div>
+      ${promotion?.notes?.length ? `<div class="card" style="margin-top:12px"><h2>Translation Notes</h2><ul>${promotion.notes.map(note => `<li><span class="cyan">${escapeHtml(note.path || '')}</span> ${escapeHtml(note.reason || '')}</li>`).join('')}</ul></div>` : ''}
       <div class="card" style="margin-top:12px"><h2>Selectable Operations</h2>${operationRows}</div>
       <div class="card" style="margin-top:12px"><h2>Suggested Tests</h2>${tests.length ? `<ul>${tests.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : '<div class="muted">No targeted tests suggested yet.</div>'}</div>
       <div class="card" style="margin-top:12px"><h2>Raw Scorecard</h2><pre>${escapeHtml(JSON.stringify(scorecard || {}, null, 2))}</pre></div>
@@ -1403,6 +1413,7 @@ function agentSessionCardsHtml(data) {
         <div class="muted" style="margin-top:6px">${escapeHtml(session.objective || '')}</div>
         <div class="muted">files ${(session.files || []).length} · tools ${(session.tools || []).length} · evidence ${(session.evidence || []).length}</div>
         <div class="row" style="margin-top:10px">
+          <button data-command="showAgentSessionDetail" data-session-id="${escapeHtml(session.session_id)}">Details</button>
           <button data-command="pauseAgentSession" data-session-id="${escapeHtml(session.session_id)}">Pause</button>
           <button data-command="resumeAgentSession" data-session-id="${escapeHtml(session.session_id)}">Resume</button>
           <button data-command="agentSessionToSourcePlan" data-session-id="${escapeHtml(session.session_id)}">SourcePlan</button>
@@ -1425,6 +1436,38 @@ async function showAgentSessions() {
         document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command, sessionId:b.dataset.sessionId})));
       </script></body></html>`;
     const panel = vscode.window.createWebviewPanel('beastAgentSessions', 'BEAST Agent Sessions', vscode.ViewColumn.Beside, { enableScripts: true });
+    panel.webview.html = html;
+    panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
+}
+
+async function showAgentSessionDetail(sessionId) {
+    const data = await fetchAgentSessions();
+    const session = (data.sessions || []).find(item => String(item.session_id || '') === String(sessionId || '')) || await pickAgentSession('Open Agent Session Detail');
+    if (!session?.session_id) return;
+    const outputs = session.outputs || [];
+    const evidence = session.evidence || [];
+    const files = session.files || [];
+    const tools = session.tools || [];
+    const budget = session.budget || {};
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>${tuiCss()}</style></head><body>
+      <div class="shell">
+        <div class="hero">${mascotHtml()}<div class="hero-content"><h1>Agent Session Detail</h1><div class="muted">${escapeHtml(session.agent_id || session.session_id)} · ${escapeHtml(session.objective || '')}</div>
+          <div class="row" style="margin-top:10px"><button data-command="pauseAgentSession" data-session-id="${escapeHtml(session.session_id)}">Pause</button><button data-command="resumeAgentSession" data-session-id="${escapeHtml(session.session_id)}">Resume</button><button data-command="agentSessionToSourcePlan" data-session-id="${escapeHtml(session.session_id)}">SourcePlan</button><button data-command="cancelAgentSession" data-session-id="${escapeHtml(session.session_id)}">Cancel</button></div>
+        </div></div>
+        <div class="grid">
+          <div class="card"><h2>Status</h2><div class="cyan">${escapeHtml(session.status || 'unknown')}</div><div class="muted">mode ${escapeHtml(session.mode || '')}</div></div>
+          <div class="card"><h2>Budget</h2><div class="metric">${escapeHtml(budget.tokens || 0)}</div><div class="muted">tokens · ${escapeHtml(budget.seconds || 0)} sec · $${escapeHtml(budget.cost_usd || 0)}</div></div>
+          <div class="card"><h2>Tools</h2><div class="metric">${tools.length}</div><div class="muted">${escapeHtml(tools.join(', ') || 'none')}</div></div>
+          <div class="card"><h2>Evidence</h2><div class="metric">${evidence.length}</div><div class="muted">session receipts and notes</div></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h2>Files</h2>${files.length ? `<ul>${files.map(file => `<li>${escapeHtml(file)}</li>`).join('')}</ul>` : '<div class="muted">No files attached.</div>'}</div>
+        <div class="card" style="margin-top:12px"><h2>Outputs</h2>${outputs.length ? outputs.map((output, index) => `<div class="op"><div class="row"><span class="pill">output ${index + 1}</span><button data-command="agentSessionOutputToSourcePlan" data-session-id="${escapeHtml(session.session_id)}" data-output-index="${index}">SourcePlan</button></div><pre>${escapeHtml(JSON.stringify(output, null, 2))}</pre></div>`).join('') : '<div class="muted">No outputs captured yet.</div>'}</div>
+        <div class="card" style="margin-top:12px"><h2>Evidence Receipts</h2>${evidence.length ? evidence.map(item => `<pre>${escapeHtml(JSON.stringify(item, null, 2))}</pre>`).join('') : '<div class="muted">No evidence attached yet.</div>'}</div>
+      </div><script>
+        const vscode = acquireVsCodeApi();
+        document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>vscode.postMessage({command:b.dataset.command, sessionId:b.dataset.sessionId, outputIndex:b.dataset.outputIndex})));
+      </script></body></html>`;
+    const panel = vscode.window.createWebviewPanel('beastAgentSessionDetail', 'BEAST Agent Session Detail', vscode.ViewColumn.Beside, { enableScripts: true });
     panel.webview.html = html;
     panel.webview.onDidReceiveMessage(async message => handleIdeWebviewCommand(message));
 }
@@ -1483,10 +1526,10 @@ async function agentSessionAction(action, sessionId) {
     return result;
 }
 
-async function agentSessionToSourcePlan(sessionId) {
+async function agentSessionToSourcePlan(sessionId, outputText = null) {
     const session = sessionId ? { session_id: sessionId } : await pickAgentSession('Convert Agent Session to SourcePlan');
     if (!session?.session_id) return;
-    const output = await vscode.window.showInputBox({
+    const output = outputText !== null ? outputText : await vscode.window.showInputBox({
         title: 'BEAST Agent Output Summary',
         prompt: 'Optional: paste/summarize the agent output. BEAST will create an advisory SourcePlan draft, not apply edits.',
         value: '',
@@ -1507,6 +1550,18 @@ async function agentSessionToSourcePlan(sessionId) {
     refreshMissionTrees();
     vscode.window.showInformationMessage(`BEAST SourcePlan draft ready: ${currentPlan.plan_id}`);
     await openSourceWorkbench();
+}
+
+async function agentSessionOutputToSourcePlan(sessionId, outputIndex) {
+    const data = await fetchAgentSessions();
+    const session = (data.sessions || []).find(item => String(item.session_id || '') === String(sessionId || ''));
+    const output = session?.outputs?.[Number(outputIndex)];
+    if (!session || !output) {
+        vscode.window.showWarningMessage('BEAST: agent output was not found.');
+        return;
+    }
+    const text = output.text || output.summary || output.content || JSON.stringify(output, null, 2);
+    await agentSessionToSourcePlan(session.session_id, String(text));
 }
 
 async function showWorktrees() {
@@ -1747,6 +1802,9 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     if (command === 'createAgentSession') {
         return createAgentSession();
     }
+    if (command === 'showAgentSessionDetail') {
+        return showAgentSessionDetail(message?.sessionId);
+    }
     if (command === 'pauseAgentSession') {
         return agentSessionAction('pause', message?.sessionId);
     }
@@ -1758,6 +1816,9 @@ async function handleIdeWebviewCommand(message, ideProvider) {
     }
     if (command === 'agentSessionToSourcePlan') {
         return agentSessionToSourcePlan(message?.sessionId);
+    }
+    if (command === 'agentSessionOutputToSourcePlan') {
+        return agentSessionOutputToSourcePlan(message?.sessionId, message?.outputIndex);
     }
     if (command === 'showWorktrees') {
         return showWorktrees();
@@ -2054,6 +2115,7 @@ function activate(context) {
         vscode.commands.registerCommand('edgekBeast.showCodeCortex', showCodeCortex),
         vscode.commands.registerCommand('edgekBeast.showPolicyGate', showPolicyGate),
         vscode.commands.registerCommand('edgekBeast.showAgentSessions', showAgentSessions),
+        vscode.commands.registerCommand('edgekBeast.showAgentSessionDetail', () => showAgentSessionDetail()),
         vscode.commands.registerCommand('edgekBeast.createAgentSession', createAgentSession),
         vscode.commands.registerCommand('edgekBeast.pauseAgentSession', () => agentSessionAction('pause')),
         vscode.commands.registerCommand('edgekBeast.resumeAgentSession', () => agentSessionAction('resume')),

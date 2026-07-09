@@ -48,6 +48,7 @@ let ideActions = [];
 let lastGatewayStatus = null;
 let lastProviderError = '';
 let lastToolingSnapshot = null;
+let lastBenchmarkVerdict = null;
 let selectedDiffHunks = new Set();
 let commandPaletteRecents = [];
 let desktopBuildInfo = { version: 'renderer-ux-modal-chips', rendererPath: '' };
@@ -1252,6 +1253,7 @@ function desktopLocalActionManifest() {
     { id: 'tooling.plugins', label: 'Inspect Plugins And Extensions', page: 'tooling', client_handler: 'focusPluginTooling', risk: 'low', description: 'Inspect plugin, extension, and installable shell surfaces.', local_fallback: true },
     { id: 'tooling.mcp_ops', label: 'Refresh MCP Operations', page: 'tooling', client_handler: 'refreshMcpOps', risk: 'low', description: 'Load MCP state, servers, schema pins, approvals, audit, and executions.', local_fallback: false },
     { id: 'tooling.plugin_ops', label: 'Refresh Plugin Operations', page: 'tooling', client_handler: 'refreshPluginOps', risk: 'low', description: 'Load plugin inventory and validation/install endpoints.', local_fallback: false },
+    { id: 'tooling.grade_benchmark_packet', label: 'Run Benchmark Grading Daemon', page: 'tooling', client_handler: 'runBenchmarkGradingDaemon', risk: 'low', description: 'Trigger the full benchmark grading daemon and load provisional plus structural verdicts.', local_fallback: false },
     { id: 'tooling.environment', label: 'Inspect Environment', page: 'tooling', client_handler: 'focusEnvironmentTooling', risk: 'low', description: 'Inspect Python, Node, npm, git, and local package scripts.', local_fallback: true },
     { id: 'doctor.copy_report', label: 'Copy Doctor Report', page: 'doctor', client_handler: 'copyDoctorReport', risk: 'low', description: 'Copy the current gateway diagnostics.', local_fallback: true },
     { id: 'settings.release_readiness', label: 'Check IDE Readiness', page: 'settings', client_handler: 'checkReleaseReadiness', risk: 'low', description: 'Run desktop readiness checks.', local_fallback: true },
@@ -1385,6 +1387,7 @@ async function runIdeAction(actionId) {
     focusPluginTooling,
     refreshMcpOps,
     refreshPluginOps,
+    runBenchmarkGradingDaemon,
     focusEnvironmentTooling,
     refreshSystemSnapshot,
     refreshSystemPorts,
@@ -2655,6 +2658,26 @@ function renderToolingSnapshot(snapshot, error = '') {
   renderNextActionInspector();
 }
 
+function renderBenchmarkVerdict(result, error = '') {
+  lastBenchmarkVerdict = result || null;
+  const node = $('benchmarkVerdictStatus');
+  if (!node) return;
+  if (!result) {
+    node.textContent = error || 'No benchmark verdict loaded.';
+    node.className = `status-box ${error ? 'bad' : 'muted'}`;
+    return;
+  }
+  const provisional = result.claim_status || 'unknown';
+  const structural = result.structural_claim_status || 'unknown';
+  node.textContent = [
+    `Provisional: ${provisional}`,
+    `Structural: ${structural}`,
+    result.verdict_path ? `Provisional verdict: ${result.verdict_path}` : '',
+    result.structural_verdict_path ? `Structural verdict: ${result.structural_verdict_path}` : '',
+  ].filter(Boolean).join('\n');
+  node.className = structural === 'supported' ? 'status-box ready' : provisional === 'supported' ? 'status-box warn' : 'status-box bad';
+}
+
 async function refreshToolingSnapshot() {
   let snapshot = null;
   if (!desktopLocalMode) {
@@ -3061,11 +3084,38 @@ function copyToolingReport() {
   const report = {
     summary: $('toolingSummary')?.textContent || '',
     snapshot: lastToolingSnapshot,
+    benchmarkVerdict: lastBenchmarkVerdict,
     raw: $('toolingRaw')?.textContent || '',
     copied_at: new Date().toISOString(),
   };
   navigator.clipboard?.writeText(JSON.stringify(report, null, 2));
   log('tooling report copied.');
+}
+
+async function runBenchmarkGradingDaemon() {
+  setDesktopPage('tooling');
+  const packetDir = workspaceRoot
+    ? `${workspaceRoot}/benchmarks/results/full_blind_test_packet`
+    : '/home/byron/EdgeK-BEAST/benchmarks/results/full_blind_test_packet';
+  try {
+    const result = await postJson('/edgek/benchmarks/public-grading-daemon', { packet_dir: packetDir });
+    renderBenchmarkVerdict(result);
+    $('toolingRaw').textContent = JSON.stringify(result, null, 2);
+    log(`benchmark grading daemon: ${result.claim_status || 'unknown'} / structural ${result.structural_claim_status || 'unknown'}`);
+  } catch (error) {
+    renderBenchmarkVerdict(null, error.message || String(error));
+    $('toolingRaw').textContent = JSON.stringify({ error: error.message || String(error), packet_dir: packetDir }, null, 2);
+    log(`benchmark grading daemon failed: ${error.message || error}`);
+  }
+}
+
+function copyBenchmarkVerdict() {
+  if (!lastBenchmarkVerdict) {
+    log('No benchmark verdict to copy.');
+    return;
+  }
+  navigator.clipboard?.writeText(JSON.stringify(lastBenchmarkVerdict, null, 2));
+  log('benchmark verdict copied.');
 }
 
 async function createAgentSession() {
@@ -5154,6 +5204,8 @@ $('approveMcpRequest').addEventListener('click', () => resolveMcpApproval('appro
 $('denyMcpRequest').addEventListener('click', () => resolveMcpApproval('deny'));
 $('refreshPluginOps').addEventListener('click', refreshPluginOps);
 $('validatePluginManifest').addEventListener('click', validatePluginManifest);
+$('runBenchmarkGrading').addEventListener('click', runBenchmarkGradingDaemon);
+$('copyBenchmarkVerdict').addEventListener('click', copyBenchmarkVerdict);
 $('copyToolingReport').addEventListener('click', copyToolingReport);
 $('refreshSystem').addEventListener('click', refreshSystemSnapshot);
 $('refreshSystemPorts').addEventListener('click', refreshSystemPorts);

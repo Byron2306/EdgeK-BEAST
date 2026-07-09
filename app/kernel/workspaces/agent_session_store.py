@@ -47,6 +47,7 @@ class AgentSessionStore:
         files: Optional[List[str]] = None,
         agent_id: str = "",
         provider: str = "",
+        model: str = "",
     ) -> Dict[str, Any]:
         seed = f"{agent_id}:{objective}:{_now()}"
         session_id = f"{_safe_slug(agent_id or mode or 'agent')}-{hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8]}"
@@ -58,6 +59,7 @@ class AgentSessionStore:
             "objective": objective,
             "mode": mode or "architect",
             "provider": provider,
+            "model": model,
             "status": "active",
             "budget": budget or {"tokens": 0, "seconds": 0, "cost_usd": 0.0},
             "tools": [str(item) for item in (tools or [])],

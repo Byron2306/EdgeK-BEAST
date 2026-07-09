@@ -1,0 +1,29 @@
+{
+  "artifacts": {
+    "blind_grading": {
+      "count": 96,
+      "key_path": "/home/byron/EdgeK-BEAST/benchmarks/results/provider_family_blind_test_packet_deep/blind_grading_key.json",
+      "packet_path": "/home/byron/EdgeK-BEAST/benchmarks/results/provider_family_blind_test_packet_deep/blind_grading.jsonl",
+      "seed": 11
+    },
+    "cost_accounting": {
+      "lane_count": 3,
+      "path": "/home/byron/EdgeK-BEAST/benchmarks/results/provider_family_blind_test_packet_deep/cost_accounting.json"
+    },
+    "grade_rubric": "grade_rubric.json",
+    "grade_template": "grade_template.jsonl",
+    "summary": "README.md"
+  },
+  "beast_object_type": "public_economic_thesis_packet",
+  "claim_scope": "Economic and quality claims remain provisional until blinded grading and published cost ledgers are complete.",
+  "claim_status": "open_research_question",
+  "generated_at": "2026-07-09T18:58:00Z",
+  "inputs": [
+    "benchmarks/results/beast_cohere_first_provider_family_anchor_o1_full.json",
+    "benchmarks/results/beast_groq_first_provider_family_anchor_o1_full.json",
+    "benchmarks/results/beast_mistral_first_provider_family_anchor_o1_full.json",
+    "benchmarks/results/beast_nim_first_provider_family_anchor_o1_full.json",
+    "benchmarks/results/beast_first_live_routes_schema_alias_secret_3task.json"
+  ],
+  "version": "1.0"
+}

@@ -47,6 +47,7 @@ Then reload VS Code/Cursor, open the command palette, and run
 - `BEAST: Show Code Cortex`
 - `BEAST: Show Policy Gate`
 - `BEAST: Show Agent Sessions`
+- `BEAST: Show Agent Session Detail`
 - `BEAST: Create Agent Session`
 - `BEAST: Pause Agent Session`
 - `BEAST: Resume Agent Session`

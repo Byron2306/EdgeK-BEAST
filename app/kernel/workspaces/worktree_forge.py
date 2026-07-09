@@ -173,9 +173,12 @@ class WorktreeForge:
             diff_range = "worktree"
         changed = self._git(["diff", "--name-only", diff_range], cwd=path) if diff_range != "worktree" else self._git(["diff", "--name-only"], cwd=path)
         files = [line.strip() for line in changed.stdout.splitlines() if line.strip()]
+        operations, translation_notes = self._sourceplan_operations_for_files(path, base_ref, files)
+        needs_translation = bool(translation_notes) or not operations
         plan_id = f"worktree-promotion-{task_id}"
         plan = {
             "beast_object_type": "sourceplan",
+            "kind": "beast_source_patch_plan",
             "version": "1.0",
             "plan_id": plan_id,
             "objective": f"Promote verified worktree mission: {record.get('objective') or task_id}",
@@ -192,9 +195,11 @@ class WorktreeForge:
             "diff_stat": stat.stdout,
             "worktree_diff": patch.stdout[:max_chars],
             "diff_truncated": len(patch.stdout) > max_chars,
-            "operations": [],
-            "requires_operator_translation": True,
-            "governance_note": "Worktree promotion is advisory until translated into explicit SourcePlan operations, previewed, approved, verified, and closed with evidence.",
+            "operations": operations,
+            "selected_operations": [op["op_id"] for op in operations if op.get("selected", True)],
+            "requires_operator_translation": needs_translation,
+            "translation_notes": translation_notes,
+            "governance_note": "Worktree promotion remains governed: preview, approve, verify, rollback, and evidence closure are required before any write.",
         }
         receipt = self._receipt("sourceplan_draft", record, True)
         receipt["plan_id"] = plan_id
@@ -206,6 +211,52 @@ class WorktreeForge:
         self._upsert(record)
         self._register_receipt(receipt)
         return {"ok": True, "plan": plan, "receipt": receipt, "task": record}
+
+    def _sourceplan_operations_for_files(self, cwd: Path, base_ref: str, files: List[str]) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        operations: List[Dict[str, Any]] = []
+        notes: List[Dict[str, Any]] = []
+        for rel in files[:50]:
+            if not rel or rel.startswith(".git/"):
+                continue
+            old = self._git(["show", f"{base_ref}:{rel}"], cwd=cwd, timeout=10.0)
+            new = self._git(["show", f"HEAD:{rel}"], cwd=cwd, timeout=10.0)
+            op_id = f"worktree_{len(operations) + 1:03d}"
+            if old.ok and new.ok and old.stdout != new.stdout:
+                if len(old.stdout) > 50000 or len(new.stdout) > 50000:
+                    notes.append({"path": rel, "reason": "file too large for exact SourcePlan operation"})
+                    continue
+                operations.append({
+                    "op_id": op_id,
+                    "op": "replace_exact",
+                    "path": rel,
+                    "old_text": old.stdout + ("\n" if old.stdout and not old.stdout.endswith("\n") else ""),
+                    "new_text": new.stdout + ("\n" if new.stdout and not new.stdout.endswith("\n") else ""),
+                    "description": f"Promote worktree change for {rel}",
+                    "source_edit": True,
+                    "selected": True,
+                    "worktree_promoted": True,
+                })
+            elif not old.ok and new.ok:
+                if len(new.stdout) > 50000:
+                    notes.append({"path": rel, "reason": "new file too large for SourcePlan operation"})
+                    continue
+                operations.append({
+                    "op_id": op_id,
+                    "op": "create_or_replace",
+                    "path": rel,
+                    "content": new.stdout + ("\n" if new.stdout and not new.stdout.endswith("\n") else ""),
+                    "description": f"Promote new worktree file {rel}",
+                    "source_edit": True,
+                    "selected": True,
+                    "worktree_promoted": True,
+                })
+            elif old.ok and not new.ok:
+                notes.append({"path": rel, "reason": "deleted files require operator translation"})
+            else:
+                notes.append({"path": rel, "reason": "unable to resolve file content for SourcePlan operation"})
+        if len(files) > 50:
+            notes.append({"path": "*", "reason": f"{len(files) - 50} additional files require operator translation"})
+        return operations, notes
 
     def test(self, task_id: str, command: Optional[List[str]] = None, timeout: float = 120.0) -> Dict[str, Any]:
         record = self._find(task_id)

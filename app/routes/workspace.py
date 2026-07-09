@@ -79,7 +79,33 @@ def build_workspace_router(
 
     @router.get("/edgek/workspace/files")
     async def edgek_workspace_files(root_path: str = None, limit: int = 200):
-        return workspace_graph_service.files(str(_root(root_path)), limit=max(1, min(limit, 1000)))
+        root = _root(root_path)
+        payload = workspace_graph_service.files(str(root), limit=max(1, min(limit, 1000)))
+        files = payload.get("files") if isinstance(payload.get("files"), list) else []
+        normalized = []
+        for item in files:
+            if not isinstance(item, dict):
+                continue
+            props = item.get("properties") if isinstance(item.get("properties"), dict) else {}
+            path = str(item.get("path") or item.get("file") or props.get("path") or props.get("relative_path") or props.get("file") or item.get("id") or "")
+            if path:
+                row = dict(item)
+                row["path"] = path
+                row["source"] = row.get("source") or "workspace_graph"
+                normalized.append(row)
+        if not normalized:
+            fallback = BeastApiClient("http://gateway-local", workspace=root).workspace_file_candidates(limit=max(1, min(limit, 1000)))
+            normalized = [{**row, "source": "local_candidates"} for row in fallback]
+            payload = {
+                **payload,
+                "files": normalized,
+                "count": len(normalized),
+                "fallback_used": True,
+                "context_front_door": "code_cortex",
+            }
+        else:
+            payload = {**payload, "files": normalized, "count": len(normalized), "fallback_used": False}
+        return payload
 
     @router.get("/edgek/workspace/file")
     async def edgek_workspace_file(path: str, root_path: str = None, max_chars: int = 12000):

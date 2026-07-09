@@ -272,6 +272,8 @@ def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
     assert "refreshMcpOps" in js
     assert "resolveMcpApproval" in js
     assert "refreshPluginOps" in js
+    assert "runBenchmarkGradingDaemon" in js
+    assert "copyBenchmarkVerdict" in js
     assert "validatePluginManifest" in js
     assert "selectedAgentSessionId" in js
     assert "selectedWorktreeTaskId" in js
@@ -463,6 +465,8 @@ def test_desktop_ide_backend_declares_action_manifest():
     assert "tooling.refresh" in routes
     assert "tooling.mcp_ops" in routes
     assert "tooling.plugin_ops" in routes
+    assert "tooling.grade_benchmark_packet" in routes
+    assert '"/edgek/benchmarks/public-grading-daemon"' in routes
     assert '"/edgek/ide/tooling-snapshot"' in routes
     assert "beast_ide_tooling_snapshot" in routes
     assert '"settings.release_readiness"' in routes
@@ -491,6 +495,11 @@ def test_desktop_ide_backend_declares_action_manifest():
     assert "showLintToolingContract" in js
     assert "focusMcpTooling" in js
     assert "focusPluginTooling" in js
+    assert "benchmarkVerdictStatus" in html
+    assert "runBenchmarkGrading" in html
+    assert "copyBenchmarkVerdict" in html
+    assert "Run Benchmark Grading Daemon" in js
+    assert "/edgek/benchmarks/public-grading-daemon" in js
     assert "focusEnvironmentTooling" in js
 
 

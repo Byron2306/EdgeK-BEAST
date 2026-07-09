@@ -101,6 +101,7 @@ from app.kernel.compute.crystal_reuse_gateway import CrystalReuseDecision, Cryst
 from app.kernel.compute.integration_harness import BeastHarnessRequest, BeastIntegrationHarness
 from app.kernel.compute.integration_acceptance import CrystalIntegrationAcceptanceHarness
 from app.kernel.compute.nim_live_probe import NvidiaNIMLiveProbe
+from app.kernel.compute.public_benchmark_grading_daemon import PublicBenchmarkGradingDaemon
 from app.kernel.compute.local_execution_gateway import LocalExecutionGateway
 from app.kernel.compute.local_route_optimizer import LocalRouteOptimizer
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
@@ -1001,6 +1002,21 @@ async def edgek_benchmarks_gauntlet_custom(payload: Dict[str, Any] = None):
         scenario_names=payload.get("scenario_names"),
         session_id=payload.get("session_id"),
     )
+
+@app.post("/edgek/benchmarks/public-grading-daemon")
+async def edgek_public_benchmark_grading_daemon(payload: Dict[str, Any] = None):
+    """Run the deterministic public benchmark grading daemon for a packet directory."""
+    payload = payload or {}
+    packet_dir = payload.get("packet_dir")
+    if not packet_dir:
+        raise HTTPException(status_code=400, detail="packet_dir is required")
+    daemon = PublicBenchmarkGradingDaemon(packet_dir)
+    if bool(payload.get("loop", False)):
+        return daemon.run_loop(
+            interval_seconds=max(0.0, float(payload.get("interval_seconds", 60.0))),
+            max_cycles=max(1, int(payload.get("max_cycles", 1))) if payload.get("max_cycles") is not None else 1,
+        )
+    return daemon.run_once()
 
 @app.get("/edgek/os-bypass/capabilities")
 async def edgek_os_bypass_capabilities():

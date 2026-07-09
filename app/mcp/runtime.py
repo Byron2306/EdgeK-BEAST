@@ -37,6 +37,7 @@ from app.kernel.compute.inference_interceptor import compute_ledger
 from app.kernel.storage.outcome_evidence import default_outcome_store
 from app.kernel.networking.network_chronicle import NetworkChronicleConnector
 from app.kernel.networking.github_pr_connector import GitHubPRConnector
+from app.kernel.compute.public_benchmark_grading_daemon import PublicBenchmarkGradingDaemon
 from app.cli.api import BeastApiClient
 from app.mcp.broker import MCPBroker
 
@@ -178,7 +179,7 @@ class BeastToolRuntime:
                     "properties": {
                         "objective": {"type": "string"},
                         "files": {"type": "array", "items": {"type": "string"}},
-                        "provider": {"type": "string", "default": "litellm"},
+                        "provider": {"type": "string", "default": "nvidia_nim"},
                         "provider_text": {"type": "string"},
                     },
                     "required": ["objective"],
@@ -988,6 +989,20 @@ class BeastToolRuntime:
                 "description": "Return BEAST MCP tools with schema, risk, audit, and execution metadata.",
                 "inputSchema": {"type": "object", "properties": {}},
             },
+            {
+                "name": "beast_public_benchmark_grading_daemon",
+                "description": "Run the deterministic public benchmark grading daemon against a benchmark packet directory, producing provisional and structural verdicts.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "packet_dir": {"type": "string"},
+                        "loop": {"type": "boolean", "default": False},
+                        "interval_seconds": {"type": "number", "default": 60.0},
+                        "max_cycles": {"type": "integer", "default": 1},
+                    },
+                    "required": ["packet_dir"],
+                },
+            },
         ]
 
     def list_resources(self) -> List[Dict[str, Any]]:
@@ -1222,7 +1237,7 @@ class BeastToolRuntime:
             action = self.beast_api.build_source_patch_plan(
                 str(arguments.get("objective") or ""),
                 [str(item) for item in (arguments.get("files") or [])],
-                provider=str(arguments.get("provider") or "litellm"),
+                provider=str(arguments.get("provider") or "nvidia_nim"),
                 provider_text=str(arguments.get("provider_text") or ""),
             )
             result = self._action_result(action)
@@ -1719,6 +1734,15 @@ class BeastToolRuntime:
             result = self._mcp_status()
         elif name == "beast_mcp_tool_catalog":
             result = {"tools": self._tool_catalog(), "count": len(self.tool_definitions())}
+        elif name == "beast_public_benchmark_grading_daemon":
+            daemon = PublicBenchmarkGradingDaemon(str(arguments["packet_dir"]))
+            if bool(arguments.get("loop", False)):
+                result = daemon.run_loop(
+                    interval_seconds=max(0.0, float(arguments.get("interval_seconds", 60.0))),
+                    max_cycles=max(1, int(arguments.get("max_cycles", 1))),
+                )
+            else:
+                result = daemon.run_once()
         else:
             raise ValueError(f"Unknown MCP tool: {name}")
         return result

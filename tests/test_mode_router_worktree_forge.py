@@ -81,9 +81,13 @@ def test_worktree_forge_create_status_and_archive(tmp_path):
     assert tested["ok"] is True
     assert draft["ok"] is True
     assert draft["plan"]["source"] == "worktree_native_mission"
-    assert draft["plan"]["requires_operator_translation"] is True
+    assert draft["plan"]["requires_operator_translation"] is False
     assert "app.py" in draft["plan"]["files"]
     assert "value = 2" in draft["plan"]["worktree_diff"]
+    assert draft["plan"]["operations"][0]["op"] == "replace_exact"
+    assert draft["plan"]["operations"][0]["old_text"] == "value = 1\n"
+    assert draft["plan"]["operations"][0]["new_text"] == "value = 2\n"
+    assert draft["plan"]["selected_operations"] == [draft["plan"]["operations"][0]["op_id"]]
     assert promote_blocked["decision"] == "blocked"
     assert "approval" in promote_blocked["reason"]
     assert archived["task"]["status"] == "archived"

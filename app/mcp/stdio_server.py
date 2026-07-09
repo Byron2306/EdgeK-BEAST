@@ -92,7 +92,7 @@ TOOL_DEFINITIONS = [
             "properties": {
                 "objective": {"type": "string"},
                 "files": {"type": "array", "items": {"type": "string"}},
-                "provider": {"type": "string", "default": "litellm"},
+                "provider": {"type": "string", "default": "nvidia_nim"},
                 "provider_text": {"type": "string"},
             },
             "required": ["objective"],
@@ -507,6 +507,20 @@ TOOL_DEFINITIONS = [
         "name": "beast_mcp_tool_catalog",
         "description": "Return BEAST MCP tools with schema, risk, audit, and execution metadata.",
         "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "beast_public_benchmark_grading_daemon",
+        "description": "Run the deterministic public benchmark grading daemon against a benchmark packet directory, producing provisional and structural verdicts.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "packet_dir": {"type": "string"},
+                "loop": {"type": "boolean", "default": False},
+                "interval_seconds": {"type": "number", "default": 60.0},
+                "max_cycles": {"type": "integer", "default": 1}
+            },
+            "required": ["packet_dir"]
+        },
     },
 ]
 
