@@ -1,0 +1,55 @@
+{
+  "name": "beast-desktop-ide",
+  "displayName": "BEAST Desktop IDE",
+  "version": "0.1.1",
+  "description": "Installable BEAST IDE shell with governed SourcePlan, Code Cortex, Evidence Bus, agent sessions, and worktree missions.",
+  "homepage": "https://github.com/EdgeK/BEAST",
+  "author": {
+    "name": "EdgeK",
+    "email": "maintainers@edgek.ai"
+  },
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "node scripts/smoke-desktop-ide.js",
+    "smoke:launch": "node scripts/launch-smoke-desktop-ide.js",
+    "lint": "ruff check ../app/ --select E,F,W,I --ignore E501 --statistics",
+    "lint:fix": "ruff check ../app/ --select E,F,W,I --ignore E501 --fix",
+    "lint:format": "ruff format ../app/ --check",
+    "package:linux": "electron-builder --linux AppImage deb",
+    "package:dir": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "ai.edgek.beast.ide",
+    "productName": "BEAST Desktop IDE",
+    "icon": "icon.png",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "scripts/**",
+      "node_modules/monaco-editor/min/vs/**",
+      "renderer/**",
+      "package.json"
+    ],
+    "linux": {
+      "category": "Development",
+      "maintainer": "EdgeK <maintainers@edgek.ai>",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "dependencies": {
+    "monaco-editor": "^0.55.1"
+  }
+}

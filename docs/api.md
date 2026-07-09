@@ -47,7 +47,7 @@ http://localhost:8005
 | `POST` | `/edgek/session/handshake` | Build the BEAST agent-awareness and local preflight latency contract |
 | `GET` | `/edgek/memory-security` | Report Memory Hull, Residue Seal, and Agent Passport state |
 
-## Connectors And Marketplace
+## Connectors And Plugin Registry
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -58,7 +58,7 @@ http://localhost:8005
 | `POST` | `/edgek/plugins/install` | Dry-run or perform an explicitly approved local installation |
 | `GET` | `/edgek/plugins` | List installed local plugin manifests |
 
-OTLP export uses `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or `OTEL_EXPORTER_OTLP_ENDPOINT`; optional headers use `OTEL_EXPORTER_OTLP_HEADERS`. Live export and plugin installation are approval-gated and dry-run by default.
+OTLP export uses `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or `OTEL_EXPORTER_OTLP_ENDPOINT`; optional headers use `OTEL_EXPORTER_OTLP_HEADERS`. Live export and plugin installation are approval-gated and dry-run by default. Generic plugin manifests install into the local registry, while executable runtime invocation is currently limited to built-in plugin handlers.
 
 ## Capability Exchange
 

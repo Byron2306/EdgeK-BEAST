@@ -2,13 +2,13 @@
   <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="520" style="max-width: 92%; height: auto;">
 </p>
 
-# BEAST - Governed Execution for Agentic Coding
+# BEAST - Auditable, Governed AI Editing via MCP and Gateway
 
-BEAST is a local governance layer for coding agents. It sits between an agent,
-your repository, local tools, MCP clients, and model providers. Models can
-propose work, but BEAST owns the hard parts: context selection, policy checks,
-safe patch compilation, verification, rollback evidence, provider routing, and
-reusable compute.
+BEAST is an auditable governance layer for coding agents and editor clients. It
+sits between your repository, local tools, MCP clients, and model providers so
+models can propose work while BEAST owns the hard parts: context selection,
+policy checks, safe patch compilation, verification, rollback evidence, and
+multi-provider routing through one governed gateway.
 
 The current upgrade turns BEAST from a collection of strong subsystems into a
 more coherent agentic IDE runtime:
