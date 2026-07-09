@@ -1,6 +1,6 @@
 # Addendum A: Trust-Bound Residue and First-Class Crystal Reuse Integration Plane
 
-Target paper: `BEAST_Inference_Economy_Inversion_Working_Paper_v0_9_compute_commons_final.pdf`
+Target paper: `assets/release/commons-media/inference-economy-paper.pdf`
 
 Date: 2026-06-28
 

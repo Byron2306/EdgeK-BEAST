@@ -6,6 +6,7 @@ from app.cli.api import BeastApiClient
 from app.cli.ui import SourceWorkbenchScreen
 from app.main import app
 from app.kernel.compute.agent_scheduler import AgentScheduler
+from app.kernel.evidence.evidence_bus import EvidenceBus
 from app.kernel.workspaces.mission_cockpit import MissionCockpit
 from app.mcp.runtime import BeastToolRuntime
 
@@ -158,6 +159,26 @@ def test_mcp_exposes_scheduler_and_cockpit_in_readonly(monkeypatch, tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_workspace_files_route_falls_back_to_local_candidates_for_desktop_ide(tmp_path):
+    (tmp_path / "app").mkdir()
+    (tmp_path / "app" / "sample.py").write_text("print('beast')\n", encoding="utf-8")
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(
+            "/edgek/workspace/files",
+            params={"root_path": str(tmp_path), "limit": 20},
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    paths = {item["path"] for item in payload["files"]}
+    assert "app/sample.py" in paths
+    assert payload["fallback_used"] is True
+    assert all(item["source"] == "local_candidates" for item in payload["files"])
+
+
+@pytest.mark.asyncio
 async def test_modular_cockpit_router_serves_mission_lattice_replay_endpoint(tmp_path):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -271,6 +292,378 @@ async def test_ide_related_context_contract_classifies_related_files(tmp_path):
     assert isinstance(payload["related"], list)
     for item in payload["related"]:
         assert item["relationship_kind"] in {"test", "route", "surface", "model", "related"}
+
+
+@pytest.mark.asyncio
+async def test_ide_sourceplan_from_editor_compiles_governed_draft(tmp_path):
+    original = "def value():\n    return 1\n"
+    updated = "def value():\n    return 2\n"
+    (tmp_path / "service.py").write_text(original, encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/edgek/ide/sourceplan/from-editor",
+            json={
+                "root_path": str(tmp_path),
+                "path": "service.py",
+                "original_text": original,
+                "new_text": updated,
+                "objective": "Desktop edit service value",
+                "provider": "nvidia_nim",
+            },
+        )
+
+    payload = response.json()
+    operation = payload["plan"]["operations"][0]
+
+    assert response.status_code == 200
+    assert payload["ok"] is True
+    assert payload["beast_object_type"] == "beast_desktop_editor_sourceplan_draft"
+    assert payload["plan"]["kind"] == "beast_desktop_editor_source_patch_plan"
+    assert operation["op"] == "replace_exact"
+    assert operation["old"] == original
+    assert operation["new"] == updated
+    assert operation["old_text"] == original
+    assert operation["new_text"] == updated
+    assert payload["preview"]["selected_count"] == 1
+    assert "return 2" in payload["preview_text"]
+
+
+@pytest.mark.asyncio
+async def test_ide_sourceplan_from_editor_rejects_stale_buffer(tmp_path):
+    (tmp_path / "service.py").write_text("def value():\n    return 3\n", encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/edgek/ide/sourceplan/from-editor",
+            json={
+                "root_path": str(tmp_path),
+                "path": "service.py",
+                "original_text": "def value():\n    return 1\n",
+                "new_text": "def value():\n    return 2\n",
+            },
+        )
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["ok"] is False
+    assert payload["stale_context"] is True
+    assert payload["error"] == "current_file_changed_since_editor_opened"
+    assert payload["current_hash"].startswith("sha256:")
+
+
+@pytest.mark.asyncio
+async def test_ide_sourceplan_from_selection_compiles_targeted_hunk(tmp_path):
+    original = "def value():\n    return 1\n"
+    (tmp_path / "service.py").write_text(original, encoding="utf-8")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/edgek/ide/sourceplan/from-selection",
+            json={
+                "root_path": str(tmp_path),
+                "path": "service.py",
+                "original_text": original,
+                "selection_text": "return 1",
+                "replacement_text": "return 2",
+                "line_start": 2,
+                "line_end": 2,
+                "char_start": original.index("return 1"),
+                "char_end": original.index("return 1") + len("return 1"),
+            },
+        )
+
+    payload = response.json()
+    operation = payload["plan"]["operations"][0]
+
+    assert response.status_code == 200
+    assert payload["ok"] is True
+    assert payload["beast_object_type"] == "beast_desktop_selection_sourceplan_draft"
+    assert payload["plan"]["kind"] == "beast_desktop_selection_source_patch_plan"
+    assert operation["op"] == "replace_exact"
+    assert operation["old"] == "return 1"
+    assert operation["new"] == "return 2"
+    assert operation["selection"]["line_start"] == 2
+    assert "return 2" in payload["preview_text"]
+
+
+@pytest.mark.asyncio
+async def test_ide_agent_session_detail_update_and_sourceplan_flow(tmp_path):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Investigate desktop live session",
+                "mode": "architect",
+                "provider": "nvidia_nim",
+                "files": ["service.py"],
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        detail = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}",
+            params={"root_path": str(tmp_path)},
+        )
+        updated = await client.post(
+            "/edgek/ide/agent-sessions/update",
+            json={
+                "root_path": str(tmp_path),
+                "session_id": session_id,
+                "output": {"kind": "operator_agent_output", "text": "Change service.py with a governed hunk."},
+                "budget_delta": {"tokens": 12},
+            },
+        )
+        paused = await client.post(
+            "/edgek/ide/agent-sessions/pause",
+            json={"root_path": str(tmp_path), "session_id": session_id},
+        )
+        draft = await client.post(
+            "/edgek/ide/agent-sessions/sourceplan-draft",
+            json={"root_path": str(tmp_path), "session_id": session_id},
+        )
+
+    assert created.status_code == 200
+    assert detail.status_code == 200
+    assert detail.json()["ok"] is True
+    assert updated.status_code == 200
+    assert updated.json()["session"]["outputs"][0]["text"].startswith("Change service.py")
+    assert updated.json()["session"]["budget"]["tokens"] == 12
+    assert paused.json()["session"]["status"] == "paused"
+    assert draft.status_code == 200
+    assert draft.json()["plan"]["source"] == "agent_session_workspace"
+    assert draft.json()["plan"]["requires_operator_translation"] is True
+
+
+@pytest.mark.asyncio
+async def test_ide_agent_session_run_events_stream_and_persist_output(tmp_path):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Stream a desktop agent run",
+                "mode": "architect",
+                "provider": "nvidia_nim",
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        streamed = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}/run-events",
+            params={
+                "root_path": str(tmp_path),
+                "prompt": "Explain the governed path.",
+                "simulate": "true",
+            },
+        )
+        detail = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}",
+            params={"root_path": str(tmp_path)},
+        )
+
+    text = streamed.text
+    outputs = detail.json()["session"]["outputs"]
+
+    assert streamed.status_code == 200
+    assert "event: agent_run_started" in text
+    assert "event: agent_run_token" in text
+    assert "event: agent_run_done" in text
+    assert any(item.get("kind") == "streamed_agent_output" for item in outputs)
+    assert "BEAST simulated agent stream" in outputs[-1]["text"]
+
+
+@pytest.mark.asyncio
+async def test_ide_agent_session_run_events_repairs_to_action_ir(monkeypatch, tmp_path):
+    target = tmp_path / "service.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+
+    async def fake_stream_live_turn(self, text, history, provider="", lifecycle_id="", context_files=None, model="", max_tokens=None, max_continuations=None, context_max_files=64, context_max_chars_each=4200, governance_level="governed"):
+        if "Return BEAST Action IR JSON only." in text:
+            yield {
+                "type": "token",
+                "text": '{"kind":"beast_action_ir","objective":"Update the value","actions":[{"id":"a1","type":"replace_exact","intent":"Return the new value","target":{"path":"service.py"},"old":"return 1","new":"return 2"}]}'
+            }
+            yield {"type": "done", "ok": True, "tool_events": []}
+            return
+        yield {"type": "token", "text": "Update service.py so the function returns 2."}
+        yield {"type": "done", "ok": True, "tool_events": []}
+
+    monkeypatch.setattr(BeastApiClient, "stream_live_turn", fake_stream_live_turn)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Update the governed file",
+                "mode": "implementer",
+                "provider": "nvidia_nim",
+                "files": ["service.py"],
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        streamed = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}/run-events",
+            params={
+                "root_path": str(tmp_path),
+                "prompt": "Change service.py so value returns 2.",
+            },
+        )
+        detail = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}",
+            params={"root_path": str(tmp_path)},
+        )
+
+    text = streamed.text
+    outputs = detail.json()["session"]["outputs"]
+    final_output = next(item for item in reversed(outputs) if item.get("kind") == "streamed_agent_output")
+
+    assert streamed.status_code == 200
+    assert "event: agent_run_sourceplan" in text
+    assert final_output["sourceplan_status"] == "compiled_action_ir"
+    assert final_output["sourceplan_operation_count"] == 1
+    assert any(item.get("kind") == "agent_action_ir_repair" for item in outputs)
+
+
+@pytest.mark.asyncio
+async def test_ide_mission_timeline_and_sourceplan_lifecycle_facades(tmp_path):
+    target = tmp_path / "service.py"
+    original = "def value():\n    return 1\n"
+    target.write_text(original, encoding="utf-8")
+    client_api = BeastApiClient("http://offline", workspace=tmp_path)
+    plan = {
+        "plan_id": "desktop_lifecycle_probe",
+        "kind": "beast_source_patch_plan",
+        "objective": "Inspect lifecycle",
+        "provider": "nvidia_nim",
+        "files_allowed": ["service.py"],
+        "operations": [{
+            "op_id": "op_001",
+            "op": "replace_exact",
+            "path": "service.py",
+            "old": "return 1",
+            "new": "return 2",
+            "expected_hash": client_api._file_hash_text(original),
+            "selected": True,
+            "source_edit": True,
+        }],
+        "selected_operations": ["op_001"],
+    }
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={"root_path": str(tmp_path), "objective": "Timeline probe", "provider": "nvidia_nim"},
+        )
+        lifecycle = await client.post(
+            "/edgek/ide/sourceplan/lifecycle",
+            json={"root_path": str(tmp_path), "plan": plan},
+        )
+        timeline = await client.get(
+            "/edgek/ide/mission-timeline",
+            params={"root_path": str(tmp_path), "objective": "Timeline probe", "limit": 20},
+        )
+
+    assert created.status_code == 200
+    assert lifecycle.status_code == 200
+    lifecycle_payload = lifecycle.json()
+    assert lifecycle_payload["beast_object_type"] == "beast_ide_sourceplan_lifecycle"
+    assert lifecycle_payload["plan_id"] == "desktop_lifecycle_probe"
+    assert lifecycle_payload["can_apply"] is True
+    assert {stage["stage"] for stage in lifecycle_payload["stages"]} >= {"draft", "preview", "scorecard", "verify", "evidence"}
+    assert timeline.status_code == 200
+    timeline_payload = timeline.json()
+    assert timeline_payload["beast_object_type"] == "beast_ide_mission_timeline"
+    assert any(item["kind"] == "agent_session" for item in timeline_payload["entries"])
+
+
+@pytest.mark.asyncio
+async def test_evidence_bus_query_supports_desktop_drawer_filters(tmp_path):
+    receipt = EvidenceBus(tmp_path).register(
+        artifact_type="desktop_probe",
+        artifact_path=tmp_path / "probe.json",
+        artifact_hash="sha256:probe",
+        source="desktop_ide_test",
+        task_id="plan_probe",
+        status="verified",
+        summary="Desktop evidence drawer probe",
+    )
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        query = await client.get(
+            "/edgek/evidence-bus/query",
+            params={
+                "root_path": str(tmp_path),
+                "source": "desktop_ide_test",
+                "artifact_type": "desktop_probe",
+                "status": "verified",
+                "plan_id": "plan_probe",
+            },
+        )
+        related = await client.get(
+            f"/edgek/evidence-bus/related/{receipt['receipt_id']}",
+            params={"root_path": str(tmp_path)},
+        )
+
+    assert query.status_code == 200
+    assert query.json()["match_count"] == 1
+    assert query.json()["receipts"][0]["receipt_id"] == receipt["receipt_id"]
+    assert related.status_code == 200
+    assert related.json()["match_count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_governed_terminal_executes_allowed_command_and_records_evidence(tmp_path):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/edgek/safety-governor/execute-command",
+            json={
+                "root_path": str(tmp_path),
+                "command": "python3 --version",
+                "mode": "operator",
+                "task_id": "terminal_probe",
+            },
+        )
+        evidence = await client.get(
+            "/edgek/evidence-bus/query",
+            params={"root_path": str(tmp_path), "source": "governed_terminal", "task_id": "terminal_probe"},
+        )
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["beast_object_type"] == "beast_governed_terminal_execution"
+    assert payload["ok"] is True
+    assert payload["returncode"] == 0
+    assert "Python" in payload["stdout"]
+    assert payload["evidence_receipt"]["source"] == "governed_terminal"
+    assert evidence.json()["match_count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_governed_terminal_blocks_dangerous_command(tmp_path):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/edgek/safety-governor/execute-command",
+            json={
+                "root_path": str(tmp_path),
+                "command": "rm -rf /tmp/definitely-do-not-run",
+                "mode": "operator",
+            },
+        )
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["ok"] is False
+    assert payload["error"] == "blocked_by_safety_governor"
+    assert payload["safety"]["decision"] == "block"
 
 
 def test_modularized_routes_are_not_active_duplicates():

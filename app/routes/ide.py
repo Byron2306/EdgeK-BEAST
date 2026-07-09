@@ -68,6 +68,153 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 continue
         return {}
 
+    def _action_ir_retry_prompt(objective: str, previous_output: str, allowed_files: list[str]) -> str:
+        allowed = "\n".join(f"- {path}" for path in allowed_files) or "- provide one allowed file first"
+        bounded_previous = str(previous_output or "")[:8000]
+        return (
+            "Return BEAST Action IR JSON only. Do not include markdown, prose, or explanation.\n\n"
+            f"Objective: {objective or 'Convert the prior answer into a governed file edit.'}\n"
+            "Allowed files:\n"
+            f"{allowed}\n\n"
+            f"Schema:\n{{\"kind\": \"{ACTION_IR_KIND}\", \"objective\": \"...\", \"actions\": [{{\"type\": \"replace_exact\", \"target\": {{\"path\": \"relative/file.py\"}}, \"old\": \"exact old snippet\", \"new\": \"replacement\"}}]}}\n\n"
+            "Rules:\n"
+            "1. Use only allowed files.\n"
+            "2. Use exact old snippets that exist in the file today.\n"
+            "3. Emit the smallest valid set of replace_exact actions.\n"
+            "4. Return one JSON object and nothing else.\n\n"
+            "Previous answer to convert:\n"
+            f"{bounded_previous}"
+        )
+
+    def _compile_agent_action_ir_sourceplan(
+        root: Path,
+        *,
+        output: str,
+        provider: str,
+        requested_files: list[str],
+        active_file: str = "",
+        objective: str = "",
+    ) -> dict[str, Any]:
+        allowed = [str(item) for item in requested_files if item]
+        if active_file:
+            allowed.insert(0, str(active_file))
+        allowed = list(dict.fromkeys(allowed))
+        parsed = _extract_json_object(output)
+        is_action_ir = str(parsed.get("kind") or "") == ACTION_IR_KIND or isinstance(parsed.get("actions"), list)
+        if not is_action_ir:
+            return {
+                "ok": False,
+                "status": "not_action_ir",
+                "error": "Agent output did not contain BEAST Action IR JSON.",
+                "requires_operator_translation": True,
+                "missing_context_questions": [
+                    "Which exact file path and symbol/range should be edited?",
+                    "What exact old snippet or anchor should be replaced?",
+                    "Should BEAST draft a SourcePlan from the current editor selection instead?",
+                ],
+                "retry_options": [
+                    {"id": "ask_for_action_ir", "label": "Ask agent for BEAST Action IR only"},
+                    {"id": "narrow_selection", "label": "Narrow editor selection and retry"},
+                    {"id": "sourceplan_from_selection", "label": "Use SourcePlan from selection"},
+                ],
+                "action_ir_schema": {
+                    "kind": ACTION_IR_KIND,
+                    "actions": [{"type": "replace_exact", "target": {"path": "relative/file.py"}, "old": "exact old snippet", "new": "replacement"}],
+                },
+            }
+        if not allowed:
+            return {
+                "ok": False,
+                "status": "no_allowed_files",
+                "error": "No allowed context files were provided for Action IR resolution.",
+                "missing_context_questions": ["Select or open the file the agent is allowed to edit."],
+                "retry_options": [{"id": "include_active_file", "label": "Include active file and retry"}],
+            }
+        try:
+            file_refs = build_file_references(root, allowed)
+            action_ir = ActionIR.from_dict(parsed)
+            resolved, non_mutating = resolve_action_ir(root, action_ir, file_refs, allowed)
+            operations = []
+            for index, item in enumerate(resolved):
+                action = item.action
+                operations.append({
+                    "op_id": str(action.id or f"a{index + 1}"),
+                    "op": "replace_exact",
+                    "path": item.path,
+                    "old": item.old,
+                    "new": item.new,
+                    "description": action.intent or f"Action IR {action.type} for {item.path}",
+                    "beast_managed": False,
+                    "source_edit": True,
+                    "provider_generated": True,
+                    "selected": True,
+                    "expected_hash": item.expected_sha256,
+                    "action_ir_id": action.id,
+                    "action_ir_type": action.type,
+                    "anchor_ref": action.target.anchor_ref,
+                    "symbol": action.target.symbol,
+                    "resolver": "action_ir.resolve_action_ir",
+                })
+            plan_id = "ide_air_" + hashlib.sha256(f"{root}|{provider}|{time.time()}".encode("utf-8")).hexdigest()[:12]
+            plan = {
+                "plan_id": plan_id,
+                "kind": "beast_ide_agent_action_ir_sourceplan",
+                "status": "draft_requires_approval",
+                "objective": str(action_ir.objective or objective or "Apply agent Action IR through BEAST IDE"),
+                "provider": provider,
+                "workspace": str(root),
+                "risk_level": "high",
+                "approval_required": True,
+                "provider_generated": True,
+                "requires_operator_translation": False,
+                "action_ir": action_ir.to_dict(),
+                "output_evidence": {
+                    "contract": ACTION_IR_KIND,
+                    "schema_valid": True,
+                    "path_valid": True,
+                    "operation_valid": True,
+                    "diff_compiled": True,
+                    "compiled_operation_count": len(operations),
+                },
+                "non_mutating_requests": [item.to_dict() for item in non_mutating],
+                "context_files": [{"path": path} for path in allowed],
+                "files_allowed": allowed,
+                "files_blocked": [],
+                "operations": operations,
+                "selected_operations": [op["op_id"] for op in operations],
+                "apply_policy": {"source_edits_require": ["selected file", "expected hash", "approval", "verification", "rollback"], "rollback_required": True, "run_py_compile": True, "run_tests": False},
+                "created_at": int(time.time()),
+            }
+            receipt = EvidenceBus(root).register(
+                artifact_type="beast_ide_agent_action_ir_sourceplan",
+                artifact_path=root / ".beast" / "ide" / "agent-action-ir",
+                artifact_hash=_json_hash(plan),
+                source="desktop_ide",
+                task_id=plan_id,
+                status="compiled_action_ir",
+                summary=f"Compiled {len(operations)} Action IR operation(s) from agent output",
+                metadata={"operation_count": len(operations), "provider": provider},
+            )
+            return {"ok": True, "status": "compiled_action_ir", "plan": plan, "operation_count": len(operations), "evidence_receipt": receipt}
+        except Exception as exc:
+            return {
+                "ok": False,
+                "status": "action_ir_rejected",
+                "error": str(exc),
+                "requires_operator_translation": True,
+                "allowed_files": allowed,
+                "missing_context_questions": [
+                    "Does the Action IR old snippet exactly match the current file?",
+                    "Is the target file included in the allowed context files?",
+                    "Would a symbol-scoped range avoid stale or ambiguous context?",
+                ],
+                "retry_options": [
+                    {"id": "reload_context", "label": "Reload file/context and retry"},
+                    {"id": "ask_for_exact_old", "label": "Ask agent for exact old/new snippets"},
+                    {"id": "sourceplan_from_selection", "label": "Draft from current selection"},
+                ],
+            }
+
     def _safe_relative(root: Path, rel: str) -> Path | None:
         if not rel or Path(rel).is_absolute() or ".." in Path(rel).parts:
             return None
@@ -1941,128 +2088,14 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
     @router.post("/edgek/ide/agent-sessions/action-ir-sourceplan")
     async def edgek_ide_agent_session_action_ir_sourceplan(payload: dict[str, Any] = None):
         payload = payload or {}
-        root = _root(payload.get("root_path"))
-        output = str(payload.get("output") or "")
-        provider = str(payload.get("provider") or "desktop_agent")
-        requested_files = [str(item) for item in payload.get("files") or [] if item]
-        if payload.get("active_file"):
-            requested_files.insert(0, str(payload.get("active_file")))
-        allowed = list(dict.fromkeys(requested_files))
-        parsed = _extract_json_object(output)
-        is_action_ir = str(parsed.get("kind") or "") == ACTION_IR_KIND or isinstance(parsed.get("actions"), list)
-        if not is_action_ir:
-            return {
-                "ok": False,
-                "status": "not_action_ir",
-                "error": "Agent output did not contain BEAST Action IR JSON.",
-                "requires_operator_translation": True,
-                "missing_context_questions": [
-                    "Which exact file path and symbol/range should be edited?",
-                    "What exact old snippet or anchor should be replaced?",
-                    "Should BEAST draft a SourcePlan from the current editor selection instead?",
-                ],
-                "retry_options": [
-                    {"id": "ask_for_action_ir", "label": "Ask agent for BEAST Action IR only"},
-                    {"id": "narrow_selection", "label": "Narrow editor selection and retry"},
-                    {"id": "sourceplan_from_selection", "label": "Use SourcePlan from selection"},
-                ],
-                "action_ir_schema": {
-                    "kind": ACTION_IR_KIND,
-                    "actions": [{"type": "replace_exact", "target": {"path": "relative/file.py"}, "old": "exact old snippet", "new": "replacement"}],
-                },
-            }
-        if not allowed:
-            return {
-                "ok": False,
-                "status": "no_allowed_files",
-                "error": "No allowed context files were provided for Action IR resolution.",
-                "missing_context_questions": ["Select or open the file the agent is allowed to edit."],
-                "retry_options": [{"id": "include_active_file", "label": "Include active file and retry"}],
-            }
-        try:
-            file_refs = build_file_references(root, allowed)
-            action_ir = ActionIR.from_dict(parsed)
-            resolved, non_mutating = resolve_action_ir(root, action_ir, file_refs, allowed)
-            operations = []
-            for index, item in enumerate(resolved):
-                action = item.action
-                operations.append({
-                    "op_id": str(action.id or f"a{index + 1}"),
-                    "op": "replace_exact",
-                    "path": item.path,
-                    "old": item.old,
-                    "new": item.new,
-                    "description": action.intent or f"Action IR {action.type} for {item.path}",
-                    "beast_managed": False,
-                    "source_edit": True,
-                    "provider_generated": True,
-                    "selected": True,
-                    "expected_hash": item.expected_sha256,
-                    "action_ir_id": action.id,
-                    "action_ir_type": action.type,
-                    "anchor_ref": action.target.anchor_ref,
-                    "symbol": action.target.symbol,
-                    "resolver": "action_ir.resolve_action_ir",
-                })
-            plan_id = "ide_air_" + hashlib.sha256(f"{root}|{provider}|{time.time()}".encode("utf-8")).hexdigest()[:12]
-            plan = {
-                "plan_id": plan_id,
-                "kind": "beast_ide_agent_action_ir_sourceplan",
-                "status": "draft_requires_approval",
-                "objective": str(action_ir.objective or payload.get("objective") or "Apply agent Action IR through BEAST IDE"),
-                "provider": provider,
-                "workspace": str(root),
-                "risk_level": "high",
-                "approval_required": True,
-                "provider_generated": True,
-                "requires_operator_translation": False,
-                "action_ir": action_ir.to_dict(),
-                "output_evidence": {
-                    "contract": ACTION_IR_KIND,
-                    "schema_valid": True,
-                    "path_valid": True,
-                    "operation_valid": True,
-                    "diff_compiled": True,
-                    "compiled_operation_count": len(operations),
-                },
-                "non_mutating_requests": [item.to_dict() for item in non_mutating],
-                "context_files": [{"path": path} for path in allowed],
-                "files_allowed": allowed,
-                "files_blocked": [],
-                "operations": operations,
-                "selected_operations": [op["op_id"] for op in operations],
-                "apply_policy": {"source_edits_require": ["selected file", "expected hash", "approval", "verification", "rollback"], "rollback_required": True, "run_py_compile": True, "run_tests": False},
-                "created_at": int(time.time()),
-            }
-            receipt = EvidenceBus(root).register(
-                artifact_type="beast_ide_agent_action_ir_sourceplan",
-                artifact_path=root / ".beast" / "ide" / "agent-action-ir",
-                artifact_hash=_json_hash(plan),
-                source="desktop_ide",
-                task_id=plan_id,
-                status="compiled_action_ir",
-                summary=f"Compiled {len(operations)} Action IR operation(s) from agent output",
-                metadata={"operation_count": len(operations), "provider": provider},
-            )
-            return {"ok": True, "status": "compiled_action_ir", "plan": plan, "operation_count": len(operations), "evidence_receipt": receipt}
-        except Exception as exc:
-            return {
-                "ok": False,
-                "status": "action_ir_rejected",
-                "error": str(exc),
-                "requires_operator_translation": True,
-                "allowed_files": allowed,
-                "missing_context_questions": [
-                    "Does the Action IR old snippet exactly match the current file?",
-                    "Is the target file included in the allowed context files?",
-                    "Would a symbol-scoped range avoid stale or ambiguous context?",
-                ],
-                "retry_options": [
-                    {"id": "reload_context", "label": "Reload file/context and retry"},
-                    {"id": "ask_for_exact_old", "label": "Ask agent for exact old/new snippets"},
-                    {"id": "sourceplan_from_selection", "label": "Draft from current selection"},
-                ],
-            }
+        return _compile_agent_action_ir_sourceplan(
+            _root(payload.get("root_path")),
+            output=str(payload.get("output") or ""),
+            provider=str(payload.get("provider") or "desktop_agent"),
+            requested_files=[str(item) for item in payload.get("files") or [] if item],
+            active_file=str(payload.get("active_file") or ""),
+            objective=str(payload.get("objective") or ""),
+        )
 
     @router.get("/edgek/ide/agent-sessions/{session_id}/run-events")
     async def edgek_ide_agent_session_run_events(
@@ -2077,6 +2110,37 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
         max_tokens: int = 2000,
         context_max_chars_each: int = 30000,
     ):
+        async def _stream_repair_action_ir(
+            client: BeastApiClient,
+            *,
+            objective: str,
+            previous_output: str,
+            provider_id: str,
+            model_id: str,
+            files: list[str],
+            max_output_tokens: int,
+            max_context_chars: int,
+        ) -> tuple[str, list[str]]:
+            repair_prompt = _action_ir_retry_prompt(objective, previous_output, files)
+            repair_parts: list[str] = []
+            repair_tools: list[str] = []
+            async for event in client.stream_live_turn(
+                repair_prompt,
+                [],
+                provider=provider_id,
+                model=model_id,
+                context_files=files,
+                max_tokens=max(256, min(int(max_output_tokens), 2400)),
+                context_max_chars_each=max(1200, min(int(max_context_chars), 60000)),
+                governance_level="ide_agent_session_action_ir_repair",
+            ):
+                event_type = str(event.get("type") or "event")
+                if event_type == "token":
+                    repair_parts.append(str(event.get("text") or ""))
+                elif event_type == "tool":
+                    repair_tools.append(str(event.get("text") or ""))
+            return "".join(repair_parts), repair_tools
+
         async def generate():
             root = _root(root_path)
             store = AgentSessionStore(root)
@@ -2108,6 +2172,7 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
             assistant_parts: list[str] = []
             tool_events: list[str] = []
             try:
+                client = BeastApiClient(_request_base_url(request), workspace=root)
                 if simulate:
                     yield _event("agent_run_stage", {"session_id": session_id, "text": "desktop simulation"})
                     simulated = (
@@ -2119,7 +2184,6 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         yield _event("agent_run_token", {"session_id": session_id, "text": chunk})
                         await asyncio.sleep(0.01)
                 else:
-                    client = BeastApiClient(_request_base_url(request), workspace=root)
                     async for event in client.stream_live_turn(
                         run_prompt,
                         [],
@@ -2149,6 +2213,62 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         elif event_type == "error":
                             yield _event("agent_run_error", {"session_id": session_id, "ok": False, "error": event.get("error") or "stream error"})
                 assistant_text = "".join(assistant_parts)
+                compile_result = _compile_agent_action_ir_sourceplan(
+                    root,
+                    output=assistant_text,
+                    provider=run_provider,
+                    requested_files=context_file_list,
+                    objective=run_prompt,
+                )
+                repair_text = ""
+                if not compile_result.get("ok") and not simulate and context_file_list:
+                    yield _event("agent_run_stage", {"session_id": session_id, "text": "sourceplan repair"})
+                    repair_text, repair_tools = await _stream_repair_action_ir(
+                        client,
+                        objective=run_prompt,
+                        previous_output=assistant_text,
+                        provider_id=run_provider,
+                        model_id=run_model,
+                        files=context_file_list,
+                        max_output_tokens=max_tokens,
+                        max_context_chars=context_max_chars_each,
+                    )
+                    for item in repair_tools[:20]:
+                        tool_events.append(item)
+                        yield _event("agent_run_tool", {"session_id": session_id, "text": item})
+                    if repair_text.strip():
+                        store.update(
+                            session_id,
+                            output={
+                                "kind": "agent_action_ir_repair",
+                                "text": repair_text,
+                                "provider": run_provider,
+                                "model": run_model,
+                            },
+                        )
+                        compile_result = _compile_agent_action_ir_sourceplan(
+                            root,
+                            output=repair_text,
+                            provider=run_provider,
+                            requested_files=context_file_list,
+                            objective=run_prompt,
+                        )
+                sourceplan_status = str(compile_result.get("status") or "requires_operator_translation")
+                if compile_result.get("ok"):
+                    yield _event("agent_run_sourceplan", {
+                        "ok": True,
+                        "session_id": session_id,
+                        "status": sourceplan_status,
+                        "operation_count": int(compile_result.get("operation_count") or 0),
+                        "plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
+                    })
+                else:
+                    yield _event("agent_run_needs_operator", {
+                        "ok": False,
+                        "session_id": session_id,
+                        "status": sourceplan_status,
+                        "error": str(compile_result.get("error") or "Action IR compilation requires operator translation."),
+                    })
                 result = store.update(
                     session_id,
                     status="active",
@@ -2159,13 +2279,26 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         "provider": run_provider,
                         "model": run_model,
                         "simulated": bool(simulate),
+                        "sourceplan_status": sourceplan_status,
+                        "sourceplan_operation_count": int(compile_result.get("operation_count") or 0),
+                        "sourceplan_plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
                     },
+                    evidence=[{
+                        "beast_object_type": "beast_agent_session_sourceplan_status",
+                        "session_id": session_id,
+                        "status": sourceplan_status,
+                        "operation_count": int(compile_result.get("operation_count") or 0),
+                        "plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
+                        "error": str(compile_result.get("error") or ""),
+                        "timestamp": time.time(),
+                    }],
                     budget_delta={"tokens": max(1, len(assistant_text) // 4)},
                 )
                 yield _event("agent_run_done", {
                     "ok": True,
                     "session_id": session_id,
                     "chars": len(assistant_text),
+                    "sourceplan_status": sourceplan_status,
                     "session": result.get("session") if result.get("ok") else {},
                 })
             except Exception as exc:

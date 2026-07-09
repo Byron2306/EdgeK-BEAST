@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="520" style="max-width: 92%; height: auto;">
+  <img src="assets/release/branding/beast-mascot-transparent.png" alt="BEAST mascot" width="520" style="max-width: 92%; height: auto;">
 </p>
 
 # BEAST - Auditable, Governed AI Editing via MCP and Gateway
@@ -9,6 +9,10 @@ sits between your repository, local tools, MCP clients, and model providers so
 models can propose work while BEAST owns the hard parts: context selection,
 policy checks, safe patch compilation, verification, rollback evidence, and
 multi-provider routing through one governed gateway.
+
+Economic and "inversion" claims should be treated as an open research question
+until the blinded public benchmark harness in `benchmarks/public_economic_thesis_harness.py`
+has been run with published baselines, grading packets, and full cost ledgers.
 
 The current upgrade turns BEAST from a collection of strong subsystems into a
 more coherent agentic IDE runtime:

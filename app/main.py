@@ -437,9 +437,10 @@ cli_assets_dir = Path(__file__).parent / "cli" / "assets"
 if cli_assets_dir.exists():
     app.mount("/beast-assets", StaticFiles(directory=str(cli_assets_dir)), name="beast-assets")
 commons_media_files = {
-    "beast-logo.png": Path(__file__).resolve().parents[1] / "BEAST_mascot-removebg-preview.png",
-    "inference-economy.mp4": Path(__file__).resolve().parents[1] / "BEAST__Inference_Economy.mp4",
-    "inference-inversion.pptx": Path(__file__).resolve().parents[1] / "BEAST_INFERENCE_INVERSION.pptx",
+    "beast-logo.png": Path(__file__).resolve().parents[1] / "assets" / "release" / "branding" / "beast-mascot-cutout.png",
+    "inference-economy.mp4": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-economy.mp4",
+    "inference-inversion.pptx": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-inversion.pptx",
+    "inference-economy-paper.pdf": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-economy-paper.pdf",
 }
 
 # In-memory process counters; durable governance state lives in the kernel stores.
