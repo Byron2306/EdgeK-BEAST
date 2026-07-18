@@ -1,0 +1,81 @@
+{
+  "product": "BEAST IDE",
+  "version": "3.1.0-rc4",
+  "build_id": "BEAST-IDE-3.1.0-RC4",
+  "codename": "BLACKGLASS",
+  "release_date": "2026-07-14",
+  "phase": "12.4 RC4 visual stabilization",
+  "routes": [
+    "studio",
+    "workspace",
+    "source",
+    "mission",
+    "models",
+    "agents",
+    "review",
+    "trust",
+    "memory",
+    "evidence",
+    "crystallization",
+    "map",
+    "terminal",
+    "tooling",
+    "doctor",
+    "providers",
+    "system",
+    "worktrees",
+    "deploy",
+    "chronicle",
+    "economy",
+    "settings"
+  ],
+  "route_count": 22,
+  "profiles": [
+    {
+      "id": "fhd-100",
+      "label": "1920×1080 at 100%",
+      "width": 1920,
+      "height": 1080,
+      "metrics": "acceptance/RC4_VISUAL_METRICS_1920x1080.json"
+    },
+    {
+      "id": "wsxga-100",
+      "label": "1600×900 at 100%",
+      "width": 1600,
+      "height": 900,
+      "metrics": "acceptance/RC4_VISUAL_METRICS_1600x900.json"
+    },
+    {
+      "id": "hd-100",
+      "label": "1366×768 at 100%",
+      "width": 1366,
+      "height": 768,
+      "metrics": "acceptance/RC4_VISUAL_METRICS_1366x768.json"
+    },
+    {
+      "id": "fhd-125",
+      "label": "1920×1080 equivalent at 125%",
+      "width": 1536,
+      "height": 864,
+      "metrics": "acceptance/RC4_VISUAL_METRICS_1536x864.json"
+    },
+    {
+      "id": "fhd-150",
+      "label": "1920×1080 equivalent at 150%",
+      "width": 1280,
+      "height": 720,
+      "metrics": "acceptance/RC4_VISUAL_METRICS_1280x720.json"
+    }
+  ],
+  "structural_scenarios": 110,
+  "entrypoint": "index.html",
+  "production_css": "css/beast-production.css",
+  "application_owner": "js/beast-release-app.js",
+  "visual_owner": "js/beast-visual-runtime.js",
+  "runtime_contract": "js/beast-runtime-contract.js",
+  "release_guard": "js/beast-release-guard.js",
+  "acceptance_runner": "acceptance/release-runner.html",
+  "visual_acceptance_summary": "acceptance/RC4_VISUAL_ACCEPTANCE_SUMMARY.json",
+  "visual_acceptance_status": "PASS",
+  "live_status": "PENDING_ELECTRON_OPERATOR_ACCEPTANCE"
+}

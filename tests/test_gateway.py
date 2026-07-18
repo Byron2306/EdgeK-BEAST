@@ -2,6 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
+from benchmarks import public_economic_thesis_harness as harness
 
 
 def _client():
@@ -55,6 +56,68 @@ async def test_commons_media_assets():
     assert video.status_code == 200
     assert "video" in video.headers["content-type"]
     assert deck.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_public_benchmark_grading_daemon_route(tmp_path):
+    rows = [
+        {
+            "source_path": "demo_governed.json",
+            "task": "task_a",
+            "lane_class": "governed",
+            "lane": "live_full_beast",
+            "provider": "demo",
+            "model": "demo-model",
+            "completed": True,
+            "latency_ms": 50.0,
+            "prompt": "task a",
+            "output_text": '{"kind":"beast.action_intent.v1","actions":[{"id":"a1","type":"replace_anchor","target":{"path":"app/a.py","anchor_ref":"A1"},"intent":"fix task a","new":"return 2"}],"verify":["python -m pytest tests -q"]}',
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "cost_usd": 0.03,
+            "verification": {},
+            "output_evidence": {},
+        },
+        {
+            "source_path": "demo_baseline.json",
+            "task": "task_b",
+            "lane_class": "baseline",
+            "lane": "live_raw",
+            "provider": "demo",
+            "model": "demo-model",
+            "completed": False,
+            "latency_ms": 70.0,
+            "prompt": "task b",
+            "output_text": "try changing the function maybe",
+            "prompt_tokens": 9,
+            "completion_tokens": 11,
+            "total_tokens": 20,
+            "cost_usd": 0.02,
+            "verification": {},
+            "output_evidence": {},
+        },
+    ]
+    packet = {
+        "generated_at": harness.utc_now(),
+        "claim_status": "open_research_question",
+        "claim_scope": "test",
+        "row_count": len(rows),
+        "rows": rows,
+    }
+    blind_info = harness.write_blind_grading(rows, tmp_path, seed=7)
+    harness.write_grader_template(tmp_path)
+    cost_info = harness.write_cost_accounting(rows, tmp_path)
+    harness.write_summary(packet, blind_info, cost_info, tmp_path)
+    harness.write_manifest(packet, blind_info, cost_info, tmp_path, [])
+
+    async with _client() as client:
+        response = await client.post("/edgek/benchmarks/public-grading-daemon", json={"packet_dir": str(tmp_path)})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["claim_status"] == "supported"
+    assert body["structural_claim_status"] == "supported"
 
 
 @pytest.mark.asyncio

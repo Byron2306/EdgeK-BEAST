@@ -1,0 +1,151 @@
+{
+  "bus_peer_death_observed": true,
+  "cgroup_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/beast-mission-isolation-proof.service/beast.slice/beast-heldout-live",
+  "cleanup_confirmed": true,
+  "clone3_supported": true,
+  "controllers": [
+    "cpu",
+    "memory",
+    "pids"
+  ],
+  "delegation": {
+    "available_controllers": [
+      "cpu",
+      "memory",
+      "pids"
+    ],
+    "capsule_created": true,
+    "enabled_controllers": [
+      "cpu",
+      "memory",
+      "pids"
+    ],
+    "full_controller_delegation": true,
+    "mission_id": "beast-heldout-live",
+    "parent_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/beast-mission-isolation-proof.service",
+    "parent_populated": false,
+    "reason": "delegated_controllers_ready",
+    "receipt_digest": "sha256:c1b9ce4337f1f3b99bbc044e2afcd81b956ed7af84a70dc584e5daa38970fe26",
+    "requested_controllers": [
+      "cpu",
+      "memory",
+      "pids"
+    ]
+  },
+  "descendant_containment": true,
+  "descriptor_cleanup": true,
+  "fault_receipts": {
+    "bus_peer_death": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:deb3e0b23c32dc03ac605feb88660a3d0b2fc4145522b775c7f95185cc6dda41",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "bus_peer_death",
+        "pid": 133318,
+        "verified": true
+      }
+    },
+    "descendant": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:a57d07f332fdddc7baa2265e9c29cf299fcf21fe3fb66b7903ef429b2729fc63",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "descendant_containment",
+        "pid": 133333,
+        "verified": true
+      }
+    },
+    "oom": {
+      "exit_code": 137,
+      "member_gone": true,
+      "receipt_digest": "sha256:2982797c42abc5836ff0bfa2f0cf9a9ec7fa798b10cd294b338ba45619a9698d",
+      "worker_evidence": {}
+    },
+    "rollback": {
+      "exit_code": 0,
+      "member_gone": true,
+      "receipt_digest": "sha256:d9bd45b3358628a2fc91510d054d8b172104dee5cb1991ca53bb412ad7244578",
+      "worker_evidence": {
+        "beast_object_type": "mission_fault_evidence",
+        "fault": "rollback",
+        "pid": 133326,
+        "verified": true
+      }
+    },
+    "timeout": {
+      "exit_code": 142,
+      "member_gone": true,
+      "receipt_digest": "sha256:2cd085baf0b6f2f82b8f4916fb08c2dbe8c1de920ad961b41757844a72dd23ee",
+      "worker_evidence": {}
+    }
+  },
+  "final_events": {
+    "frozen": 0,
+    "populated": 0
+  },
+  "freeze_observed": true,
+  "full_isolation_proven": false,
+  "host_available_controllers": [
+    "cpu",
+    "memory",
+    "pids"
+  ],
+  "initial_events": {
+    "frozen": 0,
+    "populated": 0
+  },
+  "limits_observed": {
+    "cpu.max": "50000 100000",
+    "memory.max": "33554432",
+    "memory.oom.group": "1",
+    "memory.swap.max": "0",
+    "pids.max": "16"
+  },
+  "limits_requested": {
+    "cpu.max": "50000 100000",
+    "memory.max": "33554432",
+    "memory.oom.group": "1",
+    "memory.swap.max": "0",
+    "pids.max": "16"
+  },
+  "mission_id": "beast-heldout-live",
+  "namespace_receipt_digest": "sha256:89153f0a47ca4508b39b5d6788b08172ba39439c2f9480e9d88c6de1c4400ab4",
+  "no_orphans": true,
+  "oom_observed": true,
+  "placement_boundary": "clone3_into_cgroup",
+  "populated_zero_observed": true,
+  "pressure": {
+    "cpu": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "memory": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+  },
+  "receipt_digest": "sha256:c4b00b4eeec85cb6cbffd4367291622ec4c214070f0ff68971f44ebba052787b",
+  "resource_stats": {
+    "cpu.stat": {
+      "burst_usec": 0,
+      "nice_usec": 0,
+      "nr_bursts": 0,
+      "nr_periods": 12,
+      "nr_throttled": 0,
+      "system_usec": 52413,
+      "throttled_usec": 0,
+      "usage_usec": 56445,
+      "user_usec": 4031
+    },
+    "memory.events": {
+      "high": 0,
+      "low": 0,
+      "max": 35,
+      "oom": 1,
+      "oom_group_kill": 1,
+      "oom_kill": 2
+    },
+    "pids.events": {
+      "max": 0
+    }
+  },
+  "rollback_observed": true,
+  "timeout_observed": true
+}

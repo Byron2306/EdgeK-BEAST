@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 2011,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:907eaceea0bff77f5a228c163b138776f4d1190ba60ce4e993d11299e6c62821"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 6985,
+      "path": "run_manifest.json",
+      "sha256": "sha256:60c9b2c77716774cd7220b7500a3653fe21ebb70847f3168ba768ae7a60cf598"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 345,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:bd21a1f912cbdcbfed516d795ae8c4787cd41f75b620e39a9aabdb747c626aba"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:9bea9bac1cf06e1d675137f9a37ad01a53456bcca3fd1eb5f471c5d3549405dc"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.926012+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_systems_benchmark_live_groq_gemini_10task_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_systems_benchmark_live_groq_gemini_10task_gauntlet"
+  },
+  "manifest_hash": "sha256:427c0e3f1f77ed62e289ac08dfb7ff83ea6f9e2ff38a0c9defd4bae650525b2a",
+  "name": "Beast Systems Benchmark Live Groq Gemini 10Task Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_systems_benchmark_live_groq_gemini_10task_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

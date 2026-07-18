@@ -13,6 +13,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from app.kernel.compute.resource_executor import ResourceExecutor, WorkloadProfile
+from app.kernel.compute.interference_buckets import classify as classify_interference
 
 
 @dataclass(frozen=True)
@@ -54,6 +56,7 @@ class AgentScheduler:
         self.workspace_root = Path(workspace_root).expanduser().resolve()
         self.store_dir = self.workspace_root / ".beast" / "compute"
         self.receipts_path = self.store_dir / "agent_scheduler_receipts.json"
+        self.resource_executor = ResourceExecutor(max_workers=4)
 
     def lanes(self) -> Dict[str, Any]:
         return {
@@ -75,6 +78,10 @@ class AgentScheduler:
         verification_failed: bool = False,
         high_value: bool = False,
         route_inputs: Optional[Dict[str, Any]] = None,
+        cpu_pressure: float = 0.0,
+        memory_pressure: float = 0.0,
+        io_pressure: float = 0.0,
+        trust: str = "verified",
     ) -> Dict[str, Any]:
         route_inputs = route_inputs if isinstance(route_inputs, dict) else self.collect_route_inputs(
             objective=objective,
@@ -121,6 +128,15 @@ class AgentScheduler:
         selected = list(dict.fromkeys(selected))
         lane_map = {lane.lane_id: lane for lane in LANES}
         selected_lanes = [lane_map[lane_id].to_dict() for lane_id in selected if lane_id in lane_map]
+        resource_lane = self._resource_lane(selected, risk_key)
+        interference = classify_interference(cpu_pressure=cpu_pressure, memory_pressure=memory_pressure, io_pressure=io_pressure, trust=trust, lane=resource_lane)
+        resource_profile = WorkloadProfile(
+            resource_lane,
+            interference.cpu_weight,
+            max(128, interference.memory_concurrency * 256),
+            180,
+            "sandbox" if resource_lane == "hazardous" else "thread",
+        )
         local_count = sum(1 for lane in selected_lanes if lane.get("locality") == "local")
         cloud_count = sum(1 for lane in selected_lanes if lane.get("locality") == "cloud")
         receipt = {
@@ -138,6 +154,8 @@ class AgentScheduler:
             "reasons": reasons,
             "route_inputs": route_inputs,
             "timestamp": time.time(),
+            "resource_profile": resource_profile.__dict__,
+            "interference": interference.__dict__,
         }
         self.record(receipt)
         return {
@@ -148,7 +166,22 @@ class AgentScheduler:
             "route_explanation": "; ".join(reasons),
             "route_inputs": route_inputs,
             "receipt": receipt,
+            "resource_profile": resource_profile.__dict__,
+            "interference": interference.__dict__,
         }
+
+    def execute(self, plan: Dict[str, Any], fn, *args, approved: bool = False, sandboxed: bool = False, **kwargs):
+        """Execute a scheduled callable through the selected resource lane."""
+        profile = WorkloadProfile(**dict(plan.get("resource_profile") or {}))
+        return self.resource_executor.submit(profile, fn, *args, approved=approved, sandboxed=sandboxed, **kwargs)
+
+    @staticmethod
+    def _resource_lane(selected: List[str], risk: str) -> str:
+        if risk in {"high", "critical"}: return "hazardous"
+        if "crystal_replay" in selected or "provider_implementer" in selected: return "inference"
+        if "local_verifier" in selected: return "cpu"
+        if "code_cortex_retriever" in selected: return "io"
+        return "interactive"
 
     def collect_route_inputs(
         self,

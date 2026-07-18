@@ -1,0 +1,79 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-21T04:56:47Z",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "raw"
+  ],
+  "planned_run_count": 1,
+  "providers": [
+    {
+      "api_key_env": "CEREBRAS_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.cerebras.ai/v1",
+      "model": "llama3.1-8b",
+      "provider": "cerebras_native",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 45.0
+    }
+  ],
+  "separation_rule": {
+    "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+    "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+    "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+  },
+  "tasks": [
+    {
+      "allowed_files": [
+        "app/output_guard.py"
+      ],
+      "hidden_tests": [
+        "tests/test_output_guard_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "output_governance_malformed_json",
+      "task_id": "output_governance_malformed_json",
+      "visible_tests": [
+        "tests/test_output_guard_public.py"
+      ]
+    }
+  ],
+  "trials": 1
+}

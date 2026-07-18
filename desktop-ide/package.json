@@ -1,0 +1,98 @@
+{
+  "name": "beast-desktop-ide",
+  "displayName": "BEAST Desktop IDE",
+  "version": "0.1.1",
+  "description": "Installable BEAST IDE shell with governed SourcePlan, Code Cortex, Evidence Bus, agent sessions, and worktree missions.",
+  "homepage": "https://github.com/EdgeK/BEAST",
+  "author": {
+    "name": "EdgeK",
+    "email": "maintainers@edgek.ai"
+  },
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "bash renderer/VERIFY_BEAST_IDE_RC4.sh renderer && node scripts/verify-enterprise-runtime-contract.js",
+    "smoke:launch": "node scripts/launch-smoke-desktop-ide.js",
+    "smoke:parity": "node scripts/verify-ide-parity-foundation.js",
+    "smoke:targets": "node scripts/verify-execution-target-parity.js",
+    "smoke:remote-dap": "node scripts/verify-remote-dap.js",
+    "visual:audit": "electron scripts/visual-audit-beast-studio.js",
+    "lint": "ruff check ../app/ --select E,F,W,I --ignore E501 --statistics",
+    "lint:fix": "ruff check ../app/ --select E,F,W,I --ignore E501 --fix",
+    "lint:format": "ruff format ../app/ --check",
+    "package:linux": "electron-builder --linux AppImage deb",
+    "package:dir": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^43.1.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "ai.edgek.beast.ide",
+    "productName": "BEAST Desktop IDE",
+    "icon": "icon.png",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "ide-compatibility-host.js",
+      "preload.js",
+      "scripts/**",
+      "extensions/**",
+      ".beast-python-tools/**",
+      "requirements-ide-tools.txt",
+      "node_modules/monaco-editor/min/vs/**",
+      "node_modules/bash-language-server/**",
+      "node_modules/typescript-language-server/**",
+      "node_modules/typescript/**",
+      "node_modules/pyright/**",
+      "node_modules/vscode-langservers-extracted/**",
+      "renderer/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".beast-python-tools",
+        "to": "python-tools",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "scripts",
+        "to": "scripts",
+        "filter": ["**/*.py", "beast-extension-host.js"]
+      },
+      {
+        "from": "extensions",
+        "to": "extensions",
+        "filter": ["**/*"]
+      }
+    ],
+    "asarUnpack": [
+      "scripts/**/*.py"
+    ],
+    "linux": {
+      "category": "Development",
+      "maintainer": "EdgeK <maintainers@edgek.ai>",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "dependencies": {
+    "bash-language-server": "^5.4.3",
+    "js-yaml": "^4.1.0",
+    "monaco-editor": "^0.55.1",
+    "pyright": "^1.1.411",
+    "typescript": "^5.9.3",
+    "typescript-language-server": "^4.3.4",
+    "vscode-langservers-extracted": "^4.10.0"
+  },
+  "overrides": {
+    "dompurify": "^3.4.12",
+    "minimatch": "10.2.3"
+  }
+}

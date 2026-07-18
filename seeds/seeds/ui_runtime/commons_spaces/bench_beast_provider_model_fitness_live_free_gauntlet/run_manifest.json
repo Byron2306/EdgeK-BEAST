@@ -1,0 +1,149 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-20T20:58:00Z",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "raw",
+    "full_beast"
+  ],
+  "planned_run_count": 10,
+  "providers": [
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": false,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "provider": "huggingface",
+      "stage0_route_gates": {
+        "api_key_present": false,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 60.0
+    },
+    {
+      "api_key_env": "GROQ_API_KEY",
+      "api_key_present": false,
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "provider": "groq",
+      "stage0_route_gates": {
+        "api_key_present": false,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 60.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": false,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "provider": "cerebras",
+      "stage0_route_gates": {
+        "api_key_present": false,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 60.0
+    },
+    {
+      "api_key_env": "GEMINI_API_KEY",
+      "api_key_present": false,
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "provider": "gemini",
+      "stage0_route_gates": {
+        "api_key_present": false,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 60.0
+    },
+    {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "api_key_present": false,
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "provider": "openrouter_gptoss",
+      "stage0_route_gates": {
+        "api_key_present": false,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 60.0
+    }
+  ],
+  "separation_rule": {
+    "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+    "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+    "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+  },
+  "tasks": [
+    {
+      "allowed_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_contracts_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_model_wiring",
+      "task_id": "provider_model_wiring",
+      "visible_tests": [
+        "tests/test_provider_contracts.py"
+      ]
+    }
+  ],
+  "trials": 1
+}

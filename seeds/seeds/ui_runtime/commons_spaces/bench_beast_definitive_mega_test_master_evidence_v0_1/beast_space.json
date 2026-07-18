@@ -1,0 +1,74 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1654,
+      "path": "README.md",
+      "sha256": "sha256:2aa6dc28190e2d59c24ba386bd8d04ca042904c5e065a2c9977e14edb5a28a44"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 207103,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:7f9f01ed19fe7e48536c9a9082ebc4ef8dbe43f1d5b9b50714de614874612292"
+    },
+    {
+      "artifact_type": "coverage_matrix",
+      "bytes": 9897,
+      "path": "coverage_matrix.json",
+      "sha256": "sha256:ea287e3b01705fc29ff65b221fa94d4b46a030c9be34a092907fe4db5f7dfbe5"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.541479+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_master_evidence_v0_1",
+    "registration_score": 3,
+    "signals": [
+      "integrity_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_master_evidence_v0_1"
+  },
+  "manifest_hash": "sha256:13fb28eff71252dc6c2c63eb301975783fbe15371815df6ebc4a8e77d54300b5",
+  "name": "Beast Definitive Mega Test Master Evidence V0 1",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_master_evidence_v0_1",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

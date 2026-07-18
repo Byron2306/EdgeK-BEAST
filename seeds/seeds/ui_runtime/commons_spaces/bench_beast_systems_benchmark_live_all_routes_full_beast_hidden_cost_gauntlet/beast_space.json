@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 36377,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:053aa4740678f457e0a57fa4c47d2dce56e3f26ca582d9503faed7b8eee6f19c"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 22126,
+      "path": "run_manifest.json",
+      "sha256": "sha256:6a61308f4a94927267aa013215bdb200acfd0b0992b0790194e54c9aff8f0540"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 4951,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:59d2a8cd6a5bd6d85307280d9701077a248c064da5b9a65c8224c3d4f13ff685"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 423,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:449f64b74ec047f913289939ffca41540f2fd0eee9d0f32e2a60e1dcc48a1bb6"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.848101+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_systems_benchmark_live_all_routes_full_beast_hidden_cost_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_systems_benchmark_live_all_routes_full_beast_hidden_cost_gauntlet"
+  },
+  "manifest_hash": "sha256:30037f5deccb6296c0976f3ee26550c3d5921bd6fe67c93dbb162487bdaf214f",
+  "name": "Beast Systems Benchmark Live All Routes Full Beast Hidden Cost Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_systems_benchmark_live_all_routes_full_beast_hidden_cost_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

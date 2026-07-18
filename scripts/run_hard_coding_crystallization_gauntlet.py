@@ -22,6 +22,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run BEAST hard-coding crystallization proof")
     parser.add_argument("--root", default="benchmarks/results/hard_coding_crystallization")
     parser.add_argument("--live-ollama", action="store_true")
+    parser.add_argument("--live-nim", action="store_true", help="use NVIDIA NIM as the executable ephemeral baseline/origin")
     parser.add_argument("--ollama-model", default="")
     parser.add_argument("--limit", type=int, default=0, help="Limit task families for a quick live smoke")
     args = parser.parse_args()
@@ -32,6 +33,7 @@ def main() -> int:
     receipt = HardCodingCrystallizationGauntlet(
         Path(args.root),
         live_ollama=bool(args.live_ollama),
+        live_nim=bool(args.live_nim),
         ollama_model=args.ollama_model,
     ).run(specs)
     print(json.dumps({

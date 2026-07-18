@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1423,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:6238e82278a4fbd7f1583f56fe0fe12f0332425e7bd2f2c882b4b0db322d598b"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2416,
+      "path": "run_manifest.json",
+      "sha256": "sha256:f0dac28dbe29ef1a5f935c3db63e089400af16185cce09decdecc5c726f10196"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 652,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:82d8a2c4a5c667aa9807b338b35bb8bb7cb5b3593e4d53da0b3c5a07a4a67288"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 420,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:12a182de7e76f576b34e8f60ecdb86f9425a530a1899e5358b39f9c90c0b794d"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.825618+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_provider_model_fitness_live_gemini_phase1_7_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_provider_model_fitness_live_gemini_phase1_7_gauntlet"
+  },
+  "manifest_hash": "sha256:0f16879617bf190e5bce548fa908abfca06f842b194240dd865a315b8dbc793b",
+  "name": "Beast Provider Model Fitness Live Gemini Phase1 7 Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_provider_model_fitness_live_gemini_phase1_7_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

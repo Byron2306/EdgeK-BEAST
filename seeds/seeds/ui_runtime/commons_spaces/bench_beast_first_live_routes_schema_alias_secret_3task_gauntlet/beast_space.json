@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 5889,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:6cb39ff79bf15659bfe1a886a811521bbdef6d8fce2e2234b8211bf62dafa286"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 5268,
+      "path": "run_manifest.json",
+      "sha256": "sha256:6d84cb36c59c841839e0f6e87aafcc604445c4ada3f1f98a3e4071739b313622"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 1163,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:0cc2556918f46cc052cd2f12f4d312ac0421412743b39b9fab20319b599bdc60"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:b4a8593be2a11c3517b95eb870cb6282b17d71be2e4e8248487683bf55b7677c"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.641374+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_first_live_routes_schema_alias_secret_3task_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_first_live_routes_schema_alias_secret_3task_gauntlet"
+  },
+  "manifest_hash": "sha256:11a4ad2107e317946d27c77e1d144eaab637fc37dca5c1f16d47578a215b86b0",
+  "name": "Beast First Live Routes Schema Alias Secret 3Task Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_first_live_routes_schema_alias_secret_3task_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

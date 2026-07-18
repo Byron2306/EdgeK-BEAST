@@ -1,0 +1,79 @@
+/* OPCB Phase 4 Asset Helpers: Models + Agents */
+:root {
+  --asset-cyan: #39d7ff;
+  --asset-teal: #39f0c2;
+  --asset-violet: #b36bff;
+  --asset-gold: #ffc857;
+  --asset-red: #ff5d6c;
+}
+
+.opcb-page-art.models {
+  background-image: url("../svg/models-page-bg.svg");
+}
+
+.opcb-page-art.agents {
+  background-image: url("../svg/agents-page-bg.svg");
+}
+
+.opcb-model-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(57, 215, 255, .28);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(7, 20, 38, .78);
+  color: #c8e6ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opcb-model-chip[data-local="true"] {
+  border-color: rgba(57, 240, 194, .38);
+  color: var(--asset-teal);
+}
+
+.opcb-model-chip[data-fallback="true"] {
+  border-color: rgba(255, 200, 87, .4);
+  color: var(--asset-gold);
+}
+
+.opcb-agent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(57, 240, 194, .28);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(7, 20, 38, .78);
+  color: #c8e6ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opcb-agent-chip[data-online="true"] {
+  border-color: rgba(57, 240, 194, .42);
+  color: var(--asset-teal);
+}
+
+.opcb-models-pulse,
+.opcb-agents-pulse {
+  width: 164px;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+.opcb-models-glow {
+  border-color: rgba(57, 215, 255, .4) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57, 215, 255, .12),
+    0 0 24px rgba(57, 215, 255, .16);
+}
+
+.opcb-agents-glow {
+  border-color: rgba(57, 240, 194, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57, 240, 194, .12),
+    0 0 24px rgba(57, 240, 194, .16);
+}

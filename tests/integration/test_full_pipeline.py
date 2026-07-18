@@ -2,7 +2,7 @@
 
 from app.kernel.compute.ablation_harness import AblationHarness
 from app.kernel.capability.capability_crystallization import CapabilityCrystallizationEngine
-from app.kernel.compute.compute_forge import ComputeForgeNode, ComputeLedger
+from app.kernel.compute.compute_forge import ComputeForgeNode, ForgeCreditLedger
 from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.compute.kv_cache_transport import CacheEngine, CacheLocation, CrossEngineKVCacheTransport
@@ -88,7 +88,7 @@ def test_full_pipeline_cpu_records_real_stage_evidence(tmp_path):
     )
     assert (tmp_path / "credits" / f"{credit.credit_id}.json").is_file()
 
-    ledger = ComputeLedger()
+    ledger = ForgeCreditLedger()
     ledger.update_from_node(node)
     state = ledger.to_dict()
     assert state["node_count"] == 1

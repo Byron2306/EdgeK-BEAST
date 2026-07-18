@@ -1,0 +1,104 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 612,
+      "path": "README.md",
+      "sha256": "sha256:b99f30627a218d7d4616d795689765f9b385e067ed2849d325d3a1bac499c17c"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 2856,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:a53bfd95e26130a6f5e15ad88fd71a3f902e60608317cb613cdb2ee61b82900e"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1435,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:2662458a9bde3d83430561ef0412f2a2d55d3bf94461bb26974a79c4bc6c3dd2"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 14131,
+      "path": "run_manifest.json",
+      "sha256": "sha256:6e05406fbe0d8c92bb97f214107c2beb16986b0378a8f4f7cffa749204508a85"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 98,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:1491582faa486b27381d5e5456ea1832f37f3478e73924cb4242a491b49c9911"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "live_verifier_contract",
+      "bytes": 969,
+      "path": "live_verifier_contract.json",
+      "sha256": "sha256:0bd068e5a467cd48512ab5e4f614dbb84776c0d6218f0956168bee6ce39645d6"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T08:43:52.765147+00:00",
+  "hardware_profile": {
+    "execution_class": "cpu_only_live_evidence_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_nim_live_crystal_phase_package",
+    "promoted_from_manifest_hash": "sha256:af6d32a8ca5192a7f7d9d4cfc252bdb8d6aa47e4b59567b68052a63f76792098",
+    "proof_mode": "three_distinct_live_verifier_reproductions",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_nim_live_crystal_phase_package"
+  },
+  "manifest_hash": "sha256:5b598d2ff2039d167106c203823efb12a5dfdd256663cb55289ea976bce4f6ea",
+  "name": "Beast Definitive Mega Test Nim Live Crystal Phase Package",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": true,
+    "cloud_calls_avoided": 1,
+    "cloud_calls_evidence": "local_route_policy_counterfactual",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "approved_candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_nim_live_crystal_phase_package",
+  "task_class": "local_benchmark_evidence_reuse",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "space_local_hashed_benchmark_evidence",
+      "bundle_id": "live_evidence_bench_beast_definitive_mega_test_nim_live_crystal_phase_package",
+      "commands": [
+        "python -m pytest tests/test_commons_promoted_space_verifiers.py -q -k bench_beast_definitive_mega_test_nim_live_crystal_phase_package"
+      ],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

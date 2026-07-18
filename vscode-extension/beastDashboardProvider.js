@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-const fetch = require('node-fetch'); // We'll use node-fetch for compatibility, but note we might need to install it.
 
 class BeastDashboardProvider {
     constructor() {

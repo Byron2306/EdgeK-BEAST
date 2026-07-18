@@ -59,6 +59,7 @@ async def _registry_chat(provider: str, request: Request):
         )
     body: Dict[str, Any] = await request.json()
     body = dict(body)
+    requested_model = str(body.get("model") or "").strip()
     adapter_plan = ProviderAdapterRegistry().adapter_for(provider).plan_chat(str(body.get("model") or ""))
     body["model"] = adapter_plan.model
     body.setdefault("metadata", {})
@@ -68,6 +69,9 @@ async def _registry_chat(provider: str, request: Request):
         body["metadata"]["route_provider"] = adapter_plan.route_provider
         body["metadata"]["provider_config"] = adapter_plan.to_dict()
     if _should_direct_sse(body, adapter_plan.to_dict()):
+        # LiteLLM adapter names include its internal transport prefix.  A
+        # direct provider SSE call must receive the upstream model id instead.
+        body["model"] = _direct_upstream_model(provider, requested_model, adapter_plan.to_dict())
         return StreamingResponse(
             _openai_compatible_sse(body, adapter_plan.to_dict()),
             media_type="text/event-stream",
@@ -85,12 +89,32 @@ def _should_direct_sse(body: Dict[str, Any], adapter_plan: Dict[str, Any]) -> bo
     enabled = os.environ.get("BEAST_PROXY_DIRECT_PROVIDER_SSE", "1").strip().lower() not in {"0", "false", "no", "off"}
     if not enabled or body.get("stream") is not True:
         return False
-    if str(adapter_plan.get("backend") or "") != "openai_compatible":
+    backend = str(adapter_plan.get("backend") or "")
+    provider_id = str(adapter_plan.get("provider_id") or "")
+    # Cerebras is OpenAI-SSE compatible but is represented as a LiteLLM
+    # provider for the managed sidecar.  When its credential is loaded in the
+    # gateway, use the native-compatible stream instead of an unconfigured
+    # sidecar that cannot see the gateway's secret vault.
+    # Ollama exposes a standards-compatible /v1/chat/completions SSE endpoint
+    # locally. Sending a local coding request through the non-streaming PREC
+    # compatibility path makes the renderer wait for the whole completion and
+    # is the source of multi-minute "no safe result" failures.
+    if backend not in {"openai_compatible", "ollama"} and not (backend == "litellm" and provider_id == "cerebras"):
         return False
     env_names = adapter_plan.get("env") if isinstance(adapter_plan.get("env"), list) else []
+    if backend == "ollama":
+        return bool(adapter_plan.get("base_url"))
     if not env_names:
         return False
     return bool(os.environ.get(str(env_names[0])))
+
+
+def _direct_upstream_model(provider_id: str, requested_model: str, adapter_plan: Dict[str, Any]) -> str:
+    model = requested_model or str(adapter_plan.get("model") or "")
+    for prefix in ("litellm/", f"{provider_id}/"):
+        if model.startswith(prefix):
+            model = model[len(prefix):]
+    return model
 
 
 async def _openai_compatible_sse(body: Dict[str, Any], adapter_plan: Dict[str, Any]) -> AsyncIterator[str]:
@@ -98,13 +122,20 @@ async def _openai_compatible_sse(body: Dict[str, Any], adapter_plan: Dict[str, A
     env_names = adapter_plan.get("env") if isinstance(adapter_plan.get("env"), list) else []
     api_key = os.environ.get(str(env_names[0])) if env_names else ""
     base_url = str(adapter_plan.get("base_url") or "").rstrip("/")
-    if not api_key or not base_url:
+    backend = str(adapter_plan.get("backend") or "")
+    if (backend != "ollama" and not api_key) or not base_url:
         yield _sse_error(provider_id, "Provider credentials/base URL are not loaded for direct SSE.")
         return
 
     payload = dict(body)
+    # Provider routing metadata is for the BEAST boundary only.  Do not leak
+    # it across an OpenAI-compatible upstream contract; several providers
+    # (including Cerebras) reject unknown top-level fields.
+    payload.pop("metadata", None)
     payload["stream"] = True
-    payload["model"] = str(adapter_plan.get("model") or payload.get("model") or "")
+    # `_registry_chat` has already normalized this to the upstream provider
+    # model id.  Do not reapply the LiteLLM transport prefix here.
+    payload["model"] = str(payload.get("model") or adapter_plan.get("model") or "")
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",

@@ -3,6 +3,7 @@ from app.kernel.data_processing.tool_laziness import ToolLazinessLearner
 from app.kernel.data_processing.tool_laziness_plugin import ToolLazinessPlugin
 from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 from app.kernel.storage.outcome_evidence import NegativeCapabilityStore
+from benchmarks import public_economic_thesis_harness as harness
 
 
 def test_runtime_exposes_v2_mcp_tools():
@@ -39,6 +40,7 @@ def test_runtime_exposes_v2_mcp_tools():
     assert "beast_mission_lattice_replay_scaffold" in names
     assert "beast_mcp_status" in names
     assert "beast_crystal_compute" in names
+    assert "beast_public_benchmark_grading_daemon" in names
 
 
 def test_mcp_readonly_profile_hides_and_blocks_mutating_tools(monkeypatch):
@@ -152,6 +154,65 @@ def test_mcp_status_and_catalog_include_audit_metadata():
     exchange = next(tool for tool in catalog["tools"] if tool["tool_id"] == "beast_capability_exchange")
     assert exchange["idempotent"] is False
     assert exchange["risk"] == "gated_network_and_learning_write"
+
+
+def test_public_benchmark_grading_daemon_mcp_tool(tmp_path):
+    rows = [
+        {
+            "source_path": "demo_governed.json",
+            "task": "task_a",
+            "lane_class": "governed",
+            "lane": "live_full_beast",
+            "provider": "demo",
+            "model": "demo-model",
+            "completed": True,
+            "latency_ms": 50.0,
+            "prompt": "task a",
+            "output_text": '{"kind":"beast.action_intent.v1","actions":[{"id":"a1","type":"replace_anchor","target":{"path":"app/a.py","anchor_ref":"A1"},"intent":"fix task a","new":"return 2"}],"verify":["python -m pytest tests -q"]}',
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "cost_usd": 0.03,
+            "verification": {},
+            "output_evidence": {},
+        },
+        {
+            "source_path": "demo_baseline.json",
+            "task": "task_b",
+            "lane_class": "baseline",
+            "lane": "live_raw",
+            "provider": "demo",
+            "model": "demo-model",
+            "completed": False,
+            "latency_ms": 70.0,
+            "prompt": "task b",
+            "output_text": "try changing the function maybe",
+            "prompt_tokens": 9,
+            "completion_tokens": 11,
+            "total_tokens": 20,
+            "cost_usd": 0.02,
+            "verification": {},
+            "output_evidence": {},
+        },
+    ]
+    packet = {
+        "generated_at": harness.utc_now(),
+        "claim_status": "open_research_question",
+        "claim_scope": "test",
+        "row_count": len(rows),
+        "rows": rows,
+    }
+    blind_info = harness.write_blind_grading(rows, tmp_path, seed=7)
+    harness.write_grader_template(tmp_path)
+    cost_info = harness.write_cost_accounting(rows, tmp_path)
+    harness.write_summary(packet, blind_info, cost_info, tmp_path)
+    harness.write_manifest(packet, blind_info, cost_info, tmp_path, [])
+
+    runtime = BeastToolRuntime()
+    result = runtime.call_tool("beast_public_benchmark_grading_daemon", {"packet_dir": str(tmp_path)})
+
+    assert result["claim_status"] == "supported"
+    assert result["structural_claim_status"] == "supported"
 
 
 def test_openclaw_plan_tool_is_local_first():

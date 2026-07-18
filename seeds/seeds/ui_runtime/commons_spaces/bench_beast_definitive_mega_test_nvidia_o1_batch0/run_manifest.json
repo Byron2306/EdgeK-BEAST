@@ -1,0 +1,99 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": false,
+    "live_verified": false,
+    "matrix_planned": true,
+    "secret_scan_required_before_claim": true
+  },
+  "batch": {
+    "batch_index": 0,
+    "end": 6,
+    "families": [
+      "provider_alias_normalization",
+      "schema_validation"
+    ],
+    "lanes": [
+      "beast_no_compute_governor",
+      "full_beast_compute_governor",
+      "raw"
+    ],
+    "observations": 6,
+    "occurrences": [
+      1
+    ],
+    "providers": [
+      "nvidia_nim"
+    ],
+    "start": 0,
+    "total_batches": 3
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "families": [
+    "schema_validation",
+    "provider_alias_normalization",
+    "patch_compilation",
+    "syntax_check",
+    "route_diagnostics",
+    "secret_redaction"
+  ],
+  "full_plan_summary": {
+    "by_family": {
+      "patch_compilation": 3,
+      "provider_alias_normalization": 3,
+      "route_diagnostics": 3,
+      "schema_validation": 3,
+      "secret_redaction": 3,
+      "syntax_check": 3
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 6,
+      "full_beast_compute_governor": 6,
+      "raw": 6
+    },
+    "by_provider": {
+      "nvidia_nim": 18
+    },
+    "observations": 18
+  },
+  "generated_at": "2026-06-21T04:48:59Z",
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live": false,
+  "mode": "controlled",
+  "occurrences": [
+    1
+  ],
+  "plan_summary": {
+    "by_family": {
+      "provider_alias_normalization": 3,
+      "schema_validation": 3
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 2,
+      "full_beast_compute_governor": 2,
+      "raw": 2
+    },
+    "by_provider": {
+      "nvidia_nim": 6
+    },
+    "observations": 6
+  },
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "nvidia_nim"
+  ],
+  "python": "3.13.5"
+}

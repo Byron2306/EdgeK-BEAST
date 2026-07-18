@@ -3,7 +3,7 @@
 import pytest
 
 from app.kernel.security.crystal_seal import seal_crystal_payload, verify_crystal_seal
-from app.kernel.compute.compute_forge import ComputeForgeNode, ComputeLedger, ForgeNodeProfile
+from app.kernel.compute.compute_forge import ComputeForgeNode, ForgeCreditLedger, ForgeNodeProfile
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
 
 
@@ -140,7 +140,7 @@ def test_forge_node_credits_summary():
 
 def test_compute_ledger_aggregates_forge_nodes():
     """Test that the Compute Ledger aggregates multiple forge nodes."""
-    ledger = ComputeLedger()
+    ledger = ForgeCreditLedger()
     
     node1 = ComputeForgeNode(node_id="n1", node_type="jetson")
     node2 = ComputeForgeNode(node_id="n2", node_type="rtx")

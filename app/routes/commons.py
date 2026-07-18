@@ -95,7 +95,7 @@ def build_commons_router(
         return meta_tool_commons.snapshot(task_class=task_class, role=role)
 
     @router.get("/edgek/commons-spaces")
-    def edgek_commons_spaces():
+    async def edgek_commons_spaces():
         return commons_space_registry.list_spaces()
 
     @router.get("/edgek/commons-spaces/{space_id}")
@@ -106,11 +106,11 @@ def build_commons_router(
             raise HTTPException(status_code=404, detail=str(exc))
 
     @router.get("/edgek/commons-scale/readiness")
-    def edgek_commons_scale_readiness():
+    async def edgek_commons_scale_readiness():
         return commons_space_registry.scale_readiness()
 
     @router.get("/edgek/commons-scale/registration-candidates")
-    def edgek_commons_registration_candidates(limit: int = 50):
+    async def edgek_commons_registration_candidates(limit: int = 50):
         return commons_space_registry.registration_candidates(limit=max(1, min(int(limit), 500)))
 
     @router.get("/edgek/commons-economy")

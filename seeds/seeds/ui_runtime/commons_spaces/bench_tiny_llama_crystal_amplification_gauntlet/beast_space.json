@@ -1,0 +1,68 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1426,
+      "path": "README.md",
+      "sha256": "sha256:4558b36f292870be40aa010de495095c90cb4879ce7b73cf06bf25302f5b56f5"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 1281,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:e1c2bbf755903fafad673723d189a291410a2d04b696a3b800b73e4ecfa1810b"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.612367+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "tiny_llama_crystal_amplification_gauntlet",
+    "registration_score": 3,
+    "signals": [
+      "integrity_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/tiny_llama_crystal_amplification_gauntlet"
+  },
+  "manifest_hash": "sha256:4051e11f3fa0facef4dd0fbbdd9fce821181f6961743276517442da493eb82b5",
+  "name": "Tiny Llama Crystal Amplification Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_tiny_llama_crystal_amplification_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

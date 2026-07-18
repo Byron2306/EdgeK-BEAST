@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional
 
 from app.kernel.storage.forensic_memory import ForensicMemory
 from app.kernel.networking.interception_events import InterceptionEventFactory
+from app.kernel.governance.psi_governor import PsiGovernor
 
 
 @dataclass
@@ -36,6 +37,7 @@ class RuntimeGovernor:
         policies: Optional[Dict[str, Any]] = None,
         db_path: Optional[str] = None,
         forensic_memory: Optional[ForensicMemory] = None,
+        psi_governor: Optional[PsiGovernor] = None,
     ):
         self.policies = policies or {}
         if db_path is None:
@@ -46,6 +48,7 @@ class RuntimeGovernor:
         self._lock = threading.Lock()
         self.interception_events = InterceptionEventFactory(self.policies)
         self.forensic_memory = forensic_memory or ForensicMemory(str(self.db_path.with_name("forensic_l4.db")))
+        self.psi_governor = psi_governor
         self._db_initialized = False
 
     def _connect(self):
@@ -93,6 +96,12 @@ class RuntimeGovernor:
         session_id: str = "default",
         metadata: Optional[Dict[str, Any]] = None
     ) -> RuntimeAdmission:
+        if self.psi_governor is not None:
+            lane = str((metadata or {}).get("lane", "background"))
+            pressure = self.psi_governor.decide(lane, self.psi_governor.sample())
+            if not pressure.admitted:
+                return RuntimeAdmission(False, str(uuid.uuid4()), provider,
+                                        f"PSI admission: {pressure.reason}", 1, 5)
         self.sweep_stale_attempts()
         attempt_id = str(uuid.uuid4())
         runtime_config = self._runtime_config(provider)

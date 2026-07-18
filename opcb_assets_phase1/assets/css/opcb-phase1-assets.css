@@ -1,0 +1,60 @@
+/* OPCB Phase 1 Asset Helpers: Workspace + Mission */
+:root {
+  --asset-cyan: #39d7ff;
+  --asset-teal: #39f0c2;
+  --asset-violet: #b36bff;
+  --asset-gold: #ffc857;
+  --asset-red: #ff5d6c;
+}
+
+.opcb-page-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .78;
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: screen;
+}
+
+.opcb-page-art.workspace {
+  background-image: url("../svg/workspace-flow-canvas-bg.svg");
+}
+
+.opcb-page-art.mission {
+  background-image: url("../svg/mission-overview-bg.svg");
+}
+
+.opcb-svg-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 5px rgba(57, 215, 255, .7))
+    drop-shadow(0 0 12px rgba(179, 107, 255, .24));
+}
+
+.opcb-big-glyph {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 10px rgba(57, 215, 255, .85))
+    drop-shadow(0 0 24px rgba(57, 240, 194, .25));
+}
+
+.opcb-cube-pulse-asset {
+  width: 164px;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+.opcb-mascot-state {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 10px rgba(57, 215, 255, .75))
+    drop-shadow(0 0 24px rgba(179, 107, 255, .38));
+}

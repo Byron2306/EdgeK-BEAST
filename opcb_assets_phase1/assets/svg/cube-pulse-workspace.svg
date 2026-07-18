@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180">
+  <defs>
+    <linearGradient id="cubeG" x1="40" y1="20" x2="200" y2="160">
+      <stop stop-color="#39f0c2"/><stop offset=".5" stop-color="#39d7ff"/><stop offset="1" stop-color="#b36bff"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .edge{fill:none;stroke:url(#cubeG);stroke-width:3;filter:url(#glow);stroke-linejoin:round}
+    .pulse{animation:pulse 1.8s ease-in-out infinite;transform-origin:120px 90px}
+    .spark{animation:float 2.8s ease-in-out infinite}
+    @keyframes pulse{50%{opacity:.55;transform:scale(.96)}}
+    @keyframes float{50%{transform:translateY(-9px);opacity:.35}}
+  </style>
+  <g class="pulse">
+    <path class="edge" d="M120 24l58 34v66l-58 34-58-34V58z"/>
+    <path class="edge" d="M62 58l58 34 58-34M120 92v66"/>
+    <path class="edge" d="M92 42l58 34M148 42L90 76"/>
+    <circle cx="120" cy="91" r="20" fill="#39d7ff" opacity=".24"/>
+    <circle cx="120" cy="91" r="8" fill="#fff" opacity=".85"/>
+  </g>
+  <circle class="spark" cx="49" cy="76" r="3" fill="#39f0c2"/>
+  <circle class="spark" cx="190" cy="44" r="3" fill="#ffc857" style="animation-delay:.4s"/>
+  <circle class="spark" cx="187" cy="137" r="3" fill="#b36bff" style="animation-delay:.9s"/>
+</svg>

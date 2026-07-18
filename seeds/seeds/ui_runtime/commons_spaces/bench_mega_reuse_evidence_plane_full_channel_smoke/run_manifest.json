@@ -1,0 +1,451 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": false,
+    "crystal_compute_phase_package_passed": false,
+    "crystal_compute_phase_package_present": false,
+    "live_verified": false,
+    "matrix_planned": true,
+    "provider_call_receipts_present": false,
+    "reuse_evidence_plane_active_channels": 4,
+    "reuse_evidence_plane_certification_passed": true,
+    "reuse_evidence_plane_certification_present": true,
+    "reuse_evidence_plane_full_channel_smoke_passed": true,
+    "reuse_evidence_plane_full_channel_smoke_present": true,
+    "reuse_evidence_plane_hash": "sha256:0f17bf042060b57ee7864c2a3029cab581f7e69674daaec369ead9c3997fe30c",
+    "secret_scan_required_before_claim": true
+  },
+  "batch": {
+    "batch_index": 0,
+    "end": 3,
+    "families": [
+      "schema_validation"
+    ],
+    "lanes": [
+      "beast_no_compute_governor",
+      "full_beast_compute_governor",
+      "raw"
+    ],
+    "observations": 3,
+    "occurrences": [
+      1
+    ],
+    "providers": [
+      "nvidia_nim"
+    ],
+    "start": 0,
+    "total_batches": 1
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "cross_source_provider": null,
+  "crystal_compute_phase_package": {},
+  "families": [
+    "schema_validation"
+  ],
+  "full_plan_summary": {
+    "by_family": {
+      "schema_validation": 3
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 1,
+      "full_beast_compute_governor": 1,
+      "raw": 1
+    },
+    "by_provider": {
+      "nvidia_nim": 3
+    },
+    "observations": 3
+  },
+  "generated_at": "2026-06-21T20:05:24Z",
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live": false,
+  "mode": "controlled",
+  "occurrences": [
+    1
+  ],
+  "plan_summary": {
+    "by_family": {
+      "schema_validation": 3
+    },
+    "by_lane": {
+      "beast_no_compute_governor": 1,
+      "full_beast_compute_governor": 1,
+      "raw": 1
+    },
+    "by_provider": {
+      "nvidia_nim": 3
+    },
+    "observations": 3
+  },
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "nvidia_nim"
+  ],
+  "python": "3.13.5",
+  "reuse_evidence_plane_certification": {
+    "assertions": {
+      "absent_channels_are_explicit": true,
+      "active_channel_count": 4,
+      "channels_classified": true,
+      "plane_exported": true,
+      "plane_hash_present": true,
+      "privacy_scan_passed": true
+    },
+    "beast_object_type": "mega_reuse_evidence_plane_certification",
+    "certification_hash": "sha256:2a0a6fa1a0ebe8807ec756597af7d598d8435194c4c01a334a126f022ec90814",
+    "channels": [
+      {
+        "channel": "swarm",
+        "evidence_count": 4,
+        "label": "Swarm role evidence",
+        "reason": "evidence observed in local Commons plane",
+        "safe_rate": 1.0,
+        "status": "present",
+        "useful_rate": 1.0,
+        "verified_rate": 1.0
+      },
+      {
+        "channel": "cli",
+        "evidence_count": 2,
+        "label": "OpenClaw/CLI execution evidence",
+        "reason": "evidence observed in local Commons plane",
+        "safe_rate": 1.0,
+        "status": "present",
+        "useful_rate": 1.0,
+        "verified_rate": 1.0
+      },
+      {
+        "channel": "ollama",
+        "evidence_count": 1,
+        "label": "Ollama scout calibration evidence",
+        "reason": "evidence observed in local Commons plane",
+        "safe_rate": 1.0,
+        "status": "present",
+        "useful_rate": 1.0,
+        "verified_rate": 1.0
+      },
+      {
+        "channel": "kv_cache",
+        "evidence_count": 1,
+        "label": "KV/cache transport evidence",
+        "reason": "evidence observed in local Commons plane",
+        "safe_rate": 1.0,
+        "status": "present",
+        "useful_rate": 1.0,
+        "verified_rate": 1.0
+      }
+    ],
+    "claim_boundary": "This certifies the presence, absence classification, integrity hash, and privacy shape of the local reuse evidence plane. It does not fabricate evidence for channels not invoked by the run.",
+    "generated_at": "2026-06-21T20:05:24Z",
+    "live": false,
+    "mode": "controlled",
+    "passed": true,
+    "plane": {
+      "adoption_summary": {},
+      "authority": "advisory_local_policy_decides",
+      "beast_object_type": "meta_tool_commons_evidence_plane",
+      "candidate_summary": {
+        "local_swarm_commons": {
+          "proposed": 2
+        }
+      },
+      "evidence_count": 8,
+      "latest_at": "2026-06-21T20:05:24.399830+00:00",
+      "plane_count": 4,
+      "plane_hash": "sha256:0f17bf042060b57ee7864c2a3029cab581f7e69674daaec369ead9c3997fe30c",
+      "planes": [
+        {
+          "cost_usd": 0.005,
+          "evidence_count": 4,
+          "hidden_clean_count": 4,
+          "hidden_clean_rate": 1.0,
+          "latest_at": "2026-06-21T20:05:24.398873+00:00",
+          "local_scope_count": 4,
+          "plane": "swarm",
+          "rescued_count": 0,
+          "rescued_rate": 0.0,
+          "safe_count": 4,
+          "safe_rate": 1.0,
+          "tokens": 1600,
+          "top_roles": [
+            {
+              "count": 2,
+              "name": "scout"
+            },
+            {
+              "count": 2,
+              "name": "verifier"
+            }
+          ],
+          "top_task_classes": [
+            {
+              "count": 4,
+              "name": "schema_validation"
+            }
+          ],
+          "useful_count": 4,
+          "useful_rate": 1.0,
+          "verified_count": 4,
+          "verified_rate": 1.0
+        },
+        {
+          "cost_usd": 0.0,
+          "evidence_count": 2,
+          "hidden_clean_count": 2,
+          "hidden_clean_rate": 1.0,
+          "latest_at": "2026-06-21T20:05:24.399359+00:00",
+          "local_scope_count": 2,
+          "plane": "cli",
+          "rescued_count": 0,
+          "rescued_rate": 0.0,
+          "safe_count": 2,
+          "safe_rate": 1.0,
+          "tokens": 0,
+          "top_roles": [
+            {
+              "count": 1,
+              "name": "openclaw"
+            },
+            {
+              "count": 1,
+              "name": "zeroclaw"
+            }
+          ],
+          "top_task_classes": [
+            {
+              "count": 2,
+              "name": "schema_validation"
+            }
+          ],
+          "useful_count": 2,
+          "useful_rate": 1.0,
+          "verified_count": 2,
+          "verified_rate": 1.0
+        },
+        {
+          "cost_usd": 0.0,
+          "evidence_count": 1,
+          "hidden_clean_count": 1,
+          "hidden_clean_rate": 1.0,
+          "latest_at": "2026-06-21T20:05:24.399542+00:00",
+          "local_scope_count": 1,
+          "plane": "ollama",
+          "rescued_count": 0,
+          "rescued_rate": 0.0,
+          "safe_count": 1,
+          "safe_rate": 1.0,
+          "tokens": 0,
+          "top_roles": [
+            {
+              "count": 1,
+              "name": "ollama_scout"
+            }
+          ],
+          "top_task_classes": [
+            {
+              "count": 1,
+              "name": "schema_validation"
+            }
+          ],
+          "useful_count": 1,
+          "useful_rate": 1.0,
+          "verified_count": 1,
+          "verified_rate": 1.0
+        },
+        {
+          "cost_usd": 0.002,
+          "evidence_count": 1,
+          "hidden_clean_count": 1,
+          "hidden_clean_rate": 1.0,
+          "latest_at": "2026-06-21T20:05:24.399830+00:00",
+          "local_scope_count": 1,
+          "plane": "kv_cache",
+          "rescued_count": 0,
+          "rescued_rate": 0.0,
+          "safe_count": 1,
+          "safe_rate": 1.0,
+          "tokens": 640,
+          "top_roles": [
+            {
+              "count": 1,
+              "name": "kv_cache_transport"
+            }
+          ],
+          "top_task_classes": [
+            {
+              "count": 1,
+              "name": "schema_validation"
+            }
+          ],
+          "useful_count": 1,
+          "useful_rate": 1.0,
+          "verified_count": 1,
+          "verified_rate": 1.0
+        }
+      ],
+      "privacy_policy": "aggregate_counts_and_hashes_only_redacted_inputs",
+      "version": "1.0"
+    },
+    "plane_hash": "sha256:0f17bf042060b57ee7864c2a3029cab581f7e69674daaec369ead9c3997fe30c",
+    "version": "1.0"
+  },
+  "reuse_evidence_plane_smoke": {
+    "beast_object_type": "mega_reuse_evidence_plane_smoke_seed",
+    "candidate_summary": {
+      "authority": "staged_only_explicit_local_approval_required",
+      "beast_object_type": "meta_tool_commons_swarm_candidates",
+      "min_samples": 2,
+      "proposed": [
+        {
+          "auto_adopted": false,
+          "candidate": {
+            "action": {
+              "action": "confirm_reuse_boundary",
+              "approval_required": false,
+              "execution_policy": "advisory_until_local_approval",
+              "profile": "openclaw",
+              "role": "verifier",
+              "type": "swarm_role_recipe"
+            },
+            "evidence_hashes": [
+              "sha256:39f7cd73d4d266f69ad2b99a6ea3bd7b89769f515de41b18b3a30297c19130e5",
+              "sha256:93dd5114009d4f8db1211a3aa2df9ac068d9300d883ec07d82b114d646925eda"
+            ],
+            "kind": "skill_recipe",
+            "name": "swarm_openclaw_verifier_confirm_reuse_boundary",
+            "pattern": {
+              "capability_id": "swarm:openclaw:verifier:confirm_reuse_boundary",
+              "role": "verifier",
+              "safe_rate": 1.0,
+              "sample_size": 2,
+              "source": "commons_swarm",
+              "task_class": "schema_validation",
+              "useful_rate": 1.0,
+              "verified_rate": 1.0
+            },
+            "risk_class": "low",
+            "role": "verifier",
+            "schema_hash": "sha256:39c55587fbb12ae56b44efe654d9996d0da1ccc4262e792d5cf640e908961534",
+            "source_candidate_id": null,
+            "task_class": "schema_validation",
+            "version": "1.0"
+          },
+          "candidate_id": "commons_0609e98419f83e26978f",
+          "status": "proposed"
+        },
+        {
+          "auto_adopted": false,
+          "candidate": {
+            "action": {
+              "action": "classify_contract",
+              "approval_required": false,
+              "execution_policy": "advisory_until_local_approval",
+              "profile": "openclaw",
+              "role": "scout",
+              "type": "swarm_role_recipe"
+            },
+            "evidence_hashes": [
+              "sha256:4e37e1a00589b9d098f8043517e29f9c043c722243b6670dbd92deb71d641824",
+              "sha256:f4e0df9a5ec1983bd14fb9ad5dfebf69c37970c27540ccfa16a7b3283c1eba95"
+            ],
+            "kind": "skill_recipe",
+            "name": "swarm_openclaw_scout_classify_contract",
+            "pattern": {
+              "capability_id": "swarm:openclaw:scout:classify_contract",
+              "role": "scout",
+              "safe_rate": 1.0,
+              "sample_size": 2,
+              "source": "commons_swarm",
+              "task_class": "schema_validation",
+              "useful_rate": 1.0,
+              "verified_rate": 1.0
+            },
+            "risk_class": "low",
+            "role": "scout",
+            "schema_hash": "sha256:e3fe8a65ebc875cfe760047400cec80dcf86e955a3d84360136cc75187532ce9",
+            "source_candidate_id": null,
+            "task_class": "schema_validation",
+            "version": "1.0"
+          },
+          "candidate_id": "commons_6d1cfb2b5cdd99c5a6c0",
+          "status": "proposed"
+        }
+      ],
+      "proposed_count": 2,
+      "skipped": [],
+      "skipped_count": 0,
+      "source": "local_swarm_commons"
+    },
+    "channel_count": 4,
+    "claim_boundary": "Synthetic local receipts seed the four Commons reuse channels for mega-test plumbing verification. This does not claim live provider displacement.",
+    "generated_at": "2026-06-21T20:05:24Z",
+    "passed": true,
+    "results": {
+      "cli": {
+        "accepted": 2,
+        "beast_object_type": "meta_tool_commons_cli_execution_ingest",
+        "duplicates": 0,
+        "mode": "openclaw",
+        "prepared": 2,
+        "privacy_policy": "allowlisted_capability_evidence_only",
+        "rejected": [],
+        "skipped": 0,
+        "source": "beast_cli_execution"
+      },
+      "kv_cache": {
+        "accepted": 1,
+        "beast_object_type": "meta_tool_commons_kv_cache_ingest",
+        "capability_id": "kv_cache_vllm_crossenginekvcachetransport",
+        "duplicates": 0,
+        "prepared": 1,
+        "privacy_policy": "allowlisted_capability_evidence_only",
+        "rejected": [],
+        "source": "kv_cache_transport",
+        "useful": true,
+        "verified": true
+      },
+      "ollama": {
+        "accepted": 1,
+        "beast_object_type": "meta_tool_commons_ollama_calibration",
+        "confidence_bucket": 0.9,
+        "duplicates": 0,
+        "matched_verifier": true,
+        "prepared": 1,
+        "privacy_policy": "allowlisted_capability_evidence_only",
+        "rejected": [],
+        "source": "ollama_scout_verifier"
+      },
+      "swarm": {
+        "accepted": 4,
+        "beast_object_type": "meta_tool_commons_swarm_ingest",
+        "duplicates": 0,
+        "prepared": 4,
+        "privacy_policy": "allowlisted_capability_evidence_only",
+        "rejected": [],
+        "skipped": 0,
+        "source": "local_swarm_runs"
+      }
+    },
+    "seeded_channels": [
+      "swarm",
+      "cli",
+      "ollama",
+      "kv_cache"
+    ],
+    "version": "1.0"
+  },
+  "route_set": "custom"
+}

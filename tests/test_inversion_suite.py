@@ -30,12 +30,20 @@ async def test_adaptive_router_dispatch(tmp_path):
         json.dumps({"decision": "candidate_ready_for_local_training"})
     )
     (distill_root / "capability_lattice_latest.json").write_text(
-        json.dumps({"nodes": [{"node_id": "test", "task_class": "general"}]})
+        json.dumps({"nodes": [{
+            "node_id": "test", "task_class": "general", "capability_contract_digest": "sha256:contract",
+            "impact_fingerprint_hash": "sha256:impact", "repo_fingerprint": "sha256:repo",
+            "policy_digest": "sha256:policy", "verifier_digest": "sha256:verifier", "state_digest": "sha256:state",
+        }]})
     )
     
     # Mock IR
     from app.kernel.compute.perceive import EdgeKIR
-    ir = EdgeKIR(messages=[], model="test", metadata={"task_class": "general"})
+    ir = EdgeKIR(messages=[], model="test", metadata={
+        "task_class": "general", "capability_contract_digest": "sha256:contract",
+        "impact_fingerprint_hash": "sha256:impact", "repo_fingerprint": "sha256:repo",
+        "policy_digest": "sha256:policy", "verifier_digest": "sha256:verifier", "state_digest": "sha256:state",
+    })
     
     dispatcher = AdaptiveDispatcher(workspace_root=tmp_path)
     # Patch the dispatcher to point to mocked root
@@ -44,6 +52,16 @@ async def test_adaptive_router_dispatch(tmp_path):
     route = await dispatcher.route(ir)
     assert route is not None
     assert route["execution_mode"] == "local_specialist_adapter"
+
+
+@pytest.mark.asyncio
+async def test_adaptive_router_refuses_task_class_only_or_boundary_drift(tmp_path):
+    distill_root = tmp_path / "distill"; distill_root.mkdir(parents=True, exist_ok=True)
+    (distill_root / "adapter_candidate_evaluation_latest.json").write_text(json.dumps({"decision": "candidate_ready_for_local_training"}))
+    (distill_root / "capability_lattice_latest.json").write_text(json.dumps({"nodes": [{"node_id": "test", "task_class": "general"}]}))
+    from app.kernel.compute.perceive import EdgeKIR
+    dispatcher = AdaptiveDispatcher(workspace_root=tmp_path); dispatcher.distiller.output_root = distill_root
+    assert await dispatcher.route(EdgeKIR(messages=[], model="test", metadata={"task_class": "general"})) is None
 
 # --- Adapter Compiler Tests (Impl 2) ---
 def test_adapter_compiler_scaffold(tmp_path):

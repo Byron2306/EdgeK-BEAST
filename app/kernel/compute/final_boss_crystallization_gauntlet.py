@@ -149,6 +149,7 @@ class FinalBossTeacher:
             "latency_ms": latency_ms,
             "actual_live_provider_call": True,
             "actual_local_engine_call": True,
+            "raw_response": raw,
             "raw_response_sha256": _hash_text(raw),
             "raw_quality": raw_quality,
         }
@@ -263,6 +264,12 @@ class FinalBossCrystallizationGauntlet:
         baseline = verify_gateway_repo(training_root)
         self._copy_tree(training_root, self.root / "baseline_training_gateway_repo")
         teacher_result = self.teacher.solve(training_root, self.spec, variant="training")
+        raw_output_path = self.root / "raw_teacher_output.txt"
+        if isinstance(teacher_result.get("raw_response"), str):
+            raw_output_path.write_text(str(teacher_result["raw_response"]), encoding="utf-8")
+        ephemeral_baseline = self._run_ephemeral_baseline(
+            training_root, str(teacher_result.get("raw_response") or "")
+        )
         recipe = teacher_result["recipe"]
         gates = self._evaluate_recipe_gates(training_root, recipe, baseline=baseline)
         train_request = self._request("training", include_direct_terms=True)
@@ -316,8 +323,11 @@ class FinalBossCrystallizationGauntlet:
                 "actual_engine_call": bool(teacher_result.get("actual_live_provider_call") or teacher_result.get("actual_local_engine_call")),
                 "execution_engine": str(teacher_result.get("engine") or teacher_result.get("provider") or self.teacher.mode),
                 "raw_quality": teacher_result.get("raw_quality") or {},
+                "raw_output_path": str(raw_output_path) if raw_output_path.is_file() else None,
+                "raw_output_sha256": teacher_result.get("raw_response_sha256"),
                 "evaluation_gates": gates,
             },
+            "ephemeral_baseline": ephemeral_baseline,
             "far_transfer_replay": {
                 "baseline_tests_passed": primary_replay["baseline_tests_passed"],
                 "tests_passed_after_patch": primary_replay["tests_passed_after_patch"],
@@ -381,6 +391,27 @@ class FinalBossCrystallizationGauntlet:
             encoding="utf-8",
         )
         return receipt
+
+    def _run_ephemeral_baseline(self, source_root: Path, raw_response: str) -> Dict[str, Any]:
+        """Apply only the raw model proposal in an isolated clone; never normalize it."""
+        root = self.root / "ephemeral_baseline_gateway_repo"
+        self._copy_tree(source_root, root)
+        proposal = _extract_json(raw_response)
+        result: Dict[str, Any] = {
+            "raw_response_present": bool(raw_response),
+            "raw_proposal_schema": str(proposal.get("beast_object_type") or ""),
+            "raw_patch_count": len(proposal.get("patches") or []),
+            "normalized_by_beast": False,
+            "provider_calls": 1 if raw_response else 0,
+        }
+        try:
+            applied = self.patch_tool.apply(root, proposal)
+            verification = verify_gateway_repo(root)
+            result.update({"patch_tool": applied, "tests_passed": verification["tests_passed"], "apply_error": None})
+        except Exception as exc:
+            result.update({"patch_tool": None, "tests_passed": False, "apply_error": f"{type(exc).__name__}: {exc}"})
+        self._copy_tree(root, self.root / "ephemeral_baseline_result_gateway_repo")
+        return result
 
     def _run_replay_variant(
         self,

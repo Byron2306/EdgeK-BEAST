@@ -41,6 +41,7 @@
       { "command": "edgekBeast.showCodeCortex", "title": "BEAST: Show Code Cortex" },
       { "command": "edgekBeast.showPolicyGate", "title": "BEAST: Show Policy Gate" },
       { "command": "edgekBeast.showAgentSessions", "title": "BEAST: Show Agent Sessions" },
+      { "command": "edgekBeast.showAgentSessionDetail", "title": "BEAST: Show Agent Session Detail" },
       { "command": "edgekBeast.createAgentSession", "title": "BEAST: Create Agent Session" },
       { "command": "edgekBeast.pauseAgentSession", "title": "BEAST: Pause Agent Session" },
       { "command": "edgekBeast.resumeAgentSession", "title": "BEAST: Resume Agent Session" },
@@ -133,8 +134,8 @@
         },
         "edgekBeast.model": {
           "type": "string",
-          "default": "beast-auto",
-          "description": "Model alias for BEAST chat participant requests; beast-auto resolves through the selected governed provider"
+          "default": "nvidia/nemotron-3-super-120b-a12b",
+          "description": "Default model for BEAST chat participant requests; beast-auto is still available as a governed provider alias"
         },
         "edgekBeast.maxTokens": {
           "type": "number",
@@ -157,13 +158,17 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "echo 'No build step required'"
+    "vscode:prepublish": "echo 'No build step required'",
+    "test:extension": "node ./test/runTest.js"
   },
   "devDependencies": {
     "@types/node": "20.2.5",
-    "@types/vscode": "^1.102.0"
+    "@types/vscode": "^1.102.0",
+    "@vscode/test-electron": "^2.5.2",
+    "mocha": "^10.8.2"
   },
-  "dependencies": {
-    "node-fetch": "^3.3.0"
+  "dependencies": {},
+  "overrides": {
+    "serialize-javascript": "^7.0.7"
   }
 }

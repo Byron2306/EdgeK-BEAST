@@ -1,0 +1,79 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": false,
+    "live_verified": false,
+    "matrix_planned": true,
+    "secret_scan_required_before_claim": true
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "families": [
+    "schema_validation",
+    "provider_alias_normalization",
+    "patch_compilation",
+    "syntax_check",
+    "route_diagnostics",
+    "secret_redaction"
+  ],
+  "generated_at": "2026-06-21T04:46:48Z",
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live": false,
+  "mode": "controlled",
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "cerebras": {
+      "api_key_env": "HF_TOKEN",
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "cloudflare": {
+      "api_key_env": "CLOUDFLARE_API_TOKEN,CLOUDFLARE_API_KEY,CLOUDFARE_API_KEY",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "gemini": {
+      "api_key_env": "GEMINI_API_KEY",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "secret_present": true,
+      "timeout": 180.0
+    },
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "nvidia_nim",
+    "gemini",
+    "groq",
+    "cerebras",
+    "cloudflare"
+  ],
+  "python": "3.13.5"
+}

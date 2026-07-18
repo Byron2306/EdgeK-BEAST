@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BEAST Studio</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="opcb-reference.css">
+</head>
+<body>
+  <div class="app-shell" data-active-face="Mission" data-desktop-page="mission">
+
+    <!-- ═══ SIDEBAR ═════════════════════════════════════════════════════════ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mascot" id="brandMascot" data-state="idle">
+          <div class="sprite-container" id="spriteContainer">
+            <img id="spriteFallback" src="assets/beast-dragon-mascot.png" alt="BEAST"
+              class="sprite-frame active"
+              onerror="this.src=''; this.style.display='none'">
+          </div>
+          <div class="sprite-state-dot" id="spriteStateDot" data-state="idle"></div>
+        </div>
+        <div class="brand-wordmark">
+          <pre class="brand-wordmark-text brand-wordmark-ascii" aria-label="BEAST">██████╗ ███████╗ █████╗ ███████╗████████╗
+██╔══██╗██╔════╝██╔══██╗██╔════╝╚══██╔══╝
+██████╔╝█████╗  ███████║███████╗   ██║
+██╔══██╗██╔══╝  ██╔══██║╚════██║   ██║
+██████╔╝███████╗██║  ██║███████║   ██║
+╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝</pre>
+          <div class="brand-tagline">OPCB369S Studio · Build. Verify. Remember.</div>
+          <span class="brand-sub">
+            <span class="brand-sub-dot"></span>
+            <span id="desktopBrandBuildId">loading</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="workspace-chooser">
+        <button id="chooseWorkspace" class="primary-button">Choose Folder</button>
+        <div id="workspacePath" class="mono muted">no workspace</div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item" data-desktop-page="workspace">
+          <span class="nav-icon">⌘</span><span class="nav-label">Workspace</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item active" data-desktop-page="mission">
+          <span class="nav-icon">◎</span><span class="nav-label">Mission</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="agents">
+          <span class="nav-icon">⚇</span><span class="nav-label">Agents</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="review">
+          <span class="nav-icon">▣</span><span class="nav-label">Review</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="trust">
+          <span class="nav-icon">◇</span><span class="nav-label">Trust</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="memory">
+          <span class="nav-icon">⬡</span><span class="nav-label">Memory</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="models">
+          <span class="nav-icon">⬢</span><span class="nav-label">Models</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="evidence">
+          <span class="nav-icon">▤</span><span class="nav-label">Evidence</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="crystallization">
+          <span class="nav-icon">◇</span><span class="nav-label">Crystallization</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item" data-desktop-page="map">
+          <span class="nav-icon">⌬</span><span class="nav-label">Map</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="source">
+          <span class="nav-icon">⌕</span><span class="nav-label">SourcePlan</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="worktrees">
+          <span class="nav-icon">↥</span><span class="nav-label">Worktrees</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="terminal">
+          <span class="nav-icon">⌁</span><span class="nav-label">Terminal</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="providers">
+          <span class="nav-icon">◫</span><span class="nav-label">Providers</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="tooling">
+          <span class="nav-icon">⚙</span><span class="nav-label">Tooling</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="system">
+          <span class="nav-icon">⎈</span><span class="nav-label">System</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="doctor">
+          <span class="nav-icon">盾</span><span class="nav-label">Doctor</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="settings">
+          <span class="nav-icon">⚙</span><span class="nav-label">Settings</span><span class="nav-arrow">›</span>
+        </button>
+        <button class="nav-item utility-nav" data-desktop-page="studio">
+          <span class="nav-icon">◆</span><span class="nav-label">BEAST Studio</span><span class="nav-arrow">›</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="build-name" id="desktopBuildId">BEAST Desktop</div>
+        <div id="eventStreamState" class="stream-state warn">stream idle</div>
+      </div>
+
+      <!-- hidden legacy splitter stubs so app.js doesn't throw -->
+      <div class="hidden" id="_legacySplitters">
+        <div class="splitter vertical splitter-rail-workspace" data-split="activity-workspace"></div>
+        <div class="splitter vertical splitter-workspace-main" data-split="workspace-main"></div>
+        <div class="splitter vertical splitter-main-governance" data-split="main-governance"></div>
+        <!-- legacy rail-button data-view stubs for smoke test compat -->
+        <button data-view="mission"></button><button data-view="source"></button>
+        <button data-view="agents"></button><button data-view="worktrees"></button>
+        <button data-view="evidence"></button><button data-view="terminal"></button>
+        <button data-view="providers"></button><button data-view="tooling"></button>
+        <button data-view="doctor"></button><button data-view="settings"></button>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN ═════════════════════════════════════════════════════════════ -->
+    <main class="main">
+
+      <!-- mission header -->
+      <header class="mission-header">
+        <div class="mission-header-copy">
+          <div class="mission-title-row">
+            <div id="pageEyebrow" class="page-kicker">Active Mission</div>
+            <h2 id="missionTitle">Use Code Graph and Profiler to plan local evidence parser</h2>
+          </div>
+          <div class="mission-meta-strip">
+            <span>◷ Mission ID: M-2025-05-24-0017</span>
+            <span>◉ Owner: You</span>
+            <span>⌘ Updated: 2m ago</span>
+            <span>● Status: In Progress</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="openCommandPalette" class="primary-button">Command Palette</button>
+          <button id="restartGateway" class="ghost-button">Restart Gateway</button>
+          <button id="refreshSnapshot" class="ghost-button">Refresh View</button>
+          <span id="gatewayState" class="status-pill warn">gateway unknown</span>
+        </div>
+      </header>
+
+      <div id="statusChipBar" class="status-chip-bar"></div>
+
+      <!-- workspace grid: content-panel | context-panel -->
+      <div class="workspace-grid">
+
+        <!-- ── CONTENT PANEL: file explorer + editor ──────── -->
+        <div class="content-panel">
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="workspace">
+            <div class="opcb-section-head">
+              <div><span class="dot-grid">▦</span><h2>Flow Canvas</h2></div>
+              <div class="opcb-toolbar"><button class="ghost-button">Fit</button><button class="ghost-button">100%</button><button class="ghost-button">List</button></div>
+            </div>
+            <div class="flow-canvas">
+              <div class="flow-node done"><strong>1 Mission</strong><span>Define goal and criteria</span><em>Complete</em></div>
+              <div class="flow-node done teal"><strong>2 Models</strong><span>Select local route</span><em>Complete</em></div>
+              <div class="flow-node done violet"><strong>3 Agents</strong><span>Assign roles</span><em>Complete</em></div>
+              <div class="flow-node done cyan"><strong>4 Tools</strong><span>Bind capabilities</span><em>Complete</em></div>
+              <div class="flow-node active amber"><strong>5 Review</strong><span>Plan checks and gates</span><em>In Progress</em></div>
+              <div class="flow-node blue"><strong>6 Evidence</strong><span>Collect proof</span><em>Pending</em></div>
+              <div class="flow-node amber"><strong>7 Crystallization</strong><span>Make durable</span><em>Pending</em></div>
+            </div>
+            <div class="opcb-card-grid seven">
+              <div class="opcb-card"><b>Mission Brief</b><p>Use Code Graph and Profiler to plan a local evidence parser.</p><button class="ghost-button">Open Brief</button></div>
+              <div class="opcb-card"><b>Model Route</b><p>qwen2.5-coder:7b · deepseek-coder:6.7b · mistral-nemo:12b</p><button class="ghost-button">Edit Route</button></div>
+              <div class="opcb-card"><b>Agent Squad</b><p>Planner, Graph Analyst, Profiler, Verifier.</p><button class="ghost-button">View Agents</button></div>
+              <div class="opcb-card"><b>Toolbelt</b><p>Code Graph, Profiler, File System, Shell, Evidence Parser.</p><button class="ghost-button">Manage Tools</button></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel" data-page-panel="mission">
+            <div class="opcb-section-head">
+              <div><span class="nav-icon">◎</span><h2>Mission Overview</h2></div>
+              <span class="active-chip">Active Mission</span>
+            </div>
+            <div class="mission-overview-grid">
+              <div class="opcb-card"><b>Mission Brief</b><p>Use Code Graph and Profiler to plan local evidence parser that ingests code artifacts, extracts relationships, and surfaces verifiable evidence.</p><button class="ghost-button">Open Full Brief</button></div>
+              <div class="opcb-card"><b>Objective</b><p>Design and validate a local evidence parser powered by Code Graph and Profiler.</p><span class="badge">Primary Objective</span></div>
+              <div class="opcb-card wide"><b>Scope</b><div class="pill-row"><span>Code Graph</span><span>Profiler</span><span>Evidence Parser</span><span>Review Gates</span><span>Local Artifacts</span></div></div>
+              <div class="opcb-card"><b>Hypothesis</b><p>Combining static and dynamic insights increases evidence precision and lowers summarization drift.</p><em>Confidence: High</em></div>
+              <div class="opcb-card"><b>Key Gaps</b><p>No unified mapping between profiles and code nodes. Parser robustness on large codebases remains unknown.</p><button class="ghost-button">View Gaps</button></div>
+              <div class="opcb-card"><b>Success Criteria</b><p>Evidence has source traceability, schema validation, and clean review-gate outcomes.</p><button class="ghost-button">Edit Criteria</button></div>
+            </div>
+            <div class="mission-path">
+              <div class="path-step done">1 Mission</div><div class="path-step done">2 Models</div><div class="path-step done">3 Agents</div><div class="path-step done">4 Tools</div><div class="path-step active">5 Review</div><div class="path-step">6 Evidence</div><div class="path-step candidate">7 Crystallization</div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="review">
+            <div class="opcb-section-head"><div><span class="nav-icon">▣</span><h2>Review Center</h2></div><button class="ghost-button">Review Gates</button></div>
+            <div class="metric-strip">
+              <div class="hero-metric shield"><span>87%</span><b>Overall Confidence</b><em>High</em></div>
+              <div class="hero-metric"><span>82%</span><b>Evidence Sufficiency</b><em>Sufficient</em></div>
+              <div class="hero-metric danger"><span>2</span><b>Critical Risks</b><em>Requires attention</em></div>
+              <div class="hero-metric amber"><span>4 / 5</span><b>Quality Gates</b><em>Passed</em></div>
+            </div>
+            <div class="review-grid">
+              <div class="opcb-card wide"><b>Quality Gates</b><div class="gate-list"><span>Plan Validity <em>Passed</em></span><span>Evidence Sufficiency <em>Passed</em></span><span>Parser Robustness <em>Passed</em></span><span>Risk Assessment <em>Passed</em></span><span>Operational Readiness <em>Needs Approval</em></span></div></div>
+              <div class="opcb-card warn"><b>Contradictions</b><p>C-001 mismatch between parser error handling in design docs and implementation notes.</p><button class="ghost-button">View Details</button></div>
+              <div class="opcb-card"><b>Diff Review</b><div class="diff-mini"><span>parser/evidence_parser.py <em>+342 -78</em></span><span>parser/schema_validator.py <em>+210 -34</em></span><span>tests/test_parser.py <em>+156 -12</em></span></div></div>
+              <div class="opcb-card actions"><button class="primary-button">Approve</button><button class="ghost-button">Request Changes</button><button class="ghost-button">Re-run Tests</button></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="evidence">
+            <div class="opcb-section-head"><div><span class="nav-icon">▤</span><h2>Evidence</h2></div><div class="opcb-toolbar"><button class="ghost-button">Filter</button><button class="primary-button">Add Evidence</button></div></div>
+            <div class="evidence-layout">
+              <div class="evidence-list">
+                <div class="evidence-row active"><b>parser_requirements.md</b><span>Markdown · 2.4 KB</span><em>98%</em></div>
+                <div class="evidence-row"><b>parser_design.json</b><span>JSON · 18.7 KB</span><em>96%</em></div>
+                <div class="evidence-row"><b>benchmark_results.csv</b><span>CSV · 12.1 KB</span><em>93%</em></div>
+                <div class="evidence-row"><b>validation_report.html</b><span>HTML · 34.9 KB</span><em>95%</em></div>
+                <div class="evidence-row"><b>api_contract.yaml</b><span>YAML · 6.8 KB</span><em>91%</em></div>
+              </div>
+              <div class="opcb-card selected-evidence wide"><b>parser_requirements.md</b><div class="metric-strip compact"><div class="hero-metric"><span>98%</span><b>Extraction Confidence</b></div><div class="hero-metric"><span>Valid</span><b>Schema Validation</b></div><div class="hero-metric"><span>14</span><b>Trace Links</b></div></div><pre># Parser Requirements&#10;1. Parse raw evidence inputs&#10;2. Extract structured entities&#10;3. Validate against schema and rules</pre></div>
+              <div class="opcb-card"><b>Audit Pack Readiness</b><div class="gate-list"><span>Evidence Files <em>Ready</em></span><span>Validation <em>Ready</em></span><span>Traceability <em>Ready</em></span><span>Artifacts <em>Ready</em></span></div><button class="primary-button">Generate Audit Pack</button></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="crystallization">
+            <div class="opcb-section-head"><div><span class="nav-icon">◇</span><h2>Crystallization</h2></div><button class="ghost-button">Run All Gates</button></div>
+            <div class="crystal-layout">
+              <div class="candidate-list">
+                <div class="candidate active"><b>Local evidence parser</b><span>Evidence · Code Graph</span><em>94% Ready</em></div>
+                <div class="candidate"><b>Profiler agent integration</b><span>Agent · Orchestration</span><em>91% Ready</em></div>
+                <div class="candidate"><b>Decision trace analyzer</b><span>Review · Trace</span><em>88% Ready</em></div>
+                <div class="candidate"><b>Memory integrity verifier</b><span>Trust · Verification</span><em>72% Ready</em></div>
+              </div>
+              <div class="crystal-chamber"><div class="crystal-glyph"></div><button class="crystallize-button">Crystallize Now</button><span>High Integrity · Portable · Verifiable</span></div>
+              <div class="opcb-card"><b>Quality Gates</b><div class="gate-list"><span>Evidence Integrity <em>Passed</em></span><span>Graph Consistency <em>Passed</em></span><span>Trace Completeness <em>Passed</em></span><span>Agent Validation <em>Passed</em></span><span>Risk Assessment <em>Passed</em></span></div></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="models">
+            <div class="opcb-section-head"><div><span class="nav-icon">⬢</span><h2>Models</h2></div><button class="ghost-button">Model Settings</button></div>
+            <div class="models-layout">
+              <div class="opcb-card route-card"><b>Active Route</b><strong>deepseek-coder:6.7b</strong><em>94.7% confidence · 1.24s est.</em></div>
+              <div class="opcb-card route-card"><b>Fallback Ladder</b><strong>3 steps</strong><em>Auto-fallback enabled</em></div>
+              <div class="opcb-card route-card"><b>Runtime Ready</b><strong>All systems nominal</strong><em>Warm · 8m 42s uptime</em></div>
+              <div class="model-ladder"><div class="model-row primary"><b>1 deepseek-coder:6.7b</b><span>94.7% · 14.2 tok/s</span></div><div class="model-row"><b>2 mistral-nemo:12b</b><span>83.1% · 11.0 tok/s</span></div><div class="model-row"><b>3 qwen2.5-coder:7b</b><span>68.4% · 9.3 tok/s</span></div></div>
+              <div class="opcb-card wide"><b>Route Tests</b><div class="bar-list"><span style="--w:95%">Code Graph Analysis</span><span style="--w:83%">Parser Fit</span><span style="--w:68%">Fallback Simulation</span></div></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="agents">
+            <div class="opcb-section-head"><div><span class="nav-icon">⚇</span><h2>Agent Squad</h2></div><button class="ghost-button">Assign Agent</button></div>
+            <div class="agents-cockpit-grid">
+              <div class="opcb-card agent-card"><b>Planner Agent</b><strong>Prepare parser validation path</strong><p>Tools: Code Graph · Runbook · SourcePlan</p><em>Online · 92% confidence</em></div>
+              <div class="opcb-card agent-card"><b>Graph Analyst</b><strong>Link evidence to graph nodes</strong><p>Tools: Code Graph · Evidence Parser · Trace Links</p><em>Approved · 89% confidence</em></div>
+              <div class="opcb-card agent-card"><b>Profiler Agent</b><strong>Capture target module hot paths</strong><p>Tools: Profiler · Runtime Logs · Benchmarks</p><em>Online · 86% confidence</em></div>
+              <div class="opcb-card agent-card"><b>Verifier Agent</b><strong>Validate review gates</strong><p>Tools: Test Runner · Evidence Pack · Policy</p><em>Pending · 84% confidence</em></div>
+              <div class="opcb-card wide"><b>Handoff Queue</b><div class="gate-list"><span>Planner → Graph Analyst <em>Ready</em></span><span>Profiler → Evidence <em>Queued</em></span><span>Verifier → Review <em>Pending</em></span></div></div>
+              <div class="opcb-card"><b>Memory Security</b><p>Agent memory access is local-first, scoped to mission artifacts, and subject to trust policy.</p><button class="ghost-button">Review Access</button></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="trust">
+            <div class="opcb-section-head"><div><span class="nav-icon">◇</span><h2>Trust Posture</h2></div><span class="active-chip">Secure</span></div>
+            <div class="trust-layout">
+              <div class="opcb-card trust-hero"><span>Secure</span><b>Overall Trust Score</b><div class="trust-bar"><i style="width:91%"></i></div><em>91 / 100</em></div>
+              <div class="opcb-card"><b>Data Boundary</b><p>Local-first. No external telemetry. Air-gapped capable.</p><button class="ghost-button">View Boundary Map</button></div>
+              <div class="opcb-card"><b>Integrity</b><p>Agents, models, and evidence verified.</p><button class="ghost-button">Verify Now</button></div>
+              <div class="opcb-card"><b>Policy Guardrails</b><p>Role-based access, least privilege, change approvals.</p><button class="ghost-button">View Policies</button></div>
+              <div class="opcb-card wide"><b>Integrity Checks</b><div class="metric-strip compact"><div class="hero-metric"><span>28 / 31</span><b>Checks Passing</b></div><div class="hero-metric amber"><span>2</span><b>Warnings</b></div><div class="hero-metric danger"><span>1</span><b>Failed</b></div></div></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="memory">
+            <div class="opcb-section-head"><div><span class="nav-icon">⬡</span><h2>Memory</h2></div><span class="active-chip">Live</span></div>
+            <div class="memory-layout">
+              <div class="opcb-card"><b>Mission Memory</b><span class="big-number">184</span><p>Trace-linked records retained for this mission.</p></div>
+              <div class="opcb-card"><b>Evidence Items</b><span class="big-number">96</span><p>Validated proof objects available to agents.</p></div>
+              <div class="opcb-card"><b>Recall Health</b><span class="big-number">92%</span><p>Fresh, consistent, and source-linked.</p></div>
+              <div class="opcb-card wide"><b>Recent Memory Events</b><div class="gate-list"><span>Evidence parser plan updated <em>2m ago</em></span><span>Review gate outcome stored <em>4m ago</em></span><span>Model route snapshot retained <em>8m ago</em></span></div></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="map">
+            <div class="opcb-section-head"><div><span class="nav-icon">⌬</span><h2>Mission Map</h2></div><div class="opcb-toolbar"><button class="ghost-button">Filters</button><button class="ghost-button">Layout: Force</button></div></div>
+            <div class="graph-canvas">
+              <div class="graph-node entry" style="--x:48%;--y:8%">main.py<br><span>Entry Point</span></div>
+              <div class="graph-node parser" style="--x:35%;--y:26%">parser.py<br><span>Parser</span></div>
+              <div class="graph-node parser" style="--x:54%;--y:28%">evidence_parser.py<br><span>Parser</span></div>
+              <div class="graph-node detector" style="--x:42%;--y:48%">anomaly_detector.py<br><span>Detector</span></div>
+              <div class="graph-node db" style="--x:55%;--y:52%">evidence_index.db<br><span>Store</span></div>
+              <div class="graph-node agent" style="--x:51%;--y:70%">evidence_agent<br><span>Online</span></div>
+              <div class="graph-node external" style="--x:80%;--y:36%">pydantic<br><span>External</span></div>
+            </div>
+          </section>
+
+          <section class="opcb-dashboard page-panel hidden" data-page-panel="doctor">
+            <div class="opcb-section-head">
+              <div><span class="nav-icon">▤</span><h2>Gateway Doctor</h2><span>Route contract, process health, and OPCB live-data readiness.</span></div>
+              <div class="opcb-toolbar">
+                <button class="ghost-button" data-opcb-readiness>Run Readiness</button>
+                <button class="ghost-button" data-opcb-recheck-gateway>Recheck Routes</button>
+              </div>
+            </div>
+            <div class="doctor-grid">
+              <section class="opcb-card"><b>Gateway Contract</b><p>Loading live route contract...</p></section>
+              <section class="opcb-card"><b>Recovery Actions</b><p>Loading restart and readiness controls...</p></section>
+            </div>
+          </section>
+
+          <!-- file explorer (shown on mission/workspace page) -->
+          <div id="fileExplorerSection" class="panel-title-row" style="border-bottom:1px solid var(--line)">
+            <span class="dot-grid">▦</span>
+            <h2 id="fileExplorerHeader">Files</h2>
+            <span id="fileExplorerStatus" class="active-chip">loading</span>
+          </div>
+          <div id="fileExplorerBody" style="display:flex;flex-direction:column;flex:0 0 auto;max-height:38%;min-height:120px;overflow:hidden;">
+            <div class="file-filter-row">
+              <input id="fileFilter" class="input compact-input" placeholder="filter files…">
+            </div>
+            <div class="file-action-row">
+              <button id="expandExplorer" class="ghost-button">Expand</button>
+              <button id="collapseExplorer" class="ghost-button">Collapse</button>
+              <button id="refreshFiles" class="ghost-button">Refresh</button>
+              <button id="toggleExplorerMode" class="ghost-button">Flat</button>
+              <button id="revealActiveFile" class="ghost-button">Reveal</button>
+            </div>
+            <div id="fileList" style="flex:1 1 0;min-height:0;overflow-y:auto;overflow-x:hidden;padding:5px 10px 8px;display:flex;flex-direction:column;gap:3px;"></div>
+          </div>
+
+          <!-- editor band fills remaining space -->
+          <section class="editor-band" style="flex:1 1 0;min-height:0;border-radius:0;border:0;border-top:1px solid var(--line);">
+            <div class="tabs">
+              <button class="tab active" data-editor-tab="editor">Editor</button>
+              <button class="tab" data-editor-tab="diff">Diff Preview</button>
+              <button class="tab" data-editor-tab="terminal">Terminal</button>
+            </div>
+            <div id="openTabs" class="open-tabs"></div>
+            <div id="editorPane" class="editor-pane">
+              <div class="editor-toolbar">
+                <span id="activeFile" class="mono file-path">No file open</span>
+                <div class="editor-quick-actions">
+                  <button id="sourcePlanFromEdit" class="primary-button">Draft Plan</button>
+                  <button id="saveViaSourcePlan" class="primary-button">Stage+Save</button>
+                  <button id="undoEdit" class="ghost-button" title="Undo">↩</button>
+                  <button id="redoEdit" class="ghost-button" title="Redo">↪</button>
+                  <button id="toggleSplitEditor" class="ghost-button" title="Split editor">⊟</button>
+                  <button id="revertEditorBuffer" class="ghost-button" title="Revert changes">Revert</button>
+                  <button id="closeFileTab" class="ghost-button" title="Close tab">✕</button>
+                </div>
+                <!-- kept for app.js compatibility -->
+                <button id="newWorkspaceFile" class="hidden"></button>
+                <button id="renameWorkspaceFile" class="hidden"></button>
+                <button id="deleteWorkspaceFile" class="hidden"></button>
+                <button id="reloadActiveFile" class="hidden"></button>
+                <button id="sourcePlanFromSelection" class="hidden"></button>
+              </div>
+              <div id="editorMeta" class="editor-meta">line 1 · col 1 · clean</div>
+              <div id="editorSplitHost" class="editor-split-host">
+                <div id="monacoEditor" class="monaco-editor-host"></div>
+                <div id="monacoSplitEditor" class="monaco-editor-host split-peer hidden"></div>
+              </div>
+              <textarea id="editorText" class="hidden-buffer" spellcheck="false"></textarea>
+            </div>
+            <div id="diffPane" class="editor-pane hidden">
+              <div class="editor-toolbar">
+                <span class="mono">Governed Diff Overlay</span>
+                <span id="diffMeta" class="muted">No staged diff yet.</span>
+              </div>
+              <div id="monacoDiff" class="monaco-editor-host"></div>
+              <div id="diffHunkSelector" class="mini-list hunk-selector"></div>
+              <pre id="diffPreview" class="diff-view hidden">No staged diff yet.</pre>
+            </div>
+            <div id="terminalPane" class="editor-pane hidden">
+              <div class="terminal-control-plane">
+                <div class="terminal-command-row">
+                  <input id="terminalCommand" class="terminal-input" placeholder="classify command before running">
+                  <button id="classifyCommand" class="primary-button">Safety Check</button>
+                  <button id="executeCommand" class="ghost-button">Execute</button>
+                  <button id="cancelCommand" class="ghost-button">Cancel</button>
+                </div>
+                <div class="terminal-meta-row">
+                  <input id="terminalCwd" class="terminal-input" placeholder="working directory">
+                  <select id="terminalTimeout" class="terminal-select" title="Command timeout">
+                    <option value="30">30s</option>
+                    <option value="120" selected>120s</option>
+                    <option value="300">300s</option>
+                    <option value="900">900s</option>
+                  </select>
+                  <button id="terminalUseWorkspaceCwd" class="ghost-button">CWD</button>
+                  <button id="terminalClearLog" class="ghost-button">Clear</button>
+                </div>
+                <div id="terminalDecisionCard" class="terminal-decision-card muted">No command classified yet.</div>
+                <div id="terminalStreamState" class="stream-state warn">stream idle</div>
+              </div>
+              <pre id="terminalLog" class="terminal-view">BEAST desktop terminal log will appear here.</pre>
+            </div>
+          </section>
+
+        </div><!-- end content-panel -->
+
+        <!-- ── CONTEXT PANEL: governance + state ──────────── -->
+        <div class="context-panel">
+          <div id="opcbRightRail" class="opcb-right-rail"></div>
+
+          <!-- always-visible next action -->
+          <div class="card next-action-panel">
+            <div id="nextActionInspector" class="status-box muted" style="margin:0">Load a workspace to begin.</div>
+          </div>
+
+          <!-- MISSION panels -->
+          <div class="card page-panel" data-page-panel="mission">
+            <div class="card-head">
+              <h3>Policy &amp; Route</h3>
+              <span id="policyGateBadge" class="badge">waiting</span>
+            </div>
+            <div id="policyGate" class="decision">waiting</div>
+            <div id="policyDetail" class="muted" style="font-size:11px;margin:4px 0 6px"></div>
+            <div id="activeMissionCard" class="mission-card">No active mission.</div>
+            <div id="missionRouteStrip" class="mini-list" style="margin-top:6px"></div>
+          </div>
+
+          <div class="card page-panel" data-page-panel="mission">
+            <div class="card-head"><h3>Mission Timeline</h3><span class="badge">live</span></div>
+            <div id="missionTimeline" class="mini-list"></div>
+          </div>
+
+          <div class="card page-panel" data-page-panel="mission">
+            <div class="card-head"><h3>Symbol Lens</h3></div>
+            <div id="symbolOutlineMeta" class="explorer-status muted">Select a file.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+              <button id="refreshSymbolOutline" class="ghost-button" style="font-size:11px">Refresh</button>
+              <button id="askSymbolAgent" class="ghost-button" style="font-size:11px">Ask</button>
+            </div>
+            <div id="symbolOutline" class="mini-list"></div>
+          </div>
+
+          <div class="card page-panel" data-page-panel="mission">
+            <div class="card-head"><h3>Related Context</h3></div>
+            <div id="relatedContext" class="mini-list"></div>
+          </div>
+
+          <!-- SOURCE panels -->
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="sourceLifecycle">SourcePlan Draft</button>
+            <div class="panel-body" data-panel-body="sourceLifecycle">
+              <div id="sourcePlanStatus" class="status-box muted">No editor draft yet.</div>
+              <div id="sourcePlanChecklist" class="lifecycle-checklist"></div>
+              <div id="sourcePlanLifecycle" class="mini-list"></div>
+              <div class="gov-btn-row">
+                <button id="verifySourcePlan" class="ghost-button">Verify</button>
+                <button id="applySourcePlan" class="primary-button">Apply</button>
+                <button id="clearSourcePlan" class="ghost-button">Clear</button>
+              </div>
+              <div class="gov-btn-row">
+                <button id="rebaseSourcePlan" class="ghost-button">Rebase</button>
+                <button id="showRollbackPreview" class="ghost-button">Rollback</button>
+                <button id="showApplyTimeline" class="ghost-button">Timeline</button>
+                <button id="exportMissionRunbook" class="ghost-button">Runbook</button>
+              </div>
+              <div class="small-title">Contract</div>
+              <div id="sourcePlanActionContract" class="status-box muted">No contract.</div>
+              <div class="small-title">Operations</div>
+              <div id="sourcePlanOperations" class="mini-list"></div>
+              <div id="sourcePlanOperationLedger" class="mini-list"></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="selectAllSourceOps" class="ghost-button">All</button>
+                <button id="selectNoSourceOps" class="ghost-button">None</button>
+                <button id="reloadForSourcePlan" class="ghost-button">Reload</button>
+                <button id="editSourcePlanOp" class="ghost-button">Edit</button>
+                <button id="moveSourcePlanOpUp" class="ghost-button">↑</button>
+                <button id="moveSourcePlanOpDown" class="ghost-button">↓</button>
+              </div>
+              <div class="gov-btn-row">
+                <button id="verifyMissionRunbook" class="ghost-button">Verify RB</button>
+                <button id="chooseSourceReceipt" class="ghost-button">Receipts</button>
+                <button id="copySourceRunbook" class="ghost-button">Copy</button>
+                <button id="createHandoffPackage" class="ghost-button">Handoff</button>
+                <button id="proposeLearning" class="ghost-button">Learn</button>
+              </div>
+              <div id="sourcePlanRollbackPreview" class="status-box muted" style="margin-top:6px">No rollback preview.</div>
+              <div id="sourcePlanApplyTimeline" class="mini-list"></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="codeCortexPanel">Code Cortex</button>
+            <div class="panel-body" data-panel-body="codeCortexPanel">
+              <input id="symbolSearchQuery" class="input" placeholder="search symbols…">
+              <div class="gov-btn-row">
+                <button id="runSymbolSearch" class="ghost-button">Search</button>
+                <button id="openSymbolSearchResult" class="ghost-button">Open</button>
+                <button id="askSymbolSearchAgent" class="ghost-button">Ask</button>
+                <button id="goToDefinition" class="ghost-button">Def</button>
+                <button id="findReferences" class="ghost-button">Refs</button>
+                <button id="relatedTestsRoutes" class="ghost-button">Tests</button>
+              </div>
+              <div id="symbolSearchResults" class="mini-list"></div>
+              <div id="codeCortex" class="mini-list"></div>
+            </div>
+          </section>
+
+          <!-- AGENTS panels -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="agentSessionsPanel">Agent Sessions</button>
+            <div class="panel-body" data-panel-body="agentSessionsPanel">
+              <button id="createAgent" class="primary-button full">+ New Session</button>
+              <div id="agentSessions" class="mini-list" style="margin-top:6px"></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="agentDetailPanel">Agent Detail</button>
+            <div class="panel-body" data-panel-body="agentDetailPanel">
+              <div id="agentDetail" class="status-box muted">Select a session.</div>
+              <textarea id="agentPromptText" class="agent-prompt" spellcheck="false" placeholder="Ask the agent…"></textarea>
+              <div class="gov-btn-row">
+                <button id="sendAgentPrompt" class="primary-button">Send</button>
+                <button id="runAgentStream" class="ghost-button">Stream</button>
+                <button id="agentAskSelection" class="ghost-button">Ask Selection</button>
+                <button id="agentOutputSourcePlan" class="ghost-button">→ Plan</button>
+              </div>
+              <label class="check-row"><input id="agentIncludeActiveFile" type="checkbox" checked><span>Active file</span></label>
+              <label class="check-row"><input id="agentIncludeSelection" type="checkbox" checked><span>Selection</span></label>
+              <label class="check-row"><input id="agentIncludeRelated" type="checkbox" checked><span>Related files</span></label>
+              <div id="agentContextSummary" class="status-box muted" style="margin:5px 0">No context packed yet.</div>
+              <textarea id="agentOutputText" class="agent-output" spellcheck="false" placeholder="Agent response…"></textarea>
+              <div class="gov-btn-row">
+                <button id="agentExtractPatch" class="ghost-button">Extract Code</button>
+                <button id="agentPreviewPatch" class="ghost-button">Preview Diff</button>
+                <button id="agentCompilePatch" class="primary-button">Compile Plan</button>
+              </div>
+              <div class="gov-btn-row">
+                <button id="agentStagePatch" class="ghost-button">Stage Buffer</button>
+                <button id="agentRequestPatch" class="ghost-button">Request Patch</button>
+                <button id="agentClearPatch" class="ghost-button">Clear Patch</button>
+                <button id="agentPatchToSource" class="ghost-button">Source Page</button>
+              </div>
+              <textarea id="agentProposedText" class="agent-prompt" spellcheck="false" placeholder="Paste replacement code here…"></textarea>
+              <div id="agentPatchStatus" class="status-box muted">Select code then extract or paste replacement.</div>
+              <div class="small-title">Run Inspector</div>
+              <div id="agentProviderHealth" class="status-box muted">Waiting.</div>
+              <div class="inspector-grid" style="margin-top:5px">
+                <div><div class="small-title">Stages</div><div id="agentStageTrace" class="chip-list"></div></div>
+                <div><div class="small-title">Tools</div><div id="agentToolTrace" class="chip-list"></div></div>
+              </div>
+              <div id="agentRunInspector" class="agent-run-inspector"></div>
+              <div id="agentTurnTimeline" class="mini-list"></div>
+              <div class="gov-btn-row" style="margin-top:5px">
+                <button id="pauseAgent" class="ghost-button">Pause</button>
+                <button id="resumeAgent" class="ghost-button">Resume</button>
+                <button id="cancelAgent" class="ghost-button">Cancel</button>
+                <button id="saveAgentOutput" class="ghost-button">Save</button>
+                <button id="clearAgentPrompt" class="ghost-button">Clear</button>
+                <button id="copyAgentOutput" class="ghost-button">Copy</button>
+                <button id="agentRefreshContext" class="ghost-button">Refresh Ctx</button>
+                <button id="agentClearOutput" class="ghost-button">Clear Out</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- INFERENCE MONITOR -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="inferenceMonitorPanel">Inference Monitor</button>
+            <div class="panel-body" data-panel-body="inferenceMonitorPanel">
+              <div class="small-title">Context Window</div>
+              <div id="contextWindowStats" class="status-box muted">No active run.</div>
+              <div class="small-title">KV Cache</div>
+              <div id="kvCacheStats" class="status-box muted">Not available.</div>
+              <div class="small-title">Compression</div>
+              <div id="compressionStats" class="status-box muted">No compression data.</div>
+              <div class="small-title">Token Budget</div>
+              <div id="tokenBudgetStats" class="status-box muted">Budget not configured.</div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="refreshInferenceStats" class="ghost-button">Refresh</button>
+                <button id="clearKvCache" class="ghost-button">Clear KV Cache</button>
+                <button id="toggleCompression" class="ghost-button">Toggle Compression</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- WORKTREES panels -->
+          <section class="panel page-panel" data-page-panel="worktrees">
+            <button class="panel-title panel-toggle" data-collapse-panel="worktreePanel">Worktree Missions</button>
+            <div class="panel-body" data-panel-body="worktreePanel">
+              <button id="createWorktree" class="primary-button full">+ New Worktree</button>
+              <div id="worktreeMissions" class="mini-list" style="margin-top:6px"></div>
+              <div class="gov-btn-row">
+                <button id="testWorktree" class="ghost-button">Verify</button>
+                <button id="draftWorktreePlan" class="primary-button">Plan</button>
+                <button id="browseWorktreeDiff" class="ghost-button">Diff</button>
+                <button id="worktreePromotionWizard" class="primary-button">Promote</button>
+                <button id="openWorktreeWindow" class="ghost-button">Window</button>
+                <button id="closeWorktree" class="ghost-button">Close</button>
+              </div>
+              <div id="worktreeWizardState" class="status-box muted" style="margin-top:6px">Select a worktree.</div>
+              <div id="worktreeWizardSteps" class="lifecycle-checklist"></div>
+              <div id="worktreeDiffSummary" class="mini-list"></div>
+            </div>
+          </section>
+
+          <!-- EVIDENCE panels -->
+          <section class="panel page-panel" data-page-panel="evidence">
+            <button class="panel-title panel-toggle" data-collapse-panel="evidencePanel">Evidence Bus</button>
+            <div class="panel-body" data-panel-body="evidencePanel">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+                <input id="evidenceSource" class="input compact-input" placeholder="source">
+                <input id="evidenceType" class="input compact-input" placeholder="type">
+                <input id="evidenceStatus" class="input compact-input" placeholder="status">
+                <input id="evidenceKey" class="input compact-input" placeholder="receipt / plan">
+              </div>
+              <div class="gov-btn-row">
+                <button id="searchEvidence" class="primary-button">Search</button>
+                <button id="clearEvidenceFilters" class="ghost-button">Clear</button>
+                <button id="relatedEvidence" class="ghost-button">Related</button>
+                <button id="chooseEvidenceReceipt" class="ghost-button">Receipts</button>
+                <button id="exportEvidenceRunbook" class="ghost-button">Runbook</button>
+              </div>
+              <div id="receiptChooser" class="mini-list"></div>
+              <div id="evidenceBus" class="mini-list"></div>
+            </div>
+          </section>
+
+          <!-- TERMINAL panel -->
+          <section class="panel page-panel hidden" data-page-panel="terminal">
+            <button class="panel-title panel-toggle" data-collapse-panel="terminalPanel">Terminal History</button>
+            <div class="panel-body" data-panel-body="terminalPanel">
+              <div class="gov-btn-row">
+                <button class="primary-button" data-editor-jump="terminal">Open Terminal</button>
+                <button id="terminalEvidenceShortcut" class="ghost-button">Evidence</button>
+                <button id="terminalCopyLastReceipt" class="ghost-button">Copy Receipt</button>
+                <button id="terminalRerunLast" class="ghost-button">Rerun</button>
+                <button id="terminalClearHistory" class="ghost-button">Clear</button>
+                <button id="terminalEvidenceFilter" class="ghost-button">Filter</button>
+              </div>
+              <div id="terminalPolicySummary" class="status-box muted" style="margin:5px 0">No decision yet.</div>
+              <div id="terminalHistoryList" class="mini-list"></div>
+              <div id="terminalEvidenceDetail" class="status-box muted">No receipt captured.</div>
+            </div>
+          </section>
+
+          <!-- PROVIDERS panel -->
+          <section class="panel page-panel hidden" data-page-panel="providers">
+            <button class="panel-title panel-toggle" data-collapse-panel="providersPanel">Provider Setup</button>
+            <div class="panel-body" data-panel-body="providersPanel">
+              <div id="providerState" class="status-box muted">Provider setup pending gateway.</div>
+              <label class="field-label" for="providerSelect">Provider</label>
+              <select id="providerSelect" class="input">
+                <option value="nvidia_nim">NVIDIA NIM</option>
+                <option value="local_ollama">Local Ollama</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+              </select>
+              <label class="field-label" for="providerModel">Model</label>
+              <input id="providerModel" class="input" value="meta/llama-3.1-8b-instruct" list="providerModelOptions">
+              <datalist id="providerModelOptions">
+                <option value="meta/llama-3.1-8b-instruct"></option>
+                <option value="nvidia/nemotron-3-super-120b-a12b"></option>
+              </datalist>
+              <div class="gov-btn-row">
+                <button id="refreshProviders" class="ghost-button">Refresh</button>
+                <button id="useNvidiaProvider" class="primary-button">Use NIM</button>
+                <button id="smokeNvidiaProvider" class="ghost-button">Smoke Test</button>
+                <button id="copyProviderSetup" class="ghost-button">Copy</button>
+                <button id="providerAgentPage" class="ghost-button">Agents →</button>
+                <button id="providerDoctorPage" class="ghost-button">Doctor →</button>
+              </div>
+              <div class="provider-inventory" id="providerInventory"></div>
+              <pre id="providerRaw" class="doctor-raw"></pre>
+            </div>
+          </section>
+
+          <!-- TOOLING panel -->
+          <section class="panel page-panel hidden" data-page-panel="tooling">
+            <button class="panel-title panel-toggle" data-collapse-panel="toolingPanel">Tooling Plane</button>
+            <div class="panel-body" data-panel-body="toolingPanel">
+              <div id="toolingSummary" class="status-box muted">Lint · Syntax · MCP · Plugins · Env</div>
+              <div class="gov-btn-row">
+                <button id="refreshTooling" class="primary-button">Refresh</button>
+                <button id="runSyntaxCheck" class="ghost-button">Syntax</button>
+                <button id="runLintCheck" class="ghost-button">Lint</button>
+                <button id="openMcpPanel" class="ghost-button">MCP</button>
+                <button id="openPluginPanel" class="ghost-button">Plugins</button>
+                <button id="openEnvironmentPanel" class="ghost-button">Env</button>
+              </div>
+              <div class="gov-btn-row">
+                <button id="runBenchmarkGrading" class="primary-button">Grade Packet</button>
+                <button id="copyBenchmarkVerdict" class="ghost-button">Copy Verdict</button>
+              </div>
+              <div class="small-title">Benchmark Verdict</div>
+              <div id="benchmarkVerdictStatus" class="status-box muted">No benchmark verdict loaded.</div>
+              <div class="gov-btn-row">
+                <button id="refreshMcpOps" class="ghost-button">MCP Ops</button>
+                <button id="approveMcpRequest" class="ghost-button">Approve</button>
+                <button id="denyMcpRequest" class="ghost-button">Deny</button>
+                <button id="refreshPluginOps" class="ghost-button">Plugin Ops</button>
+                <button id="validatePluginManifest" class="ghost-button">Validate</button>
+                <button id="copyToolingReport" class="ghost-button">Copy</button>
+              </div>
+              <div class="small-title">Syntax + Lint</div>
+              <div id="syntaxLintPanel" class="mini-list"></div>
+              <div class="small-title">MCP + Plugins</div>
+              <div id="mcpPluginPanel" class="mini-list"></div>
+              <div id="mcpOpsPanel" class="mini-list"></div>
+              <div id="pluginOpsPanel" class="mini-list"></div>
+              <div class="small-title">Environment</div>
+              <div id="environmentPanel" class="mini-list"></div>
+              <pre id="toolingRaw" class="doctor-raw"></pre>
+            </div>
+          </section>
+
+          <!-- SYSTEM panel -->
+          <section class="panel page-panel hidden" data-page-panel="system">
+            <button class="panel-title panel-toggle" data-collapse-panel="systemPanel">System Plane</button>
+            <div class="panel-body" data-panel-body="systemPanel">
+              <div id="systemSummary" class="status-box muted">Ports · Processes · Environment · Packages · Extensions</div>
+              <div class="gov-btn-row">
+                <button id="refreshSystem" class="primary-button">Refresh</button>
+                <button id="refreshSystemPorts" class="ghost-button">Ports</button>
+                <button id="refreshSystemProcesses" class="ghost-button">Processes</button>
+                <button id="refreshSystemEnvironment" class="ghost-button">Env</button>
+                <button id="refreshSystemPackages" class="ghost-button">Packages</button>
+                <button id="refreshSystemExtensions" class="ghost-button">Extensions</button>
+              </div>
+              <div class="gov-btn-row">
+                <input id="systemProcessQuery" class="input compact-input" placeholder="filter processes by name / pid…">
+                <select id="systemKillSignal" class="input" title="Signal used for kill / free-port">
+                  <option value="TERM">SIGTERM (15)</option>
+                  <option value="KILL">SIGKILL (9)</option>
+                  <option value="INT">SIGINT (2)</option>
+                  <option value="HUP">SIGHUP (1)</option>
+                </select>
+              </div>
+              <div class="gov-btn-row">
+                <input id="systemFreePort" class="input compact-input" placeholder="port to free (e.g. 3000)">
+                <button id="freeSystemPortBtn" class="ghost-button">Free Port</button>
+                <button id="copySystemReport" class="ghost-button">Copy</button>
+              </div>
+              <div class="small-title">Listening Ports</div>
+              <div id="systemPortsPanel" class="mini-list"></div>
+              <div class="small-title">Processes</div>
+              <div id="systemProcessPanel" class="mini-list"></div>
+              <div class="small-title">Environment</div>
+              <div id="systemEnvPanel" class="mini-list"></div>
+              <div class="small-title">Package Management</div>
+              <div id="systemPackagePanel" class="mini-list"></div>
+              <div class="small-title">Extensions + Tools</div>
+              <div id="systemExtPanel" class="mini-list"></div>
+              <div class="small-title">Recommended Catalog <button id="refreshSystemCatalog" class="ghost-button">Refresh</button></div>
+              <div id="systemCatalogPanel" class="mini-list"></div>
+              <pre id="systemRaw" class="doctor-raw"></pre>
+            </div>
+          </section>
+
+          <!-- DOCTOR panel -->
+          <section class="panel page-panel hidden" data-page-panel="doctor">
+            <button class="panel-title panel-toggle" data-collapse-panel="doctorPanel">Gateway Doctor</button>
+            <div class="panel-body" data-panel-body="doctorPanel">
+              <div id="gatewayDoctor" class="status-box muted">Waiting for gateway.</div>
+              <div class="gov-btn-row">
+                <button id="doctorRestartGateway" class="primary-button">Restart</button>
+                <button id="copyDoctorReport" class="ghost-button">Copy</button>
+                <button id="openGatewayBrowser" class="ghost-button">Open in Browser</button>
+              </div>
+              <pre id="gatewayDoctorRaw" class="doctor-raw"></pre>
+            </div>
+          </section>
+
+          <!-- SETTINGS panel -->
+          <section class="panel page-panel hidden" data-page-panel="settings">
+            <button class="panel-title panel-toggle" data-collapse-panel="settingsPanel">IDE Controls</button>
+            <div class="panel-body" data-panel-body="settingsPanel">
+              <div class="status-box muted">Keys: <b>1</b>–<b>9</b> pages · <b>Ctrl+K</b> Commands</div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" data-editor-jump="editor">Editor</button>
+                <button class="ghost-button" data-editor-jump="diff">Diff</button>
+                <button class="ghost-button" data-editor-jump="terminal">Terminal</button>
+              </div>
+              <div class="small-title">Command Palette</div>
+              <input id="commandPaletteSearch" class="input" placeholder="search governed actions">
+              <div class="gov-btn-row">
+                <button id="refreshCommandPalette" class="ghost-button">Refresh</button>
+                <button id="clearCommandPalette" class="ghost-button">Clear</button>
+              </div>
+              <div id="commandPalette" class="mini-list"></div>
+              <div class="small-title">IDE Readiness</div>
+              <div id="releaseReadiness" class="status-box muted">Not checked.</div>
+              <button id="checkReleaseReadiness" class="ghost-button full">Check Readiness</button>
+            </div>
+          </section>
+
+          <!-- CRYSTALIZATION panel (always available) -->
+          <section class="panel page-panel" data-page-panel="mission">
+            <button class="panel-title panel-toggle" data-collapse-panel="crystalPanel">Crystal Reuse</button>
+            <div class="panel-body" data-panel-body="crystalPanel">
+              <div id="studioXCrystalPanel"><div class="status-box muted">Loading crystal state…</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXCrystalRefresh" class="ghost-button">Refresh</button>
+                <button class="ghost-button" onclick="window.setDesktopPage?.('evidence')">Evidence →</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- MEMORY RECALL panel -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="memoryPanel">Memory Recall</button>
+            <div class="panel-body" data-panel-body="memoryPanel">
+              <div id="studioXMemoryPanel"><div class="status-box muted">Memory not loaded.</div></div>
+              <input id="studioXMemoryQuery" class="input compact-input" placeholder="recall query…" style="margin-top:6px">
+              <button id="studioXMemoryRecall" class="ghost-button" style="width:100%;margin-top:4px">Recall</button>
+            </div>
+          </section>
+
+          <!-- EVIDENCE STUDIO panel -->
+          <section class="panel page-panel" data-page-panel="evidence">
+            <button class="panel-title panel-toggle" data-collapse-panel="evidenceStudioPanel">Evidence Pack</button>
+            <div class="panel-body" data-panel-body="evidenceStudioPanel">
+              <div id="studioXEvidencePanel"><div class="status-box muted">No evidence pack loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXBuildEvidence" class="primary-button">Build Evidence Pack</button>
+              </div>
+              <div class="small-title" style="margin-top:8px">Quality Score</div>
+              <div id="studioXQualityScore"><div class="status-box muted">Not scored yet.</div></div>
+            </div>
+          </section>
+
+          <!-- MCP INTEGRATION panel -->
+          <section class="panel page-panel" data-page-panel="tooling">
+            <button class="panel-title panel-toggle" data-collapse-panel="mcpIntegrationPanel">MCP Integration</button>
+            <div class="panel-body" data-panel-body="mcpIntegrationPanel">
+              <div id="studioXMcpPanel"><div class="status-box muted">MCP state not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.refreshMcpIntegration()">Refresh MCP</button>
+                <button class="ghost-button" onclick="window.setDesktopPage?.('tooling')">Tooling →</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- APPROVAL GATE panel -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="approvalGatePanel">Approval Gate</button>
+            <div class="panel-body" data-panel-body="approvalGatePanel">
+              <div id="studioXApprovalPanel"><div class="status-box muted">No approvals loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.refreshApprovalState()">Refresh</button>
+                <button class="ghost-button" onclick="window.setDesktopPage?.('tooling')">MCP Tooling →</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- CODE GRAPH panel -->
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="codeGraphPanel">Code Graph</button>
+            <div class="panel-body" data-panel-body="codeGraphPanel">
+              <div id="studioXGraphPanel"><div class="status-box muted">Graph not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.refreshAll()">Refresh</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- REPO GUARD panel -->
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="repoGuardPanel">Repo Guard</button>
+            <div class="panel-body" data-panel-body="repoGuardPanel">
+              <div id="studioXRepoPanel"><div class="status-box muted">Repo status not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.refreshAll()">Refresh</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- RUNBOOK panel -->
+          <section class="panel page-panel" data-page-panel="evidence">
+            <button class="panel-title panel-toggle" data-collapse-panel="runbookStudioPanel">Mission Runbook</button>
+            <div class="panel-body" data-panel-body="runbookStudioPanel">
+              <div id="studioXRunbookPanel"><div class="status-box muted">No runbook built yet.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXBuildRunbook" class="primary-button">Build Runbook</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SKILLS panel -->
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="skillsPanel">Skills</button>
+            <div class="panel-body" data-panel-body="skillsPanel">
+              <div id="studioXSkillsPanel"><div class="status-box muted">Skills not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXMineSkills" class="ghost-button">Mine Skills</button>
+                <button id="studioXGenSkillCandidates" class="ghost-button">Generate Candidates</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SWARM panel -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="swarmPanel">Swarm</button>
+            <div class="panel-body" data-panel-body="swarmPanel">
+              <div id="studioXSwarmPanel"><div class="status-box muted">Swarm not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXSwarmRun" class="ghost-button">Run Swarm</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- MEMORY SECURITY panel -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="memSecPanel">Memory Security</button>
+            <div class="panel-body" data-panel-body="memSecPanel">
+              <div id="studioXMemorySecurityPanel"><div class="status-box muted">Loading memory security…</div></div>
+            </div>
+          </section>
+
+          <!-- CRYSTAL CHAIN + LATTICE panel -->
+          <section class="panel page-panel" data-page-panel="mission">
+            <button class="panel-title panel-toggle" data-collapse-panel="crystalChainPanel">Crystal Chain</button>
+            <div class="panel-body" data-panel-body="crystalChainPanel">
+              <div id="studioXCrystalChainPanel"><div class="status-box muted">Loading chain…</div></div>
+            </div>
+          </section>
+
+          <!-- COMMONS SPACES panel -->
+          <section class="panel page-panel" data-page-panel="evidence">
+            <button class="panel-title panel-toggle" data-collapse-panel="commonsPanel">Commons Spaces</button>
+            <div class="panel-body" data-panel-body="commonsPanel">
+              <div id="studioXCommonsPanel"><div class="status-box muted">Commons not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXCommonsRefresh" class="ghost-button">Refresh</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- COMPUTE ECONOMY panel -->
+          <section class="panel page-panel" data-page-panel="evidence">
+            <button class="panel-title panel-toggle" data-collapse-panel="economyPanel">Compute Economy</button>
+            <div class="panel-body" data-panel-body="economyPanel">
+              <div id="studioXEconomyPanel"><div class="status-box muted">Economy not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXEconomyRefresh" class="ghost-button">Refresh</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- RUNTIME CIRCUIT BREAKERS panel -->
+          <section class="panel page-panel" data-page-panel="doctor">
+            <button class="panel-title panel-toggle" data-collapse-panel="runtimePanel">Runtime</button>
+            <div class="panel-body" data-panel-body="runtimePanel">
+              <div id="studioXRuntimePanel"><div class="status-box muted">Runtime not loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXRuntimeSweep" class="ghost-button">Sweep Stale Attempts</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ARK DIFF INSPECTOR panel -->
+          <section class="panel page-panel" data-page-panel="source">
+            <button class="panel-title panel-toggle" data-collapse-panel="diffInspectorPanel">ARK Diff Inspector</button>
+            <div class="panel-body" data-panel-body="diffInspectorPanel">
+              <div id="studioXDiffPanel"><div class="status-box muted">No diff loaded.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXPreviewSandbox" class="ghost-button">Preview Current Plan</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ARK APPROVAL SELECTOR panel -->
+          <section class="panel page-panel" data-page-panel="agents">
+            <button class="panel-title panel-toggle" data-collapse-panel="approvalSelectorPanel">ARK Approval Selector</button>
+            <div class="panel-body" data-panel-body="approvalSelectorPanel">
+              <div id="studioXApprovalSelectorPanel"><div class="status-box muted">No receipts loaded.</div></div>
+              <input id="studioXApprovalPickAction" class="input compact-input" placeholder="action name (e.g. patch.apply)" style="margin-top:6px">
+              <button id="studioXApprovalPickBtn" class="ghost-button" style="width:100%;margin-top:4px">Pick Receipt</button>
+            </div>
+          </section>
+
+          <!-- INSIGHT COMPILER panel -->
+          <section class="panel page-panel" data-page-panel="mission">
+            <button class="panel-title panel-toggle" data-collapse-panel="insightPanel">Insight Compiler</button>
+            <div class="panel-body" data-panel-body="insightPanel">
+              <div id="studioXInsightPanel"><div class="status-box muted">No insights compiled yet.</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button id="studioXInsightCompile" class="ghost-button">Compile Insights</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ARK TASK ROUTER (Beast CLI Plan) panel -->
+          <section class="panel page-panel" data-page-panel="mission">
+            <button class="panel-title panel-toggle" data-collapse-panel="cliPlanPanel">ARK Task Router</button>
+            <div class="panel-body" data-panel-body="cliPlanPanel">
+              <div id="studioXCliPlanPanel"><div class="status-box muted">No plan generated yet.</div></div>
+              <input id="studioXCliPlanInput" class="input compact-input" placeholder="describe intent…" style="margin-top:6px">
+              <button id="studioXCliPlanBtn" class="primary-button" style="width:100%;margin-top:4px">Plan Route</button>
+            </div>
+          </section>
+
+          <!-- ═══ BEAST STUDIO PAGE — all integration panels in one place ═══ -->
+          <section class="panel page-panel hidden" data-page-panel="studio" style="background:linear-gradient(135deg,rgba(57,215,255,.04),rgba(179,107,255,.04));border-color:rgba(57,215,255,.3)">
+            <div class="panel-title" style="color:var(--cyan);font-size:12px">◆ BEAST Studio — All Systems</div>
+            <div class="gov-btn-row" style="margin-bottom:10px">
+              <button class="primary-button" onclick="window.beastStudio?.refreshAll(true)">↻ Refresh All</button>
+              <button class="ghost-button" onclick="window.beastStudio?.refreshCrystalChain()">Crystal Chain</button>
+              <button class="ghost-button" onclick="window.beastStudio?.refreshSkillsSummary()">Skills</button>
+              <button class="ghost-button" onclick="window.beastStudio?.refreshSwarmState()">Swarm</button>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioMemSec">Memory Security</button>
+            <div class="panel-body" data-panel-body="studioMemSec">
+              <div id="studioXMemorySecurityPanel2"><div class="status-box muted">Loading…</div></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioCrystalChain">Crystal Chain + Lattice</button>
+            <div class="panel-body" data-panel-body="studioCrystalChain">
+              <div id="studioXCrystalChainPanel2"><div class="status-box muted">Loading…</div></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioSkills">Skills</button>
+            <div class="panel-body" data-panel-body="studioSkills">
+              <div id="studioXSkillsPanel2"><div class="status-box muted">Loading…</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.studioMineSkills()">Mine Skills</button>
+                <button class="ghost-button" onclick="window.beastStudio?.studioGenerateSkillCandidates()">Gen Candidates</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioSwarm">Swarm</button>
+            <div class="panel-body" data-panel-body="studioSwarm">
+              <div id="studioXSwarmPanel2"><div class="status-box muted">Loading…</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.studioRunSwarm()">Run Swarm</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioEconomy">Compute Economy</button>
+            <div class="panel-body" data-panel-body="studioEconomy">
+              <div id="studioXEconomyPanel2"><div class="status-box muted">Loading…</div></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioRuntime">Runtime Circuits</button>
+            <div class="panel-body" data-panel-body="studioRuntime">
+              <div id="studioXRuntimePanel2"><div class="status-box muted">Loading…</div></div>
+              <div class="gov-btn-row" style="margin-top:6px">
+                <button class="ghost-button" onclick="window.beastStudio?.studioSweepRuntime()">Sweep</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioCommons">Commons Spaces</button>
+            <div class="panel-body" data-panel-body="studioCommons">
+              <div id="studioXCommonsPanel2"><div class="status-box muted">Loading…</div></div>
+            </div>
+          </section>
+
+          <section class="panel page-panel hidden" data-page-panel="studio">
+            <button class="panel-title panel-toggle" data-collapse-panel="studioPrec">PREC Lifecycle</button>
+            <div class="panel-body" data-panel-body="studioPrec">
+              <div id="studioXPrecPanel2"><div class="status-box muted">Loading…</div></div>
+            </div>
+          </section>
+
+        </div><!-- end context-panel -->
+      </div><!-- end workspace-grid -->
+
+      <!-- command bar -->
+      <div class="command-bar">
+        <div class="command-bar-tabs">
+          <button class="command-bar-tab active" id="cmdTabCommand">Command</button>
+          <button class="command-bar-tab" id="cmdTabRunbook">Runbook</button>
+          <button class="command-bar-tab" id="cmdTabNotes">Notes</button>
+        </div>
+        <div class="command-input-row">
+          <span class="command-spark">✦</span>
+          <input id="commandBarInput" class="command-input" placeholder="Ask or command BEAST Studio…">
+          <button id="commandBarSend" class="command-send">➤</button>
+        </div>
+        <div class="command-chips">
+          <span class="command-chip" data-desktop-page="mission">/mission</span>
+          <span class="command-chip" data-desktop-page="review">/review gates</span>
+          <span class="command-chip" data-desktop-page="evidence">/evidence</span>
+          <span class="command-chip" data-desktop-page="map">/graph analyze</span>
+          <span class="command-chip" data-desktop-page="models">/route test</span>
+          <span class="command-chip" data-desktop-page="crystallization">/crystallize preview</span>
+          <span class="command-chip" id="commandChipRefresh">/refresh</span>
+          <span class="command-chip" id="commandChipPalette">/commands</span>
+        </div>
+      </div>
+
+    </main><!-- end .main -->
+
+    <!-- ═══ CUBE ZONE ══════════════════════════════════════════════════════ -->
+    <aside class="cube-zone">
+      <div class="cube-zone-header">
+        <div class="cube-zone-title">Cube Pulse</div>
+        <div id="cubeZoneLive" class="cube-zone-live">● Live</div>
+      </div>
+
+      <!-- animated 3D cube mascot -->
+      <div class="cube-pulse-wrap">
+        <div class="cube-heartline"></div>
+        <div class="cube-pulse" id="cubePulse">
+          <div class="cube-wire">
+            <div class="cube-edge edge-a"></div>
+            <div class="cube-edge edge-b"></div>
+            <div class="cube-edge edge-c"></div>
+            <div class="cube-core">
+              <div class="beast-head">
+                <span class="beast-eye left"></span>
+                <span class="beast-eye right"></span>
+                <span class="beast-horn h1"></span>
+                <span class="beast-horn h2"></span>
+              </div>
+            </div>
+            <div class="particle p1"></div>
+            <div class="particle p2"></div>
+            <div class="particle p3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- gateway state in cube zone -->
+      <div class="card" style="padding:10px 12px">
+        <div class="card-head" style="margin-bottom:4px">
+          <h3 style="font-size:11px">Gateway</h3>
+          <span id="cubeGatewayBadge" class="badge">checking</span>
+        </div>
+        <div id="cubeGatewayDetail" class="muted" style="font-size:11px">Connecting…</div>
+      </div>
+
+      <!-- mission flow progress -->
+      <div class="card" style="padding:10px 12px">
+        <div class="card-head" style="margin-bottom:6px">
+          <h3 style="font-size:11px">Mission Flow</h3>
+        </div>
+        <div class="flow-row" id="missionFlowRow">
+          <div class="flow-step done">Mission</div>
+          <div class="flow-step">Source</div>
+          <div class="flow-step active">Review</div>
+          <div class="flow-step">Evidence</div>
+          <div class="flow-step">Crystal</div>
+          <div class="flow-step">Done</div>
+        </div>
+      </div>
+
+      <!-- policy gate mirror in cube zone -->
+      <div class="card" style="padding:10px 12px">
+        <div class="card-head" style="margin-bottom:4px">
+          <h3 style="font-size:11px">Policy</h3>
+        </div>
+        <div id="cubePolicyGate" class="decision" style="font-size:15px">waiting</div>
+        <div id="cubePolicyDetail" class="muted" style="font-size:11px;margin-top:3px"></div>
+      </div>
+
+      <!-- PREC lifecycle summary -->
+      <div class="card" style="padding:10px 12px">
+        <div class="card-head" style="margin-bottom:6px">
+          <h3 style="font-size:11px">PREC Lifecycle</h3>
+          <button onclick="window.beastStudio?.refreshPrecState()" class="ghost-button" style="font-size:10px;padding:2px 6px">↻</button>
+        </div>
+        <div id="studioXPrecPanel"><div class="muted" style="font-size:11px">Loading PREC state…</div></div>
+      </div>
+
+      <!-- provider route economist -->
+      <div class="card" style="padding:10px 12px">
+        <div class="card-head" style="margin-bottom:6px">
+          <h3 style="font-size:11px">Route Economist</h3>
+        </div>
+        <div id="studioXRoutePanel"><div class="muted" style="font-size:11px">Select a route for a task.</div></div>
+        <input id="studioXRouteQuery" class="input compact-input" placeholder="describe task…" style="margin-top:6px">
+        <button id="studioXRouteSelect" class="primary-button" style="width:100%;margin-top:5px;font-size:11px">Select Best Route</button>
+      </div>
+
+    </aside><!-- end .cube-zone -->
+
+  </div><!-- end .app-shell -->
+
+  <!-- command palette modal (preserved) -->
+  <div id="commandPaletteOverlay" class="palette-overlay hidden" aria-hidden="true">
+    <div class="palette-modal" role="dialog" aria-modal="true" aria-labelledby="commandPaletteTitle">
+      <div class="palette-head">
+        <div>
+          <div class="page-kicker">BEAST Actions</div>
+          <h3 id="commandPaletteTitle">Command Palette</h3>
+        </div>
+        <button id="closeCommandPalette" class="ghost-button">Close</button>
+      </div>
+      <input id="commandPaletteModalSearch" class="input" placeholder="search governed actions">
+      <div id="commandPaletteModal" class="mini-list command-palette-results"></div>
+      <div class="palette-foot">Ctrl/Cmd+K · Actions are planned by BEAST before execution.</div>
+    </div>
+  </div>
+
+  <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+  <script src="opcb-components.js"></script>
+  <script src="opcb-live-store.js"></script>
+  <script src="opcb-state.js"></script>
+  <script src="opcb-renderers.js"></script>
+  <script src="app.js"></script>
+  <script src="beast-studio-integrations.js"></script>
+</body>
+</html>

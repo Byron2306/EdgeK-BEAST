@@ -1,0 +1,82 @@
+/* OPCB Phase 6 Asset Helpers: Utility + Polish */
+:root {
+  --asset-cyan: #39d7ff;
+  --asset-teal: #39f0c2;
+  --asset-violet: #b36bff;
+  --asset-gold: #ffc857;
+  --asset-red: #ff5d6c;
+}
+
+.opcb-page-art.terminal { background-image: url("../svg/terminal-page-bg.svg"); }
+.opcb-page-art.providers { background-image: url("../svg/providers-page-bg.svg"); }
+.opcb-page-art.tooling { background-image: url("../svg/tooling-page-bg.svg"); }
+.opcb-page-art.doctor { background-image: url("../svg/doctor-page-bg.svg"); }
+.opcb-page-art.settings { background-image: url("../svg/settings-page-bg.svg"); }
+.opcb-page-art.source,
+.opcb-page-art.worktrees,
+.opcb-page-art.studio { background-image: url("../svg/sourceplan-page-bg.svg"); }
+
+.opcb-utility-pulse {
+  width: 164px;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+.opcb-terminal-glow {
+  border-color: rgba(57, 240, 194, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57, 240, 194, .12),
+    0 0 24px rgba(57, 240, 194, .16);
+}
+
+.opcb-provider-glow {
+  border-color: rgba(57, 215, 255, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57, 215, 255, .12),
+    0 0 24px rgba(57, 215, 255, .16);
+}
+
+.opcb-doctor-glow {
+  border-color: rgba(255, 200, 87, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 200, 87, .12),
+    0 0 24px rgba(255, 200, 87, .16);
+}
+
+.opcb-utility-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(57, 215, 255, .3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(7, 20, 38, .78);
+  color: #c8e6ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opcb-utility-chip[data-ok="true"] {
+  border-color: rgba(57, 240, 194, .42);
+  color: var(--asset-teal);
+}
+
+.opcb-utility-chip[data-warn="true"] {
+  border-color: rgba(255, 200, 87, .42);
+  color: var(--asset-gold);
+}
+
+.opcb-utility-chip[data-bad="true"] {
+  border-color: rgba(255, 93, 108, .42);
+  color: var(--asset-red);
+}
+
+.opcb-final-nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 5px rgba(57, 215, 255, .66))
+    drop-shadow(0 0 12px rgba(179, 107, 255, .2));
+}

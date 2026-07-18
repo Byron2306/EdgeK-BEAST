@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180">
+  <defs>
+    <linearGradient id="g" x1="35" y1="20" x2="205" y2="160">
+      <stop stop-color="#39d7ff"/><stop offset=".45" stop-color="#b36bff"/><stop offset="1" stop-color="#ff5d6c"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .edge{fill:none;stroke:url(#g);stroke-width:3;filter:url(#glow);stroke-linejoin:round}
+    .pulse{animation:pulse 1.7s ease-in-out infinite;transform-origin:120px 90px}
+    .radar{animation:spin 2.6s linear infinite;transform-origin:120px 90px}
+    @keyframes pulse{50%{opacity:.58;transform:scale(.97)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+  <g class="pulse">
+    <path class="edge" d="M120 24l58 34v66l-58 34-58-34V58z"/>
+    <path class="edge" d="M62 58l58 34 58-34M120 92v66"/>
+    <circle cx="120" cy="90" r="35" fill="none" stroke="#39d7ff" stroke-width="2" opacity=".5"/>
+    <path class="radar" d="M120 90L120 52" stroke="#ff5d6c" stroke-width="3" opacity=".75"/>
+    <circle cx="120" cy="90" r="7" fill="#fff"/>
+  </g>
+</svg>

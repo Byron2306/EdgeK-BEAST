@@ -16,6 +16,7 @@ from app.kernel.capability.capability_exchange import CapabilityExchange
 from app.kernel.capability.skill_tree import SkillTree
 from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 from app.kernel.networking.meta_tool_commons import MetaToolCommons
+from app.kernel.capability.tool_buckets import bucket_tools, exposure_receipt
 
 
 class CapabilityPlane:
@@ -114,6 +115,15 @@ class CapabilityPlane:
             "capabilities": filtered[:capped],
             "authority": "read_only_facade_no_execution_no_install",
         }
+
+    def expose(self, *, phase: str = "Observe", risk: str = "low", network: bool = False, mutating: bool = False, approved: bool = False, failed_tools=(), include_schemas: bool = False, limit: int = 100) -> Dict[str, Any]:
+        """Return only the capability schemas justified by the active phase."""
+        records,_ = self._collect(limit=max(1,min(limit,500)))
+        tools=[{**item,"bucket":item.get("bucket") or "Observe"} for item in records]
+        visible=bucket_tools(tools,phase=phase,risk=risk,network=network,mutating=mutating,approved=approved,failed_tools=failed_tools)
+        if not include_schemas:
+            visible=[{key:item.get(key) for key in ("capability_id","name","kind","family","source","risk_level","bucket","requires_approval")} for item in visible]
+        return {"beast_object_type":"capability_plane_exposure","version":"1.0","workspace_root":str(self.workspace_root),"receipt":exposure_receipt(tools,phase=phase,risk=risk,network=network,mutating=mutating,approved=approved,failed_tools=tuple(failed_tools)),"capabilities":visible[:limit],"schema_mode":"full" if include_schemas else "lazy"}
 
     def _collect(self, *, limit: int) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
         records: List[Dict[str, Any]] = []
@@ -285,5 +295,15 @@ class CapabilityPlane:
             "verified": bool(verified),
             "reusable": bool(reusable),
             "requires_approval": bool(requires_approval),
+            "bucket": self._bucket_for(local=local,risk=risk,requires_approval=bool(requires_approval),metadata=metadata or {}),
             "metadata": metadata or {},
         }
+
+    @staticmethod
+    def _bucket_for(*, local: bool, risk: str, requires_approval: bool, metadata: Dict[str, Any]) -> str:
+        if risk == "critical": return "Administer"
+        if metadata.get("writes_files"): return "Modify"
+        if metadata.get("network_access") or not local: return "Connect"
+        if requires_approval or risk == "high": return "Execute"
+        if metadata.get("read_only"): return "Observe"
+        return "Reason"

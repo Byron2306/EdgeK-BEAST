@@ -1,0 +1,122 @@
+{
+  "beast_object_type": "public_economic_thesis_verdict",
+  "claim_status": "supported",
+  "claim_status_basis": "provisional_verification_grades",
+  "generated_at": "2026-07-09T17:44:56Z",
+  "graded_rows": [
+    {
+      "blind_id": "1dfc13b685af0f99",
+      "lane_class": "governed",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": true,
+      "provider": "xai",
+      "quality_score": 0.8,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "deployment_route_resolution"
+    },
+    {
+      "blind_id": "3dadd41948e4712e",
+      "lane_class": "baseline",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": false,
+      "provider": "xai",
+      "quality_score": 0.2,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "output_governance_malformed_json"
+    },
+    {
+      "blind_id": "4ea6cda6846ac6ae",
+      "lane_class": "baseline",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": true,
+      "provider": "xai",
+      "quality_score": 0.8,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "ui_state_collapse_selection"
+    },
+    {
+      "blind_id": "8193c13a5b792a8b",
+      "lane_class": "baseline",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": false,
+      "provider": "xai",
+      "quality_score": 0.2,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "commons_local_approval_gate"
+    },
+    {
+      "blind_id": "a833727ff9d6fbbb",
+      "lane_class": "governed",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": true,
+      "provider": "xai",
+      "quality_score": 0.8,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "github_pr_task_envelope"
+    },
+    {
+      "blind_id": "ac692cdad4faf3ad",
+      "lane_class": "governed",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": true,
+      "provider": "xai",
+      "quality_score": 0.8,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "async_streaming_empty_chunk"
+    },
+    {
+      "blind_id": "ca2611d4c289cf2c",
+      "lane_class": "governed",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": true,
+      "provider": "xai",
+      "quality_score": 0.8,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "plugin_permission_risk_gate"
+    },
+    {
+      "blind_id": "cadf318bc1665914",
+      "lane_class": "baseline",
+      "model": "",
+      "notes": "provisional_verification_grade",
+      "passes_task": false,
+      "provider": "xai",
+      "quality_score": 0.2,
+      "source_path": "benchmarks/results/beast_xai_omni_gauntlet_live/omni_report.json",
+      "task": "multi_file_hidden_decimal_fix"
+    }
+  ],
+  "lane_summary": {
+    "baseline": {
+      "average_quality_score": 0.35,
+      "cost_usd": 0.0,
+      "graded_pass_rate": 0.25,
+      "graded_passes": 1,
+      "graded_rows": 4,
+      "quality_rows": 4,
+      "quality_sum": 1.4,
+      "rows": 4,
+      "total_tokens": 23719
+    },
+    "governed": {
+      "average_quality_score": 0.8,
+      "cost_usd": 0.0,
+      "graded_pass_rate": 1.0,
+      "graded_passes": 4,
+      "graded_rows": 4,
+      "quality_rows": 4,
+      "quality_sum": 3.2,
+      "rows": 4,
+      "total_tokens": 36382
+    }
+  },
+  "rationale": "Governed lane outperformed the baseline on blinded pass rate with published cost ledgers. This verdict is preliminary because passes_task was seeded from objective verification outcomes rather than independent blind human grading.",
+  "version": "1.0"
+}

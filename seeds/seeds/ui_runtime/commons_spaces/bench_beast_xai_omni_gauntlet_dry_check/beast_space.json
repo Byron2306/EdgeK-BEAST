@@ -1,0 +1,106 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1722,
+      "path": "README.md",
+      "sha256": "sha256:ca52bcd369817de16e8d86cd2cc44de8aa45e26af05c8a424eef01477958a11f"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 1707,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:61cf4bdb6bdac68cfc07516179e13a415e920734ab270e5408a468aa6bc26fcb"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 679,
+      "path": "run_manifest.json",
+      "sha256": "sha256:7a09698be064e152eaacad267f1142d8209d37a48ec2a72fd591e167f1756211"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 506,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:e682fc104a1bc3a67744cf060b11597d5804b68ef3504591b4d3877b62bd4769"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 420,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ea894d0c782c04b3cea836c2f21f6a30d42319a454c28e797a14abdb8880e091"
+    },
+    {
+      "artifact_type": "coverage_matrix",
+      "bytes": 2592,
+      "path": "coverage_matrix.json",
+      "sha256": "sha256:1bc889da281577cd5cc1863b51547f09f5b703f59d67eda73abeb439da9f51f3"
+    },
+    {
+      "artifact_type": "local_probe_matrix",
+      "bytes": 84,
+      "path": "local_probe_matrix.json",
+      "sha256": "sha256:c4e2f2ee4da1b03bb2809398d2a78bae30cd5a9435fa53f8fe279ad4ba0f88ac"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.314426+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_xai_omni_gauntlet_dry_check",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_xai_omni_gauntlet_dry_check"
+  },
+  "manifest_hash": "sha256:8e2baff6becadd94c6cf3f3024441cc67ebdee9f8271cbd1106a3b91290e084f",
+  "name": "Beast Xai Omni Gauntlet Dry Check",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_xai_omni_gauntlet_dry_check",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

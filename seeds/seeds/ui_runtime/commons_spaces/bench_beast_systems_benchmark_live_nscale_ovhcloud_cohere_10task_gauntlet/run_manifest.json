@@ -1,0 +1,267 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-19T06:17:18Z",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "full_beast"
+  ],
+  "planned_run_count": 30,
+  "providers": [
+    {
+      "api_key_env": "NSCALE_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://inference.api.nscale.com/v1",
+      "model": "meta-llama/Llama-3.1-8B-Instruct",
+      "provider": "nscale",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 90.0
+    },
+    {
+      "api_key_env": "OVHCLOUD_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "model": "Qwen2.5-Coder-32B-Instruct",
+      "provider": "ovhcloud",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 90.0
+    },
+    {
+      "api_key_env": "COHERE_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "provider": "cohere",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 90.0
+    }
+  ],
+  "separation_rule": {
+    "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+    "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+    "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+  },
+  "tasks": [
+    {
+      "allowed_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "hidden_tests": [],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_model_wiring",
+      "task_id": "provider_model_wiring",
+      "visible_tests": [
+        "tests/test_provider_contracts.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/config.py"
+      ],
+      "hidden_tests": [],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "config_validation_edge_case",
+      "task_id": "config_validation_edge_case",
+      "visible_tests": [
+        "tests/test_config.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_parser.py"
+      ],
+      "hidden_tests": [],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_id_parser",
+      "task_id": "provider_id_parser",
+      "visible_tests": [
+        "tests/test_provider_parser.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "hidden_tests": [
+        "tests/test_invoice_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "multi_file_hidden_decimal_fix",
+      "task_id": "multi_file_hidden_decimal_fix",
+      "visible_tests": [
+        "tests/test_invoice_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/tui_state.py"
+      ],
+      "hidden_tests": [
+        "tests/test_tui_state_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "ui_state_collapse_selection",
+      "task_id": "ui_state_collapse_selection",
+      "visible_tests": [
+        "tests/test_tui_state_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/streaming.py"
+      ],
+      "hidden_tests": [],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "async_streaming_empty_chunk",
+      "task_id": "async_streaming_empty_chunk",
+      "visible_tests": [
+        "tests/test_streaming.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_config.py"
+      ],
+      "hidden_tests": [],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_config_secret_redaction",
+      "task_id": "provider_config_secret_redaction",
+      "visible_tests": [
+        "tests/test_provider_config.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/rollback.py"
+      ],
+      "hidden_tests": [
+        "tests/test_rollback_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "patch_rollback_created_file",
+      "task_id": "patch_rollback_created_file",
+      "visible_tests": [
+        "tests/test_rollback_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/output_guard.py"
+      ],
+      "hidden_tests": [
+        "tests/test_output_guard_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "output_governance_malformed_json",
+      "task_id": "output_governance_malformed_json",
+      "visible_tests": [
+        "tests/test_output_guard_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/nim_contract.py"
+      ],
+      "hidden_tests": [
+        "tests/test_nim_contract_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "nim_refs_only_contract",
+      "task_id": "nim_refs_only_contract",
+      "visible_tests": [
+        "tests/test_nim_contract_public.py"
+      ]
+    }
+  ],
+  "trials": 1
+}

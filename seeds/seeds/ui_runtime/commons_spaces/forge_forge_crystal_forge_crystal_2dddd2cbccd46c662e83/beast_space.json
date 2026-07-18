@@ -1,0 +1,57 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "forge_crystal",
+      "bytes": 775,
+      "path": "forge_candidate.json",
+      "sha256": "sha256:de57a4fed0f42973fb35c26787f5428168d3f46bde75e9d969f1d31ea00cb687"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:36:28.023080+00:00",
+  "hardware_profile": {
+    "execution_class": "metadata_hypothesis",
+    "gpu_required": false
+  },
+  "lineage": {
+    "candidate_kind": "forge_crystal",
+    "case_study": "forge_candidate_forge_crystal_2dddd2cbccd46c662e83",
+    "source_snapshot_hash": "sha256:363154ef0396b97c11b341af1e99e585d6a81f83e5ef662094669006c61f99ce"
+  },
+  "manifest_hash": "sha256:138ac4c974069f3b895cb9f27c7f2cd3ac5a49229624489ab9db89dc0841a017",
+  "name": "input_validation_hardening",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "none_pending_live_replay",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "forge_forge_crystal_forge_crystal_2dddd2cbccd46c662e83",
+  "task_class": "hardening",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only",
+      "bundle_id": "pending_candidate_specific_verifier",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <radialGradient id="r1" cx="50%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#18315b" stop-opacity=".72"/>
+      <stop offset=".45" stop-color="#071426" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r2" cx="50%" cy="44%" r="28%">
+      <stop offset="0" stop-color="#39f0c2" stop-opacity=".24"/>
+      <stop offset=".5" stop-color="#39d7ff" stop-opacity=".11"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="stars" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#39d7ff" opacity=".25"/>
+      <circle cx="25" cy="19" r=".7" fill="#ffc857" opacity=".18"/>
+    </pattern>
+    <linearGradient id="beam" x1="0" x2="1">
+      <stop stop-color="#39f0c2" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#39f0c2" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#b36bff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#r1)"/>
+  <rect width="1600" height="900" fill="url(#r2)"/>
+  <rect width="1600" height="900" fill="url(#stars)" opacity=".75"/>
+  <path d="M800 95L500 780M800 95l300 685M800 95v690" fill="none" stroke="url(#beam)" stroke-width="2"/>
+  <ellipse cx="800" cy="760" rx="360" ry="55" fill="none" stroke="#39d7ff" stroke-opacity=".15"/>
+</svg>

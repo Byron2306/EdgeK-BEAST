@@ -1,0 +1,102 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": true,
+    "live_verified": true,
+    "matrix_planned": true,
+    "secret_scan_passed": true,
+    "secret_scan_required_before_claim": false
+  },
+  "batch": {
+    "batch_index": 0,
+    "end": 6,
+    "families": [
+      "patch_compilation",
+      "provider_alias_normalization",
+      "route_diagnostics",
+      "schema_validation",
+      "secret_redaction",
+      "syntax_check"
+    ],
+    "lanes": [
+      "full_beast_compute_governor"
+    ],
+    "observations": 6,
+    "occurrences": [
+      3
+    ],
+    "providers": [
+      "groq"
+    ],
+    "start": 0,
+    "total_batches": 1
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "cross_source_provider": "nvidia_nim",
+  "families": [
+    "schema_validation",
+    "provider_alias_normalization",
+    "patch_compilation",
+    "syntax_check",
+    "route_diagnostics",
+    "secret_redaction"
+  ],
+  "full_plan_summary": {
+    "by_family": {
+      "patch_compilation": 1,
+      "provider_alias_normalization": 1,
+      "route_diagnostics": 1,
+      "schema_validation": 1,
+      "secret_redaction": 1,
+      "syntax_check": 1
+    },
+    "by_lane": {
+      "full_beast_compute_governor": 6
+    },
+    "by_provider": {
+      "groq": 6
+    },
+    "observations": 6
+  },
+  "generated_at": "2026-06-21T10:07:46Z",
+  "lanes": [
+    "full_beast_compute_governor"
+  ],
+  "live": true,
+  "mode": "controlled",
+  "occurrences": [
+    3
+  ],
+  "plan_summary": {
+    "by_family": {
+      "patch_compilation": 1,
+      "provider_alias_normalization": 1,
+      "route_diagnostics": 1,
+      "schema_validation": 1,
+      "secret_redaction": 1,
+      "syntax_check": 1
+    },
+    "by_lane": {
+      "full_beast_compute_governor": 6
+    },
+    "by_provider": {
+      "groq": 6
+    },
+    "observations": 6
+  },
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "groq": {
+      "api_key_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "groq"
+  ],
+  "python": "3.13.5",
+  "route_set": "custom"
+}

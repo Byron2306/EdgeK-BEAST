@@ -546,8 +546,14 @@ class StreamingComputeInterceptor:
         max_tokens: Optional[int] = None,
         cancellation: Optional[UpstreamCancellation] = None,
         baseline_output_tokens: Optional[int] = None,
+        compute_gate: Any = None,
     ) -> StreamInterceptionReport:
         """Intercept and cancel a real provider stream at the first safe stop."""
+        if self.governor is not None:
+            if compute_gate is None:
+                raise PermissionError("governed streaming requires the shared compute gate")
+            if getattr(compute_gate, "mode", None) != self.governor.mode:
+                raise PermissionError("streaming gate is not bound to the active governor mode")
         state = self.engine.create_initial_state(max_tokens)
         emitted: List[str] = []
         cancellation = cancellation or UpstreamCancellation()

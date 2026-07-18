@@ -701,5 +701,10 @@ class InferenceComputeInterceptor:
             return 0
 
 
-compute_ledger = ComputeLedger()
-compute_interceptor = InferenceComputeInterceptor(ledger=compute_ledger, outcome_store=default_outcome_store())
+def __getattr__(name: str):
+    """Compatibility exports backed by the sole production composition root."""
+    if name in {"compute_interceptor", "compute_ledger"}:
+        from app.kernel.compute.compute_plane import get_compute_plane
+        plane = get_compute_plane()
+        return plane if name == "compute_interceptor" else plane.ledger
+    raise AttributeError(name)

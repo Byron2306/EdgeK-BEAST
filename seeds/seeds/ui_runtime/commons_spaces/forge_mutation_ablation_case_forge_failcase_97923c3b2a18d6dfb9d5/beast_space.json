@@ -1,0 +1,57 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "mutation_ablation_case",
+      "bytes": 774,
+      "path": "forge_candidate.json",
+      "sha256": "sha256:804e1f2c91c27f64f0056d32594846dba7785d633edf11342e88f0bd39537d96"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:36:36.171338+00:00",
+  "hardware_profile": {
+    "execution_class": "metadata_hypothesis",
+    "gpu_required": false
+  },
+  "lineage": {
+    "candidate_kind": "mutation_ablation_case",
+    "case_study": "forge_candidate_forge_failcase_97923c3b2a18d6dfb9d5",
+    "source_snapshot_hash": "sha256:363154ef0396b97c11b341af1e99e585d6a81f83e5ef662094669006c61f99ce"
+  },
+  "manifest_hash": "sha256:61d97743e374d79344f11a73e85c39e49d71a507edc7d4eb946f9c7564f56947",
+  "name": "component_ablation",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "none_pending_live_replay",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "forge_mutation_ablation_case_forge_failcase_97923c3b2a18d6dfb9d5",
+  "task_class": "data_protection",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only",
+      "bundle_id": "pending_candidate_specific_verifier",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

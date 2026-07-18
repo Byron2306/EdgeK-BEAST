@@ -1,0 +1,68 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1619,
+      "path": "README.md",
+      "sha256": "sha256:63333a9a0159429642e303975f9136051ec324b997ff4140ead6a1929ec308f4"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 975,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:79a06683c4a70989f4a98b11ae8d4140d3bfc861dbfeb557e0ba7de8988e9946"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.595864+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "tiny_llama_agentic_orchestrator_gauntlet_ollama_qwen25_05b_live",
+    "registration_score": 3,
+    "signals": [
+      "integrity_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/tiny_llama_agentic_orchestrator_gauntlet_ollama_qwen25_05b_live"
+  },
+  "manifest_hash": "sha256:02b687e7c921820a87f13220c6eddf01c02e542926070d880827848df1d078ef",
+  "name": "Tiny Llama Agentic Orchestrator Gauntlet Ollama Qwen25 05B Live",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_tiny_llama_agentic_orchestrator_gauntlet_ollama_qwen25_05b_live",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

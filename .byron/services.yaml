@@ -1,0 +1,34 @@
+version: 1
+services:
+  reverse_proxy:
+    port: 80
+  beast:
+    hostname: beast.test
+    upstream: 127.0.0.1:8101
+    port: 8101
+    health_path: /health
+    trust_domain: operator
+  commons:
+    hostname: commons.test
+    upstream: 127.0.0.1:8601
+    port: 8601
+    health_path: /edgek/control-plane/commons
+    trust_domain: commons
+  arda:
+    hostname: arda.test
+    upstream: 127.0.0.1:8401
+    port: 8401
+    health_path: /health
+    trust_domain: witness
+  seraph_ui:
+    hostname: seraph.test
+    upstream: 127.0.0.1:8201
+    port: 8201
+    health_path: /health
+    trust_domain: operator
+  seraph_api:
+    hostname: api.seraph.test
+    upstream: 127.0.0.1:8202
+    port: 8202
+    health_path: /health
+    trust_domain: production

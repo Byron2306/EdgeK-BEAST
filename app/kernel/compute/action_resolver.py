@@ -292,7 +292,7 @@ def _resolve_provider_registry_model_resolver(action: ActionIntent, path: str, c
         if provider_id in {"litellm", "auto", "beast_auto"}:
             return "ollama"
         if provider_id == "ollama":
-            return "llama3.2:3b"
+            return "qwen2.5:0.5b"
         return "" if model == "beast-auto" else model
 '''
     new = '''from app.kernel.registry.provider_registry import ProviderAdapterRegistry

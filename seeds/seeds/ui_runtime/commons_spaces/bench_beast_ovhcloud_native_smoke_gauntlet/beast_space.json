@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1442,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:081fc132bf973bb73d097c368698d6f58ae51baee1fb89ee1a6ed3d774dab0b4"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2382,
+      "path": "run_manifest.json",
+      "sha256": "sha256:025748f93a26d0129a115b64c481d1ac40d13be2db633f5ef880ea0fa2486111"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 669,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:d7a05e40acf6c6df1cc917a665c1785e6dcf9bf90dd967fba94924e8b1640a27"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 420,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:d138787cef73b08dbd9443950c63df1bf184f2dcc8d017ab28906b01d55f659c"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.786441+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_ovhcloud_native_smoke_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_ovhcloud_native_smoke_gauntlet"
+  },
+  "manifest_hash": "sha256:fe4533328f0b64670755c0cd515c0b6042f48e25bc8ed54536832caa89f4fdc2",
+  "name": "Beast Ovhcloud Native Smoke Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_ovhcloud_native_smoke_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

@@ -14,6 +14,7 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
         "edgekBeast.showCodeCortex",
         "edgekBeast.showPolicyGate",
         "edgekBeast.showAgentSessions",
+        "edgekBeast.showAgentSessionDetail",
         "edgekBeast.createAgentSession",
         "edgekBeast.pauseAgentSession",
         "edgekBeast.resumeAgentSession",
@@ -34,6 +35,9 @@ def test_vscode_extension_manifest_exposes_phase_one_to_three_commands():
     assert expected.issubset(commands)
     assert manifest["version"] == "1.6.1"
     assert manifest["icon"] == "media/beast-dragon-extension-icon.png"
+    config = manifest["contributes"]["configuration"]["properties"]
+    assert config["edgekBeast.provider"]["default"] == "nvidia_nim"
+    assert config["edgekBeast.model"]["default"] == "nvidia/nemotron-3-super-120b-a12b"
     assert manifest["contributes"]["viewsContainers"]["activitybar"][0]["icon"] == "media/beast-dragon-activity.svg"
     view_ids = {item["id"] for item in manifest["contributes"]["views"]["beastSidebar"]}
     assert {"beastAgentSessions", "beastWorktreeMissions"}.issubset(view_ids)

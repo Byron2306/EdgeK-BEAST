@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1038,
+      "path": "README.md",
+      "sha256": "sha256:968aee084086024fcdda223b6eda41b673975797639d1560277937cf8fb52957"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 2678,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:845e30f5066eeed034f5ff408326ea1e9755f692f1b80e470bfbefe4ce5d17a1"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1447,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:1b7badbb8673cd413d25babeff89a57d83d2746a588c3ab30115c0f72c1c9518"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 2478,
+      "path": "run_manifest.json",
+      "sha256": "sha256:03d02253d0bab3fe710821740cac166fa237ddd95bc4d83c647ec940678b3917"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 100,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:6ca94a9b9aade3d304d82e70644d7a816ec964a2c7d01bbfde29f2f219626940"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 31,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:9914bd16fb7bbe7e658b83b2d293055d161ff711d89f4480c7cc134db92a173e"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.138514+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_nvidia_mutation_o10",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_nvidia_mutation_o10"
+  },
+  "manifest_hash": "sha256:170e48ac0b12267b993c2d7a3d68c87ea009002004659b6c1293afe7a9ed4ebb",
+  "name": "Beast Definitive Mega Test Nvidia Mutation O10",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_nvidia_mutation_o10",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

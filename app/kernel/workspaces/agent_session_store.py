@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -26,6 +27,29 @@ class AgentSessionStore:
         self.workspace_root = Path(workspace_root).expanduser().resolve()
         self.store_dir = self.workspace_root / ".beast" / "agent_sessions"
         self.registry_path = self.store_dir / "sessions.json"
+        # Select the fallback before the first read as well as on write. A
+        # later request must be able to resume a session created through the
+        # fallback store, not look only in an unwritable repository directory.
+        workspace_state = self.store_dir.parent
+        if workspace_state.exists() and not os.access(workspace_state, os.W_OK):
+            self._use_fallback_store()
+
+    def _fallback_store_dir(self) -> Path:
+        """Return a user-writable session location for read-only workspaces.
+
+        IDE chat must not fail merely because a repository's existing `.beast`
+        directory belongs to a different service account. The session remains
+        scoped to the workspace by a stable hash and still carries its normal
+        evidence receipt; only its local persistence location changes.
+        """
+        configured = Path(str(os.environ.get("BEAST_SESSION_STATE_DIR") or "")).expanduser()
+        base = configured if str(configured) not in {"", "."} else Path.home() / ".local" / "state" / "edgek-beast" / "agent_sessions"
+        scope = hashlib.sha256(str(self.workspace_root).encode("utf-8")).hexdigest()[:16]
+        return base / scope
+
+    def _use_fallback_store(self) -> None:
+        self.store_dir = self._fallback_store_dir()
+        self.registry_path = self.store_dir / "sessions.json"
 
     def list(self) -> Dict[str, Any]:
         sessions = self._load().get("sessions") or []
@@ -47,6 +71,7 @@ class AgentSessionStore:
         files: Optional[List[str]] = None,
         agent_id: str = "",
         provider: str = "",
+        model: str = "",
     ) -> Dict[str, Any]:
         seed = f"{agent_id}:{objective}:{_now()}"
         session_id = f"{_safe_slug(agent_id or mode or 'agent')}-{hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8]}"
@@ -58,6 +83,7 @@ class AgentSessionStore:
             "objective": objective,
             "mode": mode or "architect",
             "provider": provider,
+            "model": model,
             "status": "active",
             "budget": budget or {"tokens": 0, "seconds": 0, "cost_usd": 0.0},
             "tools": [str(item) for item in (tools or [])],
@@ -77,6 +103,30 @@ class AgentSessionStore:
         if not record:
             return {"ok": False, "error": f"unknown agent session: {session_id}"}
         return {"ok": True, "session": record}
+
+    def conversation_history(self, session_id: str, *, limit: int = 12) -> List[Dict[str, str]]:
+        """Project persisted session outputs into provider chat history.
+
+        Session evidence and tool records stay out of the model transcript. Only
+        explicit operator prompts and completed assistant turns are replayed.
+        """
+        record = self._find(session_id)
+        if not record:
+            return []
+        messages: List[Dict[str, str]] = []
+        outputs = record.get("outputs") if isinstance(record.get("outputs"), list) else []
+        for item in outputs:
+            if not isinstance(item, dict):
+                continue
+            kind = str(item.get("kind") or "")
+            text = str(item.get("text") or "").strip()
+            if not text:
+                continue
+            if kind == "agent_user_prompt":
+                messages.append({"role": "user", "content": text})
+            elif kind in {"streamed_agent_output", "streamed_chat_output"}:
+                messages.append({"role": "assistant", "content": text})
+        return messages[-max(1, min(int(limit), 40)):]
 
     def update(
         self,
@@ -181,7 +231,11 @@ class AgentSessionStore:
         return {"beast_object_type": "beast_agent_session_registry", "version": "1.0", "sessions": sessions}
 
     def _save(self, payload: Dict[str, Any]) -> None:
-        self.store_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.store_dir.mkdir(parents=True, exist_ok=True)
+        except PermissionError:
+            self._use_fallback_store()
+            self.store_dir.mkdir(parents=True, exist_ok=True)
         tmp = self.registry_path.with_suffix(".tmp")
         tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         tmp.replace(self.registry_path)

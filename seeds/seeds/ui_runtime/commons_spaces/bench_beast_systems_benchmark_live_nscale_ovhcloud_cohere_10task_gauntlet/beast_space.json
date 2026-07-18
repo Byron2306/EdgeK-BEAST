@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 2998,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:084f005bd6345e1726a39d322fac12a137422b457a41206b23ef0e70e1ec5d6e"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 7654,
+      "path": "run_manifest.json",
+      "sha256": "sha256:39f5f45319f8189f7671aa62b3c0d3604b2087ab8f0902dd820beadbf06a13af"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 401,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:dfd29a58b6e3e57252b265fc901b889c720db9e39d512601e6d2885834b643b8"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:42b3f311896ad86edda5bb0b6688c52309201f5eb37e1a383f04dbf3c4ccd454"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.963251+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_systems_benchmark_live_nscale_ovhcloud_cohere_10task_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_systems_benchmark_live_nscale_ovhcloud_cohere_10task_gauntlet"
+  },
+  "manifest_hash": "sha256:9ed2d706068be876105a35e47f6a796e894a3ccda2e7f6c56b4228b6387555ec",
+  "name": "Beast Systems Benchmark Live Nscale Ovhcloud Cohere 10Task Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_systems_benchmark_live_nscale_ovhcloud_cohere_10task_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

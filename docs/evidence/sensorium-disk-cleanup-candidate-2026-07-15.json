@@ -1,0 +1,971 @@
+{
+  "claim": "learned_bounded_disk_cleanup_candidate",
+  "crystal": {
+    "artifact_digest": "sha256:481381b84481ccf4f5077d065e08b763d6e04ae72215551443762902b5e28283",
+    "beast_object_type": "typed_compute_crystal_ir",
+    "capability_lease": "capability-template:disk-cleanup:v1",
+    "contains_executable_code": false,
+    "edges": [
+      [
+        "step:0",
+        "step:1",
+        "REQUIRES"
+      ],
+      [
+        "step:1",
+        "step:2",
+        "REQUIRES"
+      ],
+      [
+        "step:2",
+        "step:3",
+        "REQUIRES"
+      ],
+      [
+        "step:0",
+        "step:1",
+        "SEQUENCE"
+      ],
+      [
+        "step:1",
+        "step:2",
+        "SEQUENCE"
+      ],
+      [
+        "step:2",
+        "step:3",
+        "SEQUENCE"
+      ]
+    ],
+    "evidence": [
+      "sha256:28e679a69e3629bddbb76f5bebaa3b9d227c897fe364ddc8810f7409236f3420",
+      "sha256:4e57e260fe5099828cfbb289dc4e33577e39b97bcadf9f4db83b947547dcd086",
+      "sha256:6e4ac9d04b72bdab019643b2e5c53d87c2891b6544514e3fc07aa585cc149690",
+      "sha256:8f288892f67f9a5ff1bdd516f20a93e8f778cb5244a072eeac7eeb1a90a07204",
+      "sha256:f61e1eb07bc121fc35e783e992dbe9de6b7961c1b8f5c1f4948c76b44e7000d8"
+    ],
+    "identity": "crystal:sensorium-disk-cleanup:v1",
+    "maximum_authority": "bounded_execute",
+    "negative_conditions": [
+      "outcome_status:refused",
+      "effect_result:disk.inspect_pressure:refused",
+      "branch:request_operator_approval",
+      "effect_result:disk.plan_cleanup:refused",
+      "effect_result:disk.quarantine_cleanup:refused",
+      "effect_result:disk.verify_cleanup:refused"
+    ],
+    "nodes": [
+      {
+        "authority": "context_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:a25c183ddced9d3f2c8977a6f64fd318fb27adfa7a2465e92f1035ae9cd24c40",
+        "handler_key": "sensorium.disk_pressure",
+        "input_schema": {
+          "workspace": "workspace_descriptor"
+        },
+        "node_id": "step:0",
+        "opcode": "disk.inspect_pressure",
+        "opcode_version": 1,
+        "output_schema": {
+          "manifest": "cleanup_manifest",
+          "pressure": "object"
+        },
+        "parameter_bindings": {
+          "cleanup_manifest_digest": "{{cleanup_manifest_digest}}",
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "observation",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 500.0,
+          "wall_time_ms": 3000.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.disk_manifest_bound"
+      },
+      {
+        "authority": "proposal_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:7d4025cddd739e60255c47ae3b463d1a899c83c26fbb12a39951c8be5a8b077f",
+        "handler_key": "planner.disk_cleanup",
+        "input_schema": {
+          "manifest": "cleanup_manifest"
+        },
+        "node_id": "step:1",
+        "opcode": "disk.plan_cleanup",
+        "opcode_version": 1,
+        "output_schema": {
+          "selected_branch": "string"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "decision",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 100.0,
+          "wall_time_ms": 500.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.disk_cleanup_branch_allowlisted"
+      },
+      {
+        "authority": "bounded_execute",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:64596765b308cce4fc370a047770b2906e825e9d00c3d72137bb3f864800ec9c",
+        "handler_key": "disk.quarantine_and_purge",
+        "input_schema": {
+          "manifest": "cleanup_manifest"
+        },
+        "node_id": "step:2",
+        "opcode": "disk.quarantine_cleanup",
+        "opcode_version": 1,
+        "output_schema": {
+          "cleanup_effect": "object"
+        },
+        "parameter_bindings": {
+          "approval_receipt_digest": "{{approval_receipt_digest}}",
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "actuation",
+        "refusal_key": "refuse.on_manifest_or_approval_drift",
+        "resource_limits": {
+          "cpu_time_ms": 1000.0,
+          "wall_time_ms": 5000.0
+        },
+        "rollback_key": "rollback.restore_quarantined_files",
+        "verifier_key": "verifier.disk_cleanup_bounded"
+      },
+      {
+        "authority": "verify_only",
+        "descriptor_constraints": [
+          "descriptor_type:workspace"
+        ],
+        "descriptor_requirements": [
+          "workspace"
+        ],
+        "evidence_template_hash": "sha256:3d26a34fced0e4b25b8cab04e8ea32fe868da1e666b4c099d038b2d6210a10ad",
+        "handler_key": "verifier.disk_cleanup",
+        "input_schema": {
+          "cleanup_effect": "object"
+        },
+        "node_id": "step:3",
+        "opcode": "disk.verify_cleanup",
+        "opcode_version": 1,
+        "output_schema": {
+          "verified": "boolean"
+        },
+        "parameter_bindings": {
+          "workspace_identity": "{{workspace_identity}}"
+        },
+        "phase": "verification",
+        "refusal_key": "fail_closed",
+        "resource_limits": {
+          "cpu_time_ms": 200.0,
+          "wall_time_ms": 1000.0
+        },
+        "rollback_key": "",
+        "verifier_key": "verifier.disk_cleanup_receipt"
+      }
+    ],
+    "opcode_catalog_digest": "sha256:d2f1c1046c1d12aeee5f13cc0e6b08d47257bb33e5f02f42b118cacf905ea02d",
+    "parameters": {
+      "approval_receipt_digest": {
+        "observed_count": 3,
+        "type": "sha256_digest"
+      },
+      "cleanup_manifest_digest": {
+        "observed_count": 3,
+        "type": "sha256_digest"
+      },
+      "workspace_identity": {
+        "observed_count": 3,
+        "type": "workspace_identity"
+      }
+    },
+    "postconditions": [
+      "disk.verify_cleanup:success",
+      "outcome:verified_success"
+    ],
+    "preconditions": [
+      "pressure_state",
+      "cleanup_plan",
+      "approval:{{approval_receipt_digest}}",
+      "cache_state==pressured",
+      "cache_state"
+    ],
+    "resource_envelope": {
+      "bytes_selected": 33.0
+    },
+    "source_family_hash": "sha256:c9ac2e29510e0f7ac1e7d3a274167b4d16c6f59bb3e9e0d40f8a54ed9a4dafab",
+    "task_family": [
+      "disk_pressure_diagnosis_and_governed_cleanup"
+    ],
+    "version": "1.0"
+  },
+  "evidence_digest": "sha256:b5ceacac484e88e097422813086aa52f96376cc3bed8e78e62251c7a80565cad",
+  "experiment_id": "disk-cleanup:2d7124d7491e44c598b4da1704b8735b",
+  "generalization": {
+    "candidate_id": "crystal:sensorium-disk-cleanup:v1",
+    "family_hash": "sha256:c9ac2e29510e0f7ac1e7d3a274167b4d16c6f59bb3e9e0d40f8a54ed9a4dafab",
+    "inferred_parameters": [
+      "approval_receipt_digest",
+      "cleanup_manifest_digest",
+      "workspace_identity"
+    ],
+    "negative_episode_hashes": [
+      "sha256:8f288892f67f9a5ff1bdd516f20a93e8f778cb5244a072eeac7eeb1a90a07204",
+      "sha256:f61e1eb07bc121fc35e783e992dbe9de6b7961c1b8f5c1f4948c76b44e7000d8"
+    ],
+    "positive_episode_hashes": [
+      "sha256:28e679a69e3629bddbb76f5bebaa3b9d227c897fe364ddc8810f7409236f3420",
+      "sha256:4e57e260fe5099828cfbb289dc4e33577e39b97bcadf9f4db83b947547dcd086",
+      "sha256:6e4ac9d04b72bdab019643b2e5c53d87c2891b6544514e3fc07aa585cc149690"
+    ],
+    "rejected_parameter_classes": [
+      "process_identity",
+      "socket_identity",
+      "executable_digest",
+      "arbitrary_string"
+    ],
+    "structural_signature": [
+      [
+        "disk.inspect_pressure",
+        "observation"
+      ],
+      [
+        "disk.plan_cleanup",
+        "decision"
+      ],
+      [
+        "disk.quarantine_cleanup",
+        "actuation"
+      ],
+      [
+        "disk.verify_cleanup",
+        "verification"
+      ]
+    ]
+  },
+  "isolation": {
+    "cgroup_capsule_established": false,
+    "namespace_isolation_established": false,
+    "private_disposable_workspaces": true
+  },
+  "production_promotion_allowed": false,
+  "promotion_blocker": "destructive replay worker not yet born inside delegated cgroup+namespace capsule",
+  "promotion_eligible_by_replay": true,
+  "replay": {
+    "candidate_id": "crystal:sensorium-disk-cleanup:v1",
+    "crystal_digest": "sha256:481381b84481ccf4f5077d065e08b763d6e04ae72215551443762902b5e28283",
+    "evidence_root": "sha256:729d7627563fa63ce46e3f737fd92f4c39920a1283823d324d72f95ff3a0f5ae",
+    "negative_variants": 2,
+    "positive_variants": 3,
+    "promotion_eligible": true,
+    "reason": "structured_heldout_replay_passed",
+    "variant_receipts": [
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:fab4f2f38e5a018062cdf4af6615e9fe49445a4647bb119b17f1af0a0fedec13",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:93abf6c7504712bf4450c0db4cee6c168e6ee7bf7b38110d9754030ed16c6f46",
+        "initial_state_fingerprint": "sha256:fc36930b9cfa90f5ea0b70949f3129719ff99d1e85d23e347596a05530bf44ea",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 1.143053,
+            "effect": {
+              "approval_class": "bounded_standard",
+              "manifest_digest": "sha256:f5c6465320fa145468683065d9a8bfc94073200d06d422c4f2786ebe02cfb8c0",
+              "manifest_matches": true,
+              "pressure": {
+                "candidate_files": 1,
+                "filesystem_device": 38,
+                "free_bytes": 2937061376,
+                "mount_namespace_inode": 4026531841,
+                "refusals": [],
+                "selected_bytes": 127,
+                "selected_files": 1,
+                "total_bytes": 3974893568,
+                "used_bytes": 1037832192
+              },
+              "selected_bytes": 127,
+              "selected_files": 1
+            },
+            "evidence_digest": "sha256:cb4e674650aab083b7e06dc26b7fa9cd05bd02c2667b0430938fbe8e6c7a24ae",
+            "handler_key": "sensorium.disk_pressure",
+            "node_id": "step:0",
+            "opcode": "disk.inspect_pressure",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "binding_decided": true,
+              "manifest_observed": true
+            },
+            "verified": true,
+            "wall_time_ms": 1.150353
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.018698,
+            "effect": {
+              "branch": "quarantine_and_purge",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:94f38d06c55e0f2978cb694b600bde4c7434c0c6cccd18b6c1c1c2eaa28d0d50",
+            "handler_key": "planner.disk_cleanup",
+            "node_id": "step:1",
+            "opcode": "disk.plan_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.018849
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 1.344287,
+            "effect": {
+              "all_targets_absent": true,
+              "bytes_removed": 127,
+              "files_removed": 1,
+              "free_bytes_after": 2937057280,
+              "free_bytes_before": 2937053184,
+              "manifest_digest": "sha256:f5c6465320fa145468683065d9a8bfc94073200d06d422c4f2786ebe02cfb8c0",
+              "quarantine_removed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:217ea4c9edf9505ad2c429e995799f85fdc50ff71ffe5259a52f6d0e37252340",
+            "handler_key": "disk.quarantine_and_purge",
+            "node_id": "step:2",
+            "opcode": "disk.quarantine_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_cleanup_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 1.343261
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.007939,
+            "effect": {
+              "quarantine_removed": true,
+              "targets_absent": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:8dd9e2fb298f1cb566088ab8b4e47b0662cc95d4d9e3ce03c2ba64e75f08083b",
+            "handler_key": "verifier.disk_cleanup",
+            "node_id": "step:3",
+            "opcode": "disk.verify_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.008166
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 2.513977,
+          "wall_time_ms": 2.520629
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "delta",
+        "verified": true
+      },
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:9dcd42252d6aa6f1e8388879d043e8e1627b5592eac9d0b3f4ef145dc4958f49",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:93742fe9b4f865e2aa0e9325e0a7a518e5d4909cbc4138f5211f39cae9458a2d",
+        "initial_state_fingerprint": "sha256:2218e8b9a1845c3c6c0f23d7703c4bea667a1fc71c4086033c50318b082f1c9a",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.600392,
+            "effect": {
+              "approval_class": "bounded_standard",
+              "manifest_digest": "sha256:b274860599193b59f31826c2ef568095255e452cbbf6e736132ef36f7fbeb601",
+              "manifest_matches": true,
+              "pressure": {
+                "candidate_files": 1,
+                "filesystem_device": 38,
+                "free_bytes": 2937053184,
+                "mount_namespace_inode": 4026531841,
+                "refusals": [],
+                "selected_bytes": 511,
+                "selected_files": 1,
+                "total_bytes": 3974893568,
+                "used_bytes": 1037840384
+              },
+              "selected_bytes": 511,
+              "selected_files": 1
+            },
+            "evidence_digest": "sha256:c110be3be8ddb737290c5416905d5b5652c8bdf946b1e824da7c2be76f8f2e70",
+            "handler_key": "sensorium.disk_pressure",
+            "node_id": "step:0",
+            "opcode": "disk.inspect_pressure",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "binding_decided": true,
+              "manifest_observed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.60032
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.007572,
+            "effect": {
+              "branch": "quarantine_and_purge",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:291d5ea4bb6dc6633b65107539ac1473851621a3485b25d2d288f6da4928cd1a",
+            "handler_key": "planner.disk_cleanup",
+            "node_id": "step:1",
+            "opcode": "disk.plan_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.007747
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 1.142913,
+            "effect": {
+              "all_targets_absent": true,
+              "bytes_removed": 511,
+              "files_removed": 1,
+              "free_bytes_after": 2937057280,
+              "free_bytes_before": 2937053184,
+              "manifest_digest": "sha256:b274860599193b59f31826c2ef568095255e452cbbf6e736132ef36f7fbeb601",
+              "quarantine_removed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:77ea9cf4ac3e439a35d48571654b76e73eae0ecb1bb3b9830f0b78ad1ac2b204",
+            "handler_key": "disk.quarantine_and_purge",
+            "node_id": "step:2",
+            "opcode": "disk.quarantine_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_cleanup_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 1.142048
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.007277,
+            "effect": {
+              "quarantine_removed": true,
+              "targets_absent": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:151d6dccb19e99afda5c9fa2863449f02e49cde09e9bd63db38cb61b5defc2e7",
+            "handler_key": "verifier.disk_cleanup",
+            "node_id": "step:3",
+            "opcode": "disk.verify_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.007271
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 1.758154,
+          "wall_time_ms": 1.757386
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "epsilon",
+        "verified": true
+      },
+      {
+        "boundary_updates": [],
+        "evidence_digest": "sha256:3dd0ebd202ffa28193ddca2b7eca9cd68a2650326983d72c88b687b0d29f563a",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:09e02da4a5c452e592a177a69eb8f5fdfdb60ff87b91969f2714fc44b1525212",
+        "initial_state_fingerprint": "sha256:0e4770fd92527eb86c63762333ecffeb025e3008781e7c88f2135b69ceb319af",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": false,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.55133,
+            "effect": {
+              "approval_class": "bounded_standard",
+              "manifest_digest": "sha256:972384bffe4cfe74496da432a1b46fa1799e96bce8841670ca05d41b4153a19f",
+              "manifest_matches": true,
+              "pressure": {
+                "candidate_files": 1,
+                "filesystem_device": 38,
+                "free_bytes": 2937053184,
+                "mount_namespace_inode": 4026531841,
+                "refusals": [],
+                "selected_bytes": 1023,
+                "selected_files": 1,
+                "total_bytes": 3974893568,
+                "used_bytes": 1037840384
+              },
+              "selected_bytes": 1023,
+              "selected_files": 1
+            },
+            "evidence_digest": "sha256:f24ca9059219c126361bc68b834838822ceb2425ef00da0a0bc08d71db2b57b7",
+            "handler_key": "sensorium.disk_pressure",
+            "node_id": "step:0",
+            "opcode": "disk.inspect_pressure",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "binding_decided": true,
+              "manifest_observed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.551414
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.006291,
+            "effect": {
+              "branch": "quarantine_and_purge",
+              "safe_refusal": false
+            },
+            "evidence_digest": "sha256:b302469138ee45c7d39bf36ccee1f44548d328572a3e730a63b615ce05f0f4fe",
+            "handler_key": "planner.disk_cleanup",
+            "node_id": "step:1",
+            "opcode": "disk.plan_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.006312
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 1.215409,
+            "effect": {
+              "all_targets_absent": true,
+              "bytes_removed": 1023,
+              "files_removed": 1,
+              "free_bytes_after": 2937044992,
+              "free_bytes_before": 2937040896,
+              "manifest_digest": "sha256:972384bffe4cfe74496da432a1b46fa1799e96bce8841670ca05d41b4153a19f",
+              "quarantine_removed": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:67e5b48745a67905ce7e9c903a6625c8264d23f6bf3e076af0ea557f492e74f4",
+            "handler_key": "disk.quarantine_and_purge",
+            "node_id": "step:2",
+            "opcode": "disk.quarantine_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_cleanup_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 1.214853
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.009102,
+            "effect": {
+              "quarantine_removed": true,
+              "targets_absent": true,
+              "verified": true
+            },
+            "evidence_digest": "sha256:12baa4bdc114ce41846e0c1e44a066deea2dde64e24c2a8d17540101935463be",
+            "handler_key": "verifier.disk_cleanup",
+            "node_id": "step:3",
+            "opcode": "disk.verify_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.009234
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 1.782132,
+          "wall_time_ms": 1.781813
+        },
+        "rollback_successful": true,
+        "safe_refusal": false,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "zeta",
+        "verified": true
+      },
+      {
+        "boundary_updates": [
+          "SAFE_REFUSAL_UNDER:stale_or_empty_manifest"
+        ],
+        "evidence_digest": "sha256:c36dde19478e9f677fc1784329507f10424a5dd76d52e7a4d944d9246c087e0e",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:b95f364d394056901e045b4e2b62a7ba315a0331556829394e43e03e6f14d36c",
+        "initial_state_fingerprint": "sha256:b95f364d394056901e045b4e2b62a7ba315a0331556829394e43e03e6f14d36c",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": true,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.545753,
+            "effect": {
+              "approval_class": "bounded_standard",
+              "manifest_digest": "sha256:4e653717fc6c0ffe9c2636c4352686d3b7e93569c54c41225691e1f80082018c",
+              "manifest_matches": false,
+              "pressure": {
+                "candidate_files": 1,
+                "filesystem_device": 38,
+                "free_bytes": 2937032704,
+                "mount_namespace_inode": 4026531841,
+                "refusals": [],
+                "selected_bytes": 41,
+                "selected_files": 1,
+                "total_bytes": 3974893568,
+                "used_bytes": 1037860864
+              },
+              "selected_bytes": 41,
+              "selected_files": 1
+            },
+            "evidence_digest": "sha256:553f2bb62121b82187303cd7cee520ce1007aa6234eca05da0d347b2e1f57c59",
+            "handler_key": "sensorium.disk_pressure",
+            "node_id": "step:0",
+            "opcode": "disk.inspect_pressure",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "binding_decided": true,
+              "manifest_observed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.54586
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.005892,
+            "effect": {
+              "branch": "request_operator_approval",
+              "safe_refusal": true
+            },
+            "evidence_digest": "sha256:74e53e92f97201a8bcf452db03b79c40a154e102d2c439f1bb42ee3fa30093b3",
+            "handler_key": "planner.disk_cleanup",
+            "node_id": "step:1",
+            "opcode": "disk.plan_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.005973
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.005526,
+            "effect": {
+              "bounded": true,
+              "refused": true,
+              "verified": false
+            },
+            "evidence_digest": "sha256:bbf600087982d89a245efaa016e057f85818196a613ea80660e7cf393cccb35c",
+            "handler_key": "disk.quarantine_and_purge",
+            "node_id": "step:2",
+            "opcode": "disk.quarantine_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_cleanup_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.005581
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.00546,
+            "effect": {
+              "quarantine_removed": true,
+              "safe_refusal": true,
+              "targets_absent": true,
+              "verified": false
+            },
+            "evidence_digest": "sha256:0c9a4a9f58312a5fd379e56ef8a13d917d10df1befaeffed797b6d41d7aac8b1",
+            "handler_key": "verifier.disk_cleanup",
+            "node_id": "step:3",
+            "opcode": "disk.verify_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.005532
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.562631,
+          "wall_time_ms": 0.562946
+        },
+        "rollback_successful": true,
+        "safe_refusal": true,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "wrong-manifest",
+        "verified": true
+      },
+      {
+        "boundary_updates": [
+          "SAFE_REFUSAL_UNDER:stale_or_empty_manifest"
+        ],
+        "evidence_digest": "sha256:b8f5c319c60fd3d0191087cbc6821ecc20d2442c1481b26e56e8d883f50694db",
+        "expected_checks": {
+          "branch": true
+        },
+        "final_state_fingerprint": "sha256:f599f2c1d1aa22800ec8ba03aa40790ee7249a3aa796d11cc8de351f27de7007",
+        "initial_state_fingerprint": "sha256:f599f2c1d1aa22800ec8ba03aa40790ee7249a3aa796d11cc8de351f27de7007",
+        "isolation": {
+          "cgroup_capsule_established": false,
+          "cgroup_delegated_writable": false,
+          "cgroup_v2_available": true,
+          "filesystem": "private_temporary_directory",
+          "network_namespace": "not_used",
+          "process_namespace": "not_established",
+          "state": "deep_copy",
+          "workspace_destroyed_after_replay": true
+        },
+        "negative": true,
+        "node_receipts": [
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.353426,
+            "effect": {
+              "approval_class": "bounded_standard",
+              "manifest_digest": "sha256:68cde4d5346f6cd66357fe3fda6de251f7b2698b1ab2b3d1498f20efeceb8c26",
+              "manifest_matches": true,
+              "pressure": {
+                "candidate_files": 0,
+                "filesystem_device": 38,
+                "free_bytes": 2937036800,
+                "mount_namespace_inode": 4026531841,
+                "refusals": [],
+                "selected_bytes": 0,
+                "selected_files": 0,
+                "total_bytes": 3974893568,
+                "used_bytes": 1037856768
+              },
+              "selected_bytes": 0,
+              "selected_files": 0
+            },
+            "evidence_digest": "sha256:6fc5664788e8835cd65583013bd92b5d0e5b94f5050292baa394eb124725a927",
+            "handler_key": "sensorium.disk_pressure",
+            "node_id": "step:0",
+            "opcode": "disk.inspect_pressure",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "binding_decided": true,
+              "manifest_observed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.353295
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.005948,
+            "effect": {
+              "branch": "request_operator_approval",
+              "safe_refusal": true
+            },
+            "evidence_digest": "sha256:f671b962eee35705dfdb504b0f62af263efb6e372478c4726b25296fc1d886ad",
+            "handler_key": "planner.disk_cleanup",
+            "node_id": "step:1",
+            "opcode": "disk.plan_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "branch_allowed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.006097
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.005164,
+            "effect": {
+              "bounded": true,
+              "refused": true,
+              "verified": false
+            },
+            "evidence_digest": "sha256:07a870ae82f0cd1d02881f985d9dd8314c1d03e7a9935b728088acf1d3999ea0",
+            "handler_key": "disk.quarantine_and_purge",
+            "node_id": "step:2",
+            "opcode": "disk.quarantine_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "bounded_cleanup_or_refusal": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.005219
+          },
+          {
+            "attempted": true,
+            "cpu_time_ms": 0.00517,
+            "effect": {
+              "quarantine_removed": true,
+              "safe_refusal": true,
+              "targets_absent": true,
+              "verified": false
+            },
+            "evidence_digest": "sha256:6ebed28460c82d7270f73b2af84fa8be6db75feb615387a14e8900a1fcf941ef",
+            "handler_key": "verifier.disk_cleanup",
+            "node_id": "step:3",
+            "opcode": "disk.verify_cleanup",
+            "rollback_attempted": false,
+            "rollback_successful": false,
+            "status": "verified",
+            "verification": {
+              "objective_verifier_completed": true
+            },
+            "verified": true,
+            "wall_time_ms": 0.005285
+          }
+        ],
+        "resource_usage": {
+          "cpu_time_ms": 0.369708,
+          "wall_time_ms": 0.369896
+        },
+        "rollback_successful": true,
+        "safe_refusal": true,
+        "status": "verified",
+        "unrelated_state_unchanged": true,
+        "variant_id": "empty-cache",
+        "verified": true
+      }
+    ],
+    "verified_variants": 5
+  },
+  "safety": {
+    "approval_thresholds": true,
+    "manifest_identity_fields": [
+      "device",
+      "inode",
+      "size",
+      "mtime_ns",
+      "sha256"
+    ],
+    "protected_parts": [
+      ".git",
+      ".beast",
+      ".ssh",
+      "secrets",
+      "credentials",
+      "source"
+    ],
+    "quarantine_before_purge": true
+  },
+  "schema": "beast.sensorium.disk-cleanup-evidence.v1"
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from copy import deepcopy
 from pathlib import Path
@@ -22,8 +23,14 @@ class PluginMarketplace:
     """Prepare, validate, and install local BEAST plugin manifests."""
 
     def __init__(self, registry_dir: Optional[str] = None):
-        root = Path(__file__).resolve().parents[2]
-        self.registry_dir = Path(registry_dir) if registry_dir else root / ".beast" / "plugins"
+        if registry_dir:
+            self.registry_dir = Path(registry_dir).expanduser()
+        else:
+            state_root = Path(
+                os.environ.get("BEAST_STATE_ROOT")
+                or (Path(os.environ.get("XDG_STATE_HOME") or "~/.local/state").expanduser() / "beast")
+            ).expanduser()
+            self.registry_dir = state_root / "plugins"
 
     def prepare(self, manifest: Dict[str, Any]) -> Dict[str, Any]:
         prepared = deepcopy(manifest)

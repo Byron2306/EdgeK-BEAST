@@ -646,7 +646,7 @@ server {{
         if provider == "openrouter":
             return model if model.startswith("openrouter/") else f"openrouter/{model}"
         if provider == "ollama":
-            default_model = os.environ.get("OLLAMA_SCOUT_MODEL", self.policies.get("ollama_scout", {}).get("default_model", "llama3.2:3b"))
+            default_model = os.environ.get("OLLAMA_SCOUT_MODEL", self.policies.get("ollama_scout", {}).get("default_model", "qwen2.5:0.5b"))
             ollama_model = default_model if model == provider else model
             return ollama_model if str(ollama_model).startswith("ollama/") else f"ollama/{ollama_model}"
         if provider == "huggingface":

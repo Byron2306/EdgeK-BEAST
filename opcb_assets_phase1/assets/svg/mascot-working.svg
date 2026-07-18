@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <linearGradient id="dragonG" x1="22" y1="22" x2="136" y2="138">
+      <stop stop-color="#39f0c2"/><stop offset=".55" stop-color="#39d7ff"/><stop offset="1" stop-color="#ffc857"/>
+    </linearGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="3.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#dragonG)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M39 84c4-31 29-51 60-47 22 3 40 19 46 40-16-7-30-6-42 2 11 2 21 8 27 19-22-6-39-3-52 9-13 12-32 12-47 2 15-2 24-9 27-21-8 5-15 6-19-4z" fill="#071426" opacity=".92"/>
+    <path d="M63 45L52 20l24 16M97 37l13-25 9 31"/>
+    <path d="M116 58l28-18-10 31"/>
+    <path d="M43 84L19 73l25-8"/>
+    <circle cx="78" cy="64" r="4" fill="#ffffff" stroke="none"/>
+    <circle cx="111" cy="65" r="4" fill="#ffffff" stroke="none"/>
+    <path d="M80 72c12 3 24 2 34-3"/>
+    <path d="M72 92c-12 12-26 18-45 18M113 90c16 7 26 17 31 32"/>
+    <path d="M126 40c14 5 20 16 23 26" stroke="#39f0c2" stroke-width="3" opacity=".8"/>
+  </g>
+</svg>

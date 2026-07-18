@@ -2500,6 +2500,335 @@ Legacy/proof systems       -> adapters, inputs, or archived harnesses
      policy, verification, and operator-visible lattice context remain
      connected.~~
 
+12. **Installable BEAST Desktop IDE**
+   - ~~Choose the installable shell direction over a browser-only Web IDE.~~
+   - ~~Add `desktop-ide/` Electron scaffold with app metadata, Linux packaging
+     targets, desktop process ownership, and renderer/preload split.~~
+   - ~~Start or attach to the local BEAST gateway from the desktop process.~~
+   - ~~Expose desktop IPC for gateway status, gateway restart, log capture,
+     workspace folder selection, and manual refresh.~~
+   - ~~Build the first TUI-derived IDE renderer: activity rail, workspace/file
+     rail, central editor/diff/terminal band, and governance rail.~~
+   - ~~Wire the renderer to existing BEAST IDE contracts:
+     `/edgek/ide/snapshot`, `/edgek/workspace/files`,
+     `/edgek/workspace/file`, `/edgek/ide/agent-sessions/create`, and
+     `/edgek/ide/worktree-mission/create`.~~
+   - ~~Stage editor changes into a visible diff preview rather than writing
+     directly to disk.~~
+   - ~~Add `/edgek/ide/sourceplan/from-editor` so desktop editor buffers compile
+     into governed SourcePlan drafts with stale-buffer checks and preview data.~~
+   - ~~Show desktop SourcePlan draft status in the TUI-derived governance rail.~~
+   - ~~Connect the installable IDE to `/edgek/ide/events` for live policy,
+     evidence, and agent-session updates.~~
+   - ~~Add a full agent-session operator panel: selectable sessions,
+     pause/resume/cancel, output capture, budget updates, and conversion of
+     advisory output into SourcePlan drafts.~~
+   - ~~Expose agent-session run streaming through
+     `/edgek/ide/agent-sessions/{session_id}/run-events`, backed by the TUI
+     live-turn stream with persisted output chunks and a deterministic local
+     smoke mode.~~
+   - ~~Add desktop controls for streamed agent runs and SourcePlan
+     verify/apply/clear from the governance rail.~~
+   - ~~Add a Related Context rail backed by Code Cortex
+     `/edgek/ide/related-context` so file selections surface nearby tests,
+     routes, surfaces, and models.~~
+   - ~~Add a governed terminal command classifier backed by Safety Governor so
+     terminal commands are inspected before execution is ever added.~~
+   - ~~Add governed terminal execution through Safety Governor:
+     classify-before-run, block dangerous commands, require approval for
+     elevated decisions, execute with `shell=False`, and register stdout/stderr
+     evidence in the Evidence Bus.~~
+   - ~~Add worktree mission controls in the desktop IDE for verify, SourcePlan
+     promotion draft, and close/archive.~~
+   - ~~Add `/edgek/ide/mission-timeline` to compose agent sessions, worktrees,
+     SourcePlans, and evidence receipts into one chronological IDE timeline.~~
+   - ~~Add `/edgek/ide/sourceplan/lifecycle` to compose preview, scorecard,
+     verification, stale ranges, and related evidence into one SourcePlan
+     lifecycle inspector.~~
+   - ~~Render Mission Timeline and SourcePlan Lifecycle panels in the
+     installable desktop IDE.~~
+   - ~~Add SourcePlan operation visibility and selected-operation toggles in
+     the desktop lifecycle inspector.~~
+   - ~~Add Evidence Drawer filters for source, artifact type, status,
+     plan/task/receipt key, and related receipts.~~
+   - ~~Add selection-aware editor state: line/column, dirty state, selected
+     range metadata, and targeted SourcePlan-from-selection drafts.~~
+   - ~~Add `/edgek/ide/sourceplan/from-selection` so selected source ranges can
+     compile into exact governed `replace_exact` operations with stale-buffer
+     and ambiguity checks.~~
+   - ~~Add Monaco or CodeMirror as the first real editor engine.~~
+   - Add streaming terminal process output and richer approval UX on top of the
+     governed execution route.
+   - Add app-level installers/packages for Linux first, then Windows/macOS.
+   - Add desktop smoke tests beyond static manifest/renderer route checks.
+   - Keep the browser/web IDE as a renderer/prototype surface, not the primary
+     product direction.
+
+13. **Desktop IDE Major Implementation Plan**
+   - **Mission cockpit coherence:** keep the desktop app centered on a mission
+     timeline that blends sessions, worktrees, SourcePlans, evidence, policy,
+     and Code Cortex context.
+     - ~~Add TUI-style desktop page controls for Mission, SourcePlan, Agent
+       Sessions, Worktrees, Evidence, Terminal, and Settings.~~
+     - ~~Keep workspace file browsing always visible while the right-side
+       operator panel changes by page.~~
+     - ~~Make desktop gateway startup capability-aware so the app does not
+       silently attach to an older gateway that lacks IDE routes.~~
+     - ~~Retry desktop gateway startup across fallback ports when the preferred
+       port is occupied, hung, or exits during bind.~~
+     - ~~Add a Gateway Doctor page with active URL, command, PID, route
+       capability checks, log tail, copy report, restart, and open controls.~~
+     - ~~Make gateway startup single-flight and distinguish TCP-listening
+       warmup from route-ready HTTP health instead of spawning duplicate
+       gateways.~~
+     - ~~Scope Doctor health checks to the exact active gateway URL, clear
+       exited gateway process handles, and skip occupied ports before spawn.~~
+     - ~~Use lightweight `/edgek/root-info` route-manifest capability checks
+       during startup so heavyweight IDE/workspace routes cannot keep the
+       gateway marked incompatible.~~
+     - ~~Add renderer fetch timeouts so slow route panels degrade to local IDE
+       fallbacks instead of hanging the workbench.~~
+     - ~~Normalize renderer gateway timeout errors, retry once during route
+       warmup, and use longer budgets for IDE snapshot, action manifest, and
+       workspace file routes so freshly-started gateways do not look broken.~~
+     - ~~Scan nearby ports for an already-compatible BEAST gateway before
+       spawning a new desktop-managed gateway, preventing stale gateway
+       pileups across restarts and multi-window sessions.~~
+     - ~~Add Local IDE Mode: after bounded gateway bootstrap attempts, stop
+       chasing ports and keep Monaco, file explorer, tabs, diagnostics, and
+       local diff preview usable through desktop IPC.~~
+     - ~~Make IDE readiness checks available through Electron IPC so command
+       palette readiness still works when the gateway action-plan or
+       release-readiness routes are stale, missing, or still warming.~~
+     - ~~Split the desktop shell into independent scroll planes for activity,
+       workspace/explorer, editor, and page-specific governance controls.~~
+     - ~~Add a Provider Setup page that makes NVIDIA NIM with Nemotron Super
+       120 the visible default for desktop agent sessions while reading live
+       provider registry/state when the gateway is online.~~
+     - ~~Wire Provider Setup into selected-route secret readiness, explicit
+       NVIDIA NIM live smoke checks, and agent-run provider diagnostics so
+       local fallback causes are visible in the IDE.~~
+     - ~~Fix IDE backend live routes so agent streaming and SourcePlan lifecycle
+       calls use the active gateway request base URL instead of the fake
+       `gateway-local` host.~~
+     - ~~Replace the Provider Setup text dump with structured selected-provider
+       readiness, secret/smoke status, and readable provider inventory rows.~~
+     - ~~Add a BEAST IDE Action Manifest and planning backend so command
+       surfaces are declared, searchable, governed, and receipt-backed.~~
+     - ~~Add a TUI-style desktop Command Palette with Ctrl/Cmd+K, manifest
+       filtering, local fallback actions, and dispatch into existing governed
+       SourcePlan, agent, worktree, evidence, terminal, provider, and doctor
+       flows.~~
+     - ~~Promote the Command Palette into a floating modal with Escape/overlay
+       close behavior while keeping the Settings-page palette as a mirrored
+       secondary surface.~~
+     - ~~Add top-level IDE status chips for local/gateway state, active file,
+       dirty buffers, SourcePlan readiness, verification, approval, and
+       evidence.~~
+     - ~~Add a persistent right-side Next Action inspector that explains what
+       the operator can do now and routes to the relevant governed action or
+       page.~~
+     - ~~Reduce right-rail density with collapsible governance panels and a
+       single active mission card.~~
+     - ~~Fix desktop agent context packing so large selections are referenced
+       by file/range/size instead of pasted as fake truncated code blocks, and
+       convert oversized patch requests into scoped SourcePlan/Action IR
+       planning requests.~~
+     - ~~Harden the desktop Agent Patch Workbench so prose, tool requests,
+       truncation markers, nested markdown, and oversized/non-source-like
+       replacements are rejected before diff preview, staging, or SourcePlan
+       compilation.~~
+     - ~~Add a Symbol Lens / Range Navigator for large files: backend
+       `/edgek/ide/symbol-outline`, Python AST plus regex fallback parsing,
+       Monaco range selection, and symbol-scoped agent requests so operators
+       can work on functions/classes instead of giant file selections.~~
+     - ~~Add editor ergonomics for Save/Revert/Reload: dirty-buffer snapshot
+       persistence, Ctrl/Cmd+S save through SourcePlan, guarded revert, guarded
+       reload, and clean dirty-state recovery after SourcePlan apply.~~
+     - ~~Add workspace symbol search to the Code Cortex panel so operators can
+       find functions/classes across the repo, open them directly in Monaco,
+       and ask agents about symbol-sized ranges.~~
+     - ~~Add a TUI-parity Tooling Plane to the desktop shell for syntax checks,
+       lint contracts, MCP route/config awareness, plugin/extension surfaces,
+       and local environment readiness, with both gateway and Electron IPC
+       fallback snapshots.~~
+     - ~~Replace the gateway-hosted mascot with a packaged local desktop asset
+       so the little dragon remains visible across fallback ports, offline
+       Local IDE Mode, and installed `.deb`/AppImage launches.~~
+     - ~~Deepen the Tooling Plane from inventory into operations: MCP broker
+       state, servers, schema pins, approvals, audit/execution history,
+       approve/deny controls, plugin inventory, manifest validation, and copyable
+       tooling reports.~~
+     - ~~Make desktop multi-window state explicit with per-window ids, focused
+       window routing, shared gateway log broadcast, and safer workspace dialog
+       ownership for worktree IDE windows.~~
+     - ~~Persist selected agent session, selected worktree mission, and command
+       palette recents per workspace so the operator can resume the active
+       mission shape after restart.~~
+     - ~~Improve page-aware operator guidance with active session/worktree
+       mission state and Next Action prompts for Tooling and Worktree pages.~~
+  - **SourcePlan lifecycle depth:** evolve the lifecycle inspector from
+    preview/scorecard/verify into operation selection, hunk-level toggles,
+    rollback inspection, and evidence closure.
+    - ~~Add Monaco diff overlay as the SourcePlan preview surface while
+      preserving textual diff output for evidence/debugging.~~
+    - ~~Add an OPCB-style Action Contract summary to the desktop SourcePlan
+      lifecycle view: intent, risk, approval, rollback, blocked actions,
+      allowed files, verification, and evidence requirements.~~
+    - ~~Add a SourcePlan Operation Ledger with selected/skipped/stale state,
+      before/after hashes, rollback requirement, verification status, evidence
+      status, blocked operations, and a ledger hash.~~
+    - ~~Add a SourcePlan checklist view for Draft -> Score -> Verify ->
+      Approve -> Apply -> Evidence -> Rollback-ready.~~
+    - ~~Restore the desktop Operation Preview list beside the Operation Ledger
+      so SourcePlan drafts show visible operations and do not depend on a
+      ledger-only panel.~~
+    - ~~Add operation selection controls for SourcePlan drafts: select all,
+      select none, per-operation toggle state, and reload-base repair when
+      stale context needs re-drafting.~~
+    - ~~Add an agent Action IR compiler route and desktop flow that tries to
+      resolve BEAST Action IR into exact SourcePlan operations before falling
+      back to advisory agent-output drafts.~~
+    - ~~Add a desktop Mission Runbook export that composes SourcePlan lifecycle,
+      action contract, operation ledger, mission timeline, and Evidence Bus
+      tail into JSON/Markdown under `.beast/ide/runbooks`.~~
+    - ~~Add Mission Runbook verification that checks exported JSON/Markdown,
+      object type, Evidence Bus hash linkage, and records a verification
+      receipt.~~
+    - ~~Add SourcePlan handoff packages with a manifest, repo patch, manual
+      instructions, blocked-path checks, no direct apply, and Evidence Bus
+      receipts.~~
+    - ~~Add Monaco diff hunk selection cards that group changed ranges, toggle
+      operator-selected hunks, focus Monaco on the selected range, and pass
+      selected hunk metadata into SourcePlan draft requests.~~
+    - ~~Add a learning proposal queue for successful governed IDE workflows so
+      operators can promote verified SourcePlan patterns toward durable
+      crystal/memory review without direct crystal writes.~~
+  - **Governed terminal execution:** move from Safety Governor classification
+    to execution only after allow/approval receipts, with stdout/stderr saved
+    as evidence.
+     - ~~Add terminal command history navigation as the first terminal maturity
+       pass.~~
+     - ~~Add a governed terminal control plane with explicit working directory,
+       timeout, Safety Governor decision card, command history drawer, evidence
+       receipt drawer, copy receipt, and Evidence Bus filtering.~~
+     - ~~Replace terminal execute-and-return with a governed SSE terminal
+       stream: live stdout/stderr chunks, heartbeat state, operator cancel,
+       timeout handling, close-time Evidence Bus receipt, and terminal history
+       integration.~~
+     - ~~Keep gateway log warmup from overwriting operator command output after
+       a governed execution has produced terminal evidence.~~
+   - **Real editor engine:** replace the textarea with Monaco or CodeMirror,
+     then add changed-range decorations, Code Cortex hovers, diagnostics,
+     related-test jumps, and SourcePlan-from-selection.
+     - ~~Replace the visible textarea with a packaged Monaco editor while
+       keeping a hidden compatibility buffer for existing SourcePlan flows.~~
+     - ~~Add Monaco changed-line decorations, TODO/FIXME diagnostics, minimap,
+       and BEAST governance hover content.~~
+     - ~~Fix desktop workspace file selection by normalizing graph file nodes
+       and falling back to TUI-style local file candidates when the graph is
+       cold.~~
+     - ~~Add desktop-native local file list/read fallbacks so file selection
+       still works while gateway routes are starting, missing, or stale.~~
+     - ~~Harden the file explorer with explicit Expand/Collapse/Flat/Reveal
+       controls, visible file-count status, 2000-file load depth, safer active
+       reveal handling, and render-error reporting inside the Files panel.~~
+     - ~~Add visible active-file selection state and keyboard shortcuts for
+       TUI-like page navigation.~~
+     - ~~Add a tree-style file explorer with folder collapse, reveal active
+       file, dirty markers, and instant filtering.~~
+     - ~~Add a multi-file editor tab/session model with open, close, reopen,
+       dirty-buffer tracking, and active-tab switching.~~
+     - ~~Add governed file explorer mutations for create file/folder, rename,
+       and delete file, with Safety Governor classification before desktop IPC
+       performs local file operations.~~
+     - ~~Add visible Undo, Redo, and Split Editor controls backed by Monaco,
+       with the split view sharing the active model so dirty tracking remains
+       coherent.~~
+     - ~~Persist workspace, open tabs, recent files, collapsed folders,
+       collapsed governance panels, split-editor state, and selected
+       provider/model per workspace.~~
+     - ~~Expand diagnostics beyond TODO/FIXME to dynamic execution, debug
+       output, bare exceptions, possible hard-coded secrets, and inline stale
+       SourcePlan context warnings.~~
+   - **Agent workspace maturity:** stream provider turns into persistent
+     sessions, expose budgets/tools/evidence as a timeline, and convert selected
+     outputs into Action IR-backed SourcePlans where possible.
+     - ~~Add a real agent request composer with Send, Ctrl/Cmd+Enter,
+       provider/model-aware streaming, prompt receipt persistence, local queued
+       turns, transcript copy, and compact session timeline rendering.~~
+     - ~~Persist selected model on agent sessions and record provider
+       completion/recovery/handoff diagnostics alongside streamed output.~~
+     - ~~Add a live Agent Run Inspector with provider health, stage chips, and
+       tool-event chips so streaming runs expose the governance path while
+       output arrives.~~
+     - ~~Add an Agent Context Pack workflow with active-file, selected-code, and
+       Code Cortex related-file controls, plus Monaco "Ask Agent About
+       Selection" action and run-time context file handoff.~~
+     - ~~Add an Agent Patch Workbench that extracts fenced replacement code,
+       previews selected-range diffs, compiles real SourcePlan operations, and
+       can stage advisory patches into the editor buffer without writing.~~
+     - ~~Teach the Agent Patch Workbench to reject JSON/tool-command fences as
+       non-patches and generate a follow-up "Request Patch" prompt for fenced
+       replacement code only.~~
+     - ~~Force desktop agent prompts toward symbol-scoped Action IR or narrow
+       patches by default, and require the agent to ask for missing context
+       instead of guessing hidden code.~~
+     - ~~Turn provider route failures into structured retry options: provider
+       smoke, local simulation, reduced context, or provider switch.~~
+     - ~~Return and render structured Action IR retry guidance when agent
+       output is not exact enough: missing-context questions, retry options,
+       and explicit old/new snippet requirements before advisory fallback.~~
+   - **Worktree-native mission flow:** create/open/verify/promote/close
+     worktrees from one panel, with SourcePlan promotion as the only path back
+     to the main workspace.
+     - ~~Add one-click open worktree in a second BEAST Desktop IDE window.~~
+     - ~~Add a worktree diff browser route and desktop diff preview.~~
+     - ~~Add a verify -> diff -> SourcePlan promotion wizard that keeps
+       promotion as the only path back to the main workspace.~~
+     - ~~Polish the worktree wizard with explicit lifecycle steps, selected
+       mission restore, plus added/removed diff summaries before SourcePlan
+       promotion.~~
+  - **Code intelligence:** keep Code Cortex as the context front door while
+    improving editor navigation.
+    - ~~Add Go to Definition, Find References, and Related Tests/Routes
+      controls backed by workspace symbol search and a read-only text-search
+      route.~~
+    - ~~Add a consolidated `/edgek/ide/code-intel` route and desktop flow for
+      symbols, diagnostics, related tests/routes, stale-context guidance, and
+      Code Cortex-front-door metadata.~~
+  - **Evidence drawer and search:** add first-class filters for source,
+    artifact type, status, task/session/plan id, and related receipts.
+    - ~~Add an OPCB-style Receipt Chooser surface over Evidence Bus receipts,
+      with action-specific guidance for SourcePlan apply/rollback, worktree
+      promotion, and terminal evidence.~~
+  - **Mission route visibility:** show the active mission route as an
+    OPCB-style face strip while keeping BEAST Mode Router and CapabilityPlane
+    authoritative.
+    - ~~Add `/edgek/ide/mission-route` and render Mission, Models, Agents,
+      Tools, Review, Evidence, and Crystalization route steps in the desktop
+      Mission panel.~~
+  - **Installable packaging and smoke harness:** keep Linux builds first, then
+    add Windows/macOS packaging and automated launch/snapshot checks.
+    - ~~Add a desktop IDE Release Readiness check that verifies route/module
+      presence, Monaco packaging, renderer controls, runbook/handoff/learning
+      routes, and absence of fake gateway hosts in IDE routes.~~
+    - ~~Add `npm run smoke` for the Electron desktop shell, parsing main,
+      preload, and renderer scripts and asserting command palette, status
+      chips, governed terminal, provider setup, SourcePlan, local mode, and
+      Gateway Doctor affordances before packaging.~~
+    - ~~Wire the backend Release Readiness route to execute the desktop smoke
+      harness and register pass/fail details in readiness evidence.~~
+     - ~~Add `npm run smoke:launch` to verify packaged AppImage, `.deb`, and
+       linux-unpacked executable artifacts without opening a GUI window.~~
+     - ~~Wire launch smoke into Release Readiness and rebuild the Linux AppImage
+       and `.deb` after the IDE hardening sweep.~~
+     - ~~Expand desktop smoke coverage for MCP/plugin tooling operations,
+       worktree wizard polish, multi-window log routing, workspace selection
+       persistence, and source-level launch contracts.~~
+     - ~~Rebuild Linux AppImage and `.deb` artifacts after the operational-depth
+       pass and verify them with `npm run smoke:launch`.~~
+
 9. **Worktree Enforcement**
    - ~~Upgrade worktree recommendations into hard gates for high-risk edits
      unless the operator explicitly overrides.~~

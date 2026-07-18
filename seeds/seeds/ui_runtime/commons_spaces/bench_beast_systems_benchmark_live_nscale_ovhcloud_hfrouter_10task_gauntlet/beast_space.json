@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 2029,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:5748dcbb5555cee6254ff63018ac3919b8b35e1342f531805cf9ef0f2a566b90"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 6976,
+      "path": "run_manifest.json",
+      "sha256": "sha256:a255b95c36816a80457448c8a1e4ddaae0ea3c4b280c63c0488fbba3bc62ba66"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 352,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:d5f1d49dcc2fb40f6c61aceb85c2f0e74cf74c68689d46ebf59ef97f218de806"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:1edbbb10bed4838187841a38a1d9d07ae0a4de9f6a701ee3fc189c4e5e4a36c6"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.976677+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_systems_benchmark_live_nscale_ovhcloud_hfrouter_10task_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_systems_benchmark_live_nscale_ovhcloud_hfrouter_10task_gauntlet"
+  },
+  "manifest_hash": "sha256:d4be3a3ce9707627268b79ae552423bf2e5165e84a3f99075bb2de7c9b365b98",
+  "name": "Beast Systems Benchmark Live Nscale Ovhcloud Hfrouter 10Task Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_systems_benchmark_live_nscale_ovhcloud_hfrouter_10task_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

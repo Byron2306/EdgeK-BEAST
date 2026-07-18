@@ -1,0 +1,95 @@
+{
+  "boot_id": "67db0397-9de0-4ad0-9a3a-914075618192",
+  "crystal_digest": "sha256:b8a497434550c42884e6c791080bda594c3cfbe5ca8e4101f98f5718aeec4e34",
+  "crystal_id": "crystal:sensorium-port-reuse:v1",
+  "execution_receipt": {
+    "applicability_proof_digest": "sha256:427bc1e9f4a1d53839c3df5bb8b8a3b8aa06dff5db856468c58d503993356415",
+    "authorization_receipt_digest": "sha256:cc24f883eb99817d0345ca4aa8b33faf27655e761523637430f55bf8a0e90e22",
+    "cloud_displacement_proven": true,
+    "crystal_digest": "sha256:b8a497434550c42884e6c791080bda594c3cfbe5ca8e4101f98f5718aeec4e34",
+    "crystal_id": "crystal:sensorium-port-reuse:v1",
+    "evidence_node_id": "sha256:033465097f664310505827a31cbf1344757fad12e9dd2bd76f169c29c8e8f436",
+    "final_status": "verified_local_recurrence",
+    "node_receipts": [
+      {
+        "cpu_time_ms": 12.512968,
+        "effect": {
+          "inode": "41652",
+          "occupied": true,
+          "owners": [
+            10934
+          ],
+          "port": 59615,
+          "source": "proc_net_tcp_and_fd_inode"
+        },
+        "evidence_digest": "sha256:7e11482aceecb2597a6fc517ef701d8aeeeaea132e7e74f2b6fd13c0a709b427",
+        "node_id": "step:0",
+        "opcode": "socket.inventory",
+        "rollback_attempted": false,
+        "rollback_successful": false,
+        "status": "verified",
+        "verification": {
+          "inventory_complete": true
+        },
+        "verified": true,
+        "wall_time_ms": 12.512283
+      },
+      {
+        "cpu_time_ms": 0.00648,
+        "effect": {
+          "branch": "reuse_existing_service",
+          "safe_refusal": false
+        },
+        "evidence_digest": "sha256:6d6a5435b740025917a9c80756ce4a981fa8950c84d76cc43f30dc0134a6eb5c",
+        "node_id": "step:1",
+        "opcode": "repair.select_branch",
+        "rollback_attempted": false,
+        "rollback_successful": false,
+        "status": "verified",
+        "verification": {
+          "branch_allowed": true
+        },
+        "verified": true,
+        "wall_time_ms": 0.006136
+      },
+      {
+        "cpu_time_ms": 0.904616,
+        "effect": {
+          "branch": "reuse_existing_service",
+          "healthy": true,
+          "probe": "loopback_tcp"
+        },
+        "evidence_digest": "sha256:dc257c274a8a9127d28b0818d493ea48a1c47279aa88593b217086d75902bae7",
+        "node_id": "step:2",
+        "opcode": "service.verify_health",
+        "rollback_attempted": false,
+        "rollback_successful": false,
+        "status": "verified",
+        "verification": {
+          "branch_recorded": true,
+          "probe_completed": true
+        },
+        "verified": true,
+        "wall_time_ms": 0.903612
+      }
+    ],
+    "physically_observed": true,
+    "post_execution_revalidated": true,
+    "postcondition_checks": {
+      "outcome:verified_success": true,
+      "safe_non_refusal_branch": true,
+      "service.verify_health:success": true
+    },
+    "pre_execution_revalidated": true,
+    "provider_calls_after": 0,
+    "provider_calls_before": 0,
+    "provider_calls_during_execution": 0,
+    "receipt_digest": "sha256:ddfaff6f1841f16fe7e72c1960dc4cd7418e1c49c0d76b6771efb00ea13d65e1",
+    "rollback_successful": true
+  },
+  "promotion_record_digest": "sha256:89e0eacdbe57ba598b17866a5640f30805f41355f9965326823e28774737bba1",
+  "provider_calls": 0,
+  "receipt_digest": "sha256:67fa5cac83b0223326e65892aadf25a7a2b3f3e23507d7bf60ee96972f50052e",
+  "schema": "beast.postboot-port-recurrence.v1",
+  "verified": true
+}

@@ -139,6 +139,8 @@ def test_codex_and_beast_auto_have_concrete_provider_contracts():
 def test_tui_chat_model_mapper_uses_provider_contracts():
     api = BeastApiClient()
 
+    assert api._chat_model_for_provider("", "beast-auto") == "nvidia/nemotron-3-super-120b-a12b"
+    assert api._chat_model_for_provider("auto", "beast-auto") == "nvidia/nemotron-3-super-120b-a12b"
     assert api._chat_model_for_provider("codex", "beast-auto") == "gpt-5-codex"
     assert api._chat_model_for_provider("openai", "beast-auto") == "gpt-4o-mini"
     assert api._chat_model_for_provider("openrouter", "beast-auto") == "litellm/openrouter/auto"

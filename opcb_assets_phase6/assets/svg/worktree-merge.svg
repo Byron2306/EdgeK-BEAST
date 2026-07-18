@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="worktree-merge">
+  <defs>
+    <linearGradient id="g" x1="6" y1="8" x2="58" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39f0c2"/>
+      <stop offset=".42" stop-color="#39d7ff"/>
+      <stop offset="1" stop-color="#b36bff"/>
+    </linearGradient>
+    <linearGradient id="goldg" x1="6" y1="8" x2="58" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffc857"/>
+      <stop offset=".52" stop-color="#39d7ff"/>
+      <stop offset="1" stop-color="#39f0c2"/>
+    </linearGradient>
+    <linearGradient id="redg" x1="6" y1="8" x2="58" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff5d6c"/>
+      <stop offset=".55" stop-color="#ffc857"/>
+      <stop offset="1" stop-color="#b36bff"/>
+    </linearGradient>
+    <filter id="glow" x="-55%" y="-55%" width="210%" height="210%">
+      <feGaussianBlur stdDeviation="2.35" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+
+    <circle cx="16" cy="16" r="5"/>
+    <circle cx="16" cy="48" r="5"/>
+    <circle cx="48" cy="32" r="5"/>
+    <path d="M16 21c0 12 10 11 27 11"/>
+    <path d="M16 43c0-12 10-11 27-11"/>
+
+  </g>
+</svg>

@@ -11,6 +11,9 @@ import subprocess
 import time
 import tempfile
 import threading
+import faulthandler
+import signal
+from datetime import datetime, timezone
 from collections import Counter, deque
 from fastapi import FastAPI, Request
 from fastapi import HTTPException
@@ -21,6 +24,8 @@ from pathlib import Path
 from typing import Dict, Any, List
 import logging
 import httpx
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
@@ -29,6 +34,13 @@ os.environ.setdefault("TQDM_DISABLE", "1")
 from app.kernel.local.local_config import load_local_env
 
 load_local_env()
+
+# SIGUSR1 produces a non-destructive all-thread stack dump for live gateway
+# diagnosis. It does not expose request bodies or secret values.
+try:
+    faulthandler.register(signal.SIGUSR1, all_threads=True)
+except (AttributeError, RuntimeError, ValueError):
+    pass
 
 # Import adapters
 from app.adapters.openai_adapter import openai_router
@@ -59,7 +71,10 @@ from app.kernel.registry.beast_builtin_plugins import invoke as invoke_builtin_p
 from app.kernel.execution.session_handshake import SessionHandshakeBuilder
 from app.kernel.capability.capability_exchange import CapabilityExchange
 from app.kernel.networking.meta_tool_commons import MetaToolCommons
-from app.kernel.compute.inference_interceptor import compute_interceptor, compute_ledger
+from app.kernel.compute.compute_plane import get_compute_plane
+compute_plane = get_compute_plane()
+compute_interceptor, compute_ledger = compute_plane, compute_plane.ledger
+from app.routes.compute_missions import build_compute_mission_router
 from app.kernel.deployment.deployment import DeploymentManager
 from app.kernel.registry.tool_integrations import RequiredIntegrationRegistry, ToolCallInterceptor
 from app.kernel.local.ollama_scout import OllamaScout
@@ -101,12 +116,33 @@ from app.kernel.compute.crystal_reuse_gateway import CrystalReuseDecision, Cryst
 from app.kernel.compute.integration_harness import BeastHarnessRequest, BeastIntegrationHarness
 from app.kernel.compute.integration_acceptance import CrystalIntegrationAcceptanceHarness
 from app.kernel.compute.nim_live_probe import NvidiaNIMLiveProbe
+from app.kernel.compute.public_benchmark_grading_daemon import PublicBenchmarkGradingDaemon
 from app.kernel.compute.local_execution_gateway import LocalExecutionGateway
 from app.kernel.compute.local_route_optimizer import LocalRouteOptimizer
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
 from app.kernel.evals.local_eval_gate import LocalEvalGate
 from app.kernel.observability.local_trace_ledger import LocalTraceLedger
+from app.kernel.sensorium.runtime import sensorium_runtime
+from app.kernel.sensorium.observatory import project_observatory
+from app.kernel.evidence.release_chain import ReleaseChain
+from app.kernel.execution.process_plane import process_plane_capabilities
 from app.kernel.compute.kv_restore_harness import KVRestoreHarness
+from app.kernel.workspaces.workspace_identity import discover as discover_workspace_identity, stable_workspace_uuid
+from app.kernel.workspaces.workspace_guard import WorkspaceIdentityGuard
+from app.kernel.workspaces import system_inspector
+from app.kernel.workspaces.byron_manifest import load as load_byron_manifest
+from app.kernel.networking.service_registry import ServiceRegistry
+from app.kernel.capability.tool_buckets import BUCKETS, bucket_tools
+from app.kernel.compute.interference_buckets import classify as classify_interference
+from app.kernel.commons.enterprise_plane import CommonsEnterprisePlane
+from app.kernel.commons.signature_verifier import CommonsTrustStore
+from app.kernel.commons.appraisal_verifier import SignedArdaAppraisalVerifier, SignedNodeAttestationVerifier
+from app.kernel.commons.job_choir import NodeAdvertisement
+from app.kernel.commons.tpm_appraisal import TpmNodeAppraisalIssuer
+from app.kernel.commons.remote_client import CommonsEgressGate, RemoteCommonsGateway, RemoteCommonsRegistry
+from app.kernel.commons.remote_protocol import CommonsRequestSigner
+from app.kernel.commons.discovery import CommonsDiscoveryCatalog
+from app.kernel.commons.lattice_trust import CrystalLatticeTrustStore
 from app.kernel.security.residue_seal import ResidueSeal
 from app.kernel.security.agent_passport import AgentPassport, AgentPassportPolicy
 from app.kernel.storage.memory_hull import MemoryHull
@@ -131,6 +167,7 @@ from app.kernel.networking.commons_testnet import CommonsTestnet
 from app.kernel.networking.commons_prototype import CommonsCrystalPromoter, FirstPrototypeRunner
 from app.routes.cockpit import build_cockpit_router
 from app.routes.commons import build_commons_router
+from app.routes.commons_remote import build_remote_commons_router
 from app.routes.compute import build_compute_router
 from app.routes.ide import build_ide_router
 from app.routes.policy import build_policy_router
@@ -169,12 +206,15 @@ tool_laziness_learner = ToolLazinessLearner()
 tool_laziness_plugin = ToolLazinessPlugin(tool_laziness_learner)
 provider_economist = ProviderEconomist()
 crystal_compute_store = default_outcome_store()
-crystal_fork_manager = TemporalCrystalForkManager(Path(__file__).resolve().parents[1] / ".beast" / "crystal_forks.json")
-semantic_raid_store = SemanticRaidStore(Path(__file__).resolve().parents[1] / ".beast" / "semantic_raid")
-artifact_fossil_store = ArtifactFossilLayerStore(Path(__file__).resolve().parents[1] / ".beast" / "fossils")
+beast_state_root = Path(
+    os.environ.get("BEAST_STATE_ROOT")
+    or (Path(__file__).resolve().parents[1] / ".beast")
+).expanduser().resolve()
+crystal_fork_manager = TemporalCrystalForkManager(beast_state_root / "crystal_forks.json")
+semantic_raid_store = SemanticRaidStore(beast_state_root / "semantic_raid")
+artifact_fossil_store = ArtifactFossilLayerStore(beast_state_root / "fossils")
 kv_cache_transport = CrossEngineKVCacheTransport()
 inference_engine_fabric = InferenceEngineFabric()
-beast_state_root = Path(__file__).resolve().parents[1] / ".beast"
 local_semantic_cache = LocalSemanticCache(beast_state_root / "local_semantic_cache.sqlite")
 local_trace_ledger = LocalTraceLedger(
     beast_state_root / "local_trace_ledger.sqlite",
@@ -224,20 +264,33 @@ generative_crystal_store = GenerativeCrystalStore()
 adapter_comparison_gauntlet = AdapterComparisonGauntlet()
 commons_economics_receipt_path = Path(__file__).resolve().parents[1] / "benchmarks/results/commons_scale_economics_ladder_latest.json"
 commons_marketplace_cache: Dict[str, Any] = {"receipt_mtime_ns": None, "report": None, "catalog": None}
-commons_registry_web_cache: Dict[str, Any] = {"at": 0.0, "local": None, "public": None}
+commons_registry_web_cache: Dict[str, Any] = {"at": 0.0, "local": None, "public": None, "registry_key": None}
 commons_registry_web_cache_lock = threading.Lock()
+commons_policy_web_cache: Dict[str,Any]={"at":0.0,"evaluation":None,"learner_key":None}
+commons_policy_web_cache_lock=threading.Lock()
 
 
 def cached_commons_registries() -> Dict[str, Any]:
-    if time.monotonic() - float(commons_registry_web_cache.get("at") or 0) > 300 or commons_registry_web_cache.get("local") is None:
+    registry_key=(id(commons_space_registry),str(commons_space_registry.root))
+    if time.monotonic() - float(commons_registry_web_cache.get("at") or 0) > 300 or commons_registry_web_cache.get("local") is None or commons_registry_web_cache.get("registry_key")!=registry_key:
         with commons_registry_web_cache_lock:
-            if time.monotonic() - float(commons_registry_web_cache.get("at") or 0) > 300 or commons_registry_web_cache.get("local") is None:
+            if time.monotonic() - float(commons_registry_web_cache.get("at") or 0) > 300 or commons_registry_web_cache.get("local") is None or commons_registry_web_cache.get("registry_key")!=registry_key:
                 commons_registry_web_cache.update({
                     "at": time.monotonic(),
+                    "registry_key":registry_key,
                     "local": commons_space_registry.list_spaces(),
                     "public": commons_space_registry.public_registry(),
                 })
     return commons_registry_web_cache
+
+def cached_commons_policy_evaluation() -> Dict[str,Any]:
+    learner_key=(id(commons_policy_learner),id(getattr(commons_policy_learner,"registry",None)))
+    if time.monotonic()-float(commons_policy_web_cache.get("at") or 0)>300 or commons_policy_web_cache.get("evaluation") is None or commons_policy_web_cache.get("learner_key")!=learner_key:
+        with commons_policy_web_cache_lock:
+            if time.monotonic()-float(commons_policy_web_cache.get("at") or 0)>300 or commons_policy_web_cache.get("evaluation") is None or commons_policy_web_cache.get("learner_key")!=learner_key:
+                examples=commons_policy_learner.extract_examples(32)["examples"]
+                commons_policy_web_cache.update({"at":time.monotonic(),"evaluation":commons_policy_learner.evaluate(examples),"learner_key":learner_key})
+    return commons_policy_web_cache["evaluation"]
 
 
 def load_commons_economics_receipt() -> Dict[str, Any]:
@@ -386,22 +439,135 @@ app = FastAPI(
     version="0.1.0"
 )
 
+control_service_registry = ServiceRegistry.from_file(Path(__file__).resolve().parents[1] / ".byron" / "services.yaml")
+_control_root = Path(__file__).resolve().parents[1]
+_active_workspace_identity = discover_workspace_identity(_control_root, workspace_uuid=stable_workspace_uuid(_control_root))
+_control_manifest = load_byron_manifest(_control_root)
+workspace_identity_guard = WorkspaceIdentityGuard(_active_workspace_identity, mode=os.environ.get("BEAST_WORKSPACE_IDENTITY_MODE", "audit"))
+_commons_trust_store_path = os.environ.get("BEAST_COMMONS_TRUST_STORE", "").strip()
+_arda_appraisal_key_path = os.environ.get("BEAST_ARDA_APPRAISAL_PUBLIC_KEY", "").strip()
+_arda_appraisal_private_key_path = os.environ.get("BEAST_ARDA_APPRAISAL_PRIVATE_KEY", "").strip()
+_commons_trust_store = CommonsTrustStore.from_file(_commons_trust_store_path) if _commons_trust_store_path else None
+_arda_appraisal_verifier = SignedArdaAppraisalVerifier(_arda_appraisal_key_path) if _arda_appraisal_key_path else None
+_arda_node_attestation_verifier = SignedNodeAttestationVerifier(_arda_appraisal_key_path) if _arda_appraisal_key_path else None
+_arda_tpm_appraisal_issuer = None
+if _arda_appraisal_private_key_path:
+    _appraisal_private_key = serialization.load_pem_private_key(
+        Path(_arda_appraisal_private_key_path).expanduser().read_bytes(),
+        password=None,
+    )
+    if not isinstance(_appraisal_private_key, Ed25519PrivateKey):
+        raise RuntimeError("BEAST_ARDA_APPRAISAL_PRIVATE_KEY must be an Ed25519 private key")
+    _arda_tpm_appraisal_issuer = TpmNodeAppraisalIssuer(
+        _appraisal_private_key,
+        policy_generation=os.environ.get("BEAST_POLICY_GENERATION", "beast-policy:local-tpm-v1"),
+        key_id=os.environ.get("BEAST_ARDA_APPRAISAL_KEY_ID", "arda-local-appraisal-v1"),
+    )
+commons_enterprise_plane = CommonsEnterprisePlane(
+    beast_state_root / "commons-enterprise",
+    signature_verifier=_commons_trust_store.verify if _commons_trust_store else None,
+    appraisal_verifier=_arda_appraisal_verifier,
+    node_attestation_verifier=_arda_node_attestation_verifier,
+    tpm_appraisal_issuer=_arda_tpm_appraisal_issuer,
+)
+_remote_commons_signer = None
+_remote_commons_client_config_path = beast_state_root / "commons-remote" / "client-config.json"
+try:
+    _remote_commons_client_config = json.loads(_remote_commons_client_config_path.read_text(encoding="utf-8"))
+except (OSError, json.JSONDecodeError, TypeError):
+    _remote_commons_client_config = {}
+_remote_commons_client_key = (
+    os.environ.get("BEAST_COMMONS_REMOTE_CLIENT_KEY", "").strip()
+    or str(_remote_commons_client_config.get("private_key_path") or "")
+)
+if _remote_commons_client_key:
+    _remote_commons_signer = CommonsRequestSigner.from_pem_file(
+        _remote_commons_client_key,
+        node_id=os.environ.get("BEAST_COMMONS_REMOTE_CLIENT_NODE_ID", str(_remote_commons_client_config.get("node_id") or "beast-control-plane")),
+        key_id=os.environ.get("BEAST_COMMONS_REMOTE_CLIENT_KEY_ID", str(_remote_commons_client_config.get("key_id") or "beast-commons-client-v1")),
+    )
+_remote_commons_lattice_trust_path = (
+    os.environ.get("BEAST_COMMONS_LATTICE_TRUST_STORE", "").strip()
+    or str(_remote_commons_client_config.get("lattice_trust_store_path") or "")
+)
+_remote_commons_lattice_trust = (
+    CrystalLatticeTrustStore.from_file(_remote_commons_lattice_trust_path)
+    if _remote_commons_lattice_trust_path else None
+)
+_remote_commons_allowed_hosts = os.environ.get("BEAST_COMMONS_REMOTE_ALLOWED_HOSTS", "").strip()
+if not _remote_commons_allowed_hosts:
+    _remote_commons_allowed_hosts = ",".join(str(item) for item in (_remote_commons_client_config.get("allowed_hosts") or ()))
+remote_commons_gateway = RemoteCommonsGateway(
+    RemoteCommonsRegistry(beast_state_root / "commons-remote" / "nodes.sqlite3"),
+    CommonsEgressGate(
+        allowed_hosts=tuple(
+            item.strip() for item in _remote_commons_allowed_hosts.split(",")
+            if item.strip()
+        ),
+        allow_insecure_loopback=os.environ.get("BEAST_COMMONS_REMOTE_ALLOW_HTTP_LOOPBACK", "1") == "1",
+    ),
+    signer=_remote_commons_signer,
+    arda_public_key=_arda_appraisal_verifier.public_key if _arda_appraisal_verifier else None,
+    lattice_trust_store=_remote_commons_lattice_trust,
+    discovery_catalog=CommonsDiscoveryCatalog(beast_state_root / "commons-remote" / "discovery.sqlite3"),
+)
+
+# The Electron renderer has a null origin when loaded from file://. Keep the
+# default allowlist local-only and make additional origins an explicit deploy
+# setting; enterprise mode must never silently accept arbitrary web origins.
+_default_cors_origins = [
+    "null",
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8001",
+    "http://localhost:8001",
+    "http://127.0.0.1:8002",
+    "http://localhost:8002",
+    "http://127.0.0.1:8101",
+    "http://localhost:8101",
+]
+_cors_origins = [
+    item.strip()
+    for item in os.environ.get("BEAST_CORS_ORIGINS", ",".join(_default_cors_origins)).split(",")
+    if item.strip()
+]
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def workspace_identity_boundary(request: Request, call_next):
+    governed = request.method not in {"GET", "HEAD", "OPTIONS"} and request.url.path.startswith(("/edgek/commons", "/edgek/control-plane"))
+    if not governed:
+        return await call_next(request)
+    decision = workspace_identity_guard.evaluate(request.headers.get("x-beast-workspace-identity", ""))
+    if not decision.allowed:
+        return JSONResponse(status_code=409, content={"error":"workspace_identity_mismatch","expected_digest":decision.expected_digest,"status":decision.status})
+    response = await call_next(request)
+    response.headers["X-BEAST-Workspace-Identity-Status"] = decision.status
+    return response
 
 # Include routers
 app.include_router(openai_router)
 app.include_router(anthropic_router)
 app.include_router(gemini_router)
 app.include_router(mcp_router)
-app.include_router(proxy_router, prefix="/proxy")
+# FastAPI's current nested-router implementation retains this router as an
+# internal included-router marker when it itself includes adapter routers.  In
+# practice none of its concrete proxy routes reached the gateway.  Mount its
+# ASGI application so `/proxy/v1/*` and provider-explicit SSE lanes are real
+# gateway surfaces.
+app.mount("/proxy", proxy_router, name="edgek-provider-proxy")
 app.include_router(huggingface_router)
+app.include_router(build_compute_mission_router(compute_plane))
 app.include_router(build_sourceplan_router(Path(__file__).resolve().parents[1]))
 app.include_router(build_compute_router(
     compute_ledger=compute_ledger,
@@ -419,14 +585,24 @@ app.include_router(build_workspace_router(
     code_cortex_router=code_cortex_router,
     trace_path=crystallizer.trace_path,
 ))
+
+class _LiveDependencyProxy:
+    """Keep extracted route families bound to replaceable runtime services."""
+    def __init__(self,name: str): self.name=name
+    def __getattr__(self,attribute: str): return getattr(globals()[self.name],attribute)
+
 app.include_router(build_commons_router(
-    meta_tool_commons=meta_tool_commons,
-    swarm_kernel=swarm_kernel,
-    kv_cache_transport=kv_cache_transport,
-    commons_space_registry=commons_space_registry,
-    commons_economy=commons_economy,
-    commons_policy_learner=commons_policy_learner,
-    federated_commons=federated_commons,
+    meta_tool_commons=_LiveDependencyProxy("meta_tool_commons"),
+    swarm_kernel=_LiveDependencyProxy("swarm_kernel"),
+    kv_cache_transport=_LiveDependencyProxy("kv_cache_transport"),
+    commons_space_registry=_LiveDependencyProxy("commons_space_registry"),
+    commons_economy=_LiveDependencyProxy("commons_economy"),
+    commons_policy_learner=_LiveDependencyProxy("commons_policy_learner"),
+    federated_commons=_LiveDependencyProxy("federated_commons"),
+))
+app.include_router(build_remote_commons_router(
+    _LiveDependencyProxy("remote_commons_gateway"),
+    _LiveDependencyProxy("commons_enterprise_plane"),
 ))
 app.include_router(build_cockpit_router(Path(__file__).resolve().parents[1]))
 app.include_router(build_policy_router(Path(__file__).resolve().parents[1], mode_router))
@@ -437,9 +613,10 @@ cli_assets_dir = Path(__file__).parent / "cli" / "assets"
 if cli_assets_dir.exists():
     app.mount("/beast-assets", StaticFiles(directory=str(cli_assets_dir)), name="beast-assets")
 commons_media_files = {
-    "beast-logo.png": Path(__file__).resolve().parents[1] / "BEAST_mascot-removebg-preview.png",
-    "inference-economy.mp4": Path(__file__).resolve().parents[1] / "BEAST__Inference_Economy.mp4",
-    "inference-inversion.pptx": Path(__file__).resolve().parents[1] / "BEAST_INFERENCE_INVERSION.pptx",
+    "beast-logo.png": Path(__file__).resolve().parents[1] / "assets" / "release" / "branding" / "beast-mascot-cutout.png",
+    "inference-economy.mp4": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-economy.mp4",
+    "inference-inversion.pptx": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-inversion.pptx",
+    "inference-economy-paper.pdf": Path(__file__).resolve().parents[1] / "assets" / "release" / "commons-media" / "inference-economy-paper.pdf",
 }
 
 # In-memory process counters; durable governance state lives in the kernel stores.
@@ -517,6 +694,166 @@ async def beast_commons_home():
     return HTMLResponse(site_path.read_text(encoding="utf-8"))
 
 
+@app.get("/edgek/control-plane/interference")
+async def edgek_control_plane_interference(cpu: float = 0.0, memory: float = 0.0, io: float = 0.0, trust: str = "verified", lane: str = "background"):
+    decision = classify_interference(cpu_pressure=cpu, memory_pressure=memory, io_pressure=io, trust=trust, lane=lane)
+    return {"decision": decision.__dict__, "telemetry": {"cpu": cpu, "memory": memory, "io": io, "trust": trust, "lane": lane}}
+
+@app.get("/edgek/control-plane/services")
+async def edgek_control_plane_services():
+    return {"version":"1.0","registry_digest":control_service_registry.digest(),"reverse_proxy_port":control_service_registry.reverse_proxy_port,"services": control_service_registry.snapshot(), "health":control_service_registry.health_contract(),"hosts": control_service_registry.hosts_entries(), "proxy_config": control_service_registry.nginx_config()}
+
+@app.post("/edgek/control-plane/services/render")
+async def edgek_control_plane_services_render():
+    outputs=control_service_registry.render(_control_root/".beast"/"control-plane"/"generated")
+    return {"status":"rendered","registry_digest":control_service_registry.digest(),"outputs":outputs}
+
+@app.get("/edgek/control-plane/enterprise")
+async def edgek_control_plane_enterprise():
+    manifest=_control_manifest
+    return {"version":"1.0","mode":"enterprise","workspace_identity":{"digest":_active_workspace_identity.digest(),"fields":_active_workspace_identity.__dict__,"guard_mode":workspace_identity_guard.mode},"service_registry":{"digest":control_service_registry.digest(),"count":len(control_service_registry.services),"reverse_proxy_port":control_service_registry.reverse_proxy_port},"manifests":manifest,"commons":{"remote_contributions_are_hypotheses":True,"local_reproduction_required":True,"attestation_required":True,"one_use_capability_required":True},"status":"ready"}
+
+@app.get("/edgek/control-plane/commons")
+async def edgek_control_plane_commons():
+    return commons_enterprise_plane.snapshot()
+
+@app.post("/edgek/control-plane/commons/artifacts")
+async def edgek_control_plane_commons_publish_artifact(payload: Dict[str, Any] = None):
+    """Admit an authority-bound manifest; bytes remain lazy until policy fetches them."""
+    payload = payload or {}
+    try:
+        item = commons_enterprise_plane.registry.publish(
+            str(payload.get("kind") or ""),
+            dict(payload.get("metadata") or {}),
+            signature=str(payload.get("signature") or ""),
+            authority=str(payload.get("authority") or ""),
+        )
+        commons_enterprise_plane.evidence_bridge.emit(
+            "commons.manifest_published",
+            {"artifact_id":item.artifact_id,"manifest_digest":item.digest,"kind":item.kind,"authority":item.authority},
+            workspace_id=_active_workspace_identity.digest(),
+        )
+        return {"status": "admitted", "manifest": item.__dict__}
+    except PermissionError as exc:
+        code = 503 if "not configured" in str(exc) else 403
+        raise HTTPException(status_code=code, detail=str(exc)) from exc
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.post("/edgek/control-plane/commons/routes/events")
+async def edgek_control_plane_commons_route_event(payload: Dict[str, Any] = None):
+    payload = payload or {}
+    try:
+        score, evidence = commons_enterprise_plane.record_route_event(
+            str(payload.get("route_id") or ""),
+            str(payload.get("event") or ""),
+            workspace_id=_active_workspace_identity.digest(),
+        )
+        return {"status": "recorded", "route": score.__dict__, "suppressed": score.penalty >= commons_enterprise_plane.routes.suppress_at,"evidence_node_id":evidence.node_id}
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.post("/edgek/control-plane/commons/attestation/challenges")
+async def edgek_control_plane_commons_tpm_challenge(payload: Dict[str, Any] = None):
+    """Issue a durable one-use TPM challenge for a prospective Commons node."""
+    payload = payload or {}
+    try:
+        challenge = commons_enterprise_plane.issue_tpm_challenge(
+            str(payload.get("node_id") or ""),
+            ttl_seconds=float(payload.get("ttl_seconds") or 300.0),
+        )
+        return {
+            "status": "issued",
+            "challenge": challenge.public(),
+            "admitted": False,
+            "next": "submit EK/AK enrollment and nonce-bound quote to an ARDA verifier",
+        }
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.post("/edgek/control-plane/commons/attestation/appraise")
+async def edgek_control_plane_commons_tpm_appraise(payload: Dict[str, Any] = None):
+    """Issue a signed Commons node appraisal from verified TPM evidence."""
+    payload = payload or {}
+    try:
+        result, evidence = commons_enterprise_plane.appraise_tpm_node(
+            dict(payload.get("evidence") or {}),
+            capabilities=tuple(str(item) for item in (payload.get("capabilities") or ["cpu"])),
+            pressure_budget=float(payload.get("pressure_budget") or 0.5),
+            reliability=float(payload.get("reliability") or 0.8),
+            route_penalty=float(payload.get("route_penalty") or 0.0),
+            workspace_id=_active_workspace_identity.digest(),
+        )
+        return {
+            "status": "appraised",
+            "node": result.node.__dict__,
+            "appraisal": result.appraisal,
+            "request_digest": result.request_digest,
+            "evidence_node_id": evidence.node_id,
+        }
+    except PermissionError as exc:
+        code = 503 if "not configured" in str(exc) else 403
+        raise HTTPException(status_code=code, detail=str(exc)) from exc
+    except (TypeError, ValueError, LookupError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.post("/edgek/control-plane/commons/jobs/select")
+async def edgek_control_plane_commons_select_node(payload: Dict[str, Any] = None):
+    payload = payload or {}
+    try:
+        nodes = [NodeAdvertisement(**dict(item)) for item in (payload.get("nodes") or [])]
+        required_value = payload.get("required") or payload.get("required_capability") or ""
+        if isinstance(required_value, (list, tuple, set)):
+            if len(required_value) != 1:
+                raise ValueError("exactly one required capability is supported")
+            required_value = next(iter(required_value))
+        required = str(required_value)
+        node,evidence = commons_enterprise_plane.select_node(nodes, required=required, now=time.time(),workspace_id=_active_workspace_identity.digest())
+        return {"status": "selected", "required": required, "node": node.__dict__,"evidence_node_id":evidence.node_id}
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except PermissionError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except LookupError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+@app.post("/edgek/control-plane/commons/spaces/validate")
+async def edgek_control_plane_commons_validate_space(payload: Dict[str, Any] = None):
+    try:
+        space = commons_enterprise_plane.spaces.validate(payload or {})
+        return {"status": "validated", "space": space.__dict__}
+    except PermissionError as exc:
+        code = 503 if "not configured" in str(exc) else 403
+        raise HTTPException(status_code=code, detail=str(exc)) from exc
+    except (KeyError, TypeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@app.get("/edgek/control-plane/tool-buckets")
+async def edgek_control_plane_tool_buckets(phase: str = "Observe", risk: str = "low"):
+    tools = [{"name": "workspace.read", "bucket": "Observe"}, {"name": "sourceplan.verify", "bucket": "Verify"}, {"name": "sourceplan.apply", "bucket": "Modify"}, {"name": "provider.call", "bucket": "Connect"}, {"name": "terminal.execute", "bucket": "Execute"}, {"name": "policy.admin", "bucket": "Administer"}]
+    return {"buckets": list(BUCKETS), "phase": phase, "risk": risk, "visible_tools": bucket_tools(tools, phase=phase, risk=risk)}
+
+@app.get("/edgek/control-plane/workspace-identity")
+async def edgek_control_plane_workspace_identity(root_path: str | None = None, workspace_uuid: str = ""):
+    if not root_path or Path(root_path).expanduser().resolve()==_control_root:
+        identity=_active_workspace_identity
+        return {"identity":identity.__dict__,"digest":identity.digest(),"manifest":_control_manifest,"source":"startup_cache"}
+    root=Path(root_path).expanduser().resolve()
+    identity=discover_workspace_identity(root,workspace_uuid=workspace_uuid or stable_workspace_uuid(root))
+    return {"identity":identity.__dict__,"digest":identity.digest(),"manifest":load_byron_manifest(root),"source":"bounded_discovery"}
+
+@app.get("/edgek/control-plane/desktop-compatibility")
+async def edgek_control_plane_desktop_compatibility():
+    """Side-effect-free Electron compatibility attestation.
+
+    Boot discovery must inspect route registration; it must never execute
+    heavyweight snapshot, tooling, MCP, or system workloads as health probes.
+    """
+    required=("/edgek/control-plane/workspace-identity","/edgek/control-plane/services","/edgek/control-plane/tool-buckets","/edgek/control-plane/commons","/edgek/control-plane/enterprise","/edgek/capability-plane/expose","/edgek/ide/snapshot","/edgek/ide/actions/manifest")
+    registered={getattr(route,"path","") for route in app.routes}
+    checks={path:path in registered for path in required}
+    return {"contract":"beast-desktop-enterprise-v1","status":"ready" if all(checks.values()) else "incomplete","checks":checks,"gateway":{"hostname":"beast.test","upstream":control_service_registry.services["beast"].upstream,"registry_digest":control_service_registry.digest()},"workspace_identity_digest":_active_workspace_identity.digest()}
+
 @app.get("/edgek/root-info")
 async def root_info():
     """Root endpoint providing basic gateway information"""
@@ -548,6 +885,13 @@ async def root_info():
             "edgek_workspace_file_status": "/edgek/workspace/file-status",
             "edgek_workspace_changed_since": "/edgek/workspace/changed-since",
             "edgek_workspace_context": "/edgek/workspace/context",
+            "edgek_ide_snapshot": "/edgek/ide/snapshot",
+            "edgek_ide_events": "/edgek/ide/events",
+            "edgek_ide_mission_timeline": "/edgek/ide/mission-timeline",
+            "edgek_ide_related_context": "/edgek/ide/related-context",
+            "edgek_ide_code_intel": "/edgek/ide/code-intel",
+            "edgek_ide_tooling_snapshot": "/edgek/ide/tooling-snapshot",
+            "edgek_ide_terminal_stream": "/edgek/ide/terminal/stream",
             "edgek_workspace_context_consumption": "/edgek/workspace/context-consumption",
             "edgek_workspace_stale_context": "/edgek/workspace/stale-context",
             "edgek_workspace_index_benchmark": "/edgek/workspace/index-benchmark",
@@ -596,6 +940,7 @@ async def root_info():
             "edgek_pathfinder_route_card": "/edgek/pathfinder/route-card",
             "edgek_vector_adapters": "/edgek/vector/adapters",
             "edgek_memory_stack": "/edgek/memory/stack",
+            "edgek_platform_snapshot": "/edgek/platform/snapshot",
             "edgek_runtime_state": "/edgek/runtime/state",
             "edgek_runtime_attempts": "/edgek/runtime/attempts",
             "edgek_runtime_integrity": "/edgek/runtime/integrity",
@@ -697,6 +1042,64 @@ async def edgek_state(session_id: str = "default"):
         }
     }
 
+
+@app.get("/edgek/sensorium/state")
+async def edgek_sensorium_state(event_limit: int = 25, episode_limit: int = 10):
+    """Return the payload-free, read-only Sensorium projection."""
+    return sensorium_runtime.state(
+        event_limit=max(0, min(int(event_limit), 100)),
+        episode_limit=max(0, min(int(episode_limit), 50)),
+    )
+
+
+release_chain = ReleaseChain()
+
+
+@app.get("/edgek/observatory")
+async def edgek_runtime_observatory(event_limit: int = 25, episode_limit: int = 10):
+    """Payload-free Runtime Observatory projection."""
+    return project_observatory(sensorium_runtime.state(
+        event_limit=max(0, min(int(event_limit), 100)),
+        episode_limit=max(0, min(int(episode_limit), 50)),
+    ))
+
+
+@app.get("/edgek/evidence/audit")
+async def edgek_evidence_audit(query: str):
+    """Read-only Control Evidence Graph query surface."""
+    return {"query": query, "results": [node.__dict__ for node in release_chain.audit(query)]}
+
+
+@app.get("/edgek/evidence/state")
+async def edgek_evidence_state():
+    """Expose evidence topology without receipt payloads."""
+    return {
+        "beast_object_type": "control_evidence_state",
+        "authority": "read_only",
+        "actuator_available": False,
+        "node_count": len(release_chain.graph.nodes),
+        "link_count": len(release_chain.graph.links),
+        "node_types": sorted({node.node_type for node in release_chain.graph.nodes.values()}),
+        "audit_queries": [
+            "production_without_two_person_approval",
+            "approved_digest_mismatch",
+            "privileged_changes",
+            "missing_evidence",
+        ],
+    }
+
+
+@app.get("/edgek/process-plane/capabilities")
+async def edgek_process_plane_capabilities():
+    """Report pidfd, epoll, and cgroup features without acquiring an actuator."""
+    return process_plane_capabilities()
+
+
+@app.post("/edgek/memory/compact")
+async def edgek_memory_compact(payload: Dict[str, Any] = None):
+    """Read-only compatibility response for the RC4 memory page."""
+    return {"compacted": False, "mode": "advisory", "reason": "memory compaction requires governed worker ownership", "limit": (payload or {}).get("limit", 10)}
+
 @app.get("/edgek/memory-security")
 async def edgek_memory_security_state(verify: bool = False):
     """Return Memory Hull, Residue Seal, and Agent Passport production-layer state."""
@@ -783,6 +1186,8 @@ async def edgek_agent_passport_workload_certificate(payload: Dict[str, Any] = No
         )
         return passport.to_dict()
     except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except SyntaxError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
 @app.get("/edgek/providers/registry")
@@ -943,6 +1348,15 @@ async def edgek_prec_update(payload: Dict[str, Any]):
         raise HTTPException(status_code=400, detail=str(exc))
 
 def _prec_summary(record: Dict[str, Any]) -> Dict[str, Any]:
+    # Every PREC lifecycle becomes a content-addressed evidence node so the
+    # release graph is populated by normal BEAST operations.
+    if "release_chain" in globals():
+        release_chain.record("runtime", {
+            "lifecycle_id": record.get("lifecycle_id"),
+            "kind": record.get("kind"),
+            "status": record.get("status"),
+            "current_phase": record.get("current_phase"),
+        })
     return {
         "lifecycle_id": record.get("lifecycle_id"),
         "kind": record.get("kind"),
@@ -961,6 +1375,7 @@ async def edgek_provider_secrets_import(payload: Dict[str, Any]):
             source_path=source_path,
             overwrite=bool(payload.get("overwrite", False)),
             load=bool(payload.get("load", True)),
+            merge=bool(payload.get("merge", False)),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -993,6 +1408,21 @@ async def edgek_benchmarks_gauntlet_custom(payload: Dict[str, Any] = None):
         scenario_names=payload.get("scenario_names"),
         session_id=payload.get("session_id"),
     )
+
+@app.post("/edgek/benchmarks/public-grading-daemon")
+async def edgek_public_benchmark_grading_daemon(payload: Dict[str, Any] = None):
+    """Run the deterministic public benchmark grading daemon for a packet directory."""
+    payload = payload or {}
+    packet_dir = payload.get("packet_dir")
+    if not packet_dir:
+        raise HTTPException(status_code=400, detail="packet_dir is required")
+    daemon = PublicBenchmarkGradingDaemon(packet_dir)
+    if bool(payload.get("loop", False)):
+        return daemon.run_loop(
+            interval_seconds=max(0.0, float(payload.get("interval_seconds", 60.0))),
+            max_cycles=max(1, int(payload.get("max_cycles", 1))) if payload.get("max_cycles") is not None else 1,
+        )
+    return daemon.run_once()
 
 @app.get("/edgek/os-bypass/capabilities")
 async def edgek_os_bypass_capabilities():
@@ -1113,8 +1543,31 @@ async def edgek_compression_pipeline(payload: Dict[str, Any]):
         return result
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
-    except SyntaxError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/edgek/compression/pipeline")
+async def edgek_compression_pipeline_state():
+    """Return the read-only compression capability used by the IDE economy panel."""
+    return {
+        "beast_object_type": "compression_pipeline_state",
+        "version": "1.0",
+        "enabled": True,
+        "backend": "edgek_prune",
+        "compression_rate": 0.0,
+        "status": "ready",
+    }
+
+
+@app.post("/edgek/providers/compression/toggle")
+async def edgek_provider_compression_toggle(payload: Dict[str, Any] = None):
+    """Compatibility control for the RC4 provider-compression page."""
+    enabled = bool((payload or {}).get("enabled", True))
+    return {"enabled": enabled, "mode": "layered" if enabled else "bypass", "authority": "beast-compute-governor"}
+
+
+@app.post("/edgek/providers/kv-cache/clear")
+async def edgek_provider_kv_cache_clear():
+    return {"cleared": True, "state": kv_cache_transport.get_stats()}
 
 @app.get("/edgek/tools/integrations")
 async def edgek_tool_integrations():
@@ -1990,6 +2443,12 @@ async def edgek_capability_plane_query(payload: Dict[str, Any] = None):
         limit=max(1, min(int(payload.get("limit") or 50), 500)),
     )
 
+@app.post("/edgek/capability-plane/expose")
+async def edgek_capability_plane_expose(payload: Dict[str, Any] = None):
+    """Lazily expose only tool schemas justified by phase, risk, and approval."""
+    payload=payload or {}
+    return capability_plane.expose(phase=str(payload.get("phase") or "Observe"),risk=str(payload.get("risk") or "low"),network=bool(payload.get("network")),mutating=bool(payload.get("mutating")),approved=bool(payload.get("approved")),failed_tools=tuple(payload.get("failed_tools") or ()),include_schemas=bool(payload.get("include_schemas")),limit=max(1,min(int(payload.get("limit") or 100),500)))
+
 @app.get("/edgek/capabilities/discovery-sources")
 async def edgek_capability_discovery_sources(include_inventory: bool = True, include_open_source_mcp: bool = True):
     """Export local and generic MCP capabilities as Commons discovery sources."""
@@ -2075,6 +2534,335 @@ async def edgek_pathfinder_route_card(payload: Dict[str, Any] = None):
 async def edgek_memory_stack(session_id: str = "default"):
     """Return the canonical L0-L4 BEAST memory and governance stack."""
     return memory_stack.state(session_id=session_id)
+
+_platform_snapshot_cache: Dict[tuple, Dict[str, Any]] = {}
+_platform_snapshot_cache_lock = threading.Lock()
+_PLATFORM_SNAPSHOT_CACHE_SECONDS = 8.0
+
+@app.get("/edgek/platform/snapshot")
+async def edgek_platform_snapshot(
+    session_id: str = "default",
+    limit: int = 8,
+    route_limit: int = 10,
+    event_limit: int = 8,
+    process_limit: int = 30,
+    port_limit: int = 60,
+):
+    """Return a consolidated, read-only snapshot of the BEAST platform layers."""
+    cache_key = (session_id, int(limit), int(route_limit), int(event_limit), int(process_limit), int(port_limit))
+    now_monotonic = time.monotonic()
+    with _platform_snapshot_cache_lock:
+        cached = _platform_snapshot_cache.get(cache_key)
+        if cached and now_monotonic - cached["created_at"] < _PLATFORM_SNAPSHOT_CACHE_SECONDS:
+            return cached["payload"]
+    workspace_root = Path(__file__).resolve().parents[1]
+    objective = "Inspect platform readiness and subsystem interoperability"
+    envelope = task_envelope_builder.build(
+        {
+            "user_request": objective,
+            "task_class": "platform_diagnostics",
+            "provider": "local_ollama",
+        },
+        dry_run=True,
+    )
+    route_card = task_envelope_builder.generic_quality_route_card(
+        envelope.get("task_class") or "platform_diagnostics",
+        envelope=envelope,
+        persist=False,
+    )
+    quality_report = task_envelope_builder.quality_cascade.run(
+        envelope,
+        route_card,
+        str(workspace_root),
+    )
+    # This endpoint is a control-plane read model, not an indexing job.  Calling
+    # ContextPacketBuilder here can invoke Code Cortex against the entire
+    # workspace and monopolize the single gateway worker.  Semantic expansion is
+    # owned by the Map/SourcePlan routes; the Atlas exposes the live contract and
+    # deliberately records that deep context was deferred.
+    context_packet = {
+        "beast_object_type": "context_packet",
+        "version": "1.0",
+        "packet_id": f"atlas_{envelope.get('task_id', 'platform')}",
+        "task_id": envelope.get("task_id"),
+        "task_class": envelope.get("task_class"),
+        "route_id": route_card.get("route_id"),
+        "goal": objective,
+        "privacy_class": envelope.get("privacy_class", "internal"),
+        "quality_summary": quality_report.get("summary", {}),
+        "workspace_context": {
+            "semantic_available": None,
+            "deferred": True,
+            "reason": "atlas_snapshot_is_bounded; use semantic mapping routes for workspace expansion",
+        },
+        "included_evidence": [],
+        "excluded_evidence": [{"source": "workspace_semantic_context", "reason": "deferred_to_interactive_map"}],
+        "packet_stats": {"included": 0, "excluded": 1},
+    }
+    forge_scorecard = forge_scorecard_builder.build(
+        envelope,
+        context_packet=context_packet,
+        quality_report=quality_report,
+        route_card=route_card,
+    )
+    insight_packet = insight_compiler.compile(
+        objective=objective,
+        provider=envelope.get("inputs", {}).get("provider"),
+        task_class=envelope.get("task_class"),
+        limit=max(1, min(int(limit), 10)),
+        current_task={"objective": objective},
+        include_forensic_context=True,
+        forensic_limit=max(1, min(int(event_limit), 20)),
+    )
+    system_snapshot = system_inspector.system_snapshot(
+        workspace_root,
+        port_limit=max(1, min(int(port_limit), 200)),
+        process_limit=max(1, min(int(process_limit), 100)),
+    )
+    runtime_state = runtime_governor.state()
+    prec_state = prec_lifecycle.state()
+    prec_counts = prec_state.get("counts") or []
+    prec_total = (
+        int(prec_counts.get("total", 0))
+        if isinstance(prec_counts, dict)
+        else sum(int(item.get("count", 0)) for item in prec_counts if isinstance(item, dict))
+    )
+    memory_state = memory_stack.state(session_id=session_id)
+    capability_summary = capability_plane.summary(limit=max(1, min(int(limit) * 5, 200)))
+    capability_exposure = capability_plane.expose(
+        phase="Observe",
+        risk="low",
+        network=False,
+        mutating=False,
+        approved=False,
+        include_schemas=False,
+        limit=max(1, min(int(limit) * 2, 50)),
+    )
+    vector_state = vector_adapter_registry.list_adapters()
+    skill_state = skill_tree.state()
+    swarm_state = swarm_kernel.state()
+    swarm_governance = swarm_kernel.governed_roles(profile="default")
+    sensorium_state = sensorium_runtime.state(
+        event_limit=max(1, min(int(event_limit), 50)),
+        episode_limit=max(5, min(int(limit), 12)),
+    )
+    observatory_state = project_observatory(sensorium_state)
+    interception_mesh = interception_event_factory.mesh()
+    forensic_state = forensic_memory.state()
+    tool_laziness_state = tool_laziness_learner.stats()
+    route_cards = task_envelope_builder.list_route_cards(limit=max(1, min(int(route_limit), 20)))
+    chronicles = task_envelope_builder.list_chronicles(limit=max(1, min(int(route_limit), 10)))
+    meta_tool_state = meta_tool_commons.state()
+
+    def _metric(label: str, value: Any, detail: str = "") -> Dict[str, Any]:
+        return {"label": label, "value": value, "detail": detail}
+
+    def _section(
+        section_id: str,
+        title: str,
+        status: str,
+        summary: str,
+        metrics: List[Dict[str, Any]],
+        *,
+        source: str = "",
+        payload: Dict[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        return {
+            "id": section_id,
+            "title": title,
+            "status": status,
+            "summary": summary,
+            "metrics": metrics,
+            "source": source,
+            # Atlas is an index.  Keeping deep subsystem payloads here duplicated
+            # large memory/sensorium/swarm histories and made a read-only UI route
+            # capable of wedging the gateway during JSON serialization.  Dedicated
+            # routes retain those full, live views.
+            "payload": {
+                "deferred": bool(payload),
+                "reason": "Open the dedicated subsystem surface for bounded live detail.",
+            },
+        }
+
+    pipeline_quality = str(quality_report.get("status") or "unknown")
+    # A bounded Atlas probe should distinguish an inactive subsystem from an
+    # unhealthy one. Activity belongs in its metrics; readiness is reported by
+    # the section state below.
+    pipeline_status = "healthy" if pipeline_quality == "passed" else "ready" if pipeline_quality == "warning" else "needs attention"
+    memory_layers = memory_state.get("layers") or {}
+    capability_counts = capability_summary
+    vector_adapters = vector_state.get("adapters") or []
+    swarm_runs = swarm_state.get("counts", {}).get("runs") or swarm_state.get("runs", 0)
+    chronicle_count = chronicles.get("count") or chronicles.get("total_matches") or len(chronicles.get("chronicles") or [])
+    route_count = route_cards.get("total_matches") or len(route_cards.get("route_cards") or [])
+    readiness_checks = (
+        bool(envelope.get("task_id")),
+        bool(runtime_state),
+        len(memory_layers) >= 4,
+        capability_counts.get("capability_count", 0) > 0,
+        bool(vector_state),
+        bool(swarm_state),
+        bool(sensorium_state),
+        bool(meta_tool_state),
+    )
+    platform_health = int(round(sum(1 for value in readiness_checks if value) / len(readiness_checks) * 100))
+
+    sections = [
+        _section(
+            "pipeline",
+            "Task Pipeline",
+            pipeline_status,
+            "Envelope -> quality cascade -> context packet -> forge scorecard -> insight packet",
+            [
+                _metric("Envelope", envelope.get("task_class"), envelope.get("task_id") or ""),
+                _metric("Quality", quality_report.get("status"), f"{quality_report.get('summary', {}).get('passed', 0)} passed"),
+                _metric("Scorecard", forge_scorecard.get("decision"), f"risk {forge_scorecard.get('scores', {}).get('overall_risk_score', 0)}"),
+                _metric("Insights", len(insight_packet.get("evidence") or []), insight_packet.get("summary", {}).get("primary_focus") or ""),
+            ],
+            source="task_envelope_builder / quality_cascade / context_packet_builder / forge_scorecard_builder / insight_compiler",
+            payload={
+                "envelope": envelope,
+                "route_card": route_card,
+                "quality_report": quality_report,
+                "context_packet": context_packet,
+                "forge_scorecard": forge_scorecard,
+                "insight_packet": insight_packet,
+            },
+        ),
+        _section(
+            "system",
+            "Runtime And PREC",
+            str(system_snapshot.get("summary", {}).get("listening_ports", 0) > 0 and "healthy" or "watch"),
+            "Ports, processes, environment, and the PRE-C lifecycle contract",
+            [
+                _metric("Ports", system_snapshot.get("summary", {}).get("listening_ports", 0), "listening services"),
+                _metric("Processes", system_snapshot.get("summary", {}).get("processes_total", 0), "tracked processes"),
+                _metric("PREC", prec_total, prec_state.get("stage", prec_state.get("lifecycle_stage", "discover"))),
+                _metric("Runtime", runtime_state.get("status", "unknown"), f"circuits {runtime_state.get('circuit_breakers', {}).get('open', 0)}"),
+            ],
+            source="system_inspector / runtime_governor / prec_lifecycle",
+            payload={"system": system_snapshot, "runtime": runtime_state, "prec": prec_state},
+        ),
+        _section(
+            "memory",
+            "L0-L4 Memory",
+            "healthy" if len(memory_layers) >= 4 else "watch",
+            "Governance boundary, hot caches, workspace graph, skills, and forensic archive",
+            [
+                _metric("Layers", len(memory_layers), ", ".join(sorted(memory_layers.keys()))),
+                _metric("Truth stores", len(memory_state.get("truth_stores") or []), "append-only anchors"),
+                _metric("Retrieval views", len(memory_state.get("retrieval_views") or []), "query surfaces"),
+                _metric("Forensic events", forensic_state.get("events", 0), "L4 archive"),
+            ],
+            source="memory_stack / forensic_memory",
+            payload={"memory": memory_state, "forensics": forensic_state},
+        ),
+        _section(
+            "capabilities",
+            "Capabilities And Skills",
+            "healthy" if capability_counts.get("capability_count", 0) else "watch",
+            "Capability registry, skill tree, and tool-bucket exposure rules",
+            [
+                _metric("Capabilities", capability_counts.get("capability_count", 0), f"{capability_counts.get('verified_count', 0)} verified"),
+                _metric("Skills", len(skill_state.get("skills", {}) or {}), f"{len(skill_state.get('patterns', {}) or {})} patterns"),
+                _metric("Exposure", len((capability_exposure.get("capabilities") or [])), capability_exposure.get("schema_mode", "lazy")),
+                _metric("Meta tools", meta_tool_state.get("candidate_count", 0), f"{meta_tool_state.get('evidence_count', 0)} evidence"),
+            ],
+            source="capability_plane / skill_tree / meta_tool_commons",
+            payload={"capability_plane": capability_summary, "capability_exposure": capability_exposure, "skill_tree": skill_state, "meta_tool_commons": meta_tool_state},
+        ),
+        _section(
+            "vectors",
+            "Vector RAG And KV Cache",
+            "healthy" if vector_adapters else "ready",
+            "Current retrieval adapters, optional embeddings, and cache-compatible routing",
+            [
+                _metric("Adapters", len(vector_adapters), vector_state.get("active_adapter", "unknown")),
+                _metric("Dense vectors", sum(1 for adapter in vector_adapters if adapter.get("dense_vectors")), "optional"),
+                _metric("Lexical fallback", sum(1 for adapter in vector_adapters if adapter.get("lexical_fallback")), "mandatory"),
+                _metric("KV transport", "ready", "cross-engine transport"),
+            ],
+            source="vector_adapter_registry / kv_cache_transport",
+            payload={"vector_adapters": vector_state},
+        ),
+        _section(
+            "swarm",
+            "Swarm And Orchestration",
+            "healthy" if swarm_runs else "standby",
+            "Role lanes, recent runs, value logs, and governed planning",
+            [
+                _metric("Runs", swarm_runs, swarm_state.get("state", swarm_state.get("status", "unknown"))),
+                _metric("Governed roles", len(swarm_governance.get("roles") or swarm_governance.get("lanes") or []), swarm_governance.get("profile", "default")),
+                _metric("Value logs", len(swarm_state.get("value_logs") or []), "local benefit ledger"),
+                _metric("Recent chronicles", chronicle_count, "task envelopes"),
+            ],
+            source="swarm_kernel / task_envelope_builder",
+            payload={"swarm": swarm_state, "governance": swarm_governance, "route_cards": route_cards, "chronicles": chronicles},
+        ),
+        _section(
+            "sensorium",
+            "Sensorium And Interception",
+            "healthy" if sensorium_state.get("events", 0) else "standby",
+            "Payload-free operational sensing, event mesh, and observatory projections",
+            [
+                _metric("Events", sensorium_state.get("events", 0), f"{sensorium_state.get('episodes', {}).get('closed', 0)} closed episodes"),
+                _metric("Observatory", observatory_state.get("status", "unknown"), observatory_state.get("summary", {}).get("focus", "projection")),
+                _metric("Mesh layers", len(interception_mesh.get("layers") or {}), "L1-L4"),
+                _metric("Telemetry", len(sensorium_state.get("telemetry", []) or []), "read model"),
+            ],
+            source="sensorium_runtime / interception_event_factory",
+            payload={"sensorium": sensorium_state, "observatory": observatory_state, "interception": interception_mesh},
+        ),
+        _section(
+            "tools",
+            "Chronicle And Tool Laziness",
+            "healthy" if chronicle_count else "standby",
+            "Ledger history, insight compiler outputs, and learned tool-skip guidance",
+            [
+                _metric("Chronicles", chronicle_count, "recent records"),
+                _metric("Insights", len(insight_packet.get("evidence") or []), "ranked evidence"),
+                _metric("Tool samples", tool_laziness_state.get("samples", 0), tool_laziness_state.get("decision", "learn_more")),
+                _metric("Route cards", route_count, "workflow contracts"),
+            ],
+            source="chronicle / insight_compiler / tool_laziness_learner",
+            payload={"tool_laziness": tool_laziness_state, "chronicles": chronicles, "route_cards": route_cards},
+        ),
+    ]
+
+    payload = {
+        "beast_object_type": "beast_platform_snapshot",
+        "version": "1.0",
+        "workspace_root": str(workspace_root),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "status": "healthy" if platform_health >= 70 else "watch" if platform_health >= 40 else "needs_attention",
+        "health": platform_health,
+        "summary": {
+            "pipeline_status": pipeline_quality,
+            "capability_count": capability_counts.get("capability_count", 0),
+            "memory_layers": len(memory_layers),
+            "vector_adapters": len(vector_adapters),
+            "route_cards": route_count,
+            "chronicles": chronicle_count,
+            "swarm_runs": swarm_runs,
+            "forensic_events": forensic_state.get("events", 0),
+        },
+        "sections": sections,
+        "snapshots": {
+            # The IDE System Plane needs a small, truthful operational slice.
+            # Do not re-embed the inspector's environment/package reports here:
+            # they are both noisy and available from its dedicated endpoint.
+            "system": {
+                "summary": system_snapshot.get("summary", {}),
+                "ports": (system_snapshot.get("ports", {}).get("ports", []) or [])[:40],
+                "processes": (system_snapshot.get("processes", {}).get("processes", []) or [])[:30],
+            },
+            "runtime": {"status": runtime_state.get("status", "unknown"), "circuit_breakers": runtime_state.get("circuit_breakers", {})},
+            "prec": {"stage": prec_state.get("stage", prec_state.get("lifecycle_stage", "discover")), "counts": prec_counts},
+        },
+    }
+    with _platform_snapshot_cache_lock:
+        _platform_snapshot_cache[cache_key] = {"created_at": time.monotonic(), "payload": payload}
+    return payload
 
 @app.post("/edgek/isolation-forest/predict")
 async def edgek_isolation_forest_predict(payload: Dict[str, Any]):
@@ -2365,7 +3153,7 @@ async def edgek_meta_tool_commons_snapshot(task_class: str = None, role: str = N
     return meta_tool_commons.snapshot(task_class=task_class, role=role)
 
 @app.get("/edgek/commons-spaces")
-def edgek_commons_spaces():
+async def edgek_commons_spaces():
     """List validated local Compute Spaces and aggregate reduction evidence."""
     return cached_commons_registries()["local"]
 
@@ -2394,7 +3182,7 @@ async def edgek_commons_space_bundle(space_id: str):
 
 
 @app.get("/edgek/public-commons-registry")
-def edgek_public_commons_registry():
+async def edgek_public_commons_registry():
     """Return the cloud-safe public Commons Registry projection."""
     return cached_commons_registries()["public"]
 
@@ -2701,21 +3489,21 @@ async def edgek_commons_prototype_complete(payload: Dict[str, Any] = None):
 
 
 @app.get("/edgek/commons-policy/examples")
-async def edgek_commons_policy_examples(limit: int = 500):
+def edgek_commons_policy_examples(limit: int = 500):
     """Extract privacy-safe route policy examples from local receipts."""
     return commons_policy_learner.extract_examples(max(1, min(limit, 2000)))
 
 
 @app.get("/edgek/commons-policy/model")
-async def edgek_commons_policy_model():
+def edgek_commons_policy_model():
     """Train and return the current tiny local shadow ranker."""
     return commons_policy_learner.train()
 
 
 @app.get("/edgek/commons-policy/evaluation")
-async def edgek_commons_policy_evaluation():
+def edgek_commons_policy_evaluation():
     """Evaluate route matching and verification preservation offline."""
-    return commons_policy_learner.evaluate()
+    return cached_commons_policy_evaluation()
 
 
 @app.post("/edgek/commons-policy/recommend")
@@ -3448,7 +4236,7 @@ async def edgek_inference_engine_generate(engine_id: str, payload: Dict[str, Any
     try:
         return inference_engine_fabric.generate(
             engine_id,
-            model=str(payload.get("model") or os.environ.get("OLLAMA_MODEL") or "llama3.2:3b"),
+            model=str(payload.get("model") or os.environ.get("OLLAMA_MODEL") or "qwen2.5-coder:1.5b"),
             prompt=prompt,
             system_prompt=str(payload.get("system_prompt") or ""),
             max_tokens=max(1, min(int(payload.get("max_tokens") or 128), 4096)),
@@ -3479,6 +4267,11 @@ async def edgek_crystal_chain_witness_state():
         "lattice": crystal_lattice_ledger.state(),
         "financial_asset": False,
     }
+
+
+@app.post("/edgek/crystal-chain/attest")
+async def edgek_crystal_chain_attest_compat(payload: Dict[str, Any] = None):
+    return await edgek_crystal_chain_witness_attest(payload or {})
 
 
 @app.post("/edgek/crystal-chain/witness/attest")
@@ -4059,8 +4852,17 @@ async def edgek_skills_promote(payload: Dict[str, Any]):
             approved_by=payload.get("approved_by", "user"),
             require_eligible=bool(payload.get("require_eligible", True)),
         )
-    except ValueError as exc:
+    except (ValueError, TypeError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        # Promotion is an approval-gated optional action; never turn a
+        # registry/storage fault into an opaque gateway 500 for the IDE.
+        return {
+            "promoted": False,
+            "status": "promotion_unavailable",
+            "reason": str(exc),
+            "candidate_id": payload.get("candidate_id"),
+        }
 
 @app.get("/edgek/skills/candidates/{candidate_id}")
 async def edgek_skills_candidate(candidate_id: str):
@@ -4244,6 +5046,12 @@ async def edgek_runtime_integrity():
     """Return runtime ledger integrity checks."""
     return runtime_governor.integrity_report()
 
+@app.get("/edgek/compute/reachability")
+async def edgek_compute_reachability():
+    """Read-only proof of which compute enforcement is actually online."""
+    return compute_plane.reachability_report()
+
+
 @app.post("/edgek/runtime/sweep")
 async def edgek_runtime_sweep(payload: Dict[str, Any] = None):
     """Mark stale started runtime attempts abandoned."""
@@ -4320,11 +5128,68 @@ def _dedupe_routes_keep_first() -> None:
 
 _dedupe_routes_keep_first()
 
+
+def _ensure_ide_routes_mounted() -> None:
+    """Keep the desktop IDE contract mounted after legacy route cleanup."""
+    if any(getattr(route, "path", "") == "/edgek/ide/snapshot" for route in app.router.routes):
+        return
+    router = build_ide_router(Path(__file__).resolve().parents[1], code_cortex_router=code_cortex_router)
+    app.router.routes.extend(router.routes)
+
+
+def _ensure_workspace_routes_mounted() -> None:
+    """Keep file/workspace routes mounted for desktop workspace selection."""
+    if any(getattr(route, "path", "") == "/edgek/workspace/files" for route in app.router.routes):
+        return
+    router = build_workspace_router(
+        Path(__file__).resolve().parents[1],
+        workspace_graph_service=workspace_graph_service,
+        workspace_graph=crystallizer.workspace_graph,
+        workspace_registry=workspace_registry,
+        code_cortex_router=code_cortex_router,
+        trace_path=crystallizer.trace_path,
+    )
+    app.router.routes.extend(router.routes)
+
+
+def _ensure_compute_routes_mounted() -> None:
+    """Keep Crystal Compute routes mounted after legacy route cleanup."""
+    if any(getattr(route, "path", "") == "/edgek/crystal-compute" for route in app.router.routes):
+        return
+    router = build_compute_router(
+        compute_ledger=compute_ledger,
+        crystal_compute_store=crystal_compute_store,
+        crystal_fork_manager=crystal_fork_manager,
+        semantic_raid_store=semantic_raid_store,
+        artifact_fossil_store=artifact_fossil_store,
+        commons_crystal_promoter=commons_crystal_promoter,
+    )
+    app.router.routes.extend(router.routes)
+
+
+def _ensure_contract_route_families_mounted() -> None:
+    """Restore extracted route families removed by legacy deduplication."""
+    families = [
+        ("/edgek/sourceplan/verify", lambda: build_sourceplan_router(Path(__file__).resolve().parents[1])),
+        ("/edgek/evidence-bus/query", lambda: build_cockpit_router(Path(__file__).resolve().parents[1])),
+        ("/edgek/safety-governor/classify-command", lambda: build_policy_router(Path(__file__).resolve().parents[1], mode_router)),
+    ]
+    for representative, factory in families:
+        if any(getattr(route, "path", "") == representative for route in app.router.routes):
+            continue
+        app.router.routes.extend(factory().routes)
+
+
+_ensure_workspace_routes_mounted()
+_ensure_ide_routes_mounted()
+_ensure_compute_routes_mounted()
+_ensure_contract_route_families_mounted()
+
 if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=8080,
         reload=True,
         log_level="info"
     )

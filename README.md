@@ -1,14 +1,18 @@
 <p align="center">
-  <img src="BEAST%20mascot%20transparent.png" alt="BEAST mascot" width="520" style="max-width: 92%; height: auto;">
+  <img src="assets/release/branding/beast-mascot-transparent.png" alt="BEAST mascot" width="520" style="max-width: 92%; height: auto;">
 </p>
 
-# BEAST - Governed Execution for Agentic Coding
+# BEAST - Auditable, Governed AI Editing via MCP and Gateway
 
-BEAST is a local governance layer for coding agents. It sits between an agent,
-your repository, local tools, MCP clients, and model providers. Models can
-propose work, but BEAST owns the hard parts: context selection, policy checks,
-safe patch compilation, verification, rollback evidence, provider routing, and
-reusable compute.
+BEAST is an auditable governance layer for coding agents and editor clients. It
+sits between your repository, local tools, MCP clients, and model providers so
+models can propose work while BEAST owns the hard parts: context selection,
+policy checks, safe patch compilation, verification, rollback evidence, and
+multi-provider routing through one governed gateway.
+
+Economic and "inversion" claims should be treated as an open research question
+until the blinded public benchmark harness in `benchmarks/public_economic_thesis_harness.py`
+has been run with published baselines, grading packets, and full cost ledgers.
 
 The current upgrade turns BEAST from a collection of strong subsystems into a
 more coherent agentic IDE runtime:
@@ -382,6 +386,14 @@ controls when running in stricter modes.
 
 BEAST keeps local benchmark and proof artifacts under `benchmarks/results/` and
 `.beast/evidence/`.
+
+Current deterministic benchmark verdict surfaces:
+
+- `benchmarks/results/full_blind_test_packet/provisional_verdict.json`: verifier-seeded preliminary verdict.
+- `benchmarks/results/full_blind_test_packet/structural_verdict.json`: deterministic structure-and-evidence verdict.
+- `benchmarks/results/full_blind_test_packet/grading_daemon_run.json`: latest grading daemon receipt.
+
+The current full packet reports `supported` on both provisional and structural lanes, but that is still weaker than independent blind human grading and should be treated as machine-generated evidence rather than final proof.
 
 Useful checks:
 

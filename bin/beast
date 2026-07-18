@@ -14,6 +14,7 @@ import sys
 import subprocess
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -31,9 +32,10 @@ ROOT = Path(__file__).resolve().parent.parent
 BEAST = Path(__file__).resolve()
 DEFAULT_GATEWAY = "http://127.0.0.1:8000"
 
-with contextlib.redirect_stdout(sys.stderr):
-    from app.kernel.compute.factory import ServiceFactory
-    ServiceFactory.initialize()
+if "crystal-proof" not in sys.argv[1:2]:
+    with contextlib.redirect_stdout(sys.stderr):
+        from app.kernel.compute.factory import ServiceFactory
+        ServiceFactory.initialize()
 
 COMMANDS = [
     "doctor",
@@ -68,8 +70,10 @@ COMMANDS = [
     "up",
     "heal",
     "gateway",
+    "commons-gateway",
     "mcp",
     "mcp-http",
+    "crystal-proof",
 ]
 
 
@@ -84,10 +88,30 @@ def start_mcp_http_server(host: str = "127.0.0.1", port: int = 8001) -> None:
     uvicorn.run(app, host=host, port=port, log_level="info")
 
 
-def start_gateway(host: str = "127.0.0.1", port: int = 8000, reload: bool = False) -> None:
+def start_gateway(host: str = "127.0.0.1", port: int = 8101, reload: bool = False,
+                  socket_mode: str = "direct", guardian_service: str = "beast") -> None:
     import uvicorn
-
+    if socket_mode == "guardian":
+        if reload:
+            raise RuntimeError("Guardian socket mode forbids Uvicorn reload subprocesses")
+        from app.kernel.execution.guardian_uvicorn import run_uvicorn_from_environment
+        run_uvicorn_from_environment("app.main:app", service_id=guardian_service, log_level="warning")
+        return
+    if socket_mode != "direct":
+        raise ValueError("socket_mode must be direct or guardian")
     uvicorn.run("app.main:app", host=host, port=port, reload=reload, log_level="warning")
+
+
+def start_commons_gateway(host: str = "127.0.0.1", port: int = 8601,
+                          socket_mode: str = "direct") -> None:
+    import uvicorn
+    if socket_mode == "guardian":
+        from app.kernel.execution.guardian_uvicorn import run_uvicorn_from_environment
+        run_uvicorn_from_environment("app.commons_main:app", service_id="commons", log_level="warning")
+        return
+    if socket_mode != "direct":
+        raise ValueError("socket_mode must be direct or guardian")
+    uvicorn.run("app.commons_main:app", host=host, port=port, log_level="warning")
 
 
 def run_dir() -> Path:
@@ -144,7 +168,14 @@ def url_ready(url: str, timeout: float = 1.0) -> bool:
 
 def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, list[str]]:
     """Check that the running gateway is this source tree's operator surface."""
-    required = [
+    declared_required = [
+        "/edgek/root-info",
+        "/edgek/workspace/files",
+        "/edgek/workspace/file",
+        "/edgek/ide/snapshot",
+        "/edgek/ide/actions/manifest",
+        "/edgek/ide/tooling-snapshot",
+        "/edgek/ide/system-snapshot",
         "/edgek/session/handshake",
         "/edgek/meta-tool-commons",
         "/edgek/meta-tool-commons/rank",
@@ -155,14 +186,44 @@ def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, lis
         "/edgek/plugins",
         "/edgek/compute",
     ]
+    root_param = urllib.parse.quote(str(ROOT), safe="")
+    active_required = [
+        "/edgek/root-info",
+        f"/edgek/ide/snapshot?root_path={root_param}&objective=gateway-ready",
+        "/edgek/ide/actions/manifest",
+        f"/edgek/ide/tooling-snapshot?root_path={root_param}",
+        f"/edgek/ide/system-snapshot?root_path={root_param}&port_limit=5&process_limit=5",
+        "/edgek/mcp/state",
+        "/edgek/plugins",
+    ]
+    try:
+        with urllib.request.urlopen(f"{base_url.rstrip('/')}/edgek/root-info", timeout=timeout) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        endpoints = payload.get("endpoints") if isinstance(payload, dict) else {}
+        endpoint_paths = {value for value in endpoints.values() if isinstance(value, str)}
+        declared_missing = [path for path in declared_required if path not in endpoint_paths]
+    except Exception:
+        declared_missing = declared_required[:]
+    missing: list[str] = []
+    for route in active_required:
+        try:
+            with urllib.request.urlopen(f"{base_url.rstrip('/')}{route}", timeout=timeout) as response:
+                if response.status >= 400:
+                    missing.append(route)
+        except Exception:
+            missing.append(route)
+    if not missing:
+        return True, []
+    if len(missing) < len(active_required):
+        return False, missing
     try:
         with urllib.request.urlopen(f"{base_url.rstrip('/')}/openapi.json", timeout=timeout) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except Exception:
-        return False, required
+        return False, missing
     paths = payload.get("paths") if isinstance(payload, dict) else {}
-    missing = [path for path in required if path not in paths]
-    return not missing, missing
+    openapi_missing = [path for path in declared_required if path not in paths]
+    return False, missing + openapi_missing
 
 
 def stop_managed_process(pid_file: Path, service: str, timeout_seconds: float = 6.0) -> Dict[str, Any]:
@@ -804,7 +865,7 @@ def command_start(args: argparse.Namespace) -> Dict[str, Any]:
     )) if bool_value(getattr(args, "configure", "true")) else {"skipped": True}
     up = command_up(argparse.Namespace(
         host=getattr(args, "host", "127.0.0.1"),
-        gateway_port=getattr(args, "gateway_port", 8000),
+        gateway_port=getattr(args, "gateway_port", 8101),
         mcp_port=getattr(args, "mcp_port", 8001),
         litellm_port=getattr(args, "litellm_port", 4000),
         nginx_port=getattr(args, "nginx_port", 8080),
@@ -1035,6 +1096,15 @@ def command_evidence(args: argparse.Namespace) -> Dict[str, Any]:
         "provider_model_fitness": provider_model_fitness,
         "artifacts": sorted(str(path) for path in (ROOT / "benchmarks" / "results").glob("compute_governor_phase*.json")),
     }
+
+
+def command_crystal_proof(args: argparse.Namespace) -> Dict[str, Any]:
+    from app.kernel.compute.crystal_proof_conductor import CrystalProofConductor
+    lanes = tuple(item.strip().replace("-", "_") for item in str(args.lanes).split(",") if item.strip())
+    return CrystalProofConductor().run(
+        Path(args.manifest), lanes=lanes, output=Path(args.output),
+        private_root=Path(args.private_root) if args.private_root else None,
+    )
 
 
 def command_compressors(args: argparse.Namespace) -> Dict[str, Any]:
@@ -1974,7 +2044,7 @@ def build_parser() -> argparse.ArgumentParser:
     up_parser = subparsers.add_parser("up", help="Start BEAST gateway, MCP HTTP, proxy lane, Nginx, LiteLLM, and Ollama")
     up_parser.set_defaults(handler=command_up)
     up_parser.add_argument("--host", default="127.0.0.1")
-    up_parser.add_argument("--gateway-port", type=int, default=8000)
+    up_parser.add_argument("--gateway-port", type=int, default=8101)
     up_parser.add_argument("--mcp-port", type=int, default=8001)
     up_parser.add_argument("--litellm-port", type=int, default=4000)
     up_parser.add_argument("--nginx-port", type=int, default=8080)
@@ -1987,7 +2057,7 @@ def build_parser() -> argparse.ArgumentParser:
     heal_parser = subparsers.add_parser("heal", help="Kill configured listeners and restart BEAST services")
     heal_parser.set_defaults(handler=command_heal)
     heal_parser.add_argument("--host", default="127.0.0.1")
-    heal_parser.add_argument("--gateway-port", type=int, default=8000)
+    heal_parser.add_argument("--gateway-port", type=int, default=8101)
     heal_parser.add_argument("--mcp-port", type=int, default=8001)
     heal_parser.add_argument("--litellm-port", type=int, default=4000)
     heal_parser.add_argument("--nginx-port", type=int, default=8080)
@@ -1999,7 +2069,7 @@ def build_parser() -> argparse.ArgumentParser:
     start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
     start_parser.set_defaults(handler=command_start)
     start_parser.add_argument("--host", default="127.0.0.1")
-    start_parser.add_argument("--gateway-port", type=int, default=8000)
+    start_parser.add_argument("--gateway-port", type=int, default=8101)
     start_parser.add_argument("--mcp-port", type=int, default=8001)
     start_parser.add_argument("--litellm-port", type=int, default=4000)
     start_parser.add_argument("--nginx-port", type=int, default=8080)
@@ -2021,6 +2091,15 @@ def build_parser() -> argparse.ArgumentParser:
     evidence_parser.add_argument("--timeout", type=float, default=90.0)
     evidence_parser.add_argument("--command-timeout", type=float, default=240.0)
     evidence_parser.add_argument("--phase1-repeats", type=int, default=20)
+
+    crystal_proof = subparsers.add_parser("crystal-proof", help="Run the sealed three-lane crystallized-compute pilot")
+    crystal_proof_sub = crystal_proof.add_subparsers(dest="crystal_proof_action", required=True)
+    crystal_proof_run = crystal_proof_sub.add_parser("run", help="Run frontier-native, crystal-only, and crystal-hybrid")
+    crystal_proof_run.set_defaults(handler=command_crystal_proof)
+    crystal_proof_run.add_argument("--manifest", required=True)
+    crystal_proof_run.add_argument("--lanes", default="frontier-native,crystal-only,crystal-hybrid")
+    crystal_proof_run.add_argument("--output", required=True)
+    crystal_proof_run.add_argument("--private-root")
     evidence_parser.add_argument("--free-live", default="true", help="true/false; run free-provider phase 1/2 live window")
     evidence_parser.add_argument("--free-providers", default="huggingface,groq,cerebras,gemini,openrouter_gptoss")
     evidence_parser.add_argument("--max-providers", type=int, default=2)
@@ -2128,8 +2207,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     gateway_parser = subparsers.add_parser("gateway", help="Start the BEAST FastAPI gateway")
     gateway_parser.add_argument("--host", default="127.0.0.1")
-    gateway_parser.add_argument("--port", type=int, default=8000)
+    gateway_parser.add_argument("--port", type=int, default=8101)
     gateway_parser.add_argument("--reload", action="store_true")
+    gateway_parser.add_argument("--socket-mode", choices=["direct", "guardian"], default=os.environ.get("BEAST_SOCKET_MODE", "direct"))
+    gateway_parser.add_argument("--guardian-service", default="beast")
+
+    commons_gateway_parser = subparsers.add_parser("commons-gateway", help="Start the path-restricted Commons FastAPI gateway")
+    commons_gateway_parser.add_argument("--host", default="127.0.0.1")
+    commons_gateway_parser.add_argument("--port", type=int, default=8601)
+    commons_gateway_parser.add_argument("--socket-mode", choices=["direct", "guardian"], default=os.environ.get("BEAST_SOCKET_MODE", "direct"))
 
     mcp_parser = subparsers.add_parser("mcp", help="Start the stdio MCP server")
     mcp_parser.add_argument("--workspace", help="Workspace folder path")
@@ -2309,7 +2395,10 @@ def main() -> None:
         run()
         return
     if args.command == "gateway":
-        start_gateway(args.host, args.port, args.reload)
+        start_gateway(args.host, args.port, args.reload, args.socket_mode, args.guardian_service)
+        return
+    if args.command == "commons-gateway":
+        start_commons_gateway(args.host, args.port, args.socket_mode)
         return
     if args.command == "mcp":
         from app.mcp.stdio_server import serve_stdio

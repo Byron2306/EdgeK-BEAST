@@ -1,0 +1,52 @@
+version: 1
+guardian:
+  control_socket: ${XDG_RUNTIME_DIR}/beast/socket-guardian.sock
+  lease_ledger: ${XDG_STATE_HOME}/beast/socket-guardian-leases.sqlite3
+  capability_ledger: ${XDG_STATE_HOME}/beast/socket-guardian-capabilities.sqlite3
+  service_registry: services.yaml
+
+  # Never use a development default. The private receipt key must already
+  # exist with mode 0600; the daemon will not generate it.
+  receipt_signing_key: ${HOME}/.config/beast/guardian-receipt-ed25519.pem
+  operation_authority_public_keys:
+    arda: ${HOME}/.config/beast/arda-operation-ed25519.pub.pem
+    metatron: ${HOME}/.config/beast/metatron-operation-ed25519.pub.pem
+
+  # These references bind systemd-owned listeners to a previously appraised
+  # deployment policy. Replace every example reference before provisioning.
+  systemd_bindings:
+    beast:
+      workspace_id: REPLACE_WITH_WORKSPACE_UUID
+      authority_ref: arda
+      capability_ref: REPLACE_WITH_SIGNED_DEPLOYMENT_CAPABILITY_REF
+      appraisal_ref: REPLACE_WITH_ARDA_APPRAISAL_REF
+      policy_generation: REPLACE_WITH_POLICY_GENERATION
+      vrf: operator
+    commons:
+      workspace_id: REPLACE_WITH_WORKSPACE_UUID
+      authority_ref: arda
+      capability_ref: REPLACE_WITH_SIGNED_DEPLOYMENT_CAPABILITY_REF
+      appraisal_ref: REPLACE_WITH_ARDA_APPRAISAL_REF
+      policy_generation: REPLACE_WITH_POLICY_GENERATION
+      vrf: commons
+    arda:
+      workspace_id: REPLACE_WITH_WORKSPACE_UUID
+      authority_ref: arda
+      capability_ref: REPLACE_WITH_SIGNED_DEPLOYMENT_CAPABILITY_REF
+      appraisal_ref: REPLACE_WITH_ARDA_APPRAISAL_REF
+      policy_generation: REPLACE_WITH_POLICY_GENERATION
+      vrf: witness
+    seraph_ui:
+      workspace_id: REPLACE_WITH_WORKSPACE_UUID
+      authority_ref: arda
+      capability_ref: REPLACE_WITH_SIGNED_DEPLOYMENT_CAPABILITY_REF
+      appraisal_ref: REPLACE_WITH_ARDA_APPRAISAL_REF
+      policy_generation: REPLACE_WITH_POLICY_GENERATION
+      vrf: operator
+    seraph_api:
+      workspace_id: REPLACE_WITH_WORKSPACE_UUID
+      authority_ref: arda
+      capability_ref: REPLACE_WITH_SIGNED_DEPLOYMENT_CAPABILITY_REF
+      appraisal_ref: REPLACE_WITH_ARDA_APPRAISAL_REF
+      policy_generation: REPLACE_WITH_POLICY_GENERATION
+      vrf: production
