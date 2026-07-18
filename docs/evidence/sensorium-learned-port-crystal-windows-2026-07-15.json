@@ -1,0 +1,29 @@
+{
+  "contract_id": "beast.sensorium.port-reuse.v1",
+  "created_at": 1784116291.1303456,
+  "experiment_id": "windows-port-crystal:fe7fb80c49f74e2595205e60384f6646",
+  "fixture_built_candidate": false,
+  "heldout_trials": [
+    {"expected": "reuse_existing_service", "id": "sha256:0c00f1b584a0baf38293f18b1ea9a2b466dd77b706825bbb41f243a4a69edadb", "observed": "reuse_existing_service", "port": 63813, "verified": true},
+    {"expected": "reuse_existing_service", "id": "sha256:69b240714d9c4994906aca4e66dc7a19245533da8c508ea46b2f60407466f1b1", "observed": "reuse_existing_service", "port": 63815, "verified": true},
+    {"expected": "reuse_existing_service", "id": "sha256:da98bb71fc8979014d45203c3f0df5f5788419807ac7c9504925c8995844da96", "observed": "reuse_existing_service", "port": 63818, "verified": true},
+    {"expected": "request_operator_approval", "id": "sha256:bbcb6ee15186bbfe099cbefadcc1190c744b8084cb0fc534481585218ca0cfd7", "negative": true, "observed": "request_operator_approval", "port": 63820, "verified": true}
+  ],
+  "inferred_parameters": ["requested_port"],
+  "machine": "DESKTOP-A0VN5FH",
+  "negative_episode_hashes": ["sha256:4e217f6119cadc1f5092f8dcf27793aafc2478947eddb1881b272b95095a6fbb"],
+  "physical_domain": "windows-11",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "positive_episode_hashes": [
+    "sha256:db1fb0ae2cfe1a920f76f70d18f48c4da2c0ead9c80d4d88001230a0b9dd3ecd",
+    "sha256:186a87d6786a0b78dc9bbaa8d579ddb55f34dd589309dcec86a20e02969134ca",
+    "sha256:6e5df062525f98d1804a5e2f4ac3514277943ed7ec736351e1068aa4d4bc265b"
+  ],
+  "provider_calls": 0,
+  "provider_disabled_recurrence": true,
+  "receipt_digest": "sha256:9149f3134c165e709b1178e704a0e67f6e4d642796a9133e94830b6f1e301ff6",
+  "self_test": false,
+  "stale_process_refused": true,
+  "structural_signature": [["socket.inventory", "observation"], ["repair.select_branch", "decision"], ["service.verify_health", "verification"]],
+  "verified": true
+}

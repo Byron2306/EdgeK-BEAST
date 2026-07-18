@@ -23,6 +23,7 @@ class CommonsPolicyLearner:
         examples: List[Dict[str, Any]] = []
         registry = self.registry.list_spaces()
         for row in registry.get("spaces") or []:
+            if len(examples)>=limit: break
             if not row.get("valid"):
                 continue
             detail = self.registry.get(str(row["space_id"]))
@@ -155,7 +156,7 @@ class CommonsPolicyLearner:
         }
 
     def evaluate(self, examples: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
-        examples = examples if examples is not None else self.extract_examples()["examples"]
+        examples = examples if examples is not None else self.extract_examples(32)["examples"]
         predictions = []
         holdout = len(examples) >= 2
         for index, item in enumerate(examples):

@@ -1,0 +1,15 @@
+{
+  "id": "beast.code-health",
+  "name": "BEAST Code Health",
+  "version": "1.0.0",
+  "description": "One-click access to tests, SourcePlan review, and governed change validation.",
+  "main": "extension.js",
+  "capabilities": ["workspace.read", "language.client"],
+  "contributes": {
+    "commands": [
+      { "id": "beast.openTesting", "title": "BEAST: Open Testing" },
+      { "id": "beast.openSourcePlan", "title": "BEAST: Open SourcePlan Review" },
+      { "id": "beast.openReview", "title": "BEAST: Open Governed Review" }
+    ]
+  }
+}

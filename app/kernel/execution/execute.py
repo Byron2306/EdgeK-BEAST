@@ -17,7 +17,7 @@ from app.kernel.compute.perceive import EdgeKIR, ProviderType
 from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
 from app.kernel.adapters.providers import ProviderFactory, OpenAIProvider, AnthropicProvider
 from app.kernel.governance.runtime import runtime_governor
-from app.kernel.compute.inference_interceptor import compute_interceptor
+from app.kernel.compute.compute_plane import get_compute_plane
 from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.compute.adaptive_dispatcher import AdaptiveDispatcher
@@ -26,7 +26,9 @@ from app.kernel.compute.integration_harness import BeastHarnessRequest
 
 logger = logging.getLogger(__name__)
 
-streaming_compute_interceptor = StreamingComputeInterceptor()
+compute_plane = get_compute_plane()
+compute_interceptor = compute_plane
+streaming_compute_interceptor = compute_plane.streaming_interceptor
 
 
 class Executor:
@@ -507,14 +509,13 @@ class Executor:
         baseline = self._optional_int(metadata.get("stream_baseline_output_tokens")) or ir.max_tokens
         interceptor = streaming_compute_interceptor
         if schema:
-            interceptor = StreamingComputeInterceptor(
-                StreamingInterceptionEngine(max_output_tokens=max_tokens or 4096, schema_contract=schema)
-            )
+            interceptor = compute_plane.streaming_for(max_tokens=max_tokens or 4096, schema=schema)
         provider_stream = self._route_to_provider_stream(provider_type, ir)
         report = await interceptor.intercept_provider_stream(
             provider_stream,
             max_tokens=max_tokens,
             baseline_output_tokens=baseline,
+            compute_gate=compute.gate,
         )
         content = "".join(report.emitted_chunks)
         response = self._openai_text_response(

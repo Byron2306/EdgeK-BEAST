@@ -1,0 +1,146 @@
+{
+  "capsule_cleanup": {
+    "action": "cleanup",
+    "authorization": {
+      "action": "cleanup",
+      "approval_receipt_id": "approval:beast-disk-cleanup-live-20260715:cleanup",
+      "approved_by": "local-destructive-proof-operator",
+      "destructive": false,
+      "mission_id": "beast-disk-cleanup-live-20260715",
+      "reason": "bounded held-out disk cleanup"
+    },
+    "beast_object_type": "cgroup_capsule_action_receipt",
+    "confirmed": true,
+    "created_at": "2026-07-15T13:31:14.630510+00:00",
+    "details": {},
+    "mission_id": "beast-disk-cleanup-live-20260715",
+    "version": "1.0"
+  },
+  "configured": {
+    "action": "configure",
+    "authorization": {
+      "action": "configure",
+      "approval_receipt_id": "approval:beast-disk-cleanup-live-20260715:configure",
+      "approved_by": "local-destructive-proof-operator",
+      "destructive": false,
+      "mission_id": "beast-disk-cleanup-live-20260715",
+      "reason": "bounded held-out disk cleanup"
+    },
+    "beast_object_type": "cgroup_capsule_action_receipt",
+    "confirmed": false,
+    "created_at": "2026-07-15T13:31:14.311723+00:00",
+    "details": {
+      "observed_limits": {
+        "cpu.max": "50000 100000",
+        "io.max": "259:0 rbps=10485760 wbps=10485760 riops=max wiops=max",
+        "memory.max": "33554432",
+        "memory.oom.group": "1",
+        "memory.swap.max": "0",
+        "pids.max": "16"
+      },
+      "requested_limits": {
+        "cpu.max": "50000 100000",
+        "io.max": "259:0 rbps=10485760 wbps=10485760",
+        "memory.max": "33554432",
+        "memory.oom.group": "1",
+        "memory.swap.max": "0",
+        "pids.max": "16"
+      }
+    },
+    "mission_id": "beast-disk-cleanup-live-20260715",
+    "version": "1.0"
+  },
+  "delegation": {
+    "available_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ],
+    "capsule_created": true,
+    "enabled_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ],
+    "full_controller_delegation": true,
+    "mission_id": "beast-disk-cleanup-live-20260715",
+    "parent_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p65154-i65454.service",
+    "parent_populated": false,
+    "reason": "delegated_controllers_ready",
+    "receipt_digest": "sha256:c9f08a79456f5f5c8f2721c6137ed83d8798c5c73b7d24716dd533ab050cbf25",
+    "requested_controllers": [
+      "cpu",
+      "io",
+      "memory",
+      "pids"
+    ]
+  },
+  "evidence_digest": "sha256:6bc2677598b9da27a1c637bc4abebe47657a8c4e0fa81a1579c04ab3ef45a308",
+  "full_destructive_isolation_proven": true,
+  "manifest": {
+    "approval_class": "bounded_standard",
+    "contract_id": "beast.disk-pressure-cleanup.v1",
+    "entries": [
+      {
+        "device": 38,
+        "inode": 65967,
+        "mtime_ns": 1784122273961801749,
+        "relative_path": "cache/build/stale-a.bin",
+        "sha256": "sha256:343e5e20e286dac1872b65cc26fc875d6083f0724d359ba1b3ef47c2c7fe5aa4",
+        "size": 65
+      },
+      {
+        "device": 38,
+        "inode": 65968,
+        "mtime_ns": 1784122273961801749,
+        "relative_path": "cache/build/stale-b.bin",
+        "sha256": "sha256:072e48386a10be93adf25db65a43cfc60bb2398f49ea0d73fe639e5d621a2ae6",
+        "size": 65
+      }
+    ],
+    "filesystem_device": 38,
+    "manifest_digest": "sha256:9223e023dbc5527d886a006e4c755c5b395a27e624eea14ddb323f67f8a5c38d",
+    "mount_namespace_inode": 4026531841,
+    "policy_digest": "sha256:67b5e84e9ecdc4ccb8792190f70b9a51055ba8ff3da7458ffa3e3d6d8687ac4e",
+    "total_bytes": 130,
+    "workspace_digest": "sha256:de81224e3657f68146f2335e194f51a47ed4a11b9cb9599801fca55e3f9682c9"
+  },
+  "no_orphans": true,
+  "observation": {
+    "candidate_files": 2,
+    "filesystem_device": 38,
+    "free_bytes": 2903638016,
+    "mount_namespace_inode": 4026531841,
+    "refusals": [],
+    "selected_bytes": 130,
+    "selected_files": 2,
+    "total_bytes": 3974893568,
+    "used_bytes": 1071255552
+  },
+  "populated_zero": true,
+  "pressure": {
+    "cpu": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "memory": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+  },
+  "receipt": {
+    "ambient_network_denied": true,
+    "bytes_removed": 130,
+    "cgroup_path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p65154-i65454.service/beast.slice/beast-disk-cleanup-live-20260715",
+    "clone3_into_cgroup": true,
+    "files_removed": 2,
+    "filesystem_secret_isolation": true,
+    "launch_receipt_digest": "sha256:0bf57e462a75b7efc3853943c47669ec8b2bafb6c9c15563b520692d035685a3",
+    "manifest_digest": "sha256:9223e023dbc5527d886a006e4c755c5b395a27e624eea14ddb323f67f8a5c38d",
+    "mission_id": "beast-disk-cleanup-live-20260715",
+    "namespace_isolation": true,
+    "receipt_digest": "sha256:f60483e30209090ad18428ee5ea96bb3ca9ecea1daff9b28ed2b88b0dd3658ee",
+    "root_cleanup_confirmed": true,
+    "targets_absent": true,
+    "verified": true,
+    "worker_digest": "sha256:f42cf4a49b4d60ed148306965168bf199b1a0d4212d154f038b1fd0cf60873a7"
+  },
+  "schema": "beast.isolated-disk-cleanup-proof.v1"
+}

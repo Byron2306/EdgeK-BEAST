@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 2843,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:7c7dc747735a794a70f44822fafbb753e64f5398c487b8698bea32edc51c75e0"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 3016,
+      "path": "run_manifest.json",
+      "sha256": "sha256:3999f7c1c9b640c05202afd6dfd470a4324b382c9a228a766d67cf8a31e7b235"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 802,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:7ce4c06327d8c8d30698495b6a05e1784518926029bf752e9bf61100a661ea1b"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 420,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:12a182de7e76f576b34e8f60ecdb86f9425a530a1899e5358b39f9c90c0b794d"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.681816+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_gemini_cohere_smoke_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_gemini_cohere_smoke_gauntlet"
+  },
+  "manifest_hash": "sha256:7d407755aa6aecd11cb151a96143a6ab6bc253126c04cf1038e0b433828fdf90",
+  "name": "Beast Gemini Cohere Smoke Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_gemini_cohere_smoke_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

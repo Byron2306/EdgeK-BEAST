@@ -1,0 +1,48 @@
+{
+  "mistral": {
+    "avg_latency_ms": 4317.474,
+    "avg_provider_tokens_per_success": 4162.0,
+    "beast_completed": 6,
+    "beast_completion_rate": 0.3333,
+    "clean_completed": 1,
+    "clean_to_rescue_ratio": 0.2,
+    "eligible_for_source_patching": true,
+    "first_party_cost_coverage_rate": 0.0,
+    "hard_gates": {
+      "json_validity_ge_90": true,
+      "out_of_scope_edit_rate_le_2": true,
+      "rollback_success_100": true,
+      "syntax_error_rate_le_5": true,
+      "timeout_rate_le_10": true
+    },
+    "hidden_clean_completed": 1,
+    "hidden_clean_per_usd": null,
+    "hidden_clean_rate": 0.0556,
+    "hidden_clean_usd_per_fix": null,
+    "hidden_task_count": 18,
+    "metrics": {
+      "cost_per_success_score": 0.6531666666666667,
+      "hidden_test_pass_rate": 0.0556,
+      "json_validity_rate": 1.0,
+      "latency_per_success_score": 0.96402105,
+      "out_of_scope_edit_rate": 0.0,
+      "out_of_scope_safety_score": 1.0,
+      "patch_apply_rate": 0.8889,
+      "rollback_cleanliness_score": 1.0,
+      "rollback_success_rate": 1.0,
+      "schema_valid_rate": 0.8889,
+      "syntax_error_rate": 0.0,
+      "timeout_rate": 0.0,
+      "verified_success_rate": 0.0556
+    },
+    "recommended_role": "clean_candidate_cost_incomplete",
+    "rescue_rate": 0.8333,
+    "rescued_completed": 5,
+    "route_confidence": "low",
+    "sample_size": 18,
+    "score": 0.5208,
+    "visible_clean_completed": 1,
+    "visible_clean_rate": 0.0556,
+    "visible_task_count": 18
+  }
+}

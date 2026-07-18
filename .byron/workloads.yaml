@@ -1,0 +1,14 @@
+version: 1
+lanes:
+  interactive: {workers: 1, isolation: thread, protected: true}
+  io: {workers: 4, isolation: thread}
+  cpu: {workers: 2, isolation: process-capable}
+  inference: {workers: 1, isolation: dedicated-queue}
+  exclusive: {workers: 1, isolation: thread, exclusive_keys_required: true}
+  hazardous: {workers: 1, isolation: sandbox, approval_required: true, sandbox_required: true}
+admission:
+  queue_depth: 32
+  reject_when_full: true
+pressure:
+  throttle_at: 0.50
+  constrain_at: 0.80

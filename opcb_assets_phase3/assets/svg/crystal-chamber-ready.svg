@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="crystalG" x1="48" y1="25" x2="192" y2="210">
+      <stop stop-color="#39f0c2"/><stop offset=".52" stop-color="#39d7ff"/><stop offset="1" stop-color="#ffc857"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="42%" r="55%">
+      <stop stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset=".35" stop-color="#39f0c2" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .c{fill:url(#core);stroke:url(#crystalG);stroke-width:3.5;filter:url(#glow);stroke-linejoin:round;animation:pulse 1.55s ease-in-out infinite;}
+    .ring{fill:none;stroke:url(#crystalG);stroke-width:2;opacity:.34}
+    .p{animation:float 3s ease-in-out infinite}
+    @keyframes pulse{50%{opacity:.72;transform:scale(.985);transform-origin:120px 112px}}
+    @keyframes float{50%{transform:translateY(-9px);opacity:.4}}
+  </style>
+  <ellipse class="ring" cx="120" cy="204" rx="78" ry="15"/>
+  <path class="c" d="M120 18l62 45-62 153L58 63 120 18z"/>
+  <path class="ring" d="M58 63h124M91 63l29 153 29-153M91 63l29-45 29 45"/>
+  <path d="M120 58l18 22 25 4-18 20 4 26-29-12-28 12 4-26-18-20 25-4 17-22z" fill="#ffc857" opacity=".12"/>
+  <circle class="p" cx="54" cy="101" r="3" fill="#39f0c2"/>
+  <circle class="p" cx="196" cy="84" r="3" fill="#ffc857" style="animation-delay:.5s"/>
+  <circle class="p" cx="178" cy="169" r="3" fill="#ffffff" style="animation-delay:1s"/>
+</svg>

@@ -1,0 +1,8 @@
+version: 1
+buckets: [Observe, Reason, Verify, Modify, Connect, Execute, Administer]
+defaults:
+  phase: Observe
+  risk: low
+  lazy_schema_exposure: true
+  suppress_failed_tools: true
+approval_required: [Execute, Administer]

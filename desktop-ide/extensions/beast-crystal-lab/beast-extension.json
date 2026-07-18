@@ -1,0 +1,14 @@
+{
+  "id": "beast.crystal-lab",
+  "name": "BEAST Crystal Lab",
+  "version": "1.0.0",
+  "description": "Surface crystallisation, evidence, and compute-reuse workflows from the command palette.",
+  "main": "extension.js",
+  "capabilities": ["workspace.read"],
+  "contributes": {
+    "commands": [
+      { "id": "beast.openCrystallization", "title": "BEAST: Open Crystallization" },
+      { "id": "beast.openEvidence", "title": "BEAST: Open Evidence" }
+    ]
+  }
+}

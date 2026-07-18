@@ -136,7 +136,10 @@ def provider_stream_read_timeout(provider: str) -> float:
         except ValueError:
             pass
     normalized = str(provider or "").strip().lower().replace("-", "_")
-    return 45.0 if normalized in {"nvidia", "nvidia_nim", "nim"} else 90.0
+    # NIM coding turns can pause well past a minute while the upstream model is
+    # still generating.  A short idle read timeout converts that healthy pause
+    # into a misleading truncated-stream failure.
+    return 210.0 if normalized in {"nvidia", "nvidia_nim", "nim"} else 90.0
 
 
 def provider_stream_max_tokens(provider: str) -> int:
@@ -1286,18 +1289,74 @@ class BeastApiClient:
             return data if isinstance(data, dict) else {"items": data}
 
     async def crystal_reuse_decision(
-        self, prompt: str, provider: str, model: str=DEFAULT_MODEL
+        self,
+        prompt: str,
+        provider: str,
+        model: str=DEFAULT_MODEL,
+        *,
+        parameters: Optional[Dict[str, Any]]=None,
+        task_class: str="chat_completion",
+        repo_fingerprint: Optional[str]=None,
+        metadata: Optional[Dict[str, Any]]=None,
     ) -> Dict[str, Any]:
-        """Best-effort pre-provider reuse decision for live TUI turns."""
+        """Best-effort pre-provider reuse decision for an interactive turn."""
         try:
             return await self.post_json(
                 "/edgek/crystal-reuse/decide",
                 {
                     "prompt": prompt,
                     "model": self._chat_model_for_provider(provider, model),
-                    "task_class": "chat_completion",
+                    "parameters": parameters or {},
+                    "task_class": task_class,
+                    "repo_fingerprint": repo_fingerprint,
                     "provider": provider,
-                    "metadata": {"source": "beast_tui_live_turn"},
+                    "metadata": {
+                        "source": "beast_interactive_live_turn",
+                        **(metadata or {}),
+                    },
+                },
+            )
+        except Exception:
+            return {}
+
+    async def record_crystal_response(
+        self,
+        prompt: str,
+        response: str,
+        provider: str,
+        model: str=DEFAULT_MODEL,
+        *,
+        parameters: Optional[Dict[str, Any]]=None,
+        task_class: str="chat_completion",
+        repo_fingerprint: Optional[str]=None,
+        verified: bool=False,
+        evidence: Optional[Dict[str, Any]]=None,
+        metadata: Optional[Dict[str, Any]]=None,
+    ) -> Dict[str, Any]:
+        """Best-effort crystal recording for a completed direct provider turn."""
+        if not prompt or not response:
+            return {}
+        try:
+            return await self.post_json(
+                "/edgek/crystal-reuse/record",
+                {
+                    "prompt": prompt,
+                    "response": response,
+                    "model": self._chat_model_for_provider(provider, model),
+                    "parameters": parameters or {},
+                    "task_class": task_class,
+                    "repo_fingerprint": repo_fingerprint,
+                    "provider": provider,
+                    "route": provider or "local_cpu",
+                    "engine": self._chat_model_for_provider(provider, model),
+                    "verified": bool(verified),
+                    "avoided_tokens_estimate": max(1, len(response) // 4),
+                    "write_memory": bool(verified),
+                    "evidence": evidence or {},
+                    "metadata": {
+                        "source": "beast_interactive_live_turn",
+                        **(metadata or {}),
+                    },
                 },
             )
         except Exception:
@@ -1329,8 +1388,13 @@ class BeastApiClient:
                 },
             )
         except Exception as exc:
+            disable_reuse = bool((metadata or {}).get("disable_crystal_reuse"))
             decision = await self.crystal_reuse_decision(prompt, provider, model)
-            response = self.crystal_decision_response(decision)
+            # A cached natural-language/Action IR answer is unsafe as an
+            # execution fallback: its exact anchors may no longer match the
+            # current repository. Preserve the decision for telemetry but do
+            # not hand stale patch text to a mutation-capable agent.
+            response = "" if disable_reuse else self.crystal_decision_response(decision)
             return {
                 "beast_object_type": "beast_thin_integration_harness_receipt",
                 "error": str(exc),
@@ -7012,6 +7076,84 @@ class BeastApiClient:
             return ""
         return ""
 
+    @staticmethod
+    def _gemini_request_payload(
+        messages: List[Dict[str, str]], max_tokens: int
+    ) -> Dict[str, Any]:
+        """Translate the shared chat history to Gemini's native contract."""
+        contents: List[Dict[str, Any]] = []
+        system_parts: List[Dict[str, str]] = []
+        for message in messages:
+            role = str(message.get("role") or "user")
+            content = str(message.get("content") or "")
+            if role == "system":
+                system_parts.append({"text": content})
+                continue
+            contents.append(
+                {
+                    "role": "model" if role == "assistant" else "user",
+                    "parts": [{"text": content}],
+                }
+            )
+        payload: Dict[str, Any] = {
+            "contents": contents or [{"role": "user", "parts": [{"text": ""}]}],
+            "generationConfig": {"maxOutputTokens": max_tokens, "temperature": 0.2},
+        }
+        if system_parts:
+            payload["systemInstruction"] = {"parts": system_parts}
+        return payload
+
+    @staticmethod
+    def _anthropic_request_payload(
+        messages: List[Dict[str, str]], max_tokens: int
+    ) -> Dict[str, Any]:
+        """Translate shared chat history to Anthropic's native messages API."""
+        native_messages: List[Dict[str, str]] = []
+        system_parts: List[str] = []
+        for message in messages:
+            role = str(message.get("role") or "user")
+            content = str(message.get("content") or "")
+            if role == "system":
+                system_parts.append(content)
+            elif role in {"user", "assistant"}:
+                native_messages.append({"role": role, "content": content})
+        payload: Dict[str, Any] = {
+            "messages": native_messages or [{"role": "user", "content": ""}],
+            "max_tokens": max_tokens,
+            "temperature": 0.2,
+        }
+        if system_parts:
+            payload["system"] = "\n\n".join(system_parts)
+        return payload
+
+    @staticmethod
+    def _extract_anthropic_text(data: Dict[str, Any]) -> str:
+        try:
+            content = data.get("content")
+            if not isinstance(content, list):
+                return ""
+            return "".join(
+                str(part.get("text") or "")
+                for part in content
+                if isinstance(part, dict) and part.get("type", "text") == "text"
+            )
+        except (AttributeError, TypeError):
+            return ""
+
+    @staticmethod
+    def _extract_gemini_text(data: Dict[str, Any]) -> str:
+        """Return visible text from a Gemini generateContent response."""
+        try:
+            candidates = data.get("candidates")
+            if not isinstance(candidates, list):
+                return ""
+            parts = (candidates[0] or {}).get("content", {}).get("parts", [])
+            return "".join(
+                str(part.get("text") or "") for part in parts if isinstance(part, dict)
+            )
+        except (AttributeError, IndexError, TypeError):
+            return ""
+
     def _chunk_text(self, text: str, size: int=42) -> List[str]:
         """Split fallback text into small readable chunks for simulated streaming."""
         if not text:
@@ -7046,7 +7188,7 @@ class BeastApiClient:
         except Exception:
             pass
         if provider_id == "ollama":
-            return os.environ.get("OLLAMA_SCOUT_MODEL", "llama3.2:3b")
+            return os.environ.get("OLLAMA_SCOUT_MODEL", "qwen2.5:0.5b")
         return model if model and model != "beast-auto" else DEFAULT_MODEL
 
     async def _scout_fallback_reply(
@@ -7123,6 +7265,7 @@ class BeastApiClient:
         context_files: Optional[List[str]]=None,
         max_tokens: Optional[int]=None,
         max_continuations: Optional[int]=None,
+        accept_unmarked_action_ir: bool=False,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Stream a governed provider turn through BEAST's proxy lane.
 
@@ -7150,6 +7293,83 @@ class BeastApiClient:
                 5,
             ),
         )
+        normalized_provider = str(provider or "").strip().lower().replace("-", "_")
+        if normalized_provider in {"google", "gemini", "google_ai_studio"}:
+            # Gemini is deliberately exposed through its native adapter, not
+            # the OpenAI compatibility endpoint.  Calling the latter returns a
+            # 404 instruction string which used to be rendered as agent output.
+            native_model = resolved_model.removeprefix("gemini/")
+            payload = self._gemini_request_payload(messages, max_tokens)
+            try:
+                timeout = httpx.Timeout(
+                    connect=10.0,
+                    read=provider_stream_read_timeout(provider),
+                    write=20.0,
+                    pool=10.0,
+                )
+                async with httpx.AsyncClient(timeout=timeout) as client:
+                    response = await client.post(
+                        f"{self.base_url}/proxy/gemini/v1beta/models/{native_model}:generateContent",
+                        json=payload,
+                    )
+                if response.status_code >= 400:
+                    yield {
+                        "type": "error",
+                        "error": response.text[:1200],
+                    }
+                    return
+                data = response.json()
+                text = self._extract_gemini_text(data if isinstance(data, dict) else {})
+                if not text:
+                    yield {
+                        "type": "error",
+                        "error": "Gemini returned no visible response text.",
+                    }
+                    return
+                yield {"type": "token", "text": text}
+                yield {
+                    "type": "provider_done",
+                    "tokens": 1,
+                    "raw_chunks": 1,
+                    "completed": True,
+                    "finish_reason": "native_gemini_response",
+                }
+            except Exception as exc:
+                yield {"type": "error", **classify_stream_failure(exc), "tokens": 0}
+            return
+        if normalized_provider in {"anthropic", "claude"}:
+            # Anthropic is exposed through /proxy/anthropic/v1/messages, not
+            # the OpenAI compatibility surface. Use its stable native response
+            # shape and present it as one completed UI stream event.
+            try:
+                timeout = httpx.Timeout(
+                    connect=10.0,
+                    read=provider_stream_read_timeout(provider),
+                    write=20.0,
+                    pool=10.0,
+                )
+                async with httpx.AsyncClient(timeout=timeout) as client:
+                    response = await client.post(
+                        f"{self.base_url}/proxy/anthropic/v1/messages",
+                        headers={"anthropic-version": "2023-06-01"},
+                        json={"model": resolved_model, **self._anthropic_request_payload(messages, max_tokens)},
+                    )
+                if response.status_code >= 400:
+                    yield {"type": "error", "error": response.text[:1200]}
+                    return
+                data = response.json()
+                text = self._extract_anthropic_text(data if isinstance(data, dict) else {})
+                if not text:
+                    yield {"type": "error", "error": "Anthropic returned no visible response text."}
+                    return
+                yield {"type": "token", "text": text}
+                yield {
+                    "type": "provider_done", "tokens": 1, "raw_chunks": 1,
+                    "completed": True, "finish_reason": "native_anthropic_response",
+                }
+            except Exception as exc:
+                yield {"type": "error", **classify_stream_failure(exc), "tokens": 0}
+            return
         token_count = 0
         raw_chunks: List[str] = []
         attempt_messages = [dict(item) for item in messages]
@@ -7178,11 +7398,23 @@ class BeastApiClient:
                     saw_done = False
                     finish_reason = ""
                     attempt_parts: List[str] = []
+                    # Native providers must use their explicit adapter lane.
+                    # Hugging Face is not served by the registry compatibility
+                    # endpoint; sending it through /proxy/v1 produces a raw
+                    # routing instruction instead of an assistant response.
+                    native_huggingface = normalized_provider in {"huggingface", "hf"}
+                    stream_url = (
+                        f"{self.base_url}/proxy/huggingface/v1/chat/completions"
+                        if native_huggingface
+                        else f"{self.base_url}/proxy/v1/chat/completions"
+                    )
+                    stream_params = {} if native_huggingface else {"provider": provider or DEFAULT_PROVIDER}
+                    stream_headers = {"X-EdgeK-Provider": provider or DEFAULT_PROVIDER}
                     async with client.stream(
                         "POST",
-                        f"{self.base_url}/proxy/v1/chat/completions",
-                        params={"provider": provider or DEFAULT_PROVIDER},
-                        headers={"X-EdgeK-Provider": provider or DEFAULT_PROVIDER},
+                        stream_url,
+                        params=stream_params,
+                        headers=stream_headers,
                         json=payload,
                     ) as response:
                         if response.status_code >= 400:
@@ -7301,6 +7533,29 @@ class BeastApiClient:
                     completed = (
                         bool(saw_done or finish_reason) and finish_reason != "length"
                     )
+                    # Some OpenAI-compatible gateways close an otherwise healthy
+                    # SSE stream without emitting either a finish_reason or [DONE].
+                    # A coding-agent turn is JSON-only, so it is safe to accept
+                    # that specific case only when the accumulated response is a
+                    # complete BEAST Action IR object.  Do not make this a general
+                    # text-stream rule: a truncated prose answer must still recover.
+                    if not completed and accept_unmarked_action_ir and attempt_parts:
+                        candidate = "".join(attempt_parts).strip()
+                        if candidate.startswith("```"):
+                            candidate = candidate.split("\n", 1)[-1]
+                            if candidate.rstrip().endswith("```"):
+                                candidate = candidate.rstrip()[:-3].rstrip()
+                        try:
+                            parsed = json.loads(candidate)
+                        except (TypeError, ValueError, json.JSONDecodeError):
+                            parsed = None
+                        if (
+                            isinstance(parsed, dict)
+                            and parsed.get("kind") == "beast.action_intent.v1"
+                            and isinstance(parsed.get("actions"), list)
+                        ):
+                            completed = True
+                            finish_reason = "stream_closed_after_complete_action_ir"
                     if completed:
                         yield {
                             "type": "provider_done",
@@ -7347,12 +7602,13 @@ class BeastApiClient:
         context_max_files: int=64,
         context_max_chars_each: int=4200,
         governance_level: str="governed",
+        allow_fallback: bool=True,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Streaming version of live_turn.
 
         It streams BEAST stage/tool events separately from assistant text, then
-        streams provider tokens when possible. If provider streaming fails, it
-        streams a local scout fallback in small chunks so the TUI remains alive.
+        streams provider tokens when possible. Callers can opt into a local
+        scout fallback; interactive chat disables it to avoid unrelated output.
         """
         text = text.strip()
         if not text:
@@ -7379,6 +7635,108 @@ class BeastApiClient:
             if context_files
             else []
         )
+
+        # A reuse hit must short-circuit the whole live-turn compute path, not
+        # merely the final provider call. Bind the decision to conversation and
+        # current file content before PREC compilation begins.
+        context_identity = [
+            {
+                "path": str(record.get("path") or ""),
+                "sha256": hashlib.sha256(
+                    str(record.get("preview") or "").encode("utf-8", errors="replace")
+                ).hexdigest(),
+            }
+            for record in context_records
+            if record.get("ok")
+        ]
+        repo_fingerprint = hashlib.sha256(
+            json.dumps(
+                {"workspace": str(self._workspace_root), "context": context_identity},
+                sort_keys=True,
+            ).encode("utf-8")
+        ).hexdigest()
+        reuse_prompt = json.dumps(
+            {"prompt": text, "history": history[-12:], "context": context_identity},
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        reuse_parameters = {
+            "temperature": 0.2,
+            "max_tokens": max(128, min(int(max_tokens or provider_stream_max_tokens(provider)), 16000)),
+            "governance_level": governance_level,
+        }
+        try:
+            crystal_decision = await self.crystal_reuse_decision(
+                reuse_prompt,
+                provider,
+                model,
+                parameters=reuse_parameters,
+                task_class="ide_coding_completion" if governance_level.startswith("ide_") else "chat_completion",
+                repo_fingerprint=repo_fingerprint,
+                metadata={
+                    "visible_prompt_hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+                    "context_files": [item["path"] for item in context_identity],
+                    "history_count": len(history[-12:]),
+                },
+            )
+        except TypeError:
+            # Keep compatibility with lightweight client adapters that still
+            # implement the original three-argument hook.
+            crystal_decision = await self.crystal_reuse_decision(reuse_prompt, provider, model)
+        cached_response = self.crystal_decision_response(crystal_decision)
+        reuse_served = False
+        yield {"type": "stage", "text": "crystal reuse preflight"}
+        crystal_event = self.crystal_decision_event(crystal_decision)
+        tool_events.append(crystal_event)
+        yield {"type": "tool", "text": crystal_event}
+        if cached_response and not governance_level.startswith("ide_agent"):
+            reuse_served = True
+            tool_events.append("provider route: skipped by crystallized compute reuse")
+            yield {"type": "tool", "text": "provider route: skipped by crystallized compute reuse"}
+            assistant_parts: List[str] = []
+            for chunk in self._chunk_text(cached_response):
+                assistant_parts.append(chunk)
+                yield {"type": "token", "text": chunk}
+                await asyncio.sleep(0.003)
+            yield {
+                "type": "provider_done",
+                "tokens": len(assistant_parts),
+                "raw_chunks": len(assistant_parts),
+                "completed": True,
+                "finish_reason": "crystal_reuse",
+                "crystal_reuse_decision": crystal_decision,
+            }
+            if lifecycle_id:
+                await self.update_prec(
+                    lifecycle_id,
+                    "crystallize",
+                    "Live session turn completed from context-bound crystallized compute.",
+                    "completed",
+                    artifacts={"crystal_reuse_decision": crystal_decision},
+                    signals=["live_turn_crystal_reuse"],
+                )
+            yield {
+                "type": "done",
+                "ok": True,
+                "assistant_text": "".join(assistant_parts),
+                "tool_events": tool_events,
+                "lifecycle_id": lifecycle_id,
+                "data": {
+                    "envelope": {},
+                    "insight": {},
+                    "handoff": {},
+                    "crystal_reuse_decision": crystal_decision,
+                    "crystal_record": {},
+                    "integration_harness_receipt": {},
+                    "provider_error": "",
+                    "provider_streaming": False,
+                    "provider_completed": True,
+                    "provider_recovered": False,
+                    "heal_recommended": False,
+                },
+            }
+            return
+
         current_task = self._current_task(text)
         if context_records:
             current_task["selected_context"] = [
@@ -7460,7 +7818,7 @@ class BeastApiClient:
             chat_history = chat_history + [
                 {
                     "role": "system",
-                    "content": "Selected BEAST workspace context follows. Stay within this scope unless the user expands it.\n"
+                    "content": "Selected BEAST workspace context follows. These files were successfully read from the active workspace and are authoritative for this turn. Use their contents directly. Never claim that an attached file was not provided or ask the operator to share it again; if the answer is genuinely absent from the text, say what information is insufficient instead. Stay within this scope unless the user expands it.\n"
                     +context_message,
                 }
             ]
@@ -7473,12 +7831,11 @@ class BeastApiClient:
         stream_started = time.perf_counter()
         assistant_parts: List[str] = []
         harness_receipt: Dict[str, Any] = {}
-        crystal_decision: Dict[str, Any] = {}
-
+        crystal_record: Dict[str, Any] = {}
         direct_provider_stream = os.environ.get(
             "BEAST_TUI_DIRECT_PROVIDER_STREAM", "1"
         ).strip().lower() not in {"0", "false", "no", "off"}
-        if direct_provider_stream:
+        if direct_provider_stream and not provider_completed:
             yield {"type": "stage", "text": "provider stream"}
             tool_events.append(f"provider stream: {provider or DEFAULT_PROVIDER}")
             async for event in self.stream_chat_completion(
@@ -7488,6 +7845,7 @@ class BeastApiClient:
                 context_files=context_files,
                 max_tokens=max_tokens,
                 max_continuations=max_continuations,
+                accept_unmarked_action_ir=governance_level.startswith("ide_agent"),
             ):
                 event_type = str(event.get("type") or "")
                 if event_type == "token":
@@ -7534,6 +7892,10 @@ class BeastApiClient:
                     "integration harness: deferred after completed provider SSE stream"
                 )
 
+        if not provider_completed and not provider_ok and not allow_fallback:
+            yield {"type": "error", "error": provider_error or "Provider did not produce a response.", "provider": provider or DEFAULT_PROVIDER, "model": model}
+            return
+
         if not provider_completed and not provider_ok:
             yield {"type": "stage", "text": "integration harness"}
             harness_receipt = await self.integration_harness_turn(
@@ -7548,6 +7910,7 @@ class BeastApiClient:
                     "governance_level": governance_level,
                     "max_tokens": max_tokens,
                     "max_continuations": max_continuations,
+                    "disable_crystal_reuse": governance_level.startswith("ide_agent"),
                 },
             )
             crystal_decision = (
@@ -7605,6 +7968,41 @@ class BeastApiClient:
             tool_events.append(
                 "integration harness: skipped after partial provider SSE stream"
             )
+
+        if provider_completed and assistant_parts and not reuse_served and not harness_receipt:
+            crystal_record = await self.record_crystal_response(
+                reuse_prompt,
+                "".join(assistant_parts),
+                provider,
+                model,
+                parameters=reuse_parameters,
+                task_class="ide_coding_completion" if governance_level.startswith("ide_") else "chat_completion",
+                repo_fingerprint=repo_fingerprint,
+                verified=False,
+                evidence={
+                    "provider_completed": True,
+                    "finish": "direct_provider_stream",
+                    "context_identity": context_identity,
+                },
+                metadata={"visible_prompt_hash": hashlib.sha256(text.encode("utf-8")).hexdigest()},
+            )
+            record_status = str(crystal_record.get("status") or crystal_record.get("promotion_status") or "recorded") if crystal_record else "deferred"
+            record_event = f"crystal record: {record_status}"
+            tool_events.append(record_event)
+            yield {"type": "tool", "text": record_event}
+
+        if not provider_completed and not allow_fallback:
+            # Mutation-capable callers must never receive a prose fallback
+            # appended to partial Action IR.  The IDE route can retry/repair
+            # the bounded JSON response with the original context instead.
+            yield {
+                "type": "error",
+                "error": provider_error or "Provider stream ended before completing the coding response.",
+                "provider": provider or DEFAULT_PROVIDER,
+                "model": model,
+                "partial_response": bool(assistant_parts),
+            }
+            return
 
         if not provider_completed:
             yield {
@@ -7698,6 +8096,7 @@ class BeastApiClient:
                 "insight": insight.data,
                 "handoff": handoff.data,
                 "crystal_reuse_decision": crystal_decision,
+                "crystal_record": crystal_record,
                 "integration_harness_receipt": harness_receipt,
                 "provider_error": provider_error,
                 "provider_streaming": provider_ok,
@@ -7720,13 +8119,52 @@ class BeastApiClient:
             return ActionResult(
                 False, "Provider chat", "", error="httpx is not installed"
             )
+        resolved_model = self._chat_model_for_provider(provider, model)
+        max_tokens = max(
+            128, min(int(max_tokens or provider_stream_max_tokens(provider)), 16000)
+        )
+        normalized_provider = str(provider or "").strip().lower().replace("-", "_")
+        if normalized_provider in {"google", "gemini", "google_ai_studio"}:
+            native_model = resolved_model.removeprefix("gemini/")
+            try:
+                async with httpx.AsyncClient(timeout=max(self.timeout, 5.0)) as client:
+                    response = await client.post(
+                        f"{self.base_url}/proxy/gemini/v1beta/models/{native_model}:generateContent",
+                        json=self._gemini_request_payload(messages, max_tokens),
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                return ActionResult(
+                    True,
+                    "Provider chat",
+                    "native Gemini response received",
+                    data if isinstance(data, dict) else {"response": data},
+                )
+            except Exception as exc:
+                return ActionResult(False, "Provider chat", "", error=str(exc))
+        if normalized_provider in {"anthropic", "claude"}:
+            try:
+                async with httpx.AsyncClient(timeout=max(self.timeout, 5.0)) as client:
+                    response = await client.post(
+                        f"{self.base_url}/proxy/anthropic/v1/messages",
+                        headers={"anthropic-version": "2023-06-01"},
+                        json={"model": resolved_model, **self._anthropic_request_payload(messages, max_tokens)},
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                return ActionResult(
+                    True,
+                    "Provider chat",
+                    "native Anthropic response received",
+                    data if isinstance(data, dict) else {"response": data},
+                )
+            except Exception as exc:
+                return ActionResult(False, "Provider chat", "", error=str(exc))
         payload = {
-            "model": self._chat_model_for_provider(provider, model),
+            "model": resolved_model,
             "messages": messages,
             "stream": False,
-            "max_tokens": max(
-                128, min(int(max_tokens or provider_stream_max_tokens(provider)), 16000)
-            ),
+            "max_tokens": max_tokens,
             "temperature": 0.2,
             "metadata": {
                 "edgek_surface": "beast_tui_live_session",
@@ -7734,10 +8172,16 @@ class BeastApiClient:
             },
         }
         try:
+            native_huggingface = normalized_provider in {"huggingface", "hf"}
+            chat_url = (
+                f"{self.base_url}/proxy/huggingface/v1/chat/completions"
+                if native_huggingface
+                else f"{self.base_url}/proxy/v1/chat/completions"
+            )
             async with httpx.AsyncClient(timeout=max(self.timeout, 5.0)) as client:
                 response = await client.post(
-                    f"{self.base_url}/proxy/v1/chat/completions",
-                    params={"provider": provider or DEFAULT_PROVIDER},
+                    chat_url,
+                    params={} if native_huggingface else {"provider": provider or DEFAULT_PROVIDER},
                     headers={"X-EdgeK-Provider": provider or DEFAULT_PROVIDER},
                     json=payload,
                 )
@@ -8099,6 +8543,12 @@ class BeastApiClient:
                         if isinstance(item, dict) and item.get("text"):
                             parts.append(str(item["text"]))
                     return "\n".join(parts)
+            gemini_text = self._extract_gemini_text(data)
+            if gemini_text:
+                return gemini_text
+            anthropic_text = self._extract_anthropic_text(data)
+            if anthropic_text:
+                return anthropic_text
         except Exception:
             return ""
         return ""

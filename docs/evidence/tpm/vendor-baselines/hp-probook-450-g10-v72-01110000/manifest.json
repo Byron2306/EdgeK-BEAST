@@ -1,0 +1,37 @@
+{
+  "schema": "beast.tpm.vendor-pcr-baseline.v1",
+  "source": {
+    "vendor": "HP",
+    "softpaq_number": "sp168775",
+    "softpaq_file": "sp168775.exe",
+    "softpaq_url": "https://ftp.hp.com/pub/softpaq/sp168501-169000/sp168775.exe",
+    "metadata_url": "https://ftp.hp.com/pub/softpaq/sp168501-169000/sp168775.html",
+    "softpaq_md5": "69440D4FBE27427711F28B9FC735460F",
+    "softpaq_sha256": "86e2ea8989f9ff8037a01c82da7cd73334ff38f2ee9c405a510baea956227fa5",
+    "metadata_sha256": "8556e218f7cb7b2338e537486fd4b18c8e2425e669507d560ff1cbfc176954f5",
+    "history_sha256": "938e6eaae4269228518d93f8a5a9fec4ff90931a30261d2c07be1098f4253c37",
+    "bios_image_sha256": "1cab327ed1c575513fb137d53945bffb3c9009935de3eb70ff35b39320071751"
+  },
+  "platform": {
+    "sys_vendor": "HP",
+    "product_name": "HP ProBook 450 15.6 inch G10 Notebook PC",
+    "product_sku": "71H61AV",
+    "board_name": "8B7C",
+    "bios_family": "V72",
+    "bios_version": "V72 Ver. 01.11.00",
+    "bios_date": "11/04/2025"
+  },
+  "pcr_bank": "sha256",
+  "published_pcrs": {
+    "0": "sha256:0886e6fc01b4b9c8fc427eb494c7fa477032d56991529621fe3e9865f532e92f"
+  },
+  "required_local_sources": {
+    "2": "firmware_event_log",
+    "4": "firmware_event_log",
+    "7": "firmware_event_log",
+    "10": "ima_runtime_measurements",
+    "14": "firmware_event_log"
+  },
+  "claim_boundary": "Vendor-published HP PCR0 baseline; not a waiver. Local TPM quote, EK chain, AK activation, Secure Boot, firmware replay, and IMA replay remain required.",
+  "created_at": "2026-07-15T08:40:00Z"
+}

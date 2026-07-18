@@ -147,6 +147,11 @@ class ProviderRegistry:
             "env": ["CEREBRAS_API_KEY"],
             "proxy_path": "/proxy/cerebras",
             "litellm_model_prefix": "cerebras/",
+            # The direct SSE gateway also consults the registry without the
+            # policy overlay, so this canonical endpoint must live with the
+            # provider rather than only in a deployment profile.
+            "base_url": "https://api.cerebras.ai/v1",
+            "default_model": "gpt-oss-120b",
             "openai_compatible": True,
         },
         "cohere": {
@@ -226,7 +231,11 @@ class ProviderRegistry:
             "env": ["OLLAMA_BASE_URL"],
             "proxy_path": "/proxy/ollama",
             "base_url": "http://127.0.0.1:11434/v1",
-            "default_model": "llama3.2:3b",
+            # Prefer the purpose-built 1.5B coder model.  It is small enough
+            # for CPU-only workstations while producing materially better
+            # edits than the general 0.5B chat fallback. Operators can still
+            # override this via OLLAMA_MODEL/provider configuration.
+            "default_model": "qwen2.5-coder:1.5b",
             "risk_level": "local",
             "requires_approval": False,
         },

@@ -45,3 +45,19 @@ def test_agent_session_store_lifecycle_and_sourceplan_draft(tmp_path):
 
     cancelled = store.cancel(session_id, reason="done")
     assert cancelled["session"]["status"] == "cancelled"
+
+
+def test_agent_session_store_projects_only_conversation_turns(tmp_path):
+    store = AgentSessionStore(tmp_path)
+    created = store.create(objective="Refactor safely", mode="editor_agent")
+    session_id = created["session"]["session_id"]
+
+    store.update(session_id, output={"kind": "agent_user_prompt", "text": "Inspect the router."})
+    store.update(session_id, output={"kind": "agent_run_started", "text": "internal lifecycle event"})
+    store.update(session_id, output={"kind": "streamed_agent_output", "text": "The router has one stale branch."})
+    store.update(session_id, output={"kind": "agent_action_ir_repair", "text": "internal repair packet"})
+
+    assert store.conversation_history(session_id) == [
+        {"role": "user", "content": "Inspect the router."},
+        {"role": "assistant", "content": "The router has one stale branch."},
+    ]

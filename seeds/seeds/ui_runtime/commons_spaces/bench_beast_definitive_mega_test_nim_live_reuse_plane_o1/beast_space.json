@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1003,
+      "path": "README.md",
+      "sha256": "sha256:efa4de0d820d78074cd6bffe65b208ff424e5012bc793c862faefc33f8813a74"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 4518,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:3d9080138bfb874e8de5e45a36d84e339e1b0a096f7dbd5ae5d285fcd01b7c2f"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1447,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:1b7badbb8673cd413d25babeff89a57d83d2746a588c3ab30115c0f72c1c9518"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 13750,
+      "path": "run_manifest.json",
+      "sha256": "sha256:8efa3c5e312dd957ee00db28ec0a2482eab2050374c6ee3f9fbc0d2e6ea452d8"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 98,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:a1431ea362ecd653ae87094bacc91a66540f72762121f5aeff81532b13b41ccb"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 30,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:43f52c24bb67a36c602fb94dc3299361ba93b6582ed5c769c1a00a408c1b0804"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.111214+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_nim_live_reuse_plane_o1",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_nim_live_reuse_plane_o1"
+  },
+  "manifest_hash": "sha256:887ea75c33c828cf9d763a1307a01ae93e449aa1865548d74d231bd9e6eba960",
+  "name": "Beast Definitive Mega Test Nim Live Reuse Plane O1",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_nim_live_reuse_plane_o1",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

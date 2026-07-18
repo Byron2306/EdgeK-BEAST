@@ -1,0 +1,110 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "case_study_summary",
+      "bytes": 2901,
+      "path": "README.md",
+      "sha256": "sha256:b53e8bd8f986e002d022ab0afc8139e5bb88542518c624285378f7b38405d8f5"
+    },
+    {
+      "artifact_type": "prompt_fingerprint",
+      "bytes": 276,
+      "path": "prompt_fingerprint.json",
+      "sha256": "sha256:f7e56c464f0fbfd6ab3386f4524ff81b3bb2d3dcb6da9ac937cac86651fecdd4"
+    },
+    {
+      "artifact_type": "orchestration_plan",
+      "bytes": 1457,
+      "path": "normalized_orchestration_plan.json",
+      "sha256": "sha256:b1c10a5547c36943fb0ac7e93addfbb090dbbe0eedb8a8d2bce4dad1e2a9abdd"
+    },
+    {
+      "artifact_type": "patch_plan",
+      "bytes": 512,
+      "path": "patch_plan.json",
+      "sha256": "sha256:9928a814eff8aa206d358955ce1efdfabae95a0019ae219a9ac805b68594815c"
+    },
+    {
+      "artifact_type": "verifier_result",
+      "bytes": 429,
+      "path": "verifier_results.json",
+      "sha256": "sha256:0a3853875bb5d602b6702f3aa2c2f9c727ee1a83157e67ea4a258666d0f75d59"
+    },
+    {
+      "artifact_type": "rollback_receipt",
+      "bytes": 427,
+      "path": "rollback_receipt.json",
+      "sha256": "sha256:28d59ca8d98af16d04ba7500618f67a6834ef1605281e75dd4043ba2eab6759d"
+    },
+    {
+      "artifact_type": "promotion_candidate",
+      "bytes": 1221,
+      "path": "promotion_candidate.json",
+      "sha256": "sha256:3db04e599bcb71f7ad877a130a7af4d70e45a2b8a53603fe30cc5313055dea1a"
+    },
+    {
+      "artifact_type": "commons_evidence",
+      "bytes": 421,
+      "path": "commons_evidence.json",
+      "sha256": "sha256:2ad6e3b05bfb86bd0bcc8e915873edc6230e8901bec225d43aed88164ac4b2c8"
+    },
+    {
+      "artifact_type": "lineage_receipts",
+      "bytes": 799,
+      "path": "receipts.json",
+      "sha256": "sha256:d823c5a0819900a8cab923496b1a34158ac33c164395a997ebf77a4acceada4c"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-21T21:37:35.084043+00:00",
+  "hardware_profile": {
+    "disk_bytes": null,
+    "execution_class": "cpu_only_local",
+    "gpu_required": false,
+    "local_model": "qwen2.5:0.5b",
+    "ram_bytes": null
+  },
+  "lineage": {
+    "case_study": "tiny_llama_opus_case_study_qwen25_05b",
+    "promotion_candidate_id": "commons_1dad4a28ddcabeb71beb",
+    "source_report_hash": "sha256:1f15ffa24deb9e5707768c309b4f29003ee4ae6296d701353b94d1d99f61ea49"
+  },
+  "manifest_hash": "sha256:be952fa8dbbebafb0fafa2a73a0f63986c07e9429314d949fd24254567ea896e",
+  "name": "Tiny Llama Opus Gateway Repair",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": true,
+    "cloud_calls_avoided": 1,
+    "cloud_calls_evidence": "counterfactual_no_cloud_route",
+    "gpu_avoided": true,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "high",
+    "rollback_required": true
+  },
+  "space_id": "tiny_llama_opus_gateway_repair",
+  "task_class": "hard_gateway_repair",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "isolated_case_repo",
+      "bundle_id": "gateway_pytest",
+      "commands": [
+        "python -m pytest tests -q"
+      ],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

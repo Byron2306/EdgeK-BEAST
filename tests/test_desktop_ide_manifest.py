@@ -33,17 +33,23 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "localIdeMode" in main
     assert "enterLocalIdeMode" in main
     assert "desktop_local_fallback" in main
+    assert "resolveBeastPython" in main
+    assert "import fastapi, uvicorn" in main
     assert "maxAutomaticAttempts" in main
     assert "gatewayHealth(baseUrl = gatewayUrl, rootTimeoutMs = 8000)" in main
     assert "findCompatibleGateway" in main
     assert "attached to compatible BEAST gateway" in main
     assert "gatewayCapabilityHealth(baseUrl = gatewayUrl, rootPayload = null)" in main
-    assert "declared_by_root_info" in main
-    assert "mode: 'route_manifest'" in main
+    assert "active_route_probe_with_local_file_fallback" in main
+    assert "missing_required_route" in main
+    assert "/edgek/mcp/state" in main
+    assert "/edgek/plugins" in main
+    assert "/edgek/tools/integrations" in main
+    assert "desktop_local_files" in main
     assert "port ${port} is already in use; trying next port" in main
     assert "gatewayUrl: health.url || gatewayUrl" in main
     assert "gateway process is listening" in main
-    assert "leaving process alive for diagnosis" in main
+    assert "failed the desktop route contract; replacing it" in main
     assert "spawnGatewayProcess" in main
     assert "waitForGatewayExit" in main
     assert "gateway start failed on port" in main
@@ -56,6 +62,7 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "beast:open-workspace-window" in main
     assert "beast:release-readiness" in main
     assert "beast:tooling-snapshot" in main
+    assert "beast:system-snapshot" in main
     assert "appWindows" in main
     assert "windowId" in main
     assert "BrowserWindow.getFocusedWindow" in main
@@ -72,9 +79,13 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "openWorkspaceWindow" in preload
     assert "releaseReadiness" in preload
     assert "toolingSnapshot" in preload
+    assert "systemSnapshot" in preload
     assert "openGateway" in preload
     assert "beast:choose-workspace" in main
     assert "BEAST_ACTIVE_WORKSPACE" in main
+    assert "activeWorkspaceRoot" in main
+    assert "repoRoot: activeWorkspaceRoot || repoRoot" in main
+    assert "BEAST_ACTIVE_WORKSPACE: activeWorkspaceRoot || repoRoot" in main
     assert "DESKTOP_IDE_VERSION" in main
     assert "clearCache" in main
     assert "beast:desktop-version" in main
@@ -129,10 +140,151 @@ def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
     assert "Command Palette" in html
     assert "statusChipBar" in html
     assert "desktopBuildId" in html
+
+
+def test_opcb_dashboard_has_live_store_and_control_contract():
+    html = Path("desktop-ide/renderer/index.html").read_text(encoding="utf-8")
+    app_js = Path("desktop-ide/renderer/app.js").read_text(encoding="utf-8")
+    js = app_js
+    live_store = Path("desktop-ide/renderer/opcb-live-store.js").read_text(encoding="utf-8")
+    state_js = Path("desktop-ide/renderer/opcb-state.js").read_text(encoding="utf-8")
+    renderers = Path("desktop-ide/renderer/opcb-renderers.js").read_text(encoding="utf-8")
+    reference_css = Path("desktop-ide/renderer/opcb-reference.css").read_text(encoding="utf-8")
+
+    assert 'src="opcb-live-store.js"' in html
+    assert "requiredGatewayRoutes" in live_store
+    assert "/edgek/ide/snapshot" in live_store
+    assert "/edgek/ide/system-snapshot" in live_store
+    assert "/edgek/mcp/state" in live_store
+    assert "actions_manifest" in live_store
+    assert "/edgek/plugins" in live_store
+    assert "/edgek/tools/integrations" in live_store
+    assert "/edgek/workspace/files" in live_store
+    assert "/edgek/mcp/servers" in live_store
+    assert "/edgek/mcp/approvals" in live_store
+    assert "/edgek/ide/tooling-snapshot" in live_store
+    assert "normalizeGatewayDoctor" in live_store
+    assert "window.opcbRecheckGatewayContract" in live_store
+    assert "window.opcbRefreshPage" in live_store
+    assert "normalizeMission" in live_store
+    assert "normalizeWorkspace" in live_store
+    assert "normalizeEvidence" in live_store
+    assert "normalizeGraph" in live_store
+    assert "normalizeReview" in live_store
+    assert "normalizeTrust" in live_store
+    assert "normalizeCrystallization" in live_store
+    assert "normalizeModels" in live_store
+    assert "normalizeAgents" in live_store
+    assert "normalizeMemory" in live_store
+    assert "window.opcbState.crystal" in live_store
+    assert "applyPagePayload" in live_store
+    assert "window.gatewayUrl = gatewayUrl" in app_js
+    assert "window.workspaceRoot = workspaceRoot" in app_js
+    assert "window.lastGatewayStatus = status" in app_js
+    assert "window.setDesktopPage = setDesktopPage" in app_js
+    assert "enteredPage && nextPage === 'tooling'" in app_js
+    assert "refreshMcpOps({ stayOnPage: true, auto: true })" in app_js
+    assert "if (mcpOpsPromise) return mcpOpsPromise" in app_js
+    assert "if (toolingSnapshotPromise) return toolingSnapshotPromise" in app_js
+    assert "gateway was not restarted" in app_js
+    assert "Renderer error contained" in app_js
+    assert "Renderer promise recovered" in app_js
+    assert "system.refresh" in app_js
+    assert "system.ports" in app_js
+    assert "system.processes" in app_js
+    assert "persistedWorkspaceRoot" in app_js
+    assert "workspaceRevision" in app_js
+    assert "discarded stale file list" in app_js
+    assert "local file list loaded" in app_js
+    assert "window.beastExplorerRows = explorerRows" in app_js
+    assert "window.refreshFiles = refreshFiles" in app_js
+    assert "No files loaded from the selected workspace" in app_js
+    assert "$('refreshFiles')" in app_js
+    assert "await refreshFiles();" in app_js
+    assert "window.opcbRunIdeActionById" in app_js
+    assert "window.opcbRecordAction" in app_js
+    assert "window.opcbActionBlockReason" in app_js
+    assert "window.opcbRefreshReadiness" in app_js
+    assert "OPCB_READINESS_ACTIONS" in app_js
+    assert "opcbRunReleaseReadinessProbe" in app_js
+    assert "Gateway is required for this action" in app_js
+    assert "Open a file before running code intelligence" in app_js
+    assert "OPCB action failed" in app_js
+    assert "enforceOpcbControlContract" in state_js
+    assert "actionLedger" in state_js
+    assert "Action Ledger" in state_js
+    assert "gatewayDoctor" in state_js
+    assert "readiness" in state_js
+    assert "workspaceCanvas" in state_js
+    assert "applyOpcbSelection" in state_js
+    assert "select.${normalizedKind}" in state_js
+    assert "data-opcb-readiness" in state_js
+    assert "/readiness check" in state_js
+    assert "data-opcb-recheck-gateway" in state_js
+    assert "data-opcb-restart-gateway" in state_js
+    assert "data-live-block-reason" in state_js
+    assert "opcbActionBlockReason" in state_js
+    assert "/gateway recheck" in state_js
+    assert "/gateway restart" in state_js
+    assert "data-opcb-active" not in state_js
+    assert "data-prototype-reason" in state_js
+    assert "data-opcb-refresh" in state_js
+    assert "data-opcb-select" in state_js
+    assert 'data-command="/files"' in state_js
+    assert "window.setDesktopPage?.('source')" in state_js
+    assert "OPCB command /files -> Source file explorer" in state_js
+    assert 'data-command="/tooling"' in state_js
+    assert 'data-command="/mcp"' in state_js
+    assert 'data-command="/system"' in state_js
+    assert "['/mcp', 'tooling.mcp']" in state_js
+    assert "['/system', 'system.refresh']" in state_js
+    assert "data-opcb-refresh=\"mission\">View Health Details" in state_js
+    assert "['/view attestations', 'settings.release_readiness']" in state_js
+    assert "['/show gates', 'settings.release_readiness']" in state_js
+    assert "['/add fallback', 'providers.refresh']" in state_js
+    assert "sourceplan.handoff_package" in state_js
+    assert "sourceplan.export_runbook" in state_js
+    assert "providers.smoke_nvidia" in state_js
+    assert "window.opcbRunIdeActionById || window.runIdeActionById" in state_js
+    assert "data-ide-action" in renderers
+    assert "data-opcb-select" in renderers
+    assert "data-page-target" in renderers
+    assert "renderDoctorPage" in renderers
+    assert "Full Readiness" in renderers
+    assert "Critical Action Contract" in renderers
+    assert "Readiness Blockers" in renderers
+    assert "Gateway Route Contract" in renderers
+    assert "doctor-route-row" in renderers
+    assert "scope-control-row" in renderers
+    assert "data-page-target=\"map\">Code Graph" in renderers
+    assert "data-page-target=\"evidence\">Evidence Parser" in renderers
+    assert "data-command=\"/canary status\"" in renderers
+    assert "data-opcb-refresh=\"trust\">View Canary Details" in renderers
+    assert "data-opcb-readiness>Run All Checks" in renderers
+    assert "canvas-mode-${c().escapeHtml(ui.workspaceCanvas || 'fit')}" in renderers
+    assert "filteredNodes" in renderers
+    assert "selected-route-card" in renderers
+    assert "route.required === false ? 'warn' : 'fail'" in renderers
+    assert "Readability pass" in reference_css
+    assert "font-size: 16px !important" in reference_css
+    assert "grid-template-columns: 236px minmax(0, 1fr) !important" in reference_css
+    assert ".scope-control-row button" in reference_css
+    assert ".canary-grid button" in reference_css
+    assert ".workspace-flow-canvas.canvas-mode-list" in reference_css
+    assert ".doctor-route-row.selected" in reference_css
+    styles = Path("desktop-ide/renderer/styles.css").read_text(encoding="utf-8")
+    assert ".app-shell[data-dashboard-page='true']:not([data-desktop-page='workspace']) #fileExplorerSection" in styles
+    assert ".app-shell[data-desktop-page='workspace'] #fileExplorerBody" in styles
+    assert ".app-shell[data-desktop-page='source'] #fileExplorerBody" in styles
+    assert ".app-shell[data-dashboard-page='true']:not([data-desktop-page='workspace']) #fileExplorerBody" in styles
+    assert ".app-shell[data-desktop-page='mission'] #fileExplorerBody" not in styles
+    assert "clamp(180px, 24vh, 280px)" not in styles
+    assert "max-height: calc(100vh - 178px)" in reference_css
     assert "nextActionInspector" in html
     assert "assets/beast-dragon-mascot.png" in html
     assert "127.0.0.1:8000/beast-assets" not in html
     assert "expandExplorer" in html
+    assert "refreshFiles" in html
     assert "toggleExplorerMode" in html
     assert "fileExplorerStatus" in html
     assert "sourcePlanChecklist" in html
@@ -265,7 +417,7 @@ def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
     assert "/edgek/providers/secrets/route/" in js
     assert "/edgek/providers/nvidia-nim/live-smoke" in js
     assert "/edgek/workspace/files" in js
-    assert "window.beastDesktop.listFiles" in js
+    assert "window.beastDesktop?.listFiles" in js
     assert "window.beastDesktop.readFile" in js
     assert "window.beastDesktop.fileOperation" in js
     assert "window.beastDesktop.openWorkspaceWindow" in js
@@ -284,6 +436,7 @@ def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
     assert "/edgek/ide/sourceplan/from-selection" in js
     assert "/edgek/sourceplan/verify" in js
     assert "/edgek/sourceplan/apply" in js
+    assert "/edgek/sourceplan/rollback-latest" in js
     assert "/edgek/safety-governor/classify-command" in js
     assert "/edgek/ide/terminal/stream" in js
     assert "loadTerminalState" in js
@@ -434,6 +587,10 @@ def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
 
 def test_desktop_ide_backend_declares_action_manifest():
     routes = Path("app/routes/ide.py").read_text(encoding="utf-8")
+    main_routes = Path("app/main.py").read_text(encoding="utf-8")
+    workspace_routes = Path("app/routes/workspace.py").read_text(encoding="utf-8")
+    beast_cli = Path("bin/beast").read_text(encoding="utf-8")
+    html = Path("desktop-ide/renderer/index.html").read_text(encoding="utf-8")
     js = Path("desktop-ide/renderer/app.js").read_text(encoding="utf-8")
 
     assert "_ide_action_manifest" in routes
@@ -478,7 +635,7 @@ def test_desktop_ide_backend_declares_action_manifest():
     assert "ACTION_IR_KIND" in routes
     assert "_symbol_outline_for_text" in routes
     assert "activateEditorTab" in js
-    assert "fallback_used" in js
+    assert "desktop_local_files" in js
     assert "renderSourcePlanActionContract" in js
     assert "renderSourcePlanOperationLedger" in js
     assert "chooseReceiptsForAction" in js
@@ -488,6 +645,15 @@ def test_desktop_ide_backend_declares_action_manifest():
     assert "proposeLearning" in js
     assert "checkReleaseReadiness" in js
     assert "Gateway readiness route unavailable" in js
+    assert '"/edgek/workspace/files"' in beast_cli
+    assert '"/edgek/ide/actions/manifest"' in beast_cli
+    assert '"/edgek/ide/tooling-snapshot"' in beast_cli
+    assert '"/edgek/ide/system-snapshot"' in beast_cli
+    assert "_ensure_workspace_routes_mounted" in main_routes
+    assert "_ensure_ide_routes_mounted" in main_routes
+    assert "app.router.routes.extend(router.routes)" in main_routes
+    assert '"/edgek/workspace/files"' in workspace_routes
+    assert '"/edgek/ide/actions/manifest"' in routes
     assert "window.beastDesktop.releaseReadiness" in js
     assert "refreshMissionRoute" in js
     assert "refreshToolingSnapshot" in js

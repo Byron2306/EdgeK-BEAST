@@ -28,6 +28,8 @@ from app.kernel.observability.local_trace_ledger import LocalTraceLedger
 from app.kernel.security.residue_seal import ResidueSeal
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.storage.memory_hull import MemoryHull
+from app.kernel.security.secret_vault import SecretVault
+from app.kernel.compute.nim_live_probe import NvidiaNIMLiveProbe
 
 
 @dataclass(frozen=True)
@@ -254,6 +256,8 @@ class HardCodingTeacher:
         self.calls += 1
         if self.mode == "ollama":
             return self._solve_with_ollama(spec, variant)
+        if self.mode == "nvidia_nim":
+            return self._solve_with_nim(spec, variant)
         return self._deterministic_solution(spec, variant, provider="deterministic_hard_coding_teacher")
 
     def _solve_with_ollama(self, spec: HardCodingTaskSpec, variant: str) -> Dict[str, Any]:
@@ -290,11 +294,33 @@ class HardCodingTeacher:
             "provider": "ollama",
             "model": self.ollama_model,
             "recipe": parsed,
+            "raw_response": raw,
             "raw_response_sha256": _hash(raw),
             "latency_ms": latency_ms,
             "tokens": int(body.get("eval_count") or max(1, len(raw) // 4)),
             "actual_live_provider_call": True,
         }
+
+    def _solve_with_nim(self, spec: HardCodingTaskSpec, variant: str) -> Dict[str, Any]:
+        SecretVault().load(override=False)
+        api_key = os.environ.get("NVIDIA_API_KEY", "")
+        if not api_key: raise RuntimeError("NVIDIA_API_KEY is required for NIM quality baseline")
+        probe = NvidiaNIMLiveProbe()
+        cfg = probe.config(requested_model=self.ollama_model, timeout_seconds=120, max_tokens=1400)
+        model = self.ollama_model or (probe.discover_chat_models(cfg, api_key).get("candidate_models") or cfg.model_candidates)[0]
+        prompt = ("Return only JSON with keys family, function_name, body_template, invariants. "
+                  "body_template must be a JSON array of correctly indented Python source lines, with no markdown. "
+                  f"Repair this Python function so pytest passes. Family: {spec.family}. Function: {spec.function_name}. Variant: {variant}. "
+                  f"Broken source:\n{spec.broken_source}\nTests:\n{spec.tests_source}")
+        started=time.perf_counter(); response=httpx.Client().post(cfg.base_url+"/chat/completions",headers={"Authorization":f"Bearer {api_key}","Content-Type":"application/json"},json={"model":model,"messages":[{"role":"system","content":"You are an exact Python repair agent. Return only the requested JSON."},{"role":"user","content":prompt}],"temperature":0,"max_tokens":900,"stream":False},timeout=25); latency_ms=round((time.perf_counter()-started)*1000,3)
+        body=response.json() if response.content else {}
+        if response.status_code >= 400: raise RuntimeError(f"NIM HTTP {response.status_code}: {str(body)[:240]}")
+        raw=str(((body.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+        parsed=_extract_json(raw); raw_body, adapted = _adapt_raw_body(spec, parsed.get("body_template")); valid=_is_executable_body(spec, raw_body)
+        accepted={**parsed, "body_template": raw_body} if valid else self._recipe(spec)
+        if valid and adapted: accepted["format_adapter_used"] = True
+        if not valid: accepted["normalization_reason"]="raw_nim_output_not_executable_under_contract"
+        return {"provider":"nvidia_nim","model":model,"recipe":accepted,"raw_response":raw,"raw_response_sha256":_hash(raw),"latency_ms":latency_ms,"tokens":int((body.get("usage") or {}).get("total_tokens") or max(1,len(raw)//4)),"actual_live_provider_call":True}
 
     def _deterministic_solution(self, spec: HardCodingTaskSpec, variant: str, *, provider: str) -> Dict[str, Any]:
         recipe = self._recipe(spec)
@@ -332,14 +358,15 @@ class HardCodingCrystallizationGauntlet:
         *,
         teacher: Optional[HardCodingTeacher] = None,
         live_ollama: bool = False,
+        live_nim: bool = False,
         ollama_model: str = "",
     ) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         if teacher is None:
             teacher = HardCodingTeacher(
-                mode="ollama" if live_ollama else "deterministic",
-                ollama_model=ollama_model or os.environ.get("BEAST_OLLAMA_MODEL", "qwen2.5-coder:7b"),
+                mode="nvidia_nim" if live_nim else ("ollama" if live_ollama else "deterministic"),
+                ollama_model=ollama_model or ("" if live_nim else os.environ.get("BEAST_OLLAMA_MODEL", "qwen2.5-coder:7b")),
                 ollama_host=os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434"),
             )
         self.teacher = teacher
@@ -359,7 +386,20 @@ class HardCodingCrystallizationGauntlet:
         self.tool = FunctionRewriteTool()
 
     def run(self, specs: Optional[Iterable[HardCodingTaskSpec]] = None) -> Dict[str, Any]:
-        rows = [self._run_family(spec) for spec in (specs or hard_coding_task_specs())]
+        rows = []
+        for spec in (specs or hard_coding_task_specs()):
+            try:
+                row = self._run_family(spec)
+            except Exception as exc:
+                row = {
+                    "family": spec.family, "baseline_tests_passed": False, "training_tests_passed": False,
+                    "fresh_replay_tests_passed": False, "actual_live_provider_call": self.teacher.mode in {"ollama", "nvidia_nim"},
+                    "cloud_or_live_calls_during_replay": 0, "tool_receipt": None,
+                    "ephemeral_baseline": {"tests_passed": False, "provider_calls": 0, "failure": f"{type(exc).__name__}: {exc}"},
+                    "run_failure": {"type": type(exc).__name__, "message": str(exc)[:500]},
+                }
+            rows.append(row)
+            (self.root / "hard_coding_quality_checkpoint.json").write_text(json.dumps({"families": rows}, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
         receipt = {
             "beast_object_type": "hard_coding_crystallization_gauntlet",
             "version": "1.0",
@@ -383,6 +423,10 @@ class HardCodingCrystallizationGauntlet:
         self._write_problem(train_root, spec)
         baseline = self._verify(train_root)
         teacher_result = self.teacher.solve(spec, "training_problem")
+        raw_output_path = family_root / "raw_teacher_output.txt"
+        if isinstance(teacher_result.get("raw_response"), str):
+            raw_output_path.write_text(str(teacher_result["raw_response"]), encoding="utf-8")
+        ephemeral = self._run_ephemeral_baseline(train_root, spec, str(teacher_result.get("raw_response") or ""), family_root)
         recipe = teacher_result["recipe"]
         request = self._request(spec, "training", metadata={"variant": "training_problem"})
         record = self.gateway.record_execution_response(
@@ -426,6 +470,8 @@ class HardCodingCrystallizationGauntlet:
             "teacher_provider": teacher_result["provider"],
             "teacher_model": teacher_result["model"],
             "actual_live_provider_call": bool(teacher_result.get("actual_live_provider_call")),
+            "ephemeral_baseline": ephemeral,
+            "raw_output_path": str(raw_output_path) if raw_output_path.is_file() else None,
             "cloud_or_live_calls_during_replay": calls_after - calls_before,
             "reuse_decision": decision.to_dict(),
             "tool_receipt": tool_receipt,
@@ -437,6 +483,19 @@ class HardCodingCrystallizationGauntlet:
                 "verified": replay_verify["tests_passed"],
             }),
         }
+
+    def _run_ephemeral_baseline(self, source_root: Path, spec: HardCodingTaskSpec, raw: str, family_root: Path) -> Dict[str, Any]:
+        root = family_root / "ephemeral_baseline_problem"
+        self._write_problem(root, spec)
+        proposal = _extract_json(raw)
+        body, adapted = _adapt_raw_body(spec, proposal.get("body_template"))
+        result: Dict[str, Any] = {"raw_response_present": bool(raw), "raw_body_lines": len(body), "format_adapter_used": adapted, "normalized_by_beast": False, "provider_calls": 1 if raw else 0}
+        try:
+            tool = self.tool.apply_recipe(root / "solution.py", spec.function_name, [str(line) for line in body])
+            result.update({"tool_receipt": tool, "tests_passed": self._verify(root)["tests_passed"], "apply_error": None})
+        except Exception as exc:
+            result.update({"tool_receipt": None, "tests_passed": False, "apply_error": f"{type(exc).__name__}: {exc}"})
+        return result
 
     def _request(self, spec: HardCodingTaskSpec, stage: str, *, metadata: Dict[str, Any]) -> CrystalReuseRequest:
         prompt = " ".join([
@@ -529,6 +588,26 @@ def _extract_json(text: str) -> Dict[str, Any]:
             except json.JSONDecodeError:
                 return {}
     return {}
+
+
+def _is_executable_body(spec: HardCodingTaskSpec, body: Any) -> bool:
+    if not isinstance(body, list) or not body:
+        return False
+    try:
+        signature = next(line for line in spec.broken_source.splitlines() if line.startswith(f"def {spec.function_name}"))
+        ast.parse("\n".join([signature, *[str(line) for line in body]]) + "\n")
+        return True
+    except (SyntaxError, StopIteration):
+        return False
+
+
+def _adapt_raw_body(spec: HardCodingTaskSpec, body: Any) -> tuple[list[str], bool]:
+    """Accept an exact body or a complete returned target function; never add logic."""
+    if not isinstance(body, list): return [], False
+    lines=[str(line) for line in body]
+    target=next((i for i,line in enumerate(lines) if line.startswith(f"def {spec.function_name}(")), None)
+    if target is None: return lines, False
+    return lines[target + 1:], True
 
 
 def _hash(payload: Any) -> str:

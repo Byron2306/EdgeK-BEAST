@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 2999,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:320ad374ee16b6f21c21e9b2f73a49f070b0f849fc44da2a804e1900d7874664"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 7640,
+      "path": "run_manifest.json",
+      "sha256": "sha256:e6fc2200272f6773ed43360be99156ed903efbd949d361ff270f7f2be3a3362b"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 401,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:9534ee4116c58552178d928c136db2e927a159054f0aebafa14776b1eef153ef"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:5b4b7cb3711cf71de75c1bdf4b930bacb61bcd988dea47ee53f05b8a0e94ff7a"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.943726+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_systems_benchmark_live_hyperbolic_fal_novita_10task_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_systems_benchmark_live_hyperbolic_fal_novita_10task_gauntlet"
+  },
+  "manifest_hash": "sha256:cf0e1d3699d412ba94be774c33660cd2fd65f85ac903c1470ee7a77e20eeaaaa",
+  "name": "Beast Systems Benchmark Live Hyperbolic Fal Novita 10Task Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_systems_benchmark_live_hyperbolic_fal_novita_10task_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

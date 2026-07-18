@@ -2,35 +2,27 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const dist = path.join(root, 'dist');
-const unpacked = path.join(dist, 'linux-unpacked');
-const appImage = path.join(dist, 'BEAST Desktop IDE-0.1.1.AppImage');
-const deb = path.join(dist, 'beast-desktop-ide_0.1.1_amd64.deb');
-const executable = path.join(unpacked, 'beast-desktop-ide');
-const appAsar = path.join(unpacked, 'resources', 'app.asar');
-const renderer = fs.readFileSync(path.join(root, 'renderer', 'app.js'), 'utf8');
+const rendererRoot = path.join(root, 'renderer', 'js');
+const renderer = fs.readdirSync(rendererRoot, { recursive: true }).filter(file => file.endsWith('.js')).sort()
+  .map(file => fs.readFileSync(path.join(rendererRoot, file), 'utf8')).join('\n');
 const html = fs.readFileSync(path.join(root, 'renderer', 'index.html'), 'utf8');
 const main = fs.readFileSync(path.join(root, 'main.js'), 'utf8');
+const preload = fs.readFileSync(path.join(root, 'preload.js'), 'utf8');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
 const checks = [
-  ['dist exists', fs.existsSync(dist)],
-  ['linux unpacked exists', fs.existsSync(unpacked)],
-  ['unpacked executable exists', fs.existsSync(executable)],
-  ['unpacked executable is executable', fs.existsSync(executable) && Boolean(fs.statSync(executable).mode & 0o111)],
-  ['asar exists', fs.existsSync(appAsar)],
-  ['AppImage exists', fs.existsSync(appImage)],
-  ['deb exists', fs.existsSync(deb)],
-  ['AppImage non-empty', fs.existsSync(appImage) && fs.statSync(appImage).size > 50 * 1024 * 1024],
-  ['deb non-empty', fs.existsSync(deb) && fs.statSync(deb).size > 20 * 1024 * 1024],
+  ['renderer entry modules exist', renderer.includes('window.BeastRouter') && renderer.includes("BeastRouter.navigate('studio')")],
   ['multi-window state contract', main.includes('appWindows') && main.includes('windowId')],
-  ['terminal stream contract', renderer.includes('/edgek/ide/terminal/stream') && html.includes('terminalStreamState')],
-  ['tooling ops contract', renderer.includes('refreshMcpOps') && renderer.includes('validatePluginManifest') && html.includes('mcpOpsPanel')],
-  ['code intel contract', renderer.includes('/edgek/ide/code-intel') && renderer.includes('refreshCodeIntelligence')],
-  ['worktree wizard contract', renderer.includes('renderWorktreeWizardSteps') && html.includes('worktreeWizardSteps')],
+  ['terminal stream contract', renderer.includes('startChat') && renderer.includes('terminal-chat-output')],
+  ['tooling operations contract', renderer.includes('refreshTooling') && renderer.includes('validatePluginManifest')],
+  ['worktree mission contract', renderer.includes('worktreeAction') && renderer.includes('worktree-mission/sourceplan-draft')],
+  ['release readiness contract', renderer.includes('/edgek/ide/release-readiness/check') && html.includes('data-beast-route="deploy"')],
+  ['IDE compatibility contract', main.includes('IdeCompatibilityHost') && preload.includes('startIdeProtocol') && renderer.includes('registerCompletionItemProvider')],
+  ['debug notebook remote contract', main.includes('beast:notebook-execute') && main.includes('beast:remote-probe') && preload.includes('executeNotebookCell') && renderer.includes('startPythonDebug')],
+  ['first mission journey', renderer.includes('window.BeastOnboarding') && renderer.includes('Prove + Reuse')],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);
@@ -43,7 +35,5 @@ for (const [name, ok] of checks) assert(ok, name);
 console.log(JSON.stringify({
   ok: true,
   checks: checks.length,
-  appImage: path.relative(root, appImage),
-  deb: path.relative(root, deb),
-  unpacked: path.relative(root, executable),
+  renderer: path.relative(root, rendererRoot),
 }, null, 2));

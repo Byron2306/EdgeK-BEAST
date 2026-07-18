@@ -46,13 +46,13 @@ class AdaptiveDispatcher:
         if evaluation.get("decision") != "candidate_ready_for_local_training":
             return None
 
-        # 3. Vector similarity matching (mocked integration for now)
-        # In practice, we query the lattice here.
+        # 3. Discovery candidates are hypotheses.  A route requires an exact
+        # structured capability contract, never a task-class-only or vector hit.
         node = self._find_best_lattice_node(task_ir)
         if not node:
             return None
 
-        # 4. Gating Check: Fingerprint Boundary
+        # 4. Gating Check: all current identity boundaries must match.
         if not self._verify_path_fingerprints(node, task_ir.metadata):
             logger.info("Routing demoted/stale due to fingerprint mismatch.")
             return None
@@ -70,16 +70,34 @@ class AdaptiveDispatcher:
         lattice = self._load_json(lattice_path)
         nodes = lattice.get("nodes", [])
         
-        # Simple task_class match for the dispatcher MVP
+        # Do not route on a broad task class.  Vector/semantic similarity may
+        # rank candidates upstream, but equivalence is established here only by
+        # the structured capability contract emitted by the semantic mapper.
         task_class = task_ir.metadata.get("task_class") or "general"
+        contract_digest = str(task_ir.metadata.get("capability_contract_digest") or "")
+        if not contract_digest:
+            return None
         for node in nodes:
-            if node.get("task_class") == task_class:
+            if (
+                node.get("task_class") == task_class
+                and str(node.get("capability_contract_digest") or "") == contract_digest
+            ):
                 return {**node, "confidence": 0.95}
         return None
 
     def _verify_path_fingerprints(self, node: Dict[str, Any], metadata: Dict[str, Any]) -> bool:
-        # Placeholder for real fingerprint checking logic
-        return True
+        required = (
+            "impact_fingerprint_hash",
+            "repo_fingerprint",
+            "policy_digest",
+            "verifier_digest",
+            "state_digest",
+        )
+        return all(
+            bool(metadata.get(key))
+            and str(node.get(key) or "") == str(metadata.get(key) or "")
+            for key in required
+        )
 
     @staticmethod
     def _load_json(path: Path) -> Dict[str, Any]:

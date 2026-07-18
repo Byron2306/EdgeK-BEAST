@@ -22,7 +22,9 @@ from datetime import datetime, timezone
 # Add parent to path for imports when run directly
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.kernel.compute.compute_forge import ComputeForgeNode, ComputeLedger
+from app.kernel.compute.compute_forge import ComputeForgeNode, ForgeCreditLedger
+from app.kernel.compute.compute_plane import get_compute_plane
+from app.kernel.compute.forge_isolation import ForgeIsolationAttestation
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 
 
@@ -37,11 +39,18 @@ def main():
     parser.add_argument("--ledger", default="data/compute_ledger.json", help="Path to persist ledger")
     parser.add_argument("--snapshot-dir", default="data/forge_nodes", help="Directory for per-node live snapshots")
     parser.add_argument("--propose-candidate", action="store_true", help="Propose a bounded candidate each cycle for central promotion")
+    parser.add_argument("--isolation-attestation-json", default="", help="Supervisor-verified isolation attestation")
     args = parser.parse_args()
 
     storage = DurableInferenceStorage()
-    node = ComputeForgeNode(node_id=args.node_id, node_type=args.node_type, storage=storage)
-    ledger = ComputeLedger()
+    node = ComputeForgeNode(node_id=args.node_id, node_type=args.node_type, storage=storage, compute_plane=get_compute_plane())
+    if args.isolation_attestation_json:
+        raw_attestation = json.loads(args.isolation_attestation_json)
+        fields = ForgeIsolationAttestation.__dataclass_fields__
+        node.bind_isolation_attestation(ForgeIsolationAttestation(**{
+            key: value for key, value in raw_attestation.items() if key in fields
+        }))
+    ledger = ForgeCreditLedger()
 
     print(f"[ForgeNode] Starting {args.node_id} ({args.node_type})")
     print(f"[ForgeNode] Watching: {args.repo}")

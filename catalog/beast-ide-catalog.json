@@ -132,7 +132,7 @@
   ],
   "tools": [
     {"id": "ripgrep", "name": "ripgrep", "detect": "rg", "category": "search", "description": "Extremely fast recursive code search.", "install_hint": "apt install ripgrep | brew install ripgrep", "homepage": "https://github.com/BurntSushi/ripgrep"},
-    {"id": "fd", "name": "fd", "detect": "fd", "category": "search", "description": "Fast, user-friendly file finder.", "install_hint": "apt install fd-find | brew install fd", "homepage": "https://github.com/sharkdp/fd"},
+    {"id": "fd", "name": "fd", "detect": "fd", "detect_any": ["fd", "fdfind"], "category": "search", "description": "Fast, user-friendly file finder.", "install_hint": "apt install fd-find | brew install fd", "homepage": "https://github.com/sharkdp/fd"},
     {"id": "jq", "name": "jq", "detect": "jq", "category": "data", "description": "Command-line JSON processor.", "install_hint": "apt install jq | brew install jq", "homepage": "https://jqlang.github.io/jq/"},
     {"id": "gh", "name": "GitHub CLI", "detect": "gh", "category": "vcs", "description": "GitHub from the terminal (PRs, issues, releases).", "install_hint": "https://cli.github.com", "homepage": "https://cli.github.com"},
     {"id": "uv", "name": "uv", "detect": "uv", "category": "python", "description": "Fast Python package/venv manager; provides uvx for MCP servers.", "install_hint": "curl -LsSf https://astral.sh/uv/install.sh | sh", "homepage": "https://github.com/astral-sh/uv"},
@@ -145,6 +145,6 @@
     {"id": "charliermarsh.ruff", "name": "Ruff", "category": "lint", "description": "Ruff linter/formatter integration.", "marketplace": "https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff"},
     {"id": "eamodio.gitlens", "name": "GitLens", "category": "vcs", "description": "Supercharged Git blame, history, and visualization.", "marketplace": "https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens"},
     {"id": "ms-azuretools.vscode-docker", "name": "Docker", "category": "runtime", "description": "Build, manage, and debug containerized apps.", "marketplace": "https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker"},
-    {"id": "tamasfe.even-better-toml", "name": "Even Better TOML", "category": "language", "description": "TOML syntax + schema validation (pyproject.toml).", "marketplace": "https://marketplace.visualstudio.com/items?itemName=tamasfe.even-better-toml"}
+    {"id": "tamasfe.even-better-toml", "name": "Even Better TOML", "category": "language", "description": "TOML syntax and schema validation.", "marketplace": "https://marketplace.visualstudio.com/items?itemName=tamasfe.even-better-toml"}
   ]
 }

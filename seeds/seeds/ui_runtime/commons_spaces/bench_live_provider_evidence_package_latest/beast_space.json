@@ -1,0 +1,61 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 4209,
+      "path": "README.md",
+      "sha256": "sha256:c745d752109b908ee203abcaca8bd128efbe41b0a3c6943c77e61d0ef026a613"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:21.029686+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "live_provider_evidence_package_latest",
+    "registration_score": 1,
+    "signals": [
+      "readme"
+    ],
+    "source_path": "benchmarks/results/live_provider_evidence_package_latest"
+  },
+  "manifest_hash": "sha256:093fb353a2fa07f1f7e7b1995c4c7a2e5f04b0cddeac6209b26e27addab6b83f",
+  "name": "Live Provider Evidence Package Latest",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_live_provider_evidence_package_latest",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

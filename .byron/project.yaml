@@ -1,0 +1,15 @@
+version: 1
+family: beast
+canonical_repo: EdgeK-BEAST
+exclusions:
+  - .git
+  - .venv
+  - venv
+  - node_modules
+  - data
+  - logs
+  - .beast
+  - desktop-ide/visual-audit
+identity:
+  require_exact_cache_match: true
+  fields: [repository, remote, branch, head, canonical_root, worktree_id, workspace_uuid]

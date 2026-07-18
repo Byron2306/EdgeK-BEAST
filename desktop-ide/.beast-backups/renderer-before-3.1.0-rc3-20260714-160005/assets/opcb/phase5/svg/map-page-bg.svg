@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <radialGradient id="r1" cx="42%" cy="16%" r="76%">
+      <stop offset="0" stop-color="#113a59" stop-opacity=".58"/>
+      <stop offset=".54" stop-color="#071426" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#39d7ff" opacity=".2"/>
+      <circle cx="22" cy="19" r=".8" fill="#39f0c2" opacity=".16"/>
+    </pattern>
+    <linearGradient id="edge" x1="0" x2="1">
+      <stop stop-color="#39d7ff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#39f0c2" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#b36bff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#r1)"/>
+  <rect width="1600" height="900" fill="url(#dots)" opacity=".8"/>
+  <g fill="none" stroke="url(#edge)" stroke-width="2">
+    <path d="M180 220C360 130 460 360 650 250S970 155 1280 250"/>
+    <path d="M270 620C470 510 600 740 800 610S1120 520 1390 650"/>
+    <path d="M780 160C690 310 970 370 810 540"/>
+  </g>
+</svg>

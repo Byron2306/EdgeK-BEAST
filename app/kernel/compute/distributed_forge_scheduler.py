@@ -14,7 +14,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Callable, Dict, Iterator, List, Optional
 
 try:  # POSIX process coordination; thread lock remains the portable fallback.
     import fcntl
@@ -22,6 +22,7 @@ except ImportError:  # pragma: no cover
     fcntl = None
 
 from app.kernel.compute.compute_forge import ForgeWorkItem
+from app.kernel.compute.forge_isolation import forge_work_isolation_admitted
 
 
 class NodeStatus(str, Enum):
@@ -57,6 +58,7 @@ class NodeHealth:
     total_work_failed: int = 0
     current_load: int = 0
     capabilities: List[str] = field(default_factory=list)
+    isolation_attestation: Dict[str, Any] = field(default_factory=dict)
 
 
 class DistributedForgeScheduler:
@@ -64,10 +66,12 @@ class DistributedForgeScheduler:
 
     STATE_VERSION = "2.0"
 
-    def __init__(self, scheduler_dir: Optional[Path] = None, *, lease_seconds: int = 300):
+    def __init__(self, scheduler_dir: Optional[Path] = None, *, lease_seconds: int = 300, strict_isolation: bool = False, node_admission_verifier: Optional[Callable[[Dict[str, Any]], bool]] = None):
         self.scheduler_dir = scheduler_dir or Path(__file__).resolve().parents[2] / "data" / "scheduler"
         self.scheduler_dir.mkdir(parents=True, exist_ok=True)
         self.lease_seconds = max(1, int(lease_seconds))
+        self.strict_isolation = bool(strict_isolation)
+        self.node_admission_verifier = node_admission_verifier
         self.nodes: Dict[str, NodeHealth] = {}
         self.scheduled_work: Dict[str, ScheduledWork] = {}
         self.work_queue: List[ForgeWorkItem] = []
@@ -193,7 +197,12 @@ class DistributedForgeScheduler:
         except ValueError:
             return True
 
-    def register_node(self, node_id: str, capabilities: List[str] = None) -> NodeHealth:
+    def register_node(self, node_id: str, capabilities: List[str] = None, *, isolation_attestation: Optional[Dict[str, Any]] = None) -> NodeHealth:
+        admitted = (self.node_admission_verifier or (
+            lambda value: forge_work_isolation_admitted({"requires_isolation": True}, value)
+        ))(isolation_attestation or {})
+        if self.strict_isolation and not admitted:
+            raise PermissionError("production Forge admission requires a valid isolation attestation")
         with self._locked():
             previous = self.nodes.get(node_id)
             health = NodeHealth(
@@ -201,6 +210,7 @@ class DistributedForgeScheduler:
                 status=NodeStatus.HEALTHY,
                 last_heartbeat=datetime.now(timezone.utc).isoformat(),
                 capabilities=list(capabilities or (previous.capabilities if previous else [])),
+                isolation_attestation=dict(isolation_attestation or (previous.isolation_attestation if previous else {})),
                 total_work_completed=previous.total_work_completed if previous else 0,
                 total_work_failed=previous.total_work_failed if previous else 0,
                 consecutive_failures=previous.consecutive_failures if previous else 0,
@@ -216,6 +226,11 @@ class DistributedForgeScheduler:
             if node_id not in self.nodes:
                 return False
             health = self.nodes[node_id]
+            if self.strict_isolation and self.node_admission_verifier and not self.node_admission_verifier(health.isolation_attestation):
+                health.status = NodeStatus.OFFLINE
+                self._persist_node(health)
+                self._persist_state()
+                return False
             health.last_heartbeat = datetime.now(timezone.utc).isoformat()
             health.current_load = max(0, int(current_load))
             health.status = NodeStatus.HEALTHY
@@ -224,11 +239,12 @@ class DistributedForgeScheduler:
             self._persist_state()
             return True
 
-    def submit_work(self, work_type: str, repo_path: str, priority: int = 5, deadline_seconds: Optional[int] = None) -> ForgeWorkItem:
+    def submit_work(self, work_type: str, repo_path: str, priority: int = 5, deadline_seconds: Optional[int] = None, *, metadata: Optional[Dict[str, Any]] = None) -> ForgeWorkItem:
         with self._locked():
             item = ForgeWorkItem(
                 work_id=f"work_{uuid.uuid4().hex[:12]}", work_type=work_type, repo_path=repo_path,
                 priority=priority, created_at=datetime.now(timezone.utc).isoformat(),
+                metadata=dict(metadata or {}),
             )
             if deadline_seconds is not None:
                 item.result = {"deadline": (datetime.now(timezone.utc) + timedelta(seconds=deadline_seconds)).isoformat()}
@@ -245,7 +261,11 @@ class DistributedForgeScheduler:
                 return []
             assigned: List[ScheduledWork] = []
             for _ in range(min(max_items, max(0, 5 - health.current_load))):
-                compatible_index = next((i for i, item in enumerate(self.work_queue) if not health.capabilities or item.work_type in health.capabilities), None)
+                compatible_index = next((
+                    i for i, item in enumerate(self.work_queue)
+                    if (not health.capabilities or item.work_type in health.capabilities)
+                    and forge_work_isolation_admitted(item.metadata, health.isolation_attestation)
+                ), None)
                 if compatible_index is None:
                     break
                 work_item = self.work_queue.pop(compatible_index)

@@ -16,6 +16,7 @@ import os
 import re
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -174,6 +175,107 @@ def _ports_via_ss(limit: int) -> List[Dict[str, Any]]:
     return rows
 
 
+def _decode_proc_address(value: str) -> tuple[str, int]:
+    host_hex, _, port_hex = value.partition(":")
+    try:
+        port = int(port_hex, 16)
+    except ValueError:
+        port = 0
+    try:
+        raw = bytes.fromhex(host_hex)
+        if len(raw) == 4:
+            address = socket.inet_ntop(socket.AF_INET, raw[::-1])
+        elif len(raw) == 16:
+            words = [raw[index:index + 4][::-1] for index in range(0, 16, 4)]
+            address = socket.inet_ntop(socket.AF_INET6, b"".join(words))
+        else:
+            address = host_hex
+    except Exception:
+        address = host_hex
+    return address, port
+
+
+def _inode_pid_map() -> Dict[str, Dict[str, Any]]:
+    mapping: Dict[str, Dict[str, Any]] = {}
+    proc_root = Path("/proc")
+    for proc_dir in proc_root.iterdir() if proc_root.exists() else []:
+        if not proc_dir.name.isdigit():
+            continue
+        pid = int(proc_dir.name)
+        fd_dir = proc_dir / "fd"
+        if not fd_dir.exists():
+            continue
+        name = ""
+        cmdline = ""
+        user = ""
+        try:
+            name = (proc_dir / "comm").read_text(encoding="utf-8", errors="replace").strip()
+            cmdline = (proc_dir / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", errors="replace").strip()
+            uid = (proc_dir / "status").read_text(encoding="utf-8", errors="replace")
+            match = re.search(r"^Uid:\s+(\d+)", uid, re.MULTILINE)
+            user = match.group(1) if match else ""
+        except Exception:
+            pass
+        try:
+            for fd in fd_dir.iterdir():
+                try:
+                    target = os.readlink(fd)
+                except Exception:
+                    continue
+                match = re.match(r"socket:\[(\d+)\]", target)
+                if match:
+                    mapping.setdefault(match.group(1), {"pid": pid, "process": name, "cmdline": _truncate(cmdline), "user": user})
+        except Exception:
+            continue
+    return mapping
+
+
+def _ports_via_proc(limit: int) -> List[Dict[str, Any]]:
+    inode_map = _inode_pid_map()
+    specs = [
+        (Path("/proc/net/tcp"), "tcp", "LISTEN"),
+        (Path("/proc/net/tcp6"), "tcp", "LISTEN"),
+        (Path("/proc/net/udp"), "udp", "BOUND"),
+        (Path("/proc/net/udp6"), "udp", "BOUND"),
+    ]
+    rows: List[Dict[str, Any]] = []
+    seen = set()
+    for path, proto, default_status in specs:
+        if not path.exists():
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()[1:]
+        except Exception:
+            continue
+        for line in lines:
+            fields = line.split()
+            if len(fields) < 10:
+                continue
+            state = fields[3]
+            if proto == "tcp" and state != "0A":
+                continue
+            address, port = _decode_proc_address(fields[1])
+            inode = fields[9]
+            owner = inode_map.get(inode, {})
+            key = (proto, address, port, owner.get("pid"))
+            if key in seen:
+                continue
+            seen.add(key)
+            rows.append({
+                "proto": proto,
+                "address": address,
+                "port": port,
+                "status": default_status,
+                "pid": owner.get("pid"),
+                "process": owner.get("process", ""),
+                "cmdline": owner.get("cmdline", ""),
+                "user": owner.get("user", ""),
+            })
+            if len(rows) >= limit:
+                return rows
+    return rows
+
+
 def list_listening_ports(limit: int = 300) -> Dict[str, Any]:
     limit = max(1, min(int(limit), 1000))
     rows = _ports_via_psutil(limit) if psutil is not None else []
@@ -181,6 +283,9 @@ def list_listening_ports(limit: int = 300) -> Dict[str, Any]:
     if not rows:
         rows = _ports_via_ss(limit)
         source = "ss"
+    if not rows:
+        rows = _ports_via_proc(limit)
+        source = "procfs"
     rows.sort(key=lambda item: (item.get("proto") or "", int(item.get("port") or 0)))
     return {
         "ok": True,
@@ -279,10 +384,39 @@ def _processes_via_ps(needle: str) -> List[Dict[str, Any]]:
     return rows
 
 
+def _process_detail_from_proc(pid: int) -> Dict[str, Any]:
+    """Read a minimal process record from procfs when psutil is optional/missing."""
+    proc_dir = Path("/proc") / str(int(pid))
+    if not proc_dir.exists():
+        return {"ok": False, "pid": int(pid), "error": "no such process"}
+    try:
+        status_text = (proc_dir / "status").read_text(encoding="utf-8", errors="replace")
+        values = dict(re.findall(r"^(Name|State|PPid|Uid|Threads):\s*([^\n]+)", status_text, re.MULTILINE))
+        cmdline = (proc_dir / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", errors="replace").strip()
+        stat = (proc_dir / "stat").stat()
+        return {
+            "ok": True,
+            "pid": int(pid),
+            "ppid": int((values.get("PPid") or "0").split()[0]),
+            "name": values.get("Name") or "",
+            "user": (values.get("Uid") or "").split()[0],
+            "status": values.get("State") or "",
+            "exe": _safe(lambda: os.readlink(proc_dir / "exe")),
+            "cwd": _safe(lambda: os.readlink(proc_dir / "cwd")),
+            "cmdline": _truncate(cmdline, 800),
+            "create_time": stat.st_ctime,
+            "rss_mb": None,
+            "num_threads": int((values.get("Threads") or "0").split()[0]),
+            "source": "procfs",
+        }
+    except Exception as exc:
+        return {"ok": False, "pid": int(pid), "error": str(exc)}
+
+
 def process_detail(pid: int) -> Dict[str, Any]:
     pid = int(pid)
     if psutil is None:
-        return {"ok": False, "pid": pid, "error": "psutil not available"}
+        return _process_detail_from_proc(pid)
     try:
         proc = psutil.Process(pid)
         with proc.oneshot():
@@ -317,7 +451,7 @@ def _safe(fn):
 # --------------------------------------------------------------------------------------
 
 def _protection(pid: int) -> Dict[str, Any]:
-    """Classify whether a pid is safe to signal. Never allow suicide or init."""
+    """Classify whether a pid is safe to signal. Never allow suicide, init, or Guardian."""
     if pid <= 0:
         return {"protected": True, "reason": "invalid_pid"}
     if pid == 1:
@@ -326,6 +460,11 @@ def _protection(pid: int) -> Dict[str, Any]:
         return {"protected": True, "reason": "beast_gateway_self"}
     if pid == os.getppid():
         return {"protected": True, "reason": "beast_gateway_parent"}
+    detail = process_detail(pid)
+    command = str(detail.get("cmdline") or "").lower()
+    name = str(detail.get("name") or "").lower()
+    if "socket_guardian_daemon" in command or "guardian_uvicorn" in command or "socket-guardian" in command or "guardian" in name:
+        return {"protected": True, "reason": "guardian_owned_process"}
     return {"protected": False, "reason": ""}
 
 
@@ -674,12 +813,24 @@ def extensions_report(root: Path) -> Dict[str, Any]:
     if plugins_dir.exists():
         plugins = sorted(child.name for child in plugins_dir.iterdir() if child.is_dir())[:100]
 
-    mcp_servers: List[str] = []
-    cursor_mcp = root / ".cursor" / "mcp.json"
-    if cursor_mcp.exists():
-        data = read_json(cursor_mcp)
-        servers = data.get("mcpServers") if isinstance(data.get("mcpServers"), dict) else {}
-        mcp_servers = sorted(servers.keys())
+    def mcp_server_names(path: Path) -> List[str]:
+        if not path.exists():
+            return []
+        data = read_json(path)
+        names = set()
+        for key in ("mcpServers", "servers"):
+            servers = data.get(key) if isinstance(data.get(key), dict) else {}
+            names.update(str(name) for name in servers.keys())
+        return sorted(names)
+
+    mcp_configs = []
+    mcp_servers_set = set()
+    for config_path in (root / ".cursor" / "mcp.json", root / ".vscode" / "mcp.json"):
+        servers = mcp_server_names(config_path)
+        if config_path.exists():
+            mcp_configs.append({"path": str(config_path), "configured": True, "servers": servers})
+        mcp_servers_set.update(servers)
+    mcp_servers = sorted(mcp_servers_set)
 
     return {
         "ok": True,
@@ -689,7 +840,7 @@ def extensions_report(root: Path) -> Dict[str, Any]:
         "vscode_extension": vscode_extension,
         "desktop_ide": desktop_ide,
         "plugins": {"directory": str(plugins_dir), "count": len(plugins), "names": plugins},
-        "mcp": {"config": str(cursor_mcp), "configured": cursor_mcp.exists(), "servers": mcp_servers},
+        "mcp": {"configured": bool(mcp_configs), "configs": mcp_configs, "servers": mcp_servers},
         "read_only": True,
     }
 
@@ -701,6 +852,25 @@ def extensions_report(root: Path) -> Dict[str, Any]:
 def _repo_root() -> Path:
     # app/kernel/workspaces/system_inspector.py -> repo root is parents[3]
     return Path(__file__).resolve().parents[3]
+
+
+def _installed_vscode_extensions() -> set[str]:
+    code_bin = shutil.which("code")
+    if not code_bin:
+        return set()
+    try:
+        proc = subprocess.run(
+            [code_bin, "--list-extensions"],
+            capture_output=True,
+            text=True,
+            timeout=8,
+            check=False,
+        )
+    except Exception:
+        return set()
+    if proc.returncode != 0 and not proc.stdout:
+        return set()
+    return {line.strip().lower() for line in proc.stdout.splitlines() if line.strip()}
 
 
 def catalog_report(root: Optional[Path] = None) -> Dict[str, Any]:
@@ -730,6 +900,7 @@ def catalog_report(root: Optional[Path] = None) -> Dict[str, Any]:
     mcp_servers = data.get("mcp_servers") if isinstance(data.get("mcp_servers"), list) else []
     tools = data.get("tools") if isinstance(data.get("tools"), list) else []
     extensions = data.get("vscode_extensions") if isinstance(data.get("vscode_extensions"), list) else []
+    installed_extensions = _installed_vscode_extensions()
 
     for server in mcp_servers:
         runner = str(server.get("runner") or server.get("command") or "")
@@ -746,9 +917,18 @@ def catalog_report(root: Optional[Path] = None) -> Dict[str, Any]:
         }
     installed_tools = 0
     for tool in tools:
-        present = bool(shutil.which(str(tool.get("detect") or tool.get("id") or "")))
+        detect_names = tool.get("detect_any")
+        if not isinstance(detect_names, list):
+            detect_names = [tool.get("detect") or tool.get("id") or ""]
+        present = any(bool(shutil.which(str(name))) for name in detect_names if str(name).strip())
         tool["installed"] = present
         installed_tools += 1 if present else 0
+    installed_extension_count = 0
+    for extension in extensions:
+        extension_id = str(extension.get("id") or "").lower()
+        installed = bool(extension_id and extension_id in installed_extensions)
+        extension["installed"] = installed
+        installed_extension_count += 1 if installed else 0
 
     return {
         "ok": bool(data),
@@ -762,6 +942,7 @@ def catalog_report(root: Optional[Path] = None) -> Dict[str, Any]:
             "tools": len(tools),
             "tools_installed": installed_tools,
             "vscode_extensions": len(extensions),
+            "vscode_extensions_installed": installed_extension_count,
         },
         "mcp_servers": mcp_servers,
         "tools": tools,

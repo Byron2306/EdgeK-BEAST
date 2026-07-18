@@ -1,0 +1,68 @@
+{
+  "gemini": {
+    "avg_latency_ms": 5435.765,
+    "avg_provider_tokens_per_success": 4196.0,
+    "beast_completed": 10,
+    "beast_completion_rate": 1.0,
+    "clean_completed": 1,
+    "eligible_for_source_patching": false,
+    "hard_gates": {
+      "json_validity_ge_90": false,
+      "out_of_scope_edit_rate_le_2": true,
+      "rollback_success_100": false,
+      "syntax_error_rate_le_5": true,
+      "timeout_rate_le_10": true
+    },
+    "metrics": {
+      "cost_per_success_score": 0.6503333333333333,
+      "hidden_test_pass_rate": 0.0,
+      "json_validity_rate": 0.4,
+      "latency_per_success_score": 0.9547019583333334,
+      "out_of_scope_edit_rate": 0.0,
+      "out_of_scope_safety_score": 1.0,
+      "patch_apply_rate": 0.4,
+      "rollback_cleanliness_score": 0.0,
+      "rollback_success_rate": 0.0,
+      "schema_valid_rate": 0.4,
+      "syntax_error_rate": 0.0,
+      "timeout_rate": 0.0,
+      "verified_success_rate": 0.1
+    },
+    "rescued_completed": 9,
+    "sample_size": 10,
+    "score": 0.333
+  },
+  "groq": {
+    "avg_latency_ms": null,
+    "avg_provider_tokens_per_success": null,
+    "beast_completed": 10,
+    "beast_completion_rate": 1.0,
+    "clean_completed": 0,
+    "eligible_for_source_patching": false,
+    "hard_gates": {
+      "json_validity_ge_90": false,
+      "out_of_scope_edit_rate_le_2": true,
+      "rollback_success_100": false,
+      "syntax_error_rate_le_5": true,
+      "timeout_rate_le_10": true
+    },
+    "metrics": {
+      "cost_per_success_score": 1.0,
+      "hidden_test_pass_rate": 0.0,
+      "json_validity_rate": 0.2,
+      "latency_per_success_score": 1.0,
+      "out_of_scope_edit_rate": 0.0,
+      "out_of_scope_safety_score": 1.0,
+      "patch_apply_rate": 0.1,
+      "rollback_cleanliness_score": 0.0,
+      "rollback_success_rate": 0.0,
+      "schema_valid_rate": 0.1,
+      "syntax_error_rate": 0.0,
+      "timeout_rate": 0.0,
+      "verified_success_rate": 0.0
+    },
+    "rescued_completed": 10,
+    "sample_size": 10,
+    "score": 0.23
+  }
+}

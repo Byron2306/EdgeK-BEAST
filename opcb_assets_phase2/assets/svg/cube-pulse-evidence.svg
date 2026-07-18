@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180">
+  <defs>
+    <linearGradient id="g" x1="35" y1="20" x2="205" y2="160">
+      <stop stop-color="#39f0c2"/><stop offset=".5" stop-color="#39d7ff"/><stop offset="1" stop-color="#ffc857"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .edge{fill:none;stroke:url(#g);stroke-width:3;filter:url(#glow);stroke-linejoin:round}
+    .pulse{animation:pulse 1.85s ease-in-out infinite;transform-origin:120px 90px}
+    .link{stroke-dasharray:5 7;animation:flow 1.5s linear infinite}
+    @keyframes pulse{50%{opacity:.62;transform:scale(.97)}}
+    @keyframes flow{to{stroke-dashoffset:-24}}
+  </style>
+  <g class="pulse">
+    <path class="edge" d="M120 24l58 34v66l-58 34-58-34V58z"/>
+    <path class="edge" d="M62 58l58 34 58-34M120 92v66"/>
+    <path class="edge link" d="M78 91h84"/>
+    <circle cx="80" cy="91" r="7" fill="#39f0c2"/>
+    <circle cx="120" cy="91" r="9" fill="#fff"/>
+    <circle cx="160" cy="91" r="7" fill="#ffc857"/>
+  </g>
+</svg>

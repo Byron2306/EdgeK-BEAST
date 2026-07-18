@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1485,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:5a579dc1216f0e13353dc4ec379378e9004aea2bc87d6654dcfe9270d0da0002"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 4740,
+      "path": "run_manifest.json",
+      "sha256": "sha256:a89d07b5ac1d8e26ceaa34c710935f3993165496a41147efa944b7f62db638a6"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 675,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:8a0ca7c3416a20e841bfd334f64422591d3dc7322a7b0574265f467113f2ce0c"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 421,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:7c2ed1426d0a78c58be3ec447640a107229ad65138657180df2e8da3ccab6c8c"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.629929+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_cohere_first_provider_family_anchor_o1_full_gauntlet",
+    "registration_score": 2,
+    "signals": [
+      "provider_fitness",
+      "run_manifest"
+    ],
+    "source_path": "benchmarks/results/beast_cohere_first_provider_family_anchor_o1_full_gauntlet"
+  },
+  "manifest_hash": "sha256:33269b4b9bff11869e3bbbf65cb92dae38844e901f637a2e09bc96f11665da98",
+  "name": "Beast Cohere First Provider Family Anchor O1 Full Gauntlet",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_cohere_first_provider_family_anchor_o1_full_gauntlet",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

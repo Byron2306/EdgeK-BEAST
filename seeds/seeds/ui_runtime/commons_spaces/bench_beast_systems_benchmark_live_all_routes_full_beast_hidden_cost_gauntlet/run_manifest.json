@@ -1,0 +1,651 @@
+{
+  "artifact_layout": [
+    "run_manifest.json",
+    "provider_fitness.json",
+    "task_results.jsonl",
+    "failures_by_bucket.json",
+    "cost_latency_summary.md",
+    "evidence_cards/",
+    "patches/",
+    "rollback_snapshots/"
+  ],
+  "benchmark": "BEAST live systems benchmark with Gauntlet v2 fitness",
+  "contract_tests": [
+    "strict_json_only",
+    "source_patch_plan_schema",
+    "one_selected_file_only",
+    "python_indentation_preserved",
+    "out_of_scope_refusal"
+  ],
+  "generated_at": "2026-06-19T09:03:36Z",
+  "infra_gate_steps": [
+    "api_key_present",
+    "models_route_works",
+    "plain_chat_works",
+    "strict_json_works",
+    "streaming_works_if_claimed",
+    "beast_proxy_route_works",
+    "timeout_under_threshold"
+  ],
+  "lanes": [
+    "full_beast"
+  ],
+  "planned_run_count": 250,
+  "providers": [
+    {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openrouter/auto",
+      "provider": "openrouter",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b",
+      "provider": "openrouter_gptoss",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "qwen/qwen3-coder",
+      "provider": "openrouter_qwen_coder",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "OPENROUTER_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3.1",
+      "provider": "openrouter_deepseek",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "NVIDIA_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "provider": "nvidia_nim",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b",
+      "provider": "huggingface",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HYPERBOLIC_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "provider": "hyperbolic",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "NOVITA_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.novita.ai/openai",
+      "model": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "novita",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "FAL_KEY",
+      "api_key_present": true,
+      "base_url": "https://fal.run/openrouter/router/openai/v1",
+      "model": "openai/gpt-oss-120b",
+      "provider": "fal",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:nscale",
+      "provider": "nscale",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:ovhcloud",
+      "provider": "ovhcloud",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "COHERE_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "model": "command-a-03-2025",
+      "provider": "cohere",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:cerebras",
+      "provider": "cerebras",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:deepinfra",
+      "provider": "deepinfra",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "HF_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://router.huggingface.co/v1",
+      "model": "openai/gpt-oss-120b:featherless-ai",
+      "provider": "featherless",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "GROQ_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.groq.com/openai/v1",
+      "model": "llama-3.1-8b-instant",
+      "provider": "groq",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "GEMINI_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "provider": "gemini",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "SAMBANOVA_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.sambanova.ai/v1",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "provider": "sambanova",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "MISTRAL_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.mistral.ai/v1",
+      "model": "codestral-latest",
+      "provider": "mistral",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "CLOUDFARE_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/<redacted-cloudflare-account-id>/ai/v1",
+      "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+      "provider": "cloudflare",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat",
+      "provider": "deepseek",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "PUTER_AUTH_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://api.puter.com/puterai/openai/v1",
+      "model": "deepseek/deepseek-v3.2",
+      "provider": "puter_deepseek",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "LLM7_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.llm7.io/v1",
+      "model": "gpt-4.1-nano",
+      "provider": "llm7",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "AION_LABS_API_KEY",
+      "api_key_present": true,
+      "base_url": "https://api.aionlabs.ai/v1",
+      "model": "gpt-4o-mini",
+      "provider": "aion_labs",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    },
+    {
+      "api_key_env": "GITHUB_MODELS_TOKEN",
+      "api_key_present": true,
+      "base_url": "https://models.github.ai/inference",
+      "model": "openai/gpt-4o-mini",
+      "provider": "github_models",
+      "stage0_route_gates": {
+        "api_key_present": true,
+        "beast_proxy_route_works": "not_run_direct_provider_matrix",
+        "models_route_works": "not_run_in_benchmark_manifest",
+        "plain_chat_works": "covered_by_live_call",
+        "streaming_works_if_claimed": "not_claimed",
+        "strict_json_works": "covered_by_output_gate",
+        "timeout_under_threshold": true
+      },
+      "timeout_seconds": 180.0
+    }
+  ],
+  "separation_rule": {
+    "clean_completed": "Provider output passed BEAST gates and pytest without canonicalization, schema repair, or local verifier repair.",
+    "fitness": "Provider hard gates are scored separately from BEAST end-to-end completion.",
+    "rescued_completed": "BEAST completed the task after canonicalization, schema repair, or local verifier repair."
+  },
+  "tasks": [
+    {
+      "allowed_files": [
+        "app/kernel/provider_registry.py",
+        "app/cli/api.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_contracts_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_model_wiring",
+      "task_id": "provider_model_wiring",
+      "visible_tests": [
+        "tests/test_provider_contracts.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/config.py"
+      ],
+      "hidden_tests": [
+        "tests/test_config_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "config_validation_edge_case",
+      "task_id": "config_validation_edge_case",
+      "visible_tests": [
+        "tests/test_config.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_parser.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_parser_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_id_parser",
+      "task_id": "provider_id_parser",
+      "visible_tests": [
+        "tests/test_provider_parser.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/service.py",
+        "app/math_ops.py"
+      ],
+      "hidden_tests": [
+        "tests/test_invoice_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "multi_file_hidden_decimal_fix",
+      "task_id": "multi_file_hidden_decimal_fix",
+      "visible_tests": [
+        "tests/test_invoice_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/tui_state.py"
+      ],
+      "hidden_tests": [
+        "tests/test_tui_state_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "ui_state_collapse_selection",
+      "task_id": "ui_state_collapse_selection",
+      "visible_tests": [
+        "tests/test_tui_state_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/streaming.py"
+      ],
+      "hidden_tests": [
+        "tests/test_streaming_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "async_streaming_empty_chunk",
+      "task_id": "async_streaming_empty_chunk",
+      "visible_tests": [
+        "tests/test_streaming.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/provider_config.py"
+      ],
+      "hidden_tests": [
+        "tests/test_provider_config_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "provider_config_secret_redaction",
+      "task_id": "provider_config_secret_redaction",
+      "visible_tests": [
+        "tests/test_provider_config.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/rollback.py"
+      ],
+      "hidden_tests": [
+        "tests/test_rollback_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "patch_rollback_created_file",
+      "task_id": "patch_rollback_created_file",
+      "visible_tests": [
+        "tests/test_rollback_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/output_guard.py"
+      ],
+      "hidden_tests": [
+        "tests/test_output_guard_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "output_governance_malformed_json",
+      "task_id": "output_governance_malformed_json",
+      "visible_tests": [
+        "tests/test_output_guard_public.py"
+      ]
+    },
+    {
+      "allowed_files": [
+        "app/nim_contract.py"
+      ],
+      "hidden_tests": [
+        "tests/test_nim_contract_hidden.py"
+      ],
+      "success_criteria": [
+        "output gate compiles",
+        "pytest tests pass",
+        "scope remains within allowed files"
+      ],
+      "task_class": "nim_refs_only_contract",
+      "task_id": "nim_refs_only_contract",
+      "visible_tests": [
+        "tests/test_nim_contract_public.py"
+      ]
+    }
+  ],
+  "trials": 1
+}

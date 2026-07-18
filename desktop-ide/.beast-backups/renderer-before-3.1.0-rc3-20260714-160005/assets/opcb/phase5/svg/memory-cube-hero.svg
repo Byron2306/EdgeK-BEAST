@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220">
+  <defs>
+    <linearGradient id="g" x1="35" y1="20" x2="225" y2="190">
+      <stop stop-color="#b36bff"/><stop offset=".5" stop-color="#39d7ff"/><stop offset="1" stop-color="#39f0c2"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="42%" r="60%">
+      <stop stop-color="#fff" stop-opacity=".9"/>
+      <stop offset=".4" stop-color="#b36bff" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .cube{fill:url(#core);stroke:url(#g);stroke-width:3;filter:url(#glow);stroke-linejoin:round;animation:pulse 2.6s ease-in-out infinite}
+    .ring{fill:none;stroke:url(#g);stroke-width:2;opacity:.35}
+    @keyframes pulse{50%{opacity:.72;transform:scale(.985);transform-origin:130px 108px}}
+  </style>
+  <path class="cube" d="M130 22l72 42v84l-72 42-72-42V64z"/>
+  <path class="ring" d="M58 64l72 42 72-42M130 106v84"/>
+  <circle cx="130" cy="106" r="23" fill="#39d7ff" opacity=".2" stroke="#39d7ff"/>
+  <path d="M110 108h40M130 88v40" stroke="#fff" stroke-width="3" opacity=".7"/>
+</svg>

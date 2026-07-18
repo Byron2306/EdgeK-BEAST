@@ -105,18 +105,19 @@ class BeastIntegrationHarness:
 
         crystal_request = request.crystal_request()
         crystal_decision = self.crystal_gateway.decide(crystal_request)
+        reuse_disabled = bool(request.metadata.get("disable_crystal_reuse"))
         execution_result: Dict[str, Any] = {
             "called": False,
-            "response": self._reused_response(crystal_decision.to_dict()),
-            "status": "skipped_by_crystal_reuse",
+            "response": "" if reuse_disabled else self._reused_response(crystal_decision.to_dict()),
+            "status": "reuse_disabled_for_mutation" if reuse_disabled else "skipped_by_crystal_reuse",
         }
         verification: Dict[str, Any] = {
-            "verified": True,
-            "reason": "crystal_reuse_decision_reused_existing_artifact",
+            "verified": not reuse_disabled,
+            "reason": "reuse_disabled_for_mutation" if reuse_disabled else "crystal_reuse_decision_reused_existing_artifact",
         }
         crystal_record: Optional[Dict[str, Any]] = None
 
-        should_execute = crystal_decision.action in {"execute_local_cpu", "execute_litellm_cloud", "execute_provider"}
+        should_execute = reuse_disabled or crystal_decision.action in {"execute_local_cpu", "execute_litellm_cloud", "execute_provider"}
         if should_execute:
             execution_result = self._execute_provider(crystal_request)
             execution_result.setdefault("route", "local_cpu" if crystal_decision.action == "execute_local_cpu" else "litellm_cloud")

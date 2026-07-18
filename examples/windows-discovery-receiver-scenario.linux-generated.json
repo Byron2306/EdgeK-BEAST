@@ -1,0 +1,27 @@
+{
+  "preregistration": {"corpus": "linux-generated-v1", "seed": 11},
+  "origin_host_id": "linux-origin",
+  "receiver": {
+    "host_id": "windows-receiver",
+    "physical_host": true,
+    "attestation_expires_at": 4102444800,
+    "policy_digest": "sha256:replace-with-sealed-policy",
+    "verifier_digest": "sha256:replace-with-sealed-verifier",
+    "state_digest": "sha256:replace-with-sealed-state",
+    "runtime_digest": "sha256:replace-with-sealed-runtime",
+    "attestation_evidence": {"node_advertisement": "REPLACE_WITH_SIGNED_ARDA_NODE_ADVERTISEMENT"}
+  },
+  "cases": [{
+    "case_id": "normalize-provider-identifier",
+    "expected_admission": true,
+    "task": {"task_id": "distant-words", "contract": {
+      "operation": "normalize_provider_identifier",
+      "input_schema": {"provider": "string"},
+      "output_schema": {"provider": "canonical"},
+      "invariants": ["case_fold"],
+      "tool_schema_digest": "sha256:replace-with-tool-schema",
+      "risk_tier": "low"
+    }, "policy_digest": "sha256:replace-with-sealed-policy", "verifier_digest": "sha256:replace-with-sealed-verifier", "state_digest": "sha256:replace-with-sealed-state", "runtime_digest": "sha256:replace-with-sealed-runtime},
+    "candidates": []
+  }]
+}

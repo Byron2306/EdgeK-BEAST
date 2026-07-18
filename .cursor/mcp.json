@@ -10,6 +10,72 @@
       "env": {
         "BEAST_WORKSPACE": "/home/byron/EdgeK-BEAST"
       }
+    },
+    "fetch": {
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "command": "uvx"
+    },
+    "filesystem": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/byron/EdgeK-BEAST"
+      ],
+      "command": "npx"
+    },
+    "git": {
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "/home/byron/EdgeK-BEAST"
+      ],
+      "command": "uvx"
+    },
+    "github": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "command": "npx"
+    },
+    "memory": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "command": "npx"
+    },
+    "playwright": {
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "command": "npx"
+    },
+    "postgres": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "${POSTGRES_DSN}"
+      ],
+      "command": "npx"
+    },
+    "sequential-thinking": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "command": "npx"
+    },
+    "sqlite": {
+      "args": [
+        "mcp-server-sqlite",
+        "--db-path",
+        "/home/byron/EdgeK-BEAST/data/beast.db"
+      ],
+      "command": "uvx"
     }
   }
 }

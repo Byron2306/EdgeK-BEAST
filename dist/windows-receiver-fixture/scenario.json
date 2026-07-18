@@ -1,0 +1,99 @@
+{
+  "preregistration": {
+    "corpus": "integration-v1",
+    "seed": 11
+  },
+  "origin_host_id": "origin-host",
+  "receiver": {
+    "host_id": "receiver-host",
+    "physical_host": true,
+    "attestation_expires_at": 1784301385.947395,
+    "policy_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "verifier_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "state_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "runtime_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "attestation_evidence": {
+      "node_advertisement": {
+        "node_id": "receiver-host",
+        "attestation": "verified",
+        "capabilities": [
+          "cpu",
+          "tpm"
+        ],
+        "pressure_budget": 0.8,
+        "reliability": 0.9,
+        "route_penalty": 0.0,
+        "expires_at": 1784301385.947395,
+        "appraisal_ref": "arda:node:receiver",
+        "attestation_evidence": {
+          "appraisal_ref": "arda:node:receiver",
+          "policy_generation": "policy-1",
+          "authority": "arda",
+          "state": "verified",
+          "expires_at": 1784301385.947395,
+          "audience": "commons-job-choir",
+          "decision": {
+            "authority": "arda",
+            "allowed": true,
+            "request_digest": "sha256:23b11be4693ac18a50721f80ad333c4b966846da6ab9c3e3bbd3677404fe4efb",
+            "policy_generation": "policy-1",
+            "nonce": "nonce-1",
+            "signature": "eg36DVbXVZ0JH2Lc8xwKV+8sTCnoYqJurTxC14gVHGoVHMEgjFz4ZXFlIE3buY7OmiNYuQ/8FK1Ju7wRL7wLAw==",
+            "verification_material": {
+              "key_id": "arda-key"
+            }
+          }
+        }
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "positive",
+      "expected_admission": true,
+      "task": {
+        "task_id": "distant-words",
+        "contract": {
+          "operation": "normalize_provider_identifier",
+          "input_schema": {
+            "provider": "string"
+          },
+          "output_schema": {
+            "provider": "canonical"
+          },
+          "invariants": [
+            "case_fold"
+          ],
+          "tool_schema_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "risk_tier": "low"
+        },
+        "policy_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "verifier_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "state_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "runtime_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "candidates": [
+        {
+          "candidate_id": "origin-candidate",
+          "semantic_contract_digest": "sha256:69b99ed64a6c2a8ea9cb32fba427e1b7aceb5d92b21e526159e4ec342c547775",
+          "policy_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "verifier_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "state_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "runtime_compatible_digests": [
+            "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          ],
+          "expires_at": 1784301385.947395,
+          "source": "peer_exchange"
+        }
+      ],
+      "economics": {
+        "baseline_provider_ms": 100.0,
+        "discovery_ms": 1.0,
+        "transfer_ms": 1.0,
+        "reproduction_ms": 2.0,
+        "execution_ms": 1.0,
+        "verifier_ms": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "contract_id": "beast.sensorium.port-reuse.v1",
+  "created_at": 1784117134.2089238,
+  "experiment_id": "windows-port-crystal:91bcd85fa8b347b1be58b23a69d3a2b3",
+  "fixture_built_candidate": false,
+  "heldout_trials": [
+    {
+      "expected": "reuse_existing_service",
+      "id": "sha256:0c00f1b584a0baf38293f18b1ea9a2b466dd77b706825bbb41f243a4a69edadb",
+      "observed": "reuse_existing_service",
+      "port": 53373,
+      "verified": true
+    },
+    {
+      "expected": "reuse_existing_service",
+      "id": "sha256:69b240714d9c4994906aca4e66dc7a19245533da8c508ea46b2f60407466f1b1",
+      "observed": "reuse_existing_service",
+      "port": 53375,
+      "verified": true
+    },
+    {
+      "expected": "reuse_existing_service",
+      "id": "sha256:da98bb71fc8979014d45203c3f0df5f5788419807ac7c9504925c8995844da96",
+      "observed": "reuse_existing_service",
+      "port": 53377,
+      "verified": true
+    },
+    {
+      "expected": "request_operator_approval",
+      "id": "sha256:bbcb6ee15186bbfe099cbefadcc1190c744b8084cb0fc534481585218ca0cfd7",
+      "negative": true,
+      "observed": "request_operator_approval",
+      "port": 53379,
+      "verified": true
+    }
+  ],
+  "inferred_parameters": [
+    "requested_port"
+  ],
+  "machine": "DESKTOP-A0VN5FH",
+  "negative_episode_hashes": [
+    "sha256:8e59d88b6705455f1eb734a8d70872227cfc742c8903668979577ffd2a2d5839"
+  ],
+  "physical_domain": "windows-11",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "positive_episode_hashes": [
+    "sha256:d633829bb03ce9e8f4b6a41c50623928fd215b23a410f0c14a8986f8d339b127",
+    "sha256:8801f17be29b54e4a23ccee2adfd18f799938c17a70bc1ab0a2ace07a75414d5",
+    "sha256:15239f69f96da9a20753a7a53ebb304e2402752ee99ecb2ed77a213e046bc48f"
+  ],
+  "provider_calls": 0,
+  "provider_disabled_recurrence": true,
+  "receipt_digest": "sha256:1d5ca4543e3113c5bffcc642e27a8b85cba2121f1c579d8ed566132105ce0c04",
+  "self_test": false,
+  "stale_process_refused": true,
+  "structural_signature": [
+    [
+      "socket.inventory",
+      "observation"
+    ],
+    [
+      "repair.select_branch",
+      "decision"
+    ],
+    [
+      "service.verify_health",
+      "verification"
+    ]
+  ],
+  "verified": true
+}

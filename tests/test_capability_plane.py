@@ -49,3 +49,15 @@ def test_capability_plane_query_filters_local_reusable_capabilities(tmp_path):
     assert result["query"]["reusable"] is True
     assert all(item["local"] for item in result["capabilities"])
     assert all(item["reusable"] for item in result["capabilities"])
+
+
+def test_capability_plane_exposes_lazy_least_authority_view(tmp_path):
+    plane = _plane(tmp_path)
+
+    result = plane.expose(phase="Observe", include_schemas=False, limit=20)
+
+    assert result["beast_object_type"] == "capability_plane_exposure"
+    assert result["schema_mode"] == "lazy"
+    assert result["receipt"]["context"]["phase"] == "Observe"
+    assert all(item["bucket"] == "Observe" for item in result["capabilities"])
+    assert all("metadata" not in item for item in result["capabilities"])

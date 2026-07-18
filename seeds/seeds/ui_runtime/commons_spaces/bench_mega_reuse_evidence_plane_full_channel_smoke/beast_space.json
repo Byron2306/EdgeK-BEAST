@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 940,
+      "path": "README.md",
+      "sha256": "sha256:93061f212bbab90d689b9cbac6d60d16bd6cd7ec438703e9ca8a3238529b6b73"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 3669,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:04687f452f9b8cad7cfc60a3022288b63fa34ee67b7999c54c2e74eb054f2934"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 3,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 13754,
+      "path": "run_manifest.json",
+      "sha256": "sha256:04a6551660ec4e24c6e4c6daf33c0ebcd9efd65f7a29c70181c78c495b91826e"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 52,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:564c4a89650c2f82f2ad451d4245d67dcd042fa33273222eea8a6440e7c40925"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 3,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.388338+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "mega_reuse_evidence_plane_full_channel_smoke",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/mega_reuse_evidence_plane_full_channel_smoke"
+  },
+  "manifest_hash": "sha256:12ff574a8a1f2d300a841bb84eaab36b1771b7000483e9f8ac55d1f7fc0cb8f0",
+  "name": "Mega Reuse Evidence Plane Full Channel Smoke",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_mega_reuse_evidence_plane_full_channel_smoke",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

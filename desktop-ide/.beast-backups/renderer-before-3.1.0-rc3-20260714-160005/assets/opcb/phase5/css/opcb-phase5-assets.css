@@ -1,0 +1,99 @@
+/* OPCB Phase 5 Asset Helpers: Map + Memory */
+:root {
+  --asset-cyan: #39d7ff;
+  --asset-teal: #39f0c2;
+  --asset-violet: #b36bff;
+  --asset-gold: #ffc857;
+  --asset-red: #ff5d6c;
+}
+
+.opcb-page-art.map {
+  background-image: url("../svg/map-page-bg.svg");
+}
+
+.opcb-page-art.memory {
+  background-image: url("../svg/memory-page-bg.svg");
+}
+
+.opcb-map-hero,
+.opcb-memory-hero {
+  width: min(320px, 100%);
+  aspect-ratio: 14 / 9;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 14px rgba(57, 215, 255, .62))
+    drop-shadow(0 0 32px rgba(179, 107, 255, .24));
+}
+
+.opcb-memory-hero {
+  aspect-ratio: 13 / 11;
+}
+
+.opcb-map-pulse,
+.opcb-memory-pulse {
+  width: 164px;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+.opcb-node-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(57, 215, 255, .3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(7, 20, 38, .78);
+  color: #c8e6ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opcb-node-chip[data-type="entry"],
+.opcb-node-chip[data-type="agent"] {
+  border-color: rgba(57, 240, 194, .42);
+  color: var(--asset-teal);
+}
+
+.opcb-node-chip[data-type="external"] {
+  border-color: rgba(255, 200, 87, .42);
+  color: var(--asset-gold);
+}
+
+.opcb-node-chip[data-type="orphan"] {
+  border-color: rgba(255, 93, 108, .42);
+  color: var(--asset-red);
+}
+
+.opcb-memory-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(179, 107, 255, .35);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: rgba(7, 20, 38, .78);
+  color: #d9c8ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opcb-memory-chip[data-fresh="true"] {
+  border-color: rgba(57, 240, 194, .42);
+  color: var(--asset-teal);
+}
+
+.opcb-map-glow {
+  border-color: rgba(57, 215, 255, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(57, 215, 255, .12),
+    0 0 24px rgba(57, 215, 255, .16);
+}
+
+.opcb-memory-glow {
+  border-color: rgba(179, 107, 255, .42) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(179, 107, 255, .12),
+    0 0 24px rgba(179, 107, 255, .16);
+}

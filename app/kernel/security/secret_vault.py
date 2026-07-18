@@ -126,17 +126,27 @@ class SecretVault:
             "providers": self._provider_counts(entries),
         }
 
-    def import_file(self, source_path: str, overwrite: bool = False, load: bool = True) -> Dict[str, object]:
-        """Parse a user secret file and write the normalized env vault."""
+    def import_file(self, source_path: str, overwrite: bool = False, load: bool = True, merge: bool = False) -> Dict[str, object]:
+        """Parse a user secret file and write the normalized env vault.
+
+        ``merge`` is the safe operator path for adding credentials from a
+        second provider file. Existing entries are retained and incoming
+        values replace only matching environment names.
+        """
         source = Path(source_path).expanduser()
         if not source.exists():
             raise ValueError(f"Secret source not found: {source}")
-        if self.vault_path.exists() and not overwrite:
+        if self.vault_path.exists() and not overwrite and not merge:
             raise ValueError(f"Vault already exists: {self.vault_path}")
 
         entries = self.parse_secret_text(source.read_text(encoding="utf-8", errors="replace"))
         if not entries:
             raise ValueError("No importable secret entries found")
+
+        if merge and self.vault_path.exists():
+            existing = {entry.env_name: entry for entry in self.read_env_file(self.vault_path)}
+            existing.update({entry.env_name: entry for entry in entries})
+            entries = list(existing.values())
 
         self.vault_path.parent.mkdir(parents=True, exist_ok=True)
         lines = [
@@ -153,6 +163,7 @@ class SecretVault:
             "source_path": str(source),
             "vault_path": str(self.vault_path),
             "written": True,
+            "merged": bool(merge),
             "mode": oct(self.vault_path.stat().st_mode & 0o777),
             "entries": [entry.redacted() for entry in entries],
             "providers": self._provider_counts(entries),

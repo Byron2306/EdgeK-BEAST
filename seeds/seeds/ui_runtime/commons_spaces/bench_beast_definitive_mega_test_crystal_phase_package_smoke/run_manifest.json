@@ -1,0 +1,383 @@
+{
+  "acceptance_status": {
+    "compute_governor_receipts_present": false,
+    "crystal_compute_phase_package_passed": true,
+    "crystal_compute_phase_package_present": true,
+    "live_verified": false,
+    "matrix_planned": true,
+    "secret_scan_required_before_claim": true
+  },
+  "batch": {
+    "batch_index": 0,
+    "end": 1,
+    "families": [
+      "route_diagnostics"
+    ],
+    "lanes": [
+      "full_beast_compute_governor"
+    ],
+    "observations": 1,
+    "occurrences": [
+      1
+    ],
+    "providers": [
+      "nvidia_nim"
+    ],
+    "start": 0,
+    "total_batches": 1
+  },
+  "beast_object_type": "definitive_mega_test_report",
+  "commit": "3d5242309c6abdbaba8bd13ea029839700c5b201",
+  "cross_source_provider": null,
+  "crystal_compute_phase_package": {
+    "beast_object_type": "crystal_compute_phase_package",
+    "claim_boundary": "Phases 1-6 are integrated as local/shadow/advisory evidence in the mega-test artifact. Live provider displacement remains governed by the live mega observations and receipt package.",
+    "generated_at": "2026-06-21T16:55:53Z",
+    "passed": true,
+    "phase_count": 6,
+    "phases": [
+      {
+        "beast_object_type": "compute_governor_phase1_token_calibration",
+        "claim_boundary": "Synthetic paired usage deltas calibrate receipt arithmetic; live-provider calibration remains continuous operational monitoring.",
+        "label": "Phase 1",
+        "passed": true,
+        "phase_id": "phase_1_token_calibration",
+        "report": {
+          "avoidable_token_mean_absolute_error": 0.0,
+          "beast_object_type": "compute_governor_phase1_token_calibration",
+          "calibration_coverage_rate": 1.0,
+          "claim_boundary": "Synthetic paired usage deltas calibrate receipt arithmetic; live-provider calibration remains continuous operational monitoring.",
+          "mode": "deterministic_paired_usage_calibration",
+          "paired_attempts": 18,
+          "passed": true,
+          "provider_execution_preserved": true,
+          "suppression_decisions_enforced": 0,
+          "task_classes": 6,
+          "version": "1.0"
+        }
+      },
+      {
+        "beast_object_type": "compute_governor_phase2_routing_benchmark",
+        "claim_boundary": "Paired shadow routing measures route displacement pressure only; enforcement remains disabled.",
+        "label": "Phase 2",
+        "passed": true,
+        "phase_id": "phase_2_friction_routing",
+        "report": {
+          "beast_object_type": "compute_governor_phase2_routing_benchmark",
+          "case_count": 3,
+          "claim_boundary": "Paired shadow routing measures route displacement pressure only; enforcement remains disabled.",
+          "expected_change_match_rate": 1.0,
+          "friction_selection_change_count": 3,
+          "friction_selection_change_rate": 0.333333,
+          "mode": "paired_friction_shadow_routing",
+          "paired_attempts": 9,
+          "passed": true,
+          "repeats": 3,
+          "rows": [
+            {
+              "base_selected_provider": "nim",
+              "case_id": "clean_winner_high_friction",
+              "enforced_selected_provider": "groq",
+              "expected_change": true,
+              "friction_selected_provider": "groq",
+              "repeat": 0,
+              "selection_would_change": true,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "nim"
+            },
+            {
+              "base_selected_provider": "xai",
+              "case_id": "clean_winner_low_confidence_friction",
+              "enforced_selected_provider": "xai",
+              "expected_change": false,
+              "friction_selected_provider": "xai",
+              "repeat": 0,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "xai"
+            },
+            {
+              "base_selected_provider": "gemini",
+              "case_id": "no_matching_friction",
+              "enforced_selected_provider": "gemini",
+              "expected_change": false,
+              "friction_selected_provider": "gemini",
+              "repeat": 0,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "gemini"
+            },
+            {
+              "base_selected_provider": "nim",
+              "case_id": "clean_winner_high_friction",
+              "enforced_selected_provider": "groq",
+              "expected_change": true,
+              "friction_selected_provider": "groq",
+              "repeat": 1,
+              "selection_would_change": true,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "nim"
+            },
+            {
+              "base_selected_provider": "xai",
+              "case_id": "clean_winner_low_confidence_friction",
+              "enforced_selected_provider": "xai",
+              "expected_change": false,
+              "friction_selected_provider": "xai",
+              "repeat": 1,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "xai"
+            },
+            {
+              "base_selected_provider": "gemini",
+              "case_id": "no_matching_friction",
+              "enforced_selected_provider": "gemini",
+              "expected_change": false,
+              "friction_selected_provider": "gemini",
+              "repeat": 1,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "gemini"
+            },
+            {
+              "base_selected_provider": "nim",
+              "case_id": "clean_winner_high_friction",
+              "enforced_selected_provider": "groq",
+              "expected_change": true,
+              "friction_selected_provider": "groq",
+              "repeat": 2,
+              "selection_would_change": true,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "nim"
+            },
+            {
+              "base_selected_provider": "xai",
+              "case_id": "clean_winner_low_confidence_friction",
+              "enforced_selected_provider": "xai",
+              "expected_change": false,
+              "friction_selected_provider": "xai",
+              "repeat": 2,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "xai"
+            },
+            {
+              "base_selected_provider": "gemini",
+              "case_id": "no_matching_friction",
+              "enforced_selected_provider": "gemini",
+              "expected_change": false,
+              "friction_selected_provider": "gemini",
+              "repeat": 2,
+              "selection_would_change": false,
+              "shadow_preserved_current_route": true,
+              "shadow_selected_provider": "gemini"
+            }
+          ],
+          "shadow_preserved_current_route_rate": 1.0,
+          "version": "1.0"
+        }
+      },
+      {
+        "beast_object_type": "compute_governor_phase3_counterfactuals",
+        "claim_boundary": "Local benchmark proves rejected-route crystal capture and later route resolution; promotion remains advisory.",
+        "label": "Phase 3",
+        "passed": true,
+        "phase_id": "phase_3_counterfactual_crystals",
+        "report": {
+          "beast_object_type": "compute_governor_phase3_counterfactuals",
+          "calibrated_match_rate": 0.0,
+          "claim_boundary": "Local benchmark proves rejected-route crystal capture and later route resolution; promotion remains advisory.",
+          "created_total": 2,
+          "ledger_resolved_total": 3,
+          "mode": "local_counterfactual_crystal_resolution",
+          "passed": true,
+          "repeats": 2,
+          "resolved_total": 2,
+          "rows": [
+            {
+              "created": 1,
+              "repeat": 0,
+              "resolution_receipt_id": "crec_ad647c1bed324059b311",
+              "resolved": 1
+            },
+            {
+              "created": 1,
+              "repeat": 1,
+              "resolution_receipt_id": "crec_76a8937a88a64a0da057",
+              "resolved": 1
+            }
+          ],
+          "version": "1.0"
+        }
+      },
+      {
+        "beast_object_type": "compute_governor_phase4_escrow",
+        "claim_boundary": "Local escrow benchmark proves reserve/settle/refund accounting; production budget enforcement remains policy-gated.",
+        "label": "Phase 4",
+        "passed": true,
+        "phase_id": "phase_4_compute_escrow",
+        "report": {
+          "actual_cost_usd": 0.041,
+          "beast_object_type": "compute_governor_phase4_escrow",
+          "claim_boundary": "Local escrow benchmark proves reserve/settle/refund accounting; production budget enforcement remains policy-gated.",
+          "mode": "local_compute_escrow_reserve_settle_refund",
+          "passed": true,
+          "refunded_cost_usd": 0.06,
+          "repeats": 2,
+          "reserved_cost_usd": 0.101,
+          "rows": [
+            {
+              "actual_cost_usd": 0.02,
+              "refunded_cost_usd": 0.03,
+              "repeat": 0,
+              "reserved_cost_usd": 0.05,
+              "reserved_status": "reserved",
+              "settled_status": "settled_verified",
+              "verified_delivery": true
+            },
+            {
+              "actual_cost_usd": 0.021,
+              "refunded_cost_usd": 0.03,
+              "repeat": 1,
+              "reserved_cost_usd": 0.051000000000000004,
+              "reserved_status": "reserved",
+              "settled_status": "settled_verified",
+              "verified_delivery": true
+            }
+          ],
+          "settled": 2,
+          "verified_delivery_rate": 1.0,
+          "version": "1.0"
+        }
+      },
+      {
+        "beast_object_type": "compute_governor_phase5_temporal_forks",
+        "claim_boundary": "Local benchmark proves bounded temporal channels, rollback isolation, promotion gating, and annealing operations; production rollout remains approval/policy gated.",
+        "label": "Phase 5",
+        "passed": true,
+        "phase_id": "phase_5_temporal_forks",
+        "report": {
+          "annealing": {
+            "beast_object_type": "crystal_annealing_report",
+            "fork_count": 8,
+            "merged_duplicates": 1,
+            "retired_stale": 1,
+            "split_multimodal": 1,
+            "version": "1.0"
+          },
+          "beast_object_type": "compute_governor_phase5_temporal_forks",
+          "candidate_traffic_share": 0.25,
+          "claim_boundary": "Local benchmark proves bounded temporal channels, rollback isolation, promotion gating, and annealing operations; production rollout remains approval/policy gated.",
+          "experimental_state_after_failure": "rolled_back",
+          "experimental_traffic_share": 0.05,
+          "fork_state": {
+            "channels": {
+              "candidate": 4,
+              "experimental": 2,
+              "stable": 2
+            },
+            "states": {
+              "active": 5,
+              "merged": 1,
+              "retired": 1,
+              "rolled_back": 1
+            }
+          },
+          "passed": true,
+          "promoted_channel": "stable",
+          "stable_traffic_after_experiment": 1.0,
+          "version": "1.0"
+        }
+      },
+      {
+        "beast_object_type": "compute_governor_phase6_durable_intelligence",
+        "claim_boundary": "Local benchmark proves redundant shard repair, deterministic promotion replay, and value-aware GC; distributed object-store replication remains future integration work.",
+        "label": "Phase 6",
+        "passed": true,
+        "phase_id": "phase_6_durable_intelligence",
+        "report": {
+          "beast_object_type": "compute_governor_phase6_durable_intelligence",
+          "claim_boundary": "Local benchmark proves redundant shard repair, deterministic promotion replay, and value-aware GC; distributed object-store replication remains future integration work.",
+          "fossil_replay": {
+            "checkpoint_count": 2,
+            "decisions": [
+              "stage_candidate",
+              "promote"
+            ],
+            "final_status": "promoted",
+            "replay_hash": "sha256:cb672919623148f5c239f84de6e0023ad4c6efe8c0b09bbd93ae6131fbf85f70",
+            "valid_lineage": true
+          },
+          "garbage_collection": {
+            "beast_object_type": "semantic_raid_gc_report",
+            "collected": 0,
+            "retained": 1,
+            "version": "1.0"
+          },
+          "passed": true,
+          "semantic_raid": {
+            "after_ok": true,
+            "artifact_integrity_rate": 1.0,
+            "before_ok": true,
+            "damaged_ok": false,
+            "repaired_refs": 1
+          },
+          "version": "1.0"
+        }
+      }
+    ],
+    "version": "1.0"
+  },
+  "families": [
+    "route_diagnostics"
+  ],
+  "full_plan_summary": {
+    "by_family": {
+      "route_diagnostics": 1
+    },
+    "by_lane": {
+      "full_beast_compute_governor": 1
+    },
+    "by_provider": {
+      "nvidia_nim": 1
+    },
+    "observations": 1
+  },
+  "generated_at": "2026-06-21T16:55:53Z",
+  "lanes": [
+    "full_beast_compute_governor"
+  ],
+  "live": false,
+  "mode": "controlled",
+  "occurrences": [
+    1
+  ],
+  "plan_summary": {
+    "by_family": {
+      "route_diagnostics": 1
+    },
+    "by_lane": {
+      "full_beast_compute_governor": 1
+    },
+    "by_provider": {
+      "nvidia_nim": 1
+    },
+    "observations": 1
+  },
+  "platform": "Linux-6.12.86+deb13-amd64-x86_64-with-glibc2.41",
+  "provider_manifest": {
+    "nvidia_nim": {
+      "api_key_env": "NVIDIA_API_KEY",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "secret_present": true,
+      "timeout": 180.0
+    }
+  },
+  "providers": [
+    "nvidia_nim"
+  ],
+  "python": "3.13.5",
+  "route_set": "custom"
+}

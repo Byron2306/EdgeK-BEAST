@@ -1,4 +1,11 @@
 from app.kernel.deployment.plugin_marketplace import PluginMarketplace
+
+
+def test_default_registry_uses_mutable_state_not_source_tree(monkeypatch, tmp_path):
+    monkeypatch.delenv("BEAST_STATE_ROOT", raising=False)
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    marketplace = PluginMarketplace()
+    assert marketplace.registry_dir == tmp_path / "state" / "beast" / "plugins"
 from app.mcp.broker import MCPBroker
 from app.kernel.registry.beast_builtin_plugins import manifests, invoke
 

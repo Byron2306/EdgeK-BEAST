@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <radialGradient id="r1" cx="30%" cy="20%" r="70%">
+      <stop stop-color="#122f54" stop-opacity=".72"/>
+      <stop offset=".55" stop-color="#061426" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r2" cx="85%" cy="10%" r="45%">
+      <stop stop-color="#39d7ff" stop-opacity=".16"/>
+      <stop offset=".45" stop-color="#b36bff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="micro" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0v24" fill="none" stroke="#39d7ff" stroke-width=".45" opacity=".15"/>
+      <circle cx="0" cy="0" r="1" fill="#39f0c2" opacity=".26"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#r1)"/>
+  <rect width="1600" height="900" fill="url(#r2)"/>
+  <rect width="1600" height="900" fill="url(#micro)" opacity=".8"/>
+  <g fill="none" stroke="#39d7ff" stroke-opacity=".18">
+    <path d="M1140 180h230v140h-230z"/>
+    <path d="M1190 220h160M1190 260h120M1190 300h145"/>
+  </g>
+</svg>

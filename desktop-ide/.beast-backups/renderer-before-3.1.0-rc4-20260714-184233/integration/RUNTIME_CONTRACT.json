@@ -1,0 +1,89 @@
+{
+  "version": "3.1.0-rc4",
+  "desktop_api": [
+    "status",
+    "chooseWorkspace",
+    "listFiles",
+    "readFile",
+    "fileOperation",
+    "toolingSnapshot",
+    "systemSnapshot",
+    "releaseReadiness",
+    "restartGateway",
+    "openWorkspaceWindow",
+    "openGateway",
+    "gatewayRequest",
+    "onWorkspaceSelected",
+    "onRefresh",
+    "onGatewayLog",
+    "onDesktopVersion"
+  ],
+  "transport_precedence": [
+    "window.beastDesktop.gatewayRequest",
+    "fetch(http://127.0.0.1:8000)",
+    "explicit offline normalization"
+  ],
+  "renderer_owners": {
+    "page_outlet": 1,
+    "context_rail": 1,
+    "app": "beast-release-app.js",
+    "visual": "beast-visual-runtime.js",
+    "css": "beast-production.css"
+  },
+  "state_preservation": [
+    "route scroll position",
+    "focused control",
+    "Monaco models",
+    "dirty buffers",
+    "selected nodes",
+    "workspace root"
+  ],
+  "removed_active_owners": [
+    "beast-tokens.css",
+    "beast-shell.css",
+    "beast-fx.css",
+    "beast-editor-cortex.css",
+    "beast-models-agents.css",
+    "beast-review-evidence.css",
+    "beast-trust-memory.css",
+    "beast-phase6-polish.css",
+    "beast-map-crystal.css",
+    "beast-phase6-5-visual-legibility.css",
+    "beast-phase7-terminal-tooling-doctor.css",
+    "beast-phase7-1-icon-containment.css",
+    "beast-phase8-utility-orchestration.css",
+    "beast-phase9-visual-consolidation.css",
+    "beast-phase9-1-hidef-signal.css",
+    "beast-phase9-1-1-overlay-fix.css",
+    "beast-phase9-1-2-contrast-control-fix.css",
+    "beast-phase9-1-3-glass-atmosphere-brand.css",
+    "beast-phase9-1-4-hacker-type-atmosphere.css",
+    "beast-phase9-1-5-unique-hacker-fonts.css",
+    "beast-phase9-visual-system.js",
+    "beast-phase9-1-signal-upgrade.js",
+    "beast-phase9-1-1-overlay-fix.js",
+    "beast-phase9-1-2-contrast-control-fix.js",
+    "beast-phase9-1-3-glass-atmosphere-brand.js",
+    "beast-phase9-1-4-hacker-type-atmosphere.js",
+    "beast-phase9-1-5-font-loader.js",
+    "beast-phase7-app.js",
+    "beast-phase8-app.js",
+    "beast-phase9-app.js",
+    "beast-production-visual.js",
+    "beast-atmosphere.js",
+    "beast-phase10-app.js",
+    "beast-phase11-app.js"
+  ],
+  "visual_runtime": {
+    "single_animation_frame_owner": "beast-visual-runtime.js",
+    "matrix_layers": 2,
+    "grid_layer": 1,
+    "adaptive_tiers": [
+      "high",
+      "medium",
+      "low"
+    ],
+    "visibility_pause": true,
+    "reduced_motion": true
+  }
+}

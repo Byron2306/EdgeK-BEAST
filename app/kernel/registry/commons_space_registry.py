@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import zipfile
+import threading
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +36,9 @@ class CommonsSpaceRegistry:
         self.root = selected_root.resolve()
         self.root.mkdir(parents=True, exist_ok=True)
         self.adoptions_dir = self.root / "adoptions"
+        self._adoption_cache_mtime_ns: Optional[int] = None
+        self._adoption_cache_rows: List[Dict[str, Any]] = []
+        self._adoption_cache_lock = threading.RLock()
         self.crystal_chain = crystal_chain or CrystalChainLedger(
             self.root / ".crystal_chain" / "blocks.jsonl", node_id=os.environ.get("BEAST_COMMONS_NODE_ID", "local-commons")
         )
@@ -541,13 +545,16 @@ class CommonsSpaceRegistry:
         return result
 
     def adoptions(self) -> List[Dict[str, Any]]:
-        rows = []
-        for path in sorted(self.adoptions_dir.glob("*.json")) if self.adoptions_dir.exists() else []:
-            try:
-                rows.append(self._read(path))
-            except (OSError, ValueError, json.JSONDecodeError):
-                continue
-        return rows
+        try: mtime_ns=self.adoptions_dir.stat().st_mtime_ns
+        except OSError: mtime_ns=None
+        with self._adoption_cache_lock:
+            if mtime_ns!=self._adoption_cache_mtime_ns:
+                rows=[]
+                for path in sorted(self.adoptions_dir.glob("*.json")) if self.adoptions_dir.exists() else []:
+                    try: rows.append(self._read(path))
+                    except (OSError,ValueError,json.JSONDecodeError): continue
+                self._adoption_cache_rows=rows; self._adoption_cache_mtime_ns=mtime_ns
+            return [dict(row) for row in self._adoption_cache_rows]
 
     def _summary(self, root: Path) -> Dict[str, Any]:
         manifest = self._read(root / MANIFEST_NAME)

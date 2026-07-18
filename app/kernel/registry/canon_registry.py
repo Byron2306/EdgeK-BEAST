@@ -24,6 +24,17 @@ class CanonRegistry:
         "provider_diagnostic": {"task_id": "tsk_"},
         "provider_diagnostic_summary": {"task_id": "tsk_"},
         "promotion_candidate": {"candidate_id": "promo_"},
+        "sensor_event": {"event_id": "event:sha256:"},
+        "process_lease": {"lease_id": "process:sha256:"},
+        "socket_identity": {"identity": "socket:sha256:"},
+        "runtime_episode": {},
+        "compute_crystal_ir": {"identity": "crystal:"},
+        "crystal_artifact_descriptor": {},
+        "pidfd_signal_receipt": {"lease_id": "process:sha256:"},
+        "cgroup_capsule_action_receipt": {},
+        "cgroup_graceful_cleanup_receipt": {},
+        "cgroup_capsule_orphan_state": {},
+        "beast_process_plane_capabilities": {},
     }
 
     def __init__(self):
@@ -83,6 +94,12 @@ class CanonRegistry:
         for field in schema.get("required", []):
             if not self._present(obj.get(field)):
                 errors.append({"path": field, "message": "required field is missing"})
+        supported_versions = schema.get("supported_versions") or []
+        if supported_versions and obj.get("version") not in supported_versions:
+            errors.append({
+                "path": "version",
+                "message": f"unsupported version; expected one of {supported_versions}",
+            })
         for field, expected in schema.get("types", {}).items():
             value = obj.get(field)
             if self._present(value) and not self._is_type(value, expected):
@@ -196,6 +213,83 @@ class CanonRegistry:
                 "recommended": ["recommendations"],
                 "types": {"evidence": "dict", "canon": "dict", "tool_laziness": "dict", "promotion_action": "dict", "recommendations": "list"},
                 "hash_fields": ["candidate_hash"],
+            },
+            "sensor_event": {
+                "required": ["beast_object_type", "version", "event_id", "event_type", "source", "source_instance", "ordering", "attribution", "confidence", "privacy", "payload_schema", "payload", "payload_sha256"],
+                "recommended": [],
+                "types": {"ordering": "dict", "attribution": "dict", "confidence": "dict", "privacy": "dict", "payload": "dict"},
+                "hash_fields": ["payload_sha256"],
+                "supported_versions": ["1.0"],
+            },
+            "process_lease": {
+                "required": ["beast_object_type", "version", "lease_id", "boot_id", "pid_at_observation", "start_time_ticks", "executable_digest", "cgroup_id", "pid_namespace_inode", "mount_namespace_inode", "parent_identity_hash", "owner_scope", "acquired_at"],
+                "recommended": ["exited_at"],
+                "types": {"pid_at_observation": "number", "start_time_ticks": "number"},
+                "hash_fields": ["executable_digest", "parent_identity_hash"],
+                "supported_versions": ["1.0"],
+            },
+            "socket_identity": {
+                "required": ["beast_object_type", "version", "identity", "family", "protocol", "local_address_class", "local_port", "remote_scope", "owning_process", "service_id", "workspace_id", "cgroup_id", "listener_generation", "opened_at_monotonic_ns", "policy_class"],
+                "recommended": [],
+                "types": {"local_port": "number", "listener_generation": "number", "opened_at_monotonic_ns": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "runtime_episode": {
+                "required": ["beast_object_type", "version", "mission_id", "objective_hash", "workspace_identity", "initial_state_hash", "event_ids", "event_range", "source_loss", "causal_graph", "resources", "outcome", "episode_hash", "authority"],
+                "recommended": [],
+                "types": {"event_ids": "list", "event_range": "dict", "source_loss": "dict", "causal_graph": "dict", "resources": "dict", "outcome": "dict"},
+                "hash_fields": ["objective_hash", "initial_state_hash", "episode_hash"],
+                "supported_versions": ["1.0"],
+            },
+            "compute_crystal_ir": {
+                "required": ["beast_object_type", "version", "identity", "artifact_digest", "signer", "artifact_class", "task_family", "authority", "applicability", "parameters", "preconditions", "execution_graph", "postconditions", "topology", "evidence_requirements", "economics", "decay"],
+                "recommended": [],
+                "types": {"task_family": "list", "authority": "dict", "applicability": "dict", "parameters": "dict", "preconditions": "list", "execution_graph": "dict", "postconditions": "list", "topology": "dict", "evidence_requirements": "list", "economics": "dict", "decay": "dict"},
+                "hash_fields": ["artifact_digest"],
+                "supported_versions": ["1.0"],
+            },
+            "crystal_artifact_descriptor": {
+                "required": ["beast_object_type", "version", "artifact_class", "authority", "verification_state", "applicability_hash", "policy_generation", "expires_at"],
+                "recommended": [],
+                "types": {},
+                "hash_fields": ["applicability_hash"],
+                "supported_versions": ["1.0"],
+            },
+            "pidfd_signal_receipt": {
+                "required": ["beast_object_type", "version", "lease_id", "signal_number", "approved_by", "approval_receipt_id", "reason", "targeted_via", "integer_pid_signal_used", "created_at"],
+                "recommended": [],
+                "types": {"signal_number": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "cgroup_capsule_action_receipt": {
+                "required": ["beast_object_type", "version", "mission_id", "action", "confirmed", "authorization", "details", "created_at"],
+                "recommended": [],
+                "types": {"authorization": "dict", "details": "dict"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "cgroup_graceful_cleanup_receipt": {
+                "required": ["beast_object_type", "version", "mission_id", "signal_receipts", "empty_after_graceful_wait", "escalated_to_cgroup_kill", "escalation_required", "timeout_seconds"],
+                "recommended": ["kill_receipt"],
+                "types": {"signal_receipts": "list", "timeout_seconds": "number"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "cgroup_capsule_orphan_state": {
+                "required": ["beast_object_type", "version", "mission_id", "members", "expected", "unexpected_members", "missing_expected_members", "orphaned", "populated", "read_only"],
+                "recommended": [],
+                "types": {"members": "list", "expected": "list", "unexpected_members": "list", "missing_expected_members": "list"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
+            },
+            "beast_process_plane_capabilities": {
+                "required": ["beast_object_type", "version", "authority", "actuator_available", "platform", "cgroup_v2", "claim_boundary"],
+                "recommended": [],
+                "types": {"platform": "dict", "cgroup_v2": "dict", "claim_boundary": "dict"},
+                "hash_fields": [],
+                "supported_versions": ["1.0"],
             },
         }
 

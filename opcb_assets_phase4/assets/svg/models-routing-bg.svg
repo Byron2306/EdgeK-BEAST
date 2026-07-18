@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <radialGradient id="r1" cx="38%" cy="16%" r="76%">
+      <stop stop-color="#14395f" stop-opacity=".58"/>
+      <stop offset=".5" stop-color="#071426" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#020711" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r2" cx="78%" cy="22%" r="42%">
+      <stop stop-color="#39d7ff" stop-opacity=".12"/>
+      <stop offset=".48" stop-color="#b36bff" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#39d7ff" opacity=".20"/>
+    </pattern>
+    <linearGradient id="route" x1="0" x2="1">
+      <stop stop-color="#39f0c2" stop-opacity="0"/>
+      <stop offset=".45" stop-color="#39f0c2" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#ffc857" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#r1)"/>
+  <rect width="1600" height="900" fill="url(#r2)"/>
+  <rect width="1600" height="900" fill="url(#grid)" opacity=".7"/>
+  <path d="M140 210C330 210 400 145 520 145s170 75 285 75 168-75 286-75 170 65 332 65" fill="none" stroke="url(#route)" stroke-width="3"/>
+  <path d="M160 535c160 0 240-95 360-95s155 78 280 78 170-66 283-66 168 93 320 93" fill="none" stroke="url(#route)" stroke-width="3"/>
+</svg>

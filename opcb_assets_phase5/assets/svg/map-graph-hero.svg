@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180">
+  <defs>
+    <linearGradient id="g" x1="40" y1="20" x2="240" y2="160">
+      <stop stop-color="#39f0c2"/><stop offset=".5" stop-color="#39d7ff"/><stop offset="1" stop-color="#b36bff"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .edge{fill:none;stroke:url(#g);stroke-width:2.5;filter:url(#glow);stroke-dasharray:7 8;animation:flow 1.8s linear infinite}
+    .node{fill:#071426;stroke:url(#g);stroke-width:3;filter:url(#glow)}
+    @keyframes flow{to{stroke-dashoffset:-30}}
+  </style>
+  <path class="edge" d="M62 50C110 26 143 69 196 42"/>
+  <path class="edge" d="M62 50C96 110 150 92 190 130"/>
+  <path class="edge" d="M196 42C215 80 224 104 190 130"/>
+  <circle class="node" cx="62" cy="50" r="16"/>
+  <circle class="node" cx="196" cy="42" r="16"/>
+  <circle class="node" cx="112" cy="112" r="16"/>
+  <circle class="node" cx="190" cy="130" r="16"/>
+</svg>

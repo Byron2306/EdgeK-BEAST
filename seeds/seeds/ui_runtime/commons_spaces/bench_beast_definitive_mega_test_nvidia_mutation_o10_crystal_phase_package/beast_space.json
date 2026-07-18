@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 753,
+      "path": "README.md",
+      "sha256": "sha256:2c410ebaddcb4cf53595c7fd2cf2da5ac58c710c56e7da50c946fb204f306fb6"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 2866,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:96e5f24ab901fd6178a7177c7052ab78824e52d49f14bcb701c222857e96e423"
+    },
+    {
+      "artifact_type": "provider_fitness_card",
+      "bytes": 1438,
+      "path": "provider_fitness.json",
+      "sha256": "sha256:4d3cbbc6d55d85eecc234cb2acc0afc29f54f7cb810fdaf9a8dbd25860ec3b05"
+    },
+    {
+      "artifact_type": "run_manifest",
+      "bytes": 14926,
+      "path": "run_manifest.json",
+      "sha256": "sha256:67b231056dc00076ae95b503576946cd4e1de0699392ca05943a7e82089e1a1c"
+    },
+    {
+      "artifact_type": "cost_latency_summary",
+      "bytes": 100,
+      "path": "cost_latency_summary.md",
+      "sha256": "sha256:6ca94a9b9aade3d304d82e70644d7a816ec964a2c7d01bbfde29f2f219626940"
+    },
+    {
+      "artifact_type": "failure_summary",
+      "bytes": 31,
+      "path": "failures_by_bucket.json",
+      "sha256": "sha256:9914bd16fb7bbe7e658b83b2d293055d161ff711d89f4480c7cc134db92a173e"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.148680+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_nvidia_mutation_o10_crystal_phase_package",
+    "registration_score": 5,
+    "signals": [
+      "integrity_manifest",
+      "provider_fitness",
+      "run_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_nvidia_mutation_o10_crystal_phase_package"
+  },
+  "manifest_hash": "sha256:5292dbdb7a085bbb01827729393dbe02ca7e17c1403fbcf8b33b6562c0de2d42",
+  "name": "Beast Definitive Mega Test Nvidia Mutation O10 Crystal Phase Package",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_nvidia_mutation_o10_crystal_phase_package",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

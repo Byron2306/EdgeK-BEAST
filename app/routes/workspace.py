@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -10,6 +12,107 @@ from fastapi import APIRouter, HTTPException
 from app.cli.api import BeastApiClient
 from app.kernel.data_processing.workspace_registry import repo_id_for_root
 from app.kernel.workspaces.worktree_forge import WorktreeForge
+
+
+def _quick_workspace_file_candidates(root: Path, limit: int) -> list[dict[str, Any]]:
+    skip_dirs = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        "dist",
+        "build",
+        ".next",
+        ".cache",
+        ".tox",
+        "data",
+        "logs",
+        "tmp",
+        "temp",
+        ".idea",
+    }
+    allowed_ext = {
+        ".py",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".jsx",
+        ".json",
+        ".yaml",
+        ".yml",
+        ".toml",
+        ".md",
+        ".txt",
+        ".css",
+        ".html",
+        ".sh",
+        ".ini",
+        ".cfg",
+        ".nginx",
+        ".conf",
+    }
+    allowed_names = {"Dockerfile", "Makefile", "requirements.txt", "pyproject.toml"}
+    secret_markers = ("secret", "token", "key", "credential", ".env", "vault")
+    priority_roots = [
+        "README.md",
+        "requirements.txt",
+        "pyproject.toml",
+        "bin",
+        "app",
+        "desktop-ide",
+        "tests",
+        "docs",
+        "catalog",
+        "benchmarks",
+        "vscode-extension",
+    ]
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    def add_file(path: Path, priority: int = 0) -> bool:
+        try:
+            if not path.is_file():
+                return False
+            rel = str(path.relative_to(root))
+            rel_lower = rel.lower()
+            if rel in seen or any(marker in rel_lower for marker in secret_markers):
+                return False
+            if path.suffix.lower() not in allowed_ext and path.name not in allowed_names:
+                return False
+            size = path.stat().st_size
+            if size > 180_000:
+                return False
+            seen.add(rel)
+            rows.append({"path": rel, "size": size, "ext": path.suffix.lower() or path.name, "priority": priority})
+            return len(rows) >= limit
+        except Exception:
+            return False
+
+    def walk_dir(path: Path, priority: int = 0) -> bool:
+        try:
+            for dirpath, dirnames, filenames in os.walk(path):
+                dirnames[:] = [name for name in sorted(dirnames) if name not in skip_dirs]
+                for name in sorted(filenames):
+                    if add_file(Path(dirpath) / name, priority):
+                        return True
+        except Exception:
+            return False
+        return False
+
+    for name in priority_roots:
+        target = root / name
+        if target.is_file():
+            if add_file(target, -50):
+                break
+        elif target.is_dir() and walk_dir(target, -10):
+            break
+    if len(rows) < limit:
+        walk_dir(root, 0)
+    rows.sort(key=lambda item: (item.get("priority", 0), str(item.get("path", ""))))
+    return rows[:limit]
 
 
 def build_workspace_router(
@@ -80,10 +183,26 @@ def build_workspace_router(
     @router.get("/edgek/workspace/files")
     async def edgek_workspace_files(root_path: str = None, limit: int = 200):
         root = _root(root_path)
-        payload = workspace_graph_service.files(str(root), limit=max(1, min(limit, 1000)))
-        files = payload.get("files") if isinstance(payload.get("files"), list) else []
-        normalized = []
-        for item in files:
+        capped_limit = max(1, min(limit, 2000))
+        fallback = _quick_workspace_file_candidates(root, capped_limit)
+        if not fallback:
+            fallback = BeastApiClient("http://gateway-local", workspace=root).workspace_file_candidates(limit=capped_limit)
+        normalized = [{**row, "source": "local_candidates"} for row in fallback]
+        payload: Dict[str, Any] = {
+            "beast_object_type": "workspace_files",
+            "root_path": str(root),
+            "files": normalized,
+            "count": len(normalized),
+            "fallback_used": True,
+            "context_front_door": "local_candidates",
+        }
+        if normalized:
+            return payload
+
+        graph_payload = workspace_graph_service.files(str(root), limit=max(1, min(limit, 1000)))
+        graph_files = graph_payload.get("files") if isinstance(graph_payload.get("files"), list) else []
+        graph_rows = []
+        for item in graph_files:
             if not isinstance(item, dict):
                 continue
             props = item.get("properties") if isinstance(item.get("properties"), dict) else {}
@@ -92,20 +211,16 @@ def build_workspace_router(
                 row = dict(item)
                 row["path"] = path
                 row["source"] = row.get("source") or "workspace_graph"
-                normalized.append(row)
-        if not normalized:
-            fallback = BeastApiClient("http://gateway-local", workspace=root).workspace_file_candidates(limit=max(1, min(limit, 1000)))
-            normalized = [{**row, "source": "local_candidates"} for row in fallback]
-            payload = {
-                **payload,
-                "files": normalized,
-                "count": len(normalized),
-                "fallback_used": True,
-                "context_front_door": "code_cortex",
-            }
-        else:
-            payload = {**payload, "files": normalized, "count": len(normalized), "fallback_used": False}
-        return payload
+                graph_rows.append(row)
+        return {
+            **graph_payload,
+            "beast_object_type": "workspace_files",
+            "root_path": str(root),
+            "files": graph_rows,
+            "count": len(graph_rows),
+            "fallback_used": False,
+            "context_front_door": "workspace_graph",
+        }
 
     @router.get("/edgek/workspace/file")
     async def edgek_workspace_file(path: str, root_path: str = None, max_chars: int = 12000):
@@ -120,19 +235,55 @@ def build_workspace_router(
         payload = payload or {}
         root = _root(payload.get("root_path"))
         objective = str(payload.get("objective") or payload.get("query") or "")
-        graph_context = workspace_graph_service.context(
+        selected_files = [str(item) for item in (payload.get("selected_files") or payload.get("files") or [])]
+        token_budget = max(256, min(int(payload.get("token_budget", 3000)), 32000))
+        limit = max(1, min(int(payload.get("limit", 8)), 50))
+        # Both reads may invoke an external indexer. Run them off the event
+        # loop and in parallel: serial execution was enough to trip the
+        # desktop's context-expansion timeout before a coding run even began.
+        graph_task = asyncio.create_task(asyncio.to_thread(
+            workspace_graph_service.context,
             objective=objective,
             root_path=str(root),
-            selected_files=[str(item) for item in (payload.get("selected_files") or payload.get("files") or [])],
-            token_budget=max(256, min(int(payload.get("token_budget", 3000)), 32000)),
-            limit=max(1, min(int(payload.get("limit", 8)), 50)),
+            selected_files=selected_files,
+            token_budget=token_budget,
+            limit=limit,
             session_id=str(payload.get("session_id") or "") or None,
-        )
-        graph_context["code_cortex"] = code_cortex_router.get_editing_context(
+        ))
+        cortex_task = asyncio.create_task(asyncio.to_thread(
+            code_cortex_router.get_editing_context,
             root,
             objective,
-            limit=max(1, min(int(payload.get("limit", 8)), 50)),
-        )
+            limit=limit,
+        ))
+        interactive_timeout_ms = max(0, min(int(payload.get("interactive_timeout_ms", 0)), 10000))
+        if interactive_timeout_ms:
+            await asyncio.wait({graph_task, cortex_task}, timeout=interactive_timeout_ms / 1000)
+        else:
+            await asyncio.gather(graph_task, cortex_task)
+        graph_context: Dict[str, Any] = {
+            "beast_object_type": "workspace_graph_context",
+            "selected_files": [{"path": path} for path in selected_files],
+            "context_pending": True,
+        }
+        cortex_context: Dict[str, Any] = {
+            "ok": False,
+            "adapter": "pending",
+            "files": [{"path": path} for path in selected_files],
+            "context_pending": True,
+        }
+        if graph_task.done():
+            try:
+                graph_context = graph_task.result()
+            except Exception as exc:
+                graph_context["error"] = str(exc)
+        if cortex_task.done():
+            try:
+                cortex_context = cortex_task.result()
+            except Exception as exc:
+                cortex_context["error"] = str(exc)
+        graph_context["code_cortex"] = cortex_context
+        graph_context["context_pending"] = not (graph_task.done() and cortex_task.done())
         graph_context["context_front_door"] = "code_cortex"
         return graph_context
 

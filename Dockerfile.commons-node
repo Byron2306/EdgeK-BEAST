@@ -3,19 +3,15 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    BEAST_COMMONS_ROOT=/var/lib/beast/commons_spaces
+    BEAST_COMMONS_NODE_ROOT=/var/lib/beast/remote-commons
 
 WORKDIR /workspace
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssl curl \
-    && rm -rf /var/lib/apt/lists/*
+COPY requirements.commons-node.txt /workspace/requirements.commons-node.txt
+RUN pip install -r /workspace/requirements.commons-node.txt
 
-COPY requirements.txt /workspace/requirements.txt
-RUN pip install -r /workspace/requirements.txt
-
-COPY . /workspace
+COPY app /workspace/app
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python scripts/seed_commons_node.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["uvicorn", "app.commons_node_main:app", "--host", "0.0.0.0", "--port", "8000"]

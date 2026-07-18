@@ -1,0 +1,62 @@
+{
+  "boot_id": "67db0397-9de0-4ad0-9a3a-914075618192",
+  "build_test_passed": true,
+  "byte_exact": true,
+  "compute_plane_phases": [
+    "begin",
+    "authorize",
+    "execute",
+    "verify",
+    "complete"
+  ],
+  "contract_id": "beast.sensorium.file-build.v1",
+  "evidence_packet_digest": "sha256:e5bdedb77e6eb625038c1178f4a50d7b0cc78f06184f3aca005de066ee0bfb13",
+  "expected_artifact_digest": "sha256:cd36e9a38da7c05cfdd6b2f22e9200816875f0ae4c8deffe4c74fa2ebb4cbebd",
+  "experiment_id": "file-build:71e46f369d9144929ee653002e13dcdc",
+  "final_artifact_digest": "sha256:cd36e9a38da7c05cfdd6b2f22e9200816875f0ae4c8deffe4c74fa2ebb4cbebd",
+  "fixture_built_candidate": false,
+  "inferred_parameters": [
+    "workspace_identity"
+  ],
+  "initial_artifact_digest": "sha256:8763cdc04c60929d14e76a36f3cb7520150466c94fc9fec57a4549382d40a300",
+  "negative_cases_passed": 2,
+  "negative_episode_hashes": [
+    "sha256:79fc9a388d9b30054d6febe884d170af4d2115eb24a2d2aad30a39e9ac005b4f",
+    "sha256:db91415221891299a580604c2d2ea2a0cffd93bd8f7e9d79a7347cba07e97500"
+  ],
+  "opcode_catalog_digest": "sha256:2ad4c2b56c9acd96b98178a83eb87f5c3d1f00bd30cf86c90ef70a64cf14e2ff",
+  "physical_domain": "linux-filesystem",
+  "positive_episode_hashes": [
+    "sha256:192ed15346b12a83e9bb66afc436a70f479fc8d3c4326c6b4a7b39488c18ac65",
+    "sha256:a9bf320b971060874b6704eaf7c91531b57520989467f822878d83d624aa5761",
+    "sha256:bb20e0cad52204604e10037fb7fdb23b9e2b30f1a1f7491c952ee9586915a0d3"
+  ],
+  "promoted_record_digest": "sha256:b1067261b3a42ec3872047c41701c7c737e05b657f230fe3e1bee43cd4e1cf7a",
+  "provider_calls": 0,
+  "receipt_digest": "sha256:6ebcd00ff87a2f1837f18c6a6b952d4c6cc12b6175aabbe24a65ed34aef9806e",
+  "recurrence_workspace_identity": "workspace:unseen-omega",
+  "replay_evidence_root": "sha256:c062fc88396649bf17807f0b0a5ae96475dc8b14374ca5e15c4fd9e3db8dfb15",
+  "replay_verified_variants": 6,
+  "rollback_probe_passed": true,
+  "rollback_probe_receipt": "sha256:a7f327499dac676275f6790caf97cfcae6030ef2d6d674e5916ce070b502bff0",
+  "structural_signature": [
+    [
+      "file.inspect_source",
+      "observation"
+    ],
+    [
+      "build.select_branch",
+      "decision"
+    ],
+    [
+      "build.render_artifact",
+      "actuation"
+    ],
+    [
+      "artifact.verify_build",
+      "verification"
+    ]
+  ],
+  "typed_artifact_digest": "sha256:bb909ab5874e9a4cd46d92a81563f5aef0bc1e22e5d1de1585ab8279da278c9a",
+  "verified": true
+}

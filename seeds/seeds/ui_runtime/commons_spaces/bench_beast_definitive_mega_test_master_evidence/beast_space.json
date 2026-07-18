@@ -1,0 +1,74 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 1576,
+      "path": "README.md",
+      "sha256": "sha256:a8c5715d3cd9ec28cf54536a3507fec2ce1f34b45814990f51c6f0d5ee6e215e"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 206941,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:0e5c6c8e4df794b691c185809159bb4c45527a2feddf1ae3baba014cfde2db43"
+    },
+    {
+      "artifact_type": "coverage_matrix",
+      "bytes": 9897,
+      "path": "coverage_matrix.json",
+      "sha256": "sha256:ea287e3b01705fc29ff65b221fa94d4b46a030c9be34a092907fe4db5f7dfbe5"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:20.470521+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "beast_definitive_mega_test_master_evidence",
+    "registration_score": 3,
+    "signals": [
+      "integrity_manifest",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/beast_definitive_mega_test_master_evidence"
+  },
+  "manifest_hash": "sha256:976df42babc593acf7d79a86aa3329767a01d35c4ffb7ab68d29de9fa32f6b37",
+  "name": "Beast Definitive Mega Test Master Evidence",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_beast_definitive_mega_test_master_evidence",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}

@@ -1,0 +1,17 @@
+version: 1
+mode: enterprise
+commons:
+  remote_contributions_are_hypotheses: true
+  local_reproduction_required: true
+  attestation_required: true
+  signed_one_use_capability_required: true
+  signature_algorithm: Ed25519
+  admission: fail_closed
+workspace_identity:
+  rollout: enforce_commons_mutations
+evidence:
+  append_only: true
+  hash_chain: true
+network:
+  cors: local_origins_only
+  reverse_proxy_install_requires_administrator: true

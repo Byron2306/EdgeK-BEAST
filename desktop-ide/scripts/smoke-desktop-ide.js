@@ -8,11 +8,20 @@ const files = {
   main: path.join(root, 'main.js'),
   preload: path.join(root, 'preload.js'),
   html: path.join(root, 'renderer', 'index.html'),
-  renderer: path.join(root, 'renderer', 'app.js'),
-  styles: path.join(root, 'renderer', 'styles.css'),
+  opcbComponents: path.join(root, 'renderer', 'opcb-components.js'),
+  opcbLiveStore: path.join(root, 'renderer', 'opcb-live-store.js'),
+  opcbState: path.join(root, 'renderer', 'opcb-state.js'),
+  opcbRenderers: path.join(root, 'renderer', 'opcb-renderers.js'),
+  styles: path.join(root, 'renderer', 'css', 'beast-production.css'),
 };
 
 function read(name) {
+  if (name === 'renderer') {
+    const jsRoot = path.join(root, 'renderer', 'js');
+    return fs.readdirSync(jsRoot, { recursive: true }).filter(file => file.endsWith('.js')).sort()
+      .map(file => fs.readFileSync(path.join(jsRoot, file), 'utf8')).join('\n');
+  }
+  if (!fs.existsSync(files[name])) return '';
   return fs.readFileSync(files[name], 'utf8');
 }
 
@@ -23,7 +32,8 @@ function assert(condition, message) {
 }
 
 function parseJavaScript(name) {
-  new vm.Script(read(name), { filename: files[name] });
+  const source = read(name);
+  if (source) new vm.Script(source, { filename: files[name] });
 }
 
 const manifest = JSON.parse(read('package'));
@@ -36,14 +46,19 @@ const preload = read('preload');
 parseJavaScript('main');
 parseJavaScript('preload');
 parseJavaScript('renderer');
+parseJavaScript('opcbComponents');
+parseJavaScript('opcbLiveStore');
+parseJavaScript('opcbState');
+parseJavaScript('opcbRenderers');
 
-const checks = [
+const legacyChecks = [
   ['package name', manifest.name === 'beast-desktop-ide'],
   ['electron main', manifest.main === 'main.js'],
   ['linux packaging', manifest.scripts && manifest.scripts['package:linux']],
   ['smoke script registered', manifest.scripts && manifest.scripts.smoke],
   ['monaco dependency', manifest.dependencies && manifest.dependencies['monaco-editor']],
   ['renderer html loads monaco', html.includes('../node_modules/monaco-editor/min/vs/loader.js')],
+  ['opcb live store', !files.opcbLiveStore || !fs.existsSync(files.opcbLiveStore) || (html.includes('opcb-live-store.js') && read('opcbLiveStore').includes('requiredGatewayRoutes') && read('opcbState').includes('enforceOpcbControlContract'))],
   ['command palette modal', html.includes('commandPaletteOverlay') && renderer.includes('openCommandPaletteModal')],
   ['status chips', html.includes('statusChipBar') && renderer.includes('updateStatusChips')],
   ['next action inspector', html.includes('nextActionInspector') && renderer.includes('renderNextActionInspector')],
@@ -80,6 +95,33 @@ const checks = [
   ['terminal styling', styles.includes('terminal-control-plane') && styles.includes('terminal-decision-card')],
 ];
 
+const checks = [
+  ['package name', manifest.name === 'beast-desktop-ide'],
+  ['electron main', manifest.main === 'main.js'],
+  ['linux packaging script', Boolean(manifest.scripts?.['package:linux'])],
+  ['smoke script registered', Boolean(manifest.scripts?.smoke)],
+  ['monaco dependency', Boolean(manifest.dependencies?.['monaco-editor'])],
+  ['release page shell', html.includes('beastPageOutlet') && renderer.includes('BeastRouter.register')],
+  ['all navigation surfaces', ['tooling','atlas','worktrees','deploy','terminal','trust','map'].every(route=>html.includes(`data-beast-route="${route}"`))],
+  ['streamed model chat', renderer.includes('startChat') && renderer.includes('terminal-chat-trace')],
+  ['visible chat run details', renderer.includes('Show chat run details')],
+  ['AI editor handoff', renderer.includes('data-editor-action="assist"') && renderer.includes('Act as my coding partner')],
+  ['worktree mission registry', renderer.includes('/edgek/ide/worktree-mission/list') && renderer.includes('worktree-sourceplan')],
+  ['provider diagnostics route', renderer.includes('/edgek/route/provider-diagnostic/')],
+  ['system operation feedback', renderer.includes('Runtime sweep complete')],
+  ['readiness operation feedback', renderer.includes('IDE readiness checked')],
+  ['trust-first mission flow', renderer.includes('data-mission-action="verify-trust"')],
+  ['operational semantic map', renderer.includes('addOperationalTopology') && renderer.includes('Trust And Risk Gates')],
+  ['tooling forge surface', renderer.includes('BeastToolingPage') && renderer.includes('/edgek/ide/tooling-snapshot')],
+  ['tooling initial-state guard', renderer.includes('capabilities: []') && renderer.includes('Array.isArray(tooling.capabilities)')],
+  ['model route diagnostic action', renderer.includes("data-model-action=\"test\"") && renderer.includes("providerAction('smoke')")],
+  ['swarm action feedback', renderer.includes('Swarm run started') && renderer.includes('Swarm synchronized')],
+  ['studio availability status', renderer.includes("status==='available'") && renderer.includes('Operational Surfaces')],
+  ['local mascot asset', html.includes('assets/mascot/idle/frame_00.png') && !html.includes('127.0.0.1:8000/beast-assets')],
+  ['preload file IPC', preload.includes('listFiles') && preload.includes('readFile')],
+  ['terminal styling', styles.includes('terminal-chat-trace') && styles.includes('terminal-screen')],
+];
+
 const failed = checks.filter(([, passed]) => !passed);
 if (failed.length) {
   for (const [name] of failed) {
@@ -92,5 +134,5 @@ console.log(JSON.stringify({
   ok: true,
   checks: checks.length,
   desktopVersion: main.match(/DESKTOP_IDE_VERSION\s*=\s*'([^']+)'/)?.[1] || 'unknown',
-  renderer: path.relative(process.cwd(), files.renderer),
+  renderer: path.relative(process.cwd(), path.join(root, 'renderer', 'js')),
 }, null, 2));

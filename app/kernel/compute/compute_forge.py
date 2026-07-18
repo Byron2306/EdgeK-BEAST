@@ -54,6 +54,7 @@ class ForgeNodeProfile:
     stale_fingerprints_caught: int = 0
     last_activity_at: str = ""
     metadata: Dict[str, Any] = field(default_factory=dict)
+    isolation_attestation: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -68,6 +69,7 @@ class ForgeNodeProfile:
             "stale_fingerprints_caught": self.stale_fingerprints_caught,
             "last_activity_at": self.last_activity_at,
             "metadata": self.metadata,
+            "isolation_attestation": self.isolation_attestation,
         }
 
 
@@ -160,6 +162,7 @@ class ComputeForgeNode:
         crystal_chain: CrystalChainLedger = None,
         hardware_profile: Dict[str, Any] = None,
         local_semantic_cache: Optional[LocalSemanticCache] = None,
+        compute_plane: Any = None,
     ):
         self.profile = ForgeNodeProfile(
             node_id=node_id,
@@ -176,6 +179,7 @@ class ComputeForgeNode:
             threshold=config.OLLAMA_CIRCUIT_BREAKER_THRESHOLD,
             timeout_seconds=config.OLLAMA_CIRCUIT_BREAKER_TIMEOUT,
         )
+        self.compute_plane = compute_plane
 
         # Integration: KV Cache & Engine Adapter
         self.transport = CrossEngineKVCacheTransport(storage_dir=self.storage.storage_path / "kv_cache")
@@ -191,6 +195,14 @@ class ComputeForgeNode:
         self._candidate_proposals: List[Dict[str, Any]] = []
         self._crystals: List[Dict[str, Any]] = []
         self._fused_crystals: List[Dict[str, Any]] = []
+
+    def bind_isolation_attestation(self, attestation: Any) -> Dict[str, Any]:
+        """Admit isolation evidence without granting additional authority."""
+        attestation.validate()
+        if attestation.node_id != self.profile.node_id:
+            raise PermissionError("forge isolation attestation node mismatch")
+        self.profile.isolation_attestation = attestation.to_dict()
+        return dict(self.profile.isolation_attestation)
     def run_local_inference(self, work_item: ForgeWorkItem, prompt_prefix: str, system_prompt: str, tensor_payload: bytes) -> Dict[str, Any]:
         """Execute inference with Zero KV Cache (deterministic) or probabilistic KV caching."""
         self.profile.last_activity_at = datetime.now(timezone.utc).isoformat()
@@ -276,7 +288,15 @@ class ComputeForgeNode:
                 response.raise_for_status()
                 return response
 
-            resp = self.ollama_circuit_breaker.call(call_ollama)
+            if self.compute_plane is None:
+                resp = self.ollama_circuit_breaker.call(call_ollama)
+            else:
+                resp = self.compute_plane.execute_operation(
+                    lane="forge", provider="ollama",
+                    authorize=lambda: self.compute_plane.isolation_verifier(self.profile.isolation_attestation),
+                    execute=lambda: self.ollama_circuit_breaker.call(call_ollama),
+                    verify=lambda response: int(getattr(response, "status_code", 0)) == 200,
+                )
             data = resp.json()
             actual_response = data.get("response", "")
             if "eval_count" in data:
@@ -414,6 +434,7 @@ class ComputeForgeNode:
         hidden_test_successes: Optional[int] = None,
         rollback_successes: Optional[int] = None,
         behavior_preserved_count: Optional[int] = None,
+        scientific_evidence: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Propose a centrally promotable crystallization candidate."""
         self.profile.last_activity_at = datetime.now(timezone.utc).isoformat()
@@ -432,6 +453,7 @@ class ComputeForgeNode:
             "rollback_successes": max(0, int(rollback)),
             "behavior_preserved_count": max(0, int(behavior)),
             "impact_fingerprint": impact_fingerprint,
+            "scientific_evidence": dict(scientific_evidence or {}),
             "created_at": self.profile.last_activity_at,
         }
         chain_block = self.crystal_chain.append("forge_candidate_proposed", candidate_name, proposal)
@@ -1109,6 +1131,12 @@ class CentralForgePromotionCollector:
             rollback = max(0, int(proposal.get("rollback_successes") or 0))
             behavior = max(0, int(proposal.get("behavior_preserved_count") or 0))
             fingerprint = proposal.get("impact_fingerprint") if isinstance(proposal.get("impact_fingerprint"), dict) else None
+            try:
+                from app.kernel.compute.compute_plane import ScientificPromotionGate
+                ScientificPromotionGate.require(proposal.get("scientific_evidence") or {})
+            except PermissionError as exc:
+                blocked.append({"candidate_name": candidate_name, "reason": "scientific_evidence_required", "detail": str(exc)})
+                continue
             if not candidate_name or not task_class or runs <= 0:
                 blocked.append({"candidate_name": candidate_name, "reason": "proposal_incomplete"})
                 continue
@@ -1145,7 +1173,7 @@ class CentralForgePromotionCollector:
         }
 
 
-class ComputeLedger:
+class ForgeCreditLedger:
     """The Compute Ledger aggregates forge node credits into system-wide metrics.
     
     Example entries:
@@ -1192,7 +1220,7 @@ class ComputeLedger:
     def to_dict(self) -> Dict[str, Any]:
         """Return the compute ledger state."""
         return {
-            "beast_object_type": "compute_ledger",
+            "beast_object_type": "forge_credit_ledger",
             "version": "1.0",
             "forge_nodes": {nid: p.to_dict() for nid, p in self.forge_nodes.items()},
             "system_totals": self.system_totals,

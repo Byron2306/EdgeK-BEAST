@@ -9,6 +9,7 @@ import shlex
 import subprocess
 import sys
 import time
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -23,6 +24,9 @@ class CommonsReplayEngine:
         self.workspace_root = (workspace_root or Path(__file__).resolve().parents[2]).resolve()
         self.scrubber = CommonsPrivacyScrubber()
         self.receipts_dir = self.registry.root / "reproductions"
+        self._receipt_cache_mtime_ns: Optional[int] = None
+        self._receipt_cache_rows: List[Dict[str, Any]] = []
+        self._receipt_cache_lock = threading.RLock()
 
     def replay(
         self,
@@ -111,15 +115,16 @@ class CommonsReplayEngine:
         return result
 
     def list_reproductions(self, space_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        rows = []
-        for path in sorted(self.receipts_dir.glob("*.json")) if self.receipts_dir.exists() else []:
-            try:
-                row = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                continue
-            if not space_id or row.get("space_id") == space_id:
-                rows.append(row)
-        return rows
+        try: mtime_ns=self.receipts_dir.stat().st_mtime_ns
+        except OSError: mtime_ns=None
+        with self._receipt_cache_lock:
+            if mtime_ns!=self._receipt_cache_mtime_ns:
+                rows=[]
+                for path in sorted(self.receipts_dir.glob("*.json")) if self.receipts_dir.exists() else []:
+                    try: rows.append(json.loads(path.read_text(encoding="utf-8")))
+                    except (OSError,json.JSONDecodeError): continue
+                self._receipt_cache_rows=rows; self._receipt_cache_mtime_ns=mtime_ns
+            return [dict(row) for row in self._receipt_cache_rows if not space_id or row.get("space_id")==space_id]
 
     @staticmethod
     def _allowlisted_command(command: str) -> List[str]:

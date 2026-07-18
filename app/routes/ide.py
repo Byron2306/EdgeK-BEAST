@@ -11,18 +11,23 @@ import asyncio
 import ast
 import difflib
 import hashlib
+import inspect
 import json
+import os
 import re
+import shlex
 import shutil
 import subprocess
+import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any, List
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import StreamingResponse
 
-from app.cli.api import BeastApiClient
+from app.cli.api import ActionResult, BeastApiClient
 from app.kernel.compute.action_ir import ACTION_IR_KIND, ActionIR
 from app.kernel.compute.action_resolver import build_file_references, resolve_action_ir
 from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
@@ -41,6 +46,43 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
 
     def _root(value: Any = None) -> Path:
         return Path(value or fallback_root).expanduser().resolve()
+
+    def _is_compact_local_coder(provider: str, model: str) -> bool:
+        provider_id = str(provider or "").strip().lower().replace("-", "_")
+        model_id = str(model or "").strip().lower()
+        return provider_id in {"ollama", "local_ollama"} and model_id.startswith("qwen2.5-coder:")
+
+    def _pair_programmer_limits(provider: str, model: str, requested_tokens: int, requested_context_chars: int) -> tuple[int, int, int]:
+        """Keep local CPU coding turns responsive instead of swapping for minutes.
+
+        The desktop UI can attach a broad repository surface, which is useful
+        for cloud routes but pathological for a small local model.  These
+        limits are enforced at the server boundary too, so a stale renderer
+        cannot accidentally restore the old 12 x 50K-character workload.
+        """
+        if _is_compact_local_coder(provider, model):
+            return (
+                min(max(128, int(requested_tokens)), 1024),
+                min(max(1200, int(requested_context_chars)), 2400),
+                3,
+            )
+        return (
+            min(max(128, int(requested_tokens)), 16000),
+            min(max(1200, int(requested_context_chars)), 60000),
+            12,
+        )
+
+    def _bounded_workspace_files(root: Path, suffixes: set[str], max_files: int):
+        """Walk a workspace with directory pruning and a hard file ceiling."""
+        ignored={".git",".beast","node_modules","__pycache__",".pytest_cache","dist","build",".venv","venv","data","logs"}
+        yielded=0
+        for directory,dirnames,filenames in os.walk(root):
+            dirnames[:]=[name for name in dirnames if name not in ignored]
+            for filename in filenames:
+                candidate=Path(directory)/filename
+                if candidate.suffix.lower() not in suffixes: continue
+                yield candidate; yielded+=1
+                if yielded>=max_files: return
 
     def _raw_hash_text(text: str) -> str:
         return hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()
@@ -68,20 +110,47 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 continue
         return {}
 
-    def _action_ir_retry_prompt(objective: str, previous_output: str, allowed_files: list[str]) -> str:
+    def _action_ir_anchor_hints(root: Path | None, allowed_files: list[str]) -> str:
+        if root is None or not allowed_files:
+            return ""
+        try:
+            refs = build_file_references(root, allowed_files[:8])
+        except Exception:
+            return ""
+        chunks: list[str] = []
+        for ref in refs:
+            anchors = list((ref.anchors or {}).items())[:8]
+            if not anchors:
+                continue
+            chunks.append(f"{ref.path}:")
+            for anchor_id, snippet in anchors:
+                compact = str(snippet).strip()
+                if compact:
+                    chunks.append(f"[{anchor_id}] {compact[:500]}")
+        hints = "\n".join(chunks).strip()
+        return hints[:5000]
+
+    def _action_ir_retry_prompt(objective: str, previous_output: str, allowed_files: list[str], diagnostics: str = "", root: Path | None = None) -> str:
         allowed = "\n".join(f"- {path}" for path in allowed_files) or "- provide one allowed file first"
         bounded_previous = str(previous_output or "")[:8000]
+        bounded_diagnostics = str(diagnostics or "")[:4000]
+        anchor_hints = _action_ir_anchor_hints(root, allowed_files)
         return (
             "Return BEAST Action IR JSON only. Do not include markdown, prose, or explanation.\n\n"
             f"Objective: {objective or 'Convert the prior answer into a governed file edit.'}\n"
             "Allowed files:\n"
             f"{allowed}\n\n"
-            f"Schema:\n{{\"kind\": \"{ACTION_IR_KIND}\", \"objective\": \"...\", \"actions\": [{{\"type\": \"replace_exact\", \"target\": {{\"path\": \"relative/file.py\"}}, \"old\": \"exact old snippet\", \"new\": \"replacement\"}}]}}\n\n"
+            f"Schema:\n{{\"kind\": \"{ACTION_IR_KIND}\", \"objective\": \"...\", \"actions\": [{{\"type\": \"replace_exact\", \"target\": {{\"path\": \"relative/file.py\", \"anchor_ref\": \"A1\"}}, \"old\": \"exact old snippet (omit when using anchor_ref)\", \"new\": \"replacement for the complete anchor\"}}]}}\n\n"
             "Rules:\n"
             "1. Use only allowed files.\n"
             "2. Use exact old snippets that exist in the file today.\n"
-            "3. Emit the smallest valid set of replace_exact actions.\n"
-            "4. Return one JSON object and nothing else.\n\n"
+            "2a. If a short old snippet appears more than once, use one of the supplied target.anchor_ref values and make new a replacement for that complete anchor; never guess which duplicate occurrence to change.\n"
+            "3. Emit the complete valid set of replace_exact actions required by the objective, including directly affected tests, callers, and configuration when they are in scope. Do not omit a required edit merely to keep the patch small.\n"
+            "4. Return one JSON object and nothing else.\n"
+            "5. Correct every validation diagnostic below without expanding scope.\n\n"
+            + (f"Validation diagnostics from the proposed files:\n{bounded_diagnostics}\n\n" if bounded_diagnostics else "")
+            + (f"Exact snippets available in the allowed files. Prefer these snippets as old anchors:\n{anchor_hints}\n\n" if anchor_hints else "")
+            +
             "Previous answer to convert:\n"
             f"{bounded_previous}"
         )
@@ -122,6 +191,16 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                     "actions": [{"type": "replace_exact", "target": {"path": "relative/file.py"}, "old": "exact old snippet", "new": "replacement"}],
                 },
             }
+        raw_actions = parsed.get("actions") if isinstance(parsed.get("actions"), list) else []
+        if not raw_actions:
+            return {
+                "ok": False,
+                "status": "empty_action_ir",
+                "error": "Agent returned Action IR without any file-edit actions.",
+                "requires_operator_translation": True,
+                "allowed_files": allowed,
+                "retry_options": [{"id": "require_file_edit", "label": "Retry with at least one exact file edit"}],
+            }
         if not allowed:
             return {
                 "ok": False,
@@ -155,6 +234,15 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                     "symbol": action.target.symbol,
                     "resolver": "action_ir.resolve_action_ir",
                 })
+            if not operations:
+                return {
+                    "ok": False,
+                    "status": "no_resolved_edits",
+                    "error": "Action IR did not resolve to any reviewable file edits.",
+                    "requires_operator_translation": True,
+                    "allowed_files": allowed,
+                    "retry_options": [{"id": "require_exact_edit", "label": "Retry against the current file contents"}],
+                }
             plan_id = "ide_air_" + hashlib.sha256(f"{root}|{provider}|{time.time()}".encode("utf-8")).hexdigest()[:12]
             plan = {
                 "plan_id": plan_id,
@@ -215,6 +303,261 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 ],
             }
 
+    def _validate_agent_sourceplan(root: Path, plan: dict[str, Any]) -> dict[str, Any]:
+        """Validate proposed source text without mutating or executing the workspace."""
+        operations = plan.get("operations") if isinstance(plan.get("operations"), list) else []
+        proposed: dict[str, str] = {}
+        checks: list[dict[str, Any]] = []
+        failures: list[str] = []
+        for operation in operations[:100]:
+            rel = str(operation.get("path") or "")
+            target = _safe_relative(root, rel)
+            if target is None or not target.is_file():
+                failures.append(f"{rel or '<missing>'}: target file is unavailable")
+                continue
+            if rel not in proposed:
+                try:
+                    proposed[rel] = target.read_text(encoding="utf-8")
+                except Exception as exc:
+                    failures.append(f"{rel}: {exc}")
+                    continue
+            old = str(operation.get("old") if operation.get("old") is not None else operation.get("old_text") or "")
+            new = str(operation.get("new") if operation.get("new") is not None else operation.get("new_text") or "")
+            if not old or proposed[rel].count(old) != 1:
+                failures.append(f"{rel}: operation {operation.get('op_id') or '?'} no longer has one exact anchor")
+                continue
+            proposed[rel] = proposed[rel].replace(old, new, 1)
+
+        node = shutil.which("node")
+        syntax_checked = 0
+        for rel, source in proposed.items():
+            content_errors = []
+            if "\x00" in source:
+                content_errors.append("NUL byte present")
+            if re.search(r"^(?:<<<<<<< |=======\s*$|>>>>>>> )", source, re.MULTILINE):
+                content_errors.append("unresolved conflict marker present")
+            content_passed = not content_errors
+            checks.append({"path": rel, "kind": "content-safety", "passed": content_passed, "message": "; ".join(content_errors) or "No binary or conflict markers"})
+            if not content_passed:
+                failures.extend(f"{rel}: {item}" for item in content_errors)
+            suffix = Path(rel).suffix.lower()
+            try:
+                if suffix == ".py":
+                    ast.parse(source, filename=rel)
+                    checks.append({"path": rel, "kind": "python-ast", "passed": True, "message": "Python syntax parsed"})
+                    syntax_checked += 1
+                elif suffix == ".json":
+                    json.loads(source)
+                    checks.append({"path": rel, "kind": "json-parse", "passed": True, "message": "JSON parsed"})
+                    syntax_checked += 1
+                elif suffix in {".js", ".cjs", ".mjs"} and node:
+                    with tempfile.NamedTemporaryFile("w", suffix=suffix, encoding="utf-8", delete=False) as handle:
+                        handle.write(source)
+                        temp_name = handle.name
+                    try:
+                        result = subprocess.run([node, "--check", temp_name], text=True, capture_output=True, timeout=8, check=False)
+                    finally:
+                        Path(temp_name).unlink(missing_ok=True)
+                    if result.returncode != 0:
+                        raise SyntaxError((result.stderr or result.stdout or "JavaScript syntax check failed").strip()[:1000])
+                    checks.append({"path": rel, "kind": "node-check", "passed": True, "message": "JavaScript syntax parsed"})
+                    syntax_checked += 1
+            except (SyntaxError, json.JSONDecodeError, subprocess.SubprocessError, OSError) as exc:
+                message = str(exc).replace("\n", " ")[:1000]
+                kind = "python-ast" if suffix == ".py" else "json-parse" if suffix == ".json" else "node-check"
+                checks.append({"path": rel, "kind": kind, "passed": False, "message": message})
+                failures.append(f"{rel}: {message}")
+
+        requested = [str(item) for item in ((plan.get("action_ir") or {}).get("verify") or []) if item]
+        isolated = _run_isolated_agent_verifiers(root, proposed, requested)
+        checks.extend(isolated["checks"])
+        failures.extend(isolated["failures"])
+        status = "failed" if failures else "passed" if syntax_checked == len(proposed) and proposed else "partial"
+        return {
+            "ok": not failures and bool(proposed),
+            "status": status,
+            "file_count": len(proposed),
+            "syntax_checked": syntax_checked,
+            "check_count": len(checks),
+            "checks": checks,
+            "failures": failures[:20],
+            "requested_verifiers": requested[:20],
+            "isolated_verifiers": isolated["summary"],
+            "command_policy": "allowlisted verifier commands run only in a temporary isolated workspace; unsupported commands are recorded as skipped",
+        }
+
+    def _run_isolated_agent_verifiers(root: Path, proposed: dict[str, str], requested: list[str]) -> dict[str, Any]:
+        checks: list[dict[str, Any]] = []
+        failures: list[str] = []
+        if not proposed:
+            return {"checks": checks, "failures": failures, "summary": {"status": "skipped", "passed": 0, "failed": 0, "skipped": 0, "commands": []}}
+
+        commands = _agent_validation_commands(root, proposed, requested)
+        if not commands:
+            return {"checks": checks, "failures": failures, "summary": {"status": "skipped", "passed": 0, "failed": 0, "skipped": 0, "commands": []}}
+
+        with tempfile.TemporaryDirectory(prefix="beast-ide-agent-verify-") as temp_name:
+            temp_root = Path(temp_name)
+            for rel, source in proposed.items():
+                target = _safe_relative(temp_root, rel)
+                if target is None:
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(source, encoding="utf-8")
+            for command in commands[:6]:
+                for rel in command.get("extra_inputs") or []:
+                    _copy_agent_verifier_input(root, temp_root, str(rel))
+                if command.get("skipped"):
+                    checks.append({
+                        "path": "",
+                        "kind": "isolated-verifier",
+                        "passed": True,
+                        "status": "skipped",
+                        "command": command["display"],
+                        "message": command["skipped"],
+                        "isolated": True,
+                    })
+                    continue
+                try:
+                    result = subprocess.run(
+                        command["argv"],
+                        cwd=temp_root,
+                        text=True,
+                        capture_output=True,
+                        timeout=command.get("timeout", 12),
+                        check=False,
+                        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+                    )
+                    output = ((result.stdout or "") + ("\n" if result.stdout and result.stderr else "") + (result.stderr or "")).strip()
+                    passed = result.returncode == 0
+                    check = {
+                        "path": "",
+                        "kind": "isolated-verifier",
+                        "passed": passed,
+                        "status": "passed" if passed else "failed",
+                        "command": command["display"],
+                        "returncode": result.returncode,
+                        "message": (output or "Verifier completed")[:1600],
+                        "isolated": True,
+                    }
+                    checks.append(check)
+                    if not passed:
+                        failures.append(f"{command['display']}: {(output or f'exited {result.returncode}')[:800]}")
+                except (subprocess.SubprocessError, OSError) as exc:
+                    message = str(exc).replace("\n", " ")[:800]
+                    checks.append({
+                        "path": "",
+                        "kind": "isolated-verifier",
+                        "passed": False,
+                        "status": "failed",
+                        "command": command["display"],
+                        "message": message,
+                        "isolated": True,
+                    })
+                    failures.append(f"{command['display']}: {message}")
+
+        passed = sum(1 for item in checks if item.get("kind") == "isolated-verifier" and item.get("status") == "passed")
+        failed = sum(1 for item in checks if item.get("kind") == "isolated-verifier" and item.get("status") == "failed")
+        skipped = sum(1 for item in checks if item.get("kind") == "isolated-verifier" and item.get("status") == "skipped")
+        status = "failed" if failed else "passed" if passed else "skipped"
+        return {
+            "checks": checks,
+            "failures": failures,
+            "summary": {
+                "status": status,
+                "passed": passed,
+                "failed": failed,
+                "skipped": skipped,
+                "commands": [
+                    {"command": item.get("command"), "status": item.get("status"), "message": item.get("message", "")[:240]}
+                    for item in checks
+                    if item.get("kind") == "isolated-verifier"
+                ][:6],
+            },
+        }
+
+    def _agent_validation_commands(root: Path, proposed: dict[str, str], requested: list[str]) -> list[dict[str, Any]]:
+        commands: list[dict[str, Any]] = []
+        py_files = [rel for rel in proposed if Path(rel).suffix.lower() == ".py"]
+        js_files = [rel for rel in proposed if Path(rel).suffix.lower() in {".js", ".cjs", ".mjs"}]
+        if py_files:
+            commands.append({"display": "python -m py_compile " + " ".join(py_files[:24]), "argv": [sys.executable, "-m", "py_compile", *py_files[:24]], "timeout": 12, "extra_inputs": []})
+        node = shutil.which("node")
+        for rel in js_files[:8]:
+            if node:
+                commands.append({"display": f"node --check {rel}", "argv": [node, "--check", rel], "timeout": 8, "extra_inputs": []})
+        for command in requested[:4]:
+            commands.append(_normalize_agent_verifier_command(root, proposed, command))
+        seen: set[str] = set()
+        unique: list[dict[str, Any]] = []
+        for command in commands:
+            key = str(command.get("display") or command.get("argv"))
+            if key in seen:
+                continue
+            seen.add(key)
+            unique.append(command)
+        return unique
+
+    def _normalize_agent_verifier_command(root: Path, proposed: dict[str, str], command: str) -> dict[str, Any]:
+        display = " ".join(str(command or "").split())[:500]
+        try:
+            parts = shlex.split(command)
+        except ValueError as exc:
+            return {"display": display or "<invalid verifier>", "skipped": f"could not parse verifier command: {exc}", "extra_inputs": []}
+        if not parts:
+            return {"display": "<empty verifier>", "skipped": "empty verifier command", "extra_inputs": []}
+        executable = Path(parts[0]).name
+        if executable in {"python", "python3"} and len(parts) >= 4 and parts[1] == "-m" and parts[2] == "py_compile":
+            paths = [item for item in parts[3:] if _safe_relative(root, item) is not None]
+            if paths and all(path in proposed for path in paths):
+                return {"display": display, "argv": [sys.executable, "-m", "py_compile", *paths[:24]], "timeout": 12, "extra_inputs": []}
+            return {"display": display, "skipped": "py_compile verifier must target proposed files only", "extra_inputs": []}
+        if executable in {"node", "nodejs"} and len(parts) == 3 and parts[1] == "--check":
+            node = shutil.which("node") or shutil.which("nodejs")
+            rel = parts[2]
+            if node and rel in proposed and _safe_relative(root, rel) is not None:
+                return {"display": display, "argv": [node, "--check", rel], "timeout": 8, "extra_inputs": []}
+            return {"display": display, "skipped": "node --check verifier must target one proposed JavaScript file", "extra_inputs": []}
+        if executable in {"pytest", "py.test"} or (executable in {"python", "python3"} and len(parts) >= 3 and parts[1] == "-m" and parts[2] == "pytest"):
+            normalized = _bounded_pytest_verifier(root, proposed, parts)
+            return {**normalized, "display": display}
+        return {"display": display, "skipped": "verifier command is outside the BEAST IDE isolated allowlist", "extra_inputs": []}
+
+    def _bounded_pytest_verifier(root: Path, proposed: dict[str, str], parts: list[str]) -> dict[str, Any]:
+        pytest = shutil.which("pytest")
+        prefix = [sys.executable, "-m", "pytest"] if parts[:3] == [parts[0], "-m", "pytest"] else ([pytest] if pytest else [sys.executable, "-m", "pytest"])
+        args = parts[3:] if len(parts) >= 3 and parts[1] == "-m" and parts[2] == "pytest" else parts[1:]
+        allowed_flags = {"-q", "-x", "-s", "--tb=short", "--disable-warnings", "--maxfail=1"}
+        targets: list[str] = []
+        filtered: list[str] = []
+        for arg in args:
+            if arg in allowed_flags:
+                filtered.append(arg)
+                continue
+            if arg.startswith("-"):
+                return {"skipped": f"pytest option {arg} is not allowed in isolated validation", "extra_inputs": []}
+            safe = _safe_relative(root, arg)
+            if safe is None or not safe.exists():
+                return {"skipped": f"pytest target {arg} is unavailable or unsafe", "extra_inputs": []}
+            if safe.is_dir():
+                return {"skipped": f"pytest target {arg} is too broad; choose explicit test files", "extra_inputs": []}
+            targets.append(arg)
+            filtered.append(arg)
+        if not targets:
+            return {"skipped": "pytest verifier requires explicit test file targets", "extra_inputs": []}
+        extras = list(dict.fromkeys([*targets, *proposed.keys(), "pytest.ini", "pyproject.toml", "setup.cfg", "conftest.py"]))
+        return {"argv": [*prefix, *filtered], "timeout": 20, "extra_inputs": extras}
+
+    def _copy_agent_verifier_input(root: Path, temp_root: Path, rel: str) -> None:
+        source = _safe_relative(root, rel)
+        target = _safe_relative(temp_root, rel)
+        if source is None or target is None or not source.exists() or not source.is_file():
+            return
+        if target.exists() or source.stat().st_size > 300_000:
+            return
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+
     def _safe_relative(root: Path, rel: str) -> Path | None:
         if not rel or Path(rel).is_absolute() or ".." in Path(rel).parts:
             return None
@@ -227,6 +570,45 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
 
     def _request_base_url(request: Request) -> str:
         return str(request.base_url).rstrip("/")
+
+    def _agent_related_context(root: Path, objective: str, selected_files: list[str], limit: int = 12) -> list[str]:
+        """Return a small, workspace-bounded context expansion for an IDE agent.
+
+        The renderer's context picker is useful for explicit scope, but a coding
+        agent also needs the directly related implementation/test files that a
+        VS Code user expects it to inspect.  This remains advisory context: all
+        returned paths must already exist under the workspace and every edit is
+        still constrained to this resulting allow-list and SourcePlan review.
+        """
+        discovered: list[str] = []
+
+        def add(value: Any) -> None:
+            candidate = str(value or "").replace("\\", "/").strip()
+            target = _safe_relative(root, candidate)
+            if target is None or not target.is_file():
+                return
+            relative = target.relative_to(root).as_posix()
+            if relative not in discovered:
+                discovered.append(relative)
+
+        for path in selected_files:
+            add(path)
+        try:
+            editing = code_cortex_router.get_editing_context(root, objective, limit=max(1, min(limit, 24)))
+            for row in (editing.get("files") or editing.get("results") or []):
+                add(row if isinstance(row, str) else row.get("path") if isinstance(row, dict) else "")
+            for row in (editing.get("symbols") or []):
+                if isinstance(row, dict):
+                    add(row.get("path") or row.get("file"))
+            for path in selected_files[:4]:
+                dependents = code_cortex_router.get_dependents(root, path, limit=max(1, min(limit, 24)))
+                for row in (dependents.get("dependents") or dependents.get("related_files") or dependents.get("files") or dependents.get("results") or []):
+                    add(row if isinstance(row, str) else row.get("path") or row.get("file") or row.get("dependent") if isinstance(row, dict) else "")
+        except Exception:
+            # Context discovery must never make an explicit user-selected file
+            # unusable; the selected scope remains a valid bounded fallback.
+            pass
+        return discovered[: max(1, min(limit, 24))]
 
     def _classify_related(path: str) -> str:
         lowered = path.lower()
@@ -676,10 +1058,49 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
         phase: str = "scout",
         risk: str = "",
         evidence_limit: int = 12,
+        detail: bool = False,
     ):
         root = _root(root_path)
         query = objective or active_file or "BEAST IDE mission"
-        state = await asyncio.to_thread(_gather_ide_state, root, query, phase, risk, evidence_limit)
+        if not detail or str(objective or "").strip().lower() in {"desktop-health", "gateway-ready"}:
+            return {
+                "beast_object_type": "beast_ide_snapshot",
+                "version": "1.0",
+                "status": "ready",
+                "mode": "lightweight_health_probe",
+                "workspace_root": str(root),
+                "active_file": active_file,
+                "objective": query,
+                "mission_cockpit": {"status": "ready", "workspace_root": str(root), "objective": query},
+                "sourceplan_queue": [],
+                "worktrees": {},
+                "policy": {"mode_route": {}, "reintegration_health": {}, "architecture_decisions": []},
+                "code_cortex": {"status": "deferred"},
+                "evidence_bus": {"status": "deferred", "receipts": []},
+                "mission_lattice": {"status": "deferred"},
+                "agent_sessions": [],
+                "operator_actions": [],
+            }
+        try:
+            state = await asyncio.to_thread(_gather_ide_state, root, query, phase, risk, evidence_limit)
+        except Exception as error:
+            state = {
+                "cockpit": {
+                    "status": "degraded",
+                    "workspace_root": str(root),
+                    "objective": query,
+                    "errors": [str(error)],
+                    "sourceplan_queue": [],
+                    "worktrees": {},
+                    "mode_route": {},
+                    "reintegration_health": {},
+                },
+                "code_cortex": {"status": "degraded", "error": str(error)},
+                "evidence": {"status": "degraded", "error": str(error), "receipts": []},
+                "lattice": {"status": "degraded", "error": str(error)},
+                "agent_sessions": [],
+                "architecture": [],
+            }
         cockpit = state["cockpit"]
         code_cortex = state["code_cortex"]
         evidence = state["evidence"]
@@ -874,17 +1295,10 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
         capped_files = max(1, min(int(max_files), 3000))
 
         def scan_symbols() -> tuple[int, list[dict[str, Any]]]:
-            ignore = {".git", ".beast", "node_modules", "__pycache__", ".pytest_cache", "dist", "build", ".venv", "venv"}
             suffixes = {".py", ".js", ".jsx", ".ts", ".tsx", ".css", ".html", ".md"}
             matches: list[dict[str, Any]] = []
             scanned = 0
-            for candidate in root.rglob("*"):
-                if scanned >= capped_files:
-                    break
-                if any(part in ignore for part in candidate.relative_to(root).parts):
-                    continue
-                if not candidate.is_file() or candidate.suffix.lower() not in suffixes:
-                    continue
+            for candidate in _bounded_workspace_files(root,suffixes,capped_files):
                 scanned += 1
                 try:
                     text = candidate.read_text(encoding="utf-8", errors="replace")[:900000]
@@ -925,22 +1339,12 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
         capped_files = max(1, min(int(max_files), 3000))
 
         def scan_text() -> tuple[int, list[dict[str, Any]]]:
-            ignore = {".git", ".beast", "node_modules", "__pycache__", ".pytest_cache", "dist", "build", ".venv", "venv"}
             suffixes = {".py", ".js", ".jsx", ".ts", ".tsx", ".json", ".md", ".html", ".css", ".yml", ".yaml", ".toml"}
             matches: list[dict[str, Any]] = []
             scanned = 0
             lowered = needle.lower()
-            for candidate in root.rglob("*"):
-                if scanned >= capped_files or len(matches) >= capped_limit:
-                    break
-                try:
-                    rel_parts = candidate.relative_to(root).parts
-                except Exception:
-                    continue
-                if any(part in ignore for part in rel_parts):
-                    continue
-                if not candidate.is_file() or candidate.suffix.lower() not in suffixes:
-                    continue
+            for candidate in _bounded_workspace_files(root,suffixes,capped_files):
+                if len(matches)>=capped_limit: break
                 scanned += 1
                 try:
                     lines = candidate.read_text(encoding="utf-8", errors="replace")[:900000].splitlines()
@@ -1101,10 +1505,21 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 "error": "missing_plan",
                 "plan_id": plan_id,
             }
-        client = BeastApiClient(_request_base_url(request), workspace=root)
+        client = BeastApiClient(_request_base_url(request), timeout=8.0, workspace=root)
         preview = client.preview_patch_plan(plan)
         scorecard = client.sourceplan_scorecard(plan)
-        verification = client.verify_patch_plan(plan)
+        supplied_verification = payload.get("verification") if isinstance(payload.get("verification"), dict) else None
+        if supplied_verification is not None:
+            verification = ActionResult(
+                ok=bool(supplied_verification.get("ok")),
+                summary=str(supplied_verification.get("summary") or supplied_verification.get("message") or "verification supplied by governed verify endpoint"),
+                data=supplied_verification,
+                error=str(supplied_verification.get("error") or ""),
+            )
+        elif bool(payload.get("include_verification", True)):
+            verification = client.verify_patch_plan(plan)
+        else:
+            verification = ActionResult(ok=False, summary="Verification not yet requested; use Verify SourcePlan.", data={"skipped": True}, error="")
         evidence = EvidenceBus(root).related(plan_id, limit=20) if plan_id else {"receipts": [], "match_count": 0}
         preview_data = preview.data or {}
         scorecard_data = scorecard.data or {}
@@ -1382,12 +1797,18 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
     @router.post("/edgek/ide/release-readiness/check")
     async def edgek_ide_release_readiness_check(payload: dict[str, Any] = None):
         payload = payload or {}
-        root = _root(payload.get("root_path"))
+        # This is a readiness check for the BEAST desktop product, not an
+        # arbitrary selected coding workspace. Keep the workspace as context
+        # for the receipt while always inspecting the installed IDE source.
+        workspace_scope = _root(payload.get("root_path"))
+        root = fallback_root
         def compute_release_readiness() -> dict[str, Any]:
             files = {
                 "desktop_package": root / "desktop-ide" / "package.json",
                 "desktop_main": root / "desktop-ide" / "main.js",
-                "desktop_renderer": root / "desktop-ide" / "renderer" / "app.js",
+                # RC4 replaced the retired monolithic app.js with the release
+                # shell and page modules.
+                "desktop_renderer": root / "desktop-ide" / "renderer" / "js" / "beast-release-app.js",
                 "desktop_html": root / "desktop-ide" / "renderer" / "index.html",
                 "desktop_smoke": root / "desktop-ide" / "scripts" / "smoke-desktop-ide.js",
                 "desktop_launch_smoke": root / "desktop-ide" / "scripts" / "launch-smoke-desktop-ide.js",
@@ -1421,7 +1842,10 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                     return {"ran": True, "ok": False, "error": str(exc)}
 
             route_text = read_if_exists(files["ide_routes"])
-            renderer_text = read_if_exists(files["desktop_renderer"])
+            renderer_root = root / "desktop-ide" / "renderer" / "js"
+            renderer_text = "\n".join(
+                read_if_exists(path) for path in sorted(renderer_root.rglob("*.js"))
+            )
             package_text = read_if_exists(files["desktop_package"])
             smoke_result = run_smoke(files["desktop_smoke"], missing_error="desktop smoke script missing")
             launch_smoke_result = run_smoke(files["desktop_launch_smoke"], missing_error="desktop launch smoke script missing")
@@ -1436,9 +1860,9 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 {"check": "handoff_route_present", "passed": "sourceplan/handoff-package" in route_text},
                 {"check": "release_route_present", "passed": "release-readiness/check" in route_text},
                 {"check": "learning_route_present", "passed": "learning-queue/propose" in route_text},
-                {"check": "renderer_controls_present", "passed": "exportMissionRunbook" in renderer_text and "createHandoffPackage" in renderer_text},
-                {"check": "terminal_maturity_controls_present", "passed": "terminalDecisionCard" in renderer_text and "recordTerminalExecution" in renderer_text and "terminalHistoryStorageKey" in renderer_text},
-                {"check": "workspace_persistence_controls_present", "passed": "saveWorkspaceState" in renderer_text and "restoreWorkspaceTabs" in renderer_text and "openWorkspaceWindow" in renderer_text},
+                {"check": "renderer_controls_present", "passed": "BeastWorkspacePage" in renderer_text and "BeastWorktreesPage" in renderer_text and "BeastRouter" in renderer_text},
+                {"check": "terminal_maturity_controls_present", "passed": "startChat" in renderer_text and "terminal-chat-trace" in renderer_text and "terminal-chat-output" in renderer_text},
+                {"check": "workspace_persistence_controls_present", "passed": "beast.v2.workspace.root" in renderer_text and "restoreTabs" in renderer_text and "setRoot" in renderer_text},
                 {"check": "fake_gateway_not_used_in_ide_routes", "passed": ("http://gateway-" + "local") not in route_text},
             ]
             result = {
@@ -1452,23 +1876,50 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 "smoke": smoke_result,
                 "launch_smoke": launch_smoke_result,
                 "read_only": True,
+                "workspace_scope": str(workspace_scope),
+                "product_root": str(root),
             }
             out_dir = root / ".beast" / "ide" / "release" / "checks"
-            out_dir.mkdir(parents=True, exist_ok=True)
+            storage_fallback = ""
+            try:
+                out_dir.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                # A selected workspace can be readable but not writable (for
+                # example, a shared checkout). Readiness itself is non-mutating;
+                # keep its receipt available in a scoped temporary location.
+                digest = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:16]
+                out_dir = Path(tempfile.gettempdir()) / "beast-ide-release" / digest / "checks"
+                out_dir.mkdir(parents=True, exist_ok=True)
+                storage_fallback = str(out_dir)
             out_path = out_dir / f"release_{int(time.time())}.json"
             out_path.write_text(json.dumps(result, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
-            EvidenceBus(root).register(
-                artifact_type="beast_ide_release_readiness",
-                artifact_path=out_path,
-                artifact_hash=_json_hash(result),
-                source="desktop_ide",
-                task_id="desktop_ide_release",
-                status=result["status"],
-                summary=f"{result['summary']['passed']}/{result['summary']['checks']} readiness checks passed",
-            )
+            if storage_fallback:
+                result["receipt_storage"] = {"mode": "temporary_fallback", "path": storage_fallback}
+            try:
+                EvidenceBus(root).register(
+                    artifact_type="beast_ide_release_readiness",
+                    artifact_path=out_path,
+                    artifact_hash=_json_hash(result),
+                    source="desktop_ide",
+                    task_id="desktop_ide_release",
+                    status=result["status"],
+                    summary=f"{result['summary']['passed']}/{result['summary']['checks']} readiness checks passed",
+                )
+            except OSError as exc:
+                result["evidence_warning"] = f"Readiness receipt was saved, but workspace evidence registration was unavailable: {exc}"
             return result
 
-        return await asyncio.to_thread(compute_release_readiness)
+        try:
+            return await asyncio.to_thread(compute_release_readiness)
+        except Exception as exc:
+            return {
+                "ok": False,
+                "status": "error",
+                "beast_object_type": "beast_ide_release_readiness",
+                "read_only": True,
+                "error": str(exc),
+                "summary": {"checks": 0, "passed": 0, "failed": 0},
+            }
 
     @router.get("/edgek/ide/tooling-snapshot")
     async def edgek_ide_tooling_snapshot(root_path: str = None, active_file: str = ""):
@@ -2106,7 +2557,7 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
         prompt: str = "",
         provider: str = "",
         model: str = "",
-        context_files: List[str] | None = None,
+        context_files: List[str] | None = Query(default=None),
         simulate: bool = False,
         max_tokens: int = 2000,
         context_max_chars_each: int = 30000,
@@ -2121,20 +2572,23 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
             files: list[str],
             max_output_tokens: int,
             max_context_chars: int,
+            diagnostics: str = "",
+            root_path: Path | None = None,
         ) -> tuple[str, list[str]]:
-            repair_prompt = _action_ir_retry_prompt(objective, previous_output, files)
+            repair_prompt = _action_ir_retry_prompt(objective, previous_output, files, diagnostics, root_path)
             repair_parts: list[str] = []
             repair_tools: list[str] = []
-            async for event in client.stream_live_turn(
-                repair_prompt,
-                [],
-                provider=provider_id,
-                model=model_id,
-                context_files=files,
-                max_tokens=max(256, min(int(max_output_tokens), 2400)),
-                context_max_chars_each=max(1200, min(int(max_context_chars), 60000)),
-                governance_level="ide_agent_session_action_ir_repair",
-            ):
+            repair_options = {
+                "provider": provider_id,
+                "model": model_id,
+                "context_files": files,
+                "max_tokens": max(256, min(int(max_output_tokens), 2400)),
+                "context_max_chars_each": max(1200, min(int(max_context_chars), 60000)),
+                "governance_level": "ide_agent_session_action_ir_repair",
+            }
+            if "allow_fallback" in inspect.signature(client.stream_live_turn).parameters:
+                repair_options["allow_fallback"] = False
+            async for event in client.stream_live_turn(repair_prompt, [], **repair_options):
                 event_type = str(event.get("type") or "event")
                 if event_type == "token":
                     repair_parts.append(str(event.get("text") or ""))
@@ -2150,13 +2604,55 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 yield _event("agent_run_error", {"ok": False, "error": detail.get("error") or "unknown session"})
                 return
             session = detail.get("session") if isinstance(detail.get("session"), dict) else {}
+            is_chat_session = str(session.get("mode") or "").strip().lower() == "chat"
             run_prompt = (prompt or session.get("objective") or "Continue this BEAST agent session.").strip()
             run_provider = provider or str(session.get("provider") or "nvidia_nim")
             run_model = model or str(session.get("model") or "meta/llama-3.1-8b-instruct")
+            run_max_tokens, context_char_limit, context_file_limit = _pair_programmer_limits(
+                run_provider, run_model, max_tokens, context_max_chars_each
+            )
+            compact_local_coder = _is_compact_local_coder(run_provider, run_model)
             session_files = [str(item) for item in (session.get("files") or [])]
             request_files = [str(item) for item in (context_files or [])]
-            context_file_list = list(dict.fromkeys([*request_files, *session_files]))
-            store.update(session_id, status="running", output={
+            selected_context = list(dict.fromkeys([*request_files, *session_files]))
+            # Do the repository scan off the event loop. A synchronous cortex
+            # scan here used to starve concurrent SSE turns and made the agent
+            # behave as if it only knew about the active editor tab.
+            # A 1.5B local coder is useful only when it receives a small,
+            # explicit prompt. Repository expansion adds cold-index latency
+            # and routinely pushes a CPU-only model into a multi-minute turn.
+            discovered_context = [] if compact_local_coder else await asyncio.to_thread(
+                _agent_related_context, root, run_prompt, selected_context, context_file_limit
+            )
+            context_file_list = list(dict.fromkeys([*selected_context, *discovered_context]))[:context_file_limit]
+            # A selected path is not context until it has been read from this
+            # exact workspace root.  Previously the UI reported the path as
+            # "locked" before the provider client attempted the read, which
+            # let an unreadable attachment masquerade as model context.
+            client = BeastApiClient(_request_base_url(request), workspace=root)
+            context_records = client.read_context_files(
+                context_file_list,
+                max_files=context_file_limit,
+                max_chars_each=context_char_limit,
+            )
+            readable_context = [str(record.get("path") or "") for record in context_records if record.get("ok")]
+            unreadable_context = [
+                {"path": str(record.get("path") or ""), "error": str(record.get("error") or "unreadable")}
+                for record in context_records if not record.get("ok")
+            ]
+            unreadable_requested = [
+                item for item in unreadable_context if item["path"] in set(request_files)
+            ]
+            context_file_list = readable_context
+            conversation_history = store.conversation_history(session_id, limit=3 if compact_local_coder else 12)
+            store.update(session_id, output={
+                "kind": "agent_user_prompt",
+                "text": run_prompt,
+                "provider": run_provider,
+                "model": run_model,
+                "context_files": context_file_list,
+            })
+            store.update(session_id, status="running", files=context_file_list, output={
                 "kind": "agent_run_started",
                 "text": f"Run started: {run_prompt[:500]}",
                 "provider": run_provider,
@@ -2170,10 +2666,41 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 "prompt": run_prompt,
                 "simulate": bool(simulate),
             })
+            if compact_local_coder:
+                yield _event("agent_run_stage", {
+                    "session_id": session_id,
+                    "text": f"compact local Qwen route: {len(context_file_list)} files, {run_max_tokens} output tokens",
+                })
+            if len(context_file_list) > len(selected_context):
+                yield _event("agent_run_stage", {
+                    "session_id": session_id,
+                    "text": f"repository context expanded: {len(selected_context)} selected → {len(context_file_list)} files",
+                })
+            yield _event("agent_run_context", {
+                "ok": bool(context_file_list) or not request_files,
+                "session_id": session_id,
+                "files": context_file_list,
+                "requested_files": request_files,
+                "unreadable_files": unreadable_context,
+                "content_loaded": bool(context_file_list),
+                "active_file": request_files[0] if request_files else (context_file_list[0] if context_file_list else ""),
+                "file_count": len(context_file_list),
+            })
+            if unreadable_requested:
+                detail = "; ".join(f"{item['path']}: {item['error']}" for item in unreadable_requested[:4])
+                failure = f"Attached context could not be read from the active workspace: {detail}"
+                store.update(session_id, status="active", output={
+                    "kind": "agent_context_error",
+                    "text": failure,
+                    "provider": run_provider,
+                    "model": run_model,
+                    "context_files": context_file_list,
+                })
+                yield _event("agent_run_error", {"session_id": session_id, "ok": False, "error": failure})
+                return
             assistant_parts: list[str] = []
             tool_events: list[str] = []
             try:
-                client = BeastApiClient(_request_base_url(request), workspace=root)
                 if simulate:
                     yield _event("agent_run_stage", {"session_id": session_id, "text": "desktop simulation"})
                     simulated = (
@@ -2185,16 +2712,39 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         yield _event("agent_run_token", {"session_id": session_id, "text": chunk})
                         await asyncio.sleep(0.01)
                 else:
-                    async for event in client.stream_live_turn(
-                        run_prompt,
-                        [],
-                        provider=run_provider,
-                        model=run_model,
-                        context_files=context_file_list,
-                        max_tokens=max(128, min(int(max_tokens), 16000)),
-                        context_max_chars_each=max(1200, min(int(context_max_chars_each), 60000)),
-                        governance_level="ide_agent_session",
-                    ):
+                    provider_prompt = run_prompt
+                    if not is_chat_session:
+                        yield _event("agent_run_stage", {"session_id": session_id, "text": "implementation planning"})
+                        provider_prompt = (
+                            "You are completing a repository change, not suggesting a tiny example. "
+                            "First inspect every attached file and infer the affected implementation, caller, configuration, and test surfaces. "
+                            "Build the implementation plan internally before emitting output. Then return a complete BEAST Action IR patch: include every required edit in the allowed files, with one exact action per edit. "
+                            "A one-file patch is acceptable only when the inspected scope proves no other file needs to change. "
+                            "Do not stop after the first plausible edit.\n\n"
+                            + run_prompt
+                        )
+                        if compact_local_coder:
+                            provider_prompt = (
+                                "Return one valid BEAST Action IR JSON object only—no markdown or explanation. "
+                                "Its exact top-level shape is {\"kind\":\"beast.action_intent.v1\",\"objective\":\"...\",\"actions\":[{\"type\":\"replace_exact\",\"target\":{\"path\":\"relative/file\"},\"old\":\"exact current snippet\",\"new\":\"replacement\",\"intent\":\"why\"}],\"verify\":[\"syntax check\"]}. "
+                                "Use the exact current snippets from the attached files. Produce at most three replace_exact actions, "
+                                "and use only simple syntax checks in verify. Do not call tools, describe a plan, or attempt broad discovery. "
+                                "If the requested change needs more context, make the safest complete patch possible from these files.\n\n"
+                                + run_prompt
+                            )
+                    stream_options = {
+                        "provider": run_provider,
+                        "model": run_model,
+                        "context_files": context_file_list,
+                        "max_tokens": run_max_tokens,
+                        "context_max_chars_each": context_char_limit,
+                        "governance_level": "ide_agent_session",
+                    }
+                    if "allow_fallback" in inspect.signature(client.stream_live_turn).parameters:
+                        # A coding run needs intact Action IR.  Never append a
+                        # conversational fallback to a partial edit contract.
+                        stream_options["allow_fallback"] = is_chat_session
+                    async for event in client.stream_live_turn(provider_prompt, conversation_history, **stream_options):
                         event_type = str(event.get("type") or "event")
                         if event_type == "token":
                             text = str(event.get("text") or "")
@@ -2210,20 +2760,71 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                             if event.get("assistant_text") and not assistant_parts:
                                 assistant_parts.append(str(event.get("assistant_text") or ""))
                             tool_events.extend([str(item) for item in (event.get("tool_events") or [])])
+                            event_data = event.get("data") if isinstance(event.get("data"), dict) else {}
+                            crystal_decision = event_data.get("crystal_reuse_decision") if isinstance(event_data.get("crystal_reuse_decision"), dict) else {}
+                            crystal_record = event_data.get("crystal_record") if isinstance(event_data.get("crystal_record"), dict) else {}
+                            if crystal_decision or crystal_record:
+                                yield _event("agent_run_crystal", {
+                                    "session_id": session_id,
+                                    "decision": crystal_decision,
+                                    "record": crystal_record,
+                                    "reused": bool(BeastApiClient.crystal_decision_response(crystal_decision)),
+                                })
                             yield _event("agent_run_provider_done", {"session_id": session_id, "ok": bool(event.get("ok", True)), "data": event.get("data") or {}})
                         elif event_type == "error":
-                            yield _event("agent_run_error", {"session_id": session_id, "ok": False, "error": event.get("error") or "stream error"})
+                            failure = str(event.get("error") or "stream error")
+                            # Preserve a partial coding response long enough
+                            # for the bounded Action-IR repair pass below. A
+                            # chat response, or an empty coding response, is a
+                            # real terminal provider failure.
+                            if not is_chat_session and assistant_parts:
+                                tool_events.append(f"provider stream incomplete; repairing Action IR: {failure[:180]}")
+                                yield _event("agent_run_tool", {
+                                    "session_id": session_id,
+                                    "text": "provider stream incomplete; attempting bounded Action IR repair",
+                                })
+                                break
+                            store.update(
+                                session_id,
+                                status="active",
+                                output={
+                                    "kind": "chat_provider_error" if is_chat_session else "agent_provider_error",
+                                    "text": failure,
+                                    "provider": run_provider,
+                                    "model": run_model,
+                                },
+                                evidence=[{
+                                    "beast_object_type": "beast_agent_session_run_error",
+                                    "session_id": session_id,
+                                    "error": failure,
+                                    "timestamp": time.time(),
+                                }],
+                            )
+                            yield _event("agent_run_error", {"session_id": session_id, "ok": False, "error": failure})
+                            return
                 assistant_text = "".join(assistant_parts)
-                compile_result = _compile_agent_action_ir_sourceplan(
+                compile_result = ({"ok": True, "status": "chat_complete", "operation_count": 0, "plan": {}} if is_chat_session else _compile_agent_action_ir_sourceplan(
                     root,
                     output=assistant_text,
                     provider=run_provider,
                     requested_files=context_file_list,
                     objective=run_prompt,
-                )
+                ))
                 repair_text = ""
-                if not compile_result.get("ok") and not simulate and context_file_list:
+                if not is_chat_session and not compile_result.get("ok") and not simulate and context_file_list and not compact_local_coder:
                     yield _event("agent_run_stage", {"session_id": session_id, "text": "sourceplan repair"})
+                    repair_diagnostics = "\n".join(
+                        str(value)
+                        for value in (
+                            compile_result.get("error"),
+                            *(
+                                compile_result.get("missing_context_questions")
+                                if isinstance(compile_result.get("missing_context_questions"), list)
+                                else []
+                            ),
+                        )
+                        if value
+                    )
                     repair_text, repair_tools = await _stream_repair_action_ir(
                         client,
                         objective=run_prompt,
@@ -2233,6 +2834,8 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         files=context_file_list,
                         max_output_tokens=max_tokens,
                         max_context_chars=context_max_chars_each,
+                        diagnostics=repair_diagnostics,
+                        root_path=root,
                     )
                     for item in repair_tools[:20]:
                         tool_events.append(item)
@@ -2254,22 +2857,92 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                             requested_files=context_file_list,
                             objective=run_prompt,
                         )
+                validation: dict[str, Any] = {}
+                if not is_chat_session and compile_result.get("ok"):
+                    plan = compile_result.get("plan") if isinstance(compile_result.get("plan"), dict) else {}
+                    validation = _validate_agent_sourceplan(root, plan)
+                    plan["validation"] = validation
+                    plan["status"] = "draft_validation_passed" if validation.get("ok") else "draft_validation_failed"
+                    plan.setdefault("output_evidence", {})["proposal_validation"] = {
+                        "status": validation.get("status"),
+                        "check_count": validation.get("check_count"),
+                        "syntax_checked": validation.get("syntax_checked"),
+                    }
+                    yield _event("agent_run_validation", {"session_id": session_id, **validation})
+                    if not validation.get("ok") and not simulate and context_file_list and not compact_local_coder:
+                        yield _event("agent_run_stage", {"session_id": session_id, "text": "proposal validation repair"})
+                        validation_repair, validation_tools = await _stream_repair_action_ir(
+                            client,
+                            objective=run_prompt,
+                            previous_output=repair_text or assistant_text,
+                            provider_id=run_provider,
+                            model_id=run_model,
+                            files=context_file_list,
+                            max_output_tokens=max_tokens,
+                            max_context_chars=context_max_chars_each,
+                            diagnostics="\n".join(str(item) for item in validation.get("failures") or []),
+                            root_path=root,
+                        )
+                        for item in validation_tools[:20]:
+                            tool_events.append(item)
+                            yield _event("agent_run_tool", {"session_id": session_id, "text": item})
+                        if validation_repair.strip():
+                            store.update(session_id, output={
+                                "kind": "agent_action_ir_validation_repair",
+                                "text": validation_repair,
+                                "provider": run_provider,
+                                "model": run_model,
+                                "diagnostics": validation.get("failures") or [],
+                            })
+                            compile_result = _compile_agent_action_ir_sourceplan(
+                                root,
+                                output=validation_repair,
+                                provider=run_provider,
+                                requested_files=context_file_list,
+                                objective=run_prompt,
+                            )
+                            if compile_result.get("ok"):
+                                plan = compile_result.get("plan") if isinstance(compile_result.get("plan"), dict) else {}
+                                validation = _validate_agent_sourceplan(root, plan)
+                                plan["validation"] = validation
+                                plan["status"] = "draft_validation_passed" if validation.get("ok") else "draft_validation_failed"
+                                plan.setdefault("output_evidence", {})["proposal_validation"] = {
+                                    "status": validation.get("status"),
+                                    "check_count": validation.get("check_count"),
+                                    "syntax_checked": validation.get("syntax_checked"),
+                                }
+                                yield _event("agent_run_validation", {"session_id": session_id, "repair": True, **validation})
+                    if not validation.get("ok"):
+                        compile_result = {
+                            **compile_result,
+                            "ok": False,
+                            "status": "proposal_validation_failed",
+                            "error": "Proposed edits failed bounded validation: " + "; ".join(str(item) for item in (validation.get("failures") or [])[:3]),
+                            "validation": validation,
+                            "requires_operator_translation": True,
+                        }
                 sourceplan_status = str(compile_result.get("status") or "requires_operator_translation")
-                if compile_result.get("ok"):
-                    yield _event("agent_run_sourceplan", {
-                        "ok": True,
-                        "session_id": session_id,
-                        "status": sourceplan_status,
-                        "operation_count": int(compile_result.get("operation_count") or 0),
-                        "plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
-                    })
-                else:
-                    yield _event("agent_run_needs_operator", {
-                        "ok": False,
-                        "session_id": session_id,
-                        "status": sourceplan_status,
-                        "error": str(compile_result.get("error") or "Action IR compilation requires operator translation."),
-                    })
+                if not is_chat_session:
+                    if compile_result.get("ok"):
+                        yield _event("agent_run_sourceplan", {
+                            "ok": True,
+                            "session_id": session_id,
+                            "status": sourceplan_status,
+                            "operation_count": int(compile_result.get("operation_count") or 0),
+                            "plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
+                            "plan": compile_result.get("plan") if isinstance(compile_result.get("plan"), dict) else {},
+                            "evidence_receipt": compile_result.get("evidence_receipt") if isinstance(compile_result.get("evidence_receipt"), dict) else {},
+                        })
+                    else:
+                        yield _event("agent_run_needs_operator", {
+                            "ok": False,
+                            "session_id": session_id,
+                            "status": sourceplan_status,
+                            "error": str(compile_result.get("error") or "Action IR compilation requires operator translation."),
+                            "assistant_text": assistant_text,
+                            "context_files": context_file_list,
+                            "retry_options": compile_result.get("retry_options") if isinstance(compile_result.get("retry_options"), list) else [],
+                        })
                 result = store.update(
                     session_id,
                     status="active",
@@ -2282,7 +2955,9 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         "simulated": bool(simulate),
                         "sourceplan_status": sourceplan_status,
                         "sourceplan_operation_count": int(compile_result.get("operation_count") or 0),
-                        "sourceplan_plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
+                        "sourceplan_plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")) if compile_result.get("ok") else "",
+                        "sourceplan_plan": compile_result.get("plan") if compile_result.get("ok") and isinstance(compile_result.get("plan"), dict) else {},
+                        "sourceplan_validation": validation,
                     },
                     evidence=[{
                         "beast_object_type": "beast_agent_session_sourceplan_status",
@@ -2291,6 +2966,7 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                         "operation_count": int(compile_result.get("operation_count") or 0),
                         "plan_id": str(((compile_result.get("plan") or {}).get("plan_id") or "")),
                         "error": str(compile_result.get("error") or ""),
+                        "validation_status": str(validation.get("status") or ""),
                         "timestamp": time.time(),
                     }],
                     budget_delta={"tokens": max(1, len(assistant_text) // 4)},
@@ -2386,6 +3062,8 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 "op": "create_or_replace",
                 "path": rel,
                 "content": new_text,
+                "old": original_text,
+                "new": new_text,
                 "old_text": original_text,
                 "new_text": new_text,
                 "description": f"Desktop editor replacement for empty file {rel}.",
@@ -2599,6 +3277,11 @@ def build_ide_router(default_root: str | Path, *, code_cortex_router: Any) -> AP
                 provider=str(payload.get("provider") or ""),
             )
         return mission
+
+    @router.get("/edgek/ide/worktree-mission/list")
+    async def edgek_ide_worktree_mission_list(root_path: str = None):
+        """Return the persisted worktree mission registry without a full IDE snapshot."""
+        return WorktreeForge(_root(root_path)).list()
 
     @router.post("/edgek/ide/worktree-mission/test")
     async def edgek_ide_worktree_mission_test(payload: dict[str, Any] = None):

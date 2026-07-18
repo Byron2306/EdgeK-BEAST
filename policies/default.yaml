@@ -66,6 +66,22 @@ meta_rules:
 
 # Provider configurations (will be expanded)
 providers:
+  # Local Pair Programmer route.  This must live in the governance policy as
+  # well as the provider registry: the proxy checks both, and previously the
+  # registry advertised Ollama while governance rejected every real request.
+  ollama:
+    enabled: true
+    backend: "ollama"
+    base_url: "http://127.0.0.1:11434/v1"
+    default_model: "qwen2.5-coder:1.5b"
+    runtime_max_concurrent: 1
+    runtime_timeout_seconds: 180
+    rate_limit_rpm: 30
+    rate_limit_tpm: 24000
+    pricing:
+      input_cost_per_1k: 0.0
+      output_cost_per_1k: 0.0
+
   openai:
     enabled: true
     base_url: "https://api.openai.com/v1"
@@ -141,7 +157,7 @@ providers:
   cerebras:
     enabled: true
     base_url: "https://api.cerebras.ai/v1"
-    default_model: "llama3.1-8b"
+    default_model: "gpt-oss-120b"
     runtime_max_concurrent: 5
     runtime_timeout_seconds: 120
     rate_limit_rpm: 60
@@ -392,7 +408,7 @@ required_integrations:
 ollama_scout:
   enabled: true
   base_url: "http://127.0.0.1:11434"
-  default_model: "llama3.2:3b"
+  default_model: "qwen2.5:0.5b"
   timeout_seconds: 45
   roles:
     - classify_task

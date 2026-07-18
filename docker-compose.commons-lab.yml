@@ -5,14 +5,16 @@ services:
       dockerfile: Dockerfile.commons-node
     environment:
       BEAST_NODE_ID: commons-node-a
-      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
-      BEAST_COMMONS_SEED_LIMIT: "10"
-      BEAST_COMMONS_SEED_OFFSET: "0"
-      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+      BEAST_COMMONS_NODE_ID: commons-node-a
+      BEAST_COMMONS_NODE_ROOT: /var/lib/beast/remote-commons
+      BEAST_COMMONS_NODE_SIGNING_KEY: /run/beast/node.pem
+      BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
+      BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8101:8000"
+      - "8111:8000"
     volumes:
       - commons_node_a:/var/lib/beast
+      - ./.beast/remote-commons-lab/commons-node-a:/run/beast:ro
 
   commons-node-b:
     build:
@@ -20,14 +22,16 @@ services:
       dockerfile: Dockerfile.commons-node
     environment:
       BEAST_NODE_ID: commons-node-b
-      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
-      BEAST_COMMONS_SEED_LIMIT: "10"
-      BEAST_COMMONS_SEED_OFFSET: "10"
-      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+      BEAST_COMMONS_NODE_ID: commons-node-b
+      BEAST_COMMONS_NODE_ROOT: /var/lib/beast/remote-commons
+      BEAST_COMMONS_NODE_SIGNING_KEY: /run/beast/node.pem
+      BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
+      BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8102:8000"
+      - "8112:8000"
     volumes:
       - commons_node_b:/var/lib/beast
+      - ./.beast/remote-commons-lab/commons-node-b:/run/beast:ro
 
   commons-node-c:
     build:
@@ -35,14 +39,16 @@ services:
       dockerfile: Dockerfile.commons-node
     environment:
       BEAST_NODE_ID: commons-node-c
-      BEAST_COMMONS_ROOT: /var/lib/beast/commons_spaces
-      BEAST_COMMONS_SEED_LIMIT: "10"
-      BEAST_COMMONS_SEED_OFFSET: "20"
-      BEAST_CRYSTAL_SEAL_KEY: commons-lab-portable-integrity-key
+      BEAST_COMMONS_NODE_ID: commons-node-c
+      BEAST_COMMONS_NODE_ROOT: /var/lib/beast/remote-commons
+      BEAST_COMMONS_NODE_SIGNING_KEY: /run/beast/node.pem
+      BEAST_COMMONS_CLIENT_TRUST_STORE: /run/beast/clients.yaml
+      BEAST_COMMONS_TRUST_EVIDENCE: /run/beast/trust-evidence.json
     ports:
-      - "8103:8000"
+      - "8113:8000"
     volumes:
       - commons_node_c:/var/lib/beast
+      - ./.beast/remote-commons-lab/commons-node-c:/run/beast:ro
 
 volumes:
   commons_node_a:

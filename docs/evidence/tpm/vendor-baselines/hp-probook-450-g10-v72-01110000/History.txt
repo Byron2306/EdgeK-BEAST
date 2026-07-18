@@ -1,0 +1,411 @@
+﻿				Revision History
+				 V72 ROM Family
+
+Models Supported:       HP ProBook 440 14 inch G10 Notebook PC
+                        HP ProBook 450 15.6 inch G10 Notebook PC
+
+
+- Includes the following firmware:
+Camera Firmware, version 24.22.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.20
+Embedded Controller (EC) Firmware, version 52.3D.00
+Graphics Output Protocol (GOP) Firmware, version 21.0.1066
+Management Engine Firmware, version 16.1.40.2765
+Power Delivery Firmware, version 4.3.0 (TI) / 3.9.0 (Realtek)
+Silicon Initialization Code, version C.0.F6.20
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+Version 01.11.00
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2025-20080, CVE-2025-27707, CVE-2025-31648, and CVE-2025-32008.
+- Updates the Absolute Persistence Module.
+
+FIXES:
+- General bug fixes.
+
+	V72 PCR0 (TPM2.0) = 0886E6FC01B4B9C8FC427EB494C7FA477032D56991529621FE3E9865F532E92F
+
+Version 01.10.00
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2025-20064, CVE-2025-20037, and CVE-2025-22392.
+- Deprecates the usage of the cURL library (CVE-2020-8285).
+- Optimizes the BIOS network buffer size to improve pre-boot performance.
+- Enables recent Windows cumulative updates to include the Windows UEFI CA 2023 certificate for platforms introduced in 2023 and earlier.
+
+FIXES:
+- General bug fixes.
+- Fixes issues in Wolf Protect and Trace (WPT) for certain situations to invoke remote locking and disk erase.
+- Resolves an issue where the system triggers intelligent charging and enters hibernation mode while using an AC power source.
+- Fixes an issue where Wake-on-LAN does not function properly after the system is shut down while connected to a network.
+
+	V72 PCR0 (TPM2.0) = F4B64A5BAB2446C08C741DF7C0C35256579DB3F97DFF6C1C5CDBABC767191D5C
+
+Version 01.09.00
+
+ENHANCEMENTS:
+-address security vulnerabilities for CVE-2025-20054, CVE-2024-45332, CVE-2025-20109
+-address security vulnerabilities for CVE-2023-48267, CVE-2023-49603, CVE-2023-49615, CVE-2023-49618, CVE-2024-36262, CVE-2023-48366.
+
+FIXES:
+-Fixed problems when external monitor cannot be detected properly when A/C unplugged from travel hub dock.
+-Improve USB-C devices detection consistency
+-Overall improvement to conform to USB requirements
+-General bug fixes
+-Fix Bitlocker code prompt
+
+	V72 PCR0 (TPM2.0) = F93CE0F99893B9F07A8140073ABA986FD2155D72FEE054DA227E78A1592D6606
+
+Version 01.08.00
+
+FIXES:
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2021-39300, CVE-2021-39301, CVE-2024-24582, CVE-2024-26021, and CVE-2024-30211.
+- Updates the chipset firmware.
+- Improves Secure Key management.
+- Improves Secure Boot Key protection.
+
+
+Version 01.07.01
+
+FIXES:
+- Fixes an issue where SSD information disappears and does not display the message, Drive is Locked, after the incorrect DriveLock password is entered.
+
+ENHANCEMENTS:
+- Addresses security vulnerability CVE-2024-31068.
+- Removes support for Enhanced Device Mode.
+- Adds HP Battery Control Protocol 2022 support for battery auto-calibration in the F2 UEFI Diagnostics.
+- Updates the Wireless Regulatory Domain Descriptor for the Intel Wi-Fi 6E module.
+- Adds Enhanced Sign-in Security support for the fingerprint reader and the IR camera on the system.
+- Improves Smart Cover Support.
+
+- Includes the following firmware:
+Camera Firmware, version 24.22.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.20
+Embedded Controller (EC) Firmware, version 52.39.00
+Graphics Output Protocol (GOP) Firmware, version 21.1.6
+Management Engine Firmware, version 16.1.32.2473
+Power Delivery Firmware, version 4.3.0 (TI) / 3.6.0 (Realtek)
+Silicon Initialization Code, version C.0.F3.20
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = B8E6163F7343E58345A38CA235117BCE217DCCE46D98A9D5A271FF8373E860E7
+
+
+Version 01.06.03
+
+FIXES:
+- Fixes an issue where the system stops at the Start PXE over IPv4/IPv6 interface and then switches back to the Start Menu while the system is connected to a specific dock.
+- Fixes an issue where a system that is connected to a LAN through an Intel I225-V NIC option card cannot boot to the UEFI PXE environment.
+- Fixes an issue where USB Audio Offload is not spelled correctly.
+- Fixes an issue where the power LED displays the breathing effect when the system is in the On state instead of using a solid color.
+- Fixes an issue where the battery charge LED remains orange, indicating that the battery is still charging, after the system exits shipping mode.
+- Fixes an issue where the system displays a pop-up message indicating that a problem has occurred with the HP Endpoint Security Controller.
+- Fixes an issue where the system does not auto wake from hibernate after the Erase Device Request process is run through TechPulse.
+- Fixes an issue where the system fails to connect to an access point (AP) in WPA2/WPA3 mixed mode when the host UEFI is connected using the WPA2 settings.
+- Fixes an issue where the Intel Thunderbolt Retimer Firmware Update fails to install when a BIOS update is run while the system is connected to an HP Thunderbolt Dock G4r.
+- Fixes an issue on a system connected to a dock where the USB-C port no longer detects the dock after a power surge occurs.
+- Fixes an issue where the battery icon continues to indicate that battery (DC) power is being used after the system is connected to an AC power source.
+- Fixes an issue where the privacy mode brightness level returns to the default setting after the system resumes from hibernate.
+- Fixes an issue the system runs slower than expected while connected to a low wattage adapter and operating system is set to Best Power Efficiency mode.
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2023-34424, CVE-2023-35061, CVE-2023-38655, CVE-2023-40067, CVE-2023-48361, CVE-2024-21844, CVE-2024-24968, and CVE-2024-5477.
+- Adds an Enter button to the Power-On Self-Test (POST) to enable the user to continue the boot process or to proceed to Shut Down when the system presents a POST error code (90D) thermal event.
+- Updates the names of all options in the Battery Health Manager settings.
+- Adds the JEDEC manufacturers identification code to the BIOS.
+- Provides support for large format printers.
+- Provides support for the Secure Erase feature.
+- Provides support for Wolf Connection Enhanced Response.
+- Updates the camera firmware.
+- Provides support for the USB-C control box in the F10 BIOS Setup Utility to enable or disable the data functions of the USB-C port and the Thunderbolt port.
+
+- Includes the following firmware:
+Camera Firmware, version 24.22.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.20
+Embedded Controller (EC) Firmware, version 52.38.00
+Graphics Output Protocol (GOP) Firmware, version 21.0.1065
+Management Engine Firmware, version 16.1.32.2418
+Power Delivery Firmware, version 4.3.0 (TI) / 3.3.0 (Realtek)
+Silicon Initialization Code, version C.0.D4.50
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 2A8135522310CEBEBAABB42239917818EF2A2D2524ACA814FDE86C0F4D158CCC
+
+
+Version 01.05.05
+
+FIXES:
+- Fixes an issue where TamperLock can be disabled by Windows Management Instrumentation (WMI) without authentication.
+- Fixes an issue where unsupported WLAN cards are displayed in the preboot Wi-Fi options in the F10 menu.
+- Fixes an issue where operating system recovery does not occur when the Windows Recovery Environment is disabled.
+- Fixes an issue which causes an error symbol (yellow bang) to be displayed on the UCM-UCSI ACPI device in Device Manager.
+- Fixes an issue where the airplane mode state is delayed when the hotkey is pressed while the system boots to the operating system.
+- Fixes an issue on a system connected to an AC power source while it is idle which causes the system to shut down and display the message, HP Endpoint Security Controller Problem.
+- Fixes an issue where the system shuts down unexpectedly and displays the error message, HP Endpoint Security Controller Problem, after being restarted.
+- Fixes an issue where TechPulse Erase does not function properly.
+- Fixes an issue where system performance is less than expected when the remaining battery capacity is less than 10%.
+- Fixes an issue where HP Dynamic Tuning Technology (DTT) settings cannot be accessed through the DTT user interface.
+- Fixes an issue where a 740pm monitor connected to the system does not display properly after the monitor is powered on or off while using AC power source and is then connected to the Thunderbolt port on the system using a USB-C cable.
+- Fixes an issue where the system cannot detected a Thunderbolt 5K monitor connected to the system via a Thunderbolt cable.
+- Fixes an issue where Wake on LAN fails when the system is in a powered off state while connected to an AC power source for several days.
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2023-45733 and CVE-2023-49141.
+- Provides the Minimize Battery Health Management option in the F10 BIOS menu and myHP to disable Battery Health Management.
+- Updates the Management Engine Firmware to version 16.1.30.2361v4.
+- Updates Trusted Execution Technology to version 1.18.16.
+- Updates Smart Discharge to version 2.1.
+- Improves power measure capacity.
+- Extends 6E/6GHz support for AX211, QCNFA765, Realtek RTL8852CE, and Mediatek MT7922A22M to Singapore.
+- Prevents the user from disabling Sure Start Secure Boot Keys Protection.
+- Updates the Intel Reference Code to enhance compatibility.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.20
+Embedded Controller (EC) Firmware, version 52.33.60
+Graphics Output Protocol (GOP) Firmware, version 21.0.1065
+Management Engine Firmware, version 16.1.30.2361
+Power Delivery Firmware, version 4.3.0 (TI) / 3.1.0 (Realtek)
+Silicon Initialization Code, version C.0.CE.20
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 041301279379ACCFBF96D3D262CE7A1209807C6E0AC5139E2D6FEEEF9C4E67A2
+
+
+Version 01.04.00
+
+FIXES:
+- Fixes an issue where the incorrect characters are generated when the internal keyboard is used.
+- Fixes an issue where the USB keyboard does not function properly on the BitLocker PIN screen when fast boot is enabled.
+- Fixes an issue where the Wi-Fi Password does not appear in the Preboot Wi-Fi Profile variable.
+- Fixes an issue where certain options that are present in UefiBIOSConfig file are not present in the HpSetup.txt file.
+- Fixes an issue on a system connected a USB-C dock where the system no longer functions after Windows Update is run.
+- Fixes an issue which causes the click pad to stop functioning while a firmware update is run using the BIOS Firmware Update and Recovery Utility.
+- Fixes an intermittent issue where the USB Type-C port does not function with a HP USB-C Dock G5.
+
+ENHANCEMENTS:
+- Addresses security vulnerabilities CVE-2023-27502, CVE-2023-28389, CVE-2023-28746, CVE-2023-32633, CVE-2023-38575, and CVE-2023-39368.
+- Provides distinct error messages for Fan 1 and Fan 2 to streamline troubleshooting and help to address any fan-related concerns more effectively.
+- Adds a message recommending the use of only HP-branded batteries when a non-HP battery is used in the system.
+- Reserves a 32 GB partition on the hard drive for Sure Recover Partition-Based Recovery use.
+- Extends 6E/6GHz support for Intel AX211, Realtek RTL8852CE, MediaTek MT7922A22M, and Qualcomm QCNFA765 to Thailand.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.31.00
+Graphics Output Protocol (GOP) Firmware, version 21.0.1065
+Management Engine Firmware, version 16.1.30.2330
+Power Delivery Firmware, version 4.3.0 (TI) / 3.0.0 (Realtek)
+Silicon Initialization Code, version C.0.BA.10
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 6BC4F050A9C9046CD306135A1877D5082DFF3FE8FC35598C3BEF37268B138847
+
+
+Version 01.03.01
+
+FIXES:
+- Fixes an issue that occurs after the EBAM and BIOS admin passwords are set where flashing the BIOS with the correct password causes the Firmware Update and Recovery Utility interface to display the message, Incorrect password was entered.
+- Fixes an issue on a system running in battery mode with less than 5% battery capacity remaining where the system fails to power on after High Resolution mode is enabled in the BIOS setup menu.
+- Fixes an issue where an external monitor that is disconnected from the system while the system is in hibernation cannot be detected when the monitor is reconnected after the system resumes.
+- Fixes an issue where a system cannot be locked after Find, Lock and Wipe is used to lock the system from a remote server and the system then resumes from hibernation.
+- Fixes an issue that occurs after Windows Update is run which causes a blue screen event to occur and the system displays the message, Unsupported Processor.
+- Fixes an issue where the system cannot power on automatically from hibernate or shut down modes when an AC adapter is connected to the system after Power On When AC Detected is enabled and Battery Health Manager is set to Maximize my battery health in the F10 BIOS settings.
+
+ENHANCEMENTS:
+- Provides the BIOS update. NOTE: HP strongly recommends updating the system BIOS to address a potential issue with HP Sure Start that can cause some devices to experience a SecureBoot error at boot.
+- Addresses security vulnerabilities CVE-2023-5410.
+- Addresses security vulnerabilities CVE-2023-20563, CVE-2023-20565, and CVE-2023-20571.
+- Addresses security vulnerabilities CVE-2023-20569.
+- Addresses security vulnerabilities CVE-2023-22329 and CVE-2023-25756.
+- Provides support for the 5.15-5.35 GHz band.
+- Provides support for the SMBIOS type1 version string for db addition.
+- Provides support for HP Intelligent Hibernate.
+- Updates the Silicon Initialization Code to version C.0.BA.10 (Memory Reference Code, version 0.0.4.184).
+- Updates the Management Engine Firmware to version 16.1.30.2264.
+- Updates the Realtek Power Delivery (PD) Firmware to version 2.8.0.
+- Updates the Embedded Controller (EC) Firmware to version 52.2D.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.2D.00
+Graphics Output Protocol (GOP) Firmware, version 21.0.1065
+Management Engine Firmware, version 16.1.30.2264
+Power Delivery Firmware, version 4.1.0 (TI) / 2.8.0 (Realtek)
+Silicon Initialization Code, version C.0.BA.10
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 8FFE4BF931D2B71384357D2F5F8CC0B5D169EEB80A80F698BD46768DB9B5DAEC
+
+
+Version 01.02.03
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates the production Embedded Controller (EC) Firmware to version 52.28.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.28.00
+Graphics Output Protocol (GOP) Firmware, version 21.0.1065
+Management Engine Firmware, version 16.1.27.2225
+Power Delivery Firmware, version 4.1.0 (TI) / 2.7.0 (Realtek)
+Silicon Initialization Code, version C.0.B2.10
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = FBDDC5CEDADE1FF712ABFEEFAF485AD8E158821EA5C2888A343A87D4C9A0E6A0
+
+
+Version 01.02.01
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates the Microcontroller unit (MCU) to version 0x4119.
+- Updates the Management Engine Firmware to version 16.1.27.2225.
+- Updates the Silicon Initialization Code to version C.0.B2.10 (Memory Reference Code, version 0.0.4.169).
+- Updates the Realtek Power Delivery (PD) Firmware to version 2.7.0.
+- Updates the production Embedded Controller (EC) Firmware to version 52.25.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.25.00
+Graphics Output Protocol (GOP), version 21.0.1065
+Management Engine Firmware, version 16.1.27.2225
+Silicon Initialization Code, version C.0.B2.10
+Power Delivery Firmware, version 4.1.0 (TI) / 2.7.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 87CE6BE81F721541EF95A8B5D0174D7434279B67CCCC832F453F407E0B7DB24F
+
+
+Version 01.01.07
+
+FIXES:
+- Fixes an issue that causes ACPI BIOS errors to occur.
+- Fixes an issue on a system with only one Samsung 8GB or 16GB memory module installed on slot 2 which causes the system to display a black screen and stop functioning (hang).
+- Fixes an issue where the D-Notify setting does not match the DTT table definition in DPTF on DC mode.
+- Fixes an issue where the fan runs faster than expected when the system is restarted while connected to an HP USB-C Dock.
+- Fixes an issue where an i-Tec USB Ethernet dongle or docking station are not supported in the PXE environment.
+- Fixes an issue where memory training fails.
+
+ENHANCEMENTS:
+- Updates the MCU to version 0x4114.
+- Updates the GOP to version 21.0.1065.
+- Updates the DTT setting to Rev.02.05_20230511.
+- Updates the Intel Wi-Fi UEFI driver to version 2.2.20.23023.
+- Updates the Realtek RTL8111 UNDI UEFI DXE driver to version 2.057.
+- Updates the Realtek Power Delivery (PD) Firmware to version 2.4.0.
+- Updates the production EC firmware to version 52.21.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.21.00
+Graphics Output Protocol (GOP), version 21.0.1065
+Management Engine Firmware, version 16.1.25.2091
+Power Delivery Firmware, version 4.1.0 (TI) / 2.4.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 7933806B8741861DC49BDDB9556E0562A8B3E3889F8011EFF150E39431E4E0A0
+
+
+Version 01.01.03
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates the Embedded Controller (EC) Firmware to version 52.1F.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.1F.00
+Graphics Output Protocol (GOP), version 21.0.1061
+Management Engine Firmware, version 16.1.25.2091
+Power Delivery Firmware, version 3.4.0 (TI) / 1.8.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 950E34ED8923E87CBFC1316A930B14B8F3784F61203B3863B08E5EDEFF234C3B
+
+
+Version 01.01.02
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates the Embedded Controller (EC) Firmware to version 52.1E.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.1E.00
+Graphics Output Protocol (GOP), version 21.0.1061
+Management Engine Firmware, version 16.1.25.2091
+Power Delivery Firmware, version 3.4.0 (TI) / 1.8.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = BDC9A61F185D48B31117AD94CACFC0ED65979235332B6D8ED2906E976B03CEDD
+
+
+Version 01.01.01
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates the Embedded Controller (EC) Firmware to version 52.1D.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.1D.00
+Graphics Output Protocol (GOP), version 21.0.1061
+Management Engine Firmware, version 16.1.25.2091
+Power Delivery Firmware, version 3.4.0 (TI) / 1.8.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = 7AE7030080E0DEFDE78B7E9E21246CD366AA20EEAFBB462B8AF3D64E444A6039
+
+
+Version 01.01.00
+
+FIXES:
+
+ENHANCEMENTS:
+- Updates ELAN Touch Screen Firmware to version 22.46.0.0.
+- Updates Realtek Power Delivery Firmware to version 1.8.0.
+- Updates the Embedded Controller (EC) Firmware to version 52.1C.00.
+
+- Includes the following firmware:
+Camera Firmware, version 23.01.0.0
+ClickPad Firmware, version 22.50.0.0 (ELAN) / 22.44.0.0 (Synaptics)
+ELAN Fingerprint Reader Firmware, version 4.19
+Embedded Controller (EC) Firmware, version 52.1C.00
+Graphics Output Protocol (GOP), version 21.0.1061
+Management Engine Firmware, version 16.1.25.2091
+Power Delivery Firmware, version 3.4.0 (TI) / 1.8.0 (Realtek)
+Touch Screen Firmware, version 22.46.0.0 (ELAN) / 21.38.0.0 (G2)
+
+V72 PCR0 (TPM2.0) = B3D7BCF46F20DDF0593319747169E78A0E272AFB0FF03E0EA6AFE9B1C614C704
+

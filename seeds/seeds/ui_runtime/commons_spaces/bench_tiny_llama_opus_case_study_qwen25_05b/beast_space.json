@@ -1,0 +1,75 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "public_documentation",
+      "bytes": 2901,
+      "path": "README.md",
+      "sha256": "sha256:b53e8bd8f986e002d022ab0afc8139e5bb88542518c624285378f7b38405d8f5"
+    },
+    {
+      "artifact_type": "artifact_hash_manifest",
+      "bytes": 3231,
+      "path": "integrity_manifest.json",
+      "sha256": "sha256:c06d498fb879ac02759c748039fb9cd334e30e7b0920c42f2057957c49368621"
+    },
+    {
+      "artifact_type": "orchestration_plan",
+      "bytes": 1457,
+      "path": "normalized_orchestration_plan.json",
+      "sha256": "sha256:b1c10a5547c36943fb0ac7e93addfbb090dbbe0eedb8a8d2bce4dad1e2a9abdd"
+    }
+  ],
+  "authority": "advisory",
+  "beast_object_type": "beast_compute_space",
+  "created_at": "2026-06-22T11:34:21.038982+00:00",
+  "hardware_profile": {
+    "execution_class": "benchmark_archive_replay",
+    "gpu_required": false,
+    "local_model": null
+  },
+  "lineage": {
+    "case_study": "tiny_llama_opus_case_study_qwen25_05b",
+    "registration_score": 4,
+    "signals": [
+      "integrity_manifest",
+      "orchestration_plan",
+      "readme"
+    ],
+    "source_path": "benchmarks/results/tiny_llama_opus_case_study_qwen25_05b"
+  },
+  "manifest_hash": "sha256:b14f1eb4a605bdc100be35c93a7dcceeafc341c0e8569290b77fb4e192ae0c5e",
+  "name": "Tiny Llama Opus Case Study Qwen25 05B",
+  "privacy": {
+    "contains_private_paths": false,
+    "contains_raw_prompts": false,
+    "contains_secrets": false,
+    "contains_source_code": false,
+    "content_fingerprints_only": true,
+    "local_only": true
+  },
+  "reduction_claims": {
+    "capability_preserved": false,
+    "cloud_calls_avoided": 0,
+    "cloud_calls_evidence": "pending_replay_measurement",
+    "gpu_avoided": false,
+    "tokens_avoided": null
+  },
+  "safety": {
+    "adoption_mode": "advisory",
+    "approval_required": true,
+    "promotion_state": "candidate",
+    "risk": "medium",
+    "rollback_required": false
+  },
+  "space_id": "bench_tiny_llama_opus_case_study_qwen25_05b",
+  "task_class": "benchmark_replay_candidate",
+  "verifier_bundles": [
+    {
+      "artifact_scope": "metadata_only_archive",
+      "bundle_id": "deterministic_integrity_replay",
+      "commands": [],
+      "expected_returncode": 0
+    }
+  ],
+  "version": "1.0"
+}
