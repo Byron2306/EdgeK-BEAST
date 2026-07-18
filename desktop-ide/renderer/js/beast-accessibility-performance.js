@@ -2,7 +2,7 @@
   'use strict';
   const KEY='beast.rc4.preferences';
   const defaults={textScale:'normal',contrast:'normal',motion:'full',atmosphere:'matrix-grid',adaptive:true};
-  const pages=['studio','workspace','source','mission','models','agents','review','trust','memory','evidence','crystallization','map','terminal','tooling','doctor','providers','system','worktrees','deploy','chronicle','economy','settings'];
+  const pages=['studio','workspace','source','mission','models','compute-control','agents','review','trust','memory','evidence','crystallization','map','terminal','tooling','doctor','providers','system','worktrees','deploy','chronicle','economy','settings'];
   let settings={...defaults};let initialized=false;let observer=null;let resizeTimer=0;let perfRAF=0;let performanceObserver=null;
   const $=id=>document.getElementById(id);
   const announce=message=>{const live=$('beastA11yLive');if(!live)return;live.textContent='';requestAnimationFrame(()=>{live.textContent=message;});};

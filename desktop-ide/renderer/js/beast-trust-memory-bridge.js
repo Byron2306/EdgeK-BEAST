@@ -128,7 +128,13 @@
     const healthRaw = integrity.health ?? integrity.score ?? policy.reintegration_health?.score ?? snapshot.health?.score;
     const inferredSignals = Number(security.hull.verified > 0) + Number(security.seal.exists) + Number(security.passport.valid) + Number(Boolean(enterprise.workspace_identity?.digest));
     const inferredScore = security.hull.failed ? 0 : (security.hull.verified ? 35 : 0) + (security.seal.exists ? 30 : 0) + (security.passport.valid ? 20 : 0) + (enterprise.workspace_identity?.digest ? 15 : 0);
-    const score = clamp(healthRaw == null ? inferredScore : healthRaw);
+    const runtimeObserved = snapshot.status === 'ready' || system.ok === true || Object.keys(system || {}).length > 0;
+    const optionalAttestationOnly = inferredSignals === 0 && !security.hull.failed;
+    // Optional attestation sidecars are useful evidence, but their absence is
+    // not evidence that a healthy local runtime is untrusted.  Show an honest
+    // observed-runtime baseline until those controls report in.
+    const observedScore = runtimeObserved ? 65 : 0;
+    const score = clamp(healthRaw == null ? (optionalAttestationOnly ? observedScore : inferredScore) : healthRaw);
     const total = Math.max(0, Number(integrity.total ?? integrity.checks ?? decisions ?? 0) || inferredSignals);
     const healthy = Math.max(0, Number(integrity.passed ?? integrity.healthy ?? 0) || inferredSignals);
     const agentRows = firstArray(snapshot.agent_sessions?.sessions,snapshot.agent_sessions,system.agents);
@@ -189,7 +195,7 @@
       loading:false,
       error:'',
       score,
-      status: failed ? 'Degraded' : warnings ? 'Guarded' : total ? 'Secure' : 'Not reported',
+      status: failed ? 'Degraded' : warnings ? 'Guarded' : total ? 'Secure' : runtimeObserved ? 'Observed' : 'Not reported',
       policy:String(policy.mode || policy.name || 'not reported'),
       systemsTotal:total,
       systemsHealthy:Math.min(total,healthy),

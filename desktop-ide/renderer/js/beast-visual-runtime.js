@@ -15,18 +15,21 @@
   let tier = 'high';
   let motion = 'full';
   let atmosphereMode = 'matrix-grid';
+  let workload = 'idle';
   let bg = null;
   let front = null;
   let pulse = null;
   let commandExpanded = false;
 
   const $ = id => document.getElementById(id);
-  const dprLimit = () => tier === 'low' ? 1 : tier === 'medium' ? 1.35 : 1.8;
-  const config = () => tier === 'low'
-    ? { fps:18, bgStep:40, front:false, frontStep:92, trail:8 }
-    : tier === 'medium'
-      ? { fps:24, bgStep:28, front:true, frontStep:76, trail:11 }
-      : { fps:30, bgStep:20, front:true, frontStep:56, trail:16 };
+  const dprLimit = () => workload === 'interactive' ? 1 : tier === 'low' ? 1 : tier === 'medium' ? 1.25 : 1.4;
+  const config = () => workload === 'interactive'
+    ? { fps:12, bgStep:64, front:false, frontStep:120, trail:6 }
+    : tier === 'low'
+      ? { fps:15, bgStep:48, front:false, frontStep:100, trail:7 }
+      : tier === 'medium'
+        ? { fps:20, bgStep:38, front:false, frontStep:88, trail:9 }
+        : { fps:22, bgStep:32, front:false, frontStep:76, trail:11 };
 
   function releaseIdentity() {
     document.documentElement.dataset.beastRelease = RELEASE.version;
@@ -183,6 +186,7 @@
 
   function restart() { stop(); start(); }
   function setTier(next='medium') { tier=['high','medium','low'].includes(next)?next:'medium';document.body.dataset.performanceTier=tier;if(running)restart(); }
+  function setWorkload(next='idle') { const normalized=next==='interactive'?'interactive':'idle';if(workload===normalized)return;workload=normalized;document.body.dataset.beastWorkload=workload;if(running)restart(); }
   function setAtmosphere(next='matrix-grid') { atmosphereMode=['matrix-grid','matrix','grid','quiet'].includes(next)?next:'matrix-grid';document.body.dataset.beastAtmosphere=atmosphereMode;if(running&&atmosphereMode!=='quiet')restart();else if(atmosphereMode==='quiet'){bg?.clear?.();front?.clear?.();} }
   function setMotion(next='full') { motion=next==='reduced'?'reduced':'full';document.documentElement.dataset.motion=motion;motion==='reduced'?stop():start(); }
 
@@ -211,5 +215,5 @@
   function update(root=document){scan(root);releaseIdentity();}
   function destroy(){stop();cancelAnimationFrame(resizeRaf);resizeRaf=0;observer?.disconnect();observer=null;resizeObserver?.disconnect();resizeObserver=null;cardCanvases.clear();initialized=false;}
 
-  window.BeastVisualRuntime={init,update,destroy,start,stop,restart,setTier,setAtmosphere,setMotion,get state(){return{running,tier,motion,atmosphereMode,cardCanvases:cardCanvases.size};}};
+  window.BeastVisualRuntime={init,update,destroy,start,stop,restart,setTier,setWorkload,setAtmosphere,setMotion,get state(){return{running,tier,motion,atmosphereMode,workload,cardCanvases:cardCanvases.size};}};
 })();

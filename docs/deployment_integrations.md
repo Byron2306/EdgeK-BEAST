@@ -104,10 +104,8 @@ Required integration readiness:
 - `semantic_tool_interceptor`: local BEAST semantic grep/vector backend.
 - `github`: requires `GITHUB_TOKEN`.
 - `postgres`: requires `POSTGRES_DSN` and `pip install -r requirements-integrations.txt`.
-- `rtk`: requires `rtk` binary on `PATH`.
-- `sqz`: requires `sqz` binary on `PATH`.
-- `longcodezip`: requires `longcodezip` binary on `PATH`.
-- `reporelay`: requires `reporelay` binary on `PATH`.
+- `perplexity_code_filter`: native local code-density filter; no source is sent to a remote API.
+- `rtk`, `sqz`, `longcodezip`, and `reporelay`: native BEAST implementations are always available; their matching binaries are optional accelerators.
 
 Token pruning and code filtering enter through:
 
@@ -115,6 +113,14 @@ Token pruning and code filtering enter through:
 curl -sS -X POST http://127.0.0.1:8005/edgek/compression/prune \
   -H 'Content-Type: application/json' \
   -d '{"algorithm":"sqz","text":"...large tool output or source payload..."}'
+```
+
+The native local code-density filter is also active as a dedicated route:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8005/edgek/code/filter \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"def important(): return 1"}'
 ```
 
 If a required compressor binary is unavailable, the endpoint reports the
@@ -237,6 +243,6 @@ The Nginx/LiteLLM gateway also supports:
 - **LongCodeZip**: Handles long code snippets by compressing and referencing.
 - **RepoRelay**: Facilitates repository-level context relaying across tool calls.
 - **Token Pruning**: Automatic removal of less relevant tokens to stay within context limits.
-- **Perplexity Code Filtering**: Filters code based on perplexity scores to retain high-quality, relevant snippets.
+- **Perplexity Code Filtering**: Native local code-density filtering retains high-information code snippets without remote source transfer.
 
 These integrations enhance the edgek beast gateway by providing specialized tools for code handling, compression, and external service interactions while maintaining the gateway's role as a governance layer.

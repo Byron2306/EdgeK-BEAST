@@ -6,7 +6,7 @@ and local TGI/llama.cpp requests into EdgeK IR, then run the full PREC cycle.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Awaitable, Callable, Dict
 
 from fastapi import APIRouter, HTTPException, Request  # pyright: reportMissingImports=false
 from fastapi.responses import JSONResponse
@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 from app.context.economizer import ContextEconomizer
 from app.kernel.execution.crystallize import crystallizer
 from app.kernel.execution.execute import executor
-from app.kernel.compute.perceive import ProviderType, perceiver
+from app.kernel.compute.perceive import EdgeKIR, ProviderType, perceiver
 from app.kernel.governance.reason import GovernanceDecision, reasoner
 
 
@@ -23,7 +23,12 @@ huggingface_router = APIRouter()
 context_economizer = ContextEconomizer(reasoner.policies)
 
 
-async def _run_prec(body: Dict[str, Any], provider: str, session_id: str = "default") -> JSONResponse:
+async def _run_prec(
+    body: Dict[str, Any],
+    provider: str,
+    session_id: str = "default",
+    stream_callback: Callable[[str], Awaitable[None] | None] | None = None,
+) -> JSONResponse:
     original_request = body.copy()
     ir = perceiver.perceive(body, ProviderType.OPENAI)
     if isinstance(body.get("metadata"), dict):
@@ -60,6 +65,23 @@ async def _run_prec(body: Dict[str, Any], provider: str, session_id: str = "defa
         )
 
     effective_ir = governance_result.modified_ir or ir
+    # The callback is deliberately attached after preserving the original
+    # request.  It is an in-process transport hook, never provider input or
+    # crystallized request metadata, and therefore cannot affect governance.
+    if stream_callback is not None:
+        effective_ir = EdgeKIR(
+            messages=effective_ir.messages,
+            model=effective_ir.model,
+            max_tokens=effective_ir.max_tokens,
+            temperature=effective_ir.temperature,
+            top_p=effective_ir.top_p,
+            stream=effective_ir.stream,
+            tools=effective_ir.tools,
+            tool_choice=effective_ir.tool_choice,
+            stop=effective_ir.stop,
+            metadata=dict(effective_ir.metadata or {}),
+        )
+        effective_ir.metadata["edgek_live_token_callback"] = stream_callback
     provider_response = await executor.execute(effective_ir, governance_result)
     reasoner.record_usage(effective_ir, session_id, governance_result.budget_impact)
     await crystallizer.crystallize(

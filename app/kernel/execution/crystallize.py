@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 
 def _json_safe(value: Any) -> Any:
     """Convert dataclasses and enums into JSON-serializable structures."""
+    if callable(value):
+        return f"<callable:{getattr(value, '__name__', value.__class__.__name__)}>"
     if is_dataclass(value):
         return _json_safe(asdict(value))
     if isinstance(value, Enum):
@@ -43,6 +45,8 @@ def _json_safe(value: Any) -> Any:
         return {key: _json_safe(item) for key, item in value.items()}
     if isinstance(value, list):
         return [_json_safe(item) for item in value]
+    if not isinstance(value, (str, int, float, bool, type(None))):
+        return str(value)
     return value
 
 

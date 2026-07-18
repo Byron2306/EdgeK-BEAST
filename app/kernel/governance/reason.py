@@ -13,6 +13,7 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from enum import Enum
 import logging
+import re
 
 from app.kernel.compute.perceive import EdgeKIR
 from app.kernel.data_processing.workspace_graph import WorkspaceGraph
@@ -433,17 +434,36 @@ class Reasoner:
                 policies_applied=["semantic_risk_governance_disabled"]
             )
 
-        content = " ".join(str(message.get("content", "")) for message in (ir.messages or [])).lower()
+        # Only evaluate the request authored by the caller.  System context,
+        # tool output, and retrieved documentation frequently mention secrets
+        # while describing redaction or configuration procedures.
+        content = " ".join(
+            str(message.get("content", ""))
+            for message in (ir.messages or [])
+            if str(message.get("role", "user")).lower() == "user"
+        ).lower()
+        credential_material = (
+            r"(?:api[ _-]?key|secret(?:[ _-]?(?:key|token|value))?|"
+            r"access[ _-]?token|password|credential|private[ _-]?key)"
+        )
+        disclosure_verb = (
+            r"(?:reveal|show|print|display|dump|export|upload|send|post|"
+            r"exfiltrat(?:e|ion)|copy|return|extract|give(?:\s+me)?|provide|cat)"
+        )
+        # Bind a disclosure verb to credential material within a sentence.
+        # This avoids false positives from unrelated words such as "read" in
+        # service diagnostics while retaining explicit export protections.
+        secret_disclosure = bool(re.search(
+            rf"(?:\b{disclosure_verb}\b(?:(?![.!?]).){{0,120}}\b{credential_material}\b|"
+            rf"\b{credential_material}\b(?:(?![.!?]).){{0,120}}\b{disclosure_verb}\b|"
+            rf"\b{disclosure_verb}\b(?:(?![.!?]).){{0,80}}\.env\b)",
+            content,
+        ))
         checks = [
             (
                 "prompt_injection_resistance",
                 ["ignore previous", "override policy", "reveal hidden control"],
                 "Prompt injection or policy override attempt blocked",
-            ),
-            (
-                "secret_exfiltration_block",
-                [".env", "api key", "secret"],
-                "Secret exfiltration request blocked",
             ),
             (
                 "destructive_operation_block",
@@ -466,6 +486,17 @@ class Reasoner:
                     reason=reason,
                     policies_applied=policies_applied
                 )
+
+        policies_applied.append("secret_exfiltration_block")
+        # Mentioning secrets is normal in safe configuration, rotation, and
+        # redaction work.  Deny only an explicit request to disclose or move
+        # credential material, never the subject word by itself.
+        if secret_disclosure:
+            return GovernanceResult(
+                decision=GovernanceDecision.DENY,
+                reason="Secret exfiltration request blocked",
+                policies_applied=policies_applied,
+            )
 
         return GovernanceResult(
             decision=GovernanceDecision.ALLOW,

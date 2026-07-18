@@ -8,7 +8,7 @@
     root.innerHTML = `
       <header class="beast-page-head">
         <div><h2>Model Router</h2><div class="sub">LOCAL-FIRST CASCADE // CAPABILITY FIT // LATENCY GUARD // GOVERNED ESCALATION</div></div>
-        <div class="beast-page-actions"><button class="beast-button secondary" data-model-action="policy"><img src="${BeastAssets.icon('policies')}" alt="">Route Policy</button><button class="beast-button hot" data-model-action="refresh"><img src="${BeastAssets.icon('diagnostics')}" alt="">Refresh Router</button></div>
+        <div class="beast-page-actions"><button class="beast-button secondary" data-model-action="control"><img src="${BeastAssets.icon('compute')}" alt="">Compute Control</button><button class="beast-button secondary" data-model-action="policy"><img src="${BeastAssets.icon('policies')}" alt="">Route Policy</button><button class="beast-button hot" data-model-action="refresh"><img src="${BeastAssets.icon('diagnostics')}" alt="">Refresh Router</button></div>
       </header>
       <section class="model-summary-grid">
         <article class="beast-card model-summary-card"><img src="${BeastAssets.icon('target-lock')}" alt=""><div><h3>Active Route</h3><strong data-model-active>checking</strong><span data-model-provider>provider</span></div></article>
@@ -150,6 +150,7 @@
           BeastFX.trigger('success',event.target,{size:220});
         }
         if (action === 'policy') { BeastStore.addLedger('Routing policy inspection requested'); document.dispatchEvent(new CustomEvent('beast:command',{detail:{command:'/policy show'}})); }
+        if (action === 'control') { await BeastUtilityOrchestrationBridge.refreshControl(); await BeastRouter.navigate('compute-control'); }
         if (action === 'stage') { const id = BeastStore.get().models.selectedId; if (id) { BeastStore.patch('models',{active:id}); localStorage.setItem('beast.model',id); BeastStore.addLedger(`Primary route staged locally: ${id}`); BeastFX.trigger('success', event.target,{size:250}); } }
         if (action === 'terminal') { BeastTerminalToolingDoctorBridge.syncModelSelection(BeastStore.get().models.selectedId || BeastStore.get().models.active || ''); BeastStore.addLedger('Terminal chat primed from selected model'); await BeastRouter.navigate('terminal'); BeastFX.trigger('success', event.target,{size:250}); }
       } catch (error) { const message=String(error.message||error); BeastStore.patch('models',{loading:false,error:message}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Model action failed · ${message}`,tone:'error'}})); BeastFX.trigger('warning',event.target,{size:230}); }

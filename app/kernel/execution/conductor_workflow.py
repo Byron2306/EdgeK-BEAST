@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from app.kernel.execution.least_authority_tools import LeastAuthorityToolLoop
+
 
 class ConductorWorkflowBuilder:
     """Build workflow cards from envelope, context, scorecard, and swarm advice."""
@@ -20,6 +22,7 @@ class ConductorWorkflowBuilder:
         if data_dir is None:
             data_dir = Path(__file__).resolve().parents[2] / "data"
         self.workflow_dir = Path(data_dir) / "workflow_cards"
+        self.dispatch_dir = Path(data_dir) / "workflow_dispatches"
 
     def build(
         self,
@@ -104,6 +107,101 @@ class ConductorWorkflowBuilder:
         if not path.exists():
             raise ValueError(f"Workflow card not found: {workflow_id}")
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def dispatch(
+        self,
+        workflow: Dict[str, Any],
+        executors: Optional[Dict[str, Any]] = None,
+        *,
+        approved: bool = False,
+        persist: bool = False,
+    ) -> Dict[str, Any]:
+        """Run a bounded inspect → verify → repair lifecycle.
+
+        Executors are injected by the owning surface.  The dispatcher never
+        receives a shell string or a source-write executor; a repair executor
+        can only return a new draft SourcePlan for the normal review gate.
+        """
+        executors = executors or {}
+        risk = str((workflow.get("forge_scorecard") or {}).get("risk_level") or "medium")
+        loop = LeastAuthorityToolLoop()
+        outcomes: List[Dict[str, Any]] = []
+        stopped = "completed"
+        verification_failed = False
+        for step in workflow.get("steps") or []:
+            if not isinstance(step, dict):
+                continue
+            step_id = str(step.get("id") or step.get("step_id") or "")
+            status = str(step.get("status") or "pending")
+            if status == "blocked":
+                stopped = f"gate blocked: {step_id}"
+                outcomes.append({"step_id": step_id, "status": "blocked", "reason": stopped})
+                break
+            if step_id in {"draft_patch", "draft_minimal_patch"}:
+                # Model/provider work is owned by the caller and must be a
+                # draft. It is intentionally never dispatched here.
+                outcomes.append({"step_id": step_id, "status": "awaiting_draft_sourceplan"})
+                continue
+            executor = executors.get(step_id)
+            if executor is None:
+                outcomes.append({"step_id": step_id, "status": "not_bound"})
+                continue
+            tool = {
+                "name": f"conductor:{step_id}", "category": "planning" if step_id != "run_verification" else "audit",
+                "bucket": "Verify" if step_id == "run_verification" else "Reason", "mutating": False,
+            }
+            result = loop.execute(tool, executor, phase="review" if step_id == "run_verification" else "architect", risk=risk, approved=approved)
+            outcomes.append({"step_id": step_id, "status": "executed" if result.get("ok") else "blocked", "receipt": result})
+            if step_id == "run_verification" and result.get("result") is not None:
+                verification_failed = not bool((result.get("result") or {}).get("ok", False))
+                if verification_failed:
+                    repair = executors.get("repair_draft")
+                    if repair is None:
+                        stopped = "verification failed; repair draft required"
+                        break
+                    repair_result = loop.execute({"name": "conductor:repair_draft", "category": "planning", "bucket": "Reason", "mutating": False}, repair, phase="architect", risk=risk, approved=approved)
+                    outcomes.append({"step_id": "repair_draft", "status": "draft_ready" if repair_result.get("ok") else "blocked", "receipt": repair_result})
+                    stopped = "repair draft returned for SourcePlan validation"
+                    break
+        receipt = {
+            "beast_object_type": "conductor_dispatch_receipt", "version": "1.0",
+            "workflow_id": workflow.get("workflow_id"), "execution_mode": "bounded_dispatch",
+            "outcomes": outcomes, "stopped": stopped, "verification_failed": verification_failed,
+            "source_write_rule": "No source write can be dispatched; repaired drafts re-enter SourcePlan validation and approval.",
+        }
+        if persist:
+            receipt["artifact"] = self._write_dispatch(receipt)
+        return receipt
+
+    def list_dispatches(self, workflow_id: str = "", limit: int = 20) -> Dict[str, Any]:
+        self.dispatch_dir.mkdir(parents=True, exist_ok=True)
+        rows = []
+        for path in self.dispatch_dir.glob("*.json"):
+            try:
+                row = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if workflow_id and str(row.get("workflow_id") or "") != workflow_id:
+                continue
+            rows.append({**row, "artifact": str(path)})
+        rows.sort(key=lambda item: str(item.get("created_at") or item.get("timestamp") or ""), reverse=True)
+        return {"beast_object_type": "conductor_dispatch_index", "workflow_id": workflow_id or None, "dispatches": rows[:max(1, min(int(limit), 100))], "count": len(rows)}
+
+    def resume(
+        self,
+        workflow: Dict[str, Any], executors: Optional[Dict[str, Any]] = None, *, approved: bool = False,
+    ) -> Dict[str, Any]:
+        """Resume from the latest durable receipt without replaying writes.
+
+        Only previously non-mutating, incomplete lifecycle steps are eligible;
+        draft/apply steps remain outside this dispatcher.
+        """
+        history = self.list_dispatches(str(workflow.get("workflow_id") or ""), limit=1)
+        prior = (history.get("dispatches") or [{}])[0]
+        receipt = self.dispatch(workflow, executors, approved=approved, persist=True)
+        receipt["resumed_from"] = str((prior.get("artifact") if isinstance(prior, dict) else "") or "")
+        receipt["resume_rule"] = "Only bounded non-mutating lifecycle callbacks are replayed; source writes are never resumed."
+        return receipt
 
     def _swarm_advice(
         self,
@@ -287,6 +385,16 @@ class ConductorWorkflowBuilder:
         path = self.workflow_dir / f"{workflow['workflow_id']}.json"
         path.write_text(json.dumps(workflow, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         return {"written": True, "path": str(path)}
+
+    def _write_dispatch(self, receipt: Dict[str, Any]) -> Dict[str, Any]:
+        self.dispatch_dir.mkdir(parents=True, exist_ok=True)
+        stable = dict(receipt)
+        stable.pop("artifact", None)
+        digest = hashlib.sha256(json.dumps(stable, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+        stable["created_at"] = self._utc_now()
+        path = self.dispatch_dir / f"{str(receipt.get('workflow_id') or 'workflow')}_{digest[:16]}.json"
+        path.write_text(json.dumps(stable, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+        return {"written": True, "path": str(path), "receipt_hash": f"sha256:{digest}"}
 
     def _hash(self, workflow: Dict[str, Any]) -> str:
         stable = dict(workflow)

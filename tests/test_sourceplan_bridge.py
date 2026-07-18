@@ -1,7 +1,28 @@
 import json
 
+import pytest
+
 from app.cli.api import BeastApiClient
 from app.kernel.adapters.provider_handoff import build_provider_handoff
+from app.kernel.compute.action_ir import ActionIR
+from app.kernel.compute.action_resolver import build_file_references, resolve_action_ir
+
+
+def test_action_ir_rejects_noop_and_placeholder_replacements(tmp_path):
+    target = tmp_path / "app.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    refs = build_file_references(tmp_path, ["app.py"])
+    action_ir = ActionIR.from_dict({
+        "kind": "beast.action_intent.v1",
+        "objective": "Pretend to change a function",
+        "actions": [{
+            "id": "a1", "type": "replace_exact", "target": {"path": "app.py"},
+            "old": "def value():", "new": "def value():\n    # ... (rest of the function remains the same)",
+        }],
+    })
+
+    with pytest.raises(ValueError, match="placeholder instead of a complete source replacement"):
+        resolve_action_ir(tmp_path, action_ir, refs, ["app.py"])
 
 
 def test_sourceplan_fallback_still_carries_provider_handoff(tmp_path, monkeypatch):

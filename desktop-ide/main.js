@@ -181,9 +181,25 @@ function workspaceExtensionRoot(root) { return path.join(path.resolve(root || re
 function extensionPackage(source) { const folder=path.resolve(String(source||''));const manifest=path.join(folder,'beast-extension.json');let raw;try{if(!fs.statSync(folder).isDirectory()||fs.statSync(manifest).size>65536)return null;raw=JSON.parse(fs.readFileSync(manifest,'utf8'));}catch(_){return null;}const id=String(raw?.id||'');const main=String(raw?.main||'');if(!/^[a-z0-9][a-z0-9._-]{1,95}$/.test(id)||!main||!/^[A-Za-z0-9._/-]{1,180}$/.test(main)||main.split('/').includes('..'))return null;const entry=path.resolve(folder,main);try{if(!entry.startsWith(`${folder}${path.sep}`)||!fs.statSync(entry).isFile()||fs.statSync(entry).size>65536)return null;}catch(_){return null;}return {id,folder,manifest,entry,main}; }
 class BeastExtensionHost {
   constructor() { this.session=null;this.sequence=0; }
-  summary() { const s=this.session;return {status:s?.status || 'stopped',pid:s?.process?.pid || null,root:s?.root || '',target:s?.target || {kind:'local'},mode:s?.target?.kind==='local'?'declarative-manifests':'remote-declarative-manifests',extensions:s?.extensions || []}; }
+  summary() { const s=this.session;return {status:s?.status || 'stopped',pid:s?.process?.pid || null,root:s?.root || '',target:s?.target || {kind:'local'},runtime:s?.runtime || null,mode:s?.target?.kind==='local'?'declarative-manifests':'remote-declarative-manifests',extensions:s?.extensions || []}; }
   emit(message) { const sender=this.session?.sender;if(sender&&!sender.isDestroyed())sender.send('beast:extension-host-message',message); }
-  roots(root,target={kind:'local'}) { return target.kind==='local' ? [{path:path.join(root,'.beast','extensions'),origin:'workspace'},{path:runtimeResourcePath('extensions'),origin:'bundled'}] : [{path:path.join(root,'.beast','extensions'),origin:'workspace'}]; }
+  workspaceRoot(root,target={kind:'local'}) {
+    if (target.kind==='ssh') return remotePath(target.remoteRoot || '~');
+    if (target.kind==='container') return remotePath(target.workspaceFolder || '/workspace');
+    return path.resolve(root || repoRoot);
+  }
+  roots(root,target={kind:'local'}) {
+    const workspace=this.workspaceRoot(root,target);
+    if (target.kind==='local') return [{path:path.join(workspace,'.beast','extensions'),origin:'workspace'},{path:runtimeResourcePath('extensions'),origin:'bundled'}];
+    // The host runs inside the selected target, so these are target-local
+    // paths—not desktop paths accidentally serialized into a remote process.
+    return [{path:path.posix.join(workspace,'.beast','extensions'),origin:'workspace'}];
+  }
+  async runtimePreflight(target={kind:'local'}) {
+    if(target.kind==='ssh') { const host=remoteTarget(target.host);const workspace=remotePath(target.remoteRoot||'~');if(!host||!workspace)throw new Error('SSH extension target is missing a verified host or workspace path.');const result=await boundedProcess('ssh',remoteSshArgs(host,`test -d ${shellQuote(workspace)} && command -v node && node --version`),{timeoutMs:12000,outputLimit:32000});if(!result.ok)throw new Error(`SSH extension runtime requires Node.js in ${workspace}: ${String(result.stderr||result.error||'node was not found').trim().slice(0,500)}`);return {kind:'ssh',node:String(result.stdout||'').trim().split(/\s+/).pop(),workspace}; }
+    if(target.kind==='container') { const id=containerId(target.containerId||target.name);if(!id)throw new Error('Container extension target has no valid container id.');const result=await boundedProcess('docker',['exec','-i',id,'node','--version'],{timeoutMs:12000,outputLimit:32000});if(!result.ok)throw new Error(`Container extension runtime requires Node.js: ${String(result.stderr||result.error||'node was not found').trim().slice(0,500)}`);return {kind:'container',node:String(result.stdout||'').trim(),containerId:id}; }
+    return {kind:'local',node:process.version};
+  }
   launch(root,target={kind:'local'}) {
     const script=runtimeResourcePath('scripts','beast-extension-host.js');
     if (target.kind==='ssh') {
@@ -199,13 +215,13 @@ class BeastExtensionHost {
     const selected=executionTargetSummary(target);
     if (this.session?.status==='running'&&this.session.root===workspace&&JSON.stringify(this.session.target)===JSON.stringify(selected)) { this.session.sender=sender;return this.summary(); }
     this.stop();
-    const launch=this.launch(workspace,selected);const processRef=spawn(launch.command,launch.args,{cwd:launch.cwd,env:{...process.env,ELECTRON_RUN_AS_NODE:'1',BEAST_ACTIVE_WORKSPACE:workspace},stdio:['pipe','pipe','pipe'],shell:false,windowsHide:true});
-    const session={process:processRef,sender,root:workspace,target:selected,status:'starting',buffer:'',pending:new Map(),extensions:[],readyResolve:null,readyReject:null};this.session=session;
+    const runtime=await this.runtimePreflight(selected);const launch=this.launch(workspace,selected);const processRef=spawn(launch.command,launch.args,{cwd:launch.cwd,env:{...process.env,ELECTRON_RUN_AS_NODE:'1',BEAST_ACTIVE_WORKSPACE:workspace},stdio:['pipe','pipe','pipe'],shell:false,windowsHide:true});
+    const session={process:processRef,sender,root:workspace,target:selected,runtime,status:'starting',buffer:'',stderr:'',pending:new Map(),extensions:[],readyResolve:null,readyReject:null};this.session=session;
     const rejectAll=error=>{for(const pending of session.pending.values()){clearTimeout(pending.timer);pending.reject(error);}session.pending.clear();session.readyReject?.(error);session.readyReject=null;};
     processRef.stdout.on('data',chunk=>{session.buffer+=String(chunk);let cut;while((cut=session.buffer.indexOf('\n'))>=0){const line=session.buffer.slice(0,cut);session.buffer=session.buffer.slice(cut+1);if(!line.trim())continue;try{const message=JSON.parse(line);if(message.id!=null&&session.pending.has(message.id)){const pending=session.pending.get(message.id);session.pending.delete(message.id);clearTimeout(pending.timer);message.ok===false?pending.reject(new Error(message.error||'extension host request failed')):pending.resolve(message);}else if(message.type==='ready'){session.status='running';session.readyResolve?.(this.summary());session.readyResolve=null;session.readyReject=null;this.emit(message);}else this.emit(message);}catch(error){this.emit({type:'error',error:`Malformed extension host message: ${error.message}`});}}});
-    processRef.stderr.on('data',chunk=>this.emit({type:'stderr',text:String(chunk).slice(-4000)}));
+    processRef.stderr.on('data',chunk=>{const text=String(chunk);session.stderr=`${session.stderr}${text}`.slice(-12000);this.emit({type:'stderr',text:text.slice(-4000)});});
     processRef.on('error',error=>{session.status='error';rejectAll(error);this.emit({type:'error',error:String(error.message||error)});});
-    processRef.on('exit',(code,signal)=>{if(this.session===session)this.session=null;rejectAll(new Error(`extension host exited ${code ?? signal}`));this.emit({type:'exit',code,signal});});
+    processRef.on('exit',(code,signal)=>{const diagnostic=String(session.stderr||'').trim().slice(-1000);const error=new Error(`extension host exited ${code ?? signal}${diagnostic?`: ${diagnostic}`:''}`);if(this.session===session){session.status='error';this.emit({type:'exit',code,signal,error:error.message});this.session=null;}rejectAll(error);});
     return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{session.readyReject=null;this.stop();reject(new Error('Extension host startup timed out.'));},10000);session.readyResolve=value=>{clearTimeout(timer);resolve(value);};session.readyReject=error=>{clearTimeout(timer);reject(error);};});
   }
   request(operation,payload={}) { const session=this.session;if(!session?.process?.stdin?.writable)throw new Error('Extension host is not running');const id=++this.sequence;session.process.stdin.write(`${JSON.stringify({id,operation,...payload})}\n`);return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{session.pending.delete(id);reject(new Error(`Extension host ${operation} timed out.`));},12000);session.pending.set(id,{resolve,reject,timer});}); }
@@ -214,9 +230,18 @@ class BeastExtensionHost {
   async setEnabled(root,id,enabled,sender) { const workspace=path.resolve(root||repoRoot);const summary=await this.discover(workspace,sender);if(!summary.extensions.some(item=>item.id===String(id||'')))throw new Error('Extension is not available in this workspace.');const disabled=readDisabledExtensions(workspace);enabled?disabled.delete(String(id)):disabled.add(String(id));writeDisabledExtensions(workspace,disabled);return this.discover(workspace,sender); }
   async installWorkspaceExtension(root,sender) { const workspace=path.resolve(root||repoRoot);const windowRef=BrowserWindow.fromWebContents(sender)||mainWindow;const choice=await dialog.showOpenDialog(windowRef,{title:'Install BEAST workspace extension',properties:['openDirectory']});if(choice.canceled||!choice.filePaths[0])return this.discover(workspace,sender);const source=extensionPackage(choice.filePaths[0]);if(!source)throw new Error('Choose an extension folder with a valid beast-extension.json and a bounded main entrypoint.');const destination=path.join(workspaceExtensionRoot(workspace),source.id);if(fs.existsSync(destination)){const confirm=await dialog.showMessageBox(windowRef,{type:'warning',buttons:['Replace','Cancel'],defaultId:1,cancelId:1,message:`Replace workspace extension “${source.id}”?`,detail:'The existing managed workspace copy will be removed before the selected manifest and entrypoint are installed.'});if(confirm.response!==0)return this.discover(workspace,sender);fs.rmSync(destination,{recursive:true,force:true});}fs.mkdirSync(destination,{recursive:true,mode:0o700});fs.copyFileSync(source.manifest,path.join(destination,'beast-extension.json'));const target=path.join(destination,source.main);fs.mkdirSync(path.dirname(target),{recursive:true,mode:0o700});fs.copyFileSync(source.entry,target);const disabled=readDisabledExtensions(workspace);disabled.delete(source.id);writeDisabledExtensions(workspace,disabled);return this.discover(workspace,sender); }
   async uninstallWorkspaceExtension(root,id,sender) { const workspace=path.resolve(root||repoRoot);const safeId=String(id||'');if(!/^[a-z0-9][a-z0-9._-]{1,95}$/.test(safeId))throw new Error('Extension identifier is invalid.');const folder=path.join(workspaceExtensionRoot(workspace),safeId);const source=extensionPackage(folder);if(!source||source.id!==safeId)throw new Error('Only installed workspace extensions can be removed.');const windowRef=BrowserWindow.fromWebContents(sender)||mainWindow;const confirm=await dialog.showMessageBox(windowRef,{type:'warning',buttons:['Remove','Cancel'],defaultId:1,cancelId:1,message:`Remove workspace extension “${safeId}”?`,detail:'This removes only BEAST’s managed copy in .beast/extensions.'});if(confirm.response!==0)return this.discover(workspace,sender);fs.rmSync(folder,{recursive:true,force:true});const grants=readExtensionGrants(workspace);delete grants[safeId];writeExtensionGrants(workspace,grants);const disabled=readDisabledExtensions(workspace);disabled.delete(safeId);writeDisabledExtensions(workspace,disabled);return this.discover(workspace,sender); }
-  async execute(root,id,command,sender,target={kind:'local'}) { const workspace=path.resolve(root || repoRoot);const summary=await this.discover(workspace,sender,target);const extension=summary.extensions.find(item=>item.id===String(id||''));if(!extension)throw new Error('Extension is not available in this workspace.');if(extension.disabled)throw new Error('Extension is disabled for this workspace.');if(!extension.contributes?.commands?.some(item=>item.id===String(command||'')))throw new Error('Extension command is not declared by this manifest.');const result=await this.request('execute',{extensionId:extension.id,command:String(command||''),roots:this.roots(workspace,this.session.target),workspaceRoot:workspace,granted:extension.granted||[]});const routes=new Set(['workspace','mission','compatibility','source','review','evidence','crystallization','terminal','testing']);const actions=(result.actions||[]).filter(action=>action&&typeof action==='object').map(action=>{if(action.kind==='navigate'&&!routes.has(action.payload?.route))throw new Error('Extension requested an unsupported navigation target.');if(!['navigate','notice','command'].includes(action.kind))throw new Error('Extension requested an unsupported mediated action.');return action;});return {ok:true,extension:extension.id,target:this.session.target,granted:result.granted||[],actions}; }
+  async execute(root,id,command,sender,target={kind:'local'}) { const workspace=path.resolve(root || repoRoot);const summary=await this.discover(workspace,sender,target);const extension=summary.extensions.find(item=>item.id===String(id||''));if(!extension)throw new Error('Extension is not available in this workspace.');if(extension.disabled)throw new Error('Extension is disabled for this workspace.');if(!extension.contributes?.commands?.some(item=>item.id===String(command||'')))throw new Error('Extension command is not declared by this manifest.');const selected=this.session.target;const result=await this.request('execute',{extensionId:extension.id,command:String(command||''),roots:this.roots(workspace,selected),workspaceRoot:this.workspaceRoot(workspace,selected),granted:extension.granted||[]});const routes=new Set(['workspace','mission','compatibility','source','review','evidence','crystallization','terminal','testing']);const actions=(result.actions||[]).filter(action=>action&&typeof action==='object').map(action=>{if(action.kind==='navigate'&&!routes.has(action.payload?.route))throw new Error('Extension requested an unsupported navigation target.');if(!['navigate','notice','command'].includes(action.kind))throw new Error('Extension requested an unsupported mediated action.');return action;});return {ok:true,extension:extension.id,target:selected,granted:result.granted||[],actions}; }
   stop() { const session=this.session;if(!session)return {ok:true,status:'stopped'};this.session=null;session.status='stopped';for(const pending of session.pending.values()){clearTimeout(pending.timer);pending.reject(new Error('Extension host stopped'));}session.pending.clear();if(!session.process.killed)session.process.kill('SIGTERM');return {ok:true,status:'stopped'}; }
+  async deployWorkspaceExtensions(root,sender,target={kind:'local'}) {
+    const workspace=path.resolve(root||repoRoot);const selected=executionTargetSummary(target);
+    if(selected.kind==='local') return {...await this.discover(workspace,sender,selected),deployed:[],message:'Local workspace extensions are already active.'};
+    const localRoot=workspaceExtensionRoot(workspace);const sources=fs.existsSync(localRoot)?fs.readdirSync(localRoot,{withFileTypes:true}).filter(item=>item.isDirectory()).map(item=>extensionPackage(path.join(localRoot,item.name))).filter(Boolean):[];
+    const targetRoot=this.workspaceRoot(workspace,selected);const deployFile=async(relative,content)=>{const destination=path.posix.join(targetRoot,'.beast','extensions',relative);const parent=path.posix.dirname(destination);const encoded=Buffer.from(content).toString('base64');const command=`mkdir -p ${shellQuote(parent)} && tmp=$(mktemp ${shellQuote(`${parent}/.beast-extension.XXXXXX`)}) && printf %s ${shellQuote(encoded)} | base64 -d > "$tmp" && mv -f "$tmp" ${shellQuote(destination)}`;return selected.kind==='ssh'?boundedProcess('ssh',remoteSshArgs(remoteTarget(selected.host),command),{timeoutMs:20000,outputLimit:32000}):boundedProcess('docker',['exec','-i',containerId(selected.containerId||selected.name),'sh','-lc',command],{timeoutMs:20000,outputLimit:32000});};
+    const deployed=[];for(const source of sources){const manifest=fs.readFileSync(source.manifest);const entry=fs.readFileSync(source.entry);for(const [relative,content] of [[`${source.id}/beast-extension.json`,manifest],[`${source.id}/${source.main}`,entry]]){const result=await deployFile(relative,content);if(!result.ok)throw new Error(`Extension deployment failed for ${source.id}: ${String(result.stderr||result.error||'target command failed').slice(0,500)}`);}deployed.push({id:source.id,files:2,bytes:manifest.length+entry.length});}
+    const summary=await this.discover(workspace,sender,selected);return {...summary,deployed,target:selected,message:deployed.length?`Deployed ${deployed.length} workspace extension(s) to ${selected.label||selected.kind}.`:'No managed workspace extensions to deploy.'};
+  }
 }
+BeastExtensionHost.prototype.grantForTarget=async function(root,id,capabilities,sender,target={kind:'local'}) { const workspace=path.resolve(root||repoRoot);const summary=await this.discover(workspace,sender,target);const extension=summary.extensions.find(item=>item.id===String(id||''));if(!extension)throw new Error('Extension manifest is not available on the active execution target. Deploy the workspace extension to that target first.');const requested=[...new Set((Array.isArray(capabilities)?capabilities:[]).map(String))];if(requested.some(capability=>!EXTENSION_CAPABILITIES.has(capability)||!extension.capabilities.includes(capability)))throw new Error('Requested extension grant is not declared by this manifest.');const grants=readExtensionGrants(workspace);grants[extension.id]=requested;writeExtensionGrants(workspace,grants);return this.discover(workspace,sender,target); };
 const beastExtensionHost = new BeastExtensionHost();
 function serviceRegistryGateway(root) {
   try {
@@ -226,6 +251,15 @@ function serviceRegistryGateway(root) {
     return `http://${upstream}`;
   } catch (_) {
     return 'http://127.0.0.1:8101';
+  }
+}
+function serviceRegistryPort(root, serviceName, fallback) {
+  try {
+    const config = yaml.load(fs.readFileSync(path.join(root, '.byron', 'services.yaml'), 'utf8')) || {};
+    const value = Number(config?.services?.[serviceName]?.port);
+    return Number.isInteger(value) && value > 0 && value <= 65535 ? value : fallback;
+  } catch (_) {
+    return fallback;
   }
 }
 let activeWorkspaceRoot = path.resolve(process.env.BEAST_ACTIVE_WORKSPACE || process.env.BEAST_WORKSPACE || repoRoot);
@@ -706,7 +740,7 @@ async function workspaceTargetWriteFile(rootPath, payload={}) {
   }
   const remoteFile = `${base.replace(/\/$/,'')}/${relative}`; const expected = String(payload.expectedDigest || '').replace(/^sha256:/,'');
   if (expected) { const verify = await runOnExecutionTarget(selected, rootPath, 'sh', ['-lc', `test -f ${shellQuote(remoteFile)} && sha256sum -- ${shellQuote(remoteFile)}`], {timeoutMs:20000,outputLimit:32000}); const actual=String(verify.stdout||'').trim().match(/^([a-f0-9]{64})\b/i)?.[1]?.toLowerCase() || ''; if (!verify.ok || actual !== expected.toLowerCase()) return {ok:false,conflict:true,error:'Remote file changed since it was opened. Reload before saving.',expectedDigest:`sha256:${expected}`,actualDigest:actual?`sha256:${actual}`:'',target:selected}; }
-  const encoded=Buffer.from(content,'utf8').toString('base64'); const command=`mkdir -p ${shellQuote(path.posix.dirname(remoteFile))} && printf %s ${shellQuote(encoded)} | base64 -d > ${shellQuote(remoteFile)}`; const result=await runOnExecutionTarget(selected, rootPath, 'sh', ['-lc', command], {timeoutMs:20000,outputLimit:32000}); const digest=`sha256:${crypto.createHash('sha256').update(content).digest('hex')}`; return {...result,path:relative,remotePath:remoteFile,digest,target:selected,receipt:result.ok?gitReceipt(base,'write-file',relative,result):null};
+  const encoded=Buffer.from(content,'utf8').toString('base64'); const parent=path.posix.dirname(remoteFile); const command=`mkdir -p ${shellQuote(parent)} && tmp=$(mktemp ${shellQuote(`${parent}/.beast-write.XXXXXX`)}) && printf %s ${shellQuote(encoded)} | base64 -d > "$tmp" && mv -f "$tmp" ${shellQuote(remoteFile)}`; const result=await runOnExecutionTarget(selected, rootPath, 'sh', ['-lc', command], {timeoutMs:20000,outputLimit:32000}); const digest=`sha256:${crypto.createHash('sha256').update(content).digest('hex')}`; return {...result,path:relative,remotePath:remoteFile,digest,target:selected,atomic:Boolean(result.ok),receipt:result.ok?gitReceipt(base,'write-file',relative,result):null};
 }
 
 async function probeRemoteWorkspace(payload = {}) {
@@ -736,16 +770,21 @@ async function searchRemoteWorkspace(payload={}) {
 }
 
 async function reconnectRemoteWorkspace() { if(!lastRemoteWorkspace)return {ok:false,error:'No verified remote workspace is available to reconnect.'};return probeRemoteWorkspace(lastRemoteWorkspace); }
-async function readRemoteWorkspaceFile(payload={}) { const host=remoteTarget(payload.host || lastRemoteWorkspace?.host);const target=remotePath(payload.path || '');if(!host||!target)return {ok:false,error:'Remote host or file path contains unsupported characters.'};const result=await boundedProcess('ssh',remoteSshArgs(host,`test -f ${target} && head -c 200000 -- ${target}`),{timeoutMs:15000,outputLimit:220000});return {...result,host,path:target,content:String(result.stdout||''),transport:'ssh',verification:'strict-known-host'}; }
-async function writeRemoteWorkspaceFile(payload={}) { const host=remoteTarget(payload.host || lastRemoteWorkspace?.host);const target=remotePath(payload.path || '');const content=String(payload.content || '');const expectedDigest=/^[a-f0-9]{64}$/i.test(String(payload.expectedDigest||''))?String(payload.expectedDigest).toLowerCase():'';if(!host||!target)return {ok:false,error:'Remote host or file path contains unsupported characters.'};if(Buffer.byteLength(content,'utf8')>200000)return {ok:false,error:'Remote file exceeds the 200 KiB write limit.'};if(expectedDigest){const current=await boundedProcess('ssh',remoteSshArgs(host,`test -f ${target} && sha256sum -- ${target}`),{timeoutMs:15000,outputLimit:32000});const actual=String(current.stdout||'').trim().match(/^([a-f0-9]{64})\b/i)?.[1]?.toLowerCase()||'';if(!current.ok||actual!==expectedDigest)return {ok:false,conflict:true,error:'Remote file changed since it was opened. Reload or compare before saving.',host,path:target,expectedDigest,actualDigest:actual,transport:'ssh',verification:'strict-known-host'};}const encoded=Buffer.from(content,'utf8').toString('base64');const result=await boundedProcess('ssh',remoteSshArgs(host,`printf %s ${encoded} | base64 -d > ${target}`),{timeoutMs:15000,outputLimit:32000});const digest=crypto.createHash('sha256').update(`${host}\n${target}\n${content}`).digest('hex');return {...result,host,path:target,transport:'ssh',verification:'strict-known-host',receipt:{id:`RFS-${digest.slice(0,16).toUpperCase()}`,digest:`sha256:${digest}`,evidence:'operator-initiated'}}; }
+async function remoteWorkspaceHealth(payload={}) { const host=remoteTarget(payload.host||lastRemoteWorkspace?.host);const target=remotePath(payload.path||lastRemoteWorkspace?.path||'~');if(!host||!target)return {ok:false,error:'Remote health requires a verified SSH host and workspace path.',tools:{}};const command=`cd ${shellQuote(target)} && printf 'PWD\\t%s\\n' "$PWD" && for tool in node git python3 ssh; do if command -v "$tool" >/dev/null 2>&1; then printf '%s\\t%s\\n' "$tool" "$(command -v "$tool")"; else printf '%s\\t\\n' "$tool"; fi; done && if command -v node >/dev/null 2>&1; then printf 'NODE_VERSION\\t%s\\n' "$(node --version)"; fi`;const result=await boundedProcess('ssh',remoteSshArgs(host,command),{timeoutMs:15000,outputLimit:64000});const tools={};let workspace='';let nodeVersion='';for(const line of String(result.stdout||'').split(/\r?\n/)){const [key,value='']=line.split('\t');if(key==='PWD')workspace=value;if(key==='NODE_VERSION')nodeVersion=value;else if(['node','git','python3','ssh'].includes(key))tools[key]={available:Boolean(value),path:value};}return {...result,ok:result.ok,host,path:target,workspace,nodeVersion,tools,transport:'ssh',verification:'strict-known-host',healthy:Boolean(result.ok&&workspace&&tools.ssh?.available)}; }
+async function readRemoteWorkspaceFile(payload={}) { const host=remoteTarget(payload.host || lastRemoteWorkspace?.host);const target=remotePath(payload.path || '');if(!host||!target)return {ok:false,error:'Remote host or file path contains unsupported characters.'};const result=await boundedProcess('ssh',remoteSshArgs(host,`test -f ${shellQuote(target)} && head -c 200000 -- ${shellQuote(target)}`),{timeoutMs:15000,outputLimit:220000});const content=String(result.stdout||'');const digest=crypto.createHash('sha256').update(content).digest('hex');return {...result,host,path:target,content,digest:`sha256:${digest}`,transport:'ssh',verification:'strict-known-host'}; }
+async function writeRemoteWorkspaceFile(payload={}) { const host=remoteTarget(payload.host || lastRemoteWorkspace?.host);const target=remotePath(payload.path || '');const content=String(payload.content || '');const expectedDigest=String(payload.expectedDigest||'').replace(/^sha256:/,'');if(!host||!target)return {ok:false,error:'Remote host or file path contains unsupported characters.'};if(Buffer.byteLength(content,'utf8')>200000)return {ok:false,error:'Remote file exceeds the 200 KiB write limit.'};if(expectedDigest&&!/^[a-f0-9]{64}$/i.test(expectedDigest))return {ok:false,error:'Remote expected digest must be a SHA-256 value.',host,path:target};if(expectedDigest){const current=await boundedProcess('ssh',remoteSshArgs(host,`test -f ${shellQuote(target)} && sha256sum -- ${shellQuote(target)}`),{timeoutMs:15000,outputLimit:32000});const actual=String(current.stdout||'').trim().match(/^([a-f0-9]{64})\b/i)?.[1]?.toLowerCase()||'';if(!current.ok||actual!==expectedDigest.toLowerCase())return {ok:false,conflict:true,error:'Remote file changed since it was opened. Reload or compare before saving.',host,path:target,expectedDigest:`sha256:${expectedDigest}`,actualDigest:actual?`sha256:${actual}`:'',transport:'ssh',verification:'strict-known-host'};}const encoded=Buffer.from(content,'utf8').toString('base64');const parent=path.posix.dirname(target);const command=`mkdir -p ${shellQuote(parent)} && tmp=$(mktemp ${shellQuote(`${parent}/.beast-write.XXXXXX`)}) && printf %s ${shellQuote(encoded)} | base64 -d > "$tmp" && mv -f "$tmp" ${shellQuote(target)}`;const result=await boundedProcess('ssh',remoteSshArgs(host,command),{timeoutMs:15000,outputLimit:32000});const digest=crypto.createHash('sha256').update(content).digest('hex');return {...result,host,path:target,digest:`sha256:${digest}`,transport:'ssh',verification:'strict-known-host',atomic:Boolean(result.ok),receipt:result.ok?{id:`RFS-${digest.slice(0,16).toUpperCase()}`,digest:`sha256:${digest}`,evidence:'operator-initiated'}:null}; }
 async function runRemoteTerminal(payload={}) { const host=remoteTarget(payload.host || lastRemoteWorkspace?.host);const command=String(payload.command || '').trim();if(!host||!command||Buffer.byteLength(command,'utf8')>16000)return {ok:false,error:'Remote host or command is outside allowed bounds.'};const result=await boundedProcess('ssh',remoteSshArgs(host,command),{timeoutMs:Math.max(1000,Math.min(Number(payload.timeoutMs||30000),60000)),outputLimit:512000});const digest=crypto.createHash('sha256').update(`${host}\n${command}\n${result.stdout}\n${result.stderr}\n${result.returncode}`).digest('hex');return {...result,host,command,transport:'ssh',verification:'strict-known-host',receipt:{id:`RTERM-${digest.slice(0,16).toUpperCase()}`,digest:`sha256:${digest}`,evidence:'operator-initiated'}}; }
-function devContainerConfig(rootPath) { const root=path.resolve(rootPath||repoRoot);const file=path.join(root,'.devcontainer','devcontainer.json');try{const raw=JSON.parse(fs.readFileSync(file,'utf8'));const image=String(raw?.image||'');if(image&&!/^[A-Za-z0-9][A-Za-z0-9._/:@-]{0,255}$/.test(image))return {ok:false,error:'Dev container image is outside allowed syntax.'};return {ok:true,root,file,config:{name:String(raw?.name||path.basename(root)).slice(0,120),image,workspaceFolder:String(raw?.workspaceFolder||`/workspaces/${path.basename(root)}`).slice(0,240),dockerFile:Boolean(raw?.dockerFile),compose:Boolean(raw?.dockerComposeFile)}};}catch(_){return {ok:false,error:'No readable .devcontainer/devcontainer.json exists in this workspace.'};} }
-async function inspectDevContainers(rootPath) { const config=devContainerConfig(rootPath);if(!config.ok)return {...config,containers:[]};const workspaceKey=crypto.createHash('sha256').update(config.root).digest('hex').slice(0,20);const result=await boundedProcess('docker',['ps','-a','--filter',`label=beast.workspace=${workspaceKey}`,'--format','{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}'],{timeoutMs:10000,outputLimit:64000});const containers=String(result.stdout||'').split(/\r?\n/).filter(Boolean).map(line=>{const [id,name,image,status]=line.split('\t');return {id,name,image,status,managed:true};});return {...config,ok:result.ok,containers,error:result.ok?'':String(result.stderr||'Docker inspection failed.').trim(),workspaceKey}; }
-async function startDevContainer(rootPath) { const state=await inspectDevContainers(rootPath);if(!state.ok) return state;const running=state.containers.find(item=>/\bUp\b/i.test(item.status));if(running)return {...state,attached:running,target:setActiveExecutionTarget({kind:'container',containerId:running.id,name:running.name,root:state.root,workspaceFolder:state.config.workspaceFolder}).target};if(!state.config.image)return {...state,ok:false,error:'Automatic start currently supports image-based devcontainer.json only.'};const name=`beast-dev-${state.workspaceKey}`;const result=await boundedProcess('docker',['run','-d','--rm','--name',name,'--label',`beast.workspace=${state.workspaceKey}`,'--label','beast.managed=true','-v',`${state.root}:${state.config.workspaceFolder}`,'-w',state.config.workspaceFolder,state.config.image,'sleep','infinity'],{timeoutMs:120000,outputLimit:64000});if(!result.ok)return {...state,ok:false,error:String(result.stderr||'Dev container start failed.').trim()};const next=await inspectDevContainers(state.root);const attached=next.containers.find(item=>/\bUp\b/i.test(item.status))||next.containers[0];return {...next,attached,target:attached?setActiveExecutionTarget({kind:'container',containerId:attached.id,name:attached.name,root:state.root,workspaceFolder:state.config.workspaceFolder}).target:executionTargetSummary()}; }
-async function stopDevContainer(rootPath,id) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''));if(!target)return {...state,ok:false,error:'Only BEAST-managed containers for this workspace can be stopped.'};const result=await boundedProcess('docker',['stop',target.id],{timeoutMs:30000,outputLimit:32000});return result.ok?inspectDevContainers(rootPath):{...state,ok:false,error:String(result.stderr||'Dev container stop failed.').trim()}; }
+function devContainerConfig(rootPath) { const root=path.resolve(rootPath||repoRoot);const file=path.join(root,'.devcontainer','devcontainer.json');try{const raw=JSON.parse(fs.readFileSync(file,'utf8'));const image=String(raw?.image||'');if(image&&!/^[A-Za-z0-9][A-Za-z0-9._/:@-]{0,255}$/.test(image))return {ok:false,error:'Dev container image is outside allowed syntax.'};const composeEntries=(Array.isArray(raw?.dockerComposeFile)?raw.dockerComposeFile:[raw?.dockerComposeFile]).filter(Boolean).map(value=>String(value));const composeFiles=[];for(const entry of composeEntries){if(!/^[A-Za-z0-9._/-]{1,240}$/.test(entry))return {ok:false,error:'Dev container compose file contains unsupported characters.'};const target=path.resolve(path.dirname(file),entry);if(!(target===root||target.startsWith(`${root}${path.sep}`))||!fs.existsSync(target))return {ok:false,error:`Dev container compose file was not found in this workspace: ${entry}`};composeFiles.push(target);}const service=String(raw?.service||'').trim();if(composeFiles.length&&!/^[A-Za-z0-9][A-Za-z0-9_.-]{0,120}$/.test(service))return {ok:false,error:'Compose dev containers require a safe service name.'};return {ok:true,root,file,config:{name:String(raw?.name||path.basename(root)).slice(0,120),image,workspaceFolder:String(raw?.workspaceFolder||`/workspaces/${path.basename(root)}`).slice(0,240),dockerFile:Boolean(raw?.dockerFile),compose:composeFiles.length>0,composeFiles,service}};}catch(_){return {ok:false,error:'No readable .devcontainer/devcontainer.json exists in this workspace.'};} }
+function composeArgs(state, command, extra=[]) { return ['compose','--project-directory',state.root,...state.config.composeFiles.flatMap(file=>['-f',file]),command,...extra]; }
+function parseDevContainerRows(text, managed) { return String(text||'').split(/\r?\n/).filter(Boolean).map(line=>{const [id,name,image,status]=line.split('\t');return {id,name,image,status,managed};}); }
+async function devContainerPorts(id) { const result=await boundedProcess('docker',['port',String(id||'')],{timeoutMs:8000,outputLimit:32000});if(!result.ok)return [];const seen=new Set();return String(result.stdout||'').split(/\r?\n/).map(line=>{const match=line.match(/^(\d+)\/(tcp|udp)\s+->\s+(?:0\.0\.0\.0|127\.0\.0\.1|\[::\]|::):([0-9]+)$/i);if(!match||match[2].toLowerCase()!=='tcp')return null;const containerPort=Number(match[1]);const hostPort=Number(match[3]);if(!Number.isInteger(containerPort)||!Number.isInteger(hostPort)||containerPort<1||containerPort>65535||hostPort<1||hostPort>65535)return null;const key=`${containerPort}:${hostPort}`;if(seen.has(key))return null;seen.add(key);return {containerPort,hostPort,protocol:'tcp',url:`http://127.0.0.1:${hostPort}`};}).filter(Boolean).slice(0,32); }
+async function inspectDevContainers(rootPath) { const config=devContainerConfig(rootPath);if(!config.ok)return {...config,containers:[]};const workspaceKey=crypto.createHash('sha256').update(config.root).digest('hex').slice(0,20);const result=config.config.compose?await boundedProcess('docker',composeArgs(config,'ps',['-a','--format','{{.ID}}\t{{.Name}}\t{{.Image}}\t{{.Status}}']),{timeoutMs:20000,outputLimit:128000}):await boundedProcess('docker',['ps','-a','--filter',`label=beast.workspace=${workspaceKey}`,'--format','{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}'],{timeoutMs:10000,outputLimit:64000});const containers=await Promise.all(parseDevContainerRows(result.stdout, !config.config.compose).map(async container=>({...container,ports:await devContainerPorts(container.id)})));return {...config,ok:result.ok,containers,error:result.ok?'':String(result.stderr||'Docker inspection failed.').trim(),workspaceKey}; }
+async function startDevContainer(rootPath) { const state=await inspectDevContainers(rootPath);if(!state.ok) return state;const running=state.containers.find(item=>/\bUp\b|\brunning\b/i.test(item.status));if(running)return {...state,attached:running,target:setActiveExecutionTarget({kind:'container',containerId:running.id,name:running.name,root:state.root,workspaceFolder:state.config.workspaceFolder}).target};let result;if(state.config.compose)result=await boundedProcess('docker',composeArgs(state,'up',['-d',state.config.service]),{timeoutMs:180000,outputLimit:128000});else {if(!state.config.image)return {...state,ok:false,error:'Dev container start requires image, Dockerfile, or dockerComposeFile.'};const name=`beast-dev-${state.workspaceKey}`;result=await boundedProcess('docker',['run','-d','--rm','--name',name,'--label',`beast.workspace=${state.workspaceKey}`,'--label','beast.managed=true','-v',`${state.root}:${state.config.workspaceFolder}`,'-w',state.config.workspaceFolder,state.config.image,'sleep','infinity'],{timeoutMs:120000,outputLimit:64000});}if(!result.ok)return {...state,ok:false,error:String(result.stderr||'Dev container start failed.').trim()};const next=await inspectDevContainers(state.root);const attached=next.containers.find(item=>/\bUp\b|\brunning\b/i.test(item.status))||next.containers[0];return {...next,attached,target:attached?setActiveExecutionTarget({kind:'container',containerId:attached.id,name:attached.name,root:state.root,workspaceFolder:state.config.workspaceFolder}).target:executionTargetSummary()}; }
+async function stopDevContainer(rootPath,id) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''));if(!target)return {...state,ok:false,error:'Only the selected workspace dev container can be stopped.'};const result=state.config.compose?await boundedProcess('docker',composeArgs(state,'stop',[state.config.service]),{timeoutMs:60000,outputLimit:64000}):await boundedProcess('docker',['stop',target.id],{timeoutMs:30000,outputLimit:32000});return result.ok?inspectDevContainers(rootPath):{...state,ok:false,error:String(result.stderr||'Dev container stop failed.').trim()}; }
+async function restartDevContainer(rootPath,id) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''))||state.containers.find(item=>/\bUp\b|\brunning\b/i.test(item.status))||state.containers[0];if(!target)return {...state,ok:false,error:'No workspace dev container is available to restart.'};const stopped=await stopDevContainer(rootPath,target.id);if(!stopped.ok)return {...stopped,restarted:false};const started=await startDevContainer(rootPath);return {...started,restarted:Boolean(started.ok),previousContainer:target}; }
 async function attachDevContainer(rootPath,id) { const state=await inspectDevContainers(rootPath);if(!state.ok)return state;const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''))||state.containers.find(item=>/\bUp\b/i.test(item.status))||state.containers[0];if(!target)return {...state,ok:false,error:'No BEAST-managed dev container is available to attach.'};return {...state,attached:target,target:setActiveExecutionTarget({kind:'container',containerId:target.id,name:target.name,root:state.root,workspaceFolder:state.config.workspaceFolder}).target}; }
-async function rebuildDevContainer(rootPath) { const state=devContainerConfig(rootPath);if(!state.ok)return {...state,containers:[]};if(state.config.compose)return {...state,ok:false,error:'Compose rebuild requires the operator to run docker compose from a trusted terminal; BEAST currently manages image and Dockerfile dev containers.'};let result;if(state.config.dockerFile){const dockerfile=path.join(state.root,'.devcontainer','Dockerfile');if(!fs.existsSync(dockerfile))return {...state,ok:false,error:'devcontainer.json references a Dockerfile but .devcontainer/Dockerfile was not found.'};const tag=`beast-dev-image-${crypto.createHash('sha256').update(state.root).digest('hex').slice(0,20)}`;result=await boundedProcess('docker',['build','-t',tag,'-f',dockerfile,state.root],{timeoutMs:600000,outputLimit:512000});if(result.ok)state.config.image=tag;}else if(state.config.image)result=await boundedProcess('docker',['pull',state.config.image],{timeoutMs:600000,outputLimit:512000});else return {...state,ok:false,error:'Dev container rebuild requires image or Dockerfile.'};return result.ok?startDevContainer(state.root):{...state,ok:false,error:String(result.stderr||'Dev container rebuild failed.').trim(),stdout:result.stdout,stderr:result.stderr}; }
-async function devContainerLogs(rootPath,id) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''))||state.containers[0];if(!target)return {...state,ok:false,error:'No BEAST-managed dev container is available for logs.',logs:''};const result=await boundedProcess('docker',['logs','--tail','300',target.id],{timeoutMs:15000,outputLimit:256000});return {...result,container:target,logs:`${result.stdout||''}${result.stderr||''}`.slice(-256000)}; }
+async function rebuildDevContainer(rootPath) { const state=devContainerConfig(rootPath);if(!state.ok)return {...state,containers:[]};let result;if(state.config.compose)result=await boundedProcess('docker',composeArgs(state,'up',['-d','--build',state.config.service]),{timeoutMs:600000,outputLimit:512000});else if(state.config.dockerFile){const dockerfile=path.join(state.root,'.devcontainer','Dockerfile');if(!fs.existsSync(dockerfile))return {...state,ok:false,error:'devcontainer.json references a Dockerfile but .devcontainer/Dockerfile was not found.'};const tag=`beast-dev-image-${crypto.createHash('sha256').update(state.root).digest('hex').slice(0,20)}`;result=await boundedProcess('docker',['build','-t',tag,'-f',dockerfile,state.root],{timeoutMs:600000,outputLimit:512000});if(result.ok)state.config.image=tag;}else if(state.config.image)result=await boundedProcess('docker',['pull',state.config.image],{timeoutMs:600000,outputLimit:512000});else return {...state,ok:false,error:'Dev container rebuild requires image, Dockerfile, or dockerComposeFile.'};return result.ok?startDevContainer(state.root):{...state,ok:false,error:String(result.stderr||'Dev container rebuild failed.').trim(),stdout:result.stdout,stderr:result.stderr}; }
+async function devContainerLogs(rootPath,id) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(id||'')||item.name===String(id||''))||state.containers[0];if(!target)return {...state,ok:false,error:'No workspace dev container is available for logs.',logs:''};const result=state.config.compose?await boundedProcess('docker',composeArgs(state,'logs',['--tail','300',state.config.service]),{timeoutMs:30000,outputLimit:256000}):await boundedProcess('docker',['logs','--tail','300',target.id],{timeoutMs:15000,outputLimit:256000});return {...result,container:target,logs:`${result.stdout||''}${result.stderr||''}`.slice(-256000)}; }
 async function runDevContainerTerminal(rootPath,payload={}) { const state=await inspectDevContainers(rootPath);const target=state.containers.find(item=>item.id===String(payload.id||'')||item.name===String(payload.id||''))||state.containers.find(item=>/\bUp\b/i.test(item.status))||state.containers[0];const command=String(payload.command||'').trim();if(!target)return {...state,ok:false,error:'No BEAST-managed dev container is available for terminal execution.'};if(!command||Buffer.byteLength(command,'utf8')>16000||/[\0]/.test(command))return {...state,ok:false,error:'Container terminal command must be 1–16000 bytes.'};const result=await boundedProcess('docker',['exec','-i','-w',state.config.workspaceFolder,target.id,'sh','-lc',command],{timeoutMs:Math.max(1000,Math.min(Number(payload.timeoutMs||30000),120000)),outputLimit:512000});const digest=crypto.createHash('sha256').update(`${target.id}\n${command}\n${result.stdout}\n${result.stderr}\n${result.returncode}`).digest('hex');return {...result,container:target,transport:'docker-exec',receipt:{id:`DCTR-${digest.slice(0,16).toUpperCase()}`,digest:`sha256:${digest}`,evidence:'operator-initiated'}}; }
 
 function mutateWorkspaceFile(rootPath, operation = {}) {
@@ -1069,6 +1108,30 @@ function getJson(url, timeoutMs = 2500) {
   });
 }
 
+function httpProbe(url, timeoutMs = 1600) {
+  return new Promise(resolve => {
+    const started = Date.now();
+    const request = http.get(url, { timeout: timeoutMs }, response => {
+      response.resume();
+      response.on('end', () => resolve({ ok: response.statusCode >= 200 && response.statusCode < 400, statusCode: response.statusCode, url, latencyMs: Date.now() - started }));
+    });
+    request.on('timeout', () => {
+      request.destroy(new Error(`timeout: ${url}`));
+    });
+    request.on('error', error => resolve({ ok:false, url, error:String(error.message || error), latencyMs:Date.now() - started }));
+  });
+}
+
+async function jsonHealthProbe(name, url, timeoutMs = 2000) {
+  const started = Date.now();
+  try {
+    const payload = await getJson(url, timeoutMs);
+    return { name, ok:true, url, latencyMs:Date.now() - started, payload };
+  } catch (error) {
+    return { name, ok:false, url, latencyMs:Date.now() - started, error:String(error.message || error) };
+  }
+}
+
 function gatewayRequest(payload = {}) {
   return new Promise(resolve => {
     let target;
@@ -1179,7 +1242,31 @@ class GatewayEventStreamHost {
 }
 const gatewayEventStreamHost = new GatewayEventStreamHost();
 
-async function gatewayHealth(baseUrl = gatewayUrl, rootTimeoutMs = 1800) {
+async function runtimeStackHealth(baseUrl = gatewayUrl) {
+  const litellmPort = serviceRegistryPort(repoRoot, 'litellm', 4000);
+  const mcpHttpPort = serviceRegistryPort(repoRoot, 'mcp_http', 8765);
+  const nginxPort = serviceRegistryPort(repoRoot, 'reverse_proxy', 80);
+  const checks = await Promise.all([
+    jsonHealthProbe('gateway', `${baseUrl}/health`, 2200),
+    jsonHealthProbe('proxy', `${baseUrl}/proxy/health`, 2200),
+    jsonHealthProbe('mcp_gateway', `${baseUrl}/mcp/health`, 1800),
+    jsonHealthProbe('providers', `${baseUrl}/edgek/providers/state`, 3500),
+    jsonHealthProbe('integrations', `${baseUrl}/edgek/tools/integrations`, 2200),
+    httpProbe(`http://127.0.0.1:${mcpHttpPort}/mcp/health`, 1800).then(row => ({ name:'mcp_http', ...row })),
+    httpProbe(`http://127.0.0.1:${litellmPort}/health`, 1800).then(row => ({ name:'litellm', ...row })),
+    httpProbe(`http://127.0.0.1:${nginxPort}/health`, 1800).then(row => ({ name:'nginx', ...row })),
+  ]);
+  const byName = Object.fromEntries(checks.map(row => [row.name, row]));
+  return {
+    ok: Boolean(byName.gateway?.ok && byName.proxy?.ok && byName.providers?.ok),
+    required_ok: Boolean(byName.gateway?.ok && byName.proxy?.ok && byName.providers?.ok),
+    optional_ok: Boolean(byName.mcp_gateway?.ok && byName.mcp_http?.ok && byName.litellm?.ok && byName.nginx?.ok),
+    checks: byName,
+    summary: checks.map(row => `${row.name}:${row.ok ? 'ok' : (row.statusCode || row.error || 'attention')}`).join(' · '),
+  };
+}
+
+async function gatewayHealth(baseUrl = gatewayUrl, rootTimeoutMs = 3500) {
   if (localIdeMode) {
     return {
       ok: false,
@@ -1270,12 +1357,15 @@ async function chooseGatewayPort(preferred = 8101) {
 
 async function findCompatibleGateway(preferred = 8101) {
   // A listener alone is not a gateway. Keep this probe bounded so an abandoned
-  // Guardian-owned socket cannot hold desktop startup hostage for a minute.
-  const ports = Array.from({ length: 6 }, (_item, index) => preferred + index);
+  // Guardian-owned socket cannot hold desktop startup hostage, while still
+  // allowing a cold BEAST gateway enough time to answer its desktop contract.
+  // Always include the registry port.  A stale persisted/overridden URL such
+  // as 8102 must not hide the healthy Guardian gateway on 8101.
+  const ports = [...new Set([preferred, 8101, ...Array.from({ length: 6 }, (_item, index) => preferred + index)])];
   for (const port of ports) {
     const candidateUrl = `http://127.0.0.1:${port}`;
-    if (!(await gatewayTcpListening(candidateUrl, 250))) continue;
-    const ready = await gatewayHealth(candidateUrl, 900);
+    if (!(await gatewayTcpListening(candidateUrl, 400))) continue;
+    const ready = await gatewayHealth(candidateUrl, 2500);
     if (ready.ok && ready.capabilities?.ok) {
       return { url: candidateUrl, health: ready };
     }
@@ -1304,6 +1394,113 @@ async function stopManagedGateway(processRef, timeoutMs = 4000) {
     exited.then(() => true),
     new Promise(resolve => setTimeout(() => resolve(false), 1500)),
   ]);
+}
+
+function runBoundedProcess(command, args, { cwd = repoRoot, env = process.env, timeoutMs = 45000 } = {}) {
+  return new Promise(resolve => {
+    let processRef;
+    let finished = false;
+    let timer = null;
+    let stdout = '';
+    let stderr = '';
+    const finish = (extra = {}) => {
+      if (finished) return;
+      finished = true;
+      if (timer) clearTimeout(timer);
+      resolve({ command, args, ok: extra.code === 0 && !extra.timedOut, code: extra.code ?? null, timedOut: Boolean(extra.timedOut), stdout: stdout.slice(-6000), stderr: stderr.slice(-6000), ...extra });
+    };
+    try {
+      processRef = spawn(command, args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
+      processRef.stdout.on('data', chunk => { stdout += chunk.toString(); });
+      processRef.stderr.on('data', chunk => { stderr += chunk.toString(); });
+      processRef.on('error', error => finish({ error: String(error.message || error) }));
+      processRef.on('exit', code => finish({ code }));
+    } catch (error) {
+      finish({ error: String(error.message || error) });
+    }
+    timer = setTimeout(() => {
+      try { processRef?.kill('SIGTERM'); } catch (_) {}
+      finish({ timedOut: true, error: `${command} timed out after ${timeoutMs}ms` });
+    }, timeoutMs);
+  });
+}
+
+async function resetRuntimeStack() {
+  // This intentionally controls only known BEAST user services. It never
+  // guesses at arbitrary PIDs, and reports unavailable optional components.
+  const startedAt = Date.now();
+  const report = { ok: false, action: 'reset_runtime_stack', startedAt, components: [], gatewayUrl: '', durationMs: 0 };
+  const add = (component, result) => {
+    const entry = { component, ok: Boolean(result?.ok), status: result?.status || (result?.ok ? 'ready' : 'attention'), detail: result?.detail || result?.error || result?.stderr || '', ...result };
+    report.components.push(entry);
+    appendLog(`runtime reset · ${component}: ${entry.ok ? 'ok' : entry.status}${entry.detail ? ` · ${entry.detail}` : ''}`);
+    return entry;
+  };
+  localIdeMode = false;
+  localIdeReason = '';
+  gatewayStartupPromise = null;
+  if (gatewayProcess) {
+    const managed = gatewayProcess;
+    gatewayProcess = null;
+    add('desktop_gateway', { ok: await stopManagedGateway(managed), status: 'stopped', detail: 'Stopped the desktop-managed direct gateway.' });
+  } else {
+    add('desktop_gateway', { ok: true, status: 'not_managed', detail: 'No desktop-managed gateway process was running.' });
+  }
+
+  // These are generated optional user units. `try-restart` is safe when they
+  // are not installed or inactive; each result remains visible to the user.
+  const guardianUnits = [
+    'beast-socket-guardian.service',
+    'beast-socket-guardian-beast.socket',
+    'beast-socket-guardian-commons.socket',
+    'beast-beast-guardian-consumer.service',
+    'beast-commons-guardian-consumer.service',
+  ];
+  for (const unit of guardianUnits) {
+    const result = await runBoundedProcess('systemctl', ['--user', 'restart', unit], { timeoutMs: 10000 });
+    const unavailable = !result.ok && /not found|not loaded|could not be found/i.test(`${result.stderr} ${result.stdout}`);
+    add(unit, { ...result, ok: result.ok || unavailable, status: unavailable ? 'not_installed' : result.ok ? 'restarted' : 'attention', detail: unavailable ? 'Optional user unit is not installed.' : (result.stderr || result.stdout || 'Restart request completed.') });
+  }
+
+  // The CLI healer owns daemon PID cleanup and restart ordering for LiteLLM,
+  // Ollama, MCP HTTP, Nginx, the gateway, and its proxy lane. Do not kill
+  // listener PIDs here: Guardian owns protected sockets and is handled above.
+  const childEnv = { ...process.env, BEAST_DESKTOP_MANAGED: '1', BEAST_ACTIVE_WORKSPACE: activeWorkspaceRoot || repoRoot, BEAST_WORKSPACE: activeWorkspaceRoot || repoRoot };
+  delete childEnv.BEAST_SOCKET_MODE;
+  const registryGatewayPort = Number(new URL(configuredGatewayUrl).port || 8101);
+  const registryMcpPort = serviceRegistryPort(repoRoot, 'mcp_http', 8765);
+  const registryNginxPort = serviceRegistryPort(repoRoot, 'reverse_proxy', 80);
+  const heal = await runBoundedProcess(resolveBeastPython(), [
+    path.join(repoRoot, 'bin', 'beast'), 'heal',
+    '--gateway-port', String(registryGatewayPort),
+    '--mcp-port', String(registryMcpPort),
+    '--nginx-port', String(registryNginxPort),
+    '--restart-all', 'true',
+    '--kill-address-pids', 'false',
+  ], { env: childEnv, timeoutMs: 75000 });
+  let healPayload = null;
+  // The Python runtime may print early boot diagnostics before its JSON receipt.
+  // Keep the command resilient by parsing the final structured object.
+  try { healPayload = JSON.parse(heal.stdout.slice(heal.stdout.indexOf('{'))); } catch (_) {}
+  add('beast_runtime_daemon', { ...heal, ok: heal.ok && Boolean(healPayload), status: healPayload?.status || (heal.ok ? 'completed' : 'attention'), detail: healPayload ? `Reset ${Array.isArray(healPayload.actions) ? healPayload.actions.length : 0} managed runtime actions.` : (heal.stderr || heal.error || 'The healer did not return a JSON receipt.'), receipt: healPayload });
+  for (const [name, check] of Object.entries(healPayload?.after || {})) {
+    add(name === 'mcp_http' ? 'mcp_http' : name, { ok: Boolean(check?.ok), status: check?.ok ? 'healthy' : 'attention', detail: check?.error || check?.path || '' });
+  }
+
+  const compatible = await findCompatibleGateway(8101);
+  if (compatible) {
+    gatewayUrl = compatible.url;
+    report.gatewayUrl = gatewayUrl;
+    add('desktop_contract', { ok: true, status: 'ready', detail: `Connected to ${gatewayUrl}.` });
+    for (const windowRef of appWindows) if (!windowRef.isDestroyed()) windowRef.webContents.send('beast:refresh');
+  } else {
+    const ready = await ensureGateway();
+    report.gatewayUrl = gatewayUrl;
+    add('desktop_contract', { ok: Boolean(ready?.ok && ready?.capabilities?.ok), status: ready?.ok ? 'ready' : 'attention', detail: ready?.error || `Gateway recovery result: ${gatewayUrl}` });
+  }
+  report.durationMs = Date.now() - startedAt;
+  report.ok = report.components.filter(item => ['gateway', 'proxy', 'litellm', 'ollama', 'nginx', 'desktop_contract'].includes(item.component)).every(item => item.ok);
+  return report;
 }
 
 function spawnGatewayProcess(port) {
@@ -1390,6 +1587,13 @@ async function ensureGatewayInner() {
   let attempts = 0;
   for (let port = firstPort; port <= firstPort + 20 && attempts < maxAutomaticAttempts; port += 1) {
     const candidateUrl = `http://127.0.0.1:${port}`;
+    const incumbent = await gatewayHealth(candidateUrl, 2500);
+    if (incumbent.ok && incumbent.capabilities?.ok) {
+      gatewayUrl = candidateUrl;
+      appendLog(`attached to incumbent BEAST gateway at ${gatewayUrl}`);
+      for (const windowRef of appWindows) if (!windowRef.isDestroyed()) windowRef.webContents.send('beast:refresh');
+      return incumbent;
+    }
     if (!gatewayProcess || gatewayProcess.killed || gatewayUrl !== candidateUrl) {
       const free = await portIsFree(port);
       if (!free) {
@@ -1544,16 +1748,26 @@ ipcMain.handle('beast:status', async event => {
     // owns 8101). Resetting to the registry port here made every transient
     // probe re-enter the Guardian conflict even after desktop had found a
     // healthy BEAST gateway.
-    ensureGateway();
-    health = { ...health, ok: false, starting: true, url: gatewayUrl };
+    const requestedPort = Number(new URL(gatewayUrl).port || 8101);
+    const compatibleGateway = await findCompatibleGateway(requestedPort);
+    if (compatibleGateway) {
+      gatewayUrl = compatibleGateway.url;
+      health = compatibleGateway.health;
+      appendLog(`status probe recovered compatible BEAST gateway at ${gatewayUrl}`);
+    } else {
+      ensureGateway();
+    }
+    if (!health.ok || !health.capabilities?.ok) health = { ...health, ok: false, starting: true, url: gatewayUrl };
   }
   const windowRef = BrowserWindow.fromWebContents(event.sender);
+  const runtimeStack = await runtimeStackHealth(health.url || gatewayUrl);
   return {
     gatewayUrl: health.url || gatewayUrl,
     repoRoot: activeWorkspaceRoot || repoRoot,
     workspaceFolders: workspaceFolders(),
     beastRepoRoot: repoRoot,
     health,
+    runtimeStack,
     processPid: gatewayProcess?.pid || null,
     lastGatewayCommand,
     gatewayLog,
@@ -1617,6 +1831,8 @@ ipcMain.handle('beast:restart-gateway', async () => {
   }
   return ensureGateway();
 });
+
+ipcMain.handle('beast:reset-runtime-stack', async () => resetRuntimeStack());
 
 ipcMain.handle('beast:open-gateway', async () => {
   await shell.openExternal(gatewayUrl);
@@ -1731,16 +1947,19 @@ ipcMain.handle('beast:remote-list-files', async (_event, payload) => {
 });
 ipcMain.handle('beast:remote-search', async (_event, payload) => searchRemoteWorkspace(payload || {}));
 ipcMain.handle('beast:remote-reconnect', async () => reconnectRemoteWorkspace());
+ipcMain.handle('beast:remote-health', async (_event,payload) => remoteWorkspaceHealth(payload || {}));
 ipcMain.handle('beast:remote-read-file', async (_event, payload) => readRemoteWorkspaceFile(payload || {}));
 ipcMain.handle('beast:remote-write-file', async (_event, payload) => writeRemoteWorkspaceFile(payload || {}));
 ipcMain.handle('beast:remote-terminal-run', async (_event, payload) => runRemoteTerminal(payload || {}));
 ipcMain.handle('beast:dev-container-inspect', async (_event,payload) => inspectDevContainers(registeredWorkspaceRoot(payload)));
 ipcMain.handle('beast:dev-container-start', async (_event,payload) => startDevContainer(registeredWorkspaceRoot(payload)));
 ipcMain.handle('beast:dev-container-stop', async (_event,payload) => stopDevContainer(registeredWorkspaceRoot(payload),payload?.id));
+ipcMain.handle('beast:dev-container-restart', async (_event,payload) => restartDevContainer(registeredWorkspaceRoot(payload),payload?.id));
 ipcMain.handle('beast:dev-container-attach', async (_event,payload) => attachDevContainer(registeredWorkspaceRoot(payload),payload?.id));
 ipcMain.handle('beast:dev-container-rebuild', async (_event,payload) => rebuildDevContainer(registeredWorkspaceRoot(payload)));
 ipcMain.handle('beast:dev-container-logs', async (_event,payload) => devContainerLogs(registeredWorkspaceRoot(payload),payload?.id));
 ipcMain.handle('beast:dev-container-terminal-run', async (_event,payload) => runDevContainerTerminal(registeredWorkspaceRoot(payload),payload || {}));
+ipcMain.handle('beast:dev-container-open-port', async (_event,payload) => { const port=Number(payload?.port);if(!Number.isInteger(port)||port<1||port>65535)return {ok:false,error:'Container port must be between 1 and 65535.'};const url=`http://127.0.0.1:${port}`;await shell.openExternal(url);return {ok:true,url,port}; });
 ipcMain.handle('beast:remote-terminal-list', async () => ({ok:true,terminals:remoteTerminalHost.list()}));
 ipcMain.handle('beast:remote-terminal-start', async (event,payload) => ({ok:true,terminal:remoteTerminalHost.start(payload || {},event.sender)}));
 ipcMain.handle('beast:remote-terminal-send', async (_event,payload) => remoteTerminalHost.send(payload?.id,payload?.input));
@@ -1763,10 +1982,11 @@ ipcMain.handle('beast:extension-host-discover', async (event, rootPath) => {
 });
 
 ipcMain.handle('beast:extension-host-grant', async (event, payload) => {
-  return beastExtensionHost.grant(activeWorkspaceRoot || repoRoot,payload?.id,payload?.capabilities,event.sender);
+  return beastExtensionHost.grantForTarget(activeWorkspaceRoot || repoRoot,payload?.id,payload?.capabilities,event.sender,payload?.target || activeExecutionTarget);
 });
 ipcMain.handle('beast:extension-host-enable', async (event,payload) => beastExtensionHost.setEnabled(activeWorkspaceRoot||repoRoot,payload?.id,Boolean(payload?.enabled),event.sender));
 ipcMain.handle('beast:extension-host-install', async event => beastExtensionHost.installWorkspaceExtension(activeWorkspaceRoot||repoRoot,event.sender));
+ipcMain.handle('beast:extension-host-deploy', async (event,payload) => beastExtensionHost.deployWorkspaceExtensions(activeWorkspaceRoot||repoRoot,event.sender,payload?.target || activeExecutionTarget));
 ipcMain.handle('beast:extension-host-uninstall', async (event,payload) => beastExtensionHost.uninstallWorkspaceExtension(activeWorkspaceRoot||repoRoot,payload?.id,event.sender));
 ipcMain.handle('beast:extension-host-execute', async (event, payload) => beastExtensionHost.execute(activeWorkspaceRoot || repoRoot,payload?.id,payload?.command,event.sender,payload?.target || activeExecutionTarget));
 

@@ -118,6 +118,7 @@
       next.deploy ||= {loading:false,error:'',score:0,status:'Not Checked',stages:[],blockers:[],manifest:{},ports:[],lastRunbook:null,updatedAt:0};
       next.chronicle ||= {loading:false,error:'',events:[],filtered:[],selectedId:'',filter:'all',query:'',insights:[],sensorium:{},updatedAt:0};
       next.economy ||= {loading:false,error:'',tokensSaved:0,reuseRate:0,compression:0,cacheHit:0,costAvoided:'unreported',callsDisplaced:0,providerMix:[],strategies:[],history:[],measurement:'',updatedAt:0};
+      next.control ||= {loading:false,error:'',errors:{},interception:{},reuse:{},services:{},cgroup:{},reboot:{},host:{},updatedAt:0};
       next.system ||= {loading:false,error:'',score:0,status:'Checking',cpu:0,memory:0,disk:0,network:0,ports:[],processes:[],environment:[],prec:{stage:'Discover',health:0,traces:0},runtime:{status:'checking',circuits:0},updatedAt:0};
       next.platform ||= {loading:false,error:'',status:'checking',health:0,summary:{},sections:[],snapshots:{},raw:null,updatedAt:0};
       next.studio ||= {loading:false,error:'',health:0,phase:0,completed:0,total:0,systems:[],quickActions:[],updatedAt:0};
@@ -223,7 +224,7 @@
     try {
       const params=new URLSearchParams({session_id:'default',limit:'8',route_limit:'10',event_limit:'8',process_limit:'30',port_limit:'40'});
       if(workspaceRoot()) params.set('root_path',workspaceRoot());
-      const [platformPayload,rootPayload]=await Promise.all([request(`/edgek/platform/snapshot?${params}`,{timeout:15000}),request('/edgek/root-info')]);
+      const [platformPayload,rootPayload,enforcementPayload]=await Promise.all([request(`/edgek/platform/snapshot?${params}`,{timeout:15000}),request('/edgek/root-info'),request('/edgek/host-enforcement/state').catch(()=>({capabilities:[],authority:'unavailable'}))]);
       const snapshot = platformPayload;
       const systemPayload = snapshot.snapshots?.system || snapshot.system || {};
       const runtimePayload = snapshot.snapshots?.runtime || snapshot.runtime || {};
@@ -245,7 +246,7 @@
       const precHealth=Number(precPayload?.health||precPayload?.score)|| (precTraceCount?Math.min(100,Math.round(60+Math.log10(precTraceCount+1)*12)):0);
       const sections = Array.isArray(snapshot.sections) ? snapshot.sections : [];
       BeastStore.patch('platform',{loading:false,status:snapshot.status||'watch',health:numeric(snapshot.health,Math.round(sections.length?sections.filter(section=>!/needs attention|watch|failed/i.test(String(section.status||''))).length/sections.length*100:0)),summary:snapshot.summary||{},sections,snapshots:snapshot.snapshots||{},raw:snapshot,updatedAt:now()});
-      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):'Unreported',cpu,memory,disk,network:numeric(systemPayload?.network?.percent||0),ports,processes,environment:Object.entries(rootPayload||{}).slice(0,10),prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'unknown',circuits:numeric(runtimePayload?.circuit_breakers?.open)},updatedAt:now()});
+      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):'Unreported',cpu,memory,disk,network:numeric(systemPayload?.network?.percent||0),ports,processes,environment:Object.entries(rootPayload||{}).slice(0,10),hostEnforcement:enforcementPayload,prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'unknown',circuits:numeric(runtimePayload?.circuit_breakers?.open)},updatedAt:now()});
       return snapshot;
     } catch(error){
       BeastStore.patch('platform',{loading:false,error:String(error.message||error),status:'offline',health:0,sections:[],summary:{},snapshots:{},raw:null,updatedAt:now()});
@@ -404,6 +405,27 @@
     }catch(error){BeastStore.patch('economy',{loading:false,error:String(error.message||error),updatedAt:now()});}
   }
 
+  async function refreshControl() {
+    ensureState(); BeastStore.patch('control',{loading:true,error:''});
+    // Control contracts may be requested before the desktop runtime's first
+    // status probe. Resolve the Electron-selected gateway first so a stale
+    // default port cannot make an otherwise live control plane look empty.
+    try { await BeastRuntime.probe({timeoutMs:1800}); } catch (_) {}
+    const contracts={interception:'/edgek/interception/transparent/state',reuse:'/edgek/crystal-reuse',services:'/edgek/control-plane/services',cgroup:'/edgek/control-plane/cgroup-delegation',reboot:'/edgek/control-plane/reboot-continuity',host:'/edgek/host-enforcement/state'};
+    const names=Object.keys(contracts);
+    const results=await Promise.allSettled(names.map(name=>request(contracts[name])));
+    const payload={loading:false,error:'',errors:{},updatedAt:now()}, response={};
+    results.forEach((result,index)=>{const name=names[index];if(result.status==='fulfilled'){payload[name]=result.value;response[name]=result.value;}else{const message=String(result.reason?.message||result.reason||'Unavailable');payload[name]={};payload.errors[name]=message;response[name]={};}});
+    const failures=Object.keys(payload.errors).length;
+    payload.error=failures?`${failures} control-plane contract${failures===1?'':'s'} unavailable`:'';
+    BeastStore.patch('control',payload);
+    return {...response,errors:payload.errors};
+  }
+  async function reconcileServices() {
+    const result=await request('/edgek/control-plane/services/reconcile',{method:'POST',body:{timeout_seconds:1.5}});
+    await refreshControl(); BeastStore.addLedger(`Control-plane publication reconciled: ${(result.published_services||[]).length} healthy service(s)`); return result;
+  }
+
   async function refreshStudio() {
     ensureState();
     const s=BeastStore.get();
@@ -427,7 +449,8 @@
       {route:'chronicle',label:'Chronicle + Sensorium'},
       {route:'terminal',label:'Terminal Nexus'},
       {route:'deploy',label:'Release Readiness'},
-      {route:'economy',label:'Economizer'}
+      {route:'economy',label:'Economizer'},
+      {route:'compute-control',label:'Compute Control'}
     ],updatedAt:now()});
   }
 
@@ -439,5 +462,5 @@
   }
 
   ensureState();
-  window.BeastUtilityOrchestrationBridge={ensureState,applySettings,refreshProviders,selectProvider,providerAction,refreshPlatform,refreshSystem,systemAction,previewSystemAction,updateSettings,refreshWorktrees,worktreeAction,refreshDeploy,deployAction,refreshChronicle,filterChronicle,selectChronicle,compileInsights,refreshEconomy,refreshStudio,refreshAll};
+  window.BeastUtilityOrchestrationBridge={ensureState,applySettings,refreshProviders,selectProvider,providerAction,refreshPlatform,refreshSystem,systemAction,previewSystemAction,updateSettings,refreshWorktrees,worktreeAction,refreshDeploy,deployAction,refreshChronicle,filterChronicle,selectChronicle,compileInsights,refreshEconomy,refreshControl,reconcileServices,refreshStudio,refreshAll};
 })();

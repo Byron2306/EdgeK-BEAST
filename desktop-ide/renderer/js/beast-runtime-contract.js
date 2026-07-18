@@ -3,7 +3,7 @@
   const DEFAULT_GATEWAY = 'http://127.0.0.1:8101';
   const EXPECTED_DESKTOP = [
     'status','chooseWorkspace','listFiles','readFile','fileOperation','toolingSnapshot','systemSnapshot',
-    'releaseReadiness','restartGateway','openWorkspaceWindow','openGateway','gatewayRequest',
+    'releaseReadiness','restartGateway','resetRuntimeStack','openWorkspaceWindow','openGateway','gatewayRequest',
     'readRemoteFile','writeRemoteFile','reconnectRemote','runRemoteTerminal','executeExtensionCommand',
     'onWorkspaceSelected','onRefresh','onGatewayLog','onDesktopVersion'
   ];

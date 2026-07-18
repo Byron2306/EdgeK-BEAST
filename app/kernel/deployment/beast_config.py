@@ -35,6 +35,9 @@ class BeastConfig:
     # --- KV Cache Transport ---
     KV_MAX_MEMORY_BYTES: int = 8 * 1024 * 1024 * 1024  # 8 GB
     KV_CACHE_DIR: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "data" / "kv_cache")
+    KV_TRANSPORT_ENDPOINT: str = ""
+    KV_TRANSPORT_TOKEN: str = ""
+    KV_TRANSPORT_MAX_BYTES: int = 64 * 1024 * 1024
 
     # --- Scheduler ---
     SCHEDULER_DIR: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "data" / "scheduler")

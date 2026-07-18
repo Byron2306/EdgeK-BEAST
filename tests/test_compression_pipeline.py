@@ -45,6 +45,18 @@ def test_compression_pipeline_schema_rows_produce_structured_chunks(tmp_path):
     assert result["chunks"][0]["schema_path"] == "$[0]"
 
 
+def test_compression_pipeline_refuses_editable_source_anchors(tmp_path):
+    pipeline = CompressionPipeline(data_dir=str(tmp_path / "data"))
+    with pytest.raises(ValueError, match="editable source"):
+        pipeline.compress({
+            "text": "def must_stay_exact():\n    return 1\n",
+            "content_type": "application/python",
+            "editable_source": True,
+            "purpose": "sourceplan_anchor",
+            "source_uri": "file://exact.py",
+        })
+
+
 def test_compression_pipeline_chunks_markdown_sections(tmp_path):
     pipeline = CompressionPipeline(data_dir=str(tmp_path / "data"))
     markdown = "# Intro\nhello\n\n## Plan\nstep one\n\n## Done\nship it"

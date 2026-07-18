@@ -5,9 +5,9 @@ model_list:
     api_key: os.environ/ANTHROPIC_API_KEY
   rpm: 50
   tpm: 40000
-- model_name: llama3.1-8b
+- model_name: gpt-oss-120b
   litellm_params:
-    model: cerebras/llama3.1-8b
+    model: cerebras/gpt-oss-120b
     api_key: os.environ/CEREBRAS_API_KEY
     api_base: https://api.cerebras.ai/v1
   rpm: 60
@@ -104,10 +104,12 @@ model_list:
     api_base: https://integrate.api.nvidia.com/v1
   rpm: 60
   tpm: 120000
-- model_name: qwen2.5:0.5b
+- model_name: qwen2.5-coder:1.5b
   litellm_params:
-    model: ollama/qwen2.5:0.5b
+    model: ollama/qwen2.5-coder:1.5b
     api_base: http://127.0.0.1:11434
+  rpm: 30
+  tpm: 24000
 - model_name: gpt-3.5-turbo
   litellm_params:
     model: openai/gpt-3.5-turbo

@@ -8,7 +8,7 @@ import json
 import hashlib
 import httpx
 import asyncio
-from typing import Dict, Any, Optional
+from typing import Awaitable, Callable, Dict, Any, Optional
 from dataclasses import asdict
 import logging
 from pathlib import Path
@@ -23,6 +23,7 @@ from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.compute.adaptive_dispatcher import AdaptiveDispatcher
 from app.kernel.compute.crystal_runtime_boundary import CrystalRuntimeBoundary
 from app.kernel.compute.integration_harness import BeastHarnessRequest
+from app.kernel.registry.provider_registry import ProviderRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,19 @@ class Executor:
         self.dispatcher = AdaptiveDispatcher()
         self.crystal_runtime_boundary = CrystalRuntimeBoundary()
         self.integration_harness = None
+
+    def bind_runtime_services(self, *, crystal_gateway=None, integration_harness=None) -> None:
+        """Bind the process-wide governed services used by live gateway routes.
+
+        The executor is imported before the application composition root.  This
+        late binding makes provider execution use the same durable reuse,
+        KV-transport, trace, and promotion services exposed by the gateway,
+        instead of silently creating a parallel crystal-runtime state root.
+        """
+        if crystal_gateway is not None:
+            self.crystal_runtime_boundary.gateway = crystal_gateway
+        if integration_harness is not None:
+            self.integration_harness = integration_harness
     
     def _get_provider(self, provider_type: ProviderType):
         """Get or create a provider instance"""
@@ -73,10 +87,22 @@ class Executor:
         adaptive_route = await self.dispatcher.route(ir)
         if adaptive_route:
             logger.info(f"Adaptive routing selected: {adaptive_route['model_ref']}")
-            # In a real implementation, we would dispatch to the local engine here.
-            # For this integration phase, we log and proceed to default provider routing
-            # with adaptive metadata attached to the IR.
             ir.metadata["adaptive_route"] = adaptive_route
+            if adaptive_route.get("execution_mode") == "local_specialist_adapter":
+                model_ref = str(adaptive_route.get("model_ref") or "")
+                if not model_ref.startswith("ollama://"):
+                    return self._create_error_response(
+                        "ADAPTIVE_ROUTE_REJECTED",
+                        "Adaptive specialist route is not an approved local Ollama target.",
+                        status_code=409,
+                    )
+                ir.model = model_ref.removeprefix("ollama://")
+                ir.metadata["adaptive_route_executed"] = True
+                ir.metadata["provider_candidates"] = [{
+                    "provider": "ollama", "model": ir.model,
+                    "local": True, "confidence": adaptive_route.get("confidence_score", 0.0),
+                }]
+                provider_type = ProviderType.OLLAMA
 
         provider_name = "google" if provider_type == ProviderType.GEMINI else provider_type.value
         compute = compute_interceptor.begin(ir, provider_name)
@@ -343,7 +369,7 @@ class Executor:
                         response.setdefault("edgek_crystal_record", crystal_record)
                 return response
             response = await asyncio.wait_for(
-                self._route_to_provider(provider_type, ir),
+                self._route_to_provider_with_live_relay(provider_type, ir),
                 timeout=admission.timeout_seconds,
             )
             success = "error" not in response
@@ -468,6 +494,13 @@ class Executor:
 
     def _should_intercept_stream(self, ir: EdgeKIR) -> bool:
         metadata = ir.metadata or {}
+        # Never early-cancel structured source-edit output.  This is a
+        # defence in depth guard for callers other than the proxy registry.
+        # Action IR is validated only after its complete JSON object arrives;
+        # a partial object is worse than no result because it can contain a
+        # stale anchor or an incomplete replacement.
+        if metadata.get("edgek_action_ir_required") is True:
+            return False
         return bool(ir.stream and metadata.get("stream_interception_enabled") is True)
 
     def _durable_inference_replay(self, ir: EdgeKIR):
@@ -546,6 +579,31 @@ class Executor:
             finally:
                 await provider.close()
             return
+        if provider_type == ProviderType.OPENAI_COMPATIBLE:
+            config = self._openai_compatible_config(ir)
+            provider_label = str(config.get("provider_id") or "openai_compatible")
+            env_names = config.get("env") or []
+            api_key_env = str(env_names[0] if env_names else f"{provider_label.upper()}_API_KEY")
+            api_key = os.environ.get(api_key_env, "")
+            if not api_key:
+                # Preserve the selected provider in the refusal/simulation
+                # response; never silently claim that an OpenAI key is needed
+                # for a NIM route.
+                text = self._simulate_openai_compatible_response(ir, provider_label)["choices"][0]["message"]["content"]
+                for chunk in self._stream_text_chunks(text):
+                    yield {"choices": [{"delta": {"content": chunk}}]}
+                yield {"choices": [{"delta": {}, "finish_reason": "stop"}]}
+                return
+            provider = OpenAIProvider(
+                api_key=api_key,
+                base_url=str(config.get("base_url") or "").rstrip("/"),
+            )
+            try:
+                async for item in provider.complete_stream(ir):
+                    yield item
+            finally:
+                await provider.close()
+            return
         if provider_type == ProviderType.ANTHROPIC:
             api_key = os.environ.get("ANTHROPIC_API_KEY")
             if not api_key:
@@ -561,6 +619,56 @@ class Executor:
             return
         async for item in self._simulate_openai_stream(ir):
             yield item
+
+    async def _route_to_provider_with_live_relay(self, provider_type: ProviderType, ir: EdgeKIR) -> Dict[str, Any]:
+        """Relay provider deltas to an in-process observer while preserving PREC.
+
+        Only callers that explicitly install the callback take this route. The
+        normal executor lifecycle (compute admission, runtime governor,
+        crystallization caller, receipts, and final response) remains intact;
+        the callback merely gives a compatible SSE boundary immediate access to
+        already-governed upstream deltas.
+        """
+        callback = (ir.metadata or {}).get("edgek_live_token_callback")
+        if callback is None:
+            return await self._route_to_provider(provider_type, ir)
+
+        parts: list[str] = []
+        finish_reason = "stop"
+        async for event in self._route_to_provider_stream(provider_type, ir):
+            text = self._stream_event_text(event)
+            if text:
+                parts.append(text)
+                result = callback(text)
+                if hasattr(result, "__await__"):
+                    await result
+            if isinstance(event, dict):
+                choices = event.get("choices")
+                if isinstance(choices, list) and choices and isinstance(choices[0], dict):
+                    finish_reason = str(choices[0].get("finish_reason") or finish_reason)
+        response = self._openai_text_response(
+            ir,
+            "".join(parts),
+            provider=str((ir.metadata or {}).get("edgek_provider") or provider_type.value),
+        )
+        response["choices"][0]["finish_reason"] = finish_reason
+        response["edgek_live_token_relay"] = True
+        return response
+
+    @staticmethod
+    def _stream_event_text(event: Any) -> str:
+        if isinstance(event, str):
+            return event
+        if not isinstance(event, dict):
+            return ""
+        choices = event.get("choices")
+        if isinstance(choices, list) and choices and isinstance(choices[0], dict):
+            first = choices[0]
+            delta = first.get("delta") if isinstance(first.get("delta"), dict) else {}
+            message = first.get("message") if isinstance(first.get("message"), dict) else {}
+            return str(delta.get("content") or message.get("content") or first.get("text") or "")
+        delta = event.get("delta") if isinstance(event.get("delta"), dict) else {}
+        return str(event.get("text") or event.get("completion") or delta.get("text") or "")
 
     async def _simulate_openai_stream(self, ir: EdgeKIR):
         text = str((ir.metadata or {}).get("simulated_stream_text") or self._simulate_openai_response(ir)["choices"][0]["message"]["content"])
@@ -618,7 +726,7 @@ class Executor:
                 missing_key_response=self._simulate_litellm_response,
             )
         if provider_type == ProviderType.OPENAI_COMPATIBLE:
-            config = (ir.metadata or {}).get("provider_config") or {}
+            config = self._openai_compatible_config(ir)
             provider_label = str(config.get("provider_id") or ir.metadata.get("edgek_provider") or "openai_compatible")
             env_names = config.get("env") or []
             api_key_env = env_names[0] if env_names else f"{provider_label.upper()}_API_KEY"
@@ -639,6 +747,32 @@ class Executor:
                 missing_key_response=lambda request_ir: self._simulate_openai_compatible_response(request_ir, "ollama"),
             )
         return await self._execute_openai(ir)
+
+    @staticmethod
+    def _openai_compatible_config(ir: EdgeKIR) -> Dict[str, Any]:
+        """Resolve the selected registry lane into an executable endpoint.
+
+        The gateway's provider registry is authoritative for NIM credentials
+        and base URLs.  Without this bridge, a ``nvidia_nim`` metadata value
+        was not an enum member and incorrectly fell through to OpenAI.
+        """
+        metadata = ir.metadata or {}
+        config = dict(metadata.get("provider_config") or {})
+        provider_id = str(
+            config.get("provider_id")
+            or metadata.get("route_provider")
+            or metadata.get("provider")
+            or metadata.get("edgek_provider")
+            or ""
+        ).strip()
+        if provider_id:
+            record = next(
+                (item for item in ProviderRegistry().records(include_disabled=True) if item.provider_id == provider_id),
+                None,
+            )
+            if record and record.openai_compatible:
+                config = {**record.to_dict(), **config}
+        return config
     
     def _determine_provider_type(self, ir: EdgeKIR) -> ProviderType:
         """Determine which provider to route to based on the IR"""
@@ -648,6 +782,23 @@ class Executor:
                 return ProviderType(provider_from_metadata)
             except ValueError:
                 pass
+        if provider_from_metadata:
+            record = next(
+                (item for item in ProviderRegistry().records(include_disabled=True) if item.provider_id == provider_from_metadata),
+                None,
+            )
+            if record:
+                backend_routes = {
+                    "native_anthropic": ProviderType.ANTHROPIC,
+                    "native_gemini": ProviderType.GEMINI,
+                    "native_huggingface": ProviderType.HUGGINGFACE,
+                    "litellm": ProviderType.LITELLM,
+                    "ollama": ProviderType.OLLAMA,
+                }
+                if record.openai_compatible or record.backend == "openai_compatible":
+                    return ProviderType.OPENAI_COMPATIBLE
+                if record.backend in backend_routes:
+                    return backend_routes[record.backend]
         
         # Infer from model name
         if ir.model.startswith("gpt"):

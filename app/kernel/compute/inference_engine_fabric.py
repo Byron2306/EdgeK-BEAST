@@ -97,10 +97,27 @@ class InferenceEngineFabric:
     }
 
     def select_cpu_engine(self, task_class: str, model_hint: str, max_latency_ms: int, context_tokens: int) -> str:
-        # TODO: Implement sophisticated selection logic based on requirements
-        if "llama" in model_hint.lower():
+        """Choose a configured CPU engine using explicit, deterministic policy.
+
+        llama.cpp is preferred for llama-family or long-context work when it is
+        configured; Ollama remains the low-latency and general-purpose default.
+        The fallback is always a configured candidate when one exists.
+        """
+        candidates = {profile.engine_id for profile in self.cpu_candidates()}
+        if not candidates:
+            raise ValueError("no configured CPU inference engine")
+        hint = model_hint.lower()
+        task = task_class.lower()
+        long_context = max(0, int(context_tokens)) >= 8192
+        latency_sensitive = 0 < int(max_latency_ms) <= 1500
+        llama_optimized = "llama" in hint or task in {"code_completion", "long_context", "embedding"}
+        if "llama_cpp" in candidates and llama_optimized and not latency_sensitive:
             return "llama_cpp"
-        return "ollama"
+        if "llama_cpp" in candidates and long_context and not latency_sensitive:
+            return "llama_cpp"
+        if "ollama" in candidates:
+            return "ollama"
+        return sorted(candidates)[0]
 
     def __init__(self, client: Optional[httpx.Client] = None) -> None:
         self.client = client or httpx.Client()

@@ -131,7 +131,7 @@ def build_dashboard(
         "compute": {
             "state": ledger.get_state(),
             "metrics": ledger.metrics(500),
-            "savings": {}, # Placeholder
+            "savings": ledger.savings_summary(2000),
         },
         "storage": storage.get_metrics(),
         "crystallization": {

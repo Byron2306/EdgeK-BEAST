@@ -123,29 +123,33 @@ class BeastIntegrationHarness:
             execution_result.setdefault("route", "local_cpu" if crystal_decision.action == "execute_local_cpu" else "litellm_cloud")
             execution_result.setdefault("cloud_used", crystal_decision.action == "execute_litellm_cloud")
             verification = self.provider_verifier(crystal_request, execution_result)
-            crystal_record = self.crystal_gateway.record_execution_response(
-                crystal_request,
-                str(execution_result.get("response") or ""),
-                route=str(execution_result.get("route") or "local_cpu"),
-                engine=str(execution_result.get("engine_id") or execution_result.get("engine") or request.preferred_engine or "ollama"),
-                cost_usd=execution_result.get("cost_usd"),
-                verified=bool(verification.get("verified")),
-                avoided_tokens_estimate=int(execution_result.get("total_tokens") or request.projected_tokens or 0),
-                evidence={
-                    "verification": verification,
-                    "trace_id": trace_id,
-                    "provider_result_id": execution_result.get("provider_result_id") or "",
-                    "latency_ms": execution_result.get("latency_ms") or 0,
-                    "usage": {
-                        "total_tokens": execution_result.get("total_tokens") or (
-                            int(execution_result.get("prompt_tokens") or 0) + int(execution_result.get("output_tokens") or 0)
-                        ),
-                        "prompt_tokens": execution_result.get("prompt_tokens") or 0,
-                        "output_tokens": execution_result.get("output_tokens") or 0,
+            # A harness with no bound executor is a diagnostic surface, not a
+            # coding model.  Never crystallize its explanatory placeholder as
+            # if it were a provider completion.
+            if not execution_result.get("synthetic_placeholder"):
+                crystal_record = self.crystal_gateway.record_execution_response(
+                    crystal_request,
+                    str(execution_result.get("response") or ""),
+                    route=str(execution_result.get("route") or "local_cpu"),
+                    engine=str(execution_result.get("engine_id") or execution_result.get("engine") or request.preferred_engine or "ollama"),
+                    cost_usd=execution_result.get("cost_usd"),
+                    verified=bool(verification.get("verified")),
+                    avoided_tokens_estimate=int(execution_result.get("total_tokens") or request.projected_tokens or 0),
+                    evidence={
+                        "verification": verification,
+                        "trace_id": trace_id,
+                        "provider_result_id": execution_result.get("provider_result_id") or "",
+                        "latency_ms": execution_result.get("latency_ms") or 0,
+                        "usage": {
+                            "total_tokens": execution_result.get("total_tokens") or (
+                                int(execution_result.get("prompt_tokens") or 0) + int(execution_result.get("output_tokens") or 0)
+                            ),
+                            "prompt_tokens": execution_result.get("prompt_tokens") or 0,
+                            "output_tokens": execution_result.get("output_tokens") or 0,
+                        },
                     },
-                },
-                write_memory=True,
-            )
+                    write_memory=True,
+                )
 
         enterprise_receipts = self._record_enterprise(
             enterprise_context,
@@ -312,17 +316,29 @@ class BeastIntegrationHarness:
     @staticmethod
     def _default_provider_executor(request: CrystalReuseRequest) -> Dict[str, Any]:
         return {
-            "response": f"BEAST local provider placeholder for {request.task_class}: {request.prompt[:120]}",
+            "response": "",
             "provider": request.provider or "local",
             "model": request.model,
             "cost_usd": 0.0,
-            "total_tokens": max(1, len(request.prompt.split()) + 12),
-            "status": "completed",
+            "total_tokens": 0,
+            "status": "unavailable_no_provider_executor",
+            "synthetic_placeholder": True,
+            "reason": "No live provider executor or local execution gateway is bound to this harness.",
         }
 
     @staticmethod
     def _default_provider_verifier(request: CrystalReuseRequest, provider_result: Dict[str, Any]) -> Dict[str, Any]:
         response = str(provider_result.get("response") or "")
+        if provider_result.get("synthetic_placeholder"):
+            return {
+                "beast_object_type": "beast_provider_result_verification",
+                "version": "1.0",
+                "verified": False,
+                "reason": "synthetic_placeholder_is_not_a_provider_result",
+                "response_sha256": "",
+                "model": request.model,
+                "provider": request.provider,
+            }
         return {
             "beast_object_type": "beast_provider_result_verification",
             "version": "1.0",

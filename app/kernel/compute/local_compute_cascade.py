@@ -46,8 +46,14 @@ class LocalComputeCascade:
             }
 
         # 3. Try local CPU
+        selector = getattr(self.engine_fabric, "select_cpu_engine", None)
+        engine_id = selector(
+            request.task_class, request.model,
+            int(request.parameters.get("max_latency_ms", 0)),
+            int(request.parameters.get("context_tokens", 0)),
+        ) if callable(selector) else (request.preferred_engine or "ollama")
         local = self.engine_fabric.generate(
-            request.preferred_engine or "ollama",
+            engine_id,
             model=request.model,
             prompt=request.prompt,
             system_prompt=request.system_prompt,
@@ -94,10 +100,12 @@ class LocalComputeCascade:
             caller="spiffe://beast.local/runtime-governor",
             target="spiffe://beast.local/provider/cloud",
             action="call",
-            facts={"quality_cascade": {"approved": True}},
+            facts={"quality_cascade": quality},
         )
 
         # 6. LiteLLM cloud fallback
+        if self.litellm_gateway is None:
+            raise RuntimeError("cloud fallback is not configured for the local compute cascade")
         cloud = self.litellm_gateway.complete(request)
         cloud_response = str(cloud.get("response") or "")
         cloud_receipt = self.reuse_gateway.record_execution_response(

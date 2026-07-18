@@ -122,6 +122,7 @@ def build_workspace_router(
     workspace_graph: Any,
     workspace_registry: Any,
     code_cortex_router: Any,
+    vector_memory: Any = None,
     trace_path: str | Path | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -286,6 +287,86 @@ def build_workspace_router(
         graph_context["context_pending"] = not (graph_task.done() and cortex_task.done())
         graph_context["context_front_door"] = "code_cortex"
         return graph_context
+
+    @router.post("/edgek/workspace/context-header")
+    async def edgek_workspace_context_header(payload: Dict[str, Any] = None):
+        """Return one explicit, metadata-first context suggestion contract.
+
+        This endpoint is intentionally non-mutating: callers may show its
+        ranked files/chunks, but must receive an operator's explicit selection
+        before adding any suggestion to a provider prompt or edit scope.
+        """
+        payload = payload or {}
+        root = _root(payload.get("root_path"))
+        objective = str(payload.get("objective") or payload.get("query") or "").strip()
+        selected_files = [str(item) for item in (payload.get("selected_files") or payload.get("files") or []) if item]
+        limit = max(1, min(int(payload.get("limit", 8)), 24))
+        token_budget = max(256, min(int(payload.get("token_budget", 3000)), 16000))
+        context = await asyncio.to_thread(
+            workspace_graph_service.context,
+            objective=objective,
+            root_path=str(root),
+            selected_files=selected_files,
+            token_budget=token_budget,
+            limit=limit,
+            session_id=None,
+        )
+        seen = set(selected_files)
+        suggestions = []
+        for item in context.get("results") or []:
+            path = str(item.get("path") or "")
+            if not path or path in seen:
+                continue
+            seen.add(path)
+            suggestions.append({
+                "path": path,
+                "reason": str(item.get("reason") or "retrieval_match"),
+                "language": str(item.get("language") or ""),
+                "line": item.get("line"),
+                "end_line": item.get("end_line"),
+                "selected": False,
+                "requires_operator_acceptance": True,
+            })
+        vector_memory_result = {"result_count": 0, "hits": []}
+        if vector_memory is not None and objective:
+            vector_memory_result = await asyncio.to_thread(vector_memory.search, objective, limit=limit)
+            for item in vector_memory_result.get("hits") or []:
+                metadata = item.get("metadata") or {}
+                path = str(metadata.get("file") or "")
+                if not path or path in seen:
+                    continue
+                seen.add(path)
+                suggestions.append({
+                    "path": path,
+                    "reason": "vector_memory_projection",
+                    "language": "",
+                    "line": metadata.get("start_line"),
+                    "end_line": metadata.get("end_line"),
+                    "selected": False,
+                    "requires_operator_acceptance": True,
+                    "projection_backends": item.get("projection_backends") or [item.get("backend")],
+                })
+        return {
+            "beast_object_type": "beast_context_header.v1",
+            "version": "1.0",
+            "objective": objective,
+            "workspace": str(root),
+            "retrieval_mode": "workspace_graph_metadata_first",
+            "selected_files": selected_files,
+            "suggestions": suggestions[:limit],
+            "suggestion_count": min(len(suggestions), limit),
+            "estimated_tokens": int(context.get("estimated_tokens") or 0),
+            "operator_rule": "Suggestions are not provider context until explicitly accepted.",
+            "context_receipt": {
+                "result_count": int(context.get("result_count") or 0),
+                "query": str(context.get("query") or objective),
+            },
+            "vector_memory": {
+                "result_count": int(vector_memory_result.get("result_count") or 0),
+                "diagnostics": vector_memory_result.get("diagnostics") or [],
+                "authority_rule": vector_memory_result.get("authority_rule", "Retrieval remains advisory context."),
+            },
+        }
 
     @router.get("/edgek/code-cortex/status")
     async def edgek_code_cortex_status(root_path: str = None):
@@ -453,13 +534,21 @@ def build_workspace_router(
     @router.post("/edgek/workspace/semantic-index")
     async def edgek_workspace_semantic_index(payload: Dict[str, Any] = None):
         payload = payload or {}
-        return workspace_graph.semantic_index_repository(
+        result = workspace_graph.semantic_index_repository(
             root_path=payload.get("root_path") or str(fallback_root),
             max_files=max(1, min(int(payload.get("max_files", 200)), 2000)),
             max_chunks=max(1, min(int(payload.get("max_chunks", 1000)), 10000)),
             include_patterns=payload.get("include_patterns"),
             exclude_dirs=payload.get("exclude_dirs"),
         )
+        if vector_memory is not None:
+            projection_limit = max(1, min(int(payload.get("projection_limit", result.get("indexed_chunks", 0) or 1)), 50000))
+            result["vector_memory"] = await asyncio.to_thread(
+                vector_memory.ingest,
+                workspace_graph.semantic_projection_records(limit=projection_limit),
+                purpose="workspace_source",
+            )
+        return result
 
     @router.get("/edgek/workspace/semantic-context")
     async def edgek_workspace_semantic_context(
@@ -469,6 +558,9 @@ def build_workspace_router(
         file_glob: str = None,
         node_type: str = None,
     ):
+        vector_memory_result = await asyncio.to_thread(
+            vector_memory.search, q, limit=max(1, min(limit, 50)), purposes=("workspace_source", "verified_skill")
+        ) if vector_memory is not None else None
         return {
             "context_front_door": "code_cortex",
             "code_cortex": code_cortex_router.get_editing_context(_root(), q, limit=max(1, min(limit, 50))),
@@ -479,7 +571,45 @@ def build_workspace_router(
                 file_glob=file_glob,
                 node_types=[node_type] if node_type else None,
             ),
+            "vector_memory": vector_memory_result,
         }
+
+    @router.get("/edgek/vector/memory/health")
+    async def edgek_vector_memory_health():
+        if vector_memory is None:
+            return {"beast_object_type": "vector_memory_health", "enabled": False, "backends": []}
+        return await asyncio.to_thread(vector_memory.health)
+
+    @router.post("/edgek/vector/memory/search")
+    async def edgek_vector_memory_search(payload: Dict[str, Any] = None):
+        payload = payload or {}
+        query = str(payload.get("query") or payload.get("q") or "").strip()
+        if not query:
+            raise HTTPException(status_code=400, detail="query is required")
+        if vector_memory is None:
+            return {"beast_object_type": "vector_memory_search", "query": query, "hits": [], "result_count": 0, "diagnostics": []}
+        requested = payload.get("purposes") or ("workspace_source", "verified_skill")
+        if not isinstance(requested, list | tuple):
+            raise HTTPException(status_code=400, detail="purposes must be a list")
+        return await asyncio.to_thread(
+            vector_memory.search, query, limit=max(1, min(int(payload.get("limit", 8)), 50)), purposes=tuple(str(item) for item in requested)
+        )
+
+    @router.post("/edgek/vector/memory/operational-record")
+    async def edgek_vector_memory_operational_record(payload: Dict[str, Any] = None):
+        """Store a verified, sanitized L3 or L4 summary if cloud projection is enabled.
+
+        This endpoint deliberately has no workspace-file input.  The adapter
+        rejects raw source, prompts, patches, and logs before any backend call.
+        """
+        payload = payload or {}
+        if vector_memory is None:
+            return {"beast_object_type": "vector_memory_ingest", "enabled": False, "projections": []}
+        purpose = str(payload.get("purpose") or "verified_skill")
+        if purpose not in {"verified_skill", "forensic_summary"}:
+            raise HTTPException(status_code=400, detail="purpose must be verified_skill or forensic_summary")
+        record = payload.get("record") if isinstance(payload.get("record"), dict) else payload
+        return await asyncio.to_thread(vector_memory.ingest, [record], purpose=purpose)
 
     @router.get("/edgek/workspace/nodes/{node_id:path}")
     async def edgek_workspace_node(node_id: str):

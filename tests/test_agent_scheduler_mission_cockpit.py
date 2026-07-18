@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 
@@ -526,6 +527,146 @@ async def test_ide_agent_session_run_events_stream_and_persist_output(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_ide_agent_uses_approved_search_related_reads_and_skill_recipes(tmp_path):
+    (tmp_path / "service.py").write_text(
+        "def calculate_total(value):\n    return value + 1\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "test_service.py").write_text(
+        "from service import calculate_total\n\ndef test_total():\n    assert calculate_total(1) == 2\n",
+        encoding="utf-8",
+    )
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Improve service tests",
+                "mode": "implementer",
+                "provider": "nvidia_nim",
+                "files": ["service.py"],
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        granted = await client.post(
+            "/edgek/ide/agent-sessions/capabilities/grant",
+            json={
+                "root_path": str(tmp_path),
+                "session_id": session_id,
+                "request_id": "approved-tools",
+                "capabilities": ["workspace_search", "read_related_files", "use_verified_skill"],
+                "paths": ["test_service.py"],
+            },
+        )
+        streamed = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}/run-events",
+            params=[
+                ("root_path", str(tmp_path)),
+                ("prompt", "Find calculate_total and improve its tests."),
+                ("context_files", "service.py"),
+                ("simulate", "true"),
+            ],
+        )
+
+    assert granted.status_code == 200
+    assert "event: agent_run_tool" in streamed.text
+    assert "Workspace Search completed:" in streamed.text
+    assert "Related File Read completed: 1 approved linked file(s) added to this turn" in streamed.text
+    assert "Verified Skill Recipes" in streamed.text
+
+
+@pytest.mark.asyncio
+async def test_ide_agent_uses_newly_approved_tools_in_same_run(tmp_path):
+    (tmp_path / "service.py").write_text(
+        "def calculate_total(value):\n    return value + 1\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "test_service.py").write_text(
+        "from service import calculate_total\n\ndef test_total():\n    assert calculate_total(1) == 2\n",
+        encoding="utf-8",
+    )
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Improve service tests",
+                "mode": "implementer",
+                "provider": "nvidia_nim",
+                "files": ["service.py"],
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        stream_task = asyncio.create_task(client.get(
+            f"/edgek/ide/agent-sessions/{session_id}/run-events",
+            params=[
+                ("root_path", str(tmp_path)),
+                ("prompt", "Find calculate_total and improve its tests."),
+                ("context_files", "service.py"),
+                ("simulate", "true"),
+            ],
+        ))
+        await asyncio.sleep(0.2)
+        granted = await client.post(
+            "/edgek/ide/agent-sessions/capabilities/grant",
+            json={
+                "root_path": str(tmp_path),
+                "session_id": session_id,
+                "request_id": "approved-during-run",
+                "capabilities": ["workspace_search", "read_related_files", "use_verified_skill"],
+                "paths": ["test_service.py"],
+            },
+        )
+        streamed = await stream_task
+
+    assert granted.status_code == 200
+    assert "event: agent_run_permission_request" in streamed.text
+    assert "operator-approved tools ready" in streamed.text
+    assert "Workspace Search completed:" in streamed.text
+    assert "Related File Read completed: 1 approved linked file(s) added to this turn" in streamed.text
+    assert "Verified Skill Recipes" in streamed.text
+
+
+@pytest.mark.asyncio
+async def test_ide_agent_stream_preparation_crash_emits_terminal_events(monkeypatch, tmp_path):
+    (tmp_path / "service.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+
+    def broken_read_context_files(self, *args, **kwargs):
+        raise RuntimeError("context reader exploded")
+
+    monkeypatch.setattr(BeastApiClient, "read_context_files", broken_read_context_files)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={
+                "root_path": str(tmp_path),
+                "objective": "Update service",
+                "mode": "implementer",
+                "provider": "nvidia_nim",
+                "files": ["service.py"],
+            },
+        )
+        session_id = created.json()["session"]["session_id"]
+        streamed = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}/run-events",
+            params=[
+                ("root_path", str(tmp_path)),
+                ("prompt", "Change service.py safely."),
+                ("context_files", "service.py"),
+            ],
+        )
+
+    assert streamed.status_code == 200
+    assert "event: agent_run_error" in streamed.text
+    assert "Agent run stream terminated before completion: context reader exploded" in streamed.text
+    assert "event: agent_run_done" in streamed.text
+    assert '"sourceplan_status": "stream_error"' in streamed.text
+
+
+@pytest.mark.asyncio
 async def test_ide_agent_session_run_events_repairs_to_action_ir(monkeypatch, tmp_path):
     target = tmp_path / "service.py"
     target.write_text("def value():\n    return 1\n", encoding="utf-8")
@@ -587,13 +728,20 @@ async def test_ide_agent_session_run_events_repairs_to_action_ir(monkeypatch, tm
 
 
 @pytest.mark.asyncio
-async def test_ide_local_qwen_run_is_compact_and_does_not_start_repair_cascade(monkeypatch, tmp_path):
+async def test_ide_local_qwen_run_is_compact_and_uses_one_focused_action_ir_repair(monkeypatch, tmp_path):
     for index in range(5):
         (tmp_path / f"module_{index}.py").write_text(f"VALUE_{index} = {index}\n", encoding="utf-8")
     calls = []
 
     async def fake_stream_live_turn(self, text, history, **kwargs):
         calls.append((text, kwargs))
+        if "Return BEAST Action IR JSON only." in text:
+            yield {
+                "type": "token",
+                "text": '{"kind":"beast.action_intent.v1","objective":"Update the local coder fixture","actions":[{"type":"replace_exact","target":{"path":"module_0.py"},"old":"VALUE_0 = 0","new":"VALUE_0 = 1","intent":"Update the fixture value"}],"verify":["python -m py_compile module_0.py"]}',
+            }
+            yield {"type": "done", "ok": True, "tool_events": []}
+            return
         yield {"type": "token", "text": "I would change module_0.py."}
         yield {"type": "done", "ok": True, "tool_events": []}
 
@@ -622,12 +770,16 @@ async def test_ide_local_qwen_run_is_compact_and_does_not_start_repair_cascade(m
         )
 
     assert "compact local Qwen route: 3 files, 1024 output tokens" in streamed.text
-    assert "event: agent_run_needs_operator" in streamed.text
-    assert len(calls) == 1
+    assert "bounded local sourceplan repair" in streamed.text
+    assert "event: agent_run_sourceplan" in streamed.text
+    assert "event: agent_run_needs_operator" not in streamed.text
+    assert len(calls) == 2
     assert calls[0][1]["max_tokens"] == 1024
     assert calls[0][1]["context_max_chars_each"] == 2400
     assert calls[0][1]["context_files"] == [f"module_{index}.py" for index in range(3)]
-    assert "sourceplan repair" not in streamed.text
+    assert calls[1][1]["max_tokens"] == 640
+    assert calls[1][1]["context_max_chars_each"] == 1800
+    assert calls[1][1]["context_files"] == ["module_0.py"]
 
 
 @pytest.mark.asyncio
@@ -672,6 +824,58 @@ async def test_sourceplan_rollback_latest_route_uses_governed_snapshot(monkeypat
     assert response.status_code == 200
     assert response.json()["restored"] == ["service.py"]
     assert calls == [tmp_path.resolve()]
+
+
+@pytest.mark.asyncio
+async def test_sourceplan_apply_records_outcome_for_agent_followup(monkeypatch, tmp_path):
+    calls = []
+    tests_dir = tmp_path / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "test_service.py").write_text("def test_service():\n    assert True\n", encoding="utf-8")
+
+    def fake_apply(self, plan, approved=False):
+        calls.append((self.workspace_root(), plan.get("agent_session_id"), approved))
+        return ActionResult(True, "Patch applied", "applied", {
+            "applied": ["service.py"],
+            "verification": {"ok": True, "checks": ["python syntax"]},
+        })
+
+    monkeypatch.setattr(BeastApiClient, "apply_patch_plan", fake_apply)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post(
+            "/edgek/ide/agent-sessions/create",
+            json={"root_path": str(tmp_path), "objective": "Apply then verify", "mode": "implementer"},
+        )
+        session_id = created.json()["session"]["session_id"]
+        applied = await client.post(
+            "/edgek/sourceplan/apply",
+            json={
+                "root_path": str(tmp_path),
+                "approved": True,
+                "plan": {
+                    "plan_id": "agent-followup-plan",
+                    "agent_session_id": session_id,
+                    "files_allowed": ["service.py"],
+                    "operations": [],
+                },
+            },
+        )
+        detail = await client.get(
+            f"/edgek/ide/agent-sessions/{session_id}", params={"root_path": str(tmp_path)}
+        )
+
+    assert applied.status_code == 200
+    assert applied.json()["agent_followup_ready"] is True
+    assert applied.json()["workspace_feedback"]["applied_files"] == ["service.py"]
+    assert applied.json()["workspace_feedback"]["test_candidates"] == ["tests/test_service.py"]
+    assert applied.json()["workspace_feedback"]["recommended_verifiers"] == ["python -m pytest tests/test_service.py"]
+    assert calls == [(tmp_path.resolve(), session_id, True)]
+    outcome = next(item for item in reversed(detail.json()["session"]["outputs"]) if item.get("kind") == "agent_sourceplan_apply")
+    assert outcome["applied"] == ["service.py"]
+    assert outcome["verification"]["ok"] is True
+    assert outcome["workspace_feedback"]["applied_files"] == ["service.py"]
+    assert outcome["workspace_feedback"]["test_candidates"] == ["tests/test_service.py"]
 
 
 @pytest.mark.asyncio
@@ -810,6 +1014,35 @@ async def test_ide_agent_session_repairs_invalid_proposed_syntax_before_sourcepl
 
 
 @pytest.mark.asyncio
+async def test_ide_agent_session_retries_validation_until_a_governed_plan_passes(monkeypatch, tmp_path):
+    target = tmp_path / "service.py"
+    target.write_text("def value():\n    return 1\n", encoding="utf-8")
+    calls = []
+
+    async def fake_stream_live_turn(self, text, history, **kwargs):
+        calls.append(text)
+        replacement = "return 2" if len(calls) >= 3 else "return ("
+        yield {"type": "token", "text": json.dumps({
+            "kind": "beast.action_intent.v1", "objective": "Update safely",
+            "actions": [{"type": "replace_exact", "intent": "Update value", "target": {"path": "service.py"}, "old": "return 1", "new": replacement}],
+        })}
+        yield {"type": "done", "ok": True, "tool_events": []}
+
+    monkeypatch.setattr(BeastApiClient, "stream_live_turn", fake_stream_live_turn)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post("/edgek/ide/agent-sessions/create", json={"root_path": str(tmp_path), "objective": "Update safely", "mode": "implementer", "provider": "nvidia_nim", "files": ["service.py"]})
+        session_id = created.json()["session"]["session_id"]
+        streamed = await client.get(f"/edgek/ide/agent-sessions/{session_id}/run-events", params={"root_path": str(tmp_path), "prompt": "Change the value.", "max_repair_rounds": 3})
+
+    assert streamed.status_code == 200
+    assert streamed.text.count("event: agent_run_validation") == 3
+    assert '"repair_round": 2' in streamed.text
+    assert "event: agent_run_sourceplan" in streamed.text
+    assert len(calls) == 3
+
+
+@pytest.mark.asyncio
 async def test_ide_agent_session_runs_isolated_py_compile_before_sourceplan(monkeypatch, tmp_path):
     target = tmp_path / "service.py"
     target.write_text("def value():\n    return 1\n", encoding="utf-8")
@@ -847,6 +1080,15 @@ async def test_ide_agent_session_runs_isolated_py_compile_before_sourceplan(monk
             },
         )
         session_id = created.json()["session"]["session_id"]
+        approved = await client.post(
+            "/edgek/ide/agent-sessions/capabilities/grant",
+            json={
+                "root_path": str(tmp_path),
+                "session_id": session_id,
+                "request_id": "approved-py-compile",
+                "capabilities": ["run_isolated_verifier"],
+            },
+        )
         streamed = await client.get(
             f"/edgek/ide/agent-sessions/{session_id}/run-events",
             params={
@@ -863,6 +1105,7 @@ async def test_ide_agent_session_runs_isolated_py_compile_before_sourceplan(monk
     validation = final_output["sourceplan_validation"]
     verifier_checks = [item for item in validation["checks"] if item.get("kind") == "isolated-verifier"]
     assert streamed.status_code == 200
+    assert approved.status_code == 200
     assert "event: agent_run_validation" in streamed.text
     assert "isolated_verifiers" in streamed.text
     assert validation["status"] == "passed"
@@ -910,6 +1153,15 @@ async def test_ide_agent_session_skips_unsafe_model_verifier(monkeypatch, tmp_pa
             },
         )
         session_id = created.json()["session"]["session_id"]
+        approved = await client.post(
+            "/edgek/ide/agent-sessions/capabilities/grant",
+            json={
+                "root_path": str(tmp_path),
+                "session_id": session_id,
+                "request_id": "approved-safe-verifier-check",
+                "capabilities": ["run_isolated_verifier"],
+            },
+        )
         await client.get(
             f"/edgek/ide/agent-sessions/{session_id}/run-events",
             params={
@@ -925,6 +1177,7 @@ async def test_ide_agent_session_skips_unsafe_model_verifier(monkeypatch, tmp_pa
     validation = next(item for item in reversed(detail.json()["session"]["outputs"]) if item.get("kind") == "streamed_agent_output")["sourceplan_validation"]
     verifier_checks = [item for item in validation["checks"] if item.get("kind") == "isolated-verifier"]
     assert validation["status"] == "passed"
+    assert approved.status_code == 200
     assert any(item.get("command") == "rm -rf ." and item.get("status") == "skipped" for item in verifier_checks)
     assert target.exists()
     assert target.read_text(encoding="utf-8") == "def value():\n    return 1\n"

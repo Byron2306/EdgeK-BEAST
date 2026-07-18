@@ -28,6 +28,35 @@
     catch (error) { return {ok:false, error:String(error.message || error)}; }
   }
 
+  async function openGatewayEventStream(url) {
+    const desktop = BeastRuntime?.desktop || window.beastDesktop;
+    if (!desktop?.gatewayStreamStart || !desktop?.onGatewayStreamMessage) return new EventSource(url);
+    const target = new URL(url);
+    const started = await desktop.gatewayStreamStart({
+      path: `${target.pathname}${target.search}`,
+      headers: BeastRuntime?.diagnostics?.().workspaceIdentityDigest ? { 'X-BEAST-Workspace-Identity': BeastRuntime.diagnostics().workspaceIdentityDigest } : {}
+    });
+    if (!started?.ok || !started.id) throw new Error(started?.error || 'Unable to open the terminal chat stream.');
+    const listeners = new Map();
+    const dispatch = (name, event) => (listeners.get(name) || []).forEach(handler => handler(event));
+    const source = {
+      id: started.id,
+      closed: false,
+      onopen: null,
+      onerror: null,
+      addEventListener(name, handler) { if (!listeners.has(name)) listeners.set(name, []); listeners.get(name).push(handler); },
+      close() { if (source.closed) return; source.closed = true; dispose(); desktop.gatewayStreamStop(source.id).catch(() => {}); }
+    };
+    const dispose = desktop.onGatewayStreamMessage(message => {
+      if (!message || message.id !== source.id || source.closed) return;
+      if (message.type === 'open') { source.onopen?.({}); return; }
+      if (message.type === 'event') { dispatch(message.event || 'message', { data: String(message.data || '') }); return; }
+      if (message.type === 'end') { dispatch('end', { message: message.reason || '' }); return; }
+      if (message.type === 'error') source.onerror?.({ message: message.error || 'Terminal chat stream disconnected.' });
+    });
+    return source;
+  }
+
   function loadTerminalState() {
     let history = [];
     let executions = [];
@@ -345,8 +374,9 @@
         context_max_chars_each: String(Number(options.contextMaxCharsEach || 30000))
       });
       if (files.length) params.set('context_files', files[0]);
-      const eventSource = new EventSource(`${gatewayUrl()}/edgek/ide/agent-sessions/${encodeURIComponent(String(sessionId))}/run-events?${params.toString()}`);
+      const eventSource = await openGatewayEventStream(`${gatewayUrl()}/edgek/ide/agent-sessions/${encodeURIComponent(String(sessionId))}/run-events?${params.toString()}`);
       chatStream = eventSource;
+      let terminalEventSeen = false;
       // IDE SSE envelopes carry the event body under `payload`. Accept the
       // direct shape too so older gateway builds remain compatible.
       const eventPayload = event => {
@@ -398,6 +428,7 @@
       });
       eventSource.addEventListener('agent_run_done', event => {
         if (chatStream !== eventSource) return;
+        terminalEventSeen = true;
         eventSource.close(); chatStream = null;
         try { appendChatTrace('complete', eventPayload(event).sourceplan_status || 'complete'); } catch (_) {}
         BeastStore.patch('terminal', { chatStatus: 'complete', chatStreaming: false, chatError: '' });
@@ -406,17 +437,27 @@
       });
       eventSource.addEventListener('agent_run_error', event => {
         if (chatStream !== eventSource) return;
+        terminalEventSeen = true;
         eventSource.close(); chatStream = null;
         let error = 'Chat stream failed or closed.';
         try { const payload = eventPayload(event); error = payload.error || error; } catch (_) {}
         failChat(clean, model, provider, error);
       });
       eventSource.addEventListener('error', () => {
-        // EventSource also reports an error as a finite SSE response closes.
-        // Only call this a failure while this is still the active live stream.
+        // Transport errors are distinct from a normal finite SSE close in the
+        // Electron bridge. Only fail while this is still the active stream.
+        if (terminalEventSeen) return;
         if (chatStream !== eventSource || !BeastStore.get().terminal.chatStreaming) return;
         eventSource.close(); chatStream = null;
         failChat(clean, model, provider, 'Chat stream disconnected');
+      });
+      eventSource.addEventListener('end', () => {
+        // agent_run_done closes the source itself. An end while it remains
+        // active is an incomplete gateway run, not a model readiness error.
+        if (terminalEventSeen) return;
+        if (chatStream !== eventSource || !BeastStore.get().terminal.chatStreaming) return;
+        eventSource.close(); chatStream = null;
+        failChat(clean, model, provider, 'The gateway ended the chat stream before it returned a terminal result.');
       });
       return { ok: true, session_id: String(sessionId) };
     } catch (error) {

@@ -163,12 +163,14 @@ def test_compress_reduces_effective_size():
         head_dim=64,
         seq_len=128,
         size_bytes=1024,
+        tensor_payload=b"A" * 4096,
     )
     
     assert transport.compress(block.block_id, target_ratio=0.5) is True
     updated = transport.blocks[block.block_id]
     assert updated.compressed is True
-    assert updated.compression_ratio == 0.5
+    assert 0 < updated.compression_ratio < 1
+    assert transport.export_tensor_payload(block.block_id) == b"A" * 4096
 
 
 def test_cleanup_evicts_unpinned_blocks():
@@ -280,6 +282,20 @@ def test_engine_native_tensor_payload_round_trips_through_storage(tmp_path):
     assert transport.export_tensor_payload(block.block_id) == tensor
 
 
+def test_metadata_only_block_cannot_be_persisted_or_transferred(tmp_path):
+    transport = CrossEngineKVCacheTransport(storage_dir=tmp_path)
+    block = transport.register_block(
+        model="llama", tokenizer="tok", prompt_prefix="prefix", system_prompt="system",
+        engine=CacheEngine.OLLAMA, location=CacheLocation.CPU, precision="fp16",
+        num_layers=2, num_heads=2, head_dim=8, seq_len=16, size_bytes=128,
+    )
+
+    assert transport.has_reusable_payload(block.block_id) is False
+    assert transport.move(block.block_id, CacheLocation.STORAGE) is False
+    assert transport.move(block.block_id, CacheLocation.NETWORK) is False
+    assert transport.blocks[block.block_id].location == CacheLocation.CPU
+
+
 def test_import_tensor_payload_updates_existing_block_and_network_manifest(tmp_path):
     transport = CrossEngineKVCacheTransport(storage_dir=tmp_path)
     block = transport.register_block(
@@ -295,14 +311,53 @@ def test_import_tensor_payload_updates_existing_block_and_network_manifest(tmp_p
         head_dim=8,
         seq_len=16,
         size_bytes=10,
+        metadata={"target_endpoint": "memory://kv-test"},
     )
 
     assert transport.import_tensor_payload(block.block_id, b"payload", tensor_format="safetensors") is True
     assert transport.blocks[block.block_id].size_bytes == len(b"payload")
+    transport.register_network_sender(
+        "memory://kv-test",
+        lambda manifest, payload: {
+            "accepted": True,
+            "tensor_payload_sha256": "sha256:" + __import__("hashlib").sha256(payload).hexdigest(),
+            "transfer_id": manifest["transfer_id"],
+        },
+    )
     assert transport.move(block.block_id, CacheLocation.NETWORK) is True
     manifest = (tmp_path / f"{block.block_id}.json").read_text()
     assert "tensor_payload_sha256" in manifest
     assert "transfer_" in manifest
+
+
+def test_network_transfer_is_received_verified_and_persisted(tmp_path):
+    source = CrossEngineKVCacheTransport(storage_dir=tmp_path / "source")
+    target = CrossEngineKVCacheTransport(storage_dir=tmp_path / "target")
+    block = source.register_block(
+        model="llama",
+        tokenizer="tok",
+        prompt_prefix="prefix",
+        system_prompt="system",
+        engine=CacheEngine.SGLANG,
+        location=CacheLocation.CPU,
+        precision="bf16",
+        num_layers=2,
+        num_heads=2,
+        head_dim=8,
+        seq_len=16,
+        size_bytes=0,
+        metadata={"target_endpoint": "memory://target", "source_node": "source-a"},
+        tensor_payload=b"engine-native-kv",
+        tensor_format="safetensors",
+    )
+    source.register_network_sender("memory://target", target.receive_network_transfer)
+
+    assert source.move(block.block_id, CacheLocation.NETWORK) is True
+    received = target.blocks[block.block_id]
+    assert received.location == CacheLocation.STORAGE
+    assert received.metadata["received_from_network"] is True
+    assert target.export_tensor_payload(block.block_id) == b"engine-native-kv"
+    assert target.get_stats()["network_sender_count"] == 0
 
 
 def test_local_kv_engine_adapter_prepares_live_transport_payload(tmp_path):
@@ -322,5 +377,6 @@ def test_local_kv_engine_adapter_prepares_live_transport_payload(tmp_path):
     assert payload["looked_up"] is True
     assert payload["payload_round_tripped"] is True
     assert payload["storage_persisted"] is True
-    assert payload["network_manifest_ready"] is True
+    # No sender is registered by default: a manifest is not a transfer.
+    assert payload["network_manifest_ready"] is False
     assert transport.get_stats()["operations_logged"] >= 4

@@ -77,19 +77,43 @@ check('SSH and container protocol transports are real stdio relays', [
 
 check('Dev Containers are first-class workbench actions', [
   'attachDevContainer',
+  'restartDevContainer',
   'rebuildDevContainer',
   'devContainerLogs',
   'runDevContainerTerminal',
+  'devContainerPorts',
+  'beast:dev-container-open-port',
   'data-runtime-action="container-start"',
   'data-runtime-action="container-rebuild"',
+  'data-runtime-action="container-restart"',
   'data-runtime-action="container-terminal-run"',
+  'data-runtime-container-port',
 ].every(value => main.includes(value) || preload.includes(value) || runtime.includes(value) || compatibilityPage.includes(value)));
+
+check('Dev Container Compose configurations are managed through the target layer', [
+  'dockerComposeFile',
+  'composeFiles',
+  'function composeArgs',
+  "composeArgs(state,'up'",
+  "composeArgs(state,'stop'",
+  "composeArgs(state,'logs'",
+].every(value => main.includes(value)));
 
 check('extensions activate through the selected execution target', [
   'launch(root,target',
+  'workspaceRoot(root,target',
+  "target.kind==='ssh'",
+  "target.kind==='container'",
   'remote-declarative-manifests',
   'this.session.target',
   'payload?.target || activeExecutionTarget',
+  'deployWorkspaceExtensions',
+  'runtimePreflight',
+  'SSH extension runtime requires Node.js',
+  'Container extension runtime requires Node.js',
+  'grantForTarget',
+  "'.beast','extensions'",
+  'beast:extension-host-deploy',
 ].every(value => main.includes(value)) && ['beast-code-health', 'beast-crystal-lab', 'beast-remote-toolkit'].every(name => fs.existsSync(path.join(root, 'extensions', name))));
 
 check('AI streaming keeps explicit context visible and bounded', [
@@ -98,6 +122,13 @@ check('AI streaming keeps explicit context visible and bounded', [
   'not locked by backend',
   'Context mismatch or read failure',
   "mode === 'ask' ? 6000 : 16000",
+].every(value => aiCoding.includes(value)));
+
+check('Pair Programmer has a focused local-Qwen recovery profile', [
+  'options.focused',
+  'focused one-file recovery profile',
+  'Recovery mode: make one exact, reviewable edit',
+  'maxTokens:options.maxTokens||(focused?768:undefined)',
 ].every(value => aiCoding.includes(value)));
 
 const localRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'beast-target-local-'));
@@ -123,6 +154,33 @@ if (containerImage) {
   record('container target live handshake', 'skipped', 'Set BEAST_PARITY_CONTAINER_IMAGE to run a Docker acceptance container without implicit image pulls.');
 } else {
   record('container target live handshake', 'skipped', 'Docker CLI is not installed or not on PATH.');
+}
+
+if (containerImage && has('docker')) {
+  const composeRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'beast-compose-target-'));
+  const composeFile = path.join(composeRoot, 'docker-compose.yml');
+  const project = `beast-parity-${process.pid}-${Date.now()}`.replace(/[^a-z0-9_-]/gi, '').toLowerCase();
+  fs.writeFileSync(composeFile, `services:\n  workspace:\n    image: ${JSON.stringify(containerImage)}\n    working_dir: /workspace\n    ports:\n      - \"127.0.0.1::8080\"\n    command: [\"sh\", \"-lc\", \"printf BEAST_COMPOSE_PARITY; exec sleep infinity\"]\n`, 'utf8');
+  const compose = args => run('docker', ['compose', '-p', project, '-f', composeFile, ...args], { cwd: composeRoot, timeout: 120000 });
+  let up;
+  let services;
+  let execute;
+  let logs;
+  let port;
+  try {
+    up = compose(['up', '-d']);
+    services = up.ok ? compose(['ps', '--status', 'running', '--services']) : { ok:false, stderr:'Compose did not start.' };
+    execute = services.ok ? compose(['exec', '-T', 'workspace', 'sh', '-lc', 'printf BEAST_COMPOSE_EXEC']) : { ok:false, stderr:'Compose service is not running.' };
+    logs = services.ok ? compose(['logs', '--tail', '20', 'workspace']) : { ok:false, stderr:'Compose service is not running.' };
+    port = services.ok ? compose(['port', 'workspace', '8080']) : { ok:false, stderr:'Compose service is not running.' };
+    const composeOk=Boolean(up?.ok) && services.stdout.split(/\r?\n/).includes('workspace') && `${execute.stdout}${execute.stderr}`.includes('BEAST_COMPOSE_EXEC') && logs.ok && port.ok && /127\.0\.0\.1:\d+/.test(`${port.stdout}${port.stderr}`);
+    check('Dev Container Compose lifecycle live acceptance', composeOk, composeOk?'':JSON.stringify({up,services,execute,logs,port}));
+  } finally {
+    compose(['down', '--volumes', '--remove-orphans']);
+    fs.rmSync(composeRoot, { recursive:true, force:true });
+  }
+} else {
+  record('Dev Container Compose lifecycle live acceptance', 'skipped', 'Set BEAST_PARITY_CONTAINER_IMAGE to run Compose without implicit image pulls.');
 }
 
 const failed = rows.filter(row => row.status === 'failed');

@@ -107,8 +107,10 @@ class AgentSessionStore:
     def conversation_history(self, session_id: str, *, limit: int = 12) -> List[Dict[str, str]]:
         """Project persisted session outputs into provider chat history.
 
-        Session evidence and tool records stay out of the model transcript. Only
-        explicit operator prompts and completed assistant turns are replayed.
+        Session evidence stays out of the model transcript. Explicit apply and
+        verifier receipts are replayed as BEAST tool results so a follow-up
+        coding turn reasons from the governed outcome rather than assuming its
+        proposed patch was applied successfully.
         """
         record = self._find(session_id)
         if not record:
@@ -126,6 +128,8 @@ class AgentSessionStore:
                 messages.append({"role": "user", "content": text})
             elif kind in {"streamed_agent_output", "streamed_chat_output"}:
                 messages.append({"role": "assistant", "content": text})
+            elif kind in {"agent_sourceplan_apply", "agent_verifier_result"}:
+                messages.append({"role": "user", "content": f"[BEAST tool result] {text}"})
         return messages[-max(1, min(int(limit), 40)):]
 
     def update(

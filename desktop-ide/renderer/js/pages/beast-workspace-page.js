@@ -21,10 +21,105 @@
     while((match=fence.exec(text))){if(match.index>cursor)out.push(aiPlainBlocks(text.slice(cursor,match.index)));const language=String(match[1]||'code').trim().replace(/[^A-Za-z0-9_+.-]/g,'').slice(0,24)||'code';out.push(`<pre class="cortex-ai-code"><span>${escapeHtml(language)}</span><code>${escapeHtml(match[2].replace(/\n$/,''))}</code></pre>`);cursor=fence.lastIndex;}
     if(cursor<text.length)out.push(aiPlainBlocks(text.slice(cursor)));return out.join('');
   }
+  function aiVisibleMessageContent(message) {
+    const liveNarration=message?.role==='assistant'&&message?.mode!=='ask'&&message?.streaming&&!message?.proposal&&!message?.error&&Array.isArray(message?.narration)&&message.narration.length;
+    if(liveNarration)return '';
+    return message?.content || (message?.streaming ? 'Waiting for the first streamed token…' : '');
+  }
   function aiClock(value) { try{return new Date(Number(value)||Date.now()).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(_){return '';} }
   function aiProgress(message) {
     const rows=Array.isArray(message?.progress)?message.progress:[];if(!rows.length)return '';
     return `<ol class="cortex-ai-progress" aria-label="Agent run progress">${rows.map(item=>`<li class="${escapeHtml(item.state||'active')}"><i aria-hidden="true">${item.state==='done'||item.state==='ready'?'✓':item.state==='failed'?'!':'•'}</i><span><b>${escapeHtml(item.label||'Working')}</b>${item.detail?`<small>${escapeHtml(item.detail)}</small>`:''}</span></li>`).join('')}</ol>`;
+  }
+  function aiAgentCockpit(message) {
+    if(message?.role!=='assistant'||message?.mode==='ask')return '';
+    const turns=Array.isArray(message?.turns)?message.turns:[];const draft=message?.draftPreview||{};const proposal=message?.proposal||{};const profile=message?.agentProfile||{};
+    if(!turns.length&&!draft.chars&&!proposal.operations?.length)return '';
+    const text=turns.map(item=>`${item.kind||''} ${item.text||''}`.toLowerCase());
+    const count=pattern=>text.filter(value=>pattern.test(value)).length;
+    const last=[...turns].reverse().find(item=>String(item.text||'').trim());
+    const validation=turns.findLast?.(item=>item.kind==='validation')||turns.slice().reverse().find(item=>item.kind==='validation');
+    const sourceplan=turns.findLast?.(item=>item.kind==='sourceplan')||turns.slice().reverse().find(item=>item.kind==='sourceplan');
+    const cards=[
+      ['Intent',profile.kind||message.mode||'agent',profile.mutating===false?'ready':'active'],
+      ['Context',count(/context|read|provider input|content loaded/),turns.some(item=>item.kind==='context'&&item.state==='failed')?'attention':'ready'],
+      ['Tools',count(/tool|search|semantic|cortex|crystal|handoff|envelope|insight/),'active'],
+      ['Skills',count(/skill|recipe/),count(/skill|recipe/)?'ready':'idle'],
+      ['Verify',validation?validation.text:'waiting',validation?.state||'idle'],
+      ['SourcePlan',sourceplan?sourceplan.text:(proposal.operations?.length?`${proposal.operations.length} ready`:'pending'),sourceplan?.state||(proposal.ready?'ready':'idle')],
+    ];
+    const draftLine=draft.chars?`${Number(draft.chars).toLocaleString()} streamed chars · ${Number(draft.actions||0)} structured edit${Number(draft.actions||0)===1?'':'s'}`:(proposal.operations?.length?'SourcePlan draft ready':'Reading workspace context');
+    return `<section class="cortex-ai-cockpit" aria-label="Agent cockpit"><header><span><b>Agent cockpit</b><small>${escapeHtml(draftLine)}</small></span><em>${escapeHtml(last?.text||message.activity||'Working')}</em></header><div>${cards.map(([label,value,state])=>`<p class="${escapeHtml(state||'idle')}"><b>${escapeHtml(label)}</b><span>${escapeHtml(value)}</span></p>`).join('')}</div></section>`;
+  }
+  function aiNarrationSentence(item) {
+    const text=String(item?.text||'').replace(/\s+/g,' ').trim();const command=String(item?.command||'').trim();const type=String(item?.type||item?.kind||'');const tool=String(item?.tool||'').trim();const lower=`${tool} ${text}`.toLowerCase();
+    if(!text&&!command)return '';
+    if(type==='context_read')return item.state==='failed'?`I could not read the requested context: ${text}`:`I read the selected workspace context and locked it to this run.`;
+    if(type==='tool_call'){
+      if(lower.includes('code cortex'))return 'I’m inspecting the selected code and nearby dependencies now.';
+      if(lower.includes('workspace search'))return 'I’m searching the workspace for the symbols and references that matter.';
+      if(lower.includes('related file'))return 'I’m reading the approved related files so the next step is grounded.';
+      if(lower.includes('verified skill'))return 'I’m checking the verified BEAST recipes that apply to this task.';
+      if(lower.includes('semantic raid'))return 'I’m saving the exact context packet as local evidence for this run.';
+      if(lower.includes('provider handoff'))return 'I’m handing the scoped context to the selected model now.';
+      return text?`I’m using ${tool||'a governed BEAST tool'}: ${text}`:`I’m using ${tool||'a governed BEAST tool'} now.`;
+    }
+    if(type==='tool_result'){
+      if(lower.includes('code cortex'))return 'I mapped the selected code, symbols, and direct dependents.';
+      if(lower.includes('workspace search'))return 'I found the relevant workspace symbols and editing context.';
+      if(lower.includes('related file'))return 'I added the approved related files to this turn.';
+      if(lower.includes('verified skill'))return text.includes('no matching')?'I checked the skill library; no matching verified recipe was available.':'I selected the matching verified BEAST recipe guidance.';
+      if(lower.includes('semantic raid'))return lower.includes('deferred')?'I could not mirror the context packet, so I’m continuing without that evidence cache.':'I saved the exact context packet as local evidence.';
+      if(lower.includes('provider handoff'))return 'My governed input is ready and bounded to the selected files.';
+      if(lower.includes('insight compile'))return 'I checked prior repo evidence for anything useful to this turn.';
+      if(lower.includes('handoff precheck'))return 'I verified my handoff is ready.';
+      if(lower.includes('crystal record'))return 'I recorded the useful parts of this run for future reuse.';
+      if(lower.includes('crystal reuse'))return 'I checked whether a prior successful run could be safely reused here.';
+      if(lower.includes('task envelope'))return 'I wrapped the request in a bounded task envelope.';
+      if(lower.includes('context files'))return 'I loaded the selected context files for this run.';
+      return text||`I finished using ${tool||'a governed BEAST tool'}.`;
+    }
+    if(type==='agent_reasoning'){
+      if(lower.includes('provider stream'))return 'I’m streaming my response now.';
+      if(lower.includes('action ir recovery'))return 'I’m trying to recover a reviewable edit plan from my draft.';
+      if(lower.includes('implementation planning'))return 'I’m planning the implementation against the selected files.';
+      if(lower.includes('repository observation'))return 'I’m inspecting the repository context first.';
+      if(lower.includes('operating mode:'))return text;
+      return `I’m working through ${text.charAt(0).toLowerCase()}${text.slice(1)}.`;
+    }
+    if(type==='permission_request')return item.state==='failed'?`I paused because the extra capability request was declined.`:`You approved the extra governed capability, so I’m continuing with that boundary.`;
+    if(type==='model_output')return `I finished drafting; now I’m checking what kind of result I can safely return.`;
+    if(type==='verification')return `I checked the proposed changes: ${text}`;
+    if(type==='command_request')return `I’m ready to run an isolated check if you approve it: ${command||text}`;
+    if(type==='command_call')return `I’m running an isolated check now: ${command||text}`;
+    if(type==='command_result')return `The isolated check ${item.state==='failed'?'failed':'finished'}: ${command||text}`;
+    if(type==='context_search')return `I’m searching for the extra context the agent asked for: ${text}`;
+    if(type==='context_result')return item.state==='failed'?`I could not find matching context: ${text}`:`I found context candidates for review: ${text}`;
+    if(type==='context_attach')return `I added this file to the next run’s context: ${text}`;
+    if(type==='context_continue')return 'I’m continuing the same task with the expanded context.';
+    if(type==='recovery_request')return text||'I need to repair the edit packet before it can become a SourcePlan.';
+    if(type==='sourceplan')return `I prepared a governed SourcePlan for review.`;
+    if(type==='agent_turn')return `I started the coding run with the selected workspace scope.`;
+    return text;
+  }
+  function aiNarration(message) {
+    if(message?.role!=='assistant'||message?.mode==='ask')return '';
+    const explicit=Array.isArray(message?.narration)?message.narration.filter(Boolean):[];
+    const rows=(Array.isArray(message?.turns)?message.turns:[]).map(aiNarrationSentence).filter(Boolean);
+    const combined=[...explicit,...rows];
+    if(!combined.length)return '';
+    const unique=[];for(const row of combined){if(unique.at(-1)!==row)unique.push(row);}
+    return `<section class="cortex-ai-narration" aria-label="Agent updates">${unique.slice(-5).map(row=>`<p>${escapeHtml(row)}</p>`).join('')}</section>`;
+  }
+  function aiTurns(message) {
+    const rows=Array.isArray(message?.turns)?message.turns:[];if(!rows.length)return '';
+    return `<details class="cortex-ai-turns" aria-label="Debug agent transcript"><summary><b>Debug transcript</b><small>${rows.length} typed event${rows.length===1?'':'s'}</small></summary><div>${rows.slice(-18).map(item=>`<p class="${escapeHtml(`${item.state||'active'} ${item.type||''}`)}"><i>${escapeHtml(item.type||item.kind||'event')}</i><span>${item.command?`<code>${escapeHtml(item.command)}</code>`:escapeHtml(item.text||'')}${item.authority?`<small>${escapeHtml(item.authority)}</small>`:''}</span></p>`).join('')}</div></details>`;
+  }
+  function aiActiveAgentRequests(message) {
+    if(message?.role!=='assistant'||message?.mode==='ask'||message?.proposal?.operations?.length)return '';
+    const rows=(Array.isArray(message?.turns)?message.turns:[]).filter(item=>['command_request','context_request'].includes(String(item.type||''))&&String(item.state||'active')!=='done').slice(-4);
+    if(!rows.length)return '';
+    return `<section class="cortex-ai-agent-requests"><header><b>Agent requests</b><small>non-mutating · approval gated</small></header>${rows.map(item=>{const type=String(item.type||'request');const command=String(item.command||'');const label=type==='command_request'?'Open governed terminal':'Find related context';const action=type==='command_request'?'agent-open-terminal':'agent-suggest-context';return `<p><i>${escapeHtml(type)}</i><span>${escapeHtml(command||item.text||'Agent request')}</span></p><button type="button" data-ai-action="${escapeHtml(action)}" ${command?`data-agent-command="${escapeHtml(command)}"`:''}><span>${escapeHtml(label)}</span><small>${escapeHtml(item.authority||'review before continuing')}</small></button>`;}).join('')}</section>`;
   }
   function aiDraftPreview(message) {
     const draft=message?.draftPreview;if(!draft?.chars||message?.proposal?.ready)return '';
@@ -40,13 +135,30 @@
     const oldText=String(operation.old||'').slice(0,900);const newText=String(operation.new||'').slice(0,900);
     return `<details class="cortex-ai-edit-preview"><summary>Preview edit</summary><div>${oldText?`<pre class="removed"><span>BEFORE</span>${escapeHtml(oldText)}</pre>`:''}${newText?`<pre class="added"><span>AFTER</span>${escapeHtml(newText)}</pre>`:''}</div></details>`;
   }
+  function aiIntelligenceCard(proposal) {
+    const data=proposal?.intelligence;if(!data||typeof data!=='object'||!Object.keys(data).length)return '';
+    const pathfinder=data.pathfinder||{};const quality=data.quality_cascade||{};const conductor=data.conductor||{};const dispatch=data.conductor_dispatch||{};const insight=data.insight_packet||{};const canon=data.canon||{};const handoff=data.provider_handoff||{};const recipes=Array.isArray(data.skill_recipes)?data.skill_recipes:[];const laziness=data.tool_laziness||{};
+    const skipped=Array.isArray(laziness.tools_not_to_call)?laziness.tools_not_to_call:[];
+    return `<section class="cortex-ai-intelligence"><header><span><b>Governed intelligence evidence</b><small>Advisory evidence; it cannot expand scope or apply edits.</small></span><span class="${canon.valid?'passed':'review'}">${canon.valid?'Canon valid':'Canon review'}</span></header><div class="cortex-ai-intelligence-grid"><p><b>Pathfinder</b><small>${escapeHtml(pathfinder.name||pathfinder.route_id||'route unavailable')}</small></p><p><b>Insight Compiler</b><small>${Number((insight.evidence||[]).length)} ranked local evidence item(s)</small></p><p><b>Quality Cascade</b><small>${escapeHtml(quality.status||'not run')}</small></p><p><b>Conductor</b><small>${escapeHtml(conductor.decision||conductor.execution_mode||'advisory')}</small></p><p><b>Dispatch</b><small>${escapeHtml(dispatch.stopped||'not dispatched')}${dispatch.artifact?.path?' · persisted':''}</small></p><p><b>Handoff</b><small>${escapeHtml(handoff.context_packet_id||'packet unavailable')}</small></p></div>${recipes.length?`<details><summary>Verified Skill Tree recipes (${recipes.length})</summary>${recipes.map(item=>`<p><b>${escapeHtml(item.name||item.skill_id)}</b><small>${escapeHtml(item.category||'skill')} · ${Math.round(Number(item.success_rate||0)*100)}% success · advisory only${item.description?` — ${escapeHtml(item.description)}`:''}</small></p>`).join('')}</details>`:''}${skipped.length?`<small class="cortex-ai-intelligence-note">Tool Laziness skipped: ${escapeHtml(skipped.map(item=>item.name||item).join(', '))}</small>`:''}</section>`;
+  }
   function aiProposalCard(message) {
     const proposal=message?.proposal;if(!proposal?.operations?.length)return '';
     const files=Array.isArray(proposal.files)?proposal.files:[];const operations=proposal.operations.slice(0,6);
     const validation=proposal.validation||{};const validationStatus=String(validation.status||'');const validationLabel=validationStatus==='passed'?'Checks passed':validationStatus==='partial'?'Safety checks passed':validationStatus==='failed'?'Checks failed':'Not checked';
     const isolated=validation.isolated_verifiers||{};const verifierCommands=Array.isArray(isolated.commands)?isolated.commands.slice(0,3):[];
     const verifierSummary=isolated.status?`<section class="cortex-ai-verifiers"><header><b>Isolated verification</b><span class="${escapeHtml(isolated.status)}">${escapeHtml(isolated.status)}</span></header><div>${verifierCommands.map(item=>`<p><code>${escapeHtml(item.command||'verifier')}</code><small>${escapeHtml(item.status||'')}</small></p>`).join('')||'<p><code>No verifier command</code><small>skipped</small></p>'}</div></section>`:'';
-    return `<section class="cortex-ai-proposal ${proposal.ready?'ready':'blocked'}"><header><span><b>${proposal.ready?'Changes ready':'Draft not compiled'}</b><small>${proposal.operations.length} edit${proposal.operations.length===1?'':'s'} · ${files.length} file${files.length===1?'':'s'}</small></span><span class="cortex-ai-validation ${escapeHtml(validationStatus||'pending')}"><i>${validationStatus==='failed'?'!':validationStatus?'✓':'○'}</i>${escapeHtml(validationLabel)}${validation.check_count?` · ${Number(validation.check_count)}`:''}</span></header><div>${operations.map(item=>`<article><button type="button" data-ai-preview-path="${escapeHtml(item.path)}" title="Show highlighted hunks for ${escapeHtml(item.path)}"><img src="${iconFor(item.path,'file')}" alt=""><span><b>${escapeHtml(item.path)}</b><small>${escapeHtml(item.intent||item.op||'Proposed edit')}</small></span>${aiChangeStats(item)}</button>${aiOperationPreview(item)}</article>`).join('')}${proposal.operations.length>operations.length?`<p>+ ${proposal.operations.length-operations.length} more change${proposal.operations.length-operations.length===1?'':'s'}</p>`:''}</div>${verifierSummary}${proposal.planId?`<p class="cortex-ai-plan-id">Plan ${escapeHtml(proposal.planId)}</p>`:''}${proposal.ready?'<div class="cortex-ai-proposal-actions"><button type="button" data-ai-action="diff">Open highlighted diff</button><button type="button" data-ai-action="sourceplan">Open full review and apply safely <span aria-hidden="true">→</span></button></div>':'<p>The selected file stayed attached. Retry this edit or select a narrower code range.</p>'}</section>`;
+    const requests=Array.isArray(proposal.requests)?proposal.requests.slice(0,5):[];
+    const runnable=requests.some(item=>item.type==='run_verifier'||item.command);
+    const contextable=requests.some(item=>item.type==='ask_for_context'||item.query);
+    const addedContext=Array.isArray(BeastStore.get()?.aiCoding?.contextFiles)?BeastStore.get().aiCoding.contextFiles.length:0;
+    const continueContext=contextable&&addedContext?'<button type="button" data-ai-action="agent-continue-context"><span>Continue with added context</span><small>rerun same task</small></button>':'';
+    const requestSummary=requests.length?`<section class="cortex-ai-agent-requests"><header><b>Agent next actions</b><small>non-mutating · approval gated</small></header>${requests.map(item=>`<p><i>${escapeHtml(item.type||'request')}</i><span>${escapeHtml(item.command||item.query||item.intent||'Agent request')}</span></p>`).join('')}${contextable?'<button type="button" data-ai-action="agent-context"><span>Find requested context</span><small>review before adding</small></button>':''}${continueContext}${runnable?'<button type="button" data-ai-action="agent-verify"><span>Run requested checks</span><small>isolated verifier</small></button>':''}</section>`:'';
+    return `<section class="cortex-ai-proposal ${proposal.ready?'ready':'blocked'}"><header><span><b>${proposal.ready?'Changes ready':'Draft not compiled'}</b><small>${proposal.operations.length} edit${proposal.operations.length===1?'':'s'} · ${files.length} file${files.length===1?'':'s'}</small></span><span class="cortex-ai-validation ${escapeHtml(validationStatus||'pending')}"><i>${validationStatus==='failed'?'!':validationStatus?'✓':'○'}</i>${escapeHtml(validationLabel)}${validation.check_count?` · ${Number(validation.check_count)}`:''}</span></header><div>${operations.map(item=>`<article><button type="button" data-ai-preview-path="${escapeHtml(item.path)}" title="Show highlighted hunks for ${escapeHtml(item.path)}"><img src="${iconFor(item.path,'file')}" alt=""><span><b>${escapeHtml(item.path)}</b><small>${escapeHtml(item.intent||item.op||'Proposed edit')}</small></span>${aiChangeStats(item)}</button>${aiOperationPreview(item)}</article>`).join('')}${proposal.operations.length>operations.length?`<p>+ ${proposal.operations.length-operations.length} more change${proposal.operations.length-operations.length===1?'':'s'}</p>`:''}</div>${requestSummary}${verifierSummary}${aiIntelligenceCard(proposal)}${proposal.planId?`<p class="cortex-ai-plan-id">Plan ${escapeHtml(proposal.planId)}</p>`:''}${proposal.ready?'<div class="cortex-ai-proposal-actions"><button type="button" class="cortex-ai-review-diff" data-ai-action="diff"><span class="cortex-ai-action-icon" aria-hidden="true">⌘</span><span><b>Inspect diff</b><small>Review every changed hunk</small></span></button><button type="button" class="cortex-ai-review-apply" data-ai-action="sourceplan"><span class="cortex-ai-action-icon" aria-hidden="true">✓</span><span><b>Review & approve</b><small>SourcePlan · approval required</small></span><i aria-hidden="true">→</i></button></div>':'<p>The selected file stayed attached. Retry this edit or select a narrower code range.</p>'}</section>`;
+  }
+  function aiRecoveryCard(message) {
+    const recovery=message?.recovery;if(!recovery||typeof recovery!=='object')return '';
+    const actions=Array.isArray(recovery.actions)?recovery.actions:[];
+    return `<section class="cortex-ai-recovery" aria-label="Agent recovery"><header><span><b>${escapeHtml(recovery.title||'Recovery needed')}</b><small>${escapeHtml(recovery.message||'No files changed. Choose the next recovery step.')}</small></span><i>held</i></header><div>${actions.map(item=>`<button type="button" data-ai-action="${escapeHtml(item.id||'retry')}"><span>${escapeHtml(item.label||'Retry')}</span><small>${escapeHtml(item.detail||'continue safely')}</small></button>`).join('')||'<button type="button" data-ai-action="retry"><span>Retry</span><small>same request and context</small></button>'}</div></section>`;
   }
   function workspaceTextDialog(pageRoot, options = {}) {
     return new Promise(resolve => {
@@ -195,23 +307,23 @@
         </section>
         <aside class="beast-card cortex-ai-panel" data-ai-panel>
           <header class="cortex-ai-head">
-            <div class="cortex-ai-identity"><span class="cortex-ai-avatar"><img src="${BeastAssets.icon('agent-premium')}" alt=""></span><span><strong>Pair Programmer</strong><small>Ask, edit, or delegate with governed review</small><em data-ai-session>New chat</em></span></div>
-            <div class="cortex-ai-head-actions"><button type="button" data-ai-action="expand" data-ai-expand aria-pressed="false" title="Expand Pair Programmer"><span data-ai-expand-label>Focus</span></button><button type="button" data-ai-action="close" aria-label="Close Pair Programmer" title="Close Pair Programmer">×</button></div>
+            <div class="cortex-ai-identity"><span class="cortex-ai-avatar"><img src="${BeastAssets.icon('agent-premium')}" alt=""></span><span><strong>BEAST Agent</strong><small>Search, read, use skills, verify, and propose governed changes</small><em data-ai-session>New session</em></span></div>
+            <div class="cortex-ai-head-actions"><button type="button" data-ai-action="expand" data-ai-expand aria-pressed="false" title="Expand BEAST Agent"><span data-ai-expand-label>Focus</span></button><button type="button" data-ai-action="close" aria-label="Close BEAST Agent" title="Close BEAST Agent">×</button></div>
           </header>
-          <div class="cortex-ai-modes" role="group" aria-label="Pair Programmer mode">
+          <div class="cortex-ai-modes" role="group" aria-label="BEAST Agent mode">
             <button type="button" data-ai-mode="ask"><img src="${BeastAssets.icon('chat')}" alt=""><span><b>Ask</b><small>Explain</small></span></button>
             <button type="button" data-ai-mode="edit"><img src="${BeastAssets.icon('source')}" alt=""><span><b>Edit</b><small>Propose</small></span></button>
             <button type="button" data-ai-mode="agent"><img src="${BeastAssets.icon('orchestrator')}" alt=""><span><b>Agent</b><small>Implement</small></span></button>
           </div>
           <details class="cortex-ai-context">
             <summary><span><b>Context</b><small data-ai-context-count>Active file</small></span><span class="cortex-ai-compute" data-ai-compute><img src="${BeastAssets.icon('crystal')}" alt=""><strong data-ai-crystal>Reuse ready</strong><i data-ai-crystal-confidence>Ready</i></span></summary>
-            <div class="cortex-ai-context-body"><div class="cortex-ai-context-actions"><button type="button" data-ai-action="active-file">Add active file</button><button type="button" data-ai-action="selection">Add selection</button><button type="button" data-ai-action="context-file">Add file…</button></div><div class="cortex-ai-chips" data-ai-context></div><p data-ai-crystal-detail>Prior verified work is checked before inference.</p></div>
+            <div class="cortex-ai-context-body"><div class="cortex-ai-context-actions"><button type="button" data-ai-action="active-file">Add active file</button><button type="button" data-ai-action="selection">Add selection</button><button type="button" data-ai-action="context-file">Add file…</button><button type="button" data-ai-action="suggest-context">Suggest context</button></div><div class="cortex-ai-chips" data-ai-context></div><div class="cortex-ai-context-suggestions" data-ai-context-suggestions></div><p data-ai-crystal-detail>Prior verified work is checked before inference.</p><p class="cortex-ai-compute-summary" data-ai-compute-summary>Context economics will appear when a run starts.</p></div>
           </details>
-          <div class="cortex-ai-conversation"><div class="cortex-ai-messages" data-ai-messages aria-live="polite" aria-label="Pair Programmer conversation"></div><button type="button" class="cortex-ai-jump-latest hidden" data-ai-action="jump-latest" aria-label="Jump to latest Pair Programmer output">Jump to latest <span data-ai-unread-count></span>↓</button></div>
+          <div class="cortex-ai-conversation"><div class="cortex-ai-messages" data-ai-messages aria-live="polite" aria-label="BEAST Agent conversation"></div><button type="button" class="cortex-ai-jump-latest hidden" data-ai-action="jump-latest" aria-label="Jump to latest BEAST Agent output">Jump to latest <span data-ai-unread-count></span>↓</button></div>
           <details class="cortex-ai-trace"><summary>Run details <span data-ai-trace-count>0</span></summary><div data-ai-trace></div></details>
           <div class="cortex-ai-compose">
-            <div class="cortex-ai-route"><label><span>Model</span><select data-ai-model aria-label="Pair Programmer model"><option value="">Select a model…</option></select></label><p data-ai-mode-description>Give BEAST a goal and review the proposed changes.</p></div>
-            <div class="cortex-ai-prompt-shell"><textarea data-ai-prompt rows="4" aria-label="Message Pair Programmer" placeholder="Describe what you want to build or change…"></textarea><span><kbd>Enter</kbd> send · <kbd>Shift Enter</kbd> newline</span></div>
+            <div class="cortex-ai-route"><label><span>Model</span><select data-ai-model aria-label="BEAST Agent model"><option value="">Select a model…</option></select></label><p data-ai-mode-description>Give BEAST a goal and review the proposed changes.</p></div>
+            <div class="cortex-ai-prompt-shell"><textarea data-ai-prompt rows="4" aria-label="Message BEAST Agent" placeholder="Describe what you want to build or change…"></textarea><span><kbd>Enter</kbd> send · <kbd>Shift Enter</kbd> newline</span></div>
             <div class="cortex-ai-compose-actions"><span data-ai-status role="status" aria-live="polite">Ready</span><div><button type="button" class="beast-button secondary" data-ai-action="clear">New chat</button><button type="button" class="beast-button secondary hidden" data-ai-action="cancel">Stop</button><button type="button" class="beast-button secondary" data-ai-action="worktree-agent" title="Create an isolated Git worktree, then run the coding agent there">Isolate</button><button type="button" class="beast-button hot" data-ai-action="send"><span data-ai-send-label>Run agent</span> <span aria-hidden="true">↗</span></button></div></div>
           </div>
           <button type="button" class="beast-button hot cortex-ai-sourceplan hidden" data-ai-action="sourceplan"><img src="${BeastAssets.icon('trust-core')}" alt=""><span><b>Review proposed changes</b><small>Open the governed SourcePlan</small></span><i>→</i></button>
@@ -246,7 +358,7 @@
     let gitHunksState={status:'idle',path:'',mode:'worktree',hunks:[],error:''};let gitConflictState={status:'idle',path:'',baseText:'',currentText:'',incomingText:'',resultText:'',digest:'',regions:0,error:''};
     let gitDiffCleanup=null;let gitDiffKey='';let gitDiffMountToken=0;
     let aiPreviewPlanId='';
-    let aiFollowOutput=true;let aiUnreadOutput=0;
+    let aiFollowOutput=true;let aiUnreadOutput=0;let aiScrollFrame=0;let visualWorkload='';
     let searchState={status:'idle',query:'',replacement:'',results:[],preview:[],total:0,error:'',message:'Search the active workspace.'};
     const layout=root.querySelector('.cortex-layout');
     const layoutStorageKey='beast.workspace.layout.v1';const zoomStorageKey='beast.desktop.zoom-level.v1';
@@ -357,7 +469,9 @@
 
     function renderAi(state) {
       const ai = state.aiCoding;
-      const modeCopy={ask:{description:'Ask about the codebase. BEAST answers from your selected context.',placeholder:'Ask a question about this codebase…',send:'Ask BEAST'},edit:{description:'Describe a focused change. BEAST prepares a reviewable patch.',placeholder:'Describe the change you want to make…',send:'Propose edit'},agent:{description:'Give BEAST an outcome. It investigates and prepares governed changes.',placeholder:'Describe the outcome you want BEAST to implement…',send:'Run agent'}}[ai.mode]||{};
+      const nextWorkload=ai.streaming?'interactive':'idle';
+      if(nextWorkload!==visualWorkload){visualWorkload=nextWorkload;window.BeastVisualRuntime?.setWorkload?.(nextWorkload);}
+      const modeCopy={ask:{description:'Ask about the codebase. BEAST answers from your selected context.',placeholder:'Ask a question about this codebase…',send:'Ask BEAST'},edit:{description:'Describe a focused change. BEAST prepares a reviewable patch.',placeholder:'Describe the change you want to make…',send:'Propose edit'},agent:{description:'BEAST searches and reads the workspace, uses verified skills, asks before expanded capabilities, runs isolated checks, then prepares governed changes.',placeholder:'Describe the outcome you want BEAST to implement…',send:'Run agent'}}[ai.mode]||{};
       root.classList.toggle('ai-open', Boolean(ai.open));
       root.classList.toggle('ai-focus', Boolean(ai.open&&ai.expanded));
       root.querySelector('.cortex-layout').classList.toggle('ai-open', ai.open);
@@ -381,20 +495,41 @@
         if (ai.selection?.text) chips.push(`<button type="button" data-ai-action="remove-selection" title="Remove selection">Selection · ${escapeHtml(ai.selection.path)}<i>×</i></button>`);
         root.querySelector('[data-ai-context]').innerHTML = chips.join('') || '<span>No context pinned. The active file is attached automatically.</span>';
       }
+      const suggestionKey=JSON.stringify([ai.contextSuggestions,ai.contextSuggestionStatus]);
+      if(suggestionKey!==root.dataset.aiSuggestionKey){root.dataset.aiSuggestionKey=suggestionKey;const host=root.querySelector('[data-ai-context-suggestions]');const rows=Array.isArray(ai.contextSuggestions)?ai.contextSuggestions:[];const cards=rows.map(item=>`<button type="button" data-ai-accept-suggestion="${escapeHtml(item.path)}"><span><b>${escapeHtml(fileName(item.path))}</b><small>${escapeHtml(item.reason)}${item.line?` · line ${item.line}`:''}</small></span><i>Add</i></button>`).join('');host.innerHTML=ai.contextSuggestionStatus==='loading'?'<small>Finding metadata-first context suggestions…</small>':rows.length?`<small>Suggested context — review before adding</small>${cards}`:'<small>No unapproved suggestions.</small>';}
       const scopeCount = new Set([state.editor.activePath, ...ai.contextFiles].filter(Boolean)).size;
       const primaryContext=state.editor.activePath||ai.contextFiles[0]||'';root.querySelector('[data-ai-context-count]').textContent = scopeCount===1?`${fileName(primaryContext)} · active${ai.selection?.text?' + selection':''}`:`${scopeCount||'No'} files${ai.selection?.text?' + selection':''}`;
-      const messageKey = JSON.stringify([ai.messages,ai.mode,state.editor.activePath]);
+      // During a stream, only the assistant body changes for most tokens.
+      // Replacing the entire messages subtree on every chunk reset its scroll
+      // geometry and produced the long right-edge scrollbar / snap-back.
+      const host = root.querySelector('[data-ai-messages]');
+      const messageKey = JSON.stringify([ai.messages.map(message=>({id:message.id,role:message.role,streaming:message.streaming,error:message.error,mode:message.mode,files:message.files,proposal:message.proposal?.ready,recovery:message.recovery,progress:message.progress,turns:message.turns,draftPreview:message.draftPreview,activity:message.activity})),ai.mode,state.editor.activePath]);
       if (messageKey !== lastAiMessagesKey) {
         lastAiMessagesKey = messageKey;
-        const host = root.querySelector('[data-ai-messages]');
         const followOutput=aiFollowOutput||aiAtBottom(host);
         const previousTop=host.scrollTop;
-        host.innerHTML = ai.messages.map(message => `<article data-ai-message-id="${escapeHtml(message.id)}" class="cortex-ai-message ${escapeHtml(message.role)} ${message.error ? 'error' : ''} ${message.proposal?.ready?'has-proposal':''}"><header><span class="cortex-ai-message-author"><img src="${message.role === 'user' ? BeastAssets.icon('context') : BeastAssets.icon('agent-premium')}" alt=""><b>${message.role === 'user' ? 'You' : 'BEAST'}</b></span><span>${message.streaming?`<i>${escapeHtml(message.activity||'Working…')}</i>`:escapeHtml(aiClock(message.at))}<button type="button" data-ai-copy-id="${escapeHtml(message.id)}" aria-label="Copy this message" title="Copy message">Copy</button></span></header><div class="cortex-ai-message-body">${aiMessageBody(message.content || (message.streaming ? (message.mode==='ask'?'Waiting for the first response token…':'The model output stays private while BEAST turns it into safe, reviewable edits.') : ''))}</div>${aiProgress(message)}${aiDraftPreview(message)}${aiProposalCard(message)}${message.error&&message.role==='assistant'&&message.mode!=='ask'?'<button type="button" class="cortex-ai-retry" data-ai-action="retry">Retry with locked context</button>':''}${message.files?.length ? `<footer>${message.files.length} context file${message.files.length === 1 ? '' : 's'} used · ${escapeHtml(message.mode||'ask')}</footer>` : ''}</article>`).join('') || `<div class="cortex-ai-empty"><header><img src="${BeastAssets.icon('agent-premium')}" alt=""><span><strong>What do you want to build?</strong><small>${escapeHtml(modeCopy.description||'Work with BEAST across your repository.')}</small></span></header><p>The active file is included automatically. Add more context only when you need it.</p><div class="cortex-ai-suggestions"><button type="button" data-ai-suggestion-mode="ask" data-ai-suggestion="Explain the active file and identify its key dependencies."><b>Explain this file</b><small>Ask mode · stream an explanation</small></button><button type="button" data-ai-suggestion-mode="agent" data-ai-suggestion="Find the most likely bug in the active file and propose the smallest safe fix."><b>Find and fix a bug</b><small>Agent mode · inspect and propose a patch</small></button><button type="button" data-ai-suggestion-mode="agent" data-ai-suggestion="Add focused tests for the active file, covering its riskiest behavior."><b>Add focused tests</b><small>Agent mode · create reviewable edits</small></button><button type="button" data-ai-suggestion-mode="edit" data-ai-suggestion="Refactor the selected code for clarity without changing behavior."><b>Refactor safely</b><small>Edit mode · produce exact hunks</small></button></div></div>`;
-        const latest=ai.messages.at(-1);const latestNode=latest?host.querySelector(`[data-ai-message-id="${CSS.escape(latest.id)}"]`):null;
-        if(followOutput&&latest?.proposal&&latestNode)requestAnimationFrame(()=>{const hostRect=host.getBoundingClientRect();const targetRect=(latestNode.querySelector('.cortex-ai-proposal')||latestNode).getBoundingClientRect();host.scrollTop=Math.max(0,host.scrollTop+targetRect.top-hostRect.top-6);});
-        else if(followOutput)host.scrollTop=host.scrollHeight;
-        else {host.scrollTop=previousTop;if(ai.streaming)aiUnreadOutput+=1;}
+        // Rendering replaces the message subtree. Cancel any deferred scroll
+        // from its previous incarnation before replacing it; otherwise an old
+        // proposal callback can apply an obsolete bounding-rect delta after a
+        // newer streaming update and visibly snap the scrollbar backwards.
+        if(aiScrollFrame){cancelAnimationFrame(aiScrollFrame);aiScrollFrame=0;}
+        host.innerHTML = ai.messages.map(message => `<article data-ai-message-id="${escapeHtml(message.id)}" class="cortex-ai-message ${escapeHtml(message.role)} ${message.error ? 'error' : ''} ${message.proposal?.ready?'has-proposal':''}"><header><span class="cortex-ai-message-author"><img src="${message.role === 'user' ? BeastAssets.icon('context') : BeastAssets.icon('agent-premium')}" alt=""><b>${message.role === 'user' ? 'You' : 'BEAST'}</b></span><span>${message.streaming?`<i>${escapeHtml(message.activity||'Working…')}</i>`:escapeHtml(aiClock(message.at))}<button type="button" data-ai-copy-id="${escapeHtml(message.id)}" aria-label="Copy this message" title="Copy message">Copy</button></span></header><div class="cortex-ai-message-body">${aiMessageBody(aiVisibleMessageContent(message))}</div>${aiAgentCockpit(message)}${aiNarration(message)}${aiProgress(message)}${aiDraftPreview(message)}${aiRecoveryCard(message)}${aiActiveAgentRequests(message)}${aiProposalCard(message)}${aiTurns(message)}${message.error&&message.role==='assistant'&&message.mode!=='ask'?'<button type="button" class="cortex-ai-retry" data-ai-action="retry">Retry with locked context</button>':''}${message.files?.length ? `<footer>${message.files.length} context file${message.files.length === 1 ? '' : 's'} used · ${escapeHtml(message.mode||'ask')}</footer>` : ''}</article>`).join('') || `<div class="cortex-ai-empty"><header><img src="${BeastAssets.icon('agent-premium')}" alt=""><span><strong>What do you want to build?</strong><small>${escapeHtml(modeCopy.description||'Work with BEAST across your repository.')}</small></span></header><p>The active file is included automatically. Add more context only when you need it.</p><div class="cortex-ai-suggestions"><button type="button" data-ai-suggestion-mode="ask" data-ai-suggestion="Explain the active file and identify its key dependencies."><b>Explain this file</b><small>Ask mode · stream an explanation</small></button><button type="button" data-ai-suggestion-mode="agent" data-ai-suggestion="Find the most likely bug in the active file and propose the smallest safe fix."><b>Find and fix a bug</b><small>Agent mode · inspect and propose a patch</small></button><button type="button" data-ai-suggestion-mode="agent" data-ai-suggestion="Add focused tests for the active file, covering its riskiest behavior."><b>Add focused tests</b><small>Agent mode · create reviewable edits</small></button><button type="button" data-ai-suggestion-mode="edit" data-ai-suggestion="Refactor the selected code for clarity without changing behavior."><b>Refactor safely</b><small>Edit mode · produce exact hunks</small></button></div></div>`;
+        if(followOutput){
+          // One scroll authority: follow the newest content only when the
+          // operator was already following. Never scroll to a proposal's
+          // moving bounding rectangle—its asynchronous layout was the source
+          // of the right-edge scrollbar jump/reset.
+          aiScrollFrame=requestAnimationFrame(()=>{
+            aiScrollFrame=0;
+            if(aiFollowOutput||aiAtBottom(host))host.scrollTop=host.scrollHeight;
+          });
+        } else {host.scrollTop=Math.min(previousTop,Math.max(0,host.scrollHeight-host.clientHeight));if(ai.streaming)aiUnreadOutput+=1;}
         aiFollowOutput=followOutput;syncAiFollowControl();
+      } else {
+        // Keep the existing scroll container and its native scrollbar intact;
+        // only replace message bodies whose streamed text actually changed.
+        ai.messages.forEach(message=>{const body=root.querySelector(`[data-ai-message-id="${CSS.escape(String(message.id))}"] .cortex-ai-message-body`);if(!body)return;const next=aiMessageBody(aiVisibleMessageContent(message));if(body.innerHTML!==next)body.innerHTML=next;});
+        if(aiFollowOutput){if(aiScrollFrame)cancelAnimationFrame(aiScrollFrame);aiScrollFrame=requestAnimationFrame(()=>{aiScrollFrame=0;if(aiFollowOutput)host.scrollTop=host.scrollHeight;});}
       }
       root.querySelector('[data-ai-trace]').innerHTML = ai.trace.slice().reverse().map(item => `<div><b>${escapeHtml(item.kind)}</b><span>${escapeHtml(item.text)}</span></div>`).join('') || '<span>No run events yet.</span>';
       root.querySelector('[data-ai-trace-count]').textContent = ai.trace.length;
@@ -406,10 +541,14 @@
       root.querySelector('[data-ai-action="cancel"]').classList.toggle('hidden', !ai.streaming);
       root.querySelector('.cortex-ai-sourceplan').classList.toggle('hidden', !ai.sourcePlanReady);
       const crystal = root.querySelector('[data-ai-crystal]');
-      crystal.textContent = ai.crystal.reused ? `Reused · ${ai.crystal.avoidedTokens || 0} tokens saved` : ai.crystal.recorded ? 'Saved for reuse' : ai.crystal.action ? ai.crystal.action.replaceAll('_',' ') : 'Reuse ready';
-      root.querySelector('[data-ai-crystal-detail]').textContent = ai.crystal.reused ? `Served from ${ai.crystal.source || 'verified prior work'} without another model call.` : ai.crystal.recorded ? 'This verified result can be reused on an exact future request.' : 'Prior verified work is checked before inference.';
+      crystal.textContent = ai.crystal.reused ? `Reused · ${ai.crystal.avoidedTokens || 0} tokens saved` : ai.crystal.recorded ? 'Verified reuse saved' : ai.crystal.candidate ? 'Candidate captured' : ai.crystal.action ? ai.crystal.action.replaceAll('_',' ') : 'Reuse ready';
+      root.querySelector('[data-ai-crystal-detail]').textContent = ai.crystal.reused ? `Served from ${ai.crystal.source || 'verified prior work'} without another model call.` : ai.crystal.recorded ? 'This verified result can be reused on an exact future request.' : ai.crystal.candidate ? 'Captured for learning; it cannot serve edits until SourcePlan verification and apply succeed.' : 'Prior verified work is checked before inference.';
       root.querySelector('[data-ai-crystal-confidence]').textContent = ai.crystal.confidence ? `${Math.round(ai.crystal.confidence * 100)}%` : 'On';
       root.querySelector('[data-ai-compute]').classList.toggle('live', Boolean(ai.crystal.reused || ai.crystal.recorded));
+      const compute=ai.compute||{};const supplied=Number(compute.suppliedChars||0);const source=Number(compute.sourceChars||0);const withheld=Math.max(0,source-supplied);
+      root.querySelector('[data-ai-compute-summary]').textContent = supplied
+        ? `Economizer: ${compute.historyChanged?`${compute.historyOriginalTokens}→${compute.historyFinalTokens} history tokens; `:'history preserved; '}${compute.readableFiles||0}/${compute.selectedFiles||0} selected source files · ${supplied.toLocaleString()} chars supplied${withheld ? ` · ${withheld.toLocaleString()} chars withheld` : ''}. KV cache: ${compute.kvCache==='provider_managed'?'provider-managed':'not reported'}. Crystal: ${compute.crystal||'preflight'}.`
+        : 'Context economics will appear when a run starts.';
       root.querySelector('[data-ai-session]').textContent = ai.sessionId ? `Session ${ai.sessionId.slice(-6)}` : 'New chat';
     }
 
@@ -755,6 +894,8 @@
       if (mode) { BeastAICoding.setMode(mode); return; }
       const contextPath = event.target.closest('[data-ai-context-path]')?.dataset.aiContextPath;
       if (contextPath) { BeastAICoding.toggleContext(contextPath); return; }
+      const suggestionPath=event.target.closest('[data-ai-accept-suggestion]')?.dataset.aiAcceptSuggestion;
+      if(suggestionPath){BeastAICoding.acceptSuggestedContext(suggestionPath);return;}
       const action = event.target.closest('[data-ai-action]')?.dataset.aiAction;
       if (action === 'jump-latest') { jumpToLatestAiOutput(); return; }
       if (!action) return;
@@ -769,12 +910,26 @@
           if (path && BeastStore.get().workspace.files.some(row => row.path === path)) BeastAICoding.toggleContext(path);
           else if (path) throw new Error(`Workspace file not found: ${path}`);
         }
+        if (action === 'suggest-context') await BeastAICoding.suggestContext(root.querySelector('[data-ai-prompt]')?.value);
+        if (action === 'agent-suggest-context') {
+          const latestUser=[...(BeastStore.get().aiCoding.messages||[])].reverse().find(item=>item.role==='user'&&String(item.content||'').trim());
+          await BeastAICoding.suggestContext(root.querySelector('[data-ai-prompt]')?.value || latestUser?.content || '');
+        }
+        if (action === 'agent-open-terminal') {
+          const command=event.target.closest('[data-ai-action]')?.dataset.agentCommand || '';
+          if(command && window.BeastTerminalToolingDoctorBridge?.setCommand) BeastTerminalToolingDoctorBridge.setCommand(command);
+          await BeastRouter.navigate('terminal');
+        }
         if (action === 'send') await BeastAICoding.send(root.querySelector('[data-ai-prompt]').value, { model:root.querySelector('[data-ai-model]')?.value });
+        if (action === 'agent-repair-packet') await BeastAICoding.recoverInvalidPacket({ model:root.querySelector('[data-ai-model]')?.value });
         if (action === 'retry') await BeastAICoding.retryLastRequest({ model:root.querySelector('[data-ai-model]')?.value });
         if (action === 'worktree-agent') await BeastAICoding.runInWorktree(root.querySelector('[data-ai-prompt]').value, { model:root.querySelector('[data-ai-model]')?.value });
         if (action === 'cancel') BeastAICoding.cancel();
         if (action === 'clear' && await workspaceConfirm(root,{title:'Clear AI coding conversation?',message:'The current conversation messages will be removed from this workspace view.',confirmLabel:'Clear'})) BeastAICoding.clear();
         if (action === 'diff') { const plan=BeastStore.get().sourcePlan?.plan; if(plan) await openAiDiff(plan, BeastStore.get().editor.activePath); return; }
+        if (action === 'agent-context') await BeastAICoding.resolveRequestedContext();
+        if (action === 'agent-continue-context') await BeastAICoding.continueWithAddedContext({ model:root.querySelector('[data-ai-model]')?.value });
+        if (action === 'agent-verify' && await workspaceConfirm(root,{title:'Run agent requested checks?',message:'BEAST will run only allowlisted verifier commands in a temporary isolated workspace. Your working tree will not be modified.',confirmLabel:'Run checks'})) await BeastAICoding.verifyRequestedChecks();
         if (action === 'sourceplan') await BeastAICoding.openSourcePlan();
       } catch (error) { BeastStore.patch('aiCoding',{streaming:false,status:'error',error:String(error.message || error)}); }
     });
@@ -784,7 +939,7 @@
     if (!BeastStore.get().models.registry.length) queueMicrotask(() => BeastModelAgentBridge.refreshModels({signal}).catch(() => {}));
     if (!BeastStore.get().workspace.indexedAt && BeastStore.get().workspace.root) queueMicrotask(() => BeastDesktopBridge.listFiles({ signal }));
 
-    return { node: root, dispose() { disposed = true; resizeCleanup?.();gitDiffMountToken+=1;gitDiffCleanup?.();unsubscribe();document.removeEventListener('beast:source-control-root',selectRepository);document.removeEventListener('beast:ai-proposal-ready',handleAiProposalReady); BeastEditorCortex.unmount(); } };
+    return { node: root, dispose() { disposed = true;if(aiScrollFrame)cancelAnimationFrame(aiScrollFrame);window.BeastVisualRuntime?.setWorkload?.('idle');resizeCleanup?.();gitDiffMountToken+=1;gitDiffCleanup?.();unsubscribe();document.removeEventListener('beast:source-control-root',selectRepository);document.removeEventListener('beast:ai-proposal-ready',handleAiProposalReady); BeastEditorCortex.unmount(); } };
   }
 
   window.BeastWorkspacePage = { renderer };

@@ -11,6 +11,8 @@ const vm=require('vm');
 const CAPABILITIES=new Set(['workspace.read','workspace.write','language.client','terminal.execute','network.loopback']);
 const ID=/^[a-z0-9][a-z0-9._-]{1,95}$/;
 let buffer='';
+let pending=0;
+let inputEnded=false;
 
 function send(value) { process.stdout.write(`${JSON.stringify(value)}\n`); }
 function readJson(file) { try { return JSON.parse(fs.readFileSync(file,'utf8')); } catch (_) { return null; } }
@@ -52,6 +54,10 @@ async function handle(message={}) {
   throw new Error('Unsupported extension host operation.');
 }
 
+function maybeExit() {
+  if (inputEnded && pending === 0) process.exit(0);
+}
+
 send({type:'ready',host:'beast-declarative-extension-host',capabilities:[...CAPABILITIES]});
-process.stdin.on('data',chunk=>{buffer+=String(chunk);let cut;while((cut=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,cut);buffer=buffer.slice(cut+1);if(!line.trim())continue;let request={};try{request=JSON.parse(line);Promise.resolve(handle(request)).then(result=>send({id:request.id,ok:true,...result})).catch(error=>send({id:request.id,ok:false,error:String(error.message||error)}));}catch(error){send({id:request.id,ok:false,error:String(error.message||error)});}}});
-process.stdin.on('end',()=>process.exit(0));
+process.stdin.on('data',chunk=>{buffer+=String(chunk);let cut;while((cut=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,cut);buffer=buffer.slice(cut+1);if(!line.trim())continue;let request={};try{request=JSON.parse(line);pending+=1;Promise.resolve(handle(request)).then(result=>send({id:request.id,ok:true,...result})).catch(error=>send({id:request.id,ok:false,error:String(error.message||error)})).finally(()=>{pending-=1;maybeExit();});}catch(error){send({id:request.id,ok:false,error:String(error.message||error)});}}});
+process.stdin.on('end',()=>{inputEnded=true;maybeExit();});

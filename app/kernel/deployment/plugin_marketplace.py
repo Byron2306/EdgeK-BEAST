@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
+import inspect
 import json
 import os
 import re
+import shlex
+import subprocess
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
+
+import httpx
 
 
 RISK_CLASSES = {"low", "medium", "high", "critical"}
@@ -150,6 +156,129 @@ class PluginMarketplace:
                     "path": str(path),
                 })
         return {"beast_object_type": "plugin_marketplace_inventory", "version": "1.0", "count": len(records), "plugins": records}
+
+    def invoke(
+        self,
+        plugin_id: str,
+        tool_name: str,
+        payload: Optional[Dict[str, Any]] = None,
+        *,
+        approved: bool = False,
+    ) -> Dict[str, Any]:
+        """Run an installed third-party plugin through its declared entrypoint.
+
+        Installation and each invocation are separately approval-gated.  The
+        manifest remains the authority for the callable, remote host, command,
+        timeout, and declared tool name; no renderer-supplied executable data
+        is used to select an entrypoint.
+        """
+        if not approved:
+            raise PermissionError("explicit first-run approval required")
+        manifest = self._installed_manifest(plugin_id)
+        if manifest is None:
+            raise LookupError("plugin is not installed")
+        validation = self.validate(manifest)
+        if not validation["valid"]:
+            raise ValueError("installed plugin manifest no longer validates")
+        tool = next((item for item in manifest.get("tools") or [] if isinstance(item, dict) and item.get("name") == tool_name), None)
+        if tool is None:
+            raise ValueError("tool is not declared by this plugin")
+        entrypoint = manifest.get("entrypoint") or {}
+        context = {
+            "plugin_id": plugin_id,
+            "tool_name": tool_name,
+            "permissions": deepcopy(manifest.get("permissions") or {}),
+            "budget": deepcopy(manifest.get("budget") or {}),
+        }
+        kind = entrypoint.get("kind")
+        if kind == "python":
+            result = self._invoke_python(entrypoint, payload or {}, context)
+        elif kind == "http":
+            result = self._invoke_http(entrypoint, manifest.get("permissions") or {}, tool_name, payload or {}, context)
+        elif kind == "mcp_stdio":
+            result = self._invoke_mcp_stdio(entrypoint, tool_name, payload or {}, context)
+        else:  # validate() normally makes this unreachable; retain a fail-closed guard.
+            raise ValueError("unsupported plugin entrypoint")
+        return {
+            "beast_object_type": "plugin_invocation_result",
+            "version": "1.0",
+            "plugin_id": plugin_id,
+            "tool_name": tool_name,
+            "entrypoint_kind": kind,
+            "approved": True,
+            "result": result,
+        }
+
+    def _installed_manifest(self, plugin_id: str) -> Optional[Dict[str, Any]]:
+        if not re.fullmatch(r"[a-z0-9][a-z0-9._-]{2,79}", str(plugin_id or "")):
+            return None
+        path = self.registry_dir / f"{plugin_id}.beast-plugin.json"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+        return payload if isinstance(payload, dict) and payload.get("id") == plugin_id else None
+
+    @staticmethod
+    def _timeout_seconds(entrypoint: Dict[str, Any], budget: Dict[str, Any]) -> float:
+        requested = entrypoint.get("timeout_ms", budget.get("max_latency_ms", 5000))
+        try:
+            return max(0.1, min(float(requested) / 1000.0, 60.0))
+        except (TypeError, ValueError):
+            return 5.0
+
+    def _invoke_python(self, entrypoint: Dict[str, Any], payload: Dict[str, Any], context: Dict[str, Any]) -> Any:
+        module_name = str(entrypoint.get("module") or "")
+        callable_name = str(entrypoint.get("callable") or "invoke")
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.]*", module_name) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", callable_name):
+            raise ValueError("invalid python plugin entrypoint")
+        try:
+            callback = getattr(importlib.import_module(module_name), callable_name)
+        except (ImportError, AttributeError) as exc:
+            raise RuntimeError(f"python plugin entrypoint unavailable: {exc}") from exc
+        if not callable(callback):
+            raise ValueError("python plugin entrypoint is not callable")
+        try:
+            parameters = inspect.signature(callback).parameters
+        except (TypeError, ValueError):
+            parameters = {}
+        result = callback(payload, context) if len(parameters) >= 2 else callback(payload)
+        if inspect.isawaitable(result):
+            raise ValueError("async python plugin entrypoints are not supported by the synchronous marketplace runtime")
+        return result
+
+    def _invoke_http(self, entrypoint: Dict[str, Any], permissions: Dict[str, Any], tool_name: str, payload: Dict[str, Any], context: Dict[str, Any]) -> Any:
+        url = str(entrypoint.get("url") or "")
+        parsed = httpx.URL(url)
+        host = parsed.host or ""
+        host_port = f"{host}:{parsed.port}" if parsed.port else host
+        allowed = {str(item).lower() for item in permissions.get("network_domains") or []}
+        if host.lower() not in allowed and host_port.lower() not in allowed:
+            raise PermissionError("plugin HTTP endpoint is outside declared network_domains")
+        timeout = self._timeout_seconds(entrypoint, context["budget"])
+        response = httpx.post(url, json={"tool_name": tool_name, "payload": payload, "context": context}, timeout=timeout)
+        response.raise_for_status()
+        try:
+            return response.json()
+        except ValueError:
+            return {"text": response.text}
+
+    def _invoke_mcp_stdio(self, entrypoint: Dict[str, Any], tool_name: str, payload: Dict[str, Any], context: Dict[str, Any]) -> Any:
+        command = shlex.split(str(entrypoint.get("command") or ""))
+        if not command:
+            raise ValueError("mcp_stdio command is empty")
+        timeout = self._timeout_seconds(entrypoint, context["budget"])
+        request = json.dumps({"jsonrpc": "2.0", "id": "beast-plugin", "method": "tools/call", "params": {"name": tool_name, "arguments": payload, "context": context}}) + "\n"
+        try:
+            completed = subprocess.run(command, input=request, capture_output=True, text=True, timeout=timeout, check=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise RuntimeError(f"mcp_stdio plugin execution failed: {exc}") from exc
+        if completed.returncode != 0:
+            raise RuntimeError(f"mcp_stdio plugin exited {completed.returncode}: {completed.stderr[-500:]}")
+        try:
+            return json.loads(completed.stdout.strip())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("mcp_stdio plugin returned invalid JSON") from exc
 
     def install_builtins(self) -> Dict[str, Any]:
         from app.kernel.registry.beast_builtin_plugins import manifests

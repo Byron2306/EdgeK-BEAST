@@ -92,7 +92,8 @@
       const s=state.system;
       const platform=state.platform||{};
       const platformSections=Array.isArray(platform.sections)?platform.sections:[];
-      root.querySelector('[data-system-metrics]').innerHTML=[metric('CPU',`${Math.round(s.cpu)}%`,'processor load','diagnostics'),metric('Memory',`${Math.round(s.memory)}%`,'allocated memory','memory'),metric('Disk',`${Math.round(s.disk)}%`,'workspace volume','database'),metric('Network',`${Math.round(s.network)}%`,'local throughput','network'),metric('Runtime',s.runtime?.status||'checking',`${s.runtime?.circuits||0} open circuits`,'system')].join('');
+      const hostCaps=s.hostEnforcement?.capabilities||[];const hostReady=hostCaps.filter(item=>item.available).length;
+      root.querySelector('[data-system-metrics]').innerHTML=[metric('CPU',`${Math.round(s.cpu)}%`,'processor load','diagnostics'),metric('Memory',`${Math.round(s.memory)}%`,'allocated memory','memory'),metric('Disk',`${Math.round(s.disk)}%`,'workspace volume','database'),metric('Network',`${Math.round(s.network)}%`,'local throughput','network'),metric('Host Enforcement',`${hostReady}/${hostCaps.length||5}`,s.hostEnforcement?.authority||'operator gated','trust'),metric('Runtime',s.runtime?.status||'checking',`${s.runtime?.circuits||0} open circuits`,'system')].join('');
       const status=root.querySelector('[data-system-status]');
       status.textContent=String(s.status||'checking').toUpperCase();
       status.className=`beast-pill ${s.score>80?'live':s.score>60?'warn':'bad'}`;

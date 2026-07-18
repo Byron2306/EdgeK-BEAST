@@ -15,6 +15,7 @@ class SensoriumReadModel:
         self.sequencer = sequencer
         self.episodes = episodes
         self._sockets = {}
+        self._collector_receipts: dict[str, dict[str, Any]] = {}
         self._lock = RLock()
 
     def register_socket(self, reconciled) -> None:
@@ -42,6 +43,17 @@ class SensoriumReadModel:
         with self._lock:
             return self._sockets.pop(identity, None) is not None
 
+    def set_collector_receipt(self, receipt: Dict[str, Any]) -> None:
+        """Keep capability/limitation metadata, never a collector payload."""
+        collector = str(receipt.get("collector") or "unknown")
+        with self._lock:
+            self._collector_receipts[collector] = {
+                "collector": collector, "read_only": bool(receipt.get("read_only")),
+                "socket_count": int(receipt.get("socket_count") or 0),
+                "families": list(receipt.get("families") or ()), "protocols": list(receipt.get("protocols") or ()),
+                "limitations": list(receipt.get("limitations") or ()),
+            }
+
     def state(self, *, event_limit: int = 25, episode_limit: int = 10) -> Dict[str, Any]:
         entries = self.sequencer.latest(event_limit)
         closed = self.episodes.latest_closed(episode_limit)
@@ -49,12 +61,14 @@ class SensoriumReadModel:
         event_types = Counter(entry.event.event_type for entry in entries)
         with self._lock:
             sockets = tuple(dict(value) for value in self._sockets.values())
+            collectors = tuple(dict(value) for _, value in sorted(self._collector_receipts.items()))
         return {
             "beast_object_type": "sensorium_read_model",
             "version": "1.0",
             "authority": "read_only",
             "actuator_available": False,
             "socket_topology": sockets,
+            "collectors": collectors,
             "sequencer": self.sequencer.metrics(),
             "episodes": self.episodes.state(include_closed=False),
             "recent_sources": dict(sorted(sources.items())),

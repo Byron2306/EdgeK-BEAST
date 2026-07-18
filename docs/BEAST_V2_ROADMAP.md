@@ -1,5 +1,27 @@
 # EdgeK BEAST V2 Roadmap
 
+## Active Integration Board (2026-07-18)
+
+These are execution tracks, not aspirational feature claims.  A track may only
+move to **operational** when it is exercised on the normal IDE/CLI/MCP path,
+has a bounded failure mode, and has focused regression coverage.
+
+| Track | Status | Completion indicator | Current boundary |
+| --- | --- | --- | --- |
+| Universal retrieval and context headers | in progress | One metadata-first retrieval response feeds Context Packet, Pair Programmer, CLI, TUI, MCP, Review, Task, and Debug surfaces; the IDE presents suggestions for explicit operator acceptance. | Pair Programmer now uses a direct, hash-bound provider Context Packet and has an explicit **Suggest context** workflow backed by `/edgek/workspace/context-header`; suggestions remain unselected until the operator clicks Add. CLI/TUI/MCP/Review still need to converge on the same visible picker. |
+| Least-authority tool-use loop | in progress | Tool discovery is policy-scoped; every call is authorized, budgeted, receipt-backed, and cannot widen file/network/write authority. | `LeastAuthorityToolLoop` composes Mode Router and tool buckets into per-tool authorization receipts, structurally refuses generic mutation executors, and exposes a separate mutation-entry gate. IDE Conductor dispatch uses it for task/context/route/verification; MCP exposes `beast_least_authority_plan` and now mutation-gates declared mutating calls; CLI diagnose/route/verify and TUI draft/verify attach the same receipt; `BeastApiClient.apply_patch_plan` now requires a bound, approved mutation-gate receipt before its existing preview/verification/rollback pipeline. CLI/TUI rollback and remaining direct mutation routes still need migration. |
+| Conductor inspect → test → repair | in progress | A bounded dispatcher persists each step, stops at approval/scope/budget gates, runs deterministic verification, and hands off only valid SourcePlans. | Pair Programmer now runs Pathfinder and Tool Laziness before provider dispatch, then Quality Cascade, a receipt-backed Conductor dispatch, and Canon validation after bounded proposal validation. Dispatch receipts persist under `.beast/intelligence/workflow_dispatches`; `resume()` reloads the latest receipt and replays only bounded non-mutating callbacks. The dispatcher can stop on a gate, execute registered inspect/verify callbacks, and request a repaired **draft** after a failed verification; it cannot execute a source write. CLI/TUI/MCP executor bindings remain. |
+| L0-L4 vector memory projections | operational | Local LanceDB is the L2 rebuildable workspace-source view. Aurora pgvector, Qdrant, and Chroma are reserved for validated L3 verified-skill and L4 forensic-summary projections; all results retain layer and store attribution. | Workspace source, prompts, diffs, and logs are structurally refused by cloud projection. L0 policy and L1 runtime memory stay local. L3/L4 cloud projection requires `verified=true`, a receipt ID, a bounded sanitized summary, and `BEAST_VECTOR_MEMORY_CLOUD_OPERATIONAL_ENABLED=1`; retrieval remains advisory and requires operator acceptance before prompt inclusion. |
+
+### Non-negotiable acceptance rules
+
+- No retrieval suggestion silently becomes provider context or edit scope.
+- No tool result, provider placeholder, or KV metadata record is treated as a
+  verified execution result.
+- No Conductor repair can apply source changes; SourcePlan approval remains the
+  mutation boundary.
+- No vector backend becomes source of truth or disables lexical fallback.
+
 Working plan for turning BEAST from a governed gateway into a governed
 meta-optimization plane for agentic software work.
 

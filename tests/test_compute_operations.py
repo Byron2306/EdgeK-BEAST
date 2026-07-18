@@ -59,3 +59,4 @@ def test_dashboard_and_rollout_monitor_read_local_state(tmp_path):
     assert rollout["readiness"] == "phase2_phase3_monitored_canary_ready"
     assert dashboard["forge"]["totals"]["nodes"] == 1
     assert dashboard["phase_artifacts"]["phase2"]["present"] is True
+    assert dashboard["compute"]["savings"]["beast_object_type"] == "compute_savings_summary"

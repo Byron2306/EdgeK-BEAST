@@ -77,6 +77,7 @@ class PhysicalCrystalPromotionRegistry:
         self.require_scientific_evidence = bool(require_scientific_evidence)
         self.path = Path(path) if path else None
         self._records: dict[str, PhysicalCrystalRecord] = {}
+        self._recurrences: list[dict[str, Any]] = []
         self._lock = RLock()
         self._load()
 
@@ -158,6 +159,30 @@ class PhysicalCrystalPromotionRegistry:
             raise PermissionError("physical crystal promotion expired")
         return record
 
+    def record_verified_reuse(self, crystal_id: str, *, proof_digest: str, execution_digest: str,
+                              occurred_at: float | None = None) -> dict[str, Any]:
+        """Durably witness a successful promoted recurrence.
+
+        Promotion is never inferred from this history; it is an auditable
+        production signal used for demotion/expiry review and reuse evidence.
+        """
+        self.require_active(crystal_id, now=occurred_at)
+        if not proof_digest or not execution_digest:
+            raise ValueError("reuse witness requires applicability and execution digests")
+        item = {"crystal_id": crystal_id, "proof_digest": proof_digest,
+                "execution_digest": execution_digest, "occurred_at": time.time() if occurred_at is None else float(occurred_at)}
+        item["receipt_digest"] = content_hash(item)
+        with self._lock:
+            if not any(existing["receipt_digest"] == item["receipt_digest"] for existing in self._recurrences):
+                self._recurrences.append(item)
+                self._persist_recurrences()
+        return dict(item)
+
+    def recurrence_summary(self, crystal_id: str) -> dict[str, Any]:
+        entries = [item for item in self._recurrences if item["crystal_id"] == crystal_id]
+        return {"crystal_id": crystal_id, "verified_reuse_count": len(entries),
+                "last_verified_reuse_at": max((item["occurred_at"] for item in entries), default=None)}
+
     def _persist(self) -> None:
         if self.path is None:
             return
@@ -174,6 +199,20 @@ class PhysicalCrystalPromotionRegistry:
             if os.path.exists(name):
                 os.unlink(name)
 
+    def _persist_recurrences(self) -> None:
+        if self.path is None:
+            return
+        target = self.path.with_name(self.path.stem + ".recurrences.json")
+        descriptor, name = tempfile.mkstemp(prefix=f".{target.name}.", suffix=".tmp", dir=target.parent)
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                json.dump(self._recurrences, handle, sort_keys=True, separators=(",", ":"))
+                handle.flush(); os.fsync(handle.fileno())
+            os.replace(name, target)
+        finally:
+            if os.path.exists(name):
+                os.unlink(name)
+
     def _load(self) -> None:
         if self.path is None or not self.path.exists():
             return
@@ -185,6 +224,16 @@ class PhysicalCrystalPromotionRegistry:
                 if record.crystal_id != crystal_id:
                     raise ValueError("physical crystal registry identity mismatch")
                 self._records[crystal_id] = record
+            recurrence_path = self.path.with_name(self.path.stem + ".recurrences.json")
+            if recurrence_path.exists():
+                entries = json.loads(recurrence_path.read_text(encoding="utf-8"))
+                if not isinstance(entries, list):
+                    raise ValueError("recurrence history must be a list")
+                for item in entries:
+                    body = dict(item); supplied = body.pop("receipt_digest", "")
+                    if supplied != content_hash(body) or not body.get("crystal_id"):
+                        raise ValueError("recurrence history is tampered")
+                self._recurrences = entries
         except Exception as exc:
             raise RuntimeError("physical crystal promotion registry is invalid") from exc
 

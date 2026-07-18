@@ -1,0 +1,19 @@
+[Unit]
+Description=EdgeK BEAST governed gateway
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/byron/EdgeK-BEAST
+ExecStart=/home/byron/EdgeK-BEAST/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8102 --log-level warning
+Restart=on-failure
+RestartSec=2
+Delegate=yes
+CPUAccounting=yes
+MemoryAccounting=yes
+TasksAccounting=yes
+KillMode=mixed
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target

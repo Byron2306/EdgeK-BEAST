@@ -117,6 +117,26 @@ def test_thin_integration_harness_reuses_crystal_without_provider_call(tmp_path)
     assert gateway.decide(crystal_request).action == "reuse_answer"
 
 
+def test_thin_integration_harness_never_crystallizes_placeholder_as_provider_output(tmp_path):
+    harness, _gateway, _storage, _hull, _enterprise = _harness(tmp_path)
+
+    receipt = harness.run(
+        BeastHarnessRequest(
+            prompt="must not fabricate a coding completion",
+            model="local-test",
+            caller=AgentPassport.local("proxy/gateway"),
+            provider="local",
+            metadata={"trace_id": "trace_harness_placeholder"},
+        )
+    )
+
+    assert receipt["provider_result"]["synthetic_placeholder"] is True
+    assert receipt["provider_result"]["status"] == "unavailable_no_provider_executor"
+    assert receipt["verification"]["verified"] is False
+    assert receipt["verification"]["reason"] == "synthetic_placeholder_is_not_a_provider_result"
+    assert receipt["crystal_record"] is None
+
+
 def test_thin_integration_harness_can_execute_through_local_gateway(tmp_path):
     class Candidate:
         engine_id = "ollama"

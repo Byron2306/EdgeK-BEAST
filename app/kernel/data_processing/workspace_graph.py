@@ -16,6 +16,7 @@ from app.kernel.data_processing.code_indexers import (
     file_metadata,
     language_for_path,
     sha256_text,
+    tree_sitter_status,
 )
 
 class WorkspaceGraph:
@@ -400,7 +401,7 @@ class WorkspaceGraph:
             "total_edges": int(total_edges),
             "node_types": {str(row[0]): int(row[1]) for row in node_rows},
             "semantic": {"embeddings": int(embeddings)},
-            "tree_sitter": {"available": False, "mode": "regex_fallback"},
+            "tree_sitter": tree_sitter_status(),
             "file_read_cache": {
                 "l1_entries": len(self._file_read_l1),
                 "l2_entries": 0,
@@ -497,11 +498,7 @@ class WorkspaceGraph:
         return {"beast_object_type": "workspace_graph_integrity", "ok": not orphan_edges, "orphan_edge_count": len(orphan_edges), "orphan_edges": orphan_edges}
 
     def _extract_symbols_tree_sitter(self, content: str, language: str, rel_path: str) -> List[Dict[str, Any]]:
-        """Compatibility wrapper around the dependency-free indexers.
-
-        The method name is retained because several tests and callers already
-        use it as the symbol extraction hook.
-        """
+        """Compatibility hook around the parser-backed symbol indexer."""
         return extract_symbols(content, language, rel_path)
 
     def _dir_node_id(self, repo_id: str, path: str) -> str:
@@ -1259,6 +1256,36 @@ class WorkspaceGraph:
             "result_count": len(out),
             "retrieval_mode": "lexical_bm25_fallback",
         }
+
+    def semantic_projection_records(self, limit: int = 10000) -> List[Dict[str, Any]]:
+        """Expose indexed chunks as rebuildable, non-authoritative projections."""
+        self.ensure_db()
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT id, type, label, properties, first_seen, last_seen FROM nodes WHERE type = ? ORDER BY last_seen DESC LIMIT ?",
+                ("semantic_chunk", max(1, min(int(limit), 50000))),
+            ).fetchall()
+        records = []
+        for row in rows:
+            node = self._row_to_node(row)
+            props = node.get("properties") or {}
+            content = str(props.get("content") or props.get("preview") or "")
+            if not content:
+                continue
+            records.append({
+                "id": node["id"],
+                "content": content,
+                "metadata": {
+                    "file": props.get("file") or props.get("path") or "",
+                    "start_line": props.get("start_line"),
+                    "end_line": props.get("end_line"),
+                    "chunk_kind": props.get("chunk_kind") or "code_window",
+                    "context_header": props.get("context_header") or "",
+                    "node_type": node["type"],
+                },
+                "source": "workspace_graph",
+            })
+        return records
 
     def semantic_dedupe_payloads(self, payloads: List[str]) -> Dict[str, Any]:
         seen: Dict[str, int] = {}

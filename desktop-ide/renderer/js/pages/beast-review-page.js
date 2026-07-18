@@ -57,7 +57,7 @@
 
       <div class="review-lower-grid">
         <section class="beast-card wide review-diff-panel">
-          <header class="beast-panel-head"><div><h3>Change Surface</h3><span>SourcePlan and review footprint</span></div><button class="beast-button secondary" data-nav="source">Open SourcePlan</button></header>
+          <header class="beast-panel-head"><div><h3>Change Surface</h3><span data-review-plan>SourcePlan and review footprint</span></div><button class="beast-button secondary" data-nav="source">Open SourcePlan</button></header>
           <div class="review-diff-stats">
             <div><span>Changed Files</span><b data-diff-files>0</b></div><div class="plus"><span>Additions</span><b data-diff-additions>0</b></div><div class="minus"><span>Deletions</span><b data-diff-deletions>0</b></div><div><span>Operations</span><b data-diff-operations>0</b></div>
           </div>
@@ -75,11 +75,14 @@
     const root = template();
     let disposed = false;
     let lastKey = '';
+    let observedPlanId = '';
 
     function patch(state) {
       if (disposed) return;
       const review = state.review || {};
-      const key = JSON.stringify([review,state.ledger.slice(0,8)]);
+      const livePlanId=String(state.sourcePlan?.plan?.plan_id || '');
+      if(livePlanId && livePlanId!==observedPlanId){observedPlanId=livePlanId;queueMicrotask(()=>BeastReviewEvidenceBridge.refreshReview({signal}).catch(()=>{}));}
+      const key = JSON.stringify([review,state.ledger.slice(0,8),livePlanId]);
       if (key === lastKey) return; lastKey = key;
       const gates = review.gates || [];
       const contradictions = review.contradictions || [];
@@ -130,6 +133,7 @@
       root.querySelector('[data-review-test-list]').innerHTML = (tests.rows||[]).map(item=>`<div class="review-test ${tone(item.status)}"><span>${/pass|ok/i.test(item.status)?'✓':/fail|error/i.test(item.status)?'!':'○'}</span><b>${esc(item.label)}</b><em>${esc(item.duration)}</em></div>`).join('') || '<div class="cortex-empty-list">No test telemetry.</div>';
 
       const diff = review.diff || {};
+      root.querySelector('[data-review-plan]').textContent = review.sourcePlanId ? `${review.sourcePlanObjective || 'Pair Programmer proposal'} · ${review.sourcePlanId}` : 'No governed SourcePlan has been selected yet.';
       root.querySelector('[data-diff-files]').textContent = diff.files || 0;
       root.querySelector('[data-diff-additions]').textContent = `+${diff.additions || 0}`;
       root.querySelector('[data-diff-deletions]').textContent = `-${diff.deletions || 0}`;

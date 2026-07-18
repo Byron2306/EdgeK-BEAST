@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import ast
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
@@ -52,6 +53,29 @@ def _sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _reject_placeholder_replacement(action: ActionIntent, old: str, new: str) -> None:
+    """Reject model-shaped pseudo-edits before they become a SourcePlan.
+
+    A frequent weak-model failure is to restate a function signature followed
+    by ``# ... rest of function remains the same``.  That is neither a
+    reviewable patch nor a faithful replacement; accepting it makes the UI
+    advertise a change while showing the operator no implementation.
+    """
+    if old == new:
+        raise ValueError(f"action {action.id} makes no material source change")
+    placeholder = re.compile(
+        r"(?im)^\s*(?:#|//|/\*)?\s*(?:\.\.\.|…)(?:\s*\(?\s*(?:the\s+)?rest\s+of\s+(?:the\s+)?(?:function|file|method|code).*|\s*unchanged.*)?$"
+    )
+    prose_placeholder = re.compile(
+        r"(?i)(?:rest\s+of\s+(?:the\s+)?(?:function|file|method|code)\s+(?:remains?|is)\s+(?:the\s+)?same|implementation\s+(?:omitted|unchanged)|\[\s*unchanged\s*\])"
+    )
+    if placeholder.search(new) or prose_placeholder.search(new):
+        raise ValueError(
+            f"action {action.id} contains a placeholder instead of a complete source replacement; "
+            "emit the full changed block with no ellipses or 'rest remains the same' text"
+        )
+
+
 def _safe_path(root: Path, rel: str) -> Path:
     rel_path = Path(str(rel))
     if rel_path.is_absolute() or ".." in rel_path.parts:
@@ -65,6 +89,23 @@ def _safe_path(root: Path, rel: str) -> Path:
 
 def _anchor_catalog(text: str, max_anchors: int = 24, max_chars: int = 500) -> Dict[str, str]:
     anchors: Dict[str, str] = {}
+
+    def unique_line_anchor(lines: List[str], index: int) -> str:
+        """Return a bounded anchor whose occurrence is unique in ``text``.
+
+        A single line such as ``return value`` or a repeated docstring bullet
+        is not a usable edit locator. Expand symmetrically with neighbouring
+        source until it identifies exactly one location, otherwise omit it.
+        """
+        for radius in range(0, 12):
+            start = max(0, index - radius)
+            end = min(len(lines), index + radius + 1)
+            snippet = "\n".join(lines[start:end])
+            if not snippet or len(snippet) > max_chars:
+                break
+            if text.count(snippet) == 1:
+                return snippet
+        return ""
 
     # Light block anchors first, so long files still expose semantic edit units.
     lines = text.splitlines()
@@ -85,12 +126,13 @@ def _anchor_catalog(text: str, max_anchors: int = 24, max_chars: int = 500) -> D
         if len(anchors) >= max_anchors:
             return anchors
     # Compact line anchors catch small return/config edits after block anchors.
-    for line in lines:
+    for index, line in enumerate(lines):
         stripped = line.strip()
         if not stripped or stripped in {"{", "}", "(", ")"}:
             continue
-        if len(line) <= max_chars and line not in anchors.values():
-            anchors[f"A{len(anchors) + 1}"] = line
+        snippet = unique_line_anchor(lines, index)
+        if snippet and snippet not in anchors.values():
+            anchors[f"A{len(anchors) + 1}"] = snippet
         if len(anchors) >= max_anchors:
             return anchors
     return anchors
@@ -391,6 +433,7 @@ def resolve_action_ir(
             old = (ref.anchors or {}).get(action.target.anchor_ref, "") if ref else ""
         if not old or not isinstance(new, str):
             raise ValueError(f"action {action.id} did not include resolvable old/new snippets")
+        _reject_placeholder_replacement(action, old, new)
         current = target.read_text(encoding="utf-8")
         if current.count(old) != 1:
             raise ValueError(f"action {action.id} anchor was not unique in {path}")

@@ -225,6 +225,7 @@
     if(!desktop()?.reconnectRemote) throw new Error('Remote reconnect is available only in the BEAST desktop shell.');
     patchRuntime('remote',{status:'reconnecting',error:''});const result=await desktop().reconnectRemote();patchRuntime('remote',{status:result.ok?'connected':'error',host:result.host||runtime().remote?.host||'',path:result.remote_root||result.path||runtime().remote?.path||'~',remoteRoot:result.remote_root||'',verification:result.verification||'',error:result.error||''});if(result.ok){await Promise.allSettled([listRemoteFiles(),refreshRemoteTerminals(),refreshRemoteForwards(),refreshExecutionTargets()]);BeastStore.addLedger(`Remote workspace rehydrated: ${result.host||runtime().remote?.host}`);}return result;
   }
+  async function remoteHealth() { const remote=runtime().remote||{};if(!desktop()?.remoteHealth)throw new Error('SSH health checks are available only in the BEAST desktop shell.');if(!remote.host||!remote.path)throw new Error('Connect a remote workspace before checking its runtime.');patchRuntime('remote',{healthStatus:'checking',healthError:''});try{const result=await desktop().remoteHealth({host:remote.host,path:remote.path});patchRuntime('remote',{healthStatus:result.healthy?'healthy':'error',health:result,healthError:result.error||''});BeastStore.addLedger(result.healthy?`Remote runtime healthy: ${result.host} · Node ${result.nodeVersion||'unreported'}`:`Remote runtime health failed: ${result.error||result.host}`);return result;}catch(error){patchRuntime('remote',{healthStatus:'error',healthError:String(error.message||error)});throw error;} }
   async function runRemoteTerminal(command) {
     const remote=runtime().remote||{};if(!remote.host)throw new Error('Connect a remote workspace before running a remote command.');if(!desktop()?.runRemoteTerminal)throw new Error('Remote terminal is available only in the BEAST desktop shell.');patchRuntime('remote',{terminalStatus:'running',terminalError:'',terminalOutput:''});try{const result=await desktop().runRemoteTerminal({host:remote.host,command,timeoutMs:30000});patchRuntime('remote',{terminalStatus:result.ok?'complete':'failed',terminalError:result.error||'',terminalOutput:`${result.stdout||''}${result.stderr?`\n[stderr]\n${result.stderr}`:''}`,lastRemoteReceipt:result.receipt||null});return result;}catch(error){patchRuntime('remote',{terminalStatus:'error',terminalError:String(error.message||error)});throw error;}
   }
@@ -328,6 +329,7 @@
     await refreshExecutionTargets().catch(()=>{});
     return result;
   }
+  async function restartDevContainer(id='') { if(!desktop()?.restartDevContainer)throw new Error('Dev Container restart is available only in the BEAST desktop shell.');patchRuntime('remote',{containerStatus:'restarting',containerError:''});const result=await desktop().restartDevContainer({root:root(),id});if(result.target)BeastDesktopBridge.setExecutionTarget(result.target);patchRuntime('remote',{containerStatus:result.ok?'attached':'error',containerError:result.error||'',devContainers:result.containers||[],activeTarget:result.target||executionTarget(),devContainerAttached:result.attached||null});BeastStore.addLedger(result.ok?`Dev Container restarted: ${result.attached?.name||result.attached?.id||'container'}`:`Dev Container restart failed: ${result.error||'unknown'}`);await refreshExecutionTargets().catch(()=>{});return result; }
   async function rebuildDevContainer() {
     if(!desktop()?.rebuildDevContainer)throw new Error('Dev Container rebuild is available only in the BEAST desktop shell.');
     patchRuntime('remote',{containerStatus:'rebuilding',containerError:''});
@@ -350,6 +352,7 @@
     patchRuntime('remote',{containerTerminalStatus:result.ok?'complete':'failed',containerTerminalOutput:`${result.stdout||''}${result.stderr?`\n[stderr]\n${result.stderr}`:''}`,containerError:result.error||'',lastContainerReceipt:result.receipt||null});
     return result;
   }
+  async function openDevContainerPort(port) { if(!desktop()?.openDevContainerPort)throw new Error('Opening a Dev Container port is available only in the BEAST desktop shell.');const result=await desktop().openDevContainerPort({port:Number(port)});if(!result?.ok)throw new Error(result?.error||'Container port could not be opened.');BeastStore.addLedger(`Opened Dev Container service: ${result.url}`);return result; }
 
   function patchExtensions(summary={}) { patchRuntime('extensions',{status:summary.status || 'stopped',pid:summary.pid || null,mode:summary.mode || 'declarative-manifests',items:summary.extensions || [],error:''}); }
   async function discoverExtensions() {
@@ -360,10 +363,11 @@
   }
   async function grantExtensionCapabilities(id, capabilities) {
     if (!desktop()?.grantExtensionCapabilities) throw new Error('Extension grants are available only in the BEAST desktop shell.');
-    const summary=await desktop().grantExtensionCapabilities({id,capabilities});patchExtensions(summary);BeastStore.addLedger(`Extension capability grants updated: ${id}`);return summary;
+    const summary=await desktop().grantExtensionCapabilities({id,capabilities,target:executionTarget()});patchExtensions(summary);BeastStore.addLedger(`Extension capability grants updated: ${id}`);return summary;
   }
   async function setExtensionEnabled(id, enabled) { if(!desktop()?.setExtensionEnabled)throw new Error('Extension lifecycle controls are available only in the BEAST desktop shell.');const summary=await desktop().setExtensionEnabled({id,enabled:Boolean(enabled)});patchExtensions(summary);BeastStore.addLedger(`Extension ${enabled?'enabled':'disabled'}: ${id}`);return summary; }
   async function installWorkspaceExtension() { if(!desktop()?.installWorkspaceExtension)throw new Error('Extension installation is available only in the BEAST desktop shell.');const summary=await desktop().installWorkspaceExtension();patchExtensions(summary);BeastStore.addLedger('Workspace extension install completed.');return summary; }
+  async function deployWorkspaceExtensions() { if(!desktop()?.deployWorkspaceExtensions)throw new Error('Extension deployment is available only in the BEAST desktop shell.');const summary=await desktop().deployWorkspaceExtensions({target:executionTarget()});patchExtensions(summary);BeastStore.addLedger(summary.message||`Workspace extensions deployed to ${executionTarget().label||executionTarget().kind}.`);return summary; }
   async function uninstallWorkspaceExtension(id) { if(!desktop()?.uninstallWorkspaceExtension)throw new Error('Extension removal is available only in the BEAST desktop shell.');const summary=await desktop().uninstallWorkspaceExtension({id});patchExtensions(summary);BeastStore.addLedger(`Workspace extension removed: ${id}`);return summary; }
   async function executeExtensionCommand(id, command) {
     if (!desktop()?.executeExtensionCommand) throw new Error('Extension commands are available only in the BEAST desktop shell.');
@@ -430,4 +434,8 @@
   desktop()?.onTerminalSessionMessage?.(handleTerminalSessionMessage);
   desktop()?.onExtensionHostMessage?.(handleExtensionHostMessage);
   window.BeastIDERuntime={startDebug,startPythonDebug,startLaunchConfiguration,startCompound,loadLaunchConfigurations,debugControl,evaluateDebug,addWatchExpression,removeWatchExpression,runPythonCell,ensureNotebookKernel,stopNotebookKernel,probeRemote,listRemoteFiles,openRemoteWorkspaceFile,searchRemoteWorkspace,reconnectRemote,runRemoteTerminal,refreshRemoteTerminals,startRemoteTerminal,sendRemoteTerminal,stopRemoteTerminal,refreshTerminalSessions,startTerminalSession,sendTerminalSession,stopTerminalSession,refreshRemoteForwards,startRemoteForward,stopRemoteForward,refreshExecutionTargets,setExecutionTarget,inspectDevContainers,startDevContainer,attachDevContainer,stopDevContainer,rebuildDevContainer,devContainerLogs,runDevContainerTerminal,discoverExtensions,grantExtensionCapabilities,setExtensionEnabled,installWorkspaceExtension,uninstallWorkspaceExtension,executeExtensionCommand,stopExtensionHost};
+  window.BeastIDERuntime.restartDevContainer=restartDevContainer;
+  window.BeastIDERuntime.remoteHealth=remoteHealth;
+  window.BeastIDERuntime.openDevContainerPort=openDevContainerPort;
+  window.BeastIDERuntime.deployWorkspaceExtensions=deployWorkspaceExtensions;
 })();

@@ -1,5 +1,5 @@
 (() => {
-  const pages = ['studio','workspace','compatibility','source','mission','models','agents','review','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
+  const pages = ['studio','workspace','compatibility','source','mission','models','compute-control','agents','review','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
   let railKey = '';
   let gatewayRecoveryAttempts = 0;
   let gatewayRecoveryTimer = 0;
@@ -305,6 +305,7 @@
       if (['/deploy','/release','/deploy open'].includes(normalized)) return await BeastRouter.navigate('deploy');
       if (['/chronicle','/chronicle open'].includes(normalized)) return await BeastRouter.navigate('chronicle');
       if (['/economy','/compute economy'].includes(normalized)) return await BeastRouter.navigate('economy');
+      if (['/compute control','/control plane','/interception'].includes(normalized)) { await BeastUtilityOrchestrationBridge.refreshControl(); return await BeastRouter.navigate('compute-control'); }
       if (['/settings','/settings open'].includes(normalized)) return await BeastRouter.navigate('settings');
       if (normalized === '/remote dev') { await BeastRouter.navigate('compatibility'); document.dispatchEvent(new CustomEvent('beast:remote-dev-focus')); return; }
       if (normalized === '/extensions discover') { await BeastRouter.navigate('compatibility'); await BeastIDERuntime.discoverExtensions(); return; }
@@ -333,6 +334,17 @@
       if (normalized === '/tooling benchmark') { await BeastTerminalToolingDoctorBridge.runBenchmark(); return await BeastRouter.navigate('tooling'); }
       if (normalized === '/doctor scan') { await BeastTerminalToolingDoctorBridge.refreshDoctor(); return await BeastRouter.navigate('doctor'); }
       if (normalized === '/providers refresh') { await BeastUtilityOrchestrationBridge.refreshProviders(); return await BeastRouter.navigate('providers'); }
+      if (normalized === '/providers import-secrets' || normalized === '/providers secrets import') {
+        const sourcePath = window.prompt('Local secrets file to import (for example: /home/me/.config/beast/providers.env)', '');
+        if (!sourcePath?.trim()) return;
+        const result = await BeastRuntime.request('/edgek/providers/secrets/import', {
+          method:'POST', timeoutMs:30000,
+          body:{ source_path:sourcePath.trim(), overwrite:false, merge:true, load:true }
+        });
+        BeastStore.addLedger(`Provider secrets imported from ${sourcePath.trim()} · ${Number(result?.imported || result?.loaded || 0)} value(s) loaded`);
+        await BeastUtilityOrchestrationBridge.refreshProviders();
+        return await BeastRouter.navigate('providers');
+      }
       if (normalized === '/platform refresh' || normalized === '/atlas refresh') { await BeastUtilityOrchestrationBridge.refreshPlatform(); return await BeastRouter.navigate('atlas'); }
       if (normalized === '/system refresh') { await BeastUtilityOrchestrationBridge.refreshSystem(); return await BeastRouter.navigate('system'); }
       if (normalized === '/system sweep') { await BeastUtilityOrchestrationBridge.systemAction('sweep'); return await BeastRouter.navigate('system'); }
@@ -361,6 +373,17 @@
       if (normalized === '/refresh') { await Promise.allSettled([BeastDesktopBridge.status(),BeastModelAgentBridge.refreshModels(),BeastIDECompatibility.refresh(),BeastTerminalToolingDoctorBridge.refreshTooling()]); return; }
       if (normalized === '/layout reset') { window.BeastShellLayout?.reset?.(); window.BeastWorkbenchPanels?.reset?.(); BeastStore.addLedger('Workbench layout reset'); return; }
       if (normalized === '/runtime probe') { await BeastRuntime.probe(); await BeastDesktopBridge.status(); BeastRuntimeWatchdog.inspect(); return; }
+      if (normalized === '/runtime reset' || normalized === '/runtime restart all') {
+        if (!BeastRuntime.hasDesktop('resetRuntimeStack')) throw new Error('Runtime stack reset is available only inside the BEAST Electron shell.');
+        if (!window.confirm('Reset the BEAST runtime stack? This interrupts active model streams, terminals, gateway requests, Guardian consumers, Commons, LiteLLM, MCP, Ollama, and proxy traffic.')) return;
+        BeastStore.addLedger('Runtime stack reset started: Guardian, Commons, daemon, gateway, proxy, LiteLLM, MCP, Ollama, Nginx.');
+        const result = await BeastRuntime.desktopCall('resetRuntimeStack', [], { required:true });
+        const summary = (result?.components || []).map(item => `${item.component}: ${item.ok ? 'ok' : item.status}`).join(' · ');
+        BeastStore.addLedger(`Runtime stack reset ${result?.ok ? 'completed' : 'needs attention'}${summary ? ` · ${summary}` : ''}`);
+        await BeastDesktopBridge.status();
+        await Promise.allSettled([BeastTerminalToolingDoctorBridge.refreshDoctor(), BeastIDECompatibility.refresh(), BeastUtilityOrchestrationBridge.refreshProviders()]);
+        return await BeastRouter.navigate('doctor');
+      }
       if (normalized === '/runtime report') { console.table(BeastRuntime.diagnostics()); BeastStore.addLedger('Runtime report emitted to console'); return; }
       BeastStore.addLedger(`Command queued: ${command}`);
       document.dispatchEvent(new CustomEvent('beast:command',{detail:{command}}));
@@ -515,6 +538,7 @@
       page === 'source' ? BeastSourcePlanPage.renderer :
       page === 'mission' ? BeastMissionPage.renderer :
       page === 'models' ? BeastModelsPage.renderer :
+      page === 'compute-control' ? BeastComputeControlPage.renderer :
       page === 'agents' ? BeastAgentsPage.renderer :
       page === 'review' ? BeastReviewPage.renderer :
       page === 'evidence' ? BeastEvidencePage.renderer :

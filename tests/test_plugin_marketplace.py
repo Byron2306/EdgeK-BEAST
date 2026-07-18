@@ -1,3 +1,6 @@
+import sys
+import types
+
 from app.kernel.deployment.plugin_marketplace import PluginMarketplace
 
 
@@ -154,3 +157,31 @@ def test_builtin_plugins_install_with_valid_schema_pins_and_invoke(tmp_path):
 
     result = invoke("beast.context.surgeon", "context_budget_plan", {"token_budget": 4000, "candidate_files": 4}, {"registry": Registry(), "economy": Economy(), "scale": Scale(), "testnet": Testnet()})
     assert result["per_file_budget"] == 1000
+
+
+def test_marketplace_invokes_an_approved_installed_python_plugin(tmp_path, monkeypatch):
+    module = types.ModuleType("test_marketplace_plugin")
+    module.invoke = lambda payload, context: {"role": payload["role"], "plugin": context["plugin_id"]}
+    monkeypatch.setitem(sys.modules, module.__name__, module)
+    marketplace = PluginMarketplace(str(tmp_path / "plugins"))
+    manifest = sample_manifest()
+    manifest["entrypoint"] = {"kind": "python", "module": module.__name__, "callable": "invoke"}
+    manifest = marketplace.prepare(manifest)
+    assert marketplace.install(manifest, approved=True, dry_run=False)["installed"] is True
+
+    result = marketplace.invoke("example.route-helper", "route_recommend", {"role": "coder"}, approved=True)
+
+    assert result["entrypoint_kind"] == "python"
+    assert result["result"] == {"role": "coder", "plugin": "example.route-helper"}
+
+
+def test_marketplace_refuses_unapproved_or_undeclared_plugin_tool(tmp_path):
+    marketplace = PluginMarketplace(str(tmp_path / "plugins"))
+    manifest = marketplace.prepare(sample_manifest())
+    assert marketplace.install(manifest, approved=True, dry_run=False)["installed"] is True
+
+    import pytest
+    with pytest.raises(PermissionError):
+        marketplace.invoke("example.route-helper", "route_recommend", {}, approved=False)
+    with pytest.raises(ValueError):
+        marketplace.invoke("example.route-helper", "not_declared", {}, approved=True)

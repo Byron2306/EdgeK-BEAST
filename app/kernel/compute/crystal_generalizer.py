@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, Sequence
 
 from app.kernel.compute.runtime_crystallizer import CrystalIR
+from app.kernel.compute.crystal_verifier_synthesis import synthesize_verifier_plan
 from app.kernel.sensorium.contracts import RuntimeEpisode, content_hash
 
 
@@ -109,6 +110,10 @@ class CrystalGeneralizer:
             key: max(float(item.get("resources", {}).get(key, 0.0)) for item in positives)
             for key in sorted({key for item in positives for key in (item.get("resources") or {})})
         }
+        verifier_plan = synthesize_verifier_plan(
+            templates, postconditions=postconditions, negative_conditions=negative_conditions,
+            evidence=receipt.positive_episode_hashes + receipt.negative_episode_hashes,
+        )
         crystal = CrystalIR(
             identity=identity,
             task_family=tuple(task_family),
@@ -123,7 +128,8 @@ class CrystalGeneralizer:
             negative_conditions=tuple(negative_conditions),
             causal_edges=tuple((f"step:{source}", f"step:{target}", relation, confidence) for source, target, relation, confidence in causal[0]),
             parameter_schemas=parameter_schemas,
-            invariants={"step_templates": templates, "causal_topology": causal[0]},
+            invariants={"step_templates": templates, "causal_topology": causal[0],
+                        "verifier_plan": verifier_plan.to_dict()},
             generalization_receipt=receipt.to_dict(),
         )
         return crystal, receipt

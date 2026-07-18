@@ -131,6 +131,23 @@ def test_executor_routes_provider_prefixes():
         assert executor._determine_provider_type(ir) == expected
 
 
+@pytest.mark.asyncio
+async def test_executor_routes_nvidia_nim_through_its_registry_lane(monkeypatch):
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    executor = Executor()
+    ir = EdgeKIR(
+        messages=[{"role": "user", "content": "hi"}],
+        model="meta/llama-3.1-70b-instruct",
+        metadata={"provider": "nvidia_nim", "route_provider": "nvidia_nim"},
+    )
+
+    assert executor._determine_provider_type(ir) == ProviderType.OPENAI_COMPATIBLE
+    response = await executor._route_to_provider(ProviderType.OPENAI_COMPATIBLE, ir)
+    assert response["edgek_provider"] == "nvidia_nim"
+    assert "OPENAI_API_KEY" not in response["choices"][0]["message"]["content"]
+
+
 def test_litellm_config_includes_hf_tgi_and_google():
     manager = DeploymentManager({
         "providers": {

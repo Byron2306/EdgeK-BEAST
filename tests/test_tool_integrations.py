@@ -33,7 +33,7 @@ def test_required_integrations_surface_reports_not_ready(monkeypatch):
     status = RequiredIntegrationRegistry(POLICIES).status()
 
     names = {item["name"] for item in status["required_integrations"]}
-    assert {"semantic_tool_interceptor", "github", "postgres", "rtk", "sqz", "longcodezip", "reporelay"} <= names
+    assert {"semantic_tool_interceptor", "perplexity_code_filter", "github", "postgres", "rtk", "sqz", "longcodezip", "reporelay"} <= names
     github = next(item for item in status["required_integrations"] if item["name"] == "github")
     assert github["ready"] is bool(github["detail"].get("gh_auth_present"))
     postgres = next(item for item in status["required_integrations"] if item["name"] == "postgres")
@@ -92,7 +92,7 @@ def test_mcp_understands_github_postgres_and_token_compressor(tmp_path, monkeypa
     assert postgres.decision == MCPDecision.REQUIRE_APPROVAL
     assert compressor["executed"] is True
     assert compressor["server_class"] == "token_compressor"
-    assert compressor["backend"] == "edgek_builtin_prune"
+    assert compressor["backend"] == "beast_native_rtk"
 
 
 def test_deployment_config_routes_tool_call_interception():
@@ -112,6 +112,7 @@ async def test_tool_intercept_and_integration_endpoints():
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         integrations = await client.get("/edgek/tools/integrations")
         compressed = await client.post("/edgek/compression/prune", json={"text": "x\n\nx\ny", "algorithm": "sqz"})
+        filtered = await client.post("/edgek/code/filter", json={"source": "# note\n\ndef useful():\n    return 1\n"})
 
     assert integrations.status_code == 200
     assert "required_integrations" in integrations.json()
@@ -120,6 +121,9 @@ async def test_tool_intercept_and_integration_endpoints():
     assert compressed.json()["interception"]["intent"] == "payload_compression"
     assert compressed.json()["evidence_record"]["artifact_type"] == "interception_evidence"
     assert compressed.json()["evidence_record"]["priority_score"] > 0
+    assert filtered.status_code == 200
+    assert filtered.json()["backend"] == "beast_native_perplexity_code_filter"
+    assert filtered.json()["network_used"] is False
 
 
 def test_unmatched_interception_returns_evidence_record(tmp_path):
@@ -133,3 +137,13 @@ def test_unmatched_interception_returns_evidence_record(tmp_path):
     assert result["evidence_record"]["severity"] == "low"
     assert result["evidence_record"]["learning_status"] in {"observe", "prioritize", "promotion_candidate"}
     assert "interception_unmatched" in result["evidence_record"]["signals"]
+
+
+@pytest.mark.parametrize("algorithm", ["rtk", "sqz", "longcodezip", "reporelay", "perplexity_code_filter"])
+def test_native_documented_compression_backends_are_ready_without_binaries(monkeypatch, algorithm):
+    monkeypatch.setattr("app.kernel.registry.tool_integrations.shutil.which", lambda _name: None)
+    result = ToolCallInterceptor().compress_text(
+        "import os\n\ndef useful(value):\n    return value\n\n# long comment " + ("x" * 120), algorithm=algorithm,
+    )
+    assert result["backend"] == f"beast_native_{algorithm}"
+    assert result["content"]

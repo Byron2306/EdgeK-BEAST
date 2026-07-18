@@ -6,3 +6,11 @@
 # - longcodezip
 # - reporelay
 psycopg[binary]>=3.2.0
+
+# Optional local/vector-memory clients.  Installing these makes the adapter
+# clients available; a configured database/store is still required before any
+# becomes an active source of truth.
+qdrant-client>=1.12,<2
+duckdb>=1.1,<2
+lancedb>=0.18,<1
+chromadb>=0.5,<2

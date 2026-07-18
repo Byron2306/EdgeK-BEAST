@@ -537,6 +537,7 @@
         }
       }
       BeastStore.addLedger(`SourcePlan applied: ${state.plan.plan_id || 'draft'}`);
+      document.dispatchEvent(new CustomEvent('beast:agent-sourceplan-applied', { detail:{ plan:state.plan, result } }));
       return result;
     } catch (error) {
       BeastStore.patch('sourcePlan', { applying: false, status: 'error', error: String(error.message || error), message: String(error.message || error) });
