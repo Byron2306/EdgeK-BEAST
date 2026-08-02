@@ -72,6 +72,8 @@ class AgentSessionStore:
         agent_id: str = "",
         provider: str = "",
         model: str = "",
+        execution_target: str = "",
+        execution_target_payload: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         seed = f"{agent_id}:{objective}:{_now()}"
         session_id = f"{_safe_slug(agent_id or mode or 'agent')}-{hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8]}"
@@ -84,6 +86,8 @@ class AgentSessionStore:
             "mode": mode or "architect",
             "provider": provider,
             "model": model,
+            "execution_target": str(execution_target or "local"),
+            "execution_target_payload": dict(execution_target_payload or {}),
             "status": "active",
             "budget": budget or {"tokens": 0, "seconds": 0, "cost_usd": 0.0},
             "tools": [str(item) for item in (tools or [])],
@@ -107,8 +111,10 @@ class AgentSessionStore:
     def conversation_history(self, session_id: str, *, limit: int = 12) -> List[Dict[str, str]]:
         """Project persisted session outputs into provider chat history.
 
-        Session evidence and tool records stay out of the model transcript. Only
-        explicit operator prompts and completed assistant turns are replayed.
+        Session evidence stays out of the model transcript. Explicit apply and
+        verifier receipts are replayed as BEAST tool results so a follow-up
+        coding turn reasons from the governed outcome rather than assuming its
+        proposed patch was applied successfully.
         """
         record = self._find(session_id)
         if not record:
@@ -126,6 +132,8 @@ class AgentSessionStore:
                 messages.append({"role": "user", "content": text})
             elif kind in {"streamed_agent_output", "streamed_chat_output"}:
                 messages.append({"role": "assistant", "content": text})
+            elif kind in {"agent_sourceplan_apply", "agent_verifier_result"}:
+                messages.append({"role": "user", "content": f"[BEAST tool result] {text}"})
         return messages[-max(1, min(int(limit), 40)):]
 
     def update(
@@ -138,6 +146,8 @@ class AgentSessionStore:
         files: Optional[List[str]] = None,
         tools: Optional[List[str]] = None,
         budget_delta: Optional[Dict[str, Any]] = None,
+        execution_target: Optional[str] = None,
+        execution_target_payload: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         record = self._find(session_id)
         if not record:
@@ -149,6 +159,10 @@ class AgentSessionStore:
             record["files"] = [str(item) for item in files]
         if tools is not None:
             record["tools"] = [str(item) for item in tools]
+        if execution_target is not None:
+            record["execution_target"] = str(execution_target or "local")
+        if execution_target_payload is not None:
+            record["execution_target_payload"] = dict(execution_target_payload or {})
         if evidence:
             record.setdefault("evidence", []).extend(evidence)
         if output:

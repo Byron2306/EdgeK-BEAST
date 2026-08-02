@@ -1,0 +1,82 @@
+{
+  "beast_object_type": "memory_hull_sidecar",
+  "markdown_sha256": "sha256:c997860cb068225fca593b531b91698a0ee202817642fc1bbaf0f7402eb55a52",
+  "payload": {
+    "beast_object_type": "memory_hull_residue",
+    "beast_systems": {
+      "chronicle_compatible": true,
+      "residue_sealed": true,
+      "vault_editable": true
+    },
+    "caller": "spiffe://beast.local/runtime-governor/crystal-evidence-bridge",
+    "correlation_id": "sha256:a4d7c270177a22dec50486274f424c34ef3dc38152cec6bf306f3176800d9bee",
+    "cost_saved": 191,
+    "created_at": "2026-07-22T10:10:54.449118+00:00",
+    "decision": "reuse_semantic_credit",
+    "evidence": {
+      "chronicle_written": [
+        true,
+        true
+      ],
+      "evidence_ids": [
+        "ev_4c2b7a5feb47c267",
+        "ev_2adeaa1d155350e4"
+      ],
+      "metrics": {
+        "actual_reuse_count": 1,
+        "cloud_calls_during_completion": 0,
+        "fused_crystal_estimate": 2975,
+        "reuse_observations": 1,
+        "runtime_tokens_avoided": 191,
+        "training_tokens_observed": 570,
+        "unique_crystals": 1
+      },
+      "negative_case_count": 0,
+      "packet_hash": "sha256:a4d7c270177a22dec50486274f424c34ef3dc38152cec6bf306f3176800d9bee",
+      "runtime": {
+        "cloud_used": false,
+        "decision_action": "reuse_semantic_credit",
+        "engine": "beast_local_semantic_cache",
+        "execution_mode": "local_reuse"
+      },
+      "semantic_credit": {
+        "confidence": 0.88,
+        "credit_id": "scc_4c91f36da8e0ed25",
+        "replay_type": "semantic_credit"
+      },
+      "task_class": "bounded_discount_math_repair",
+      "teacher": {
+        "cloud_used": true,
+        "engine": "nvidia_nim_or_external_teacher",
+        "training_cloud_calls": 3
+      }
+    },
+    "files_touched": [],
+    "markdown_sha256": "sha256:c997860cb068225fca593b531b91698a0ee202817642fc1bbaf0f7402eb55a52",
+    "policy_tags": [
+      "crystallized_compute",
+      "unified_evidence_packet",
+      "cloud_disabled_replay"
+    ],
+    "provider": "nvidia_nim_or_external_teacher",
+    "residue_id": "residue_944d0d0cab77e7cb349b",
+    "section": "residue",
+    "task": "Crystallized compute evidence: bounded_discount_math_repair",
+    "version": "2.0"
+  },
+  "residue_seal": {
+    "algorithm": "Ed25519",
+    "beast_object_type": "beast_residue_seal",
+    "created_at": "2026-07-22T10:10:54.451865+00:00",
+    "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+    "message_sha256": "sha256:28fddadc86438b18f841458de99c2fee18a2b12b01e5dbf4bb1d56888519d5ca",
+    "payload_sha256": "sha256:e5d8ebea5d61d8dc8c66a3608836568d9a26de529da868deaeee6c3975746e0a",
+    "provider": "cryptography",
+    "public_key_hash": "sha256:4dbff4ecc6ef1660baa1262f1dba513571367d367b1b3479ff6ed20ea6fbd3bd",
+    "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTJpL3Jha1JPQ2dSOGp0YWtFL0ZrOTM5Q2hNbUN2WXh0NDBoMWNNVlJwSVU9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+    "purpose": "memory_hull_residue",
+    "signature_b64": "PyPP40LIb4RbTtXMmpIBPK/m2XGv69B7clec1hv8ewYN7E3RdrhZiXwM5bRxAJpAGs1BuEEcoN+0uBxi+/c+Dg==",
+    "version": "2.0"
+  },
+  "version": "2.0"
+}

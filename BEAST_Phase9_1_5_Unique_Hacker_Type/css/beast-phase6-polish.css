@@ -1,0 +1,156 @@
+/* BEAST Phase 6 premium polish: animated hacker-edge energy and icon-complete controls. */
+@property --beast-edge-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  --beast-edge-rgb: 119,255,61;
+  --beast-edge-speed: 6.4s;
+}
+
+.beast-surface::before {
+  animation: beast-surface-current 5.8s linear infinite, beast-surface-breathe 3.6s ease-in-out infinite;
+  background:
+    linear-gradient(90deg, transparent 0 12%, rgba(var(--beast-edge-rgb),.05) 32%, rgba(var(--beast-edge-rgb),.52) 50%, rgba(var(--beast-edge-rgb),.05) 68%, transparent 88%) top / 220% 1px no-repeat,
+    linear-gradient(180deg, transparent 0 18%, rgba(var(--beast-edge-rgb),.32) 50%, transparent 82%) left / 1px 210% no-repeat;
+}
+
+.beast-surface::after {
+  content:"";
+  position:absolute;
+  inset:2px;
+  border:1px solid rgba(var(--beast-edge-rgb),.08);
+  border-radius:calc(var(--beast-radius) - 2px);
+  box-shadow:inset 0 0 20px rgba(var(--beast-edge-rgb),.025), 0 0 0 rgba(var(--beast-edge-rgb),0);
+  opacity:.65;
+  pointer-events:none;
+  z-index:8;
+  animation:beast-shell-pulse 3.1s ease-in-out infinite;
+}
+
+.beast-card {
+  --card-edge-rgb:119,255,61;
+  --card-pulse-delay:0s;
+}
+
+.beast-card.warning { --card-edge-rgb:255,189,50; }
+.beast-card.danger { --card-edge-rgb:255,73,56; }
+.beast-card.silver { --card-edge-rgb:210,217,213; }
+
+.beast-card::before {
+  content:"";
+  position:absolute;
+  inset:8px;
+  padding:1px;
+  border-radius:5px;
+  background:conic-gradient(
+    from var(--beast-edge-angle),
+    transparent 0deg 214deg,
+    rgba(var(--card-edge-rgb),.05) 232deg,
+    rgba(var(--card-edge-rgb),.84) 260deg,
+    rgba(220,255,205,.98) 270deg,
+    rgba(var(--card-edge-rgb),.18) 288deg,
+    transparent 312deg 360deg
+  );
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:7;
+  opacity:.56;
+  filter:drop-shadow(0 0 5px rgba(var(--card-edge-rgb),.42));
+  animation:beast-card-edge var(--beast-edge-speed) linear infinite, beast-card-breathe 2.8s ease-in-out infinite;
+  animation-delay:var(--card-pulse-delay);
+}
+
+.beast-card:hover::before,
+.beast-card:focus-within::before,
+.beast-card.is-active::before {
+  opacity:.98;
+  filter:drop-shadow(0 0 7px rgba(var(--card-edge-rgb),.72)) drop-shadow(0 0 20px rgba(var(--card-edge-rgb),.24));
+  animation-duration:2.5s,1.4s;
+}
+
+.beast-card:nth-child(2n) { --card-pulse-delay:-1.3s; }
+.beast-card:nth-child(3n) { --card-pulse-delay:-2.7s; }
+.beast-card:nth-child(5n) { --card-pulse-delay:-4.1s; }
+
+.beast-button,
+.beast-page-actions button,
+.agent-control-row button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+.beast-button > img,
+.beast-page-actions button > img,
+.agent-control-row button > img,
+.beast-icon-button > img {
+  width:18px;
+  height:18px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 5px rgba(119,255,61,.45));
+}
+
+.beast-button.hot > img { filter:drop-shadow(0 0 7px rgba(119,255,61,.82)); }
+.danger-button > img { filter:drop-shadow(0 0 6px rgba(255,73,56,.72)); }
+
+.beast-hacker-flicker {
+  position:relative;
+  overflow:hidden;
+}
+.beast-hacker-flicker::after {
+  content:"";
+  position:absolute;
+  left:-40%; right:-40%; top:-12px;
+  height:18px;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(119,255,61,.19),transparent);
+  mix-blend-mode:screen;
+  opacity:.22;
+  animation:beast-panel-scan 6.2s linear infinite;
+}
+
+.beast-data-noise {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.045;
+  background-image:url("../assets/effects/matrix-stream.png");
+  background-size:cover;
+  mix-blend-mode:screen;
+  animation:beast-noise-drift 9s steps(12,end) infinite;
+}
+
+@keyframes beast-card-edge { to { --beast-edge-angle:360deg; } }
+@keyframes beast-card-breathe {
+  0%,100% { opacity:.38; }
+  50% { opacity:.76; }
+}
+@keyframes beast-surface-current {
+  from { background-position:-120% 0, 0 -110%; }
+  to { background-position:220% 0, 0 210%; }
+}
+@keyframes beast-surface-breathe {
+  0%,100% { opacity:.38; }
+  50% { opacity:.95; }
+}
+@keyframes beast-shell-pulse {
+  0%,100% { border-color:rgba(var(--beast-edge-rgb),.05); box-shadow:inset 0 0 15px rgba(var(--beast-edge-rgb),.018),0 0 0 rgba(var(--beast-edge-rgb),0); }
+  50% { border-color:rgba(var(--beast-edge-rgb),.18); box-shadow:inset 0 0 22px rgba(var(--beast-edge-rgb),.045),0 0 13px rgba(var(--beast-edge-rgb),.075); }
+}
+@keyframes beast-panel-scan { from { transform:translateY(-18px); } to { transform:translateY(720px); } }
+@keyframes beast-noise-drift {
+  0% { transform:translate3d(-2%,0,0); filter:contrast(1); }
+  34% { transform:translate3d(1%,-1%,0); filter:contrast(1.35); }
+  66% { transform:translate3d(0,1%,0); filter:contrast(.9); }
+  100% { transform:translate3d(2%,0,0); filter:contrast(1.1); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .beast-surface::before,.beast-surface::after,.beast-card::before,.beast-hacker-flicker::after,.beast-data-noise { animation:none!important; }
+}

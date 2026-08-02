@@ -1,0 +1,52 @@
+{
+  "approval_policy": {
+    "external_write": false,
+    "filesystem_write": false,
+    "first_run": true,
+    "install": true,
+    "network": false
+  },
+  "beast_plugin_manifest_version": "1.0",
+  "budget": {
+    "calls_per_hour": 1000,
+    "max_cost_usd_per_call": 0,
+    "max_latency_ms": 5000,
+    "max_tokens_per_call": 0
+  },
+  "entrypoint": {
+    "kind": "python",
+    "module": "app.kernel.beast_builtin_plugins"
+  },
+  "id": "beast.commons.guardian",
+  "name": "Commons Guardian",
+  "permissions": {
+    "environment": [],
+    "filesystem_read": [],
+    "filesystem_write": [],
+    "network_domains": [],
+    "subprocess": false
+  },
+  "publisher": "BEAST Core",
+  "risk_class": "medium",
+  "tools": [
+    {
+      "description": "Governed local commons integrity audit",
+      "inputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "name": "commons_integrity_audit",
+      "tool_schema_hash": "sha256:ac8f3c6e2b070465ca624fe9a55d46d015d4c841a64d1cc06e3e648e51e3ce16"
+    },
+    {
+      "description": "Governed local anti gaming audit",
+      "inputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "name": "anti_gaming_audit",
+      "tool_schema_hash": "sha256:c1a70cfbc10b5752c859f0775c00b74154c54376642144588f174990e40608c4"
+    }
+  ],
+  "version": "1.0.0"
+}

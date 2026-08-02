@@ -5,7 +5,7 @@ upstream at `127.0.0.1:8101` by default:
 
 ```bash
 npm run smoke
-./node_modules/.bin/electron --no-sandbox scripts/visual-audit-beast-studio.js
+npm run visual:audit
 ```
 
 Acceptance requires: all declared routes navigate through `BeastRouter`, each

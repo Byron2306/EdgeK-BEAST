@@ -16,6 +16,13 @@ from app.kernel.networking.service_registry import ServiceRegistry
 def generate(registry_file: Path, config_file: Path, output_dir: Path, repository: Path) -> list[Path]:
     registry = ServiceRegistry.from_file(registry_file)
     output_dir.mkdir(parents=True, exist_ok=True)
+    # Guardian authorization binds the consumer's executable identity.  The
+    # deployment appraisal is produced with the project interpreter, so the
+    # generated user units must use that exact venv rather than an arbitrary
+    # system Python (which would correctly be rejected by ARDA).
+    interpreter = repository / "venv" / "bin" / "python"
+    if not interpreter.is_file():
+        interpreter = Path(sys.executable).resolve()
     socket_names = [f"beast-socket-guardian-{name}.socket" for name, service in registry.services.items() if service.enabled]
     service = output_dir / "beast-socket-guardian.service"
     service.write_text(
@@ -26,7 +33,7 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
         "[Service]\n"
         "Type=simple\n"
         f"WorkingDirectory={repository}\n"
-        f"ExecStart=/usr/bin/python3 -m app.kernel.execution.socket_guardian_daemon --config {config_file}\n"
+        f"ExecStart={interpreter} -m app.kernel.execution.socket_guardian_daemon --config {config_file}\n"
         "Restart=on-failure\n"
         "RestartSec=2s\n"
         "RuntimeDirectory=beast\n"
@@ -89,7 +96,7 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
             "LoadCredential=guardian_authorization_token:%h/.config/beast/guardian-authorization.token\n"
             "Environment=BEAST_GUARDIAN_AUTHORIZATION_TOKEN_FILE=%d/guardian_authorization_token\n"
             f"Environment=BEAST_GUARDIAN_HANDOFF_RECEIPT=%S/beast/{service_id}-handoff.json\n"
-            f"ExecStart=/usr/bin/python3 {repository / 'bin' / 'beast'} {command}\n"
+            f"ExecStart={interpreter} {repository / 'bin' / 'beast'} {command}\n"
             "Restart=on-failure\n"
             "RestartSec=2s\n"
             "StateDirectory=beast\n"
@@ -98,7 +105,11 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
             "PrivateTmp=yes\n"
             "ProtectSystem=strict\n"
             "ProtectHome=read-only\n"
-            "ReadWritePaths=%S/beast\n"
+            # The gateway's local workspace graph/Chroma index is persisted
+            # under the selected BEAST workspace.  Keep the system sandbox
+            # strict, but permit that single configured workspace alongside
+            # the dedicated runtime state directory.
+            f"ReadWritePaths=%S/beast {repository}\n"
             "RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6\n"
             "LockPersonality=yes\n\n"
             "[Install]\n"

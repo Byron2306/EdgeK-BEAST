@@ -6,20 +6,43 @@
   <meta name="application-name" content="BEAST IDE">
   <meta name="beast-version" content="3.1.0-rc4">
   <meta name="beast-build" content="BEAST-IDE-3.1.0-RC4">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:*; worker-src 'self' blob:; frame-src 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:*; worker-src 'self' blob:; frame-src 'none';">
   <title>BEAST IDE 3.1.0 RC4 — BLACKGLASS VISUAL STABILIZATION</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aldrich&family=Azeret+Mono:wght@400;500;600;700&family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Michroma&family=Orbitron:wght@400;500;600;700;800;900&family=Oxanium:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Teko:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="css/beast-production.css">
+  <link rel="stylesheet" href="css/beast-tokens.css">
+  <link rel="stylesheet" href="css/beast-shell.css">
+  <link rel="stylesheet" href="css/beast-fx.css">
+  <link rel="stylesheet" href="css/beast-editor-cortex.css">
+  <link rel="stylesheet" href="css/beast-models-agents.css">
+  <link rel="stylesheet" href="css/beast-review-evidence.css">
+  <link rel="stylesheet" href="css/beast-trust-memory.css">
+  <link rel="stylesheet" href="css/beast-phase6-polish.css">
+  <link rel="stylesheet" href="css/beast-map-crystal.css">
+  <link rel="stylesheet" href="css/beast-phase6-5-visual-legibility.css">
+  <link rel="stylesheet" href="css/beast-phase7-terminal-tooling-doctor.css">
+  <link rel="stylesheet" href="css/beast-phase7-1-icon-containment.css">
+  <link rel="stylesheet" href="css/beast-phase8-utility-orchestration.css">
+  <link rel="stylesheet" href="css/beast-phase9-visual-consolidation.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-hidef-signal.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-1-overlay-fix.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-2-contrast-control-fix.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-3-glass-atmosphere-brand.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-4-hacker-type-atmosphere.css">
+  <link rel="stylesheet" href="css/beast-phase9-1-5-unique-hacker-fonts.css">
+  <link rel="stylesheet" href="css/beast-9-1-5-local-fonts.css">
+  <link rel="stylesheet" href="css/beast-new-route-compat.css">
+  <link rel="stylesheet" href="css/beast-aesthetic-override.css">
+  <link rel="stylesheet" href="css/beast-signal-authority.css">
+  <link rel="stylesheet" href="css/beast-hacker-coherence.css">
+  <link rel="stylesheet" href="css/beast-layout-authority.css">
 </head>
 <body>
   <a class="beast-skip-link" href="#beastPageOutlet">Skip to active BEAST workspace</a>
   <div id="beastA11yLive" class="beast-sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="beastFxLayer" class="beast-fx-layer" aria-hidden="true"></div>
+  <div id="beastGridLayer" aria-hidden="true"></div>
   <canvas id="beastMatrix" aria-hidden="true"></canvas>
   <canvas id="beastMatrixFront" aria-hidden="true"></canvas>
-  <div id="beastGridLayer" aria-hidden="true"></div>
-  <div id="beastFxLayer" class="beast-fx-layer" aria-hidden="true"></div>
 
   <div class="beast-shell" data-phase="release">
     <aside class="beast-sidebar beast-surface fx-stream" aria-label="BEAST navigation and identity">
@@ -44,17 +67,22 @@
         <button data-beast-route="source"><img src="assets/icons/source.png" alt=""><span class="label">Task Pipeline</span><span>›</span></button>
         <button data-beast-route="mission"><img src="assets/icons/mission.png" alt=""><span class="label">Mission</span><span>›</span></button>
         <button data-beast-route="models"><img src="assets/icons/models.png" alt=""><span class="label">Models</span><span>›</span></button>
+        <button data-beast-route="compute-fabric"><img src="assets/icons/compute.png" alt=""><span class="label">Compute Fabric</span><span>›</span></button>
+        <button data-beast-route="live-fabric"><img src="assets/icons/system.png" alt=""><span class="label">Live Evidence Fabric</span><span>›</span></button>
+        <button data-beast-route="compute-control"><img src="assets/icons/compute.png" alt=""><span class="label">Compute Control</span><span>›</span></button>
         <button data-beast-route="agents"><img src="assets/icons/agents.png" alt=""><span class="label">Swarm</span><span>›</span></button>
         <button data-beast-route="review"><img src="assets/icons/review.png" alt=""><span class="label">Review</span><span>›</span></button>
         <button data-beast-route="trust"><img src="assets/icons/trust.png" alt=""><span class="label">Trust</span><span>›</span></button>
         <button data-beast-route="memory"><img src="assets/icons/memory.png" alt=""><span class="label">Memory</span><span>›</span></button>
         <button data-beast-route="evidence"><img src="assets/icons/evidence.png" alt=""><span class="label">Evidence</span><span>›</span></button>
+        <button data-beast-route="grand-closure"><img src="assets/icons/evidence.png" alt=""><span class="label">Grand Closure</span><span>›</span></button>
         <button data-beast-route="crystallization"><img src="assets/icons/crystallization.png" alt=""><span class="label">Crystallization</span><span>›</span></button>
         <button data-beast-route="map"><img src="assets/icons/map.png" alt=""><span class="label">Semantic Map</span><span>›</span></button>
         <button data-beast-route="terminal"><img src="assets/icons/terminal.png" alt=""><span class="label">Terminal</span><span>›</span></button>
         <button data-beast-route="testing"><img src="assets/icons/review.png" alt=""><span class="label">Testing</span><span>›</span></button>
         <button data-beast-route="tooling"><img src="assets/icons/tooling.png" alt=""><span class="label">Schemas + Skills</span><span>›</span></button>
         <button data-beast-route="doctor"><img src="assets/icons/doctor.png" alt=""><span class="label">Doctor</span><span>›</span></button>
+        <button data-beast-route="reality"><img src="assets/icons/trust.png" alt=""><span class="label">Reality Matrix</span><span>›</span></button>
         <button data-beast-route="providers"><img src="assets/icons/providers.png" alt=""><span class="label">RAG + KV Cache</span><span>›</span></button>
         <button data-beast-route="system"><img src="assets/icons/system.png" alt=""><span class="label">Runtime + PREC</span><span>›</span></button>
         <button data-beast-route="atlas"><img src="assets/icons/map.png" alt=""><span class="label">Systems Atlas</span><span>›</span></button>
@@ -88,7 +116,7 @@
         <canvas id="beastHeaderPulse" aria-hidden="true"></canvas>
         <select id="beastCompactRoute" class="beast-compact-route" aria-label="Navigate BEAST page">
           <option value="studio">BEAST Studio</option><option value="mission">Mission</option><option value="workspace">Workspace</option><option value="compatibility">IDE Compatibility</option><option value="source">SourcePlan</option>
-          <option value="models">Models</option><option value="agents">Agents</option><option value="review">Review</option>
+          <option value="models">Models</option><option value="compute-fabric">Compute Fabric</option><option value="live-fabric">Live Evidence Fabric</option><option value="compute-control">Compute Control</option><option value="agents">Agents</option><option value="review">Review</option><option value="grand-closure">Grand Closure</option><option value="reality">Reality Matrix</option>
           <option value="trust">Trust</option><option value="memory">Memory</option><option value="evidence">Evidence</option>
           <option value="crystallization">Crystallization</option><option value="commons">Commons Forge</option><option value="map">Map</option>
           <option value="terminal">Terminal</option><option value="tooling">Tooling</option><option value="doctor">Doctor</option><option value="providers">Providers</option><option value="system">System</option><option value="atlas">Systems Atlas</option><option value="worktrees">Worktrees</option><option value="deploy">Deploy</option><option value="chronicle">Chronicle</option><option value="economy">Compute Economy</option><option value="settings">Settings</option>
@@ -102,6 +130,7 @@
     <main class="beast-viewport beast-surface fx-scan" id="beastMainViewport" tabindex="-1" aria-label="Active BEAST workspace">
       <div id="beastPageOutlet" aria-live="polite" aria-busy="false"></div>
     </main>
+    <div class="beast-shell-resizer command" data-shell-resizer="command" role="separator" aria-orientation="horizontal" aria-label="Resize command dock" tabindex="0"></div>
 
     <aside class="beast-rail beast-surface fx-radar" aria-label="BEAST context and telemetry">
       <div id="beastContextRail"></div>
@@ -150,10 +179,17 @@
     <footer><span><kbd>Ctrl</kbd> + <kbd>K</kbd> command · <kbd>F6</kbd> cycle regions · <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd> controls</span></footer>
   </section>
 
+  <aside id="beastCapsuleInspector" class="beast-capsule-inspector" aria-label="Capsule inspector" aria-hidden="true">
+    <header><div><span>SEALED OBJECT</span><h2 id="beastCapsuleInspectorTitle">Capsule Inspector</h2></div><button id="beastCapsuleInspectorClose" type="button" aria-label="Close capsule inspector">×</button></header>
+    <div id="beastCapsuleInspectorBody" class="beast-capsule-inspector-body"></div>
+  </aside>
+
   <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+  <script src="js/generated/beast-build-identity.js"></script>
   <script src="js/beast-assets.js"></script>
   <script src="js/beast-store.js"></script>
   <script src="js/beast-runtime-contract.js"></script>
+  <script src="js/beast-workspace-trust.js"></script>
   <script src="js/beast-desktop-bridge.js"></script>
   <script src="js/beast-render-scheduler.js"></script>
   <script src="js/beast-router.js"></script>
@@ -169,7 +205,30 @@
   <script src="js/beast-panel-resize.js"></script>
   <script src="js/beast-ide-compatibility.js"></script>
   <script src="js/beast-ide-runtime.js"></script>
+  <script src="js/beast-editor-document-model.js"></script>
+  <script src="js/beast-editor-safety.js"></script>
+  <script src="js/beast-editor-groups.js"></script>
+  <script src="js/beast-tab-lifecycle.js"></script>
   <script src="js/beast-editor-cortex.js"></script>
+  <script src="js/beast-editor-workbench.js"></script>
+  <script src="js/beast-compare-editors.js"></script>
+  <script src="js/ai/beast-ai-transport.js"></script>
+  <script src="js/ai/beast-ai-intent.js"></script>
+  <script src="js/ai/operations-console-client.js"></script>
+  <script src="js/ai/agent-client.js"></script>
+  <script src="js/ai/agent-store.js"></script>
+  <script src="js/ai/agent-events.js"></script>
+  <script src="js/ai/agent-view.js"></script>
+  <script src="js/ai/context-picker.js"></script>
+  <script src="js/ai/context-manifest.js"></script>
+  <script src="js/ai/approval-cards.js"></script>
+  <script src="js/ai/tool-cards.js"></script>
+  <script src="js/ai/plan-view.js"></script>
+  <script src="js/ai/verification-view.js"></script>
+  <script src="js/ai/sourceplan-handoff.js"></script>
+  <script src="js/ai/conversation-renderer.js"></script>
+  <script src="js/ai/mode-controller.js"></script>
+  <script src="js/ai/budget-view.js"></script>
   <script src="js/beast-ai-coding.js"></script>
   <script src="js/beast-onboarding.js"></script>
   <script src="js/beast-model-agent-bridge.js"></script>
@@ -183,8 +242,13 @@
   <script src="js/pages/beast-sourceplan-page.js"></script>
   <script src="js/pages/beast-mission-page.js"></script>
   <script src="js/pages/beast-models-page.js"></script>
+  <script src="js/beast-capsule-inspector.js"></script>
+  <script src="js/pages/beast-compute-fabric-page.js"></script>
+  <script src="js/pages/beast-live-fabric-page.js"></script>
+  <script src="js/pages/beast-compute-control-page.js"></script>
   <script src="js/pages/beast-agents-page.js"></script>
   <script src="js/pages/beast-review-page.js"></script>
+  <script src="js/pages/beast-grand-closure-page.js"></script>
   <script src="js/pages/beast-evidence-page.js"></script>
   <script src="js/pages/beast-trust-page.js"></script>
   <script src="js/pages/beast-memory-page.js"></script>
@@ -194,12 +258,18 @@
   <script src="js/pages/beast-testing-page.js"></script>
   <script src="js/pages/beast-tooling-page.js"></script>
   <script src="js/pages/beast-doctor-page.js"></script>
+  <script src="js/pages/beast-reality-page.js"></script>
   <script src="js/pages/beast-phase8-pages.js"></script>
   <script src="js/pages/beast-atlas-page.js"></script>
   <script src="js/pages/beast-commons-page.js"></script>
   <script src="js/beast-accessibility-performance.js"></script>
   <script src="js/beast-release-guard.js"></script>
+  <script src="js/beast-phase-a-layout.js"></script>
+  <script src="js/beast-phase-d-interaction.js"></script>
   <script src="js/beast-release-app.js"></script>
+  <script src="js/beast-hacker-runtime.js"></script>
+  <script src="js/beast-zoom-guardian.js"></script>
   <script src="js/beast-command-palette.js"></script>
+  <script src="js/beast-profile-studio.js"></script>
 </body>
 </html>

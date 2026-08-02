@@ -1,0 +1,130 @@
+{
+  "artifact_type": "reuse_safety_mutations",
+  "category": "crystallized_compute_safety",
+  "chronicle_type": "evidence_envelope",
+  "created_at": "2026-07-22T10:10:14.890543+00:00",
+  "evidence": {
+    "artifact_type": "reuse_safety_mutations",
+    "blast_radius": 0.55,
+    "capability_family": "crystallized_compute_safety",
+    "confidence": 0.55,
+    "created_at": "2026-07-22T10:10:14.890543+00:00",
+    "evidence_id": "ev_3e9c99aaadf79e66",
+    "evidence_schema_version": "1.0",
+    "expected_value": 0.493,
+    "failure_probability": 0.45,
+    "freshness": 1.0,
+    "learning_status": "prioritize",
+    "priority_score": 0.6443,
+    "promotion_candidate": false,
+    "provider": "nvidia_nim_or_external_teacher",
+    "recommended_actions": [
+      "keep_reuse_fail_closed",
+      "quarantine_failed_mutations"
+    ],
+    "recommended_capability_id": null,
+    "relationships": [
+      {
+        "target": "ev_3f00f320681b27e1",
+        "type": "derived_from"
+      }
+    ],
+    "relevance": 0.9,
+    "repeat_count": 1,
+    "risk": 0.65,
+    "scope": "bounded_discount_math_repair",
+    "score_breakdown": {
+      "expected_value_components": {
+        "blast_radius_inverse": 0.027,
+        "confidence": 0.099,
+        "freshness": 0.1,
+        "relevance": 0.198,
+        "repetition": 0.0,
+        "severity": 0.027,
+        "verification": 0.042
+      },
+      "expected_value_raw": 0.493,
+      "expected_value_weights": {
+        "blast_radius_inverse": 0.06,
+        "confidence": 0.18,
+        "freshness": 0.1,
+        "relevance": 0.22,
+        "repetition": 0.14,
+        "severity": 0.18,
+        "verification": 0.12
+      },
+      "failure_probability_components": {
+        "blast_radius_penalty": -0.0275,
+        "confidence": 0.1375,
+        "freshness": 0.05,
+        "relevance": 0.225,
+        "repetition": 0.0,
+        "severity": 0.03,
+        "verification": 0.035
+      },
+      "failure_probability_raw": 0.45,
+      "failure_probability_weights": {
+        "blast_radius_penalty": -0.05,
+        "confidence": 0.25,
+        "freshness": 0.05,
+        "relevance": 0.25,
+        "repetition": 0.15,
+        "severity": 0.2,
+        "verification": 0.1
+      },
+      "local_scores": {
+        "blast_radius": 0.55,
+        "confidence": 0.55,
+        "expected_value": 0.493,
+        "failure_probability": 0.45,
+        "freshness": 1.0,
+        "relevance": 0.9,
+        "repetition": 0.0,
+        "severity": 0.15,
+        "verification_strength": 0.35
+      },
+      "priority_components": {
+        "blast_radius_penalty": -0.1375,
+        "confidence": 0.55,
+        "expected_value": 1.479,
+        "relevance": 0.9,
+        "repeat_bonus": 0.08,
+        "verification": 0.35
+      },
+      "priority_raw": 3.2215,
+      "priority_weights": {
+        "blast_radius_penalty": -1.0,
+        "confidence": 1.0,
+        "expected_value": 3.0,
+        "relevance": 1.0,
+        "repeat_bonus": 1.0,
+        "verification": 1.0
+      },
+      "score_schema_version": "1.0",
+      "thresholds": {
+        "prioritize_priority_score": 0.55,
+        "promotion_expected_value": 0.55,
+        "promotion_priority_score": 0.72,
+        "promotion_repeat_count": 2,
+        "promotion_verification_strength": 0.5
+      },
+      "uncertainty": 0.4575
+    },
+    "severity": "info",
+    "signals": [
+      "negative_cases=0",
+      "blocked=0"
+    ],
+    "source_type": "crystallized_compute_negative_cases",
+    "source_uri": "sha256:099944f5e7931540cda86c2ef52f2a226e0140aedc58fb41f24728b766a913e0#negative_cases",
+    "summary": "0/0 unsafe crystal reuse mutations blocked.",
+    "task_id": null,
+    "uncertainty": 0.4575,
+    "verification_strength": 0.35
+  },
+  "provider": "nvidia_nim_or_external_teacher",
+  "reason": "crystallized_compute_unified_packet",
+  "source_type": "crystallized_compute_negative_cases",
+  "task_id": null,
+  "version": "1.0"
+}

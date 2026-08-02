@@ -1,0 +1,170 @@
+{
+  "cartographer_grounding": {
+    "file_sha256": "sha256:d0a3d4a35a5e19b2ec3b9c9bd0aaaa3726b3a495c1f0253f742c1f380a8970f3",
+    "old_sha256": "sha256:d0a3d4a35a5e19b2ec3b9c9bd0aaaa3726b3a495c1f0253f742c1f380a8970f3",
+    "path": "app/config.py",
+    "symbol": "parse_bool",
+    "target_id": "T0"
+  },
+  "claim_boundary": "This proves one bounded local edit path, not general coding capability or model-weight improvement.",
+  "cpu_seconds": 0.024234,
+  "deterministic_crystal_reuse": {
+    "provider_calls": 0,
+    "receipt": {
+      "after_sha256": "sha256:c7e8ad989ac59e8fe1c3be59ee968743daf6cee6f337e29dce028f22b2f7e0b1",
+      "approval_id": "novel-ide-approval",
+      "authority": {
+        "authorize": false,
+        "execute": false,
+        "model_authority": {
+          "authorize": false,
+          "declare_success": false,
+          "execute": false,
+          "interpret": true,
+          "propose": true
+        }
+      },
+      "beast_object_type": "crystal_execution_receipt",
+      "before_sha256": "sha256:d0a3d4a35a5e19b2ec3b9c9bd0aaaa3726b3a495c1f0253f742c1f380a8970f3",
+      "crystal_ir_digest": "sha256:e9cae52c87debcb0492f6a79419e33b14e61a5339d35d99240d97564ee890471",
+      "mutation_performed": true,
+      "path": "app/config.py",
+      "receipt_digest": "sha256:9ccd21c15ed3a333e12de943bcfb391a964ecd692fb9137354799f8bc53f9091",
+      "rollback_performed": false,
+      "status": "verified",
+      "verification": [
+        {
+          "command": [
+            "python",
+            "-m",
+            "py_compile",
+            "app/config.py"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "pytest",
+            "-q",
+            "tests/test_config.py"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+        }
+      ],
+      "version": "1.0",
+      "worktree_task_id": "crystal-reuse"
+    }
+  },
+  "evidence_pack": "benchmarks/results/novel_ide_closure_v3_pack",
+  "live_residual": {
+    "bounded_field": true,
+    "candidate": {
+      "new": "return value.lower() in {'true', '1', 'yes'} or value.lower() == 'on' and not value.lower() == 'off'"
+    },
+    "mutation_performed": false,
+    "telemetry": {
+      "eval_count": 37,
+      "eval_duration_ns": 6771237216,
+      "latency_ms": 40214.87,
+      "load_duration_ns": 144760080,
+      "prompt_eval_count": 398,
+      "prompt_eval_duration_ns": 32032634811,
+      "provider_called": true,
+      "total_duration_ns": 40205651448
+    }
+  },
+  "live_verified_edit": {
+    "after_sha256": "sha256:784fdd96d36d95512a94ca3fb4adebdb783aeaac003932436ed492c9fd9c752f",
+    "approval_id": "novel-ide-approval",
+    "authority": {
+      "authorize": false,
+      "execute": false,
+      "model_authority": {
+        "authorize": false,
+        "declare_success": false,
+        "execute": false,
+        "interpret": true,
+        "propose": true
+      }
+    },
+    "beast_object_type": "crystal_execution_receipt",
+    "before_sha256": "sha256:d0a3d4a35a5e19b2ec3b9c9bd0aaaa3726b3a495c1f0253f742c1f380a8970f3",
+    "crystal_ir_digest": "sha256:e9cae52c87debcb0492f6a79419e33b14e61a5339d35d99240d97564ee890471",
+    "mutation_performed": true,
+    "path": "app/config.py",
+    "receipt_digest": "sha256:d83de4c648583ffb9ff43d8473ef8b6d331f9856e2137036ee8527db5b837ebe",
+    "rollback_performed": false,
+    "status": "verified",
+    "verification": [
+      {
+        "command": [
+          "python",
+          "-m",
+          "py_compile",
+          "app/config.py"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "pytest",
+          "-q",
+          "tests/test_config.py"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+      }
+    ],
+    "version": "1.0",
+    "worktree_task_id": "novel-live"
+  },
+  "model": "qwen2.5:3b",
+  "options": {
+    "num_batch": 128,
+    "num_ctx": 1024,
+    "num_predict": 64,
+    "num_thread": 2,
+    "temperature": 0
+  },
+  "provider_calls": 2,
+  "raw_ollama": {
+    "candidate_type": "dict",
+    "mutation_performed": false,
+    "telemetry": {
+      "eval_count": 8,
+      "eval_duration_ns": 1201415060,
+      "latency_ms": 3898.52,
+      "load_duration_ns": 175428726,
+      "prompt_eval_count": 52,
+      "prompt_eval_duration_ns": 2048772123,
+      "provider_called": true,
+      "total_duration_ns": 3879792709
+    }
+  },
+  "receipt_hash": "sha256:c676407d52e377696639909d1291b29062084d9113c2ffc90f179ad3abde3b24",
+  "repair": {
+    "attempted": false
+  },
+  "task": {
+    "objective": "The boolean configuration parser must accept the common on/off aliases while preserving existing true/false/yes behavior.",
+    "target_id": "T0",
+    "target_menu": {
+      "T0": {
+        "file": "app/config.py",
+        "symbol": "parse_bool"
+      }
+    }
+  },
+  "wall_seconds": 45.69
+}

@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+import os
+from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
+
+from app.kernel.local.ollama_config import ollama_base_url, ollama_model
+from app.kernel.compute.ollama_cpu_profile import request_options
 
 from app.kernel.registry.provider_registry import ProviderRecord, ProviderRegistry
 
@@ -19,6 +23,7 @@ class ProviderAdapterPlan:
     base_url: Optional[str]
     proxy_path: str
     governed_by_beast: bool = True
+    request_policy: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -119,6 +124,22 @@ class OllamaAdapter(ProviderAdapter):
     def plan_chat(self, requested_model: str = "") -> ProviderAdapterPlan:
         plan = super().plan_chat(requested_model)
         plan.route_provider = "ollama"
+        requested = self._requested_model(requested_model)
+        # A concrete policy model remains authoritative, while the built-in
+        # default follows the live workstation override.
+        plan.model = (requested or ollama_model()) if plan.model == "qwen2.5:0.5b" else (requested or plan.model)
+        plan.base_url = ollama_base_url(plan.base_url or "")
+        plan.request_policy = {
+            "engine": "ollama_native",
+            "api": "/api/generate",
+            "stream": False,
+            "num_ctx": int(os.environ.get("BEAST_OLLAMA_NUM_CTX", "2048")),
+            "num_predict": int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "48")),
+            **request_options(),
+            "keep_alive": os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
+            "portable_kv": False,
+            "prompt_cache": "runner_local",
+        }
         return plan
 
 

@@ -1,0 +1,3826 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 638,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:49:45Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_5408d1dc8cdb6305478a",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_9564cd48c121b50a.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "secret_redaction_o01_v1",
+        "secret_redaction_o02_v1"
+      ],
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 639,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:49:52Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_18126dcabefbc52bf346",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_c994d9bed8869f2d",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_c994d9bed8869f2d.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "secret_redaction_o01_v1",
+        "secret_redaction_o02_v1"
+      ],
+      "task_id": "secret_redaction_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fc238e6ad8c9301e8837.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 8033.501,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ad949fe0f9bc825a0ce5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2195.438,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_5e5b2de0a0ae844b3c33.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 3618.304,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 377,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 4244,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_342f136e2e9fd42c566d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 2359.633,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_be210e690f448389b3d1.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2553.936,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_31db605c74df98146daf.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4024.85,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 383,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 4250,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4c63ca7125832bd81cda.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 3283.79,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1d0c4592cea7d6435d32.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2416.246,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 256,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 638,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_5408d1dc8cdb6305478a.json"
+      },
+      "avoided_tokens_estimate": 638,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b3c5079abacb36a51e25.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 2254.782,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0aae2e5fba1491f4a9db.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2196.368,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_18126dcabefbc52bf346.json"
+      },
+      "avoided_tokens_estimate": 639,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_c994d9bed8869f2d",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1ed04a8a942c98889364.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 2240.278,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_380d9554237245e4053a.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2481.257,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 639,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_63d4b0957c1d46c5d33f.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2976.562,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 383,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 4250,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:5571707f0e067d05334209beb9f5fc326496f234aedc9765d255dbd49067e598",
+      "applicability_fingerprint": "sha256:d4c40b410c91466d00228f7545117b66d0d79249c566381733b460eee4ed1bce",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:467bcb169366c4a474a4173a62c637eff348a3d4e8c5cc7cfb8a591ad4c3ebe1",
+      "applicability_fingerprint": "sha256:df246758703630fff297ff63f63448d225a2f0cb3b2048aa77798e1a3629a097",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ad949fe0f9bc825a0ce5.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:425b901b8797b1fdf260ffdcb9d31481b29677d0f2c0b432901482924e1b08d5",
+      "applicability_fingerprint": "sha256:98a40623915dfa0ba82228cb4df41709316e2906e14a0c07e43cfb468bd2277b",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ad949fe0f9bc825a0ce5.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:e206a056dc15baa3f07b8c48ec19604b05db369a3221f30f567c4d1135702663",
+      "applicability_fingerprint": "sha256:d4c40b410c91466d00228f7545117b66d0d79249c566381733b460eee4ed1bce",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:2aedb85d7a73fe8524e42151415bfd2ae7ffae38ccfb098254c312b695ad08a7",
+      "applicability_fingerprint": "sha256:df246758703630fff297ff63f63448d225a2f0cb3b2048aa77798e1a3629a097",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_be210e690f448389b3d1.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:178bd0a67d2cbb2804b4fba2846be5cd968694702a20e103623d06fb6364b9fd",
+      "applicability_fingerprint": "sha256:98a40623915dfa0ba82228cb4df41709316e2906e14a0c07e43cfb468bd2277b",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_be210e690f448389b3d1.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:6eaf17225389e6118bfe2c8e08ae5bffd170b124036f91169f4aba9454fb5ceb",
+      "applicability_fingerprint": "sha256:d4c40b410c91466d00228f7545117b66d0d79249c566381733b460eee4ed1bce",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:9e6db2907e2844b1908ddd93d08a15ae6e83ddfe600d1491d248e3672d14d046",
+      "applicability_fingerprint": "sha256:df246758703630fff297ff63f63448d225a2f0cb3b2048aa77798e1a3629a097",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1d0c4592cea7d6435d32.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:c6fe4e29d43c4dfe75c2c9859fce216168568fb771dff932df76dd2800503782",
+      "applicability_fingerprint": "sha256:98a40623915dfa0ba82228cb4df41709316e2906e14a0c07e43cfb468bd2277b",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1d0c4592cea7d6435d32.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:b1e764fedf5702fcff354220ac38458689af0a35bb9173625e14694bc3398a34",
+      "applicability_fingerprint": "sha256:d4c40b410c91466d00228f7545117b66d0d79249c566381733b460eee4ed1bce",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:14cdb5654a8a7408e992af8c3039bc3db32c4493f79179923c5c4bded96087db",
+      "applicability_fingerprint": "sha256:df246758703630fff297ff63f63448d225a2f0cb3b2048aa77798e1a3629a097",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0aae2e5fba1491f4a9db.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:b066c88c2a405450114e8ea6c115444a6e429d6680efae0def573abb86a0c1c6",
+      "applicability_fingerprint": "sha256:98a40623915dfa0ba82228cb4df41709316e2906e14a0c07e43cfb468bd2277b",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0aae2e5fba1491f4a9db.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:00a3fdd5579dca1d3862341c86c5d0bddfc56c06ca276c242e1c9d34264565bd",
+      "applicability_fingerprint": "sha256:d4c40b410c91466d00228f7545117b66d0d79249c566381733b460eee4ed1bce",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:4617bba739cef028c24fc7dc0997889569e0a2cd33ffbc7db0d7562381708abb",
+      "applicability_fingerprint": "sha256:df246758703630fff297ff63f63448d225a2f0cb3b2048aa77798e1a3629a097",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:93ca99ae7e6a89e4784d2ff93498836d8e2839746b115af752fec07ead881656",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_380d9554237245e4053a.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:347e0d563f86e819123423a3bc4e8b673ead4ce91d0481b60eaf926359612337",
+      "applicability_fingerprint": "sha256:98a40623915dfa0ba82228cb4df41709316e2906e14a0c07e43cfb468bd2277b",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_380d9554237245e4053a.json"
+      },
+      "family": "secret_redaction",
+      "family_fingerprint": "sha256:214f939a2d40aa04ec4005c1bce2cc00634e3fd2b7320e3c0bace206ed2f7542",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:9df358989ee6f79cd1ecfda0f38a9e219bc1afcbc93d5613ec2367788d59d8a3"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:19b5b26d40ddf16653a9881c16c5d5e648b5fb08f3e72398b5c8358489f3ca32",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:49:45Z",
+      "cross_provider_reuse": false,
+      "family": "secret_redaction",
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "occurrence": 3,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_5408d1dc8cdb6305478a",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "validated_first_recurrence",
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:49:52Z",
+      "cross_provider_reuse": false,
+      "family": "secret_redaction",
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "occurrence": 5,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_18126dcabefbc52bf346",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "active_recurrence",
+      "task_id": "secret_redaction_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "secret_redaction"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 8033.501,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 8033.501,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2195.438,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2195.438,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 3618.304,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3618.304,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 980,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 377,
+          "prompt_tokens": 3867,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4244
+        }
+      },
+      "prompt_tokens": 3075,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider ID to env key format\",\n      \"new\": \"    key = provider_id.replace('-', '_').upper() + \\\"_API_KEY\\\"\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Redact raw API key in provider_env\",\n      \"new\": \"    return {\\\"provider\\\": provider_id, \\\"api_key_present\\\": bool(env.get(key))}\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"provider_handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 377,
+        "prompt_tokens": 3867,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4244
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2359.633,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2359.633,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2553.936,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2553.936,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 4024.85,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4024.85,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1018,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 383,
+          "prompt_tokens": 3867,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "total_tokens": 4250
+        }
+      },
+      "prompt_tokens": 3075,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider ID to match environment variable naming\",\n      \"new\": \"    key = provider_id.upper().replace('-', '_') + \\\"_API_KEY\\\"\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Redact raw API key in the returned dictionary\",\n      \"new\": \"    return {\\\"provider\\\": provider_id, \\\"api_key_present\\\": bool(env.get(key))}\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"provider_handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 383,
+        "prompt_tokens": 3867,
+        "prompt_tokens_details": {
+          "cached_tokens": 3840
+        },
+        "total_tokens": 4250
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 3283.79,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3283.79,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2416.246,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2416.246,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 845,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 256,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 638
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 638
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2254.782,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2254.782,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider_id and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2196.368,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2196.368,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2240.278,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2240.278,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider_id and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,3 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    return {\"provider\": provider_id.replace(\"-\", \"_\"), \"api_key_present\": key in env}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2481.257,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2481.257,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 854,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 257,
+          "prompt_tokens": 382,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 639
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id.replace(\\\"-\\\", \\\"_\\\"), \\\"api_key_present\\\": key in env}\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"why\": \"Normalize provider ID and redact API key presence\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.04s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 257,
+        "prompt_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 639
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2976.562,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2976.562,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1024,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 383,
+          "prompt_tokens": 3867,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "total_tokens": 4250
+        }
+      },
+      "prompt_tokens": 3075,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider ID to match environment variable naming convention\",\n      \"new\": \"    key = provider_id.replace('-', '_').upper() + \\\"_API_KEY\\\"\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Redact raw API key and indicate presence\",\n      \"new\": \"    return {\\\"provider\\\": provider_id, \\\"api_key_present\\\": bool(env.get(key))}\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"provider_handoff_hash\": \"sha256:b4c89594b8d437d5f5a5bd5238ffd0a979227623eb94adae96c06ac495f29c17\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 383,
+        "prompt_tokens": 3867,
+        "prompt_tokens_details": {
+          "cached_tokens": 3840
+        },
+        "total_tokens": 4250
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "tests:tests/test_provider_config.py:semantic_change",
+        "tests:tests/test_provider_config.py:symbol_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:0e059360467fd25b765b6b2b2d0f71be0725a2dba5da3a8f1922648cf1944931",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:3d9ea72562a2c03074b4d851feaab8d594e644f5534d4eaefbcb8cfc020dfe32",
+            "semantic_hash": "sha256:f6afe6b5ba449a3a8f074a049e7ae22a00a63cf3655815485811a4bf73a20813",
+            "symbol_hashes": {
+              "test_mutation_contract_sentinel": "sha256:ce3375caaa586cb65b64122d4728e4c04d655e0a29382a05d9f4da10b03184ba",
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:0e059360467fd25b765b6b2b2d0f71be0725a2dba5da3a8f1922648cf1944931",
+      "mutation_type": "test_contract_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "provider": "mistral",
+      "recovered_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "tests:tests/test_provider_config.py:semantic_change",
+          "tests:tests/test_provider_config.py:symbol_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:24Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 8033.501,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_fc238e6ad8c9301e8837",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:24Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2195.438,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_ad949fe0f9bc825a0ce5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:49:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 3618.304,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 377,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_5e5b2de0a0ae844b3c33",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": 4244,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:36Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2359.633,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_342f136e2e9fd42c566d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:37Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2553.936,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_be210e690f448389b3d1",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:49:37Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 4024.85,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 383,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_31db605c74df98146daf",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": 4250,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:44Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 3283.79,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_4c63ca7125832bd81cda",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:45Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2416.246,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 256,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_1d0c4592cea7d6435d32",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 638,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:51Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2254.782,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_b3c5079abacb36a51e25",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:49:52Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2196.368,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_0aae2e5fba1491f4a9db",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:50:04Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2240.278,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_1ed04a8a942c98889364",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:50:05Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2481.257,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 257,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 382,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_380d9554237245e4053a",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 639,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:50:06Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2976.562,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 383,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3867,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_63d4b0957c1d46c5d33f",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": 4250,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "mistral": {
+      "live_failures_by_bucket": {
+        "capability_failure": 13,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "mistral": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.55,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "mistral": {
+          "average_latency_ms": 2566.032,
+          "average_provider_prompt_tokens": 1543.667,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_mistral_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "provider_config_secret_redaction"
+            },
+            {
+              "lane": "live_mistral_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "provider_config_secret_redaction"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 2976.562,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 4250.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "mistral"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_mistral_schema_validation_20260721T2048Z_b004/live_execution.json"
+}

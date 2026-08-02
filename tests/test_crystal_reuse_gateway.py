@@ -72,6 +72,7 @@ def test_crystal_reuse_gateway_reuses_kv_transport_block(tmp_path):
         head_dim=16,
         seq_len=128,
         size_bytes=4096,
+        tensor_payload=b"engine-native-kv-prefill",
     )
 
     decision = gateway.decide(request)

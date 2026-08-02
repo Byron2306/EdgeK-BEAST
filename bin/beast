@@ -30,9 +30,57 @@ logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 BEAST = Path(__file__).resolve()
-DEFAULT_GATEWAY = "http://127.0.0.1:8000"
+DEFAULT_GATEWAY = os.environ.get("BEAST_GATEWAY_URL", "http://127.0.0.1:8101").rstrip("/")
 
-if "crystal-proof" not in sys.argv[1:2]:
+
+def _bootstrap_tui_runtime() -> None:
+    """Run the interactive console in the project runtime, not PATH Python.
+
+    ``bin/beast`` is commonly symlinked into ``~/.local/bin``.  Its env
+    shebang then follows whatever Python happens to lead PATH (often a conda
+    or tool-specific interpreter without PyYAML/Textual).  The TUI has a real
+    project runtime, so re-exec it before importing any BEAST modules.
+    """
+    # Do not trust a marker inherited from a terminal or parent process.  The
+    # interpreter identity check below is loop-safe and is the authoritative
+    # signal that we are already inside the project runtime.
+    if "ui" not in sys.argv[1:]:
+        return
+    candidates = [
+        ROOT / "venv" / "bin" / "python",
+        ROOT / ".venv" / "bin" / "python",
+        Path(os.environ["BEAST_PYTHON"]) if os.environ.get("BEAST_PYTHON") else None,
+    ]
+    current_prefix = Path(sys.prefix).expanduser().absolute()
+    for candidate in candidates:
+        if not candidate or not candidate.exists():
+            continue
+        # Do not resolve the venv launcher symlink: Python uses that path to
+        # locate pyvenv.cfg and its site-packages. Resolving it jumps straight
+        # to the base interpreter and reintroduces missing-package failures.
+        # ``venv/bin/python`` is normally a symlink to the system
+        # interpreter, so ``samefile`` is *not* a valid test here: it would
+        # incorrectly say that a system Python already has the venv's
+        # dependencies.  Python exposes the active environment through
+        # sys.prefix; that is the identity we need to compare.
+        candidate_prefix = candidate.parent.parent.absolute()
+        if candidate_prefix == current_prefix:
+            return
+        env = os.environ.copy()
+        env["BEAST_TUI_RUNTIME_READY"] = "1"
+        os.execve(str(candidate), [str(candidate), str(BEAST), *sys.argv[1:]], env)
+
+
+_bootstrap_tui_runtime()
+
+# Server commands import ``app.main`` (or ``app.commons_main``), which owns
+# service construction.  Initialising the factory here as well can contend
+# with the gateway's durable stores before Uvicorn has started, leaving a
+# desktop-managed gateway alive but not listening.  Keep eager setup for CLI
+# commands that need it, but let server processes initialise once in-app.
+_command_name = sys.argv[1] if len(sys.argv) > 1 else ""
+_lightweight_verify = _command_name == "verify" and len(sys.argv) > 2 and sys.argv[2] == "release-contract"
+if _command_name not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"} and not _lightweight_verify:
     with contextlib.redirect_stdout(sys.stderr):
         from app.kernel.compute.factory import ServiceFactory
         ServiceFactory.initialize()
@@ -64,6 +112,7 @@ COMMANDS = [
     "hermes-plan",
     "hermes-execute",
     "ui",
+    "ide",
     "start",
     "evidence",
     "spaces",
@@ -77,7 +126,35 @@ COMMANDS = [
 ]
 
 
-def start_mcp_http_server(host: str = "127.0.0.1", port: int = 8001) -> None:
+def discover_desktop_gateway(preferred: str = "") -> str:
+    """Return a live BEAST desktop-contract gateway without trusting stale ports.
+
+    The desktop may select 8102+ when Socket Guardian owns 8101.  CLI, TUI,
+    and stdio MCP processes must follow that selected local route instead of
+    retaining the old 8000 default or failing after a desktop recovery.
+    """
+    candidates = []
+    for value in (preferred, os.environ.get("BEAST_GATEWAY_URL", ""), DEFAULT_GATEWAY):
+        value = str(value or "").rstrip("/")
+        if value and value not in candidates:
+            candidates.append(value)
+    for port in range(8101, 8107):
+        candidate = f"http://127.0.0.1:{port}"
+        if candidate not in candidates:
+            candidates.append(candidate)
+    for candidate in candidates:
+        try:
+            request = urllib.request.Request(f"{candidate}/edgek/control-plane/desktop-compatibility", method="GET")
+            with urllib.request.urlopen(request, timeout=0.65) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+            if response.status < 400 and payload.get("status") == "ready":
+                return candidate
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError, json.JSONDecodeError):
+            continue
+    return str(preferred or DEFAULT_GATEWAY).rstrip("/")
+
+
+def start_mcp_http_server(host: str = "127.0.0.1", port: int = 8765) -> None:
     import uvicorn
     from fastapi import FastAPI
     from app.mcp.server import mcp_router
@@ -185,6 +262,8 @@ def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, lis
         "/edgek/capability-exchange",
         "/edgek/plugins",
         "/edgek/compute",
+        "/edgek/swarm/state",
+        "/edgek/prec/state",
     ]
     root_param = urllib.parse.quote(str(ROOT), safe="")
     active_required = [
@@ -195,6 +274,8 @@ def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, lis
         f"/edgek/ide/system-snapshot?root_path={root_param}&port_limit=5&process_limit=5",
         "/edgek/mcp/state",
         "/edgek/plugins",
+        "/edgek/swarm/state",
+        "/edgek/prec/state",
     ]
     try:
         with urllib.request.urlopen(f"{base_url.rstrip('/')}/edgek/root-info", timeout=timeout) as response:
@@ -371,22 +452,24 @@ def ensure_nginx(listen_port: int = 8080, apply: bool = True) -> Dict[str, Any]:
     if not nginx:
         return {**result, "status": "missing", "ready": False, "error": "nginx executable not found"}
     if pgrep("nginx") and os.geteuid() != 0:
+        ready = url_ready(f"http://127.0.0.1:{listen_port}/health")
         return {
             **result,
             "status": "already_running_unmanaged",
-            "ready": True,
-            "warning": "nginx is already running; run with elevated privileges to test/reload the system nginx config",
+            "ready": ready,
+            "warning": "nginx is already running; run with elevated privileges to test/reload the system nginx config" if ready else "nginx is running but is not serving the BEAST health route; run with elevated privileges to install/reload the generated config",
         }
     test = subprocess.run([nginx, "-t"], capture_output=True, text=True, timeout=15, check=False)
     result["test_returncode"] = test.returncode
     result["test_stderr"] = test.stderr[-1000:]
     if test.returncode != 0:
         if pgrep("nginx"):
+            ready = url_ready(f"http://127.0.0.1:{listen_port}/health")
             return {
                 **result,
                 "status": "already_running_unmanaged",
-                "ready": True,
-                "warning": "nginx is running, but this user could not test/reload the system nginx config",
+                "ready": ready,
+                "warning": "nginx is running, but this user could not test/reload the system nginx config" if ready else "nginx is running but is not serving the BEAST health route; run with elevated privileges to test/reload the generated config",
             }
         return {**result, "status": "config_test_failed", "ready": False}
     if not pgrep("nginx"):
@@ -399,7 +482,7 @@ def ensure_nginx(listen_port: int = 8080, apply: bool = True) -> Dict[str, Any]:
         result["reload_returncode"] = reload_result.returncode
         result["reload_stderr"] = reload_result.stderr[-1000:]
         status = "reloaded" if reload_result.returncode == 0 else "reload_failed"
-    return {**result, "status": status, "ready": bool(pgrep("nginx"))}
+    return {**result, "status": status, "ready": url_ready(f"http://127.0.0.1:{listen_port}/health")}
 
 
 def shutil_which(name: str) -> Optional[str]:
@@ -440,6 +523,29 @@ def parse_host_port(value: str, default_port: int) -> tuple[str, int]:
         host, port = raw.rsplit(":", 1)
         return host or "127.0.0.1", int(port)
     return raw or "127.0.0.1", int(default_port)
+
+
+def registry_service_port(service_name: str, fallback: int) -> int:
+    """Read the workspace service-registry port without requiring PyYAML."""
+    try:
+        lines = (ROOT / ".byron" / "services.yaml").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return fallback
+    current = ""
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if line.startswith("  ") and not line.startswith("    ") and stripped.endswith(":"):
+            current = stripped[:-1]
+            continue
+        if current == service_name and stripped.startswith("port:"):
+            try:
+                port = int(stripped.split(":", 1)[1].strip())
+                return port if 1 <= port <= 65535 else fallback
+            except ValueError:
+                return fallback
+    return fallback
 
 
 def listening_pids_on_port(port: int) -> list[int]:
@@ -680,6 +786,10 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
     nginx_port = int(args.nginx_port)
     if bool_value(getattr(args, "force_gateway", "false")):
         results.append(stop_managed_process(run_dir() / "gateway.pid", "gateway"))
+        # Force means ownership recovery, not just PID-file cleanup. A stale
+        # unmanaged listener otherwise survives and makes `up` report a false
+        # healthy state while serving old in-memory code.
+        results.append(kill_listeners_on_port("gateway", host, gateway_port, dry_run=False))
 
     surfaces = command_reinstall_surfaces(argparse.Namespace(
         workspace=str(ROOT),
@@ -699,9 +809,13 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
         "mcp_http": {"ok": url_ready(f"http://{host}:{mcp_port}/mcp/health", timeout=2.0), "path": f"http://{host}:{mcp_port}/mcp/health"},
         "litellm": {"ok": url_ready(f"http://127.0.0.1:{litellm_port}/v1/models", timeout=2.0), "path": f"http://127.0.0.1:{litellm_port}/v1/models"},
         "ollama": {"ok": url_ready(f"http://{args.ollama_host}/api/tags", timeout=2.0), "path": f"http://{args.ollama_host}/api/tags"},
-        "nginx": {"ok": bool(pgrep("nginx")), "path": f"http://127.0.0.1:{nginx_port}"},
+        "nginx": {"ok": url_ready(f"http://127.0.0.1:{nginx_port}/health", timeout=2.0), "path": f"http://127.0.0.1:{nginx_port}/health"},
     }
-    ready = all(check.get("ok") for check in checks.values() if isinstance(check, dict))
+    gateway_routes_ok, gateway_missing = gateway_routes_ready(gateway_base)
+    checks["gateway"]["routes_ok"] = gateway_routes_ok
+    if gateway_missing:
+        checks["gateway"]["missing_routes"] = gateway_missing
+    ready = all(check.get("ok") for check in checks.values() if isinstance(check, dict)) and gateway_routes_ok
     return {
         "command": "up",
         "status": "ready" if ready else "attention",
@@ -714,7 +828,55 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
         "services": results,
         "surfaces": surfaces,
         "checks": checks,
-        "next": "Run `./bin/beast ui` for the TUI or use provider exports from `./bin/beast providers`.",
+        "next": "Run `./bin/beast ui` or `./bin/beast ide` for the desktop workspace.",
+    }
+
+
+def command_ide(args: argparse.Namespace) -> Dict[str, Any]:
+    """Launch the Electron IDE with the same workspace and gateway contract."""
+    workspace = Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()
+    desktop = ROOT / "desktop-ide"
+    electron = desktop / "node_modules" / ".bin" / "electron"
+    if not desktop.is_dir():
+        return {"command": "ide", "ok": False, "error": f"Desktop IDE directory is missing: {desktop}"}
+    command = [str(electron), "."] if electron.exists() else ["npm", "start", "--"]
+    preferred_gateway = getattr(args, "gateway_url", "") or os.environ.get("BEAST_DESKTOP_GATEWAY", "")
+    gateway = discover_desktop_gateway(preferred_gateway)
+    gateway_host, gateway_port = parse_host_port(gateway, registry_service_port("beast", 8102))
+    if bool_value(getattr(args, "ensure_stack", "true")):
+        stack = command_heal(argparse.Namespace(
+            host=gateway_host or "127.0.0.1",
+            gateway_port=gateway_port,
+            mcp_port=registry_service_port("mcp_http", 8765),
+            litellm_port=registry_service_port("litellm", 4000),
+            nginx_port=registry_service_port("reverse_proxy", 80),
+            ollama_host=os.environ.get("OLLAMA_HOST", "127.0.0.1:11434"),
+            dry_run="false",
+            restart_all="false",
+            kill_address_pids="false",
+        ))
+        gateway = discover_desktop_gateway(preferred_gateway or f"http://{gateway_host}:{gateway_port}")
+    env = os.environ.copy()
+    env.update({
+        "BEAST_WORKSPACE": str(workspace),
+        "BEAST_ACTIVE_WORKSPACE": str(workspace),
+        "BEAST_CONTEXT_WORKSPACE": str(workspace),
+        "BEAST_DESKTOP_GATEWAY": gateway,
+        "BEAST_ALLOW_GATEWAY_OVERRIDE": "1",
+    })
+    try:
+        process = subprocess.Popen(command, cwd=str(desktop), env=env, start_new_session=True,
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError as exc:
+        return {"command": "ide", "ok": False, "error": str(exc), "launch_command": command}
+    return {
+        "command": "ide",
+        "ok": True,
+        "pid": process.pid,
+        "workspace": str(workspace),
+        "gateway": gateway,
+        "launch_command": command,
+        "stack": stack if bool_value(getattr(args, "ensure_stack", "true")) else {"skipped": True},
     }
 
 
@@ -727,7 +889,7 @@ def stack_checks(host: str, gateway_port: int, mcp_port: int, litellm_port: int,
         "mcp_http": {"ok": url_ready(f"http://{host}:{mcp_port}/mcp/health", timeout=2.0)},
         "litellm": {"ok": url_ready(f"http://127.0.0.1:{litellm_port}/v1/models", timeout=2.0)},
         "ollama": {"ok": url_ready(f"http://{ollama_host}/api/tags", timeout=2.0)},
-        "nginx": {"ok": bool(pgrep("nginx")), "path": f"http://127.0.0.1:{nginx_port}"},
+        "nginx": {"ok": url_ready(f"http://127.0.0.1:{nginx_port}/health", timeout=2.0), "path": f"http://127.0.0.1:{nginx_port}/health"},
     }
 
 
@@ -866,7 +1028,7 @@ def command_start(args: argparse.Namespace) -> Dict[str, Any]:
     up = command_up(argparse.Namespace(
         host=getattr(args, "host", "127.0.0.1"),
         gateway_port=getattr(args, "gateway_port", 8101),
-        mcp_port=getattr(args, "mcp_port", 8001),
+        mcp_port=getattr(args, "mcp_port", 8765),
         litellm_port=getattr(args, "litellm_port", 4000),
         nginx_port=getattr(args, "nginx_port", 8080),
         ollama_host=getattr(args, "ollama_host", "127.0.0.1:11434"),
@@ -1143,6 +1305,15 @@ def _gateway_or_local(args: argparse.Namespace, method: str, path: str, payload:
     return {**local_fn(None), "source": "local"}
 
 
+def _authority_receipt(name: str, *, phase: str, risk: str = "low", category: str = "planning") -> Dict[str, Any]:
+    """Attach the same non-mutating authority receipt used by IDE/TUI/MCP."""
+    from app.kernel.execution.least_authority_tools import LeastAuthorityToolLoop
+    return LeastAuthorityToolLoop().plan(
+        [{"name": f"cli:{name}", "category": category, "bucket": "Verify" if phase == "verify" else "Reason", "mutating": False}],
+        phase=phase, risk=risk,
+    )
+
+
 def command_diagnose(args: argparse.Namespace) -> Dict[str, Any]:
     payload = {
         "provider": args.provider,
@@ -1155,7 +1326,7 @@ def command_diagnose(args: argparse.Namespace) -> Dict[str, Any]:
 
         return TaskEnvelopeBuilder().diagnose_provider(payload, workspace_root=str(ROOT), write_chronicle=bool_value(args.chronicle))
 
-    return {"command": "diagnose", **_gateway_or_local(args, "POST", "/edgek/task/provider-diagnostic", payload, local)}
+    return {"command": "diagnose", "authority": _authority_receipt("diagnose", phase="debugger", category="audit"), **_gateway_or_local(args, "POST", "/edgek/task/provider-diagnostic", payload, local)}
 
 
 def command_route(args: argparse.Namespace) -> Dict[str, Any]:
@@ -1171,10 +1342,85 @@ def command_route(args: argparse.Namespace) -> Dict[str, Any]:
         envelope = TaskEnvelopeBuilder().build(payload, dry_run=True)
         return TaskEnvelopeBuilder().provider_diagnostic_route_card(args.provider, envelope=envelope, persist=bool_value(args.persist))
 
-    return {"command": "route", **_gateway_or_local(args, "POST", "/edgek/pathfinder/route-card", payload, local)}
+    return {"command": "route", "authority": _authority_receipt("route", phase="architect"), **_gateway_or_local(args, "POST", "/edgek/pathfinder/route-card", payload, local)}
+
+
+def _phase0_step(name: str, command: list[str], cwd: Path | None = None, timeout: int = 180) -> Dict[str, Any]:
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=str(cwd or ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=timeout,
+            check=False,
+        )
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": completed.returncode == 0,
+            "returncode": completed.returncode,
+            "stdout": completed.stdout.strip()[-12000:],
+            "stderr": completed.stderr.strip()[-8000:],
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": False,
+            "returncode": 124,
+            "stdout": str(exc.stdout or "")[-12000:],
+            "stderr": f"timeout after {timeout}s",
+        }
+    except OSError as exc:
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": False,
+            "returncode": 127,
+            "stdout": "",
+            "stderr": str(exc),
+        }
+
+
+def command_release_contract(args: argparse.Namespace) -> Dict[str, Any]:
+    all_checks = bool(getattr(args, "all", False))
+    steps = [
+        _phase0_step("build_identity", [sys.executable, "scripts/phase0/generate_build_identity.py"], timeout=60),
+        _phase0_step("phase0_contracts", [sys.executable, "scripts/phase0/verify_phase0.py"], timeout=90),
+    ]
+    if all_checks:
+        desktop = ROOT / "desktop-ide"
+        steps.extend([
+            _phase0_step("parity_foundation", ["npm", "run", "smoke:parity:foundation"], cwd=desktop, timeout=240),
+            _phase0_step("execution_targets", ["npm", "run", "smoke:targets"], cwd=desktop, timeout=240),
+        ])
+    steps.append(_phase0_step("release_contract_report", [sys.executable, "scripts/phase0/generate_release_contract.py"], timeout=180))
+    status_path = ROOT / "build" / "PHASE0_STATUS.json"
+    status: Dict[str, Any] = {}
+    if status_path.exists():
+        try:
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            status = {"status": "FAIL", "error": f"invalid phase0 status artifact: {exc}"}
+    ok = all(step.get("ok") for step in steps) and str(status.get("status") or "PASS") == "PASS"
+    return {
+        "command": "verify release-contract",
+        "ok": ok,
+        "mode": "all" if all_checks else "structural",
+        "status_artifact": str(status_path.relative_to(ROOT)),
+        "steps": steps,
+        "bundle": status,
+    }
 
 
 def command_verify(args: argparse.Namespace) -> Dict[str, Any]:
+    if getattr(args, "verify_target", None) == "release-contract":
+        return command_release_contract(args)
     payload = {
         "provider": args.provider,
         "user_request": args.objective or "Run local quality cascade",
@@ -1186,7 +1432,7 @@ def command_verify(args: argparse.Namespace) -> Dict[str, Any]:
 
         return TaskEnvelopeBuilder().run_quality_cascade(payload, workspace_root=str(ROOT))
 
-    return {"command": "verify", **_gateway_or_local(args, "POST", "/edgek/quality/run", payload, local)}
+    return {"command": "verify", "authority": _authority_receipt("verify", phase="verify", category="audit"), **_gateway_or_local(args, "POST", "/edgek/quality/run", payload, local)}
 
 
 def command_maintenance(args: argparse.Namespace) -> Dict[str, Any]:
@@ -1449,17 +1695,23 @@ def command_scout(args: argparse.Namespace) -> Dict[str, Any]:
 
 def command_mcp_config(args: argparse.Namespace) -> Dict[str, Any]:
     workspace = str(Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve())
+    gateway = discover_desktop_gateway()
     config = {
         "servers": {
             "edgek-beast": {
                 "type": "stdio",
                 "command": str(BEAST),
                 "args": ["mcp", "--workspace", workspace],
-                "env": {"BEAST_WORKSPACE": workspace},
+                "env": {
+                    "BEAST_WORKSPACE": workspace,
+                    "BEAST_ACTIVE_WORKSPACE": workspace,
+                    "BEAST_CONTEXT_WORKSPACE": workspace,
+                    "BEAST_GATEWAY_URL": gateway,
+                },
             }
         }
     }
-    return {"command": "mcp-config", "config": config}
+    return {"command": "mcp-config", "workspace": workspace, "gateway": gateway, "config": config}
 
 
 def command_mcp_install(args: argparse.Namespace) -> Dict[str, Any]:
@@ -1485,11 +1737,7 @@ def command_reinstall_surfaces(args: argparse.Namespace) -> Dict[str, Any]:
     """Refresh local MCP, plugin, and extension integration surfaces."""
     workspace = Path(args.workspace or os.environ.get("BEAST_WORKSPACE") or ROOT).resolve()
     results: Dict[str, Any] = {"command": "reinstall-surfaces", "workspace": str(workspace)}
-    mcp_server = {
-        "command": str(BEAST),
-        "args": ["mcp", "--workspace", str(workspace)],
-        "env": {"BEAST_WORKSPACE": str(workspace)},
-    }
+    mcp_server = command_mcp_config(argparse.Namespace(workspace=str(workspace)))["config"]["servers"]["edgek-beast"]
 
     if bool_value(getattr(args, "install_workspace_mcp", "false")):
         mcp_args = argparse.Namespace(workspace=str(workspace))
@@ -2041,11 +2289,16 @@ def build_parser() -> argparse.ArgumentParser:
     ui_parser.add_argument("--workspace", help="Workspace folder path")
     ui_parser.add_argument("--gateway-url", default=DEFAULT_GATEWAY, help="BEAST gateway URL")
 
+    ide_parser = subparsers.add_parser("ide", help="Launch the BEAST Electron IDE with the active workspace")
+    ide_parser.add_argument("--workspace", help="Workspace folder path")
+    ide_parser.add_argument("--gateway-url", default="", help="Optional BEAST gateway URL override")
+    ide_parser.add_argument("--ensure-stack", default="true", help="true/false; preflight gateway, proxy, MCP HTTP, LiteLLM, Ollama, and nginx before opening the IDE")
+
     up_parser = subparsers.add_parser("up", help="Start BEAST gateway, MCP HTTP, proxy lane, Nginx, LiteLLM, and Ollama")
     up_parser.set_defaults(handler=command_up)
     up_parser.add_argument("--host", default="127.0.0.1")
     up_parser.add_argument("--gateway-port", type=int, default=8101)
-    up_parser.add_argument("--mcp-port", type=int, default=8001)
+    up_parser.add_argument("--mcp-port", type=int, default=8765)
     up_parser.add_argument("--litellm-port", type=int, default=4000)
     up_parser.add_argument("--nginx-port", type=int, default=8080)
     up_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
@@ -2058,7 +2311,7 @@ def build_parser() -> argparse.ArgumentParser:
     heal_parser.set_defaults(handler=command_heal)
     heal_parser.add_argument("--host", default="127.0.0.1")
     heal_parser.add_argument("--gateway-port", type=int, default=8101)
-    heal_parser.add_argument("--mcp-port", type=int, default=8001)
+    heal_parser.add_argument("--mcp-port", type=int, default=8765)
     heal_parser.add_argument("--litellm-port", type=int, default=4000)
     heal_parser.add_argument("--nginx-port", type=int, default=8080)
     heal_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
@@ -2070,7 +2323,7 @@ def build_parser() -> argparse.ArgumentParser:
     start_parser.set_defaults(handler=command_start)
     start_parser.add_argument("--host", default="127.0.0.1")
     start_parser.add_argument("--gateway-port", type=int, default=8101)
-    start_parser.add_argument("--mcp-port", type=int, default=8001)
+    start_parser.add_argument("--mcp-port", type=int, default=8765)
     start_parser.add_argument("--litellm-port", type=int, default=4000)
     start_parser.add_argument("--nginx-port", type=int, default=8080)
     start_parser.add_argument("--ollama-host", default="127.0.0.1:11434")
@@ -2222,7 +2475,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     mcp_http_parser = subparsers.add_parser("mcp-http", help="Start the HTTP MCP facade")
     mcp_http_parser.add_argument("--host", default="127.0.0.1")
-    mcp_http_parser.add_argument("--port", type=int, default=8001)
+    mcp_http_parser.add_argument("--port", type=int, default=8765)
     mcp_http_parser.add_argument("--workspace", help="Workspace folder path")
 
     for name, handler, help_text in [
@@ -2237,6 +2490,10 @@ def build_parser() -> argparse.ArgumentParser:
     ]:
         item = subparsers.add_parser(name, help=help_text)
         item.set_defaults(handler=handler)
+        if name in {"mcp-config", "mcp-install"}:
+            # Accept the workspace in the natural post-command position while
+            # retaining the root-level --workspace form for compatibility.
+            item.add_argument("--workspace", default=argparse.SUPPRESS, help="Workspace folder path")
         if name == "reinstall-surfaces":
             item.add_argument("--workspace", help="Workspace folder path")
             item.add_argument("--install-vscode-extension", default="false", help="true/false; install latest local VSIX with code --install-extension")
@@ -2282,8 +2539,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     verify = subparsers.add_parser("verify", help="Run Quality Cascade checks")
     verify.set_defaults(handler=command_verify)
+    verify.add_argument("verify_target", nargs="?", choices=["release-contract"], help="Special verifier target, e.g. release-contract")
+    verify.add_argument("--all", action="store_true", help="For release-contract, run structural, parity-foundation, and execution-target checks")
     verify.add_argument("--provider")
-    verify.add_argument("--objective", "--task", dest="objective", required=True)
+    verify.add_argument("--objective", "--task", dest="objective")
     verify.add_argument("--task-class", default="general_software_task")
     verify.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
 
@@ -2386,13 +2645,19 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.workspace:
-        os.environ["BEAST_WORKSPACE"] = args.workspace
+        workspace = str(Path(args.workspace).expanduser().resolve())
+        os.environ["BEAST_WORKSPACE"] = workspace
+        os.environ["BEAST_ACTIVE_WORKSPACE"] = workspace
+        os.environ["BEAST_CONTEXT_WORKSPACE"] = workspace
 
     if args.command == "ui":
-        os.environ["BEAST_GATEWAY_URL"] = args.gateway_url
+        os.environ["BEAST_GATEWAY_URL"] = discover_desktop_gateway(args.gateway_url)
         from app.cli.ui import run
 
         run()
+        return
+    if args.command == "ide":
+        emit(command_ide(args), args.agent)
         return
     if args.command == "gateway":
         start_gateway(args.host, args.port, args.reload, args.socket_mode, args.guardian_service)
@@ -2401,6 +2666,7 @@ def main() -> None:
         start_commons_gateway(args.host, args.port, args.socket_mode)
         return
     if args.command == "mcp":
+        os.environ["BEAST_GATEWAY_URL"] = discover_desktop_gateway()
         from app.mcp.stdio_server import serve_stdio
 
         serve_stdio()

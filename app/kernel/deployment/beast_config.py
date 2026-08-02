@@ -27,14 +27,17 @@ class BeastConfig:
 
     # --- Ollama (CPU inference) ---
     OLLAMA_URL: str = "http://localhost:11434"
-    # Purpose-built coding model; override with BEAST_OLLAMA_MODEL when a
-    # workstation has a larger GPU or needs the tiny emergency fallback.
-    OLLAMA_MODEL: str = "qwen2.5-coder:1.5b"
+    # Small local default; override with BEAST_OLLAMA_MODEL when available.
+    OLLAMA_MODEL: str = "qwen2.5:0.5b"
     OLLAMA_TIMEOUT: int = 180
 
     # --- KV Cache Transport ---
-    KV_MAX_MEMORY_BYTES: int = 8 * 1024 * 1024 * 1024  # 8 GB
+    # Keep KV residency subordinate to the local model and IDE.
+    KV_MAX_MEMORY_BYTES: int = 512 * 1024 * 1024
     KV_CACHE_DIR: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "data" / "kv_cache")
+    KV_TRANSPORT_ENDPOINT: str = ""
+    KV_TRANSPORT_TOKEN: str = ""
+    KV_TRANSPORT_MAX_BYTES: int = 64 * 1024 * 1024
 
     # --- Scheduler ---
     SCHEDULER_DIR: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "data" / "scheduler")

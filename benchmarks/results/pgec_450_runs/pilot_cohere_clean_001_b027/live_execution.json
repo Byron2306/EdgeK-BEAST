@@ -1,0 +1,793 @@
+{
+  "compute_governor_receipts": [],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_5a387cd403638dd1566f.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": 8285.957,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 245,
+      "provider_prompt_tokens": 396,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 641,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9b0408dbb9d05ef2ae7d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2997.916,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 252,
+      "provider_prompt_tokens": 396,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 648,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0ddc8b273bff08ed952d.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 6368.1,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 369,
+      "provider_prompt_tokens": 3945,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 4314,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [],
+  "families": [
+    "secret_redaction"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,5 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    api_key_present = bool(env.get(key, \"\"))\n+    normalized_provider = provider_id.replace('-', '_')\n+    return {\"provider\": normalized_provider, \"api_key_present\": api_key_present}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 8285.957,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 8285.957,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 741,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 245,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 396,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 641
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    normalized_provider = provider_id.replace('-', '_')\\n    return {\\\"provider\\\": normalized_provider, \\\"api_key_present\\\": api_key_present}\",\n      \"why\": \"Normalize provider ID and redact API key from the output.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 245,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 396,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 641
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,5 @@\n def provider_env(provider_id, env):\n     key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    api_key_present = bool(env.get(key, \"\"))\n+    normalized_provider = provider_id.replace('-', '_')\n+    return {\"provider\": normalized_provider, \"api_key_present\": api_key_present}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2997.916,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2997.916,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 776,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 252,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 396,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 648
+        }
+      },
+      "prompt_tokens": 300,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_config.py\",\n      \"old\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    return {\\\"provider\\\": provider_id, \\\"api_key\\\": env.get(key, \\\"\\\")}\",\n      \"new\": \"def provider_env(provider_id, env):\\n    key = provider_id.upper() + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    normalized_provider = provider_id.replace('-', '_')\\n    return {\\\"provider\\\": normalized_provider, \\\"api_key_present\\\": api_key_present}\",\n      \"why\": \"Normalize provider ID and redact API key by returning a boolean flag instead of the raw key.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n______________ test_provider_config_normalizes_and_redacts_secret ______________\n\n    def test_provider_config_normalizes_and_redacts_secret():\n        result = provider_env(\"nvidia-nim\", {\"NVIDIA_NIM_API_KEY\": \"secret\"})\n>       assert result == {\"provider\": \"nvidia_nim\", \"api_key_present\": True}\nE       AssertionError: assert {'api_key_pre... 'nvidia_nim'} == {'api_key_pre... 'nvidia_nim'}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'api_key_present': False} != {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\n1 failed, 1 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 252,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 396,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 648
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,7 @@\n def provider_env(provider_id, env):\n+    normalized_provider = provider_id.replace('-', '_').lower()\n+    key = normalized_provider.upper() + \"_API_KEY\"\n+    api_key_present = bool(env.get(key, \"\"))\n+    return {\"provider\": normalized_provider, \"api_key_present\": api_key_present}\n     key = provider_id.upper() + \"_API_KEY\"\n     return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 6368.1,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6368.1,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 924,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 369,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3945,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4314
+        }
+      },
+      "prompt_tokens": 3074,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider ID to lowercase and redact API key\",\n      \"new\": \"def provider_env(provider_id, env):\\n    normalized_provider = provider_id.replace('-', '_').lower()\\n    key = normalized_provider.upper() + \\\"_API_KEY\\\"\\n    api_key_present = bool(env.get(key, \\\"\\\"))\\n    return {\\\"provider\\\": normalized_provider, \\\"api_key_present\\\": api_key_present}\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:22c1b9d90be359b8f44a4f8f38099aa49c16b9b18e87ff6d1e6a2dd590f8b1bc\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider config normalization and never return raw API keys.\",\n  \"provider_handoff_hash\": \"sha256:22c1b9d90be359b8f44a4f8f38099aa49c16b9b18e87ff6d1e6a2dd590f8b1bc\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {
+        "completion_tokens": 369,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3945,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4314
+      }
+    }
+  ],
+  "mutation_recovery_cases": [],
+  "occurrences": [
+    3
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:24:06Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 8285.957,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 245,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 396,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_5a387cd403638dd1566f",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 641,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:24:06Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 2997.916,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 252,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 396,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_9b0408dbb9d05ef2ae7d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 648,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T19:24:06Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": 6368.1,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 369,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3945,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_0ddc8b273bff08ed952d",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 4314,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "cohere": {
+      "live_failures_by_bucket": {
+        "capability_failure": 2,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "cohere": {
+          "avg_latency_ms": 6368.1,
+          "avg_provider_tokens_per_success": 4314.0,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 0.6405000000000001,
+            "hidden_test_pass_rate": 0.3333,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 0.9469325,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.3333
+          },
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.6767,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "cohere": {
+          "average_latency_ms": 5883.991,
+          "average_provider_prompt_tokens": 1579.0,
+          "canonicalized": 0,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_cohere_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "provider_config_secret_redaction"
+            },
+            {
+              "lane": "live_cohere_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "provider_config_secret_redaction"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 6368.1,
+          "local_verifier_repaired": 0,
+          "provider_tokens_per_verified_fix": 4314.0,
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "repair_attempted": 0,
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "cohere"
+  ],
+  "raw_live_result_count": 3,
+  "resume_source": null
+}

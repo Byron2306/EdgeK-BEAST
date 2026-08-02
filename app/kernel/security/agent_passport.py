@@ -47,6 +47,13 @@ DEFAULT_POLICIES = [
         "actions": ["call"],
     },
     {
+        "id": "proxy-local-compute-cascade",
+        "effect": "allow",
+        "caller": "spiffe://beast.local/proxy/gateway",
+        "target": "spiffe://beast.local/compute/cascade",
+        "actions": ["run"],
+    },
+    {
         "id": "runtime-governor-cloud-escalation",
         "effect": "allow",
         "caller": "spiffe://beast.local/runtime-governor",

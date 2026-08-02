@@ -3,7 +3,9 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const main = read('main.js');
+const mainEntry = read('main.js');
+const mainModules = fs.readdirSync(path.join(root, 'main')).filter(name => name.endsWith('.js')).sort().map(name => read(`main/${name}`)).join('\n');
+const main = `${mainEntry}\n${mainModules}`;
 const preload = read('preload.js');
 const runtime = read('renderer/js/beast-runtime-contract.js');
 const commons = read('renderer/js/pages/beast-commons-page.js');
@@ -17,7 +19,18 @@ const editorCortex = read('renderer/js/beast-editor-cortex.js');
 const crystalBridge = read('renderer/js/beast-map-crystal-bridge.js');
 const store = read('renderer/js/beast-store.js');
 const styles = read('renderer/css/beast-production.css');
-const ideRoutes = fs.readFileSync(path.join(root, '..', 'app', 'routes', 'ide.py'), 'utf8');
+const ideRoot = path.join(root, '..', 'app', 'routes');
+const readPythonDirectory = directory => fs.existsSync(directory)
+  ? fs.readdirSync(directory).filter(name => name.endsWith('.py')).sort().map(name => fs.readFileSync(path.join(directory, name), 'utf8'))
+  : [];
+const ideRoutes = [
+  fs.readFileSync(path.join(ideRoot, 'ide.py'), 'utf8'),
+  fs.readFileSync(path.join(ideRoot, 'ide_context.py'), 'utf8'),
+  ...readPythonDirectory(path.join(ideRoot, 'ide_support')),
+  ...readPythonDirectory(path.join(ideRoot, 'ide_routes')),
+].join('\n');
+const gatewayTimeoutMatch = main.match(/gatewayHealth\(baseUrl\s*=\s*gatewayUrl,\s*rootTimeoutMs\s*=\s*(\d+)(?:,\s*options\s*=\s*\{\})?\)/);
+const gatewayRootTimeoutMs = Number(gatewayTimeoutMatch?.[1] || 0);
 
 const checks = {
   registry_gateway_8101: main.includes("serviceRegistryGateway(repoRoot)") && runtime.includes("http://127.0.0.1:8101"),
@@ -29,7 +42,7 @@ const checks = {
     '/edgek/control-plane/commons/remote','/edgek/control-plane/commons/remote/discovery','data-discovery-form','data-remote-discovery','data-node-form','data-bucket-form','data-probe-node','data-browse-node',
   ].every(contract => commons.includes(contract)),
   remote_commons_no_direct_egress: !commons.includes('fetch(') && commons.includes('BeastRuntime.request'),
-  ipc_gateway_transport: preload.includes('gatewayRequest') && main.includes("ipcMain.handle('beast:gateway-request'") && runtime.includes("hasDesktop('gatewayRequest')"),
+  ipc_gateway_transport: preload.includes('gatewayRequest') && main.includes("handle('beast:gateway-request'") && runtime.includes("hasDesktop('gatewayRequest')"),
   workspace_identity_header: runtime.includes('X-BEAST-Workspace-Identity'),
   dependency_complete_python_probe: main.includes('fastapi, uvicorn, cryptography, yaml'),
   systems_atlas_registered: index.includes('data-beast-route="atlas"') && index.includes('beast-atlas-page.js') && release.includes('BeastAtlasPage.renderer'),
@@ -41,7 +54,7 @@ const checks = {
   demo_fixtures_require_explicit_build_opt_in: ['renderer/js/beast-store.js','renderer/js/beast-desktop-bridge.js','renderer/js/beast-terminal-tooling-doctor-bridge.js','renderer/js/beast-utility-orchestration-bridge.js'].every(file => read(file).includes('window.BEAST_ENABLE_DEMO === true')),
   demo_query_cannot_force_runtime_offline: runtime.includes("window.BEAST_ENABLE_DEMO===true&&(params.get('capture')==='1'||params.get('demo')==='1')"),
   platform_snapshot_not_boot_fanout: !bridge.includes('Promise.allSettled([refreshProviders(),refreshPlatform(),refreshWorktrees()'),
-  guardian_listener_fallback_is_bounded: main.includes('rootTimeoutMs = 1800') && main.includes('listener at ${gatewayUrl} did not answer the BEAST HTTP contract') && main.includes('health.ok || health.tcp_listening ? requestedPort + 1 : requestedPort'),
+  guardian_listener_fallback_is_bounded: gatewayRootTimeoutMs >= 500 && gatewayRootTimeoutMs <= 5000 && main.includes('listener at ${gatewayUrl} did not answer the BEAST HTTP contract') && main.includes('health.ok || health.tcp_listening ? requestedPort + 1 : requestedPort'),
   managed_gateway_not_reset_to_guardian: main.includes('Keep a managed compatible port') && !main.includes('gatewayUrl = configuredGatewayUrl;\n    ensureGateway();'),
   desktop_child_forces_direct_gateway_mode: main.includes('delete childEnv.BEAST_SOCKET_MODE') && main.includes('starting direct desktop gateway'),
   gateway_restart_waits_for_managed_exit: main.includes('async function stopManagedGateway') && main.includes('await stopManagedGateway(previousGateway)'),

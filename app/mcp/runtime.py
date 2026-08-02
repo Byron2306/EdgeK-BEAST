@@ -17,6 +17,7 @@ from app.kernel.data_processing.code_cortex import CodeCortexRouter
 from app.kernel.registry.canon_registry import CanonRegistry
 from app.kernel.data_processing.forge_scorecard import ForgeScorecardBuilder
 from app.kernel.execution.conductor_workflow import ConductorWorkflowBuilder
+from app.kernel.execution.least_authority_tools import LeastAuthorityToolLoop
 from app.kernel.data_processing.promotion_loop import PromotionLoop
 from app.kernel.deployment.beast_cli_executor import BeastCLIExecutor
 from app.kernel.local.ollama_scout import OllamaScout
@@ -63,6 +64,7 @@ class BeastToolRuntime:
         self.canon_registry = CanonRegistry()
         self.forge_scorecard_builder = ForgeScorecardBuilder()
         self.conductor_workflow_builder = ConductorWorkflowBuilder(swarm_kernel=swarm_kernel)
+        self.least_authority_tools = LeastAuthorityToolLoop()
         self.tool_laziness_learner = ToolLazinessLearner()
         self.tool_laziness_plugin = ToolLazinessPlugin(self.tool_laziness_learner)
         self.provider_economist = ProviderEconomist()
@@ -112,6 +114,29 @@ class BeastToolRuntime:
                 "name": "beast_tool_profile",
                 "description": "Explain the active BEAST MCP tool profile, visible tools, hidden tools, and blocked mutations.",
                 "inputSchema": {"type": "object", "properties": {}},
+            },
+            {
+                "name": "beast_least_authority_plan",
+                "description": "Evaluate declared tool capabilities through BEAST Mode Router and risk buckets. Returns receipts; it never executes a tool.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "tools": {"type": "array", "items": {"type": "object"}},
+                        "phase": {"type": "string", "default": "scout"},
+                        "risk": {"type": "string", "default": "low"},
+                        "approved": {"type": "boolean", "default": False},
+                        "network": {"type": "boolean", "default": False},
+                    },
+                    "required": ["tools"],
+                },
+            },
+            {
+                "name": "beast_conductor_dispatch_history",
+                "description": "Read durable bounded Conductor dispatch receipts for a workflow. This is inspection-only.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {"workflow_id": {"type": "string"}, "limit": {"type": "integer", "default": 20}},
+                },
             },
             {
                 "name": "beast_prepare_task",
@@ -1198,9 +1223,37 @@ class BeastToolRuntime:
     def call_tool(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         arguments = arguments or {}
         logger.info("MCP tool call: %s", name)
+        mutation_authority = None
+        if name in self._mutating_tools():
+            plan = arguments.get("plan") if isinstance(arguments.get("plan"), dict) else {}
+            sourceplan_bound = bool(
+                (plan.get("plan_id") and (plan.get("operations") or []))
+                or arguments.get("task_id") or arguments.get("manifest")
+            )
+            mutation_authority = self.least_authority_tools.mutation_gate(
+                name,
+                phase="implementer" if "sourceplan" in name or "worktree" in name else "security_gate",
+                approved=bool(arguments.get("approved", False)), sourceplan_bound=sourceplan_bound,
+            )
+            if not mutation_authority.get("mutation_permitted"):
+                return {"beast_object_type": "least_authority_mutation_block", "ok": False, "tool": name, "authority_receipt": mutation_authority, "reason": mutation_authority.get("reason")}
 
         if name == "beast_tool_profile":
             result = self._tool_profile_state()
+        elif name == "beast_least_authority_plan":
+            tools = arguments.get("tools") if isinstance(arguments.get("tools"), list) else []
+            result = self.least_authority_tools.plan(
+                tools,
+                phase=str(arguments.get("phase") or "scout"),
+                risk=str(arguments.get("risk") or "low"),
+                approved=bool(arguments.get("approved")),
+                network=bool(arguments.get("network")),
+            )
+        elif name == "beast_conductor_dispatch_history":
+            result = self.conductor_workflow_builder.list_dispatches(
+                workflow_id=str(arguments.get("workflow_id") or ""),
+                limit=max(1, min(int(arguments.get("limit", 20)), 100)),
+            )
         elif blocked := self._blocked_by_profile(name):
             return blocked
         elif name == "beast_prepare_task":
@@ -1745,6 +1798,8 @@ class BeastToolRuntime:
                 result = daemon.run_once()
         else:
             raise ValueError(f"Unknown MCP tool: {name}")
+        if mutation_authority is not None and isinstance(result, dict):
+            result.setdefault("authority_receipt", mutation_authority)
         return result
 
     def _action_result(self, action: Any) -> Dict[str, Any]:
@@ -1856,6 +1911,8 @@ class BeastToolRuntime:
         return catalog
 
     def _tool_category(self, name: str) -> str:
+        if "least_authority" in name:
+            return "planning"
         if "openclaw" in name:
             return "execution"
         if "otel" in name:

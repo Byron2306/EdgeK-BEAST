@@ -140,6 +140,20 @@
     .panel-list{display:grid;gap:8px}
     .errbox{border:1px solid rgba(255,74,114,.35);background:rgba(255,74,114,.08);border-radius:14px;padding:10px;color:#ffdbe4;font-family:JetBrains Mono,monospace;font-size:12px;white-space:pre-wrap;max-height:140px;overflow:auto}
     .resultbox{border:1px solid rgba(40,216,255,.18);background:rgba(0,0,0,.18);border-radius:14px;padding:10px;font-family:JetBrains Mono,monospace;font-size:12px;white-space:pre-wrap;max-height:260px;overflow:auto;color:#dff7ff}
+
+    .context-toolbar{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr auto;gap:9px;align-items:end}
+    .timeline-toolbar{display:grid;grid-template-columns:1.2fr .9fr .9fr 1fr auto auto;gap:9px;align-items:end}
+    .timeline-events{display:grid;gap:10px;max-height:640px;overflow:auto;padding-right:4px}.timeline-event{border:1px solid rgba(40,216,255,.16);background:rgba(4,12,20,.72);padding:12px;border-radius:8px}.timeline-event.error{border-color:rgba(255,90,90,.5)}.timeline-event.warning{border-color:rgba(255,190,70,.45)}.timeline-event.critical{border-color:rgba(255,70,120,.62)}.timeline-top{display:flex;justify-content:space-between;gap:12px}.timeline-time{font-family:var(--mono);color:var(--cyan)}.timeline-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.timeline-summary{font-weight:700;margin-top:4px}.timeline-detail{margin-top:8px;white-space:pre-wrap;font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .context-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+    .context-stat{padding:12px;border:1px solid rgba(40,216,255,.18);border-radius:15px;background:rgba(0,0,0,.18)}
+    .context-stat strong{display:block;font-family:Orbitron;font-size:21px;color:#f4fdff}.context-stat span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:900}
+    .context-cards{display:grid;gap:12px}
+    .context-card{border:1px solid rgba(40,216,255,.19);border-radius:18px;padding:14px;background:linear-gradient(145deg,rgba(9,24,42,.92),rgba(4,12,24,.86));box-shadow:inset 0 0 22px rgba(40,216,255,.025)}
+    .context-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.context-card h4{margin:0;font-family:JetBrains Mono,monospace;font-size:13px;color:#effcff;overflow-wrap:anywhere}
+    .context-meta{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.context-badge{border:1px solid rgba(40,216,255,.22);border-radius:999px;padding:4px 8px;font-size:10px;font-family:Orbitron;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:rgba(40,216,255,.06)}
+    .context-badge.sensitive{color:var(--amber);border-color:rgba(255,207,102,.3)}.context-badge.stale{color:var(--red);border-color:rgba(255,74,114,.34)}.context-badge.selected{color:var(--green);border-color:rgba(57,245,141,.3)}
+    .context-reason{color:#cce2ed;font-size:12px;line-height:1.45}.context-warning{margin-top:8px;padding:8px 10px;border-left:3px solid var(--amber);background:rgba(255,207,102,.07);color:#ffe7aa;font-size:11px}
+    .context-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.context-actions .btn{padding:7px 9px}.context-empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed rgba(40,216,255,.2);border-radius:16px}
     .hidden{display:none !important}
     .archmap{position:relative;min-height:420px;border-radius:18px;background:
         radial-gradient(circle at 50% -20%, rgba(40,216,255,.08), transparent 44%),
@@ -357,6 +371,25 @@
     </div></section>
 
     <section class="tab hidden" id="context"><div class="grid">
+      <div class="card c12"><div class="card-head">Live Run Timeline Console <span class="green">Phase 5.7</span></div><div class="card-body">
+        <div class="timeline-toolbar"><div class="field"><label>AgentRun ID</label><input id="timelineRunId" placeholder="run-..."/></div><div class="field"><label>Category</label><select id="timelineCategory"><option value="">All categories</option><option>run</option><option>plan</option><option>context</option><option>tool</option><option>approval</option><option>worktree</option><option>verification</option><option>budget</option><option>provider</option><option>sourceplan</option><option>recovery</option></select></div><div class="field"><label>Severity</label><select id="timelineSeverity"><option value="">All severities</option><option>info</option><option>warning</option><option>error</option><option>critical</option></select></div><div class="field"><label>Search</label><input id="timelineQuery" placeholder="test, approval, tool..."/></div><button class="btn primary" id="loadTimeline">Load Timeline</button><button class="btn" id="toggleTimelineLive">Live: Off</button></div>
+        <div class="row"><span class="k">Transport</span><span class="v cyan">Reconnect-safe cursor polling</span></div>
+      </div></div>
+      <div class="card c4"><div class="card-head">Run State</div><div class="card-body" id="timelineState"><div class="context-empty">No run loaded.</div></div></div>
+      <div class="card c8"><div class="card-head">Durable Event Stream <span id="timelineDigest" class="mono cyan">not loaded</span></div><div class="card-body"><div class="timeline-events" id="liveTimelineEvents"><div class="context-empty">Enter an AgentRun ID to load its verified event timeline.</div></div><button class="btn" id="timelineLoadMore" style="margin-top:10px;display:none">Load More</button></div></div>
+      <div class="card c12"><div class="card-head">Context Manifest Console <span class="green">Phase 5.6</span></div><div class="card-body">
+        <div class="context-toolbar">
+          <div class="field"><label>AgentRun ID</label><input id="contextRunId" placeholder="run-..."/></div>
+          <div class="field"><label>Status</label><select id="contextStatus"><option value="">All states</option><option>SUGGESTED_UNSELECTED</option><option>ACCEPTED</option><option>ADMITTED</option><option>REDACTED</option><option>REJECTED</option><option>EXCLUDED</option><option>STALE</option></select></div>
+          <div class="field"><label>Privacy</label><select id="contextPrivacy"><option value="">All privacy</option><option>PUBLIC</option><option>INTERNAL</option><option>SENSITIVE</option><option>RESTRICTED</option></select></div>
+          <div class="field"><label>Visibility</label><select id="contextVisibility"><option value="">All providers</option><option>LOCAL_ONLY</option><option>REDACTED_ONLY</option><option>APPROVED_PROVIDER</option><option>ANY_PROVIDER</option></select></div>
+          <button class="btn primary" id="loadContextManifest">Load Manifest</button>
+        </div>
+        <div class="field"><label>Search source, path, or retrieval reason</label><input id="contextQuery" placeholder="parser, failing test, semantic retrieval..."/></div>
+      </div></div>
+      <div class="card c12"><div class="card-head">Selection and Admission Summary <span id="contextDigest" class="mono cyan">not loaded</span></div><div class="card-body"><div class="context-summary" id="contextSummary"></div></div></div>
+      <div class="card c8"><div class="card-head">Reviewable Context Items <span class="amber">Suggestions stay unselected</span></div><div class="card-body"><div class="context-cards" id="contextManifestCards"><div class="context-empty">Enter an AgentRun ID to load its durable context manifest.</div></div></div></div>
+      <div class="card c4"><div class="card-head">Manifest Rules</div><div class="card-body" id="contextRules"><div class="row"><span class="k">Selection</span><span class="v green">Explicit</span></div><div class="row"><span class="k">Admission</span><span class="v cyan">Separate gate</span></div><div class="row"><span class="k">Sensitive data</span><span class="v amber">Redaction required</span></div><div class="row"><span class="k">Source content</span><span class="v">Not embedded</span></div></div></div>
       <div class="card c12"><div class="card-head">Layered Memory Stack <span class="cyan">L0-L4</span></div><div class="card-body"><div class="grid" id="memoryStackGrid"></div></div></div>
       <div class="card c8"><div class="card-head">Retrieved vs Sent Upstream</div><div class="card-body"><canvas id="chunksCanvas" style="width:100%;height:280px"></canvas></div></div>
       <div class="card c4"><div class="card-head">Repo Intelligence</div><div class="card-body" id="repoIntel"></div></div>
@@ -435,6 +468,52 @@ async function buildWorkflowFromDiagnostic(result,packet,scorecard){const box=$(
 async function buildForgeScorecardFromDiagnostic(result,packet){const box=$('#forgeScorecardPreview'); if(box) box.textContent='Scoring implementation shape...'; try{const scorecard=await postJSON('/edgek/forge/scorecard',{envelope:result.envelope,route_card:result.route_card,quality_report:result.quality_report,context_packet:packet,build_context:false}); renderForgeScorecard(scorecard); await buildWorkflowFromDiagnostic(result,packet,scorecard); log('OK',`Forge scorecard built: ${scorecard.decision}`,'forge');}catch(e){if(box) box.textContent=e.message; log('WARN',e.message,'forge');}}
 async function buildContextPacketFromDiagnostic(result){const box=$('#contextPacketPreview'); if(box) box.textContent='Building bounded context packet...'; try{const packet=await postJSON('/edgek/context/packet',{envelope:result.envelope,route_card:result.route_card,quality_report:result.quality_report,run_quality:false}); renderContextPacket(packet); await buildForgeScorecardFromDiagnostic(result,packet); log('OK',`Context packet built: ${packet.packet_id}`,'context');}catch(e){if(box) box.textContent=e.message; log('WARN',e.message,'context');}}
 async function runProviderDiagnostic(){const provider=$('#diagProvider').value; const request=$('#diagRequest').value.trim() || `Diagnose why the ${provider} route is failing`; const chronicle=$('#diagChronicle').checked; $('#providerDiagResult').textContent='Running local provider diagnostic...'; $('#contextPacketPreview').textContent='Waiting for diagnostic evidence...'; $('#forgeScorecardPreview').textContent='Waiting for context packet...'; $('#workflowPreview').textContent='Waiting for Forge scorecard...'; $('#canonPreview').textContent='Waiting for workflow card...'; $('#promotionPreview').textContent='Waiting for Canon validation...'; $('#openclawPreview').textContent='Waiting for workflow card...'; try{const result=await postJSON('/edgek/task/provider-diagnostic',{provider,user_request:request,chronicle}); renderProviderDiagnostic(result); await buildContextPacketFromDiagnostic(result); log('OK',`Provider diagnostic completed: ${result.failure_category}`,'task');}catch(e){$('#providerDiagResult').textContent=e.message; log('ERR',e.message,'task');}}
+
+function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
+function contextBadgeClass(card){if(card.status==='STALE') return 'stale'; if(card.privacy_level==='SENSITIVE'||card.privacy_level==='RESTRICTED') return 'sensitive'; if(card.selected) return 'selected'; return '';}
+function renderContextManifestConsole(view){
+  const summary=view.summary||{};
+  $('#contextSummary').innerHTML=[['Items',summary.item_count],['Visible',summary.visible_count],['Selected',summary.selected_count],['Admitted',summary.admitted_count],['Unselected',summary.suggested_unselected_count],['Selected tokens',summary.selected_token_estimate]].map(([label,value])=>`<div class="context-stat"><strong>${fmt(value||0)}</strong><span>${label}</span></div>`).join('');
+  $('#contextDigest').textContent=(view.projection_digest||'').slice(0,22)+(view.projection_digest?'…':'not loaded');
+  const cards=view.cards||[];
+  $('#contextManifestCards').innerHTML=cards.length?cards.map(card=>`<article class="context-card" data-context-item="${escapeHtml(card.item_id)}"><div class="context-card-top"><div><h4>${escapeHtml(card.source_reference)}</h4><div class="context-reason">${(card.retrieval_reasons||[]).map(escapeHtml).join(' • ')||'No retrieval reason recorded'}</div></div><span class="context-badge ${contextBadgeClass(card)}">${escapeHtml(card.status)}</span></div><div class="context-meta"><span class="context-badge">${escapeHtml(card.source)}</span><span class="context-badge ${card.privacy_level==='SENSITIVE'||card.privacy_level==='RESTRICTED'?'sensitive':''}">${escapeHtml(card.privacy_level)}</span><span class="context-badge">${escapeHtml(card.provider_visibility)}</span><span class="context-badge">${fmt(card.token_estimate)} tokens</span><span class="context-badge">${escapeHtml(card.selection_origin)}</span></div>${(card.warnings||[]).map(w=>`<div class="context-warning">${escapeHtml(w)}</div>`).join('')}<div class="context-actions">${(card.valid_actions||[]).map(action=>`<button class="btn" data-context-action="${escapeHtml(action)}" data-item-id="${escapeHtml(card.item_id)}">${escapeHtml(action.replaceAll('_',' '))}</button>`).join('')}</div></article>`).join(''):`<div class="context-empty">No context items match the active filters.</div>`;
+  $$('[data-context-action]').forEach(button=>button.onclick=()=>decideContextItem(button.dataset.itemId,button.dataset.contextAction));
+}
+async function loadContextManifestConsole(){
+  const runId=$('#contextRunId').value.trim(); if(!runId){log('WARN','Enter an AgentRun ID before loading context','context'); return;}
+  const params=new URLSearchParams(); const root=''; if(root) params.set('root_path',root);
+  [['status','#contextStatus'],['privacy','#contextPrivacy'],['visibility','#contextVisibility'],['query','#contextQuery']].forEach(([key,sel])=>{const value=$(sel).value.trim(); if(value) params.set(key,value);});
+  $('#contextManifestCards').innerHTML='<div class="context-empty">Loading durable context manifest…</div>';
+  try{const data=await getJSON(`/edgek/agent-runs/${encodeURIComponent(runId)}/console/context?${params}`); renderContextManifestConsole(data.context_console); log('OK',`Loaded context manifest for ${runId}`,'context');}
+  catch(e){$('#contextManifestCards').innerHTML=`<div class="errbox">${escapeHtml(e.message)}</div>`; log('ERR',e.message,'context');}
+}
+async function decideContextItem(itemId,decision){
+  const runId=$('#contextRunId').value.trim();
+  const reason=window.prompt(`Reason for ${decision.replaceAll('_',' ').toLowerCase()}:`); if(!reason) return;
+  const payload={decision,operator_id:'operator:console',reason};
+  if(decision==='ADMITTED'){payload.provider=window.prompt('Provider identifier (for example ollama):','ollama')||'';}
+  try{await postJSON(`/edgek/agent-runs/${encodeURIComponent(runId)}/context-manifest/items/${encodeURIComponent(itemId)}/decision`,payload); await loadContextManifestConsole(); log('OK',`Context item ${itemId} ${decision.toLowerCase()}`,'context');}
+  catch(e){log('ERR',e.message,'context'); window.alert(e.message);}
+}
+
+
+let timelineCursor='', timelineLive=false, timelineTimer=null;
+function renderLiveTimeline(view,append=false){
+  const events=view.events||[]; const target=$('#liveTimelineEvents');
+  const html=events.map(e=>`<article class="timeline-event ${escapeHtml(e.severity)}"><div class="timeline-top"><div><span class="timeline-time">${new Date((e.occurred_at||0)*1000).toLocaleTimeString()}</span><div class="timeline-summary">${escapeHtml(e.summary)}</div></div><span class="context-badge">${escapeHtml(e.category)}</span></div><div class="timeline-meta"><span class="context-badge">${escapeHtml(e.severity)}</span>${e.step_id?`<span class="context-badge">step ${escapeHtml(e.step_id)}</span>`:''}${e.tool_id?`<span class="context-badge">${escapeHtml(e.tool_id)}</span>`:''}${e.status?`<span class="context-badge">${escapeHtml(e.status)}</span>`:''}</div>${e.expandable?`<details><summary>Evidence and event detail</summary><div class="timeline-detail">${escapeHtml(JSON.stringify(e.detail||{},null,2))}</div></details>`:''}</article>`).join('');
+  if(append) target.insertAdjacentHTML('beforeend',html); else target.innerHTML=html||'<div class="context-empty">No events match the active filters.</div>';
+  $('#timelineState').innerHTML=`<div class="row"><span class="k">State</span><span class="v ${view.paused?'amber':'green'}">${escapeHtml(view.run_state)}</span></div><div class="row"><span class="k">Visible</span><span class="v">${fmt(view.summary?.visible_count||0)}</span></div><div class="row"><span class="k">Projected</span><span class="v cyan">${fmt(view.summary?.projected_count||0)}</span></div><div class="row"><span class="k">Recoverable</span><span class="v ${view.recoverable?'amber':'green'}">${view.recoverable?'Yes':'No'}</span></div><div class="row"><span class="k">Active</span><span class="v">${escapeHtml(view.active_operation?.summary||'--')}</span></div>`;
+  $('#timelineDigest').textContent=(view.console_digest||'').slice(0,22)+'…'; timelineCursor=view.next_cursor||''; $('#timelineLoadMore').style.display=view.has_more?'inline-flex':'none';
+}
+async function loadLiveTimeline(append=false){
+  const runId=$('#timelineRunId').value.trim(); if(!runId) return;
+  const params=new URLSearchParams({limit:'100',view:'expanded'}); if(append&&timelineCursor) params.set('cursor',timelineCursor);
+  const c=$('#timelineCategory').value.trim(), sev=$('#timelineSeverity').value.trim(), q=$('#timelineQuery').value.trim(); if(c) params.set('categories',c); if(sev) params.set('severities',sev); if(q) params.set('query',q);
+  try{const data=await getJSON(`/edgek/agent-runs/${encodeURIComponent(runId)}/console/timeline?${params}`); renderLiveTimeline(data.timeline_console,append);}
+  catch(e){$('#liveTimelineEvents').innerHTML=`<div class="errbox">${escapeHtml(e.message)}</div>`;}
+}
+function setTimelineLive(enabled){timelineLive=enabled; $('#toggleTimelineLive').textContent=`Live: ${enabled?'On':'Off'}`; if(timelineTimer) clearInterval(timelineTimer); timelineTimer=enabled?setInterval(()=>loadLiveTimeline(false),1500):null;}
+
 function produceLogs(){if(state.tick % 4 !== 0) return; const msgs=[['OK','File intercept → semantic slice returned','context'],['OK','Ollama scout packed handoff packet','local'],['WARN','Cloud escalation: complexity score 0.87','router'],['OK','Prompt cache hit saved 46.2K tokens','cache'],['OK','Patch verified locally','verifier'],['INFO','MCP selected GitHub + Postgres only','mcp']]; const pick=msgs[Math.floor(Math.random()*msgs.length)]; log(pick[0],pick[1],pick[2]); logTo('mcpAudit',pick[0],pick[1],pick[2]); logTo('secLog',pick[0],pick[1],pick[2]); logTo('swarmLog',pick[0],pick[1],pick[2]);}
 async function update(){state.tick++; if(state.live && (state.tick % 2 === 1 || !state.liveData)) await pullLive(); if(!state.demo && !state.liveData){renderConnection(); return;} updateKPIs(); renderPanels(); drawSpark('spReq','rgba(40,216,255,.95)',1); drawSpark('spSessions','rgba(57,245,141,.95)',3); drawSpark('spToken','rgba(57,245,141,.95)',5); drawSpark('spLocal','rgba(40,216,255,.95)',7); drawSpark('spCloud','rgba(255,150,80,.95)',2); drawSpark('spSec','rgba(176,99,255,.95)',6); drawLineCanvas('latencyCanvas'); drawBars('chunksCanvas'); produceLogs(); renderConnection();}
 $$('#nav button').forEach(btn=>{btn.onclick=()=>{$$('#nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $$('.tab').forEach(tab=>tab.classList.add('hidden')); $('#'+btn.dataset.tab).classList.remove('hidden'); setTimeout(()=>{drawLineCanvas('latencyCanvas');drawBars('chunksCanvas');},50);};});
@@ -442,8 +521,27 @@ $('#saveBase').onclick=()=>{state.apiBase=$('#apiBase').value.trim(); state.demo
 $('#testApi').onclick=async()=>{state.apiBase=$('#apiBase').value.trim(); state.demo=$('#demoToggle').checked; state.live=true; saveCfg(); state.errors=[]; try{const h=await getJSON('/health'); state.liveData={...(state.liveData||{}), health:h}; state.lastOk=new Date(); log('OK','/health responded successfully','api');}catch(e){state.errors=[e.message,'If this is a CORS error, serve this HTML from the BEAST backend or enable CORS on the backend. If it is 404, your backend may not expose /health.']; log('ERR',e.message,'api');} renderConnection();};
 $('#refreshNow').onclick=()=>update(); $('#clearLog').onclick=()=>{['activityLog','mcpAudit','secLog','swarmLog'].forEach(id=>{const el=$('#'+id); if(el) el.innerHTML='';});};
 $('#runProviderDiag').onclick=()=>runProviderDiagnostic();
+$('#loadTimeline').onclick=()=>{timelineCursor='';loadLiveTimeline(false)}; $('#timelineLoadMore').onclick=()=>loadLiveTimeline(true); $('#toggleTimelineLive').onclick=()=>setTimelineLive(!timelineLive); $('#timelineQuery').onkeydown=e=>{if(e.key==='Enter') loadLiveTimeline(false);};
+$('#loadContextManifest').onclick=()=>loadContextManifestConsole(); ['contextStatus','contextPrivacy','contextVisibility'].forEach(id=>$('#'+id).onchange=()=>loadContextManifestConsole()); $('#contextQuery').onkeydown=e=>{if(e.key==='Enter') loadContextManifestConsole();};
 $('#demoToggle').onchange=()=>{state.demo=$('#demoToggle').checked; saveCfg(); update();}; $('#liveToggle').onchange=()=>{state.live=$('#liveToggle').checked; saveCfg(); update();};
 update(); setInterval(update,4000); log('OK','BEAST UI booted. Exact logo image embedded.','ui');
 </script>
+
+<!-- PHASE5_8_TOOL_APPROVAL_CARDS -->
+<section id="toolApprovalCardsPanel" class="ops-panel" data-beast-console="tool-approval-cards">
+  <header><h3>Tool & Approval Cards</h3><span class="ops-badge">Durable authority chain</span></header>
+  <div class="ops-toolbar"><input id="toolApprovalRunId" placeholder="AgentRun ID"><select id="toolApprovalStatus"><option value="">All states</option><option>WAITING_FOR_APPROVAL</option><option>APPROVED</option><option>EXECUTING</option><option>FAILED</option><option>REVOKED</option></select><button id="toolApprovalRefresh">Refresh cards</button></div>
+  <div id="toolApprovalCards" aria-live="polite"></div>
+</section>
 </body>
 </html>
+<!-- PHASE5_9_WORKTREE_DIFF_CONSOLE -->
+<template id="worktreeDiffConsoleTemplate">
+  <section id="worktreeDiffConsolePanel" class="beast-console-panel" aria-label="Worktree changes and diff console">
+    <header><h2>WORKTREE CHANGES</h2><span data-field="sourceplan-status">SourcePlan boundary</span></header>
+    <div class="worktree-diff-summary" data-field="change-summary"></div>
+    <div class="worktree-diff-warnings" data-field="warnings"></div>
+    <div class="worktree-diff-files" data-field="changed-files"></div>
+    <pre class="worktree-exact-diff" data-field="exact-diff"></pre>
+  </section>
+</template>

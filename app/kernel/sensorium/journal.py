@@ -3,17 +3,38 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
+import os
+import fcntl
 import sqlite3
-from typing import Iterable
+from pathlib import Path
+from typing import Iterable, List, Optional
 
 from app.kernel.sensorium.contracts import SensorEvent
 from app.kernel.sensorium.event_sequencer import SequencedEvent
 
+VALID_EVENT_VOCABULARY = {
+    "socket.open",
+    "socket.close",
+    "process.spawn",
+    "process.exit",
+    "network.connect",
+    # Physical Sensorium proof experiments.  These remain an explicit,
+    # closed vocabulary rather than accepting arbitrary event names.
+    "socket.inventoried",
+    "file.source_inspected",
+    "build.branch_selected",
+    "build.artifact_rendered",
+    "artifact.build_verified",
+    "repair.branch_selected",
+    "health.verified",
+    "disk.pressure_inspected",
+    "disk.cleanup_planned",
+    "disk.cleanup_executed",
+    "disk.cleanup_verified",
+}
 
 def _canonical(value) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-
 
 def event_from_dict(value: dict) -> SensorEvent:
     ordering = value.get("ordering") or {}
@@ -32,17 +53,46 @@ def event_from_dict(value: dict) -> SensorEvent:
     event.validate()
     return event
 
-
 class SensoriumJournal:
     """SQLite durability plus an application-level hash chain for audit replay."""
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
+        self.digest_path = self.path.with_suffix(".head_digest")
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.integrity_ok = True
         self.integrity_fracture: dict | None = None
         self._initialize()
         self.verify()
+
+    def _lock(self):
+        self._fd = os.open(self.path, os.O_RDWR | os.O_CREAT)
+        fcntl.flock(self._fd, fcntl.LOCK_EX)
+
+    def _unlock(self):
+        fcntl.flock(self._fd, fcntl.LOCK_UN)
+        os.close(self._fd)
+
+    def _fsync(self, connection):
+        """Checkpoint a committed SQLite transaction while holding the journal lock."""
+        connection.execute("PRAGMA wal_checkpoint(FULL)")
+        fd = os.open(self.path, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+
+    def _initialize(self):
+        self._lock()
+        try:
+            connection = self._connect()
+            connection.execute(
+                "CREATE TABLE IF NOT EXISTS sensor_events (offset INTEGER PRIMARY KEY, event_id TEXT UNIQUE NOT NULL, "
+                "admitted_at TEXT NOT NULL, event_json TEXT NOT NULL, previous_hash TEXT NOT NULL, record_hash TEXT NOT NULL)"
+            )
+            connection.close()
+        finally:
+            self._unlock()
 
     def _connect(self):
         connection = sqlite3.connect(str(self.path), timeout=10, isolation_level=None)
@@ -51,21 +101,17 @@ class SensoriumJournal:
         connection.execute("PRAGMA busy_timeout=10000")
         return connection
 
-    def _initialize(self):
-        connection = self._connect()
-        try:
-            connection.execute(
-                "CREATE TABLE IF NOT EXISTS sensor_events (offset INTEGER PRIMARY KEY, event_id TEXT UNIQUE NOT NULL, "
-                "admitted_at TEXT NOT NULL, event_json TEXT NOT NULL, previous_hash TEXT NOT NULL, record_hash TEXT NOT NULL)"
-            )
-        finally:
-            connection.close()
+    def _validate_vocabulary(self, event_type: str):
+        if event_type not in VALID_EVENT_VOCABULARY:
+            raise ValueError(f"Invalid event type: {event_type}")
 
     def append(self, entry: SequencedEvent) -> str:
+        self._validate_vocabulary(entry.event.event_type)
         if not self.integrity_ok:
             raise RuntimeError("refusing Sensorium append after journal integrity fracture")
         entry.event.validate()
         event_json = json.dumps(entry.event.to_dict(), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        self._lock()
         connection = self._connect()
         try:
             connection.execute("BEGIN IMMEDIATE")
@@ -81,6 +127,10 @@ class SensoriumJournal:
                 (entry.offset, entry.event.event_id, entry.admitted_at, event_json, previous_hash, record_hash),
             )
             connection.execute("COMMIT")
+            # WAL checkpoints cannot run inside the write transaction.  Commit
+            # first, keep the process lock, then force the durable checkpoint.
+            self._fsync(connection)
+            self.digest_path.write_text(record_hash)
             return record_hash
         except Exception:
             if connection.in_transaction:
@@ -88,8 +138,11 @@ class SensoriumJournal:
             raise
         finally:
             connection.close()
+            self._unlock()
 
     def verify(self) -> bool:
+        current_hash = self.digest_path.read_text() if self.digest_path.exists() else ""
+        
         self.integrity_ok = True
         self.integrity_fracture = None
         previous_hash = ""
@@ -101,6 +154,8 @@ class SensoriumJournal:
             ).fetchall()
         finally:
             connection.close()
+        
+        last_hash = ""
         for offset, event_id, admitted_at, event_json, supplied_previous, supplied_hash in rows:
             try:
                 event_value = json.loads(event_json)
@@ -119,7 +174,14 @@ class SensoriumJournal:
                 return False
             previous_hash = supplied_hash
             expected_offset += 1
-        return True
+            last_hash = supplied_hash
+        
+        if current_hash and last_hash != current_hash:
+            self.integrity_ok = False
+            self.integrity_fracture = {"reason": "truncation_detected_via_external_digest"}
+            return False
+            
+        return self.integrity_ok
 
     def replay(self, *, tail: int | None = None) -> list[SequencedEvent]:
         if not self.verify():

@@ -16,6 +16,8 @@ import json
 import os
 import tempfile
 import time
+import re
+import math
 from dataclasses import dataclass, field, fields
 from datetime import datetime, timezone
 from pathlib import Path
@@ -150,6 +152,8 @@ class RuntimeReplayResult:
 
 class DurableInferenceStorage:
     """Phase 7 storage layer for Semantic Compute Credits and stored inference artifacts."""
+    SEMANTIC_INDEX_VERSION = "beast_hashed_embedding_v1"
+    SEMANTIC_DIMENSIONS = 256
 
     def __init__(self, storage_path: Optional[Path] = None):
         if storage_path is None:
@@ -539,6 +543,128 @@ class DurableInferenceStorage:
         if model and tokenizer and prompt_prefix is not None and system_prompt is not None:
             return self.lookup_prefill(model, tokenizer, prompt_prefix, system_prompt)
         return None
+
+    @staticmethod
+    def _semantic_terms(value: str) -> set[str]:
+        return {item for item in re.findall(r"[a-z0-9_]{3,}", value.lower()) if len(item) <= 80}
+
+    def semantic_index(self, prompt: str) -> Dict[str, Any]:
+        """Create a local, salted feature vector without persisting prompt text."""
+        terms = sorted(self._semantic_terms(prompt))[:256]
+        salt = hashlib.sha256(str(self.storage_path.resolve()).encode("utf-8")).hexdigest()
+        vector = [0.0] * self.SEMANTIC_DIMENSIONS
+        token_hashes: list[str] = []
+        for term in terms:
+            token_hashes.append(hashlib.sha256(f"{salt}:term:{term}".encode()).hexdigest()[:24])
+            features = [term] + [f"g:{term[index:index + 3]}" for index in range(max(0, len(term) - 2))]
+            for feature in features:
+                digest = hashlib.sha256(f"{salt}:feature:{feature}".encode()).digest()
+                index = int.from_bytes(digest[:4], "big") % self.SEMANTIC_DIMENSIONS
+                vector[index] += 1.0 if digest[4] & 1 else -1.0
+        norm = math.sqrt(sum(item * item for item in vector))
+        normalized = [round(item / norm, 8) for item in vector] if norm else vector
+        return {
+            "version": self.SEMANTIC_INDEX_VERSION,
+            "dimensions": self.SEMANTIC_DIMENSIONS,
+            "token_hashes": sorted(token_hashes),
+            "vector": normalized,
+        }
+
+    @staticmethod
+    def _cosine(left: Any, right: Any) -> float:
+        if not isinstance(left, list) or not isinstance(right, list) or len(left) != len(right) or not left:
+            return 0.0
+        try:
+            return max(0.0, min(1.0, sum(float(a) * float(b) for a, b in zip(left, right))))
+        except (TypeError, ValueError):
+            return 0.0
+
+    @staticmethod
+    def _jaccard(left: Any, right: Any) -> float:
+        if not isinstance(left, list) or not isinstance(right, list):
+            return 0.0
+        lhs, rhs = set(map(str, left)), set(map(str, right))
+        return len(lhs & rhs) / len(lhs | rhs) if lhs and rhs else 0.0
+
+    def _semantic_candidates(
+        self, *, task_class: str, repo_fingerprint: Optional[str], model: Optional[str],
+        require_repo_fingerprint: bool, require_verified: bool,
+    ) -> list[SemanticComputeCredit]:
+        if require_repo_fingerprint and not repo_fingerprint:
+            return []
+        result = []
+        for credit in self.credits.values():
+            if credit.task_class != task_class or (require_verified and not credit.is_reusable()):
+                continue
+            if repo_fingerprint and credit.repo_fingerprint != repo_fingerprint:
+                continue
+            if require_repo_fingerprint and credit.repo_fingerprint in {"", "n/a"}:
+                continue
+            if model and str(credit.metadata.get("model") or "") != model:
+                continue
+            index = credit.metadata.get("semantic_index")
+            if not isinstance(index, dict) or index.get("version") != self.SEMANTIC_INDEX_VERSION:
+                continue
+            result.append(credit)
+        return result
+
+    def _replay_with_similarity(self, credit: SemanticComputeCredit, similarity: float, reason: str) -> Optional[RuntimeReplayResult]:
+        replay = self.replay_credit(credit.credit_id)
+        if replay is None:
+            return None
+        return RuntimeReplayResult(
+            replay_type=replay.replay_type, credit_id=replay.credit_id, reusable=replay.reusable,
+            payload={**replay.payload, "semantic_similarity": round(similarity, 6), "semantic_index_version": self.SEMANTIC_INDEX_VERSION},
+            avoided_tokens_estimate=replay.avoided_tokens_estimate,
+            confidence=min(float(replay.confidence), float(similarity)), reason=reason,
+        )
+
+    def semantic_search(
+        self, *, task_class: str, prompt: str, threshold: float = 0.86,
+        repo_fingerprint: Optional[str] = None, model: Optional[str] = None,
+        require_repo_fingerprint: bool = True, require_verified: bool = True,
+    ) -> Optional[RuntimeReplayResult]:
+        """Match only explicit, bounded semantic terms stored with verified credits."""
+        query = self.semantic_index(prompt)
+        if not query["token_hashes"]:
+            return None
+        candidates = []
+        for credit in self._semantic_candidates(
+            task_class=task_class, repo_fingerprint=repo_fingerprint, model=model,
+            require_repo_fingerprint=require_repo_fingerprint, require_verified=require_verified,
+        ):
+            index = credit.metadata["semantic_index"]
+            cosine = self._cosine(query["vector"], index.get("vector"))
+            overlap = self._jaccard(query["token_hashes"], index.get("token_hashes"))
+            similarity = (0.75 * cosine) + (0.25 * overlap)
+            if similarity >= float(threshold):
+                candidates.append((similarity, credit))
+        if not candidates:
+            return None
+        _score, credit = max(candidates, key=lambda item: (item[0], item[1].confidence, item[1].reuse_count))
+        return self._replay_with_similarity(credit, _score, "gptcache_compatible_verified_semantic_replay")
+
+    def embedding_search(
+        self, *, task_class: str, prompt: str, threshold: float = 0.90,
+        repo_fingerprint: Optional[str] = None, model: Optional[str] = None,
+        require_repo_fingerprint: bool = True, require_verified: bool = True,
+    ) -> Optional[RuntimeReplayResult]:
+        """Strict cosine search over versioned local hashed embeddings."""
+        query = self.semantic_index(prompt)
+        if not query["token_hashes"]:
+            return None
+        candidates = []
+        for credit in self._semantic_candidates(
+            task_class=task_class, repo_fingerprint=repo_fingerprint, model=model,
+            require_repo_fingerprint=require_repo_fingerprint, require_verified=require_verified,
+        ):
+            similarity = self._cosine(query["vector"], credit.metadata["semantic_index"].get("vector"))
+            if similarity >= float(threshold):
+                candidates.append((similarity, credit))
+        if not candidates:
+            return None
+        score, credit = max(candidates, key=lambda item: (item[0], item[1].confidence, item[1].reuse_count))
+        return self._replay_with_similarity(credit, score, "local_hashed_embedding_verified_replay")
 
     def replay_credit(self, credit_id: str, *, measured_tokens_saved: Optional[int] = None) -> Optional[RuntimeReplayResult]:
         """Replay a stored artifact by credit id and update reuse counters."""

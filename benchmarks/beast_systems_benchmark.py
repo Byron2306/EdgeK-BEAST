@@ -179,7 +179,7 @@ LIVE_PROVIDER_PRESETS: Dict[str, LiveProvider] = {
     "nvidia_nim": LiveProvider(
         name="nvidia_nim",
         base_url="https://integrate.api.nvidia.com/v1",
-        model="nvidia/nemotron-3-super-120b-a12b",
+        model="deepseek-ai/deepseek-v4-flash",
         api_key_env="NVIDIA_API_KEY",
         timeout=180.0,
     ),
@@ -242,7 +242,7 @@ LIVE_PROVIDER_PRESETS: Dict[str, LiveProvider] = {
     "cerebras_native": LiveProvider(
         name="cerebras_native",
         base_url="https://api.cerebras.ai/v1",
-        model="llama3.1-8b",
+        model="gpt-oss-120b",
         api_key_env="CEREBRAS_API_KEY",
         timeout=180.0,
     ),
@@ -1917,6 +1917,7 @@ def live_lane_mode(lane: str) -> LiveLaneMode:
 
 def live_source_patch_profile(provider_name: str) -> Any:
     profile = provider_output_profile(provider_name)
+    normalized = str(provider_name or "").lower().replace("-", "_")
     return replace(
         profile,
         role="live_non_beast_source_patch_generator",
@@ -1925,7 +1926,7 @@ def live_source_patch_profile(provider_name: str) -> Any:
         forbid_old_when_anchor_ref=False,
         require_exact_old_snippet=True,
         allowed_ops=["create_or_replace", "replace_exact", "insert_after", "delete_exact"],
-        repair_attempts=0,
+        repair_attempts=1 if normalized == "nvidia_nim" else 0,
         max_output_chars=max(profile.max_output_chars, 16000),
         max_new_chars=max(profile.max_new_chars, 2400),
     )

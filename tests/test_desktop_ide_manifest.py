@@ -36,12 +36,13 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "resolveBeastPython" in main
     assert "import fastapi, uvicorn" in main
     assert "maxAutomaticAttempts" in main
-    assert "gatewayHealth(baseUrl = gatewayUrl, rootTimeoutMs = 8000)" in main
+    assert "gatewayHealth(baseUrl = gatewayUrl" in main
     assert "findCompatibleGateway" in main
+
     assert "attached to compatible BEAST gateway" in main
     assert "gatewayCapabilityHealth(baseUrl = gatewayUrl, rootPayload = null)" in main
-    assert "active_route_probe_with_local_file_fallback" in main
-    assert "missing_required_route" in main
+    assert "side_effect_free_route_attestation" in main
+    assert "missing_enterprise_desktop_contract" in main
     assert "/edgek/mcp/state" in main
     assert "/edgek/plugins" in main
     assert "/edgek/tools/integrations" in main
@@ -92,6 +93,18 @@ def test_desktop_ide_starts_or_attaches_to_beast_gateway():
     assert "desktopVersion" in main
     assert "rendererPath" in main
     assert "onDesktopVersion" in preload
+
+
+def test_terminal_chat_uses_desktop_gateway_stream_bridge():
+    js = Path("desktop-ide/renderer/js/beast-terminal-tooling-doctor-bridge.js").read_text(encoding="utf-8")
+
+    assert "openGatewayEventStream" in js
+    assert "desktop.gatewayStreamStart" in js
+    assert "desktop.onGatewayStreamMessage" in js
+    assert "let terminalEventSeen = false" in js
+    assert "terminalEventSeen = true" in js
+    assert "await openGatewayEventStream" in js
+    assert "new EventSource(`${gatewayUrl()}/edgek/ide/agent-sessions/" not in js
 
 
 def test_desktop_ide_renderer_uses_tui_workflow_surfaces():
@@ -685,3 +698,218 @@ def test_desktop_ide_backend_uses_request_base_url_for_live_routes():
     assert "_request_base_url(request)" in route_source
     assert "http://gateway-local" not in route_source
     assert "context_files: List[str] | None = None" in route_source
+
+
+def test_pair_programmer_refreshes_live_provider_route_before_starting():
+    ai_root = Path("desktop-ide/renderer/js/ai")
+    module_names = (
+        "agent-client.js", "agent-store.js", "agent-events.js", "agent-view.js",
+        "context-picker.js", "context-manifest.js", "approval-cards.js", "tool-cards.js",
+        "plan-view.js", "verification-view.js", "sourceplan-handoff.js",
+        "conversation-renderer.js", "mode-controller.js", "budget-view.js",
+    )
+    js = "\n".join(
+        [Path("desktop-ide/renderer/js/beast-ai-coding.js").read_text(encoding="utf-8")]
+        + [(ai_root / name).read_text(encoding="utf-8") for name in module_names]
+    )
+    page = Path("desktop-ide/renderer/js/pages/beast-workspace-page.js").read_text(encoding="utf-8")
+    css = Path("desktop-ide/renderer/css/beast-production.css").read_text(encoding="utf-8")
+    routes = Path("app/routes/ide.py").read_text(encoding="utf-8")
+
+    assert "resolveCodingRoute" in js
+    assert "Model registry was not ready; refreshing live providers" in js
+    assert "window.BeastModelAgentBridge.refreshModels" in js
+    assert "'/edgek/providers/state'" in js
+    assert "providerStateRoute" in js
+    assert "row.id === 'nvidia_nim'" in js
+    assert "Recovered live provider route" in js
+    assert "const route = await resolveCodingRoute" in js
+    assert "function appendTurn" in js
+    assert "function narrationFromTurn" in js
+    assert "function runDoneSentence" in js
+    assert "Recovery is waiting for your review. No files changed." in js
+    assert "narrating:shouldNarrate" in js
+    assert "content:message.content" in js
+    assert "I’m streaming my response now" in js
+    assert "I verified my handoff is ready" in js
+    assert "I’m waiting for the model’s stream" not in js
+    assert "I’m provider stream" not in js
+    assert "I connected to the selected model and started the run" in js
+    assert "agent_run_request" in js
+    assert "I need a little more context before the next pass" in js
+    assert "type === 'context_search'" in js
+    assert "type === 'context_result'" in js
+    assert "type === 'context_attach'" in js
+    assert "type === 'context_continue'" in js
+    assert "function appendProposalTurns" in js
+    assert "function continueWithAddedContext" in js
+    assert "function recoverInvalidPacket" in js
+    assert "function isAgentAnalysisPrompt" in js
+    assert "function agentTurnProfile" in js
+    assert "function initialAgentTurns" in js
+    assert "function initialAgentProgress" in js
+    assert "Operating mode: ${profile.kind}" in js
+    assert "Starting ${agentProfile.kind} loop" in js
+    assert "discover and run focused workspace checks" in js
+    assert "SourcePlan required before writes" in js
+    assert "uiMode === 'analysis' ? 'analysis' : 'implementer'" in js
+    assert "analysisRun ? 'analysis' : mode" in js
+    assert "This is an analysis turn, not an edit request" in js
+    assert "mode==='ask'||analysisRun" in js
+    assert "focused:false" in js
+    assert "preserveContext:true" in js
+    assert "actionIrRecovery:true" in js
+    assert "Edit packet needs repair" in js
+    assert "BEAST caught an edit-packet problem before it could become a patch" in js
+    assert "The model returned an invalid edit packet" not in js
+    assert "I’m searching for the extra context the agent asked for" in js
+    assert "I found context candidates for review" in js
+    assert "I added this file to the next run’s context" in js
+    assert "I’m continuing the same task with the expanded context" in js
+    assert "operator accepted suggestion" in js
+    assert "type === 'tool_call'" in js
+    assert "I’m inspecting the selected code and nearby dependencies now" in js
+    assert "I checked prior repo evidence for anything useful to this turn" in js
+    assert "type:'tool_result'" in js
+    assert "payload.tool||'BEAST governed tool'" in js
+    assert "payload.authority||'read-only/governed'" in js
+    assert "turnType==='tool_call'?'active'" in js
+    assert "'command_request':'command_result'" in js
+    assert "type:'command_call'" in js
+    assert "I’m running an isolated check now" in js
+    assert "Operator approved; running in an isolated temporary workspace" in js
+    assert "type:'command_result'" in js
+    assert "authority:'isolated temporary workspace'" in js
+    assert "appendAssistant(assistantId,text)" in js
+    assert "Streaming model output" in js
+    assert "function structuredDraftStatus" in js
+    assert "function isStructuredEditStream" in js
+    assert "Receiving a structured edit plan" in js
+    assert "run_verifier" in js
+    assert "ask_for_context" in js
+    assert "Agent requested" in js
+    assert "verifyRequestedChecks" in js
+    assert "resolveRequestedContext" in js
+    assert "agent-requested context suggestion(s) ready for your approval" in js
+    assert "'/edgek/ide/agent-sessions/verify-sourceplan'" in js
+    assert "Running agent-requested checks in an isolated temporary workspace" in js
+    assert "mode==='ask'||analysisRun)appendAssistant(assistantId,text)" in js
+    assert "internalFormat:'beast.action_intent.v1'" in js
+    assert "function aiAgentCockpit" in page
+    assert "Agent cockpit" in page
+    assert "const profile=message?.agentProfile||{}" in page
+    assert "['Intent',profile.kind||message.mode||'agent'" in page
+    assert "function aiNarration" in page
+    assert "function aiVisibleMessageContent" in page
+    assert "function aiActiveAgentRequests" in page
+    assert "Agent requests" in page
+    assert "'agent-open-terminal'" in page
+    assert "'agent-suggest-context'" in page
+    assert "BeastTerminalToolingDoctorBridge.setCommand" in page
+    assert "BeastRouter.navigate('terminal')" in page
+    assert "liveNarration" in page
+    assert "aiMessageBody(aiVisibleMessageContent(message))" in page
+    assert "aiActiveAgentRequests(message)" in page
+    assert "Agent updates" in page
+    assert "if(explicit.length)return" not in page
+    assert "const combined=[...explicit,...rows]" in page
+    assert "I’m running an isolated check now" in page
+    assert "context_search" in page
+    assert "context_result" in page
+    assert "context_attach" in page
+    assert "context_continue" in page
+    assert "I’m searching for the extra context the agent asked for" in page
+    assert "I found context candidates for review" in page
+    assert "I added this file to the next run’s context" in page
+    assert "Continue with added context" in page
+    assert "agent-continue-context" in page
+    assert "continueWithAddedContext" in page
+    assert "function aiRecoveryCard" in page
+    assert "Agent recovery" in page
+    assert "agent-repair-packet" in page
+    assert "recoverInvalidPacket" in page
+    assert "recovery:message.recovery" in page
+    assert "recovery_request" in page
+    assert "I’m inspecting the selected code and nearby dependencies now" in page
+    assert "I checked prior repo evidence for anything useful to this turn" in page
+    assert "I’m streaming my response now" in page
+    assert "I verified my handoff is ready" in page
+    assert "I’m waiting for the model’s stream" not in page
+    assert "Reading workspace context" in page
+    assert "I’m provider stream" not in page
+    assert "I used ${item.tool||'a governed BEAST tool'} and got a result" not in page
+    assert "I read the selected workspace context" in page
+    assert "Agent next actions" in page
+    assert "agent-context" in page
+    assert "Find requested context" in page
+    assert "agent-verify" in page
+    assert "Run agent requested checks" in page
+    assert "Context" in page
+    assert "SourcePlan" in page
+    assert "aiAgentCockpit(message)" in page
+    assert "aiNarration(message)" in page
+    assert "aiTurns(message)" in page
+    assert "Debug transcript" in page
+    assert "aria-label=\"Debug agent transcript\"" in page
+    assert "Typed agent turns" not in page
+    assert "model output stays private" not in page
+    assert ".cortex-ai-cockpit" in css
+    assert ".cortex-ai-narration" in css
+    assert ".cortex-ai-agent-requests" in css
+    assert ".cortex-ai-recovery" in css
+    assert ".cortex-ai-turns" in css
+    assert ".cortex-ai-turns p.command_result" in css
+    assert "Conversation-first viewport" in css
+    assert "without clipping the composer" in css
+    assert "overflow-y:auto!important" in css
+    assert "grid-template-rows:auto auto auto minmax(0,1fr) auto auto auto!important" in css
+    assert "@media(min-height:760px)" in css
+    assert "minmax(min(42vh,520px),1fr)" in css
+    assert "minmax(min(55vh,720px),1fr)" in css
+    assert ".beast-workspace-page.ai-open .cortex-ai-route>p{display:none!important}" in css
+    assert ".beast-workspace-page.ai-open .cortex-ai-prompt-shell textarea{height:48px!important" in css
+    assert "agents.verify_requested_checks" in routes
+    assert "def _tool_event" in routes
+    assert "def _tool_call_event" in routes
+    assert 'session_mode in {"chat", "analysis", "analyze"}' in routes
+    assert '"agent_run_request"' in routes
+    assert '"type": "command_request"' in routes
+    assert '"context_request" if request_type == "ask_for_context"' in routes
+    assert '"type": "tool_result"' in routes
+    assert '"type": "tool_call"' in routes
+    assert "Inspecting {len(context_file_list[:3])} selected file(s)" in routes
+    assert 'tool="Code Cortex"' in routes
+    assert 'tool="Workspace Search"' in routes
+    assert 'tool="Provider Handoff"' in routes
+    assert '"/edgek/ide/agent-sessions/verify-sourceplan"' in routes
+    assert "_validate_agent_sourceplan(root, plan, run_isolated_verifier=True)" in routes
+    assert "non_mutating_requests" in routes
+    assert "run only after operator approval" in routes
+
+
+def test_desktop_status_reports_runtime_stack_health():
+    main = Path("desktop-ide/main.js").read_text(encoding="utf-8")
+    beast_cli = Path("bin/beast").read_text(encoding="utf-8")
+    app_main = Path("app/main.py").read_text(encoding="utf-8")
+
+    assert "function serviceRegistryPort" in main
+    assert "async function runtimeStackHealth" in main
+    assert "`${baseUrl}/proxy/health`" in main
+    assert "`${baseUrl}/edgek/providers/state`" in main
+    assert "name:'mcp_http'" in main
+    assert "name:'litellm'" in main
+    assert "name:'nginx'" in main
+    assert "const runtimeStack = await runtimeStackHealth" in main
+    assert "runtimeStack," in main
+    assert "'--gateway-port', String(registryGatewayPort)" in main
+    assert "'--mcp-port', String(registryMcpPort)" in main
+    assert "'--nginx-port', String(registryNginxPort)" in main
+    assert "['gateway', 'proxy', 'litellm', 'ollama', 'nginx', 'desktop_contract']" in main
+    assert 'url_ready(f"http://127.0.0.1:{nginx_port}/health"' in beast_cli
+    assert 'default=8765' in beast_cli
+    assert "nginx is running but is not serving the BEAST health route" in beast_cli
+    assert '@app.get("/mcp/health")' in app_main
+    assert "edgek-beast-mcp-gateway" in app_main
+    assert "ensure_stack" in beast_cli
+    assert "command_heal(argparse.Namespace" in beast_cli
+    assert 'mcp_port=registry_service_port("mcp_http", 8765)' in beast_cli

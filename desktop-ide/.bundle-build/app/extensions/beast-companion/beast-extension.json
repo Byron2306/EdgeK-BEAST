@@ -1,0 +1,14 @@
+{
+  "id": "beast.companion",
+  "name": "BEAST Companion",
+  "version": "1.0.0",
+  "description": "Declares the built-in BEAST command and language integration surface.",
+  "main": "extension.js",
+  "capabilities": ["workspace.read", "language.client"],
+  "contributes": {
+    "commands": [
+      { "id": "beast.openMission", "title": "BEAST: Open Mission Control" },
+      { "id": "beast.openCompatibility", "title": "BEAST: Open Compatibility Center" }
+    ]
+  }
+}

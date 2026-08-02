@@ -20,6 +20,8 @@ from app.kernel.compute.compute_forge import ComputeForgeNode
 from app.kernel.compute.crystal_distillation import CrystalToAdapterDistiller, CrystalTrainingSignal, stable_hash
 from app.kernel.compute.nim_live_probe import DEFAULT_NIM_MODELS, NvidiaNIMLiveProbe
 from app.kernel.compute.crystal_reuse_gateway import CrystalReuseGateway, CrystalReuseRequest
+from app.kernel.compute.crystal_ir import compile_crystal_ir
+from app.kernel.compute.crystal_execution import CrystalExecutionEngine, CrystalExecutionRequest
 from app.kernel.compute.local_route_optimizer import LocalRouteOptimizer
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
 from app.kernel.compute.unified_evidence_packet import UnifiedEvidencePacketBuilder
@@ -103,7 +105,9 @@ class CrystallizedComputeProofHarness:
         cloud_executor: Optional[CloudExecutor] = None,
     ) -> None:
         self.config = config
-        self.root = Path(config.root)
+        # All subprocesses and receipts must use one absolute worktree root.
+        # Relative roots otherwise become doubled when a verifier changes cwd.
+        self.root = Path(config.root).expanduser().resolve()
         self.root.mkdir(parents=True, exist_ok=True)
         self.cloud_executor = cloud_executor or CountingCloudExecutor()
         self.storage = DurableInferenceStorage(self.root / "durable")
@@ -791,6 +795,22 @@ class PythonAstFunctionRewriteTool:
 
     name = "python_ast_function_rewriter"
 
+    def render_recipe(self, source_path: Path, *, function_name: str, recipe: Dict[str, Any]) -> Dict[str, str]:
+        source = Path(source_path)
+        text = source.read_text(encoding="utf-8")
+        tree = ast.parse(text)
+        target = next((node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == function_name), None)
+        if target is None or target.end_lineno is None:
+            raise ValueError(f"function not found or has no line span: {function_name}")
+        body_template = recipe.get("body_template")
+        if not isinstance(body_template, list) or not all(isinstance(line, str) for line in body_template):
+            raise ValueError("recipe.body_template must be a list of source lines")
+        lines = text.splitlines(keepends=True)
+        old = "".join(lines[target.lineno - 1:target.end_lineno])
+        new = "\n".join([f"def {function_name}(price, percent):", *body_template]) + "\n"
+        ast.parse(new, filename=str(source))
+        return {"old": old, "new": new}
+
     def apply_recipe(self, source_path: Path, *, function_name: str, recipe: Dict[str, Any]) -> Dict[str, Any]:
         source = Path(source_path)
         text = source.read_text(encoding="utf-8")
@@ -929,11 +949,32 @@ class CrystallizedCodeRepairMegaGauntlet(CrystallizedComputeProofHarness):
         baseline = self.discount_skill.verify(self.source_path, self.tests_path)
         proof = super().run()
         recipe = self._recipe_from_completion(proof["completion"]["answer"])
-        tool_receipt = self.rewrite_tool.apply_recipe(
-            self.source_path,
-            function_name="calculate_discounted_total",
-            recipe=recipe,
+        rendered = self.rewrite_tool.render_recipe(
+            self.source_path, function_name="calculate_discounted_total", recipe=recipe
         )
+        crystal_ir = compile_crystal_ir({
+            "version": "crystal.ir.v1",
+            "mission": {"objective": "repair bounded discount calculation"},
+            "target": {"file": "shop_math.py", "symbol": "calculate_discounted_total"},
+            "observed_failure": {"class": "discount_math_invariant_failure"},
+            "required_transform": {"pipeline": ["replace_function"]},
+            "authority": {"writable_files": ["shop_math.py"], "tests_mutable": False, "network_allowed": False, "maximum_effects": 1},
+            "postconditions": ["syntax_valid", "target_tests_pass", "rollback_available"],
+            "rollback": {"required": True},
+        })
+        tool_receipt = CrystalExecutionEngine().execute(CrystalExecutionRequest(
+            crystal_ir=crystal_ir,
+            old=rendered["old"],
+            new=rendered["new"],
+            approval_id="gauntlet-crystal-approval",
+            worktree_task_id="discount-math-crystal-gauntlet",
+            worktree_root=str(self.problem_root),
+            verification_commands=(("python", "-m", "py_compile", "shop_math.py"), ("python", "-m", "pytest", "-q", "test_shop_math.py")),
+        ))
+        # Preserve the historical skill/tool identity while making the new
+        # Crystal transaction explicit in the receipt.
+        tool_receipt["tool"] = "python_ast_function_rewriter"
+        tool_receipt["executor"] = "crystal_execution_engine"
         verification = self.discount_skill.verify(self.source_path, self.tests_path)
         repaired_source = self.source_path.read_text(encoding="utf-8")
         gauntlet = {
@@ -947,6 +988,8 @@ class CrystallizedCodeRepairMegaGauntlet(CrystallizedComputeProofHarness):
             "crystallized_compute_proof": proof,
             "baseline_verification": baseline,
             "tool_receipt": tool_receipt,
+            "crystal_ir": crystal_ir.to_dict(),
+            "crystal_ir_digest": crystal_ir.digest(),
             "skill_verification": verification,
             "repaired_source_sha256": "sha256:" + hashlib.sha256(repaired_source.encode("utf-8")).hexdigest(),
             "repaired_source_preview": repaired_source,
@@ -956,6 +999,7 @@ class CrystallizedCodeRepairMegaGauntlet(CrystallizedComputeProofHarness):
                 and verification["py_compile_passed"] is True
                 and verification["tests_passed"] is True
                 and proof["completion"]["cloud_calls_during_completion"] == 0
+                and tool_receipt["status"] == "verified"
             ),
         }
         gauntlet["receipt_hash"] = "sha256:" + hashlib.sha256(

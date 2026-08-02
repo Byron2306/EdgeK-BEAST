@@ -903,6 +903,17 @@ class CrystalToAdapterDistiller:
             "{\"beast_object_type\":\"adapter_assisted_local_proposal\",\"task_family\":\"route_diagnostics\",\"task_envelope\":{\"task_id\":\"live_ollama_crystal_runtime\",\"task_family\":\"route_diagnostics\"},\"prec_stage\":\"reason\",\"action_ir\":{\"route\":\"local_verifier_first\"},\"required_verifiers\":[\"provider_fitness_check\"],\"beast_systems_used\":[\"task_envelope\",\"prec_lifecycle\",\"compute_governor\",\"commons_spaces\",\"compute_forge\",\"skill_tree\",\"chronicle\",\"local_verifiers\"],\"agent_awareness\":{\"linked\":true,\"authority\":\"proposal_only\",\"must_use_beast_systems\":true},\"risk_notes\":[\"local verifier required before adoption\"],\"authority\":\"proposal_only\"}",
         ])
         system_prompt = system_prompt.replace('"""', "'''")
+        # Keep the Ollama-derived specialist's stable prefix small. The full
+        # lattice explanation belongs in BEAST retrieval, not every inference
+        # prefill; embedding it here made the wrapper slower than the base 3B.
+        system_prompt = (
+            "You are BEAST's bounded local code-repair specialist.\n"
+            "Return one JSON proposal only; never execute tools or claim authority.\n"
+            "Use the supplied C3 control packet and fill only its declared field.\n"
+            "Never rewrite a whole file, invent imports, include placeholders, or emit markdown.\n"
+            "Preserve task_envelope, Action IR, verifier requirements, proposal_only authority, and rollback safety.\n"
+            "If context is insufficient, return a constrained refusal requesting the missing exact snippet."
+        )
         modelfile = "\n".join([
             f"FROM {base_model}",
             "PARAMETER temperature 0.2",

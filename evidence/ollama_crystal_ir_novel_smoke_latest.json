@@ -1,0 +1,72 @@
+{
+  "beast_object_type": "crystal_ir_translation_receipt",
+  "digest": "sha256:09ddf8d8e2a109c87b3cda907cf6f818a64bfb0068c5e6596b35dc43b2cfa0f7",
+  "evidence_pack": "evidence/ollama_crystal_ir_novel_smoke_latest_pack",
+  "intent": {
+    "constraints": [],
+    "evidence": [],
+    "examples": [],
+    "failure_class": "identifier_alias_mismatch",
+    "intent_family": "provider_normalization",
+    "question": "",
+    "reason_code": "",
+    "requested_effect": "canonicalize",
+    "status": "interpreted",
+    "target_symbol_hint": "canonicalize",
+    "uncertainties": []
+  },
+  "ir": {
+    "beast_object_type": "crystal_ir",
+    "examples": [],
+    "failure_class": "identifier_alias_mismatch",
+    "maximum_effects": 1,
+    "network_allowed": false,
+    "objective": "canonicalize provider identifier",
+    "postconditions": [
+      "syntax_valid",
+      "target_tests_pass",
+      "no_unrelated_diff"
+    ],
+    "rollback_required": true,
+    "target_file": "app/provider_parser.py",
+    "target_symbol": "normalize_provider_id",
+    "tests_mutable": false,
+    "transforms": [
+      {
+        "name": "strip_whitespace"
+      },
+      {
+        "name": "lowercase"
+      },
+      {
+        "from": [
+          "-",
+          " "
+        ],
+        "name": "replace_separator",
+        "to": "_"
+      }
+    ],
+    "unresolved_fields": [],
+    "version": "crystal.ir.v1",
+    "writable_files": [
+      "app/provider_parser.py"
+    ]
+  },
+  "model": "qwen2.5:3b",
+  "mutation_performed": false,
+  "options": {
+    "num_batch": 128,
+    "num_ctx": 1024,
+    "num_predict": 64,
+    "num_thread": 2,
+    "temperature": 0
+  },
+  "provider_called": true,
+  "usage": {
+    "eval_count": 46,
+    "prompt_eval_count": 335,
+    "total_duration": 42694748019
+  },
+  "valid": true
+}

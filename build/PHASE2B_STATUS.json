@@ -1,0 +1,94 @@
+{
+  "phase": "2B",
+  "title": "Durable AgentRun Execution Ownership",
+  "date": "2026-07-18",
+  "status": "PASS",
+  "summary": {
+    "durable_post_launch": true,
+    "renderer_subscribes_by_run_id": true,
+    "prompt_removed_from_sse_query": true,
+    "backend_worker_owns_execution": true,
+    "legacy_and_canonical_replay": true,
+    "sse_event_ids_forwarded": true,
+    "renderer_cursor_persisted": true,
+    "disconnect_preserves_backend_run": true,
+    "durable_approval_wait": true,
+    "resume_relaunches_persisted_request": true,
+    "sourceplan_boundary_preserved": true
+  },
+  "verification": {
+    "phase2a_foundation": {
+      "passed": 16,
+      "total": 16
+    },
+    "phase2b_execution": {
+      "passed": 18,
+      "total": 18
+    },
+    "focused_python_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "python_compilation": {
+      "files": 381,
+      "failed": 0
+    },
+    "javascript_syntax": {
+      "files": 109,
+      "failed": 0
+    },
+    "local_parity_foundation": {
+      "passed": 89,
+      "total": 89
+    },
+    "enterprise_runtime_contract": "PASS",
+    "execution_targets": {
+      "passed": 12,
+      "skipped": 3,
+      "failed": 0
+    },
+    "desktop_static_smoke": {
+      "passed": 24,
+      "total": 24
+    },
+    "desktop_launch_smoke": {
+      "passed": 9,
+      "total": 9
+    },
+    "visual_acceptance": {
+      "passed": 110,
+      "total": 110
+    }
+  },
+  "environment_limits": [
+    "Live SSH and Dev Container fixtures remain environment-gated.",
+    "Two broad app-level tests could not collect because the extracted archive did not include .byron/services.yaml."
+  ],
+  "next_phase": [
+    "provider-neutral typed tool registry",
+    "model-selected tool loop",
+    "worktree-first mutation",
+    "verification feedback and bounded repair",
+    "durable approval cards"
+  ],
+  "contract_checks": {
+    "contract_v2_present": true,
+    "worker_module_present": true,
+    "post_launch_path": true,
+    "renderer_subscribes_by_run_id": true,
+    "prompt_not_in_renderer_sse_query": true,
+    "internal_worker_adapter": true,
+    "resume_relaunches": true,
+    "legacy_projection": true,
+    "approval_wait_is_durable": true,
+    "gateway_forwards_event_id": true,
+    "renderer_persists_cursor": true,
+    "disconnect_preserves_run_identity": true,
+    "transport_forwards_event_id": true,
+    "launch_response_ok": true,
+    "worker_reaches_terminal": true,
+    "worker_event_recorded": true,
+    "legacy_events_recorded": true,
+    "legacy_replay_works": true
+  }
+}

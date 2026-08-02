@@ -1,0 +1,278 @@
+{
+  "beast_object_type": "unified_crystallized_compute_evidence_packet",
+  "capability": {
+    "candidate_id": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+    "confidence": 0.93,
+    "fingerprint_boundary": {
+      "reason": "fingerprint_active",
+      "valid": true
+    },
+    "promotion_status": "promoted",
+    "proof": {
+      "allowed_transform": "bounded_discount_repair_recipe",
+      "approved_for_enforcement": true,
+      "beast_object_type": "deterministic_displacement_proof",
+      "candidate_name": "bounded_discount_repair_recipe",
+      "confidence": 0.93,
+      "created_at": "2026-07-22T10:10:53.620552+00:00",
+      "expected_output_sha256": "",
+      "hidden_tests_equal_or_better": true,
+      "impact_fingerprint": {
+        "crystal_chain_block_hash": "sha256:4be725c20529ce906e969cdb6fd53e94da07e337b08fbf97a881e4ac42c8a123",
+        "fingerprint_hash": "sha256:102f7ac66dda434473114a77851c299fa8b137e1a549c8cda70d3e822a8daa6c",
+        "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+        "state": "active",
+        "task_class": "bounded_discount_math_repair"
+      },
+      "paired_ablation_runs": 3,
+      "policy_version": "phase6_crystallization_v1",
+      "proof_id": "crystal_proof_crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+      "risk_class": "low",
+      "rollback_equal_or_better": true,
+      "scope_checks_equal_or_better": true,
+      "security_checks_equal_or_better": true,
+      "task_class": "bounded_discount_math_repair",
+      "verifier_command": "crystallized_bounded_discount_repair_recipe",
+      "version": "1.0",
+      "visible_tests_equal_or_better": true
+    }
+  },
+  "created_at": "2026-07-22T10:10:54.442812+00:00",
+  "eval_gate": {
+    "beast_object_type": "local_eval_gate_result",
+    "checks": [
+      {
+        "passed": true,
+        "rule": {
+          "type": "must_contain",
+          "value": "CRYSTAL_CODE_RECIPE"
+        }
+      },
+      {
+        "passed": true,
+        "rule": {
+          "type": "must_contain",
+          "value": "python_ast_function_rewriter"
+        }
+      },
+      {
+        "passed": true,
+        "rule": {
+          "type": "max_length",
+          "value": 200000
+        }
+      },
+      {
+        "passed": true,
+        "rule": {
+          "type": "no_secret_patterns"
+        }
+      }
+    ],
+    "passed": true,
+    "promotion_allowed": true,
+    "version": "1.0"
+  },
+  "forge": {
+    "receipts": []
+  },
+  "lattice": {
+    "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+    "node_count": 1,
+    "signal_count": 3,
+    "top_node": {
+      "behavior_labels": [
+        "provider_displacement",
+        "retry_policy_completion",
+        "semantic_reuse"
+      ],
+      "fingerprint_hashes": [
+        "sha256:17b74a7d8bf0463e117efdf2ce02e24637ae09f9e1bcfe049a9569b508583b88"
+      ],
+      "negative_count": 0,
+      "positive_count": 3,
+      "proof_density": 1.0,
+      "providers": [
+        "nvidia_nim"
+      ],
+      "signal_count": 3,
+      "task_family": "bounded_discount_math_repair",
+      "training_priority": 0.6625,
+      "verifier_labels": [
+        "hidden",
+        "local_eval_gate",
+        "visible"
+      ]
+    }
+  },
+  "memory_hull": {
+    "beast_object_type": "memory_hull_inventory",
+    "editable": true,
+    "failed_sidecars": 0,
+    "index_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/.index/residue_index.json",
+    "root": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault",
+    "sections": {
+      "decisions": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "policies": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "projects": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "provider_receipts": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "quality_cascade": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "residue": {
+        "failed": 0,
+        "markdown": 3,
+        "sidecars": 3,
+        "verified": 3
+      },
+      "tasks": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      }
+    },
+    "sidecar_sealed": true,
+    "verified_sidecars": 3,
+    "version": "2.0"
+  },
+  "metrics": {
+    "actual_reuse_count": 1,
+    "beast_object_type": "crystallized_compute_evidence_metrics",
+    "capability_total_compute_displaced_tokens": 191,
+    "cloud_calls_completion": 0,
+    "cloud_calls_training": 3,
+    "fused_crystal_estimate": 2975,
+    "runtime_tokens_avoided": 191,
+    "storage_total_avoided_tokens": 191,
+    "training_tokens_observed": 570,
+    "version": "1.0"
+  },
+  "negative_cases": [],
+  "packet_hash": "sha256:a4d7c270177a22dec50486274f424c34ef3dc38152cec6bf306f3176800d9bee",
+  "replay": {
+    "answer_hash": "sha256:f5de5ac45e56426f55acee541dbf1ac870b40d50a5bc100331b8080adf9fbe03",
+    "cloud_calls_during_completion": 0,
+    "completed_locally": true,
+    "provider_displaced": true
+  },
+  "request": {
+    "beast_object_type": "crystal_reuse_request",
+    "metadata": {
+      "capability_id": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+      "fused_crystal_id": "fused_crystal_d80992dfa37c4783f45a",
+      "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+      "semantic_page_ids": {
+        "intermediate_summary": "scp_470f9bca490a0b8dce784bd7",
+        "route_card": "scp_1f95ff77ad8f1da820e94f1f",
+        "verifier_plan": "scp_57ee5ad1926d4455da90c4ab"
+      }
+    },
+    "model": "nvidia-nim-code-repair-proof-model",
+    "parameters": {
+      "max_tokens": 128,
+      "temperature": 0
+    },
+    "policy_version": "crystal_reuse_v1",
+    "preferred_engine": null,
+    "prompt_hash": "sha256:6ee99867ae43f022e7b53a29285a939b75db97a53c2263c82e9b27212de60802",
+    "prompt_prefix": "",
+    "prompt_preview": "BEAST code repair bounded discount math bug fix numeric coercion clamp percent round cents ValueError invalid input deterministic AST rewrite pytest skill discount_repair_crystal_term_0 discount_repair_crystal_term_1 discount_repair_crystal_term_2 discount_repair_crystal_term_3 discount_repair_crystal_term_4 discount_repair_crystal_term_5 discount_repair_crystal_term_6 discount_repair_crystal_term_7 discount_repair_crystal_term_8 discount_repair_crystal_term_9 discount_repair_crystal_term_10 dis",
+    "provider": "nvidia_nim",
+    "repo_fingerprint": "repo-code-repair-mega-gauntlet",
+    "system_prompt": "",
+    "task_class": "bounded_discount_math_repair",
+    "tokenizer": "",
+    "version": "1.0"
+  },
+  "route_optimizer": {
+    "beast_object_type": "local_route_optimizer_feedback",
+    "engine_id": "beast_local_semantic_cache",
+    "latency_ms": 1201.0,
+    "model": "nvidia-nim-code-repair-proof-model",
+    "runtime_engine": "beast_local_semantic_cache",
+    "success": true,
+    "task_class": "bounded_discount_math_repair",
+    "teacher_engine": "nvidia_nim_or_external_teacher",
+    "tokens": 189,
+    "version": "1.0"
+  },
+  "runtime": {
+    "cloud_used": false,
+    "decision_action": "reuse_semantic_credit",
+    "engine": "beast_local_semantic_cache",
+    "execution_mode": "local_reuse",
+    "route_optimizer_choice": "beast_local_semantic_cache"
+  },
+  "semantic_credit": {
+    "confidence": 0.88,
+    "credit_id": "scc_4c91f36da8e0ed25",
+    "replay_type": "semantic_credit"
+  },
+  "skills": [
+    {
+      "category": "code_repair",
+      "name": "discount_math_guardrails",
+      "version": "1.0"
+    },
+    {
+      "category": "compute_reduction",
+      "name": "semantic_crystal_reuse",
+      "version": "1.0"
+    }
+  ],
+  "task_class": "bounded_discount_math_repair",
+  "teacher": {
+    "cloud_used": true,
+    "engine": "nvidia_nim_or_external_teacher",
+    "live_nim_receipts": [],
+    "local_forge_receipts": [],
+    "training_cloud_calls": 3,
+    "training_observations": 3
+  },
+  "tools": [
+    {
+      "name": "python_ast_function_rewriter",
+      "risk_class": "low",
+      "role": "apply_verified_recipe"
+    },
+    {
+      "name": "pytest",
+      "risk_class": "low",
+      "role": "verify_behavior"
+    },
+    {
+      "name": "py_compile",
+      "risk_class": "low",
+      "role": "verify_syntax"
+    }
+  ],
+  "trace": {
+    "artifact_path": "",
+    "trace_ledger_bytes": 23307
+  },
+  "version": "1.0"
+}

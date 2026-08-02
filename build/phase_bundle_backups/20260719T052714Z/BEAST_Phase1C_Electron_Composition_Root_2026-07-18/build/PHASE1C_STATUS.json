@@ -1,0 +1,58 @@
+{
+  "schema": "beast.phase1-status.v1",
+  "phase": "1C",
+  "status": "PASS",
+  "date": "2026-07-18",
+  "objective": "Close the remaining safe Phase 1 boundaries for desktop bootstrap/security/IPC/diagnostics/menu/window/lifecycle, gateway registry parsing, workspace normalization, Pair Programmer narration/profile logic, and IDE route context/event/action-ir formatting.",
+  "entrypoints": {
+    "desktop-ide/main.js": {
+      "phase1b_lines": 1350,
+      "phase1c_lines": 1254
+    },
+    "desktop-ide/renderer/js/beast-ai-coding.js": {
+      "phase1b_lines": 1282,
+      "phase1c_lines": 1160
+    },
+    "app/routes/ide.py": {
+      "phase1b_lines": 4312,
+      "phase1c_lines": 3966
+    }
+  },
+  "created_modules": [
+    "desktop-ide/main/bootstrap.js",
+    "desktop-ide/main/security-policy.js",
+    "desktop-ide/main/gateway-host.js",
+    "desktop-ide/main/workspace-host.js",
+    "desktop-ide/main/ipc-registry.js",
+    "desktop-ide/main/diagnostics-host.js",
+    "desktop-ide/main/menu-host.js",
+    "desktop-ide/main/window-host.js",
+    "desktop-ide/main/application-lifecycle.js",
+    "desktop-ide/renderer/js/ai/beast-ai-narration.js",
+    "desktop-ide/renderer/js/ai/beast-ai-profile.js",
+    "app/routes/ide_support/action_ir.py",
+    "app/routes/ide_support/agent_session_routes.py",
+    "app/routes/ide_support/context.py",
+    "app/routes/ide_support/events.py",
+    "app/routes/ide_support/system_routes.py",
+    "app/routes/ide_support/worktree_routes.py"
+  ],
+  "checks": {
+    "phase1_verify": "passed",
+    "phase1_module_boundaries": "21 direct desktop modules, 4 renderer AI modules",
+    "parity_foundation": "89/89",
+    "execution_target_contract": "12 passed, 3 environment-gated skips, 0 failed",
+    "focused_python_regressions": "15 passed",
+    "phase0_release_contract": "passed",
+    "syntax": "passed",
+    "diff_check": "passed"
+  },
+  "behavioural_contract": {
+    "route_paths_changed": false,
+    "ipc_channels_changed": false,
+    "preload_contract_changed": false,
+    "renderer_public_api_changed": false,
+    "sourceplan_boundary_changed": false,
+    "execution_target_semantics_changed": false
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "beast.phase1e-status.v1",
+  "date": "2026-07-18",
+  "status": "PASS",
+  "scope": "ide-backend-route-decomposition",
+  "entrypoint": {
+    "path": "app/routes/ide.py",
+    "before_lines": 4312,
+    "after_lines": 40,
+    "reduction_percent": 99.07
+  },
+  "graph": {
+    "total_lines": 4201,
+    "context_lines": 709,
+    "route_count": 52,
+    "route_contract_unchanged": true,
+    "route_modules": 9,
+    "agent_stream_isolated": true
+  },
+  "verification": {
+    "backend_contract": {
+      "passed": 11,
+      "total": 11
+    },
+    "focused_python_tests": {
+      "passed": 25,
+      "failed": 0
+    },
+    "parity_foundation": {
+      "passed": 89,
+      "total": 89
+    },
+    "enterprise_runtime_contract": "PASS",
+    "execution_targets": {
+      "passed": 12,
+      "skipped": 3,
+      "failed": 0
+    },
+    "desktop_static_smoke": {
+      "passed": 24,
+      "total": 24
+    },
+    "desktop_launch_smoke": {
+      "passed": 9,
+      "total": 9
+    },
+    "visual_acceptance": {
+      "passed": 110,
+      "total": 110
+    },
+    "python_compilation": "PASS"
+  },
+  "known_boundary": {
+    "path": "app/routes/ide_routes/agent_run_stream.py",
+    "lines": 1177,
+    "reason": "Preserved as the exact Phase 2 AgentRunEngine transplant seam."
+  }
+}

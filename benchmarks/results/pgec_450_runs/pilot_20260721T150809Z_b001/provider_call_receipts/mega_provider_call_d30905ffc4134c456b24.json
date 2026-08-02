@@ -1,0 +1,86 @@
+{
+  "base_url": "http://127.0.0.1:11434/v1",
+  "beast_object_type": "mega_provider_call_receipt",
+  "clean_completed": false,
+  "cloud_calls": 1,
+  "completed": true,
+  "created_at": "2026-07-21T15:08:39Z",
+  "decision": "provider_execution",
+  "failure_bucket": null,
+  "family": "patch_compilation",
+  "files_changed": [
+    "app/math_ops.py"
+  ],
+  "hidden_passed": true,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+    "fixture_family": "patch_compilation",
+    "fixture_occurrence": 1,
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/math_ops.py": {
+        "exists": true,
+        "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+        "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+        "symbol_hashes": {
+          "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+        }
+      },
+      "app/service.py": {
+        "exists": true,
+        "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+        "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+        "symbol_hashes": {
+          "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+        }
+      }
+    },
+    "tests": {
+      "tests/test_invoice_hidden.py": {
+        "exists": true,
+        "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+        "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+        "symbol_hashes": {
+          "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+        }
+      },
+      "tests/test_invoice_public.py": {
+        "exists": true,
+        "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+        "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+        "symbol_hashes": {
+          "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+        }
+      }
+    },
+    "tool_schema_hashes": [
+      "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+    ],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+  "latency_ms": null,
+  "live_lane": "live_ollama_full_beast",
+  "mega_lane": "full_beast_compute_governor",
+  "model": "qwen2.5-coder:7b",
+  "occurrence": 1,
+  "provider": "ollama",
+  "provider_completion_tokens": null,
+  "provider_execution_requested": true,
+  "provider_prompt_tokens": null,
+  "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+  "receipt_id": "mega_provider_call_d30905ffc4134c456b24",
+  "rescued_completed": true,
+  "rollback_success": true,
+  "task": "multi_file_hidden_decimal_fix",
+  "task_id": "patch_compilation_o01_v1",
+  "total_tokens": null,
+  "version": "1.0",
+  "visible_passed": true
+}

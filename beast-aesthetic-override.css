@@ -1,0 +1,1354 @@
+/* VS Code-grade neon hacker workbench skin. Keep this last in index.html. */
+
+:root {
+  --beast-bg-0: #050807;
+  --beast-bg-1: #07110d;
+  --beast-bg-2: #091a12;
+  --beast-panel: rgba(8, 14, 11, .96);
+  --beast-panel-strong: rgba(10, 18, 14, .985);
+  --beast-green: #74ff5b;
+  --beast-green-hot: #b6ff8d;
+  --beast-green-deep: #1f8f38;
+  --beast-cyan: #57f6ff;
+  --beast-muted: #8c9b93;
+  --beast-border: rgba(131, 255, 101, .17);
+  --beast-border-hot: rgba(142, 255, 102, .62);
+  --beast-shadow: 0 14px 42px rgba(0,0,0,.42);
+  --beast-glow: 0 0 14px rgba(116,255,91,.18);
+  --beast-sidebar-w: clamp(238px, 14vw, 276px);
+  --beast-rail-w: clamp(292px, 17vw, 342px);
+  --beast-header-h: 104px;
+  --beast-command-h: 92px;
+  --beast-gap: 8px;
+  --beast-radius: 7px;
+  --beast-display: "Rajdhani", "Chakra Petch", "Oxanium", system-ui, sans-serif;
+  --beast-mono: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html,
+body {
+  background: #050807;
+}
+
+body {
+  color: #e9f6ed;
+  font: 14px/1.42 var(--beast-display);
+}
+
+body::before {
+  opacity: .42;
+  background-image:
+    linear-gradient(rgba(116,255,91,.034) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116,255,91,.028) 1px, transparent 1px),
+    radial-gradient(circle at 16% 0%, rgba(87,246,255,.06), transparent 32%);
+  background-size: 44px 44px, 44px 44px, 100% 100%;
+}
+
+body::after {
+  opacity: .075;
+}
+
+.beast-shell {
+  gap: 8px;
+  padding: 8px;
+  background:
+    radial-gradient(circle at 38% -14%, rgba(116,255,91,.11), transparent 34%),
+    linear-gradient(135deg, rgba(87,246,255,.035), transparent 28%),
+    #050807;
+}
+
+.beast-surface {
+  border-color: rgba(116,255,91,.14);
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(11,19,15,.985), rgba(5,9,7,.99)),
+    #050807;
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 12px 34px rgba(0,0,0,.38);
+}
+
+.beast-surface,
+.beast-card {
+  transform: translateZ(0);
+}
+
+.beast-sidebar {
+  padding: 8px;
+  border-right-color: rgba(116,255,91,.28);
+  background:
+    linear-gradient(180deg, rgba(10,20,15,.98), rgba(3,8,6,.995)),
+    #050807;
+}
+
+.beast-brand {
+  grid-template-columns: 44px minmax(0,1fr);
+  min-height: 58px;
+  padding: 5px 4px 8px;
+  gap: 8px;
+  border-bottom-color: rgba(116,255,91,.2);
+}
+
+.beast-mascot {
+  width: 44px;
+  height: 44px;
+}
+
+.beast-mascot::before {
+  inset: 3px;
+  opacity: .78;
+}
+
+.beast-ascii {
+  font-size: 3px !important;
+  line-height: .88 !important;
+  letter-spacing: 0;
+  color: #aaff82;
+  text-shadow: 0 0 8px rgba(116,255,91,.55);
+}
+
+.beast-brand-copy small {
+  display: block;
+  margin-top: 5px;
+  color: #79ff63;
+  font: 700 9px var(--beast-mono);
+  letter-spacing: .14em;
+}
+
+.beast-nav {
+  gap: 2px;
+  padding-right: 2px;
+}
+
+.beast-nav button {
+  min-height: 34px;
+  grid-template-columns: 22px minmax(0,1fr) 10px;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #acbbb2;
+  font: 650 12px/1 var(--beast-display);
+}
+
+.beast-nav button::before {
+  top: 5px;
+  bottom: 5px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(#b6ff8d, #57ff79);
+  box-shadow: 0 0 16px rgba(116,255,91,.62);
+}
+
+.beast-nav button:hover,
+.beast-nav button.active {
+  color: #f6fff8;
+  border-color: rgba(116,255,91,.36);
+  background:
+    linear-gradient(90deg, rgba(116,255,91,.18), rgba(116,255,91,.052) 54%, transparent),
+    rgba(255,255,255,.018);
+}
+
+.beast-nav button.active {
+  box-shadow: inset 0 0 0 1px rgba(182,255,141,.08), 0 0 18px rgba(116,255,91,.08);
+}
+
+.beast-nav img {
+  width: 20px;
+  height: 20px;
+}
+
+.beast-nav .label {
+  letter-spacing: .01em;
+}
+
+.beast-sidebar-foot {
+  color: #78877f;
+  padding-top: 8px;
+  font-size: 9px;
+}
+
+.beast-header.beast-header-premium,
+.beast-header {
+  min-height: var(--beast-header-h) !important;
+  padding: 12px 16px 12px 118px !important;
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgba(116,255,91,.105), transparent 38%),
+    linear-gradient(180deg, rgba(10,21,15,.985), rgba(5,10,8,.99)) !important;
+}
+
+.beast-header-emblem {
+  left: 22px !important;
+  top: 16px !important;
+  width: 72px !important;
+  height: 72px !important;
+  opacity: .92;
+}
+
+.beast-header-emblem img {
+  width: 64px !important;
+  height: 64px !important;
+}
+
+.beast-header-brandmark,
+.beast-header-terminal,
+#beastHeaderPulse {
+  display: none !important;
+}
+
+.beast-title-row {
+  align-self: center;
+}
+
+.beast-kicker {
+  color: #7dff68;
+  font-size: 10px;
+  letter-spacing: .18em;
+}
+
+.beast-title,
+.beast-header .beast-title {
+  margin: 5px 0 2px;
+  color: #f4fff6;
+  font: 760 clamp(20px, 1.25vw, 26px)/1.02 var(--beast-display) !important;
+  letter-spacing: .015em;
+  text-shadow: 0 0 18px rgba(116,255,91,.12);
+}
+
+.beast-meta {
+  color: #98aaa0;
+}
+
+.beast-header-state {
+  gap: 6px;
+  max-width: min(42vw, 640px);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.beast-compact-route,
+.beast-access-toggle,
+.beast-pill {
+  min-height: 30px;
+  border-radius: 4px;
+  border-color: rgba(116,255,91,.24);
+  background: rgba(3,8,6,.78);
+  color: #d7e6dc;
+  box-shadow: none;
+}
+
+.beast-compact-route {
+  max-width: 210px;
+  padding: 0 9px;
+  font: 700 10px var(--beast-mono);
+}
+
+.beast-access-toggle {
+  padding: 0 10px;
+  font: 800 10px var(--beast-mono);
+  color: var(--beast-green-hot);
+}
+
+.beast-viewport {
+  background:
+    linear-gradient(180deg, rgba(8,15,11,.985), rgba(3,7,5,.995)),
+    #040806;
+}
+
+#beastPageOutlet {
+  padding: 10px;
+}
+
+.beast-page {
+  gap: 10px;
+  animation-duration: .14s;
+}
+
+.beast-page-head {
+  min-height: 74px !important;
+  padding: 14px 18px !important;
+  border: 1px solid rgba(116,255,91,.16) !important;
+  border-radius: 7px !important;
+  background:
+    linear-gradient(90deg, rgba(116,255,91,.12), rgba(87,246,255,.035), transparent 72%),
+    rgba(6,13,9,.96) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 10px 26px rgba(0,0,0,.26);
+}
+
+.beast-page-head::before,
+.beast-page-head::after {
+  display: none !important;
+}
+
+.beast-page-head h2 {
+  color: #f2faf5;
+  font: 780 clamp(20px, 1.2vw, 27px)/1.05 var(--beast-display) !important;
+  letter-spacing: .035em;
+}
+
+.beast-page-head .sub {
+  color: #92a59a !important;
+  font: 700 10px var(--beast-mono) !important;
+  letter-spacing: .11em;
+}
+
+.beast-card {
+  min-height: 124px;
+  border-width: 12px !important;
+  border-image-width: 12px !important;
+  padding: 14px !important;
+  background:
+    linear-gradient(180deg, rgba(9,17,13,.965), rgba(4,9,7,.99)),
+    #050807 !important;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,.28));
+  box-shadow: inset 0 1px rgba(255,255,255,.028);
+}
+
+.beast-card::after {
+  opacity: .72;
+}
+
+.beast-card h3,
+.beast-panel-head h3 {
+  color: #a8ff7b;
+  letter-spacing: .07em;
+}
+
+.beast-card p,
+.beast-panel-head span {
+  color: #a3b2aa;
+}
+
+.beast-button {
+  min-height: 32px;
+  border-color: rgba(116,255,91,.36);
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, rgba(116,255,91,.13), rgba(14,35,20,.32));
+  color: #baff92;
+  box-shadow: none;
+}
+
+.beast-button.secondary {
+  border-color: rgba(166,190,176,.23);
+  background: rgba(255,255,255,.025);
+  color: #cbd9d0;
+}
+
+.beast-button:hover {
+  border-color: rgba(182,255,141,.78);
+  box-shadow: 0 0 12px rgba(116,255,91,.15);
+}
+
+.beast-pill.live {
+  color: var(--beast-green-hot);
+  border-color: rgba(116,255,91,.46);
+  box-shadow: 0 0 10px rgba(119,255,61,.12);
+}
+
+.beast-command {
+  padding: 8px 10px;
+  background:
+    linear-gradient(180deg, rgba(7,14,10,.98), rgba(3,7,5,.99)),
+    #040806;
+}
+
+.beast-command-tabs {
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.beast-command-tabs button,
+.beast-chip {
+  min-height: 26px;
+  border-color: rgba(116,255,91,.18);
+  background: rgba(255,255,255,.018);
+}
+
+.beast-command-tabs button.active,
+.beast-chip:hover {
+  color: #baff92;
+  border-color: rgba(116,255,91,.44);
+  background: rgba(116,255,91,.08);
+}
+
+.beast-command-line {
+  grid-template-columns: 20px minmax(0,1fr) 42px;
+}
+
+.beast-command-line input {
+  height: 36px;
+  border-color: rgba(116,255,91,.2);
+  background: #020604;
+}
+
+.beast-send {
+  height: 36px;
+  border-color: rgba(116,255,91,.56);
+  background: rgba(116,255,91,.12);
+}
+
+.beast-operation-notice {
+  color: #8fa098;
+  font-size: 9px;
+}
+
+.beast-chips {
+  margin-top: 6px;
+}
+
+.beast-rail {
+  padding: 8px;
+  background:
+    linear-gradient(180deg, rgba(8,16,12,.96), rgba(3,8,6,.992)),
+    #040806;
+}
+
+.beast-rail-card {
+  min-height: 96px;
+}
+
+.cortex-layout,
+.beast-workspace-layout {
+  gap: 8px;
+}
+
+.cortex-explorer,
+.cortex-editor,
+.beast-explorer-panel,
+.beast-editor-panel {
+  border-radius: 6px;
+  border-color: rgba(116,255,91,.15);
+  background: rgba(4,9,7,.985);
+}
+
+.cortex-editor-top,
+.cortex-statusbar {
+  background: #050907;
+}
+
+.cortex-tab,
+.cortex-tabbar button,
+.cortex-editor-tools button,
+.cortex-explorer-tools button {
+  border-radius: 4px;
+  border-color: rgba(116,255,91,.16);
+  background: #07100c;
+}
+
+.cortex-tab.active,
+.cortex-tabbar button.active,
+.cortex-editor-tools button.active {
+  color: #f4fff6;
+  border-color: rgba(116,255,91,.55);
+  background: #020604;
+  box-shadow: inset 0 -2px #74ff5b, 0 0 13px rgba(116,255,91,.08);
+}
+
+.cortex-editor-stage,
+.cortex-editor-pane,
+.beast-editor-host,
+.beast-editor-fallback,
+.sourceplan-diff-host,
+.sourceplan-diff-fallback {
+  background: #020604 !important;
+  border-color: rgba(116,255,91,.14);
+}
+
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .margin {
+  background-color: #020604 !important;
+}
+
+.terminal-screen-wrap,
+.terminal-output,
+.beast-terminal-screen {
+  border-color: rgba(116,255,91,.18) !important;
+  background:
+    linear-gradient(rgba(116,255,91,.026) 1px, transparent 1px),
+    #020604 !important;
+  background-size: 30px 30px !important;
+  box-shadow: inset 0 0 28px rgba(0,0,0,.62), 0 0 14px rgba(116,255,91,.045) !important;
+}
+
+.terminal-live-pill.active i,
+.terminal-prompt-line i {
+  background: #8dff68;
+  box-shadow: 0 0 10px rgba(116,255,91,.65);
+}
+
+.beast-nav img,
+.beast-button img,
+.beast-metric-grid img,
+.terminal-metric img,
+.tooling-summary-card img {
+  filter: drop-shadow(0 0 4px rgba(119,255,61,.22));
+}
+
+.beast-ascii[data-flicker="true"],
+.beast-mascot::before,
+.beast-card::before,
+#beastPageScan::before,
+#beastPageScan::after {
+  animation-duration: 18s !important;
+}
+
+#beastMatrix,
+#beastMatrixFront,
+#beastGridLayer {
+  opacity: .10 !important;
+}
+
+#beastPageScan::before,
+#beastPageScan::after,
+.terminal-screen-wrap::after,
+.beast-terminal-screen::after,
+.terminal-output::after {
+  opacity: .08 !important;
+}
+
+.beast-shell-resizer {
+  opacity: .55;
+}
+
+.beast-shell-resizer:hover,
+.beast-shell-resizer:focus {
+  opacity: 1;
+  background: rgba(116,255,91,.18);
+}
+
+::selection {
+  color: #011004;
+  background: #9cff70;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,.025);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#356d42, #75ff5b);
+  border: 3px solid #050807;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaff82;
+}
+
+body[data-performance-tier="low"] .beast-card,
+body[data-performance-tier="low"] .beast-surface {
+  filter: none !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.025) !important;
+}
+
+@media (max-width: 1450px) {
+  :root {
+    --beast-header-h: 96px;
+    --beast-command-h: 84px;
+  }
+
+  .beast-header.beast-header-premium,
+  .beast-header {
+    padding-left: 96px !important;
+  }
+
+  .beast-header-emblem {
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  .beast-header-emblem img {
+    width: 54px !important;
+    height: 54px !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  :root {
+    --beast-header-h: 88px;
+  }
+
+  .beast-header-state {
+    display: none;
+  }
+
+  .beast-header.beast-header-premium,
+  .beast-header {
+    padding-right: 14px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after,
+  #beastMatrix,
+  #beastPageScan {
+    display: none !important;
+  }
+}
+
+/* BEAST identity restoration + structural workbench v2
+   This layer is intentionally late and forceful: the prior neon pass made the
+   brand too quiet and left too many surfaces sharing the same rounded-box DNA. */
+:root {
+  --beast-sidebar-w: clamp(310px, 19vw, 380px) !important;
+  --beast-rail-w: clamp(310px, 18vw, 372px) !important;
+  --beast-header-h: 132px !important;
+  --beast-command-h: 112px !important;
+  --beast-green: #8dff54;
+  --beast-green-hot: #b8ff6c;
+  --beast-green-deep: #12351b;
+  --beast-panel-ink: rgba(4, 13, 7, .96);
+  --beast-panel-ink-2: rgba(8, 23, 12, .94);
+  --beast-panel-line: rgba(141, 255, 84, .46);
+  --beast-panel-line-hard: rgba(184, 255, 108, .78);
+  --beast-text-big: clamp(15px, .86vw, 16px);
+}
+
+body {
+  font-size: var(--beast-text-big) !important;
+  letter-spacing: .006em !important;
+}
+
+.beast-header-brandmark,
+.beast-header-terminal,
+#beastHeaderPulse {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.beast-header.beast-header-premium,
+.beast-header {
+  min-height: var(--beast-header-h) !important;
+  padding: 18px 28px 18px 132px !important;
+  background:
+    linear-gradient(110deg, rgba(141,255,84,.18), transparent 22%),
+    linear-gradient(180deg, rgba(8,20,10,.98), rgba(2,6,4,.94)) !important;
+  border-bottom: 1px solid var(--beast-panel-line-hard) !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(184,255,108,.28),
+    0 16px 56px rgba(0,0,0,.48),
+    0 0 48px rgba(107,255,69,.10) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 36px) 100%, 0 100%) !important;
+}
+
+.beast-header-emblem {
+  width: 104px !important;
+  height: 104px !important;
+  left: 18px !important;
+  top: 14px !important;
+  border-radius: 0 20px 0 20px !important;
+  border: 1px solid var(--beast-panel-line-hard) !important;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(184,255,108,.26), transparent 48%),
+    linear-gradient(145deg, #071309, #0f2a15 58%, #020402) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(141,255,84,.12),
+    0 0 34px rgba(141,255,84,.30) !important;
+}
+
+.beast-header-emblem img {
+  width: 94px !important;
+  height: 94px !important;
+  filter:
+    drop-shadow(0 0 12px rgba(184,255,108,.62))
+    drop-shadow(0 8px 14px rgba(0,0,0,.48)) !important;
+}
+
+.beast-header-brandmark {
+  align-content: center !important;
+  gap: 5px !important;
+  min-width: 260px !important;
+}
+
+.beast-header-wordmark,
+.beast-wordmark {
+  display: block !important;
+  font-size: clamp(28px, 2.2vw, 48px) !important;
+  line-height: .88 !important;
+  letter-spacing: .11em !important;
+  color: #d8ffc2 !important;
+  text-shadow:
+    0 0 10px rgba(184,255,108,.78),
+    0 0 32px rgba(107,255,69,.38) !important;
+}
+
+.beast-header-wordmark::after,
+.beast-wordmark::after {
+  content: " IDE" !important;
+  color: var(--beast-green-hot) !important;
+  letter-spacing: .16em !important;
+}
+
+.beast-header-tagline {
+  display: block !important;
+  font-size: 12px !important;
+  letter-spacing: .23em !important;
+  color: rgba(210,255,191,.76) !important;
+  text-transform: uppercase !important;
+}
+
+.beast-header-terminal {
+  min-height: 58px !important;
+  align-content: center !important;
+  padding: 10px 15px !important;
+  border-radius: 0 16px 0 16px !important;
+  border: 1px solid rgba(141,255,84,.40) !important;
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 1px, transparent 1px 7px),
+    rgba(1,7,3,.72) !important;
+  color: rgba(219,255,202,.86) !important;
+  font-size: 12px !important;
+  box-shadow: inset 0 0 22px rgba(141,255,84,.08) !important;
+}
+
+.beast-sidebar {
+  width: var(--beast-sidebar-w) !important;
+  min-width: var(--beast-sidebar-w) !important;
+  background:
+    linear-gradient(180deg, rgba(10,27,13,.98), rgba(2,6,4,.98)),
+    radial-gradient(circle at 26% 8%, rgba(141,255,84,.18), transparent 28%) !important;
+  border-right: 1px solid rgba(141,255,84,.42) !important;
+  box-shadow: inset -1px 0 0 rgba(184,255,108,.15), 18px 0 46px rgba(0,0,0,.30) !important;
+}
+
+.beast-brand {
+  grid-template-columns: 96px minmax(0, 1fr) !important;
+  min-height: 124px !important;
+  padding: 20px 18px !important;
+  gap: 18px !important;
+  border-radius: 0 26px 0 26px !important;
+  border: 1px solid var(--beast-panel-line-hard) !important;
+  background:
+    radial-gradient(circle at 22% 22%, rgba(184,255,108,.22), transparent 34%),
+    linear-gradient(135deg, rgba(18,53,27,.96), rgba(1,7,3,.98)) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(141,255,84,.08),
+    0 0 38px rgba(106,255,65,.16) !important;
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px)) !important;
+}
+
+.beast-mascot {
+  width: 96px !important;
+  height: 96px !important;
+  min-width: 96px !important;
+  border-radius: 18px 0 18px 0 !important;
+  border-color: rgba(184,255,108,.84) !important;
+  box-shadow: 0 0 28px rgba(141,255,84,.36), inset 0 0 18px rgba(141,255,84,.13) !important;
+}
+
+.beast-mascot img {
+  width: 88px !important;
+  height: 88px !important;
+  object-fit: contain !important;
+}
+
+.beast-ascii {
+  display: block !important;
+  max-height: 96px !important;
+  overflow: hidden !important;
+  font-size: clamp(5.2px, .42vw, 6.8px) !important;
+  line-height: .9 !important;
+  letter-spacing: .018em !important;
+  color: #c9ffad !important;
+  text-shadow: 0 0 7px rgba(184,255,108,.75), 0 0 18px rgba(107,255,69,.42) !important;
+}
+
+.beast-brand-copy strong {
+  display: block !important;
+  font-size: clamp(21px, 1.42vw, 31px) !important;
+  line-height: .92 !important;
+  letter-spacing: .15em !important;
+}
+
+.beast-brand-copy small {
+  display: block !important;
+  margin-top: 8px !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  letter-spacing: .18em !important;
+  color: rgba(220,255,204,.74) !important;
+}
+
+.beast-nav button,
+.beast-nav .beast-nav-item {
+  min-height: 48px !important;
+  padding: 12px 14px !important;
+  border-radius: 0 16px 0 16px !important;
+  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px)) !important;
+  font-size: 13px !important;
+  letter-spacing: .06em !important;
+}
+
+.beast-nav button[aria-current="page"],
+.beast-nav .beast-nav-item.active,
+.beast-nav .active {
+  background:
+    linear-gradient(90deg, rgba(141,255,84,.24), rgba(141,255,84,.06)),
+    rgba(8,22,11,.96) !important;
+  border-color: rgba(184,255,108,.82) !important;
+  box-shadow: inset 4px 0 0 var(--beast-green-hot), 0 0 24px rgba(141,255,84,.14) !important;
+}
+
+.beast-main,
+.beast-content,
+.beast-page {
+  font-size: var(--beast-text-big) !important;
+}
+
+.beast-page-head {
+  min-height: 132px !important;
+  padding: 26px 32px !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(184,255,108,.60) !important;
+  background:
+    linear-gradient(100deg, rgba(141,255,84,.20), transparent 38%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 16px),
+    rgba(5,16,8,.94) !important;
+  clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%) !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.30), inset 0 0 36px rgba(141,255,84,.08) !important;
+}
+
+.beast-page-head h1,
+.beast-page-head h2,
+.beast-page-title {
+  font-size: clamp(34px, 2.9vw, 58px) !important;
+  line-height: .92 !important;
+  letter-spacing: .035em !important;
+  color: #ecffdd !important;
+  text-shadow: 0 0 16px rgba(141,255,84,.50) !important;
+}
+
+.beast-page-head p,
+.beast-page-subtitle {
+  max-width: 82ch !important;
+  font-size: clamp(14px, .92vw, 17px) !important;
+  line-height: 1.55 !important;
+  color: rgba(225,255,211,.78) !important;
+}
+
+.beast-card,
+.beast-surface,
+.agent-panel,
+.tooling-summary-card,
+.terminal-metric {
+  border-image: none !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(141,255,84,.42) !important;
+  background:
+    linear-gradient(145deg, rgba(10,28,13,.95), rgba(3,9,5,.96) 62%, rgba(7,18,9,.94)),
+    radial-gradient(circle at 0 0, rgba(141,255,84,.12), transparent 32%) !important;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(225,255,210,.08),
+    inset 0 0 0 1px rgba(141,255,84,.05),
+    0 16px 42px rgba(0,0,0,.30) !important;
+}
+
+.beast-card::before,
+.beast-surface::before,
+.agent-panel::before,
+.tooling-summary-card::before,
+.terminal-metric::before {
+  border-radius: 0 !important;
+  border: 0 !important;
+  background:
+    linear-gradient(90deg, var(--beast-green-hot), transparent 34%) top left / 100% 2px no-repeat,
+    linear-gradient(180deg, var(--beast-green-hot), transparent 38%) top left / 2px 100% no-repeat !important;
+  opacity: .72 !important;
+  pointer-events: none !important;
+}
+
+.beast-card.wide,
+.beast-grid > .beast-card:nth-child(3n + 1) {
+  clip-path: polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 16px 100%, 0 calc(100% - 16px)) !important;
+  background:
+    linear-gradient(120deg, rgba(141,255,84,.17), transparent 34%),
+    linear-gradient(180deg, rgba(6,19,9,.98), rgba(2,7,4,.98)) !important;
+}
+
+.beast-card.compact,
+.beast-grid > .beast-card:nth-child(3n + 2),
+.terminal-metric {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px) !important;
+  border-color: rgba(126,255,85,.32) !important;
+}
+
+.beast-card h2,
+.beast-card h3,
+.beast-surface h2,
+.beast-surface h3,
+.agent-panel h2,
+.agent-panel h3 {
+  font-size: clamp(16px, 1.06vw, 22px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: .055em !important;
+}
+
+.beast-card p,
+.beast-surface p,
+.agent-panel p,
+.tooling-summary-card p {
+  font-size: clamp(14px, .86vw, 16px) !important;
+  line-height: 1.55 !important;
+}
+
+.beast-button,
+button,
+.action-button,
+.primary-action,
+.secondary-action {
+  min-height: 38px !important;
+  border-radius: 0 13px 0 13px !important;
+  clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px)) !important;
+  font-size: 12px !important;
+  letter-spacing: .075em !important;
+}
+
+.beast-rail,
+.right-rail,
+.beast-context-rail {
+  width: var(--beast-rail-w) !important;
+  min-width: var(--beast-rail-w) !important;
+  border-left: 1px solid rgba(141,255,84,.36) !important;
+  background:
+    linear-gradient(180deg, rgba(3,12,6,.98), rgba(8,23,12,.96)),
+    repeating-linear-gradient(0deg, rgba(141,255,84,.035) 0 1px, transparent 1px 14px) !important;
+}
+
+.beast-rail-card,
+.rail-card,
+.status-card {
+  border-radius: 18px 0 18px 0 !important;
+  border: 1px dashed rgba(141,255,84,.42) !important;
+  background: rgba(3,14,6,.88) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%) !important;
+}
+
+.monaco-workbench,
+.editor-shell,
+.beast-editor,
+.terminal-screen-wrap,
+.beast-terminal-screen,
+.terminal-output {
+  border-radius: 0 !important;
+  border-color: rgba(141,255,84,.46) !important;
+  background:
+    linear-gradient(180deg, rgba(2,8,4,.98), rgba(1,5,3,.98)),
+    repeating-linear-gradient(180deg, rgba(141,255,84,.035) 0 1px, transparent 1px 22px) !important;
+}
+
+@media (max-width: 1450px) {
+  :root {
+    --beast-sidebar-w: 292px !important;
+    --beast-header-h: 122px !important;
+    --beast-command-h: 104px !important;
+  }
+
+  .beast-header.beast-header-premium,
+  .beast-header {
+    padding-left: 118px !important;
+  }
+
+  .beast-header-emblem {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
+  .beast-header-emblem img {
+    width: 82px !important;
+    height: 82px !important;
+  }
+
+  .beast-brand {
+    grid-template-columns: 84px minmax(0, 1fr) !important;
+  }
+
+  .beast-mascot {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+  }
+
+  .beast-mascot img {
+    width: 78px !important;
+    height: 78px !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  :root {
+    --beast-sidebar-w: 260px !important;
+    --beast-header-h: 112px !important;
+  }
+
+  .beast-header.beast-header-premium,
+  .beast-header {
+    padding-left: 108px !important;
+  }
+
+  .beast-header-terminal {
+    display: none !important;
+  }
+
+  .beast-ascii {
+    font-size: 4.8px !important;
+  }
+}
+
+/* Deep UI QA guardrails: fix clipping, cramped typography, and unsafe fixed sizing. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --beast-readable-body: clamp(14.5px, .82vw, 16px) !important;
+  --beast-readable-small: clamp(11.5px, .68vw, 13px) !important;
+  --beast-readable-nav: clamp(13px, .78vw, 15px) !important;
+  --beast-cut-safe-pad: 22px;
+}
+
+body {
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.beast-shell,
+.beast-main,
+.beast-content,
+.beast-viewport,
+#beastPageOutlet,
+.beast-page {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+.beast-viewport,
+#beastPageOutlet,
+.beast-page {
+  overflow: auto !important;
+  scrollbar-gutter: stable both-edges;
+}
+
+.beast-page,
+.beast-grid,
+.beast-card,
+.beast-surface,
+.agent-panel,
+.tooling-summary-card,
+.terminal-metric,
+.beast-rail-card,
+.rail-card,
+.status-card {
+  contain: layout style;
+}
+
+.beast-card,
+.beast-surface,
+.agent-panel,
+.tooling-summary-card,
+.terminal-metric {
+  min-width: 0 !important;
+  min-height: max-content !important;
+  height: auto !important;
+  padding: max(18px, var(--beast-cut-safe-pad)) !important;
+  overflow: visible !important;
+}
+
+.beast-card.compact,
+.beast-grid > .beast-card:nth-child(3n + 2),
+.terminal-metric {
+  padding: 18px !important;
+}
+
+.beast-card.wide,
+.beast-grid > .beast-card:nth-child(3n + 1) {
+  padding: 24px 26px 22px !important;
+}
+
+.beast-card > *,
+.beast-surface > *,
+.agent-panel > *,
+.tooling-summary-card > *,
+.terminal-metric > *,
+.beast-page-head > *,
+.beast-brand > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.beast-page :where(p, li, label, span, small, b, strong, em, code, pre, button, input, select, textarea),
+.beast-card :where(p, li, label, span, small, b, strong, em, code, pre),
+.beast-surface :where(p, li, label, span, small, b, strong, em, code, pre),
+.agent-panel :where(p, li, label, span, small, b, strong, em, code, pre) {
+  line-height: 1.42 !important;
+}
+
+.beast-page :where(p, li, label, input, select, textarea),
+.beast-card p,
+.beast-surface p,
+.agent-panel p,
+.tooling-summary-card p {
+  font-size: var(--beast-readable-body) !important;
+}
+
+.beast-page :where(small, .sub, .beast-meta, .beast-kicker, .beast-pill, .beast-chip),
+.beast-card small,
+.beast-surface small,
+.agent-panel small {
+  font-size: var(--beast-readable-small) !important;
+  line-height: 1.35 !important;
+}
+
+.beast-page :where(h1, h2, h3, h4),
+.beast-card :where(h2, h3, h4),
+.beast-surface :where(h2, h3, h4),
+.agent-panel :where(h2, h3, h4) {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.beast-page-head {
+  display: grid !important;
+  align-content: center !important;
+  gap: 10px !important;
+  min-height: max-content !important;
+  padding: 28px 38px 30px !important;
+  overflow: visible !important;
+}
+
+.beast-page-head h1,
+.beast-page-head h2,
+.beast-page-title {
+  line-height: 1.02 !important;
+  padding-bottom: .08em !important;
+}
+
+.beast-page-head .sub,
+.beast-page-head p,
+.beast-page-subtitle {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.beast-header.beast-header-premium,
+.beast-header {
+  display: grid !important;
+  grid-template-columns: minmax(270px, .72fr) minmax(260px, 1fr) minmax(260px, .8fr) !important;
+  gap: 18px !important;
+  align-items: center !important;
+  min-height: max(132px, var(--beast-header-h)) !important;
+  overflow: visible !important;
+}
+
+.beast-title-row,
+.beast-header-brandmark,
+.beast-header-terminal,
+.beast-header-state {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.beast-header-wordmark,
+.beast-wordmark {
+  line-height: 1 !important;
+  padding-bottom: .08em !important;
+  white-space: nowrap !important;
+}
+
+.beast-title,
+.beast-header .beast-title {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.08 !important;
+}
+
+.beast-header-terminal {
+  overflow: hidden !important;
+}
+
+.beast-header-terminal *,
+.beast-compact-route,
+.beast-pill {
+  min-width: 0 !important;
+}
+
+.beast-sidebar {
+  overflow: auto !important;
+  scrollbar-gutter: stable;
+}
+
+.beast-brand {
+  align-items: center !important;
+  min-height: 142px !important;
+  overflow: visible !important;
+}
+
+.beast-brand-copy {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.beast-brand-copy strong {
+  line-height: 1.04 !important;
+  padding-bottom: .08em !important;
+  overflow-wrap: anywhere;
+}
+
+.beast-brand-copy small {
+  line-height: 1.45 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.beast-ascii {
+  max-height: none !important;
+  overflow: visible !important;
+  line-height: .98 !important;
+  padding: 2px 0 3px !important;
+}
+
+.beast-nav {
+  gap: 6px !important;
+  overflow: visible !important;
+}
+
+.beast-nav button,
+.beast-nav .beast-nav-item {
+  grid-template-columns: 26px minmax(0, 1fr) auto !important;
+  min-height: 52px !important;
+  height: auto !important;
+  align-items: center !important;
+  font-size: var(--beast-readable-nav) !important;
+  line-height: 1.18 !important;
+  overflow: visible !important;
+}
+
+.beast-nav .label,
+.beast-nav button span,
+.beast-nav .beast-nav-item span {
+  min-width: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.18 !important;
+}
+
+.beast-button,
+button,
+.action-button,
+.primary-action,
+.secondary-action,
+.beast-command-tabs button,
+.beast-chip {
+  height: auto !important;
+  min-height: 40px !important;
+  line-height: 1.22 !important;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  white-space: normal !important;
+}
+
+.beast-command-line input {
+  height: auto !important;
+  min-height: 42px !important;
+  line-height: 1.35 !important;
+}
+
+.beast-send {
+  height: auto !important;
+  min-height: 42px !important;
+}
+
+.cortex-statusbar,
+.contract-row {
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+.cortex-tab {
+  height: auto !important;
+  min-height: 36px !important;
+}
+
+.cortex-editor-tools button,
+.cortex-explorer-tools button {
+  min-height: 32px !important;
+  line-height: 1.2 !important;
+}
+
+.sourceplan-summary-grid .beast-card {
+  min-height: 152px !important;
+}
+
+.sourceplan-summary-grid .metric.small,
+.sourceplan-op b,
+.sourceplan-op small,
+.sourceplan-op em,
+.sourceplan-check *,
+.contract-row b,
+.contract-row span {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+@media (max-width: 1450px) {
+  .beast-header.beast-header-premium,
+  .beast-header {
+    grid-template-columns: minmax(230px, .8fr) minmax(240px, 1fr) auto !important;
+    gap: 14px !important;
+    min-height: 124px !important;
+  }
+
+  .beast-header-wordmark,
+  .beast-wordmark {
+    font-size: clamp(25px, 2vw, 38px) !important;
+  }
+
+  .beast-page-head {
+    padding: 24px 30px 26px !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  .beast-header.beast-header-premium,
+  .beast-header {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    min-height: 112px !important;
+    padding: 16px 18px 16px 108px !important;
+  }
+
+  .beast-header-brandmark {
+    min-width: 0 !important;
+  }
+
+  .beast-header-state {
+    display: flex !important;
+  }
+
+  .beast-page-head h1,
+  .beast-page-head h2,
+  .beast-page-title {
+    font-size: clamp(28px, 5vw, 40px) !important;
+  }
+
+  .beast-card,
+  .beast-surface,
+  .agent-panel,
+  .tooling-summary-card,
+  .terminal-metric {
+    padding: 20px !important;
+  }
+}

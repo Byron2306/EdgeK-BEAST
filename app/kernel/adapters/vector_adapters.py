@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
-import shutil
+import os
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 
@@ -66,44 +66,51 @@ class VectorAdapterRegistry:
         )
 
     def _pgvector(self) -> VectorAdapterStatus:
+        has_client = importlib.util.find_spec("psycopg") is not None
+        configured = bool(os.environ.get("BEAST_PGVECTOR_DSN"))
         return VectorAdapterStatus(
             adapter_id="pgvector",
             name="Postgres pgvector",
-            status="adapter_target",
+            status="configured_pending_health" if configured else "adapter_target",
             source_of_truth=False,
-            dense_vectors=bool(shutil.which("psql")),
+            dense_vectors=has_client,
             lexical_fallback=True,
             metadata_filters_first=True,
             governance="best_for_shared_sql_governance",
-            reason="Use when BEAST needs shared relational memory and SQL policy controls.",
-            package="psql",
+            reason=("DSN reference configured; health check and CREATE EXTENSION vector remain required."
+                    if configured else "Client dependency is ready; set BEAST_PGVECTOR_DSN for a PostgreSQL database with the pgvector extension."),
+            package="psycopg",
         )
 
     def _qdrant(self) -> VectorAdapterStatus:
+        configured = bool(os.environ.get("BEAST_QDRANT_URL") and os.environ.get("BEAST_QDRANT_API_KEY"))
         return VectorAdapterStatus(
             adapter_id="qdrant",
             name="Qdrant",
-            status="adapter_target",
+            status="configured_pending_health" if configured else "adapter_target",
             source_of_truth=False,
             dense_vectors=importlib.util.find_spec("qdrant_client") is not None,
             lexical_fallback=True,
             metadata_filters_first=True,
             governance="best_for_hybrid_dense_sparse_named_vectors",
-            reason="Good fit for hybrid retrieval once SQLite contracts are stable.",
+            reason=("Endpoint and API-key reference configured; health check remains required."
+                    if configured else "Set BEAST_QDRANT_URL and BEAST_QDRANT_API_KEY to enable a health-checked projection."),
             package="qdrant_client",
         )
 
     def _chroma(self) -> VectorAdapterStatus:
+        configured = bool(os.environ.get("BEAST_CHROMA_API_KEY") and os.environ.get("BEAST_CHROMA_TENANT"))
         return VectorAdapterStatus(
             adapter_id="chroma",
             name="Chroma",
-            status="prototype_target",
+            status="configured_pending_health" if configured else "prototype_target",
             source_of_truth=False,
             dense_vectors=importlib.util.find_spec("chromadb") is not None,
             lexical_fallback=True,
             metadata_filters_first=True,
             governance="quick_local_prototype_weaker_governance",
-            reason="Useful for quick local experiments, not the canonical memory layer.",
+            reason=("Cloud credential references configured; tenant/database health check remains required."
+                    if configured else "Set BEAST_CHROMA_API_KEY, BEAST_CHROMA_TENANT, and BEAST_CHROMA_DATABASE for cloud Chroma."),
             package="chromadb",
         )
 
@@ -113,12 +120,13 @@ class VectorAdapterRegistry:
         return VectorAdapterStatus(
             adapter_id="lancedb_duckdb_parquet",
             name="LanceDB/DuckDB/Parquet",
-            status="analytical_snapshot_target",
+            status="configured_local" if os.environ.get("BEAST_LANCEDB_URI") else "analytical_snapshot_target",
             source_of_truth=False,
             dense_vectors=has_lancedb,
             lexical_fallback=True,
             metadata_filters_first=True,
             governance="local_analytical_memory_and_artifact_snapshots",
-            reason="Good for local analytical memory and artifact snapshots after core contracts stabilize.",
+            reason=("Local LanceDB URI configured as a retrieval projection."
+                    if os.environ.get("BEAST_LANCEDB_URI") else "Set BEAST_LANCEDB_URI (for example .beast/lancedb) for local analytical snapshots."),
             package="lancedb/duckdb",
         )

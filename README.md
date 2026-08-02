@@ -248,28 +248,44 @@ Optional LiteLLM proxy support:
 pip install -r requirements-litellm.txt
 ```
 
-Start the gateway:
+Bring up the full backend stack (gateway, proxy lane, MCP HTTP, LiteLLM, Ollama, and nginx):
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8005
+venv/bin/python bin/beast heal \
+  --host 127.0.0.1 \
+  --gateway-port 8101 \
+  --mcp-port 8765 \
+  --litellm-port 4000 \
+  --nginx-port 8080 \
+  --ollama-host 127.0.0.1:11434 \
+  --restart-all true \
+  --kill-address-pids true
 ```
 
-Health check:
+Short form using the same defaults:
 
 ```bash
-curl http://127.0.0.1:8005/health
+./bin/beast heal
+```
+
+Health checks:
+
+```bash
+curl http://127.0.0.1:8101/health
+curl http://127.0.0.1:8765/mcp/health
+curl http://127.0.0.1:8080/health
 ```
 
 Point an OpenAI-compatible agent at BEAST:
 
 ```bash
-export OPENAI_BASE_URL=http://localhost:8005/v1
+export OPENAI_BASE_URL=http://localhost:8101/v1
 ```
 
 Point an Anthropic-compatible agent at BEAST:
 
 ```bash
-export ANTHROPIC_BASE_URL=http://localhost:8005
+export ANTHROPIC_BASE_URL=http://localhost:8101
 ```
 
 Launch the TUI:
@@ -453,6 +469,45 @@ different workspace root.
   performance and BEAST-rescued reliability are tracked separately.
 
 ---
+
+## Overall Assessment: Agentic Loop And VS Code Parity
+
+BEAST is now a serious governed coding-agent platform rather than a thin model
+chat wrapper. Its strongest capability is the safety-critical loop: inspect
+bounded context, plan, propose structured edits, compile a SourcePlan, require
+approval, verify in an isolated target, repair failures, preserve rollback
+evidence, and apply only after the contract is satisfied. This loop works with
+remote worktrees, disposable SSH/devcontainer targets, local Ollama, NIM, and
+hosted providers, with provider failover and heuristic continuation available
+when a local route stalls.
+
+The practical assessment is deliberately conservative:
+
+| Area | Assessment | What is solid | What remains |
+|---|---:|---|---|
+| Governed agent loop | High | SourcePlan, approval, verification, repair, rollback, evidence | Long-horizon planning and difficult multi-file repairs still need stronger model supervision |
+| Provider resilience | High | Gateway routing, timeout failover, route memory, telemetry, escalation | Small local models can still produce weak edits or stall before a useful first token |
+| Workspace and remote execution | High | Target-side reads, mutation, verification, SSH/devcontainer routing | Long-lived interrupted-session soak coverage must keep expanding |
+| VS Code-style editor | Medium-high | Monaco workbench, files, buffers, panes, diffs, terminals, tasks, tests, notebooks | Deep language-service behavior, debug ergonomics, and extension-host fidelity are not complete |
+| LSP, indexing, debug, tests | Medium | Multiple adapters, discovery, diagnostics, verifier routing, debug foundations | Full cross-language LSP UX, test history/explorer depth, and adapter breadth remain behind VS Code |
+| Extensions | Medium | Governed host foundation, contributions, storage/task/terminal surfaces | Real popular extensions with messy dependencies and webviews still require broader workload validation |
+| UI cockpit | Medium-high | Unified run stages, provider state, approvals, verification, and evidence surfaces | Some pages and complex layouts still need continued visual and responsive hardening |
+
+In short, BEAST is competitive as a governed, auditable agent runtime and is
+approaching useful parity for the core coding workflow. It is not honestly
+100% VS Code parity yet: VS Code still leads in extension compatibility,
+language-server depth, debugger polish, test explorer maturity, and years of
+edge-case UX hardening. The next highest-value work is not more decorative
+surface area; it is proving the loop on messy large repositories, improving
+semantic patch quality for weak local models, and running real extension and
+remote-session soak workloads continuously.
+
+The success criterion for the next phase is therefore outcome-based: a user
+should be able to start with an ambiguous task, let BEAST inspect and plan,
+review bounded edits, run targeted verification inside the actual target,
+repair failures, and finish with a trustworthy apply receipt without manually
+translating model prose. Any route that cannot do that should remain visibly
+advisory rather than pretending it completed.
 
 ## Status
 

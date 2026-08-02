@@ -4,6 +4,19 @@ from pathlib import Path
 from app.kernel.governance.output_governor import output_gate, provider_output_profile
 from app.kernel.compute.action_ir import ActionIR
 from app.kernel.compute.action_resolver import build_file_references, resolve_actions
+
+
+def test_file_reference_anchors_expand_duplicate_lines_to_unique_context(tmp_path: Path):
+    target = tmp_path / "app.py"
+    target.write_text(
+        "def first():\n    return value\n\n\ndef second():\n    return value\n",
+        encoding="utf-8",
+    )
+
+    refs = build_file_references(tmp_path, ["app.py"])
+
+    assert refs[0].anchors
+    assert all(target.read_text(encoding="utf-8").count(anchor) == 1 for anchor in refs[0].anchors.values())
 from app.kernel.adapters.provider_handoff import build_provider_handoff, output_skeleton, render_provider_handoff_prompt
 from benchmarks.coding_task_completion_harness import API_BROKEN, PROVIDER_REGISTRY_BROKEN
 

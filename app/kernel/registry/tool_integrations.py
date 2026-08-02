@@ -40,19 +40,20 @@ class RequiredIntegrationRegistry:
 
     DEFAULTS = {
         "semantic_tool_interceptor": {"kind": "local", "required": True},
+        "perplexity_code_filter": {"kind": "code_filter", "required": True, "native": True},
         "github": {"kind": "api", "required": True, "env": "GITHUB_TOKEN"},
         "postgres": {"kind": "database", "required": True, "env": "POSTGRES_DSN"},
-        "rtk": {"kind": "compressor", "required": True, "binary": "rtk"},
-        "sqz": {"kind": "compressor", "required": True, "binary": "sqz"},
-        "longcodezip": {"kind": "compressor", "required": True, "binary": "longcodezip"},
-        "reporelay": {"kind": "repository", "required": True, "binary": "reporelay"},
+        "rtk": {"kind": "compressor", "required": True, "binary": "rtk", "native": True},
+        "sqz": {"kind": "compressor", "required": True, "binary": "sqz", "native": True},
+        "longcodezip": {"kind": "compressor", "required": True, "binary": "longcodezip", "native": True},
+        "reporelay": {"kind": "repository", "required": True, "binary": "reporelay", "native": True},
     }
 
     def __init__(self, policies: Optional[Dict[str, Any]] = None):
         self.policies = policies or {}
 
     def status(self) -> Dict[str, Any]:
-        configured = self.policies.get("required_integrations") or self.DEFAULTS
+        configured = {**self.DEFAULTS, **(self.policies.get("required_integrations") or {})}
         statuses = [self._status_one(name, config or {}) for name, config in configured.items()]
         compressors = self.compressor_status(configured)
         return {
@@ -64,7 +65,7 @@ class RequiredIntegrationRegistry:
 
     def compressor_status(self, configured: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Return compressor backend readiness plus BEAST's local fallback."""
-        configured = configured or self.policies.get("required_integrations") or self.DEFAULTS
+        configured = configured or {**self.DEFAULTS, **(self.policies.get("required_integrations") or {})}
         backends = []
         for name, config in configured.items():
             config = config or {}
@@ -75,11 +76,11 @@ class RequiredIntegrationRegistry:
             path = shutil.which(str(binary or name))
             backends.append({
                 "name": name,
-                "kind": "external_binary",
+                "kind": "native_with_optional_binary" if config.get("native") or name in {"rtk", "sqz", "longcodezip", "reporelay"} else "external_binary",
                 "binary": str(binary or name),
-                "ready": bool(path),
+                "ready": bool(config.get("native") or name in {"rtk", "sqz", "longcodezip", "reporelay"} or path),
                 "binary_path": path,
-                "fallback": "edgek_builtin_prune",
+                "fallback": "native_beast_backend",
             })
         backends.append({
             "name": "edgek_prune",
@@ -129,12 +130,17 @@ class RequiredIntegrationRegistry:
                 detail.update(pg_ready)
         if binary:
             path = shutil.which(str(binary))
-            ready = bool(path)
+            ready = bool(path) or bool(config.get("native")) or name in {"rtk", "sqz", "longcodezip", "reporelay"}
             detail["binary"] = str(binary)
             detail["binary_path"] = path
+            detail["native_backend"] = name if ready else ""
         if name == "semantic_tool_interceptor":
             detail["backends"] = ["workspace_graph_vectors", "basic_semantic_grep"]
             ready = True
+        if name == "perplexity_code_filter":
+            ready = True
+            detail["backend"] = "beast_local_code_density"
+            detail["network_required"] = False
         return IntegrationStatus(name=name, required=required, ready=ready, kind=kind, detail=detail)
 
     def _postgres_local_ready(self) -> Dict[str, Any]:
@@ -332,9 +338,18 @@ class ToolCallInterceptor:
             if completed.returncode == 0 and completed.stdout:
                 output = completed.stdout
                 return self._compression_response(text, output, algorithm, f"{algorithm}_binary")
-
-        output = self._edge_prune(text)
-        return self._compression_response(text, output, algorithm, "edgek_builtin_prune")
+        native = {
+            "rtk": self._native_rtk,
+            "sqz": self._native_sqz,
+            "longcodezip": self._native_longcodezip,
+            "reporelay": self._native_reporelay,
+            "perplexity": self._native_perplexity_filter,
+            "perplexity_code_filter": self._native_perplexity_filter,
+        }.get(algorithm)
+        if native:
+            output = native(text)
+            return self._compression_response(text, output, algorithm, f"beast_native_{algorithm}")
+        return self._compression_response(text, self._edge_prune(text), algorithm, "edgek_builtin_prune")
 
     def _normalize_algorithm(self, algorithm: str) -> str:
         normalized = str(algorithm or "edgek_prune").strip().lower().replace("-", "_")
@@ -345,6 +360,8 @@ class ToolCallInterceptor:
             "prune": "edgek_prune",
             "repo_relay": "reporelay",
             "long_code_zip": "longcodezip",
+            "perplexity_filter": "perplexity_code_filter",
+            "code_filter": "perplexity_code_filter",
         }
         return aliases.get(normalized, normalized)
 
@@ -430,6 +447,64 @@ class ToolCallInterceptor:
             tail = kept[-60:]
             kept = head + ["# ... edgek_prune omitted middle low-density lines ..."] + tail
         return "\n".join(kept)
+
+    def _native_rtk(self, text: str) -> str:
+        """Local token-killer analogue: remove blank/repeated/low-value lines."""
+        return self._edge_prune(text)
+
+    def _native_sqz(self, text: str) -> str:
+        """Stable line-run compaction without lossy token substitutions."""
+        output: list[str] = []
+        lines = [line.rstrip() for line in text.splitlines() if line.strip()]
+        index = 0
+        while index < len(lines):
+            end = index + 1
+            while end < len(lines) and lines[end] == lines[index]:
+                end += 1
+            output.append(lines[index] if end - index == 1 else f"{lines[index]}  # [repeated {end - index}x]")
+            index = end
+        return "\n".join(output)
+
+    def _native_longcodezip(self, text: str) -> str:
+        """Code-aware summary retaining imports, declarations, and call sites."""
+        lines = text.splitlines(); kept: list[str] = []
+        patterns = re.compile(r"^\s*(?:from\s+\S+\s+import|import\s+|def\s+|class\s+|async\s+def\s+|export\s+|function\s+|const\s+\w+\s*=|#\s*[-=]{3,})")
+        for number, line in enumerate(lines, start=1):
+            if patterns.search(line):
+                kept.append(f"{number}: {line.rstrip()}")
+        if not kept:
+            return self._edge_prune(text)
+        return "\n".join(kept[:240])
+
+    def _native_reporelay(self, text: str) -> str:
+        """Repository-context relay retaining path/declaration-shaped anchors."""
+        anchors = []
+        for number, line in enumerate(text.splitlines(), start=1):
+            stripped = line.strip()
+            if ("/" in stripped and (stripped.endswith((".py", ".js", ".ts", ".md")) or stripped.startswith(("app/", "tests/", "docs/")))
+                    or re.match(r"(?:def|class|function|interface)\s+", stripped)):
+                anchors.append(f"{number}: {stripped}")
+        return "\n".join(anchors[:240]) or self._native_longcodezip(text)
+
+    def _native_perplexity_filter(self, text: str) -> str:
+        """Retain high-information code paragraphs using local density scoring.
+
+        This is deliberately not a remote Perplexity API call: source remains
+        local and the returned content is accompanied by normal interception
+        evidence.  Syntax, identifiers, and non-comment content raise score.
+        """
+        ranked = []
+        for index, paragraph in enumerate(self._paragraphs(text)):
+            content = paragraph["content"]
+            nonblank = [line.strip() for line in content.splitlines() if line.strip()]
+            code = sum(bool(re.search(r"[{}();=]|\b(?:def|class|return|if|for|import|function)\b", line)) for line in nonblank)
+            comments = sum(line.startswith(("#", "//", "*")) for line in nonblank)
+            identifiers = len(set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]{2,}\b", content)))
+            score = (code * 3.0) + min(identifiers, 20) / 5.0 - comments
+            ranked.append((score, index, paragraph))
+        ranked.sort(key=lambda item: (-item[0], item[1]))
+        selected = sorted(ranked[:max(1, min(12, len(ranked)))], key=lambda item: item[1])
+        return "\n\n".join(item[2]["content"] for item in selected)
 
     def _compression_response(self, original: str, output: str, algorithm: str, backend: str) -> Dict[str, Any]:
         original_bytes = len(original.encode("utf-8"))

@@ -1,0 +1,14 @@
+{
+  "id": "beast.remote-toolkit",
+  "name": "BEAST Remote Toolkit",
+  "version": "1.0.0",
+  "description": "Fast access to execution targets, LSP/DAP compatibility, and the integrated terminal.",
+  "main": "extension.js",
+  "capabilities": ["workspace.read", "language.client", "terminal.execute"],
+  "contributes": {
+    "commands": [
+      { "id": "beast.openCompatibility", "title": "BEAST: Open Remote + Compatibility Center" },
+      { "id": "beast.openTerminal", "title": "BEAST: Open Integrated Terminal" }
+    ]
+  }
+}

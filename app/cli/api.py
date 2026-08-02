@@ -30,10 +30,13 @@ from app.kernel.adapters.provider_handoff import (
 )
 from app.kernel.compute.action_ir import ACTION_IR_KIND, ActionIR
 from app.kernel.compute.action_resolver import build_file_references, resolve_action_ir
+from app.kernel.compute.perceive import EdgeKIR
+from app.context.economizer import ContextEconomizer
 from app.kernel.compute.agent_scheduler import AgentScheduler
 from app.kernel.compute.mission_crystal_lattice import MissionCrystalLattice
 from app.kernel.evidence.evidence_bus import EvidenceBus
 from app.kernel.agents.mode_router import ModeRouter
+from app.kernel.execution.least_authority_tools import LeastAuthorityToolLoop
 from app.kernel.capability.capability_plane import CapabilityPlane
 from app.kernel.data_processing.code_cortex import CodeCortexRouter
 from app.kernel.data_processing.code_indexers import (
@@ -204,6 +207,41 @@ def classify_stream_failure(exc: Exception | str) -> Dict[str, Any]:
         "recoverable": timeout or transport or status in {408, 429, 500, 502, 503, 504},
         "local_service_failure": local_service_failure,
         "error": message[:1200],
+    }
+
+
+def provider_transport_receipt(
+    response: Any,
+    *,
+    requested_url: str,
+    body: bytes | str = b"",
+) -> Dict[str, Any]:
+    """Describe an unusable provider response without attempting to parse it.
+
+    Pair Programmer requests pass through the BEAST proxy.  A reverse proxy
+    can return an HTML error page which is not provider output and must never
+    be presented as a model answer or treated as an Action IR.
+    """
+    headers = getattr(response, "headers", {}) or {}
+    content_type = str(headers.get("content-type") or "").lower()
+    server = str(headers.get("server") or "")
+    request = getattr(response, "request", None)
+    actual_url = str(getattr(request, "url", "") or requested_url)
+    if isinstance(body, bytes):
+        preview = body.decode("utf-8", errors="replace")[:500]
+    else:
+        preview = str(body)[:500]
+    status = int(getattr(response, "status_code", 0) or 0)
+    return {
+        "failure_stage": "provider_transport",
+        "safe_result_produced": False,
+        "http_status": status or None,
+        "content_type": content_type,
+        "requested_url": actual_url,
+        "response_server": server,
+        "body_preview": preview,
+        "retry_safe": True,
+        "workspace_mutated": False,
     }
 
 
@@ -1239,12 +1277,23 @@ class BeastApiClient:
 
     def __init__(
         self,
-        base_url: str="http://127.0.0.1:8000",
+        base_url: str | None=None,
         timeout: float=2.2,
         workspace: str | Path | None=None,
         workspace_graph: Optional[Any]=None,
     ):
-        self.base_url = base_url.rstrip("/")
+        candidate_base_url = (base_url or os.environ.get("BEAST_GATEWAY_URL") or "http://127.0.0.1:8101").rstrip("/")
+        # Detached durable workers replay through an in-process ASGI origin.
+        # Provider calls must escape that origin and reach the live gateway;
+        # otherwise native Gemini requests return a misleading 404.
+        if candidate_base_url in {
+            "http://beast.internal",
+            "https://beast.internal",
+            "http://testserver",
+            "https://testserver",
+        }:
+            candidate_base_url = (os.environ.get("BEAST_GATEWAY_URL") or "http://127.0.0.1:8101").rstrip("/")
+        self.base_url = candidate_base_url
         self.timeout = timeout
         self._explicit_workspace = workspace is not None
         self._workspace_root = resolve_active_workspace(workspace)
@@ -1394,7 +1443,7 @@ class BeastApiClient:
             # execution fallback: its exact anchors may no longer match the
             # current repository. Preserve the decision for telemetry but do
             # not hand stale patch text to a mutation-capable agent.
-            response = "" if disable_reuse else self.crystal_decision_response(decision)
+            response = "" if disable_reuse else self.crystal_decision_response(decision, provider, model)
             return {
                 "beast_object_type": "beast_thin_integration_harness_receipt",
                 "error": str(exc),
@@ -1429,9 +1478,22 @@ class BeastApiClient:
         )
 
     @staticmethod
-    def crystal_decision_response(decision: Dict[str, Any]) -> str:
+    def crystal_decision_response(
+        decision: Dict[str, Any], provider: str = "", model: str = ""
+    ) -> str:
         reuse = (decision.get("payload") or {}).get("reuse") or {}
         payload = reuse.get("payload") if isinstance(reuse.get("payload"), dict) else {}
+        # A cache entry is useful only for the exact provider/model route that
+        # created it.  Some durable stores hold historical responses from
+        # other routes; serving one to a different model is neither a cache
+        # hit nor safe context reuse.
+        requested = (decision.get("payload") or {}).get("request") or {}
+        cached_model = str(payload.get("model") or "").strip().lower()
+        cached_provider = str(requested.get("provider") or "").strip().lower()
+        if model and cached_model and cached_model != str(model).strip().lower():
+            return ""
+        if provider and cached_provider and cached_provider != str(provider).strip().lower():
+            return ""
         return str(payload.get("response") or "")
 
     @staticmethod
@@ -2994,6 +3056,16 @@ class BeastApiClient:
             requested_mode=requested_mode,
             provider=provider,
             sourceplan=sourceplan or {},
+        )
+
+    def least_authority_plan(
+        self,
+        tools: List[Dict[str, Any]], *, phase: str = "scout", risk: str = "low",
+        approved: bool = False, network: bool = False,
+    ) -> Dict[str, Any]:
+        """Shared local policy receipt used by CLI/TUI before a BEAST action."""
+        return LeastAuthorityToolLoop(self.mode_router()).plan(
+            tools, phase=phase, risk=risk, approved=approved, network=network,
         )
 
     def worktree_forge(self) -> WorktreeForge:
@@ -6732,8 +6804,13 @@ class BeastApiClient:
         self, plan: Dict[str, Any], approved: bool=False
     ) -> ActionResult:
         """Apply selected operations with validation, rollback, and Chronicle crystallization."""
-        if not approved:
+        authority = LeastAuthorityToolLoop(self.mode_router()).mutation_gate(
+            "sourceplan_apply", phase="implementer", risk=str(plan.get("risk_level") or "high"),
+            approved=approved, sourceplan_bound=bool(plan.get("plan_id") and (plan.get("operations") or [])),
+        )
+        if not authority.get("mutation_permitted"):
             return ActionResult(False, "Patch apply", "", error="approval_required")
+        plan = {**plan, "authority_receipt": authority}
         root = self.workspace_root()
         plan_id = str(plan.get("plan_id") or f"plan_{int(time.time())}")
         preview_pre = self.preview_patch_plan(plan)
@@ -7266,6 +7343,7 @@ class BeastApiClient:
         max_tokens: Optional[int]=None,
         max_continuations: Optional[int]=None,
         accept_unmarked_action_ir: bool=False,
+        action_ir_required: bool=False,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Stream a governed provider turn through BEAST's proxy lane.
 
@@ -7390,6 +7468,11 @@ class BeastApiClient:
                         "temperature": 0.2,
                         "metadata": {
                             "edgek_surface": "beast_tui_live_session_stream",
+                            # A source-edit response is not a generic governed
+                            # object: it must remain intact until Action IR
+                            # validation.  The proxy uses this to retain SSE
+                            # framing while disabling early stream cancellation.
+                            "edgek_action_ir_required": bool(action_ir_required),
                             "context_files": context_files or [],
                             "stream_attempt": attempt + 1,
                             "stream_max_continuations": max_continuations,
@@ -7398,6 +7481,7 @@ class BeastApiClient:
                     saw_done = False
                     finish_reason = ""
                     attempt_parts: List[str] = []
+                    sse_event_type = ""
                     # Native providers must use their explicit adapter lane.
                     # Hugging Face is not served by the registry compatibility
                     # endpoint; sending it through /proxy/v1 produces a raw
@@ -7419,15 +7503,39 @@ class BeastApiClient:
                     ) as response:
                         if response.status_code >= 400:
                             body = await response.aread()
+                            receipt = provider_transport_receipt(
+                                response, requested_url=stream_url, body=body
+                            )
                             yield {
                                 "type": "error",
-                                "error": body.decode("utf-8", errors="replace")[:1200],
+                                "error": (
+                                    f"Provider HTTP {receipt['http_status']}; "
+                                    f"content_type={receipt['content_type']!r}; "
+                                    f"url={receipt['requested_url']}; "
+                                    f"body={receipt['body_preview']!r}"
+                                )[:1200],
+                                "transport_receipt": receipt,
                             }
                             return
                         content_type = response.headers.get("content-type", "")
                         if "text/event-stream" not in content_type:
                             body = await response.aread()
                             text = body.decode("utf-8", errors="replace")
+                            if "application/json" not in content_type.lower():
+                                receipt = provider_transport_receipt(
+                                    response, requested_url=stream_url, body=body
+                                )
+                                yield {
+                                    "type": "error",
+                                    "error": (
+                                        "Expected JSON or SSE provider response but received "
+                                        f"{receipt['content_type']!r} from "
+                                        f"{receipt['requested_url']}; "
+                                        f"body={receipt['body_preview']!r}"
+                                    )[:1200],
+                                    "transport_receipt": receipt,
+                                }
+                                return
                             try:
                                 data = json.loads(text)
                             except Exception:
@@ -7473,6 +7581,10 @@ class BeastApiClient:
                                     continue
                                 line = line.strip()
                                 if not line:
+                                    sse_event_type = ""
+                                    continue
+                                if line.startswith("event:"):
+                                    sse_event_type = line[6:].strip()
                                     continue
                                 raw_chunks.append(line)
                                 if line.startswith("data:"):
@@ -7489,6 +7601,16 @@ class BeastApiClient:
                                         attempt_parts.append(line)
                                         yield {"type": "token", "text": line}
                                     continue
+                                if sse_event_type == "edgek_status":
+                                    message = str(data.get("message") or "Provider is still working") if isinstance(data, dict) else "Provider is still working"
+                                    elapsed = data.get("elapsed_seconds") if isinstance(data, dict) else None
+                                    suffix = f" ({elapsed}s)" if isinstance(elapsed, (int, float)) and elapsed else ""
+                                    yield {"type": "stage", "text": message + suffix}
+                                    continue
+                                if sse_event_type == "edgek_error":
+                                    error = data.get("error") if isinstance(data, dict) else data
+                                    yield {"type": "error", "error": json.dumps(error, default=str)[:1200]}
+                                    return
                                 delta = self._extract_stream_delta(data)
                                 if delta:
                                     token_count += 1
@@ -7602,6 +7724,7 @@ class BeastApiClient:
         context_max_files: int=64,
         context_max_chars_each: int=4200,
         governance_level: str="governed",
+        action_ir_required: bool=False,
         allow_fallback: bool=True,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Streaming version of live_turn.
@@ -7635,6 +7758,26 @@ class BeastApiClient:
             if context_files
             else []
         )
+        # Report the actual bounded-context decision to interactive clients.
+        # This is deliberately factual: the economizer limits the material
+        # sent to the model; it must not be presented as semantic compression
+        # when no semantic compressor has been run for this turn.
+        readable_records = [record for record in context_records if record.get("ok")]
+        source_chars = sum(int(record.get("size") or 0) for record in readable_records)
+        supplied_chars = sum(len(str(record.get("preview") or "")) for record in readable_records)
+        yield {
+            "type": "compute",
+            "context": {
+                "selected_files": len(context_files),
+                "readable_files": len(readable_records),
+                "source_chars": source_chars,
+                "supplied_chars": supplied_chars,
+                "truncated_files": sum(1 for record in readable_records if record.get("truncated")),
+                "policy": "bounded_selected_context",
+                "kv_cache": "provider_managed",
+                "crystal": "preflight",
+            },
+        }
 
         # A reuse hit must short-circuit the whole live-turn compute path, not
         # merely the final provider call. Bind the decision to conversation and
@@ -7683,7 +7826,7 @@ class BeastApiClient:
             # Keep compatibility with lightweight client adapters that still
             # implement the original three-argument hook.
             crystal_decision = await self.crystal_reuse_decision(reuse_prompt, provider, model)
-        cached_response = self.crystal_decision_response(crystal_decision)
+        cached_response = self.crystal_decision_response(crystal_decision, provider, model)
         reuse_served = False
         yield {"type": "stage", "text": "crystal reuse preflight"}
         crystal_event = self.crystal_decision_event(crystal_decision)
@@ -7813,13 +7956,40 @@ class BeastApiClient:
                     )
             context_message = "\n\n".join(snippets)
 
-        chat_history = history[-12:]
+        # Economize dialogue history, but never trim the explicit source text
+        # attached below: exact source anchors are essential for SourcePlans.
+        history_ir = EdgeKIR(
+            messages=[dict(item) for item in history[-12:] if isinstance(item, dict)],
+            model=model, max_tokens=max_tokens, temperature=0.2, stream=True,
+            metadata={"surface": "ide_pair_programmer", "provider": provider},
+        )
+        economy = ContextEconomizer().economize(history_ir)
+        chat_history = economy.ir.messages
+        yield {"type": "compute", "context": {
+            "selected_files": len(context_files), "readable_files": len(readable_records),
+            "source_chars": source_chars, "supplied_chars": supplied_chars,
+            "truncated_files": sum(1 for record in readable_records if record.get("truncated")),
+            "policy": "history_economized_selected_source_preserved", "kv_cache": "provider_managed", "crystal": "preflight",
+            "history_original_tokens": economy.original_tokens, "history_final_tokens": economy.final_tokens,
+            "history_changed": economy.changed,
+        }}
         if context_message:
             chat_history = chat_history + [
                 {
                     "role": "system",
                     "content": "Selected BEAST workspace context follows. These files were successfully read from the active workspace and are authoritative for this turn. Use their contents directly. Never claim that an attached file was not provided or ask the operator to share it again; if the answer is genuinely absent from the text, say what information is insufficient instead. Stay within this scope unless the user expands it.\n"
                     +context_message,
+                }
+            ]
+            # Gemini can be overly conservative when source is supplied only
+            # as a system attachment. Repeat the same bounded, authoritative
+            # context as an explicit user evidence turn so ASK answers are
+            # grounded in the file rather than a generic uncertainty script.
+            chat_history = chat_history + [
+                {
+                    "role": "user",
+                    "content": "AUTHORITATIVE SOURCE EVIDENCE. Use this exact file for the next answer; do not claim it is unavailable or speculate beyond it:\n\n"
+                    + context_message,
                 }
             ]
         chat_history = chat_history + [{"role": "user", "content": text}]
@@ -7846,6 +8016,7 @@ class BeastApiClient:
                 max_tokens=max_tokens,
                 max_continuations=max_continuations,
                 accept_unmarked_action_ir=governance_level.startswith("ide_agent"),
+                action_ir_required=action_ir_required,
             ):
                 event_type = str(event.get("type") or "")
                 if event_type == "token":
@@ -7881,6 +8052,9 @@ class BeastApiClient:
                         or event.get("kind")
                         or "provider stream failed"
                     )
+                    transport_receipt = event.get("transport_receipt")
+                    if isinstance(transport_receipt, dict):
+                        provider_failure["transport_receipt"] = transport_receipt
                     tool_events.append(f"provider stream error: {provider_error[:160]}")
                     yield {
                         "type": "tool",
@@ -7893,7 +8067,13 @@ class BeastApiClient:
                 )
 
         if not provider_completed and not provider_ok and not allow_fallback:
-            yield {"type": "error", "error": provider_error or "Provider did not produce a response.", "provider": provider or DEFAULT_PROVIDER, "model": model}
+            yield {
+                "type": "error",
+                "error": provider_error or "Provider did not produce a response.",
+                "provider": provider or DEFAULT_PROVIDER,
+                "model": model,
+                "transport_receipt": provider_failure.get("transport_receipt"),
+            }
             return
 
         if not provider_completed and not provider_ok:
@@ -7969,6 +8149,9 @@ class BeastApiClient:
                 "integration harness: skipped after partial provider SSE stream"
             )
 
+        # Capture completed output as an unverified crystal candidate. IDE
+        # mutation flows never serve this candidate as a patch; promotion
+        # remains contingent on SourcePlan verification and successful apply.
         if provider_completed and assistant_parts and not reuse_served and not harness_receipt:
             crystal_record = await self.record_crystal_response(
                 reuse_prompt,

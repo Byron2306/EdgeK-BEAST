@@ -30,13 +30,16 @@ class CompressionPipeline:
     def compress(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         content_type = str(payload.get("content_type") or "").lower()
         source_uri = str(payload.get("source_uri") or "payload://compression")
+        artifact_type = str(payload.get("artifact_type") or "").lower()
+        purpose = str(payload.get("purpose") or "artifact_transport").lower()
+        if bool(payload.get("editable_source")) or purpose in {"sourceplan_anchor", "patch_anchor", "editable_source"} or artifact_type in {"source_anchor", "patch_anchor", "action_ir_anchor"}:
+            raise ValueError("Compression is forbidden for editable source and patch anchors; use exact references instead")
         max_chunk_chars = max(240, min(int(payload.get("max_chunk_chars") or 1600), 8000))
         value = payload.get("value")
         text = payload.get("text") or payload.get("content") or payload.get("source")
         layers: List[Dict[str, Any]] = []
         chunks: List[Dict[str, Any]] = []
 
-        artifact_type = str(payload.get("artifact_type") or "").lower()
         if value is not None:
             result = self.ast_compressor.compress_json(value).to_dict()
             raw_text = json.dumps(value, sort_keys=True, default=str)
@@ -102,6 +105,11 @@ class CompressionPipeline:
             "chunks": chunks,
             "chunk_count": len(chunks),
             "raw_bytes": len(raw_text.encode("utf-8")),
+            "compression_boundary": {
+                "purpose": purpose,
+                "editable_source": False,
+                "rule": "Compressed output is for artifacts, traces, schemas, and non-editable analysis only; source anchors remain exact.",
+            },
             "evidence_record": evidence,
             "chronicle": chronicle,
         }

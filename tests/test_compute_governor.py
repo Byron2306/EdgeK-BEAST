@@ -451,6 +451,33 @@ async def test_executor_intercepts_enabled_provider_stream_and_records_savings(m
     assert metrics["stream_tokens_saved"] == receipt["stream_tokens_saved"]
 
 
+@pytest.mark.asyncio
+async def test_executor_never_early_stops_action_ir_streams(monkeypatch, tmp_path):
+    """Source-edit JSON must be completed before the Action IR validator sees it."""
+    import app.kernel.execution.execute as execute_module
+    from app.kernel.execution.execute import Executor
+    from app.kernel.governance.reason import GovernanceDecision, GovernanceResult
+
+    ledger = ComputeLedger(str(tmp_path / "compute.db"))
+    monkeypatch.setattr(execute_module, "compute_interceptor", InferenceComputeInterceptor(ComputeGovernor(), ledger))
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    ir = EdgeKIR(
+        messages=[{"role": "user", "content": "Return one complete action IR"}],
+        model="gpt-test",
+        max_tokens=50,
+        stream=True,
+        metadata={
+            "stream_interception_enabled": True,
+            "edgek_action_ir_required": True,
+        },
+    )
+
+    response = await Executor().execute(ir, GovernanceResult(GovernanceDecision.ALLOW, reason="test"))
+
+    assert "edgek_stream_interception" not in response
+    assert response["edgek_compute"]["streaming"]["early_stopped"] is False
+
+
 def test_compute_api_and_mcp_are_read_only_shadow_surfaces(monkeypatch, tmp_path):
     from fastapi.testclient import TestClient
     import app.main as main_module

@@ -1,0 +1,826 @@
+{
+  "compute_governor_receipts": [],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_87a77257e6250876714c.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 9420.941,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 295,
+      "provider_prompt_tokens": 408,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 2,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 703,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4aeabd02aea7d7a7233c.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 4053.282,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 305,
+      "provider_prompt_tokens": 408,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 2,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 713,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9e0d348d79e475e98df9.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 7058.154,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 455,
+      "provider_prompt_tokens": 4125,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "completed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 4580,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [],
+  "families": [
+    "patch_compilation"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,4 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,7 @@\n from app.math_ops import normalize_amount\n \n \n+from decimal import Decimal\n+\n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal('0.00'))\n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 9420.941,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 9420.941,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 959,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 295,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 408,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 703
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\",\n      \"new\": \"from decimal import Decimal, ROUND_HALF_UP\\n\\ndef normalize_amount(value):\\n    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\",\n      \"why\": \"Ensure accurate decimal rounding for financial calculations\"\n    },\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"old\": \"def invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items, start=Decimal('0.00'))\",\n      \"why\": \"Ensure sum uses Decimal arithmetic for accurate totals\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 2,
+      "stderr_tail": "",
+      "stdout_tail": "it__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/home/byron/.local/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:197: in exec_module\n    exec(co, module.__dict__)\ntests/test_invoice_public.py:3: in <module>\n    from app.service import invoice_total\nE     File \"/tmp/beast-systems-live-multi_file_hidden_decimal_fix-raw-a2_vxv4u/app/service.py\", line 7\nE       return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal('0.00'))\nE                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   SyntaxError: Generator expression must be parenthesized\n=========================== short test summary info ============================\nERROR tests/test_invoice_hidden.py\nERROR tests/test_invoice_public.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.16s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 295,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 408,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 703
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,4 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,8 @@\n from app.math_ops import normalize_amount\n \n \n+from decimal import Decimal\n+from app.math_ops import normalize_amount\n+\n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal(0))\n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 4053.282,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4053.282,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 1006,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 305,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 408,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 713
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\",\n      \"new\": \"from decimal import Decimal, ROUND_HALF_UP\\n\\ndef normalize_amount(value):\\n    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\",\n      \"why\": \"Ensure accurate decimal rounding for financial calculations\"\n    },\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"old\": \"def invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items, start=Decimal(0))\",\n      \"why\": \"Ensure sum operation uses Decimal for accurate financial totals\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 2,
+      "stderr_tail": "",
+      "stdout_tail": "_.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/home/byron/.local/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:197: in exec_module\n    exec(co, module.__dict__)\ntests/test_invoice_public.py:3: in <module>\n    from app.service import invoice_total\nE     File \"/tmp/beast-systems-live-multi_file_hidden_decimal_fix-schema_only-5xzv6nzx/app/service.py\", line 8\nE       return sum(normalize_amount(item[\"amount\"]) for item in items, start=Decimal(0))\nE                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   SyntaxError: Generator expression must be parenthesized\n=========================== short test summary info ============================\nERROR tests/test_invoice_hidden.py\nERROR tests/test_invoice_public.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.28s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 305,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 408,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 713
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,4 @@\n def normalize_amount(value):\n+    from decimal import ROUND_HALF_UP, Decimal\n+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\n     return int(value)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,13 @@\n from app.math_ops import normalize_amount\n \n \n+from decimal import Decimal\n+\n+from app.math_ops import normalize_amount\n+\n def invoice_total(items):\n+    total = Decimal(0)\n+    for item in items:\n+        total += normalize_amount(item[\"amount\"])\n+    return total\n     return sum(normalize_amount(item[\"amount\"]) for item in items)\n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 7058.154,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 7058.154,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 1298,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 455,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4125,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4580
+        }
+      },
+      "prompt_tokens": 3226,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update normalize_amount to handle Decimal inputs and apply correct rounding\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import ROUND_HALF_UP, Decimal\\n    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F2\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Ensure invoice_total accumulates Decimal values correctly\",\n      \"new\": \"from decimal import Decimal\\n\\nfrom app.math_ops import normalize_amount\\n\\ndef invoice_total(items):\\n    total = Decimal(0)\\n    for item in items:\\n        total += normalize_amount(item[\\\"amount\\\"])\\n    return total\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:cd96a313eaa6e9dcac7d1068f722ba1e5e023bb20e900f7b996dfd4f817c259a\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:cd96a313eaa6e9dcac7d",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 455,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4125,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4580
+      }
+    }
+  ],
+  "mutation_recovery_cases": [],
+  "occurrences": [
+    5
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:18:58Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 9420.941,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 295,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 408,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_87a77257e6250876714c",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 703,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:18:58Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 4053.282,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 305,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 408,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_4aeabd02aea7d7a7233c",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 713,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T19:18:58Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 7058.154,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 455,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4125,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_9e0d348d79e475e98df9",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 4580,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "cohere": {
+      "live_failures_by_bucket": {
+        "capability_failure": 2,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "cohere": {
+          "avg_latency_ms": 7058.154,
+          "avg_provider_tokens_per_success": 4580.0,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "eligible_for_source_patching": false,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": false,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 0.6183333333333334,
+            "hidden_test_pass_rate": 0.3333,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 0.94118205,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.6667,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.3333
+          },
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.675,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "cohere": {
+          "average_latency_ms": 6844.126,
+          "average_provider_prompt_tokens": 1647.0,
+          "canonicalized": 0,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_cohere_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "multi_file_hidden_decimal_fix"
+            },
+            {
+              "lane": "live_cohere_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "multi_file_hidden_decimal_fix"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 7058.154,
+          "local_verifier_repaired": 0,
+          "provider_tokens_per_verified_fix": 4580.0,
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "repair_attempted": 0,
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "cohere"
+  ],
+  "raw_live_result_count": 3,
+  "resume_source": null
+}

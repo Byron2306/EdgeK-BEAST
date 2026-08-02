@@ -11,6 +11,19 @@ from typing import Callable, Dict
 from pathlib import Path
 
 
+from enum import Enum, auto
+
+class LifecycleState(Enum):
+    RESERVED = auto()
+    HANDED_OFF = auto()
+    ACTIVE = auto()
+    RELEASED = auto()
+
+class HealthState(Enum):
+    UNKNOWN = auto()
+    HEALTHY = auto()
+    UNHEALTHY = auto()
+
 @dataclass(frozen=True)
 class PortLease:
     lease_id: str
@@ -26,8 +39,8 @@ class PortLease:
     expires_at_monotonic_ns: int = 0
     family: str = "AF_INET"
     vrf: str = "production"
-    lifecycle_state: str = "reserved"
-    health_state: str = "unknown"
+    lifecycle_state: LifecycleState = LifecycleState.RESERVED
+    health_state: HealthState = HealthState.UNKNOWN
     authority_ref: str = ""
     appraisal_ref: str = ""
     transferred_at_monotonic_ns: int = 0
@@ -67,12 +80,27 @@ class PortLeaseBroker:
     """
 
     def __init__(self, *, socket_factory: Callable[..., socket.socket] = socket.socket,
-                 guardian_client=None) -> None:
+                 guardian_client=None, max_active_leases: int = 128) -> None:
         self._lock = threading.RLock()
         self._leases: Dict[str, tuple[PortLease, socket.socket, bool]] = {}
         self._socket_factory = socket_factory
         self._generations: Dict[tuple[str, str, str, int, str], int] = {}
+        self._flap_history: Dict[str, list[int]] = {}
         self.guardian_client = guardian_client
+        self.max_active_leases = max(1, int(max_active_leases))
+
+    def _reap_expired_locked(self, now: int) -> None:
+        """Close expired descriptors even when no explicit reconcile runs."""
+        expired = [
+            lease_id for lease_id, (lease, _sock, _transferred) in self._leases.items()
+            if lease.expires_at_monotonic_ns and now >= lease.expires_at_monotonic_ns
+        ]
+        for lease_id in expired:
+            _lease, sock, _transferred = self._leases.pop(lease_id)
+            try:
+                sock.close()
+            except OSError:
+                pass
 
     def reserve(self, service_id: str, workspace_id: str, *, host: str = "127.0.0.1",
                 port: int = 0, network_namespace: str = "host", ttl_seconds: float = 0,
@@ -92,6 +120,20 @@ class PortLeaseBroker:
             raise ValueError("service_id and workspace_id are required")
         if not 0 <= port <= 65535:
             raise ValueError("port must be between 0 and 65535")
+            
+        issued = time.monotonic_ns()
+        with self._lock:
+            self._reap_expired_locked(issued)
+            if len(self._leases) >= self.max_active_leases:
+                raise RuntimeError("port lease capacity exhausted")
+            history = self._flap_history.setdefault(service_id, [])
+            cutoff = issued - 60_000_000_000  # 60s sliding window
+            history = [t for t in history if t > cutoff]
+            self._flap_history[service_id] = history
+            if len(history) >= 10:
+                raise PermissionError(f"Route flapping detected: Service {service_id} requested too many leases within 60s")
+            history.append(issued)
+
         if family not in {"AF_INET", "AF_INET6"}:
             raise ValueError("family must be AF_INET or AF_INET6")
         protocol = protocol.upper()
@@ -102,9 +144,10 @@ class PortLeaseBroker:
         sock = self._socket_factory(socket_family, socket_type)
         try:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            # Enable SO_REUSEPORT to allow multiple processes/threads to bind to the same port
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
             sock.bind((host, port))
             actual_port = int(sock.getsockname()[1])
-            issued = time.monotonic_ns()
             generation_key = (family, protocol, host, actual_port, network_namespace)
             with self._lock:
                 generation = self._generations.get(generation_key, 0) + 1
@@ -151,9 +194,26 @@ class PortLeaseBroker:
                 lease, sock, _ = self._leases[lease_id]
                 if lease.expires_at_monotonic_ns and time.monotonic_ns() >= lease.expires_at_monotonic_ns:
                     raise KeyError("expired port lease")
+                
+                # Strict transition check
+                if lease.lifecycle_state != LifecycleState.RESERVED:
+                    raise ValueError(f"Invalid transition from {lease.lifecycle_state} to HANDED_OFF")
+                
+                # Binding and Authorization Enforcement
+                if workspace_id and lease.workspace_id != workspace_id:
+                    raise PermissionError(f"Workspace mismatch: {workspace_id} vs {lease.workspace_id}")
+                if capability_ref and lease.capability_ref != capability_ref:
+                    raise PermissionError("Capability reference mismatch")
+                if registry_digest and lease.registry_digest != registry_digest:
+                    raise PermissionError("Registry reconciliation failed")
+
                 transferred_at = time.monotonic_ns()
-                lease = replace(lease, lifecycle_state="handed_off", transferred_at_monotonic_ns=transferred_at)
+                lease = replace(lease, lifecycle_state=LifecycleState.HANDED_OFF, 
+                                transferred_at_monotonic_ns=transferred_at,
+                                capability_ref=capability_ref or lease.capability_ref,
+                                appraisal_ref=appraisal_ref or lease.appraisal_ref)
                 self._leases[lease_id] = (lease, sock, True)
+                
                 material = {
                     "lease_id": lease.lease_id, "service_id": lease.service_id,
                     "workspace_id": lease.workspace_id,
@@ -164,6 +224,7 @@ class PortLeaseBroker:
                     "registry_digest": lease.registry_digest,
                     "transferred_at_monotonic_ns": transferred_at,
                 }
+                
                 digest = "sha256:" + hashlib.sha256(
                     json.dumps(material, sort_keys=True, separators=(",", ":")).encode()
                 ).hexdigest()
@@ -195,7 +256,7 @@ class PortLeaseBroker:
                 lease, sock, transferred = self._leases[lease_id]
             except KeyError as exc:
                 raise KeyError("unknown or released port lease") from exc
-            lease = replace(lease, health_state="healthy" if healthy else "unhealthy")
+            lease = replace(lease, health_state=HealthState.HEALTHY if healthy else HealthState.UNHEALTHY)
             self._leases[lease_id] = (lease, sock, transferred)
             return lease
 
@@ -211,33 +272,61 @@ class PortLeaseBroker:
         if self.guardian_client is not None:
             return self.guardian_client.snapshot()
         with self._lock:
+            self._reap_expired_locked(time.monotonic_ns())
             return tuple(item[0] for item in self._leases.values() if not item[0].expires_at_monotonic_ns or time.monotonic_ns() < item[0].expires_at_monotonic_ns)
 
-    def reconcile(self, *, now_monotonic_ns: int | None = None) -> tuple[PortLease, ...]:
-        """Expire leases and close their retained sockets after restart/drift."""
+    def reconcile(self, *, now_monotonic_ns: int | None = None, registry_digest: str | None = None, **binding) -> tuple[PortLease, ...]:
+        """Expire leases, validate persistent state, and enforce registry reconciliation."""
         if self.guardian_client is not None:
+            if registry_digest:
+                self.guardian_client.reconcile_registry(registry_digest=registry_digest, **binding)
             return self.guardian_client.snapshot()
+
         now = time.monotonic_ns() if now_monotonic_ns is None else now_monotonic_ns
         expired = []
+        revoked = []
         with self._lock:
+            self._reap_expired_locked(now)
+            # 1. Expiration cleanup & 2. Registry drift detection
             for lease_id, (lease, sock, _) in self._leases.items():
                 if lease.expires_at_monotonic_ns and now >= lease.expires_at_monotonic_ns:
                     expired.append(lease_id)
-            for lease_id in expired:
-                _, sock, _ = self._leases.pop(lease_id)
-                sock.close()
+                elif registry_digest and lease.registry_digest and registry_digest != lease.registry_digest:
+                    revoked.append(lease_id)
+
+            for lease_id in expired + revoked:
+                if lease_id in self._leases:
+                    lease, sock, _ = self._leases.pop(lease_id)
+                    try:
+                        sock.close()
+                    except Exception:
+                        pass
+
         return self.snapshot()
 
     def persist_receipts(self, path: str | Path) -> None:
-        """Persist non-secret lease receipts for restart reconciliation."""
-        payload = [lease.__dict__ for lease in self.snapshot()]
+        """Persist non-secret lease receipts with comprehensive metadata for recovery."""
+        # Convert Enums to strings for JSON serialization
+        data = []
+        for lease in self.snapshot():
+            lease_dict = lease.__dict__.copy()
+            lease_dict['lifecycle_state'] = lease.lifecycle_state.name
+            lease_dict['health_state'] = lease.health_state.name
+            data.append(lease_dict)
+            
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+        Path(path).write_text(json.dumps(data, sort_keys=True), encoding="utf-8")
 
     @staticmethod
     def load_receipts(path: str | Path) -> tuple[PortLease, ...]:
-        """Load receipts as evidence only; sockets must be rebound explicitly."""
+        """Load receipts, restoring Enums from persisted strings."""
         if not Path(path).exists():
             return ()
         values = json.loads(Path(path).read_text(encoding="utf-8"))
-        return tuple(PortLease(**item) for item in values)
+        leases = []
+        for item in values:
+            # Restore Enums
+            item['lifecycle_state'] = LifecycleState[item['lifecycle_state']]
+            item['health_state'] = HealthState[item['health_state']]
+            leases.append(PortLease(**item))
+        return tuple(leases)

@@ -1,0 +1,205 @@
+/* ==========================================================================\n   BEAST Phase 9.1.1 — Overlay / Header Ownership Fix\n   Removes visual collisions between the premium identity plate, live mission\n   title, page-title strips, and action clusters. This is the final cascade.\n   ========================================================================== */
+:root { --beast-header-h: 184px; }
+
+/* One bounded header stage. Static brand art and live mission copy occupy
+   different vertical bands, so neither can paint over the other. */
+.beast-header.beast-header-premium {
+  display:block !important;
+  min-height:var(--beast-header-h) !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  isolation:isolate;
+}
+.beast-header-premium > * { box-sizing:border-box; }
+.beast-header-brandmark {
+  left:176px !important;
+  top:12px !important;
+  width:min(650px,42vw) !important;
+  height:68px !important;
+  max-height:68px !important;
+  overflow:hidden;
+  z-index:2 !important;
+}
+.beast-header-wordmark {
+  width:100% !important;
+  height:56px !important;
+  max-height:56px !important;
+  object-fit:contain !important;
+  object-position:center !important;
+}
+.beast-header-brandmark span {
+  margin-top:0 !important;
+  line-height:10px !important;
+}
+.beast-title-row {
+  left:186px !important;
+  right:472px !important;
+  top:91px !important;
+  bottom:auto !important;
+  min-height:58px;
+  max-height:62px;
+  padding:8px 15px 7px !important;
+  overflow:hidden;
+  z-index:5 !important;
+  border-left:2px solid rgba(119,255,61,.68);
+  background:linear-gradient(90deg,rgba(0,0,0,.94),rgba(2,10,5,.84) 72%,rgba(2,10,5,.14));
+  box-shadow:inset 0 1px rgba(255,255,255,.025);
+}
+.beast-header .beast-title {
+  display:block;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+  z-index:2;
+  font-size:clamp(16px,1.02vw,21px) !important;
+  line-height:1.08 !important;
+  -webkit-text-stroke:.3px rgba(3,5,4,.96) !important;
+  text-shadow:0 1px 0 #000,0 0 6px rgba(215,226,220,.12) !important;
+}
+.beast-header .beast-kicker,.beast-header .beast-meta { position:relative;z-index:2; }
+.beast-header-terminal {
+  left:42px !important;
+  top:47px !important;
+  width:112px;
+  max-height:44px;
+  overflow:hidden;
+  z-index:3 !important;
+}
+.beast-header-emblem {
+  right:360px !important;
+  top:24px !important;
+  width:96px !important;
+  height:96px !important;
+  z-index:4 !important;
+}
+.beast-header-state {
+  right:34px !important;
+  top:25px !important;
+  bottom:auto !important;
+  max-width:315px !important;
+  z-index:6 !important;
+}
+
+/* Page header content is a real two-column layout, never an absolute pile. */
+.beast-page-head {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:18px !important;
+  min-height:100px !important;
+  padding:17px 34px 17px 116px !important;
+  overflow:hidden !important;
+  isolation:isolate;
+}
+.beast-page-head > div:first-child {
+  min-width:0;
+  position:relative;
+  z-index:5;
+}
+.beast-page-head h2 {
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  -webkit-text-stroke:.35px rgba(2,4,3,.96) !important;
+  text-shadow:0 1px 0 #010201,0 0 6px rgba(220,231,225,.13),0 0 8px rgba(119,255,61,.055) !important;
+}
+.beast-page-head .sub {
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  line-height:1.45 !important;
+}
+/* The page-specific PNG sits on an opaque socket that covers the generic
+   terminal glyph baked into the ornamental strip. */
+.beast-page-head::before {
+  left:47px !important;
+  top:50% !important;
+  width:48px !important;
+  height:48px !important;
+  transform:translateY(-50%) !important;
+  border:1px solid rgba(119,255,61,.28);
+  border-radius:8px;
+  background-color:#020503 !important;
+  background-size:36px 36px !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  box-shadow:inset 0 0 16px rgba(119,255,61,.08),0 0 9px rgba(119,255,61,.18);
+  z-index:6 !important;
+}
+.beast-page-actions {
+  position:relative !important;
+  z-index:7 !important;
+  display:flex !important;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:8px !important;
+  min-width:0;
+  max-width:min(58vw,760px);
+}
+.beast-page-actions .beast-button {
+  flex:0 0 auto;
+  min-height:36px;
+  white-space:nowrap;
+}
+
+/* SourcePlan had an older sticky-header skin that fought the Phase 9 plate.
+   Reset it explicitly, while preserving sticky access to its governed actions. */
+.beast-sourceplan-page .beast-page-head {
+  position:sticky !important;
+  top:0 !important;
+  z-index:40 !important;
+  grid-template-columns:minmax(300px,1fr) minmax(500px,auto) !important;
+  min-height:108px !important;
+  padding:18px 36px 18px 116px !important;
+  background:url("../assets/headers/header-page-hd.png") center/100% 100% no-repeat !important;
+  backdrop-filter:none !important;
+}
+.beast-sourceplan-page .beast-page-actions { max-width:620px; }
+.beast-sourceplan-page .beast-page-actions .beast-button { padding-inline:12px; }
+
+/* Never allow a renderer race or hot-reload residue to visually stack pages. */
+#beastPageOutlet { position:relative; }
+#beastPageOutlet > .beast-page { position:relative; z-index:1; }
+#beastPageOutlet > .beast-page[aria-hidden="true"],
+#beastPageOutlet > .beast-page.beast-stale-page { display:none !important; }
+
+@media(max-width:1540px){
+  :root{--beast-header-h:174px}
+  .beast-header-brandmark{left:148px!important;width:min(540px,38vw)!important;height:62px!important}
+  .beast-header-wordmark{height:51px!important}
+  .beast-title-row{left:154px!important;right:390px!important;top:85px!important}
+  .beast-header-emblem{display:none!important}
+  .beast-header-state{right:24px!important;max-width:300px!important}
+  .beast-sourceplan-page .beast-page-head{grid-template-columns:minmax(260px,1fr) minmax(460px,auto)!important}
+  .beast-sourceplan-page .beast-page-actions{max-width:540px}
+}
+@media(max-width:1280px){
+  :root{--beast-header-h:162px}
+  .beast-header-brandmark{left:112px!important;top:10px!important;width:430px!important;height:54px!important}
+  .beast-header-wordmark{height:45px!important}
+  .beast-header-terminal{display:none!important}
+  .beast-title-row{left:112px!important;right:310px!important;top:72px!important;min-height:58px}
+  .beast-header-state{right:18px!important;top:18px!important;max-width:270px!important}
+  .beast-page-head{grid-template-columns:1fr!important;gap:10px!important;min-height:126px!important;padding:16px 26px 16px 102px!important}
+  .beast-page-actions{justify-content:flex-start!important;max-width:100%!important}
+  .beast-sourceplan-page .beast-page-head{grid-template-columns:1fr!important;min-height:154px!important;padding:17px 24px 17px 102px!important}
+  .beast-sourceplan-page .beast-page-actions{max-width:100%}
+  .beast-page-head::before{left:38px!important}
+}
+@media(max-width:900px){
+  :root{--beast-header-h:118px}
+  .beast-header-brandmark,.beast-header-terminal{display:none!important}
+  .beast-header.beast-header-premium{padding:14px 16px!important}
+  .beast-title-row{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;max-height:none;margin-right:220px}
+  .beast-header-state{right:14px!important;top:14px!important;max-width:205px!important}
+  .beast-page-head,.beast-sourceplan-page .beast-page-head{position:relative!important;top:auto!important;min-height:auto!important;padding:14px 18px 14px 70px!important;background:linear-gradient(180deg,#071009,#020503)!important}
+  .beast-page-head::before{left:16px!important;width:42px!important;height:42px!important;background-size:31px 31px!important}
+  .beast-page-head h2{font-size:22px!important}
+}

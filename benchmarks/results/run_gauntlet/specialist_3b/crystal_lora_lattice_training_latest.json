@@ -1,0 +1,88 @@
+{
+  "authority": "proposal_only_until_local_verifiers_pass",
+  "beast_object_type": "crystal_lora_lattice_training_receipt",
+  "claim": "Crystallized compute has been vectorized into a lattice and trained into actual low-rank parameter matrices.",
+  "class_count": 1,
+  "created_at": "2026-07-22T09:06:06.866251+00:00",
+  "epochs": 250,
+  "families": [
+    "schema_validation"
+  ],
+  "final_training_accuracy": 1.0,
+  "history": [
+    {
+      "accuracy": 1.0,
+      "epoch": 1,
+      "loss": -0.0
+    },
+    {
+      "accuracy": 1.0,
+      "epoch": 50,
+      "loss": -0.0
+    },
+    {
+      "accuracy": 1.0,
+      "epoch": 100,
+      "loss": -0.0
+    },
+    {
+      "accuracy": 1.0,
+      "epoch": 150,
+      "loss": -0.0
+    },
+    {
+      "accuracy": 1.0,
+      "epoch": 200,
+      "loss": -0.0
+    },
+    {
+      "accuracy": 1.0,
+      "epoch": 250,
+      "loss": -0.0
+    }
+  ],
+  "input_dimension": 512,
+  "insertion_boundary": "BEAST adapter-assisted route/proposal head; not direct Ollama GGUF mutation",
+  "learning_rate": 0.35,
+  "parameter_shapes": {
+    "bias": [
+      1
+    ],
+    "delta_W": [
+      512,
+      1
+    ],
+    "lora_A": [
+      512,
+      4
+    ],
+    "lora_B": [
+      4,
+      1
+    ]
+  },
+  "rank": 4,
+  "row_count": 15,
+  "vector_report": {
+    "authority": "training_scaffold_only",
+    "beast_object_type": "crystal_lattice_vectorization",
+    "class_count": 1,
+    "created_at": "2026-07-22T09:06:06.836407+00:00",
+    "dimension": 512,
+    "families": [
+      "schema_validation"
+    ],
+    "matrix_shape": [
+      15,
+      512
+    ],
+    "npz_path": "benchmarks/results/run_gauntlet/specialist_3b/crystal_lattice_vectors_latest.npz",
+    "row_count": 15,
+    "vector_lattice_hash": "sha256:cbeeec533591e226c7a4d692c4a12cc3f8b66d7994f8a76f0af5f3d56368916f",
+    "vectorizer": "signed_hashing_trick_over_privacy_safe_crystal_features",
+    "version": "1.0"
+  },
+  "version": "1.0",
+  "weights_hash": "sha256:438b90368c8379ed654b630e0b1768edca648c5851cd32293f73e22e4ae0e1cd",
+  "weights_path": "benchmarks/results/run_gauntlet/specialist_3b/crystal_lora_lattice_weights_latest.npz"
+}

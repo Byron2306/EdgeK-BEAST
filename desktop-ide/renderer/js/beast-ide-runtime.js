@@ -15,10 +15,21 @@
   const savedWatches=()=>{try{return JSON.parse(localStorage.getItem(watchStorageKey())||'[]').filter(value=>typeof value==='string'&&value.trim()).slice(0,20);}catch(_){return [];}};
   const watchExpressions=()=>{const rows=runtime().debug?.watches||[];return rows.length?rows.map(row=>typeof row==='string'?row:row.expression).filter(Boolean).slice(0,20):savedWatches();};
   function setWatchExpressions(expressions) { const next=[...new Set((expressions||[]).map(value=>String(value||'').trim()).filter(value=>value&&value.length<=500))].slice(0,20);localStorage.setItem(watchStorageKey(),JSON.stringify(next));patchRuntime('debug',{watches:next.map(expression=>({expression,result:'',type:'',pending:true}))});return next; }
+  function selectedFrameId() { return Number(runtime().debug?.selectedFrameId || runtime().debug?.stack?.[0]?.id || 0); }
+  function selectedScopeIndex() { return Number(runtime().debug?.selectedScopeIndex || 0); }
 
   function patchRuntime(section, change) {
     const current=runtime();
     BeastStore.patch('compatibility',{runtime:{...current,[section]:{...(current[section] || {}),...change}}});
+  }
+
+  function sameTargetIdentity(left={}, right={}) {
+    const a=left&&typeof left==='object'?left:{kind:'local'};
+    const b=right&&typeof right==='object'?right:{kind:'local'};
+    if ((a.kind||'local') !== (b.kind||'local')) return false;
+    if ((a.kind||'local') === 'ssh') return String(a.host||'')===String(b.host||'') && String(a.remoteRoot||a.path||'~')===String(b.remoteRoot||b.path||'~');
+    if ((a.kind||'local') === 'container') return String(a.containerId||a.name||'')===String(b.containerId||b.name||'') && String(a.workspaceFolder||'/workspace')===String(b.workspaceFolder||'/workspace');
+    return true;
   }
 
   function waitFor(map,id,label) {
@@ -87,7 +98,33 @@
         try { await request(session,'configurationDone',{});session.configurationDone=true; }
         catch(error) { if(!/only allowed during handling of a "(?:launch|attach)" request/i.test(String(error.message||error))) throw error; session.configurationDone=false;appendDebugOutput(`Adapter completed launch before configurationDone; continuing without a second configuration handshake.\n`); }
       } else session.configurationDone=false;
-      patchRuntime('debug',{status:'running',sessionId:session.id,adapter:selected,program:launch.program||launch.connect?.host||'',source:source.path,targetSource:breakpointSource.path,breakpoints:lines,condition:String(condition||''),logMessage:String(logMessage||''),functionBreakpoints:functions,configurationName:launch.name||'',request:launch.request,error:''});
+      patchRuntime('debug',{
+        status:'running',
+        sessionId:session.id,
+        adapter:selected,
+        program:launch.program||launch.connect?.host||'',
+        source:source.path,
+        targetSource:breakpointSource.path,
+        breakpoints:lines,
+        condition:String(condition||''),
+        logMessage:String(logMessage||''),
+        functionBreakpoints:functions,
+        configurationName:launch.name||'',
+        request:launch.request,
+        error:'',
+        disconnected:false,
+        restartContext:{
+          adapter:selected,
+          target:String(target||''),
+          configuration:configuration&&typeof configuration==='object'?structuredClone(configuration):null,
+          condition:String(condition||''),
+          logMessage:String(logMessage||''),
+          functionBreakpoints:functions,
+          breakpoints:lines.join(', '),
+          sourcePath:source.path,
+          target:structuredClone(selectedTarget),
+        },
+      });
       BeastStore.addLedger(`Debug session started: ${selected} · ${launch.program}`);
       return session;
     } catch (error) {
@@ -102,6 +139,60 @@
   }
   async function startLaunchConfiguration(name,options={}) { const catalog=await loadLaunchConfigurations();const config=catalog.configurations.find(item=>item&&item.name===name);if(!config)throw new Error(`Launch configuration “${name}” was not found in .vscode/launch.json.`);return startDebug({...options,adapter:config.type==='python'?'debugpy':config.type==='go'?'delve':config.type==='lldb'?'lldb':'auto',configuration:{...config,__beastName:config.name}}); }
   async function startCompound(name,options={}) { const catalog=await loadLaunchConfigurations();const compound=catalog.compounds.find(item=>item&&item.name===name);if(!compound)throw new Error(`Compound “${name}” was not found in .vscode/launch.json.`);const names=(compound.configurations||[]).map(item=>typeof item==='string'?item:item?.name).filter(Boolean).slice(0,8);if(!names.length)throw new Error('This compound has no launch configurations.');const sessions=[];for(const configName of names)sessions.push(await startLaunchConfiguration(configName,options));patchRuntime('debug',{compound:name,compoundSessions:sessions.map(session=>session.id)});return sessions; }
+  async function restartDebug() {
+    const debug=runtime().debug||{};
+    const restart=debug.restartContext||{};
+    const session=dapSessions.get(debug.sessionId||'');
+    if (session?.capabilities?.supportsRestartRequest) {
+      patchRuntime('debug',{status:'restarting',error:'',disconnected:false});
+      await request(session,'restart',{},12000);
+      appendDebugOutput('Adapter-native restart requested.\n');
+      return session;
+    }
+    if (!restart.adapter) throw new Error('No governed debug launch is available to restart yet.');
+    const restartTarget=restart.target&&typeof restart.target==='object'?restart.target:{kind:'local'};
+    if (!sameTargetIdentity(executionTarget(),restartTarget) && BeastDesktopBridge?.setExecutionTarget) BeastDesktopBridge.setExecutionTarget(restartTarget);
+    patchRuntime('debug',{status:'restarting',error:'',disconnected:false});
+    return startDebug({
+      adapter:restart.adapter,
+      target:restart.target||'',
+      configuration:restart.configuration||null,
+      condition:restart.condition||'',
+      logMessage:restart.logMessage||'',
+      functionBreakpoints:restart.functionBreakpoints||[],
+      breakpoints:restart.breakpoints||'',
+    });
+  }
+
+  async function restartDebugFrame() {
+    const debug=runtime().debug||{};
+    const session=dapSessions.get(debug.sessionId||'');
+    const frameId=Number(debug.stack?.[0]?.id || 0);
+    if (!session) throw new Error('No active debug session.');
+    if (!session.capabilities?.supportsRestartFrame) throw new Error('This adapter does not support frame restart.');
+    if (!frameId) throw new Error('Pause at a stack frame before restarting it.');
+    patchRuntime('debug',{status:'restarting-frame',error:''});
+    await request(session,'restartFrame',{frameId},12000);
+    appendDebugOutput(`Adapter-native frame restart requested for frame ${frameId}.\n`);
+    return { ok:true, frameId };
+  }
+
+  async function resumeDebugIfTargetRecovered(trigger='target-recovered', recoveredTarget=null) {
+    const debug=runtime().debug||{};
+    const restart=debug.restartContext||{};
+    const target=recoveredTarget&&typeof recoveredTarget==='object'?recoveredTarget:executionTarget();
+    if (!restart.adapter || !debug.disconnected) return { resumed:false, reason:'no-disconnected-debug-session' };
+    if (!sameTargetIdentity(restart.target||{kind:'local'}, target||{kind:'local'})) return { resumed:false, reason:'target-mismatch' };
+    appendDebugOutput(`Recovered ${target.kind||'target'} transport; attempting governed debug resume (${trigger}).\n`);
+    try {
+      await restartDebug();
+      BeastStore.addLedger(`Debug session resumed after ${trigger}.`);
+      return { resumed:true };
+    } catch (error) {
+      patchRuntime('debug',{status:'terminated',disconnected:true,error:`Automatic debug resume failed: ${String(error.message || error)}`});
+      return { resumed:false, reason:'restart-failed', error:String(error.message || error) };
+    }
+  }
 
   async function inspectStop(session,body={}) {
     try {
@@ -109,10 +200,13 @@
       const threads=(await request(session,'threads',{})).threads || [];
       const selected=threadId || Number(threads[0]?.id || 0);
       const frames=selected ? ((await request(session,'stackTrace',{threadId:selected,startFrame:0,levels:20})).stackFrames || []) : [];
+      const loadedSources=await inspectLoadedSources(session);
       let scopes=[];
       let variables=[];
-      if (frames[0]?.id != null) {
-        scopes=(await request(session,'scopes',{frameId:frames[0].id})).scopes || [];
+      const activeFrameId=Number(runtime().debug?.selectedFrameId || frames[0]?.id || 0);
+      const chosenFrame=frames.find(frame=>Number(frame.id||0)===activeFrameId) || frames[0] || null;
+      if (chosenFrame?.id != null) {
+        scopes=(await request(session,'scopes',{frameId:chosenFrame.id})).scopes || [];
         variables=await Promise.all(scopes.slice(0,6).map(async scope=>{
           if (!Number(scope.variablesReference)) return {...scope,variables:[]};
           try {
@@ -123,8 +217,31 @@
           }
         }));
       }
-      const watches=await Promise.all(watchExpressions().map(async expression=>{try{const response=await request(session,'evaluate',{expression,frameId:frames[0]?.id,context:'watch'});return {expression,result:String(response.result||''),type:String(response.type||''),variablesReference:Number(response.variablesReference||0)};}catch(error){return {expression,error:String(error.message||error)};}}));
-      patchRuntime('debug',{status:'stopped',threadId:selected,threads,stack:frames,scopes,variables,watches,reason:body.reason || 'breakpoint'});
+      const chosenScopeIndex=Math.max(0,Math.min(selectedScopeIndex(),Math.max(0,variables.length-1)));
+      const chosenScope=variables[chosenScopeIndex] || variables[0] || null;
+      const watches=await Promise.all(watchExpressions().map(async expression=>{try{const response=await request(session,'evaluate',{expression,frameId:chosenFrame?.id,context:'watch'});return {expression,result:String(response.result||''),type:String(response.type||''),variablesReference:Number(response.variablesReference||0)};}catch(error){return {expression,error:String(error.message||error)};}}));
+      patchRuntime('debug',{
+        status:'stopped',
+        threadId:selected,
+        threads,
+        stack:frames,
+        scopes,
+        variables,
+        selectedFrameId:Number(chosenFrame?.id || 0),
+        selectedScopeIndex:chosenScope ? chosenScopeIndex : 0,
+        activeScope:chosenScope ? { name:String(chosenScope.name||''), variablesReference:Number(chosenScope.variablesReference||0) } : null,
+        watches,
+        loadedSources,
+        reason:body.reason || 'breakpoint',
+        stopDetail:body.text || body.description || '',
+        preserveFocusHint:Boolean(body.preserveFocusHint),
+        allThreadsStopped:body.allThreadsStopped !== false,
+        hitBreakpointIds:Array.isArray(body.hitBreakpointIds) ? body.hitBreakpointIds.slice(0,20) : [],
+        canRestart:Boolean(session.capabilities?.supportsRestartRequest),
+        supportsLoadedSources:Boolean(session.capabilities?.supportsLoadedSourcesRequest),
+        supportsRestartFrame:Boolean(session.capabilities?.supportsRestartFrame),
+        sourceReference:Number(chosenFrame?.source?.sourceReference || frames[0]?.source?.sourceReference || 0),
+      });
     } catch (error) { patchRuntime('debug',{status:'stopped',error:String(error.message || error)}); }
   }
 
@@ -137,28 +254,42 @@
       try { await request(session,'disconnect',{restart:false,terminateDebuggee:true}); } finally { await desktop().stopIdeProtocol(session.id); dapSessions.delete(session.id); patchRuntime('debug',{status:'terminated',sessionId:'',threadId:0}); }
       return;
     }
+    if (action==='restart') return restartDebug();
+    if (action==='restartFrame') return restartDebugFrame();
     const method=methods[action]; if (!method) throw new Error('Unsupported debug command.');
     if(['continue','next','stepIn','stepOut'].includes(action) && debug.status!=='stopped') { appendDebugOutput(`Ignored ${action}: debugger is ${debug.status||'not stopped'}.\n`); return {ignored:true,status:debug.status}; }
     await request(session,method,threadId?{threadId}:{});
     patchRuntime('debug',{status:action==='pause'?'pausing':'running',error:''});
   }
   async function evaluateDebug(expression) {
-    const text=String(expression||'').trim();if(!text)throw new Error('Enter a debug expression to evaluate.');if(text.length>4000)throw new Error('Debug expressions are limited to 4,000 characters.');const debug=runtime().debug||{};const session=dapSessions.get(debug.sessionId);if(!session)throw new Error('No active debug session.');const response=await request(session,'evaluate',{expression:text,frameId:debug.stack?.[0]?.id,context:'repl'});const entry={text:`> ${text}\n${String(response.result||'')}${response.type?` · ${response.type}`:''}\n`,category:'console'};patchRuntime('debug',{repl:[...(debug.repl||[]),entry].slice(-100)});return response;
+    const text=String(expression||'').trim();if(!text)throw new Error('Enter a debug expression to evaluate.');if(text.length>4000)throw new Error('Debug expressions are limited to 4,000 characters.');const debug=runtime().debug||{};const session=dapSessions.get(debug.sessionId);if(!session)throw new Error('No active debug session.');const response=await request(session,'evaluate',{expression:text,frameId:selectedFrameId(),context:'repl'});const entry={text:`> ${text}\n${String(response.result||'')}${response.type?` · ${response.type}`:''}\n`,category:'console'};patchRuntime('debug',{repl:[...(debug.repl||[]),entry].slice(-100)});return response;
   }
   function addWatchExpression(expression) { return setWatchExpressions([...watchExpressions(),expression]); }
   function removeWatchExpression(expression) { return setWatchExpressions(watchExpressions().filter(value=>value!==String(expression||''))); }
+  async function selectDebugFrame(frameId) {
+    const debug=runtime().debug||{};const session=dapSessions.get(debug.sessionId);if(!session) throw new Error('No active debug session.');
+    patchRuntime('debug',{selectedFrameId:Number(frameId||0)});
+    await inspectStop(session,{threadId:Number(debug.threadId||0),reason:debug.reason||'frame_selected',description:debug.stopDetail||''});
+    return { ok:true, frameId:Number(frameId||0) };
+  }
+  async function selectDebugScope(index) {
+    const debug=runtime().debug||{};const session=dapSessions.get(debug.sessionId);if(!session) throw new Error('No active debug session.');
+    patchRuntime('debug',{selectedScopeIndex:Math.max(0,Number(index||0))});
+    await inspectStop(session,{threadId:Number(debug.threadId||0),reason:debug.reason||'scope_selected',description:debug.stopDetail||''});
+    return { ok:true, index:Math.max(0,Number(index||0)) };
+  }
 
   async function ensureNotebookKernel() {
     if (notebookKernel?.status==='ready') return notebookKernel;
     if (!desktop()?.startNotebookKernel) throw new Error('Jupyter kernel sessions are available only in the BEAST desktop shell.');
-    patchRuntime('notebook',{status:'starting-kernel',error:'',kernelStatus:'starting'});
+    patchRuntime('notebook',{status:'starting-kernel',error:'',kernelStatus:'starting',workspaceRoot:root(),sessionStartedAt:Date.now()});
     const summary=await desktop().startNotebookKernel(root());
     const prior=notebookKernel;notebookKernel={...summary,...prior,status:prior?.status==='ready'||summary.status==='running'?'ready':'starting'};
     if (notebookKernel.status!=='ready') {
       notebookKernelReady=new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Jupyter kernel startup timed out.')),25000);notebookKernel.resolve=()=>{clearTimeout(timer);resolve(notebookKernel);};notebookKernel.reject=error=>{clearTimeout(timer);reject(error);};});
       await notebookKernelReady;
     }
-    patchRuntime('notebook',{status:'kernel-ready',kernelStatus:'ready',kernel:'beast-python'});
+    patchRuntime('notebook',{status:'kernel-ready',kernelStatus:'ready',kernel:'beast-python',pid:notebookKernel?.pid||summary?.pid||null,workspaceRoot:root(),lastKernelEventAt:Date.now()});
     BeastStore.addLedger('Jupyter kernel ready: BEAST Python');
     return notebookKernel;
   }
@@ -166,7 +297,7 @@
   async function stopNotebookKernel() {
     if (desktop()?.stopNotebookKernel) await desktop().stopNotebookKernel();
     notebookKernel=null;notebookKernelReady=null;
-    patchRuntime('notebook',{status:'idle',kernelStatus:'stopped',kernel:''});
+    patchRuntime('notebook',{status:'idle',kernelStatus:'stopped',kernel:'',pid:null,lastKernelEventAt:Date.now()});
   }
 
   async function runPythonCell(code) {
@@ -180,7 +311,7 @@
         result={...result,stdout:(result.outputs||[]).map(item=>item.text||item.evalue||'').join(''),stderr:(result.outputs||[]).filter(item=>item.type==='error').map(item=>`${item.ename||'Error'}: ${item.evalue||''}\n${(item.traceback||[]).join('\n')}`).join('\n'),returncode:result.ok?0:1};
       } else result=await desktop().executeNotebookCell({language:'python',code,timeoutMs:30000});
       const cells=[{id:result.receipt?.id || `NB-${Date.now()}`,code:String(code || ''),...result,at:Date.now()},...(runtime().notebook?.cells || [])].slice(0,12);
-      patchRuntime('notebook',{status:result.ok?'complete':'failed',error:result.error || '',cells,lastReceipt:result.receipt || null});
+      patchRuntime('notebook',{status:result.ok?'complete':'failed',error:result.error || '',cells,lastReceipt:result.receipt || null,lastRunAt:Date.now(),lastMimeSummary:result.output_mime_summary||{},kernel:'beast-python',workspaceRoot:root()});
       BeastStore.addLedger(`Notebook cell ${result.ok?'completed':'failed'}: ${result.receipt?.id || 'unreceipted'}`);
       return result;
     } catch (error) { patchRuntime('notebook',{status:'error',error:String(error.message || error)}); throw error; }
@@ -223,8 +354,9 @@
   }
   async function reconnectRemote() {
     if(!desktop()?.reconnectRemote) throw new Error('Remote reconnect is available only in the BEAST desktop shell.');
-    patchRuntime('remote',{status:'reconnecting',error:''});const result=await desktop().reconnectRemote();patchRuntime('remote',{status:result.ok?'connected':'error',host:result.host||runtime().remote?.host||'',path:result.remote_root||result.path||runtime().remote?.path||'~',remoteRoot:result.remote_root||'',verification:result.verification||'',error:result.error||''});if(result.ok){await Promise.allSettled([listRemoteFiles(),refreshRemoteTerminals(),refreshRemoteForwards(),refreshExecutionTargets()]);BeastStore.addLedger(`Remote workspace rehydrated: ${result.host||runtime().remote?.host}`);}return result;
+    patchRuntime('remote',{status:'reconnecting',error:''});const result=await desktop().reconnectRemote();patchRuntime('remote',{status:result.ok?'connected':'error',host:result.host||runtime().remote?.host||'',path:result.remote_root||result.path||runtime().remote?.path||'~',remoteRoot:result.remote_root||'',verification:result.verification||'',error:result.error||''});if(result.ok){await Promise.allSettled([listRemoteFiles(),refreshRemoteTerminals(),refreshRemoteForwards(),refreshExecutionTargets()]);await resumeDebugIfTargetRecovered('ssh reconnect',result.target||{kind:'ssh',host:result.host,remoteRoot:result.remote_root||result.path||'~'}).catch(()=>{});BeastStore.addLedger(`Remote workspace rehydrated: ${result.host||runtime().remote?.host}`);}return result;
   }
+  async function remoteHealth() { const remote=runtime().remote||{};if(!desktop()?.remoteHealth)throw new Error('SSH health checks are available only in the BEAST desktop shell.');if(!remote.host||!remote.path)throw new Error('Connect a remote workspace before checking its runtime.');patchRuntime('remote',{healthStatus:'checking',healthError:''});try{const result=await desktop().remoteHealth({host:remote.host,path:remote.path});patchRuntime('remote',{healthStatus:result.healthy?'healthy':'error',health:result,healthError:result.error||''});BeastStore.addLedger(result.healthy?`Remote runtime healthy: ${result.host} · Node ${result.nodeVersion||'unreported'}`:`Remote runtime health failed: ${result.error||result.host}`);return result;}catch(error){patchRuntime('remote',{healthStatus:'error',healthError:String(error.message||error)});throw error;} }
   async function runRemoteTerminal(command) {
     const remote=runtime().remote||{};if(!remote.host)throw new Error('Connect a remote workspace before running a remote command.');if(!desktop()?.runRemoteTerminal)throw new Error('Remote terminal is available only in the BEAST desktop shell.');patchRuntime('remote',{terminalStatus:'running',terminalError:'',terminalOutput:''});try{const result=await desktop().runRemoteTerminal({host:remote.host,command,timeoutMs:30000});patchRuntime('remote',{terminalStatus:result.ok?'complete':'failed',terminalError:result.error||'',terminalOutput:`${result.stdout||''}${result.stderr?`\n[stderr]\n${result.stderr}`:''}`,lastRemoteReceipt:result.receipt||null});return result;}catch(error){patchRuntime('remote',{terminalStatus:'error',terminalError:String(error.message||error)});throw error;}
   }
@@ -286,11 +418,27 @@
     patchRuntime('remote',{executionTargets:result?.targets||[],activeTarget:result?.active||executionTarget()});
     return result;
   }
+  async function soakExecutionTarget({iterations=3,interruptEvery=0,target=null}={}) {
+    if(!desktop()?.soakExecutionTarget) throw new Error('Execution target soak is available only in the BEAST desktop shell.');
+    patchRuntime('remote',{soakStatus:'running',soakError:''});
+    const result=await desktop().soakExecutionTarget({root:root(),iterations,interruptEvery,target:target||executionTarget()});
+    patchRuntime('remote',{soakStatus:result.ok?'passed':'failed',soakError:result.ok?'':(result.error||''),lastSoak:result,activeTarget:result.target||executionTarget()});
+    BeastStore.addLedger(result.ok?`Execution target soak passed: ${result.receipt?.id||result.target?.kind||'target'}`:`Execution target soak failed: ${result.error||'unknown'}`);
+    await refreshExecutionTargets().catch(()=>{});
+    return result;
+  }
+  async function refreshExecutionTargetSoaks() {
+    if(!desktop()?.executionTargetSoakSummary) return { ok:true, soaks:[], counts:{soaks:0,failures:0} };
+    const result=await desktop().executionTargetSoakSummary();
+    patchRuntime('remote',{soaks:result.soaks||[],soakCounts:result.counts||{soaks:0,failures:0}});
+    return result;
+  }
 
   async function setExecutionTarget(target) {
     const selected=BeastDesktopBridge.setExecutionTarget(target || {kind:'local'});
     patchRuntime('remote',{activeTarget:selected});
     await refreshExecutionTargets().catch(()=>{});
+    await resumeDebugIfTargetRecovered('target switch',selected).catch(()=>{});
     return selected;
   }
 
@@ -310,6 +458,7 @@
     patchRuntime('remote',{containerStatus:result.ok?'attached':'error',containerError:result.error||'',devContainers:result.containers||[],activeTarget:result.target||executionTarget(),devContainerAttached:result.attached||null});
     BeastStore.addLedger(result.ok?`Dev Container attached: ${result.attached?.name||result.attached?.id||'container'}`:`Dev Container start failed: ${result.error||'unknown'}`);
     await refreshExecutionTargets().catch(()=>{});
+    if (result.ok) await resumeDebugIfTargetRecovered('devcontainer start',result.target||executionTarget()).catch(()=>{});
     return result;
   }
   async function attachDevContainer(id='') {
@@ -318,6 +467,7 @@
     if(result.target)BeastDesktopBridge.setExecutionTarget(result.target);
     patchRuntime('remote',{containerStatus:result.ok?'attached':'error',containerError:result.error||'',devContainers:result.containers||[],activeTarget:result.target||executionTarget(),devContainerAttached:result.attached||null});
     await refreshExecutionTargets().catch(()=>{});
+    if (result.ok) await resumeDebugIfTargetRecovered('devcontainer attach',result.target||executionTarget()).catch(()=>{});
     return result;
   }
   async function stopDevContainer(id='') {
@@ -328,6 +478,7 @@
     await refreshExecutionTargets().catch(()=>{});
     return result;
   }
+  async function restartDevContainer(id='') { if(!desktop()?.restartDevContainer)throw new Error('Dev Container restart is available only in the BEAST desktop shell.');patchRuntime('remote',{containerStatus:'restarting',containerError:''});const result=await desktop().restartDevContainer({root:root(),id});if(result.target)BeastDesktopBridge.setExecutionTarget(result.target);patchRuntime('remote',{containerStatus:result.ok?'attached':'error',containerError:result.error||'',devContainers:result.containers||[],activeTarget:result.target||executionTarget(),devContainerAttached:result.attached||null});BeastStore.addLedger(result.ok?`Dev Container restarted: ${result.attached?.name||result.attached?.id||'container'}`:`Dev Container restart failed: ${result.error||'unknown'}`);await refreshExecutionTargets().catch(()=>{});if(result.ok)await resumeDebugIfTargetRecovered('devcontainer restart',result.target||executionTarget()).catch(()=>{});return result; }
   async function rebuildDevContainer() {
     if(!desktop()?.rebuildDevContainer)throw new Error('Dev Container rebuild is available only in the BEAST desktop shell.');
     patchRuntime('remote',{containerStatus:'rebuilding',containerError:''});
@@ -350,8 +501,10 @@
     patchRuntime('remote',{containerTerminalStatus:result.ok?'complete':'failed',containerTerminalOutput:`${result.stdout||''}${result.stderr?`\n[stderr]\n${result.stderr}`:''}`,containerError:result.error||'',lastContainerReceipt:result.receipt||null});
     return result;
   }
+  async function openDevContainerPort(port) { if(!desktop()?.openDevContainerPort)throw new Error('Opening a Dev Container port is available only in the BEAST desktop shell.');const result=await desktop().openDevContainerPort({port:Number(port)});if(!result?.ok)throw new Error(result?.error||'Container port could not be opened.');BeastStore.addLedger(`Opened Dev Container service: ${result.url}`);return result; }
 
-  function patchExtensions(summary={}) { patchRuntime('extensions',{status:summary.status || 'stopped',pid:summary.pid || null,mode:summary.mode || 'declarative-manifests',items:summary.extensions || [],error:''}); }
+  function patchExtensions(summary={}) { patchRuntime('extensions',{status:summary.status || 'stopped',pid:summary.pid || null,mode:summary.mode || 'declarative-manifests',items:summary.extensions || [],lifecycle:summary.lifecycle || null,lifecycleTargets:summary.targets || summary.lifecycleTargets || [],error:''}); }
+  async function refreshExtensionHostStatus() { if(!desktop()?.extensionHostStatus)return null;const status=await desktop().extensionHostStatus({target:executionTarget()});patchRuntime('extensions',{lifecycle:status.active||null,lifecycleTargets:status.targets||[]});return status; }
   async function discoverExtensions() {
     if (!desktop()?.discoverExtensions) throw new Error('Extension runtime is available only in the BEAST desktop shell.');
     patchRuntime('extensions',{status:'starting',error:''});
@@ -360,14 +513,32 @@
   }
   async function grantExtensionCapabilities(id, capabilities) {
     if (!desktop()?.grantExtensionCapabilities) throw new Error('Extension grants are available only in the BEAST desktop shell.');
-    const summary=await desktop().grantExtensionCapabilities({id,capabilities});patchExtensions(summary);BeastStore.addLedger(`Extension capability grants updated: ${id}`);return summary;
+    const summary=await desktop().grantExtensionCapabilities({id,capabilities,target:executionTarget()});patchExtensions(summary);BeastStore.addLedger(`Extension capability grants updated: ${id}`);return summary;
   }
   async function setExtensionEnabled(id, enabled) { if(!desktop()?.setExtensionEnabled)throw new Error('Extension lifecycle controls are available only in the BEAST desktop shell.');const summary=await desktop().setExtensionEnabled({id,enabled:Boolean(enabled)});patchExtensions(summary);BeastStore.addLedger(`Extension ${enabled?'enabled':'disabled'}: ${id}`);return summary; }
   async function installWorkspaceExtension() { if(!desktop()?.installWorkspaceExtension)throw new Error('Extension installation is available only in the BEAST desktop shell.');const summary=await desktop().installWorkspaceExtension();patchExtensions(summary);BeastStore.addLedger('Workspace extension install completed.');return summary; }
+  async function deployWorkspaceExtensions() { if(!desktop()?.deployWorkspaceExtensions)throw new Error('Extension deployment is available only in the BEAST desktop shell.');const summary=await desktop().deployWorkspaceExtensions({target:executionTarget()});patchExtensions(summary);BeastStore.addLedger(summary.message||`Workspace extensions deployed to ${executionTarget().label||executionTarget().kind}.`);return summary; }
   async function uninstallWorkspaceExtension(id) { if(!desktop()?.uninstallWorkspaceExtension)throw new Error('Extension removal is available only in the BEAST desktop shell.');const summary=await desktop().uninstallWorkspaceExtension({id});patchExtensions(summary);BeastStore.addLedger(`Workspace extension removed: ${id}`);return summary; }
+  async function activateExtension(id, activationEvent='onStartupFinished') {
+    if (!desktop()?.activateExtension) throw new Error('Extension activation is available only in the BEAST desktop shell.');
+    const result=await desktop().activateExtension({id,activationEvent,target:executionTarget()});
+    patchRuntime('extensions',{lastActivation:{id,activationEvent,result}});
+    BeastStore.addLedger(`Extension activated: ${id} · ${activationEvent}`);
+    await refreshExtensionHostStatus().catch(()=>null);
+    return result;
+  }
+  async function activateExtensionsByEvent(activationEvent='onStartupFinished') {
+    if (!desktop()?.activateExtensionsByEvent) throw new Error('Extension lifecycle activation is available only in the BEAST desktop shell.');
+    const result=await desktop().activateExtensionsByEvent({activationEvent,target:executionTarget()});
+    patchRuntime('extensions',{lastActivationBatch:{activationEvent,result}});
+    BeastStore.addLedger(`Extension lifecycle activation: ${activationEvent} · ${result.activated||0}/${result.matched||0}`);
+    await refreshExtensionHostStatus().catch(()=>null);
+    return result;
+  }
   async function executeExtensionCommand(id, command) {
     if (!desktop()?.executeExtensionCommand) throw new Error('Extension commands are available only in the BEAST desktop shell.');
     const result=await desktop().executeExtensionCommand({id,command,target:executionTarget()});
+    patchRuntime('extensions',{lastExecution:{id,command,result}});
     for (const action of result.actions||[]) {
       if (action.kind==='navigate'&&action.payload?.route) await BeastRouter.navigate(action.payload.route);
       if (action.kind==='notice') { const message=String(action.payload?.message||'Extension notice');BeastStore.addLedger(`Extension ${id}: ${message}`);document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message,tone:action.payload?.severity==='error'?'bad':action.payload?.severity==='warning'?'warn':'ok'}})); }
@@ -376,7 +547,19 @@
     BeastStore.addLedger(`Extension command completed: ${id} · ${command}`);
     return result;
   }
-  async function stopExtensionHost() { if (desktop()?.stopExtensionHost) await desktop().stopExtensionHost();patchRuntime('extensions',{status:'stopped',pid:null}); }
+  async function stopExtensionHost() { let result=null;if (desktop()?.stopExtensionHost) result=await desktop().stopExtensionHost();patchRuntime('extensions',{status:'stopped',pid:null,lifecycle:result?.lifecycle||null});await refreshExtensionHostStatus().catch(()=>null); }
+  async function refreshIdeServicesSnapshot() {
+    if(!desktop()?.ideServicesSnapshot)return null;
+    const snapshot=await desktop().ideServicesSnapshot({root:root(),target:executionTarget()});
+    patchRuntime('services',{status:snapshot.score?.percent>=80?'ready':'partial',snapshot,score:snapshot.score||null,updatedAt:snapshot.updatedAt||new Date().toISOString()});
+    return snapshot;
+  }
+  async function refreshWorkspaceIndexSnapshot() {
+    if(!desktop()?.workspaceIndexSnapshot)return null;
+    const snapshot=await desktop().workspaceIndexSnapshot({root:root(),target:executionTarget()});
+    patchRuntime('index',{status:snapshot.ok?'ready':'error',snapshot,summary:snapshot.summary||null,digest:snapshot.indexDigest||'',updatedAt:snapshot.updatedAt||new Date().toISOString(),error:snapshot.error||''});
+    return snapshot;
+  }
 
   function appendDebugOutput(value,category='console') {
     const debug=runtime().debug || {};
@@ -384,24 +567,65 @@
     patchRuntime('debug',{output});
   }
 
+  async function inspectLoadedSources(session) {
+    if (!session?.capabilities?.supportsLoadedSourcesRequest) return [];
+    try {
+      const response=await request(session,'loadedSources',{});
+      return (response.loadedSources || []).slice(0,80).map(source=>({
+        name:String(source?.name || source?.path || 'source'),
+        path:String(source?.path || ''),
+        sourceReference:Number(source?.sourceReference || 0),
+        presentationHint:String(source?.presentationHint || ''),
+        origin:String(source?.origin || ''),
+        adapterData:source?.adapterData || null,
+      }));
+    } catch (error) {
+      appendDebugOutput(`loadedSources unavailable: ${String(error.message || error)}\n`,'stderr');
+      return [];
+    }
+  }
+
+  async function openDebugLocation({ path='', line=1, column=1, sourceReference=0 } = {}) {
+    const targetPath=String(path||'').trim();
+    if(targetPath){
+      const activeTarget=executionTarget();
+      if(activeTarget.kind==='ssh'){
+        await BeastEditorCortex.openFile(BeastDesktopBridge.remoteRef(activeTarget.host,targetPath));
+      }else{
+        const workspace=root().replace(/[\\/]$/,'').replace(/\\/g,'/');
+        const normalized=targetPath.replace(/\\/g,'/');
+        const relative=workspace&&normalized.startsWith(`${workspace}/`)?normalized.slice(workspace.length+1):normalized.replace(/^\/+/,'');
+        await BeastEditorCortex.openFile(relative||normalized);
+      }
+      await BeastRouter.navigate('workspace');
+      BeastEditorCortex.gotoLine(Number(line||1),Number(column||1));
+      return { ok:true, path:targetPath, line:Number(line||1), sourceReference:Number(sourceReference||0) };
+    }
+    throw new Error('The selected debug source does not expose a navigable path.');
+  }
+
   function handleMessage(event={}) {
     const session=dapSessions.get(event.sessionId); if (!session) return;
     if (event.type==='ready') { session.ready=true;session.capabilities=event.capabilities||{};dapSessions.set(session.id,session); readyWaiters.get(session.id)?.resolve(); readyWaiters.delete(session.id); return; }
     if (event.type==='error') { const error=new Error(event.error || 'Debug adapter error');session.status='error';readyWaiters.get(session.id)?.reject(error); initializedWaiters.get(session.id)?.reject(error); readyWaiters.delete(session.id); initializedWaiters.delete(session.id);if(runtime().debug?.sessionId===session.id)patchRuntime('debug',{status:'error',error:error.message}); return; }
-    if (event.type==='exit') { session.status='terminated';dapSessions.delete(event.sessionId);if(runtime().debug?.sessionId===session.id)patchRuntime('debug',{status:'terminated',sessionId:'',error:'Debug adapter disconnected; start Debug again to reconnect.'}); return; }
+    if (event.type==='exit') { session.status='terminated';dapSessions.delete(event.sessionId);if(runtime().debug?.sessionId===session.id)patchRuntime('debug',{status:'terminated',sessionId:'',disconnected:true,canRestart:Boolean(session.capabilities?.supportsRestartRequest)||Boolean(runtime().debug?.restartContext?.adapter),error:'Debug adapter disconnected; restart will be attempted when the target recovers.'}); return; }
     const message=event.message || {};
     if (message.type!=='event') return;
     if (message.event==='initialized') { session.initialized=true; dapSessions.set(session.id,session); initializedWaiters.get(session.id)?.resolve(); initializedWaiters.delete(session.id); return; }
     if (message.event==='output') { appendDebugOutput(message.body?.output,message.body?.category || 'console'); return; }
+    if (message.event==='thread') { inspectStop(session,{threadId:message.body?.threadId,reason:'thread'}); return; }
+    if (message.event==='breakpoint') { patchRuntime('debug',{breakpointEvent:message.body || null}); return; }
+    if (message.event==='loadedSource') { inspectLoadedSources(session).then(loadedSources=>patchRuntime('debug',{loadedSources,lastLoadedSourceEvent:message.body || null})).catch(()=>{}); return; }
     if (message.event==='stopped') { inspectStop(session,message.body || {}); return; }
     if (message.event==='continued') { patchRuntime('debug',{status:'running'}); return; }
-    if (message.event==='terminated'||message.event==='exited') { patchRuntime('debug',{status:'terminated'}); BeastStore.addLedger('Debug session terminated.'); }
+    if (message.event==='terminated'||message.event==='exited') { patchRuntime('debug',{status:'terminated',terminatedEvent:message.body || {},canRestart:Boolean(session.capabilities?.supportsRestartRequest)||Boolean(runtime().debug?.restartContext?.adapter)}); BeastStore.addLedger('Debug session terminated.'); }
   }
 
   function handleNotebookKernelMessage(message={}) {
-    if (message.type==='ready') { notebookKernel={...(notebookKernel||{}),status:'ready',pid:message.pid,kernel:message.kernel};notebookKernel?.resolve?.();return; }
-    if (message.type==='fatal'||message.type==='error') { const error=new Error(message.error||'Notebook kernel failed');notebookKernel?.reject?.(error);patchRuntime('notebook',{status:'error',kernelStatus:'error',error:error.message});return; }
-    if (message.type==='exit') { notebookKernel=null;patchRuntime('notebook',{kernelStatus:'stopped'}); }
+    if (message.type==='ready') { notebookKernel={...(notebookKernel||{}),status:'ready',pid:message.pid,kernel:message.kernel};patchRuntime('notebook',{status:'kernel-ready',kernelStatus:'ready',kernel:message.kernel||'beast-python',pid:message.pid||null,lastKernelEventAt:Date.now()});notebookKernel?.resolve?.();return; }
+    if (message.type==='fatal'||message.type==='error') { const error=new Error(message.error||'Notebook kernel failed');notebookKernel?.reject?.(error);patchRuntime('notebook',{status:'error',kernelStatus:'error',error:error.message,lastKernelEventAt:Date.now()});return; }
+    if (message.type==='stderr') { patchRuntime('notebook',{lastKernelStderr:String(message.text||'').slice(-4000),lastKernelEventAt:Date.now()}); return; }
+    if (message.type==='exit') { notebookKernel=null;patchRuntime('notebook',{kernelStatus:'stopped',pid:null,lastKernelEventAt:Date.now()}); }
   }
 
   function handleRemoteForwardMessage(message={}) {
@@ -429,5 +653,9 @@
   desktop()?.onRemoteTerminalMessage?.(handleRemoteTerminalMessage);
   desktop()?.onTerminalSessionMessage?.(handleTerminalSessionMessage);
   desktop()?.onExtensionHostMessage?.(handleExtensionHostMessage);
-  window.BeastIDERuntime={startDebug,startPythonDebug,startLaunchConfiguration,startCompound,loadLaunchConfigurations,debugControl,evaluateDebug,addWatchExpression,removeWatchExpression,runPythonCell,ensureNotebookKernel,stopNotebookKernel,probeRemote,listRemoteFiles,openRemoteWorkspaceFile,searchRemoteWorkspace,reconnectRemote,runRemoteTerminal,refreshRemoteTerminals,startRemoteTerminal,sendRemoteTerminal,stopRemoteTerminal,refreshTerminalSessions,startTerminalSession,sendTerminalSession,stopTerminalSession,refreshRemoteForwards,startRemoteForward,stopRemoteForward,refreshExecutionTargets,setExecutionTarget,inspectDevContainers,startDevContainer,attachDevContainer,stopDevContainer,rebuildDevContainer,devContainerLogs,runDevContainerTerminal,discoverExtensions,grantExtensionCapabilities,setExtensionEnabled,installWorkspaceExtension,uninstallWorkspaceExtension,executeExtensionCommand,stopExtensionHost};
+  window.BeastIDERuntime={startDebug,startPythonDebug,startLaunchConfiguration,startCompound,loadLaunchConfigurations,restartDebug,restartDebugFrame,debugControl,evaluateDebug,addWatchExpression,removeWatchExpression,selectDebugFrame,selectDebugScope,runPythonCell,ensureNotebookKernel,stopNotebookKernel,probeRemote,listRemoteFiles,openRemoteWorkspaceFile,searchRemoteWorkspace,reconnectRemote,runRemoteTerminal,refreshRemoteTerminals,startRemoteTerminal,sendRemoteTerminal,stopRemoteTerminal,refreshTerminalSessions,startTerminalSession,sendTerminalSession,stopTerminalSession,refreshRemoteForwards,startRemoteForward,stopRemoteForward,refreshExecutionTargets,setExecutionTarget,soakExecutionTarget,refreshExecutionTargetSoaks,inspectDevContainers,startDevContainer,attachDevContainer,stopDevContainer,rebuildDevContainer,devContainerLogs,runDevContainerTerminal,discoverExtensions,grantExtensionCapabilities,setExtensionEnabled,installWorkspaceExtension,uninstallWorkspaceExtension,activateExtension,activateExtensionsByEvent,executeExtensionCommand,refreshExtensionHostStatus,refreshIdeServicesSnapshot,refreshWorkspaceIndexSnapshot,stopExtensionHost,openDebugLocation};
+  window.BeastIDERuntime.restartDevContainer=restartDevContainer;
+  window.BeastIDERuntime.remoteHealth=remoteHealth;
+  window.BeastIDERuntime.openDevContainerPort=openDevContainerPort;
+  window.BeastIDERuntime.deployWorkspaceExtensions=deployWorkspaceExtensions;
 })();

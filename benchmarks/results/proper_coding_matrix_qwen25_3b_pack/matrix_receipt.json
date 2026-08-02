@@ -1,0 +1,1569 @@
+{
+  "beast_object_type": "proper_coding_matrix_receipt",
+  "claim_boundary": "Crystal lane proves physical fixture repairs; live lane is sampled and does not claim general coding capability.",
+  "live_sample": 2,
+  "metrics": {
+    "cpu_seconds": 0.127371,
+    "crystal_verified": 20,
+    "live_failures": 1,
+    "live_verified": 0,
+    "provider_calls": 0,
+    "repair_attempts": 1,
+    "wall_seconds": 77.518
+  },
+  "model": "qwen2.5:3b",
+  "receipt_hash": "sha256:0ad81b28640fa734c3611ee467e72a1b256577fcddf57c2905abc4a81ebeab65",
+  "rows": [
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:46598ab4a8bb47f2760aa7f8fd238dfc620c752bdeb93d59b81b7399912e8c0f",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:7712525bc61a3607488d434da376e5e6abf4ba46be507d94dfaa3610ce5932a6",
+            "crystal_ir_digest": "sha256:44ccfa53b462d17a82a300b40f0fe14d0ae3565e78d8bf0309a68948f1d5834d",
+            "mutation_performed": true,
+            "path": "app/kernel/provider_registry.py",
+            "receipt_digest": "sha256:a9487f9966582d6a76d9a14f18488a1a9ed1ebc0ac32abd633950aed5f28850c",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/kernel/provider_registry.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_model_wiring-adapter_for"
+          },
+          {
+            "after_sha256": "sha256:b2f1982ec86903cf933458a0dc124f620cdf521e08061a490473550219c9e322",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:0f831b3ae092419ff1ce2d7bc278bc145b3eaeca9e6eb79cd21fa474929bca59",
+            "crystal_ir_digest": "sha256:4da07e812b0328f4c5d366551a7b80bb53eb7969262eab086b4ea917f1ea60a9",
+            "mutation_performed": true,
+            "path": "app/cli/api.py",
+            "receipt_digest": "sha256:f674db602a5e8d8ed69ee909d39649155ad08f67ac1c69b552aa1e60ba20eb2d",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/cli/api.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_model_wiring-_chat_model_for_provider"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 255.79,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "....                                                                     [100%]\n4 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:7712525bc61a3607488d434da376e5e6abf4ba46be507d94dfaa3610ce5932a6",
+        "old_sha256": "sha256:53c07ba0d183582b2938d5e85260f7c79319240afc6a8b6163d0fe18f08d204f",
+        "target_id": "T:provider_model_wiring:adapter_for"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/kernel/provider_registry.py",
+          "symbol": "adapter_for"
+        },
+        {
+          "path": "app/cli/api.py",
+          "symbol": "_chat_model_for_provider"
+        }
+      ],
+      "task": "provider_model_wiring"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:f28a593d9d948235ca6308b6a8dddd906df402b8c7cc72c75a5577f519a11fc6",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+            "crystal_ir_digest": "sha256:73fcb9c885e80f164011fc45aabdc4f947233958c4502499bc4aa41fda80baf4",
+            "mutation_performed": true,
+            "path": "app/config.py",
+            "receipt_digest": "sha256:3654fa7515d915f15ef67e7061b562293f71f1582f453608280612ad32fb79d7",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/config.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-config_validation_edge_case-parse_bool"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 244.39,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+        "old_sha256": "sha256:f9b64076797dd1c8afedd818ea4312f2db51bb0d8eed6561b42ec929f84fae17",
+        "target_id": "T:config_validation_edge_case:parse_bool"
+      },
+      "live": {
+        "error": "HTTPError: HTTP Error 500: Internal Server Error",
+        "status": "failed"
+      },
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "provider_calls": 0,
+      "raw_ollama": {
+        "error": "HTTPError: HTTP Error 500: Internal Server Error",
+        "mutation_performed": false
+      },
+      "repair": {
+        "attempted": true,
+        "error": "HTTPError: HTTP Error 500: Internal Server Error",
+        "status": "failed"
+      },
+      "targets": [
+        {
+          "path": "app/config.py",
+          "symbol": "parse_bool"
+        }
+      ],
+      "task": "config_validation_edge_case"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:257556f05b077c4c9812bd9f66cffac0065fd30e132214a448e4d478fce2fea3",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "crystal_ir_digest": "sha256:49d80e6bb19fd6c5aea7faae04078e0c7921bc3df09a1912625b6e96f80864f3",
+            "mutation_performed": true,
+            "path": "app/provider_parser.py",
+            "receipt_digest": "sha256:18f6630ecb53ecda7ec55f787a0a0fa27271bf27062738287e3c8bcea1047d62",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/provider_parser.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_id_parser-normalize_provider_id"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 397.61,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+        "old_sha256": "sha256:987e2ad6143e3f4e910ed09bcdd34d079d54b95f420c40aba8509cea679e3839",
+        "target_id": "T:provider_id_parser:normalize_provider_id"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix provider-id normalization for hyphen and space variants.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/provider_parser.py",
+          "symbol": "normalize_provider_id"
+        }
+      ],
+      "task": "provider_id_parser"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:f9cb1e2ff92e8c83a5a5a0a01da7d6828ae81d708af0a3d61949086e17bef5d0",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "crystal_ir_digest": "sha256:4d19f6055d7f0bece410fa9cd8af1e73506e6f5bbbe83b94022f4523bb961924",
+            "mutation_performed": true,
+            "path": "app/math_ops.py",
+            "receipt_digest": "sha256:831dc1206e0c9096dc2d78e98e4b24b8da61417e559e28237ef4b827178b4e2b",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/math_ops.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-multi_file_hidden_decimal_fix-normalize_amount"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 409.71,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+        "old_sha256": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+        "target_id": "T:multi_file_hidden_decimal_fix:normalize_amount"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix invoice totals across service and math helper files while satisfying hidden rounding tests.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/math_ops.py",
+          "symbol": "normalize_amount"
+        }
+      ],
+      "task": "multi_file_hidden_decimal_fix"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:1b935cbe95a542af5809607d85fcbf79ef58e28890247417427cc6d3b28bfb55",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:db52e282501c080a22c652a6ba609271175b777c31c486778a8373f42c5036ec",
+            "crystal_ir_digest": "sha256:0fbeef729b811ee2afa5c831ce225608f14a765a5706dd349d5c0899d77898b1",
+            "mutation_performed": true,
+            "path": "app/tui_state.py",
+            "receipt_digest": "sha256:cf1a0975b382e6994852ba585cece9bc62c2e3fbdb4614a35c80f530b5e867b8",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/tui_state.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-ui_state_collapse_selection-move"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 358.46,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:db52e282501c080a22c652a6ba609271175b777c31c486778a8373f42c5036ec",
+        "old_sha256": "sha256:828f03510af01d6c6e21081d0d4055c5b501953a426a09b76e522faa7807212c",
+        "target_id": "T:ui_state_collapse_selection:move"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix TUI collapse/expand state so selection survives hidden collapsed-move cases.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/tui_state.py",
+          "symbol": "move"
+        }
+      ],
+      "task": "ui_state_collapse_selection"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:21b628bfffc25530f6e30702c1019e3d8875a73f24f97096fe9b83e5106ae49c",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:e8eacc8f370503d2963e40f0c835bb3888f26206c35a4285989ecff1011be940",
+            "crystal_ir_digest": "sha256:db104a0745a0ebfa113724a6bf21e5126ebfce00d6304ffcb1af0b62f4ad0eff",
+            "mutation_performed": true,
+            "path": "app/streaming.py",
+            "receipt_digest": "sha256:a7c460edac29bee3c686d7fa864feb0ba17b81be1e8aff1f64353e91eff16db5",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/streaming.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-async_streaming_empty_chunk-collect_stream"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 416.06,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:e8eacc8f370503d2963e40f0c835bb3888f26206c35a4285989ecff1011be940",
+        "old_sha256": "sha256:e8eacc8f370503d2963e40f0c835bb3888f26206c35a4285989ecff1011be940",
+        "target_id": "T:async_streaming_empty_chunk:collect_stream"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix async streaming collection so empty chunks do not terminate the stream.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/streaming.py",
+          "symbol": "collect_stream"
+        }
+      ],
+      "task": "async_streaming_empty_chunk"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:fb4a99ea404b8c02cc1f1a582411bc35e987fdd1ba71d218307e6d2fb15c6ab2",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "crystal_ir_digest": "sha256:c374dc63bfe716ad2e1f0dc3ca14f1cc0b0959bc12143ed8d30984b45ef22bc3",
+            "mutation_performed": true,
+            "path": "app/provider_config.py",
+            "receipt_digest": "sha256:4bce36b7de271bab3685e8e41be6012e5f41ed73f3129c97febf40f2a134ece3",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/provider_config.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_config_secret_redaction-provider_env"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 284.91,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+        "old_sha256": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+        "target_id": "T:provider_config_secret_redaction:provider_env"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix provider config normalization and never return raw API keys.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/provider_config.py",
+          "symbol": "provider_env"
+        }
+      ],
+      "task": "provider_config_secret_redaction"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:27b9b7a7e08687e0a35ef44e3896c2fde07619617a38d9929f2a7f2ed69715d5",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:17368a3cdd02e1c896935166fe980b5e062b6d9dbc61e8ce8ab16873f45bb23d",
+            "crystal_ir_digest": "sha256:56a4ffd6cefa0f7c88d22fbca9f98b5c9ada7e97b382e93b5d11dae5ff768b43",
+            "mutation_performed": true,
+            "path": "app/rollback.py",
+            "receipt_digest": "sha256:cb73aabdc50913d07ba858b2642dac6fb70a1776eb82251e2750c7a447697c80",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/rollback.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-patch_rollback_created_file-rollback"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 393.36,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:17368a3cdd02e1c896935166fe980b5e062b6d9dbc61e8ce8ab16873f45bb23d",
+        "old_sha256": "sha256:17368a3cdd02e1c896935166fe980b5e062b6d9dbc61e8ce8ab16873f45bb23d",
+        "target_id": "T:patch_rollback_created_file:rollback"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix rollback so created files are deleted and modified files are restored.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/rollback.py",
+          "symbol": "rollback"
+        }
+      ],
+      "task": "patch_rollback_created_file"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:a5d1190eec1c1501916f99c58f2e54c0edd586ae0f2ea94bfd22a6397a9fb490",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "crystal_ir_digest": "sha256:91ff8ea461dab332bc9bd7c4c255766d2c8ad0c6ee5c03f8a5a0f646964127bc",
+            "mutation_performed": true,
+            "path": "app/output_guard.py",
+            "receipt_digest": "sha256:2bf5f3bbd75ccf6a2f0f64c2c6145ad410da6d2f462f9f6c1538b516e28aa7ec",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/output_guard.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-output_governance_malformed_json-parse_provider_output"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 246.93,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+        "old_sha256": "sha256:079cb3acea86b017ab58f11121672ea2f9995b13368a26a39afa2c322b3534e4",
+        "target_id": "T:output_governance_malformed_json:parse_provider_output"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix output governance JSON extraction for markdown/prose failure cases.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/output_guard.py",
+          "symbol": "parse_provider_output"
+        }
+      ],
+      "task": "output_governance_malformed_json"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:62f957240419e3dfd8715cecdec4aa1c9ea12e9603bfede37d8547cd849ab49f",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "crystal_ir_digest": "sha256:0c401565be73cf0084c4e7678fe046d9cfbaf48c94572af105959a96147404a0",
+            "mutation_performed": true,
+            "path": "app/nim_contract.py",
+            "receipt_digest": "sha256:214b6e0c0b0fe3d8d4371247c797a2316d204245f81aa97c661493c9bd657bbc",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/nim_contract.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-nim_refs_only_contract-validate_nim_action"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 234.03,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+        "old_sha256": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+        "target_id": "T:nim_refs_only_contract:validate_nim_action"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix NIM refs-only output validation so anchor refs are used without copied old snippets.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/nim_contract.py",
+          "symbol": "validate_nim_action"
+        }
+      ],
+      "task": "nim_refs_only_contract"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:a753e6c544a464327f1a63135516d8d1a7584ce4baaf6cb22b8b390ffab9e560",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:20411ca8b3e1cdd40211837d5be7fd432c44e5e46b7de79b22da7f396f196513",
+            "crystal_ir_digest": "sha256:911cf5b1147f7afea920e7aefe57a862d8ad00b885f3a6a337992d19fc3aabae",
+            "mutation_performed": true,
+            "path": "app/hash_guard.py",
+            "receipt_digest": "sha256:c32119db3924d408fd58eec74c5de42b9d739dea6bcfd2add15e8418000f95fb",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/hash_guard.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-stale_file_hash_rejection-validate_ref"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 247.48,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:20411ca8b3e1cdd40211837d5be7fd432c44e5e46b7de79b22da7f396f196513",
+        "old_sha256": "sha256:03438acf441606c0c392c554ebf27cd6d19232e7a275bda2e787c358faa2a05d",
+        "target_id": "T:stale_file_hash_rejection:validate_ref"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Reject stale Action IR file references while accepting the current digest.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/hash_guard.py",
+          "symbol": "validate_ref"
+        }
+      ],
+      "task": "stale_file_hash_rejection"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:e17c9abc07bf8569316a1cf0bd409b6cd812dd36b1a407224c97ad4bb99685a0",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:0c5794d8a852af5f3e5ee6c1bb572640956c25da08bbd94cce9d47473467fda1",
+            "crystal_ir_digest": "sha256:fca82d5a84eaf4ebe81445a5523eeaa7736e3484e7ea0c95d4467553d26ab2d1",
+            "mutation_performed": true,
+            "path": "app/session_budget.py",
+            "receipt_digest": "sha256:b9d94c49f1c98781d77b248806ecc2a42e81bde1e70aeb25ad9d04267c4479a0",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/session_budget.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-session_latency_budget_clamp-budgets"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 285.79,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:0c5794d8a852af5f3e5ee6c1bb572640956c25da08bbd94cce9d47473467fda1",
+        "old_sha256": "sha256:0c5794d8a852af5f3e5ee6c1bb572640956c25da08bbd94cce9d47473467fda1",
+        "target_id": "T:session_latency_budget_clamp:budgets"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Clamp BEAST preflight and scout budgets so optional work cannot overrun preflight.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/session_budget.py",
+          "symbol": "budgets"
+        }
+      ],
+      "task": "session_latency_budget_clamp"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:1008b56c21be886c75c9f5a37cb3eb3594b04e76a605ad7bf4af52503572ba94",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:0d03e1b3ccb4f61fc02d9b712c40813584e0452486316136f799a8733f15ba7a",
+            "crystal_ir_digest": "sha256:af8f32c5a5275442857b64905a874fd5e736f43058b036848959753e0f4d3ebb",
+            "mutation_performed": true,
+            "path": "app/route_economist.py",
+            "receipt_digest": "sha256:054a20fd4aa97bd222e74a382f9d869fbc1f2f8c7160cfc21b38698e21f4e92a",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/route_economist.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_economist_role_route-select"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 240.17,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:0d03e1b3ccb4f61fc02d9b712c40813584e0452486316136f799a8733f15ba7a",
+        "old_sha256": "sha256:0d03e1b3ccb4f61fc02d9b712c40813584e0452486316136f799a8733f15ba7a",
+        "target_id": "T:provider_economist_role_route:select"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Select routes by requested role, auth confidence, latency, and hidden-clean economics.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/route_economist.py",
+          "symbol": "select"
+        }
+      ],
+      "task": "provider_economist_role_route"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:52df22c536ac6d92013634fdc2f8e060acfa4f92143f30875094e03ecd230290",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:dba7efd3ec56b05824fe6087849de0028a08bdbb18039ecc266357b11d6ae675",
+            "crystal_ir_digest": "sha256:a3a522688f686e28f88ad3599ba312f090d21f52be5a18a5a0402c1524306c42",
+            "mutation_performed": true,
+            "path": "app/tool_laziness_gate.py",
+            "receipt_digest": "sha256:05ba50dd1065b03d06c99dadad152bf1b615f9488d8b6d05a0ffd699b9662c19",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/tool_laziness_gate.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-tool_laziness_required_override-decisions"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 244.25,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:dba7efd3ec56b05824fe6087849de0028a08bdbb18039ecc266357b11d6ae675",
+        "old_sha256": "sha256:dba7efd3ec56b05824fe6087849de0028a08bdbb18039ecc266357b11d6ae675",
+        "target_id": "T:tool_laziness_required_override:decisions"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Skip learned low-value tools but never suppress a workflow-required tool.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/tool_laziness_gate.py",
+          "symbol": "decisions"
+        }
+      ],
+      "task": "tool_laziness_required_override"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:c163874472d55eb0be76f958c4f24d284292a7080a004f3a9907be5b98ffedc0",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:9760e91daeb5bea09e94f538291e3177585f7a820c0836661534a5c709cd7d1e",
+            "crystal_ir_digest": "sha256:fcf7b54c34a73c022167b3d3e87d668dd4e09ab96e11a651d6adf0cd9b3e0ab2",
+            "mutation_performed": true,
+            "path": "app/commons_gate.py",
+            "receipt_digest": "sha256:bc590ca4ce92e6bf63976b42b6374dbc3861f4cc3ad6bd5fe71d457e996e7dda",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/commons_gate.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-commons_local_approval_gate-adoption"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 234.25,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:9760e91daeb5bea09e94f538291e3177585f7a820c0836661534a5c709cd7d1e",
+        "old_sha256": "sha256:9760e91daeb5bea09e94f538291e3177585f7a820c0836661534a5c709cd7d1e",
+        "target_id": "T:commons_local_approval_gate:adoption"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Keep shared Meta Tool Commons candidates advisory until explicit local approval.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/commons_gate.py",
+          "symbol": "adoption"
+        }
+      ],
+      "task": "commons_local_approval_gate"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:7b87199f840a0e0f0995ba0bee9f5d6230bd036dc38c8fbbeec220bbe02c3e07",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:ad49fa4036f6e3429b7d13b3d927ec08946c3509efdce0acb510335decda4461",
+            "crystal_ir_digest": "sha256:f0613f9e7bbae793d54b7692967baee49a9b93c05a8c10b834dc6f861b57b7e7",
+            "mutation_performed": true,
+            "path": "app/plugin_gate.py",
+            "receipt_digest": "sha256:458c6a57333444397ffe1ecb235342df762b34e80451ed0f9c7112f468b8e6b3",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/plugin_gate.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-plugin_permission_risk_gate-validate"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 244.45,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:ad49fa4036f6e3429b7d13b3d927ec08946c3509efdce0acb510335decda4461",
+        "old_sha256": "sha256:ad49fa4036f6e3429b7d13b3d927ec08946c3509efdce0acb510335decda4461",
+        "target_id": "T:plugin_permission_risk_gate:validate"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Reject plugin manifests whose permissions exceed their declared risk and approval policy.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/plugin_gate.py",
+          "symbol": "validate"
+        }
+      ],
+      "task": "plugin_permission_risk_gate"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:840554938be3865b80534c367fa8d253dfdde3c0a8d9bda0e889b4ac1615bbf5",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:2afaf8790f66fd228692ffa58643e3c643a52f5fc7307a9e2243e9f79e6279a5",
+            "crystal_ir_digest": "sha256:26fb12ef3a644eae86f8768cf6cdf0f9c55a27156b3ebb87437798028d72d91c",
+            "mutation_performed": true,
+            "path": "app/otel_redactor.py",
+            "receipt_digest": "sha256:dbbf1a72797ba50a7f187941b1516b050366c3509ebf8fb027c7d59b8e5bbb44",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/otel_redactor.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-otel_attribute_secret_redaction-safe_attributes"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 266.84,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:2afaf8790f66fd228692ffa58643e3c643a52f5fc7307a9e2243e9f79e6279a5",
+        "old_sha256": "sha256:2afaf8790f66fd228692ffa58643e3c643a52f5fc7307a9e2243e9f79e6279a5",
+        "target_id": "T:otel_attribute_secret_redaction:safe_attributes"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Export useful telemetry attributes without leaking secrets, prompts, code, or paths.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/otel_redactor.py",
+          "symbol": "safe_attributes"
+        }
+      ],
+      "task": "otel_attribute_secret_redaction"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:76a3ee3943c22d60b54fc6d7fc3d898070a05d04054c3de104a4d58e0aec2a53",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:65a383efedd04162392723ae2e20ed2d4de57e8b96ae7b0651f016bebade100d",
+            "crystal_ir_digest": "sha256:671ebb9cb8393d0c4ec54fbcb8a6ef40d0bdf95ca860dc95a008e315b87cd697",
+            "mutation_performed": true,
+            "path": "app/network_probe.py",
+            "receipt_digest": "sha256:e3b897bc742795d3685efa5ecd33fc945b2304a6ccb86a2cc714b0541e657f36",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/network_probe.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-network_probe_failure_classification-classify"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 229.83,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:65a383efedd04162392723ae2e20ed2d4de57e8b96ae7b0651f016bebade100d",
+        "old_sha256": "sha256:65a383efedd04162392723ae2e20ed2d4de57e8b96ae7b0651f016bebade100d",
+        "target_id": "T:network_probe_failure_classification:classify"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Separate DNS, connect, TLS, first-byte, and application failures from provider capability.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/network_probe.py",
+          "symbol": "classify"
+        }
+      ],
+      "task": "network_probe_failure_classification"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:453722836cdf4a4f6a8013773f2935b87c8d41c277e68660632e6477a5e881e5",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:550cd888ec87278d682cc647b892d0c4afff907feb8cb13ac2472c9907a68f5e",
+            "crystal_ir_digest": "sha256:8658db8fd3ab3171087ab212b68ae0d97a5c1abc509843ed6e98ceb8bc79a03e",
+            "mutation_performed": true,
+            "path": "app/pr_envelope.py",
+            "receipt_digest": "sha256:0cef2de6ae6b17ed2f9da6bb546ef384293d4f32aa1d57f81702907ad7f6d252",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/pr_envelope.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-github_pr_task_envelope-build"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 234.51,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:550cd888ec87278d682cc647b892d0c4afff907feb8cb13ac2472c9907a68f5e",
+        "old_sha256": "sha256:550cd888ec87278d682cc647b892d0c4afff907feb8cb13ac2472c9907a68f5e",
+        "target_id": "T:github_pr_task_envelope:build"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Turn PR files, failed checks, and review comments into a bounded task envelope.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/pr_envelope.py",
+          "symbol": "build"
+        }
+      ],
+      "task": "github_pr_task_envelope"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:966bf43a8694c7e47baa7f73c0525dc15345ddf2d1ef7258ff8c5e0b03c78d22",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:70ea304f16b802771859dceb07c45944bd098c8a3cb76b7becb9e6b90c29d2de",
+            "crystal_ir_digest": "sha256:759760a0c3d1894f45ad351a28bc45f42465695324d5a79d412edb49a2a461c7",
+            "mutation_performed": true,
+            "path": "app/quality_matrix.py",
+            "receipt_digest": "sha256:411ee6fa7a3d31338b3f6d9d5983483578ea42506aa358798b8e3168869811ea",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/quality_matrix.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-quality_cascade_language_matrix-checks"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 258.08,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:70ea304f16b802771859dceb07c45944bd098c8a3cb76b7becb9e6b90c29d2de",
+        "old_sha256": "sha256:70ea304f16b802771859dceb07c45944bd098c8a3cb76b7becb9e6b90c29d2de",
+        "target_id": "T:quality_cascade_language_matrix:checks"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Select syntax, test, and packaging checks across Python, JS, Java, C#, and HTML projects.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/quality_matrix.py",
+          "symbol": "checks"
+        }
+      ],
+      "task": "quality_cascade_language_matrix"
+    }
+  ],
+  "tasks": 20,
+  "version": "1.0"
+}

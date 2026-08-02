@@ -14,7 +14,7 @@ Run a workspace-scoped BEAST Python Jupyter kernel behind a Python JSON-lines re
 
 ## Trade-offs
 
-The first kernel supports Python and text-stream outputs. It does not yet persist `.ipynb` documents or render rich notebook MIME types. The kernel uses local loopback transport internally; this is contained within the main-process boundary and never exposed to the renderer.
+The first kernel supports Python, persistent execution state, normalized Jupyter MIME bundles, `.ipynb` output persistence, and trust-aware rendering for text, HTML, Markdown, JSON, PNG/JPEG, and SVG outputs. Interactive widgets and full VS Code notebook contribution APIs remain future work. The kernel uses local loopback transport internally; this is contained within the main-process boundary and never exposed to the renderer.
 
 ## Consequences
 

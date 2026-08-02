@@ -91,8 +91,46 @@ Interpretation:
   usable DPDK ethdev was discovered. That can mean no NIC is bound, the NIC is
   unsupported by the loaded PMDs, IOMMU is not enabled, or hugepages were not
   reserved.
-- AF_XDP `opened: true` means libxdp/libbpf and interface lookup are ready. Full
-  packet IO still requires an XDP-capable interface and privileges.
+- AF_XDP `opened: true` means libxdp/libbpf and interface lookup are ready. It
+  does not prove packet IO.
+
+## 3a. Run the native AF_XDP worker in the X3 RX namespace
+
+The X3 worker is native C, not a UDP substitute. It compiles the XSKMAP redirect
+program and worker, allocates UMEM, populates the fill ring, creates the AF_XDP
+RX socket, attaches its XDP program with `UPDATE_IF_NOEXIST`, and detaches that
+program on exit. It refuses to replace an XDP program already owned by the
+namespace.
+
+    python3 scripts/x3_lab_benchmark.py --mode af_xdp_copy --duration 10 --packet-size 512 --rx-interface eth0 --generic-xdp
+
+For a NIC and driver that support zero-copy, request it explicitly:
+
+    python3 scripts/x3_lab_benchmark.py --mode af_xdp_zero_copy --duration 10 --packet-size 512 --rx-interface eth0
+
+The commands enter `beast-x3-rx` with `ip netns exec`; the UDP sender remains
+in `beast-x3-tx`. The JSON result includes `packets_rx`, `bytes_rx`,
+`xdp_packets_seen`, `xdp_socket_misses`, and `fill_starvation`. AF_XDP is a
+one-way receive benchmark today, so it intentionally does not report made-up
+request/response latency.
+
+For the disposable veth topology, create the isolated namespaces first and
+write a validated receipt after the copy-mode run:
+
+    sudo scripts/x3_lab_netns.sh up
+    sudo scripts/x3_af_xdp_proof.sh --duration 10 --packet-size 512 --packets-per-second 1000
+
+With the namespaces still running, measure native AF_XDP RX/TX echo latency:
+
+    sudo scripts/x3_af_xdp_echo_proof.sh --duration 10 --packet-size 512 --packets-per-second 1000
+
+## Local Forge KV proof
+
+This proof compares a fresh Ollama prompt against a continuation using the
+engine's returned native context. It writes a receipt only when the continuation
+actually supplied and returned native context and reduced prompt evaluation.
+
+    scripts/forge_kv_local_proof.sh --model qwen2.5:0.5b
 
 On the current lab host, AF_PACKET TPACKET_V3 opens successfully on `lo`.
 DPDK EAL initializes and common PMDs are loaded, but the available RTL8111 NIC

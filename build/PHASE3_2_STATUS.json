@@ -1,0 +1,15 @@
+{
+  "phase": "3.2",
+  "name": "Append-only Evidence Ledger",
+  "status": "complete",
+  "architecture_checks": {"passed": 10, "total": 10},
+  "focused_tests": {"passed": 9, "failed": 0},
+  "combined_regressions": {"passed": 14, "failed": 0},
+  "guarantees": [
+    "immutable evidence objects are not edited",
+    "lifecycle facts are sequence-bound and hash-chained",
+    "revoked evidence cannot be reused",
+    "supersession requires an existing successor",
+    "tampering is independently detectable"
+  ]
+}

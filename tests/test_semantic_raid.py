@@ -25,6 +25,22 @@ def test_semantic_raid_stores_redundant_shards_and_repairs_corruption(tmp_path):
     assert after["ok"] is True
 
 
+def test_semantic_raid_accepts_only_complete_context_packets(tmp_path):
+    store = SemanticRaidStore(tmp_path / "raid")
+    packet = {
+        "beast_object_type": "context_packet",
+        "packet_id": "pkt_test",
+        "handoff_hash": "sha256:test",
+        "goal": "Change the selected file",
+        "included_evidence": [{"kind": "file_snippet", "source": "service.py", "content": "value = 1"}],
+    }
+
+    shard = store.store_context_packet(packet)
+
+    assert shard.artifact_type == "context_packet"
+    assert store.integrity_report()["ok"] is True
+
+
 def test_artifact_fossil_layers_replay_promotion_lineage(tmp_path):
     fossils = ArtifactFossilLayerStore(tmp_path / "fossils")
     first = fossils.checkpoint(

@@ -10,6 +10,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
+import subprocess
+import tempfile
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -371,7 +374,7 @@ class GenerativeCrystalStore:
         path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
-def run_phase5_generative_crystal_gauntlet(*, store: Optional[GenerativeCrystalStore] = None) -> Dict[str, Any]:
+def run_mocked_crystal_gauntlet(*, store: Optional[GenerativeCrystalStore] = None) -> Dict[str, Any]:
     store = store or GenerativeCrystalStore()
     context = {
         "task_family": "route_diagnostics",
@@ -448,3 +451,81 @@ def run_phase5_generative_crystal_gauntlet(*, store: Optional[GenerativeCrystalS
     latest = store.root / "proof_local_phase5_generative_crystals_latest.json"
     store._write_json(latest, receipt)
     return receipt
+
+
+run_phase5_generative_crystal_gauntlet = run_mocked_crystal_gauntlet
+
+
+def run_dynamic_crystal_gauntlet(file_path_to_validate: str, new_content: str, *, store: Optional[GenerativeCrystalStore] = None) -> Dict[str, Any]:
+    """
+    Runs a validation gauntlet for a code change in a dynamic shadow container.
+    """
+    store = store or GenerativeCrystalStore()
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    shadow_root = Path(tempfile.mkdtemp(prefix="beast_shadow_"))
+
+    try:
+        # 1. Create a shadow copy of the project
+        print(f"Creating shadow copy of {project_root} at {shadow_root}...")
+        ignore = shutil.ignore_patterns(
+            ".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache",
+            "*.pyc", "*.log", "node_modules", "build", "dist",
+            "desktop-ide_*", ".local", ".vscode"
+        )
+        shutil.copytree(project_root, shadow_root, ignore=ignore, dirs_exist_ok=True)
+        print("Shadow copy created.")
+
+        # 2. Apply the change in the shadow copy
+        # The file_path_to_validate is relative to the project root
+        shadow_file_path = shadow_root / file_path_to_validate
+        print(f"Applying changes to {shadow_file_path}...")
+        if not shadow_file_path.parent.exists():
+            shadow_file_path.parent.mkdir(parents=True)
+        shadow_file_path.write_text(new_content, encoding="utf-8")
+        print("Changes applied.")
+
+        # 3. Run tests in a Docker container
+        docker_image = "python:3.11-slim"
+        container_project_path = "/app"
+        
+        print(f"Running tests in Docker container using image {docker_image}...")
+        docker_command = [
+            "docker", "run", "--rm",
+            "-v", f"{shadow_root}:{container_project_path}",
+            "-w", str(container_project_path),
+            docker_image,
+            "sh", "-c", "pip install -q -r requirements.txt && pytest"
+        ]
+        
+        result = subprocess.run(docker_command, capture_output=True, text=True, timeout=600)
+
+        passed = result.returncode == 0
+
+        # 4. Record the result (simplified for now)
+        print("--- Dynamic Crystal Gauntlet Result ---")
+        print(f"File: {file_path_to_validate}")
+        print(f"Tests Passed: {passed}")
+        if not passed:
+            print(f"Exit Code: {result.returncode}")
+            print("STDOUT:")
+            print(result.stdout[-1000:])
+            print("STDERR:")
+            print(result.stderr[-1000:])
+        print("------------------------------------")
+
+        return {
+             "beast_object_type": "proof_local_dynamic_crystal_gauntlet_receipt",
+             "version": "1.0",
+             "status": "passed" if passed else "failed",
+             "file_validated": file_path_to_validate,
+             "exit_code": result.returncode,
+             "stdout": result.stdout,
+             "stderr": result.stderr,
+        }
+
+    finally:
+        # 5. Clean up the shadow directory
+        print(f"Cleaning up shadow directory {shadow_root}...")
+        shutil.rmtree(shadow_root)
+        print("Cleanup complete.")
+

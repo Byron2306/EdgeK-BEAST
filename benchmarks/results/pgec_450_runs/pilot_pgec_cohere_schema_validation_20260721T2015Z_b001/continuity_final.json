@@ -1,0 +1,77 @@
+{
+  "batch_index": 1,
+  "beast_object_type": "pgec_450_continuity_final",
+  "blocked_reasons": [],
+  "contiguous_policy_sequence": true,
+  "experiment_id": "pgec_cohere_schema_validation_20260721T2015Z",
+  "families": {
+    "provider_alias_normalization": {
+      "contiguous_policy_sequence": true,
+      "mutation_challenge_at": 10,
+      "observed_occurrences": [
+        1,
+        2,
+        3,
+        5,
+        10
+      ],
+      "passed": true,
+      "preflight_family": {
+        "applicability_fingerprint": "sha256:03191af4c2601b3d400a13a042efd800f63150fa7725a5608f6942b0fb225028",
+        "candidate_state": "observed",
+        "contiguous_prefix": [],
+        "crystal_key": "sha256:9b419270b69800b5c5cc1cd62605120bb8a4ad1afac990b1c6305c7f186d6f4e",
+        "family": "provider_alias_normalization",
+        "family_fingerprint": "sha256:1381e65f4ed89270f8ee670d1255a76687da1be4e2fae94cf38742f0b403ba82",
+        "next_expected_occurrence": 1,
+        "policy_generation": "pgec_450_policy_v1",
+        "prior_occurrences": [],
+        "prior_occurrences_found": 0,
+        "reuse_windows": {
+          "active_reuse_ready": false,
+          "mutation_challenge_seen": false,
+          "shadow_reuse_ready": false
+        },
+        "tool_schema_digest": "20d802ec8076b346de8c034c60652af1ca5f4cc1ef4ff45d881b8fb7988cc8db",
+        "verifier_contract_digest": "4864f7a2f9d586360c0b89c86416c96f0aad55d6ef8a2621fbb29bf7acdbb2f5",
+        "workspace_domain": "edgek_beast_repo"
+      },
+      "reuse_at": [
+        3,
+        5
+      ],
+      "same_family_fingerprint": true,
+      "same_state_root": true,
+      "same_verifier_contract": true
+    }
+  },
+  "family": "provider_alias_normalization",
+  "generated_at": "2026-07-21T20:22:01Z",
+  "lane_state_dirs": {
+    "beast_no_compute_governor": "benchmarks/state/pgec_450_cohere_schema_validation/cohere/governed_no_pgec/provider_alias_normalization",
+    "full_beast_compute_governor": "benchmarks/state/pgec_450_cohere_schema_validation/cohere/full_pgec/provider_alias_normalization",
+    "raw": "benchmarks/state/pgec_450_cohere_schema_validation/cohere/raw/provider_alias_normalization"
+  },
+  "mutation_challenge_at": 10,
+  "observed_occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "passed": true,
+  "policy_generation": "pgec_450_policy_v1",
+  "preflight_ref": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_cohere_schema_validation_20260721T2015Z_b001/continuity_preflight.json",
+  "provider": "cohere",
+  "reuse_at": [
+    3,
+    5
+  ],
+  "run_id": "pgec_cohere_schema_validation_20260721T2015Z",
+  "same_family_fingerprint": true,
+  "same_state_root": true,
+  "same_verifier_contract": true,
+  "state_dir": "benchmarks/state/pgec_450_cohere_schema_validation/cohere",
+  "version": "1.1"
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgek.ai/schemas/beast-parity-contract.v1.json",
+  "title": "BEAST Parity Contract v1",
+  "type": "object",
+  "required": ["contract_id", "schema_version", "product", "verification_classes", "tiers", "capabilities"],
+  "properties": {
+    "contract_id": {"const": "beast.parity.v1"},
+    "schema_version": {"const": 1},
+    "product": {"type": "string", "minLength": 1},
+    "verification_classes": {"type": "object", "minProperties": 1},
+    "tiers": {"type": "object", "minProperties": 1},
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "tier", "owner", "targets", "status", "verification"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$"},
+          "tier": {"type": "string"},
+          "owner": {"type": "string"},
+          "targets": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "status": {"enum": ["planned", "partial", "operational", "deprecated"]},
+          "verification": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

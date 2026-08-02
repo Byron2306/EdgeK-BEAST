@@ -1,0 +1,106 @@
+{
+  "authority": "accounting_and_lifecycle_only",
+  "break_even_observed": true,
+  "capsules": [
+    {
+      "avoided_recompile_ms": 8.0,
+      "break_even": false,
+      "capsule_id": "capsule_c2612e8fcb6e4ac993fbea0d50524ea9",
+      "credit_eligible": false,
+      "economics_digest": "sha256:8ce9b90c076e591ceffa45ba4a3fe0bfb52bfccdcdfa04c28b2103659751a51c",
+      "net_value_ms": -90.0,
+      "preparation_debt_ms": 80.0,
+      "proof_critical": false,
+      "residency_cost_ms": 12.0,
+      "retained_after_pressure": false,
+      "reuse_count": 1,
+      "role": "negative",
+      "verification_cost_ms": 6.0
+    },
+    {
+      "avoided_recompile_ms": 160.0,
+      "break_even": true,
+      "capsule_id": "capsule_982052f8bd9f409592f5eb79385bf401",
+      "credit_eligible": true,
+      "economics_digest": "sha256:f387131897a7501adc236684874f9a425b4fd16682138b63e0313c0217c7707a",
+      "net_value_ms": 122.0,
+      "preparation_debt_ms": 25.0,
+      "proof_critical": false,
+      "residency_cost_ms": 5.0,
+      "retained_after_pressure": true,
+      "reuse_count": 4,
+      "role": "profitable",
+      "verification_cost_ms": 8.0
+    },
+    {
+      "avoided_recompile_ms": 5.0,
+      "break_even": false,
+      "capsule_id": "capsule_f03f55d6f2694b3b97c2584c0cda6046",
+      "credit_eligible": false,
+      "economics_digest": "sha256:23dbd9286e2ccbd4a9c1ae85bdcdc41d7955f42761cca858945feb0f6513ce5a",
+      "net_value_ms": -68.0,
+      "preparation_debt_ms": 60.0,
+      "proof_critical": true,
+      "residency_cost_ms": 8.0,
+      "retained_after_pressure": true,
+      "reuse_count": 1,
+      "role": "proof-critical",
+      "verification_cost_ms": 5.0
+    }
+  ],
+  "closure_digest": "sha256:5b684c4908247549fe740930fd72563d81268399e7fbdae269d1a2322d93d82f",
+  "credit_before_break_even": false,
+  "event_count": 14,
+  "lifecycle_receipts": [
+    {
+      "evicted_capsules": [],
+      "pressure_level": "low",
+      "protected_capsules": [
+        "capsule_f03f55d6f2694b3b97c2584c0cda6046"
+      ],
+      "speculative_creation_allowed": true
+    },
+    {
+      "evicted_capsules": [],
+      "pressure_level": "rising",
+      "protected_capsules": [
+        "capsule_f03f55d6f2694b3b97c2584c0cda6046"
+      ],
+      "speculative_creation_allowed": false
+    },
+    {
+      "evicted_capsules": [
+        "capsule_c2612e8fcb6e4ac993fbea0d50524ea9"
+      ],
+      "pressure_level": "high",
+      "protected_capsules": [
+        "capsule_982052f8bd9f409592f5eb79385bf401",
+        "capsule_f03f55d6f2694b3b97c2584c0cda6046"
+      ],
+      "speculative_creation_allowed": false
+    },
+    {
+      "evicted_capsules": [],
+      "pressure_level": "critical",
+      "protected_capsules": [
+        "capsule_982052f8bd9f409592f5eb79385bf401",
+        "capsule_f03f55d6f2694b3b97c2584c0cda6046"
+      ],
+      "speculative_creation_allowed": false
+    }
+  ],
+  "negative_capsule_evicted": true,
+  "preparation_debt_observed": true,
+  "pressure_sequence": [
+    "low",
+    "rising",
+    "high",
+    "critical"
+  ],
+  "privacy_domain": "workspace:edgek-beast",
+  "profitable_capsule_retained": true,
+  "proof_critical_capsule_retained": true,
+  "raw_payload_retained": false,
+  "status": "closed",
+  "workspace_id": "edgek-beast"
+}

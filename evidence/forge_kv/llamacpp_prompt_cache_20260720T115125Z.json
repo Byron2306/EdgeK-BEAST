@@ -1,0 +1,56 @@
+{
+  "authority": "engine_local_prompt_cache_only",
+  "beast_object_type": "forge_kv_llamacpp_prompt_cache_proof",
+  "created_at": 1784548285.5697787,
+  "engine": "llama.cpp",
+  "portable_raw_kv": false,
+  "prefix_digest": "sha256:b51564b6a961d4d676bf62544420f7cae75d00331b5400116942af439088e5c0",
+  "proof_scope": "Local llama.cpp server prompt cache; no raw KV export and no external publication.",
+  "trials": [
+    {
+      "baseline": {
+        "cache_n": 0,
+        "predicted_n": 16,
+        "prompt_ms": 14118.835,
+        "prompt_n": 971
+      },
+      "cached": {
+        "cache_n": 962,
+        "predicted_n": 16,
+        "prompt_ms": 250.026,
+        "prompt_n": 9
+      }
+    },
+    {
+      "baseline": {
+        "cache_n": 0,
+        "predicted_n": 16,
+        "prompt_ms": 12016.502,
+        "prompt_n": 971
+      },
+      "cached": {
+        "cache_n": 962,
+        "predicted_n": 16,
+        "prompt_ms": 165.894,
+        "prompt_n": 9
+      }
+    },
+    {
+      "baseline": {
+        "cache_n": 0,
+        "predicted_n": 16,
+        "prompt_ms": 14713.209,
+        "prompt_n": 971
+      },
+      "cached": {
+        "cache_n": 962,
+        "predicted_n": 16,
+        "prompt_ms": 262.579,
+        "prompt_n": 9
+      }
+    }
+  ],
+  "url": "http://127.0.0.1:11435",
+  "validated": true,
+  "version": "1.0"
+}

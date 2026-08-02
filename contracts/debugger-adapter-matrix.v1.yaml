@@ -1,0 +1,15 @@
+matrix_id: beast.debuggers.v1
+schema_version: 1
+adapters:
+  - id: debugpy
+    language: python
+    status: operational
+    required_flows: [initialize, launch, breakpoints, configurationDone, stopped, variables, continue, stop]
+  - id: delve
+    language: go
+    status: conditional
+    required_flows: [initialize, launch, breakpoints, stopped, continue, stop]
+  - id: lldb
+    language: cpp-rust
+    status: conditional
+    required_flows: [initialize, launch, breakpoints, stopped, continue, stop]

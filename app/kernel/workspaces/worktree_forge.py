@@ -44,9 +44,32 @@ class WorktreeForge:
     """Create and track isolated git worktrees for risky BEAST missions."""
 
     def __init__(self, workspace_root: str | Path):
-        self.workspace_root = Path(workspace_root).expanduser().resolve()
+        requested_root = Path(workspace_root).expanduser().resolve()
+        # A Mission can be launched while the editor is focused on a prior
+        # mission worktree.  Creating ``.beast/worktrees`` relative to that
+        # path recursively nests worktrees and eventually makes git operations
+        # look broken.  The worktree registry belongs to the primary worktree
+        # of the repository, regardless of the focused editor folder.
+        self.requested_workspace_root = requested_root
+        self.workspace_root = self._primary_worktree_root(requested_root)
         self.store_dir = self.workspace_root / ".beast" / "worktrees"
         self.registry_path = self.store_dir / "tasks.json"
+
+    @staticmethod
+    def _primary_worktree_root(candidate: Path) -> Path:
+        try:
+            result = subprocess.run(
+                ["git", "worktree", "list", "--porcelain"],
+                cwd=str(candidate), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                text=True, timeout=5.0, check=False,
+            )
+            if result.returncode == 0:
+                for line in result.stdout.splitlines():
+                    if line.startswith("worktree "):
+                        return Path(line[len("worktree "):]).expanduser().resolve()
+        except Exception:
+            pass
+        return candidate
 
     def list(self) -> Dict[str, Any]:
         registry = self._load()
@@ -54,6 +77,7 @@ class WorktreeForge:
             "beast_object_type": "beast_worktree_registry",
             "version": "1.0",
             "workspace_root": str(self.workspace_root),
+            "requested_workspace_root": str(self.requested_workspace_root),
             "count": len(registry.get("tasks") or []),
             "tasks": registry.get("tasks") or [],
         }
@@ -86,6 +110,7 @@ class WorktreeForge:
             "base_ref": base_ref,
             "base_commit": base_commit.stdout if base_commit.ok else "",
             "workspace_root": str(self.workspace_root),
+            "requested_workspace_root": str(self.requested_workspace_root),
             "worktree_path": str(worktree_path),
             "status": "creating",
             "created_at": _now(),

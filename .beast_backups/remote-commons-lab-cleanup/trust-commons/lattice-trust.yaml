@@ -1,0 +1,11 @@
+beast_object_type: crystal_lattice_trust_store
+version: '1.0'
+lattice_authorities:
+- authority: edgek-crystal-compute-lattice
+  key_id: edgek-lattice-lab-v1
+  public_key_path: lattice-authority.pub.pem
+  policy_generations:
+  - crystal-lattice:commons-lab-v1
+  accepted_lattice_heads:
+  - sha256:f3c65391ed7992d3e0d19b124115fe475162fe9674f58b676aac752364cf1077
+  minimum_checkpoint_count: 9

@@ -34,6 +34,7 @@ from app.kernel.compute.physical_crystal_lifecycle import (
 from app.kernel.compute.crystal_replay_lab import CrystalReplayLaboratory, ReplayLaboratoryReceipt
 from app.kernel.compute.typed_crystal_ir import ExecutableCrystalIR, TypedCrystalNode
 from app.kernel.compute.streaming_interceptor import StreamingComputeInterceptor, StreamingInterceptionEngine
+from app.kernel.observability.telemetry_outbox import TelemetryOutbox
 from app.kernel.compute.typed_crystal_interpreter import TypedCrystalInterpreter
 from app.kernel.evidence.control_graph import ControlEvidenceGraph
 from app.kernel.governance.compute_governor import ComputeGovernor
@@ -177,6 +178,7 @@ class ComputePlane:
                  provider_fallback: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
                  production_routing_mode: str = "explicit_enforce",
                  isolated_disk_cleanup_delegate: Callable[..., Mapping[str, Any]] | None = None):
+        configured_root = root is not None or bool(os.environ.get("BEAST_COMPUTE_PLANE_ROOT", "").strip())
         if root is None:
             configured = os.environ.get("BEAST_COMPUTE_PLANE_ROOT", "").strip()
             state_root = os.environ.get("BEAST_STATE_ROOT", "").strip()
@@ -186,7 +188,23 @@ class ComputePlane:
                 else xdg_state / "beast" / "compute_plane"
             )
         self.root = Path(root)
-        self.root.mkdir(parents=True, exist_ok=True)
+        try:
+            self.root.mkdir(parents=True, exist_ok=True)
+            # Directory existence is not sufficient in managed sandboxes;
+            # verify that the scheduler can create its lock/state files.
+            probe = self.root / ".beast-write-probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+        except OSError:
+            if configured_root:
+                raise
+            # Some managed IDE/test sandboxes expose the user's XDG state path
+            # as read-only. Keep durable compute state in the repository-owned
+            # BEAST area rather than failing during import or leaving a phantom
+            # scheduler-lock diagnosis behind.
+            fallback = Path(__file__).resolve().parents[3] / ".beast" / "state" / "compute_plane"
+            fallback.mkdir(parents=True, exist_ok=True)
+            self.root = fallback
         self.governor = governor or ComputeGovernor()
         if production_routing_mode not in {"explicit_enforce", "disabled"}:
             raise ValueError("production routing mode must be explicit_enforce or disabled")
@@ -195,6 +213,7 @@ class ComputePlane:
             isolated_disk_cleanup_delegate or self._unconfigured_disk_cleanup_delegate
         )
         self.ledger = ComputeLedger(str(self.root / "compute_ledger.db"))
+        self.telemetry_outbox = TelemetryOutbox(self.root / "telemetry_outbox")
         self.inference_interceptor = InferenceComputeInterceptor(
             governor=self.governor, ledger=self.ledger, outcome_store=default_outcome_store()
         )
@@ -464,6 +483,9 @@ class ComputePlane:
             workspace_identity=workspace_identity, initial_state_hash=initial_state,
             outcome={"status": "verified_success", "effect_hash": execution.receipt_digest},
             resources={"provider_calls": float(execution.provider_calls_during_execution or 0)})
+        reuse_witness = self.physical_registry.record_verified_reuse(
+            crystal.identity, proof_digest=proof.proof_digest, execution_digest=execution.receipt_digest,
+        )
         displacement = self.evidence_graph.add("production_displacement_observation", {
             "mission_id": mission_id, "crystal_id": crystal.identity,
             "provider_calls_during_execution": execution.provider_calls_during_execution,
@@ -486,6 +508,7 @@ class ComputePlane:
             "authorization_receipt_digest": authorization.receipt_digest,
             "capsule_receipt_id": capsule["receipt_id"], "execution_receipt_digest": execution.receipt_digest,
             "episode_hash": episode.episode_hash, "displacement_node": displacement.node_id,
+            "verified_reuse_receipt": reuse_witness["receipt_digest"],
             "execution_latency_ms": execution_latency_ms,
             "provider_call_witness": provider_witness,
             "delegated_isolation_node": delegate_node.node_id if delegate_node else "",
@@ -597,6 +620,7 @@ class ComputePlane:
 
     def complete(self, interception: Any, **kwargs: Any) -> Any:
         receipt = self.inference_interceptor.complete(interception, **kwargs)
+        self.telemetry_outbox.enqueue_compute_receipt(receipt)
         with self._lock:
             attempt = self._attempts[self._interception_attempts.pop(id(interception))]
             attempt.phases.extend(("execute", "verify", "complete"))

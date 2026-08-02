@@ -7,12 +7,13 @@ from typing import Any, Dict
 TELEMETRY_OUTBOX = Path("~/.beast/outbox/telemetry").expanduser()
 
 class TelemetryOutbox:
-    def __init__(self):
-        TELEMETRY_OUTBOX.mkdir(parents=True, exist_ok=True)
+    def __init__(self, root: Path | str | None = None):
+        self.root = Path(root).expanduser() if root is not None else TELEMETRY_OUTBOX
+        self.root.mkdir(parents=True, exist_ok=True)
 
     def enqueue(self, exporter: str, data: Dict[str, Any]):
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-        filename = TELEMETRY_OUTBOX / f"{exporter}_{timestamp}_{os.urandom(4).hex()}.json"
+        filename = self.root / f"{exporter}_{timestamp}_{os.urandom(4).hex()}.json"
         with open(filename, "w") as f:
             json.dump(data, f, indent=2)
 
@@ -21,3 +22,7 @@ class TelemetryOutbox:
 
     def enqueue_execution(self, request: Any, result: Dict[str, Any], receipt: Dict[str, Any]):
         self.enqueue("execution", {"request": request.to_dict(), "result": result, "receipt": receipt})
+
+    def enqueue_compute_receipt(self, receipt: Any) -> None:
+        payload = receipt.to_dict() if hasattr(receipt, "to_dict") else dict(receipt)
+        self.enqueue("compute_receipt", payload)

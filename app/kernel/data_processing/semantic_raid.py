@@ -111,6 +111,34 @@ class SemanticRaidStore:
         _atomic_json(self.manifest_path, manifest)
         return shard
 
+    def store_context_packet(self, packet: Dict[str, Any], *, value_score: float = 0.7) -> SemanticRaidShard:
+        """Persist a bounded Context Packet as redundant, integrity-checked evidence.
+
+        Context packets are already scope- and sensitivity-filtered by their
+        builder.  This method refuses arbitrary payloads so callers cannot
+        accidentally label an unbounded repository dump as a packet.
+        """
+        if str(packet.get("beast_object_type") or "") != "context_packet":
+            raise ValueError("Semantic RAID accepts only a ContextPacket here")
+        if not str(packet.get("packet_id") or "") or not str(packet.get("handoff_hash") or ""):
+            raise ValueError("ContextPacket must have packet_id and handoff_hash")
+        return self.store_shard(
+            "context_packet",
+            {
+                "packet_id": packet["packet_id"],
+                "handoff_hash": packet["handoff_hash"],
+                "task_id": packet.get("task_id"),
+                "task_class": packet.get("task_class"),
+                "goal": packet.get("goal"),
+                "context_budget": packet.get("context_budget") or {},
+                "included_evidence": packet.get("included_evidence") or [],
+                "excluded_evidence": packet.get("excluded_evidence") or [],
+                "workspace_context": packet.get("workspace_context") or {},
+                "packet_stats": packet.get("packet_stats") or {},
+            },
+            value_score=value_score,
+        )
+
     def integrity_report(self) -> Dict[str, Any]:
         manifest = self._manifest()
         corrupt: List[Dict[str, str]] = []

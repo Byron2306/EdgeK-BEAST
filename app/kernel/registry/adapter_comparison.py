@@ -14,7 +14,10 @@ import resource
 import shlex
 import subprocess
 import sys
+import threading
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -91,9 +94,14 @@ def evaluate_proposal(parsed: Dict[str, Any], task: Dict[str, Any]) -> Dict[str,
 
 
 class AdapterComparisonGauntlet:
-    def __init__(self, output_root: Optional[Path] = None):
+    def __init__(self, output_root: Optional[Path] = None, *, base_model: str = "qwen2.5:3b", wrapper_model: str = "beast-crystal-qwen25-3b:latest", ollama_concurrency: int = 1):
         self.output_root = Path(output_root or "benchmarks/results/adapter_comparison")
         self.output_root.mkdir(parents=True, exist_ok=True)
+        self.base_model = base_model
+        self.wrapper_model = wrapper_model
+        # A 3B CPU model is memory-bound. Pool orchestration, not concurrent
+        # generations, is the safe default; callers may raise this explicitly.
+        self._ollama_slots = threading.BoundedSemaphore(max(1, int(ollama_concurrency)))
 
     def run(
         self,
@@ -104,8 +112,8 @@ class AdapterComparisonGauntlet:
         live_cloud: bool = False,
     ) -> Dict[str, Any]:
         lanes = [
-            {"lane_id": "baseline_qwen_05b", "kind": "ollama", "model": "qwen2.5:0.5b"},
-            {"lane_id": "beast_modelfile_wrapper", "kind": "ollama", "model": "beast-crystal-qwen25-05b:latest"},
+            {"lane_id": "baseline_local_model", "kind": "ollama", "model": self.base_model},
+            {"lane_id": "beast_modelfile_wrapper", "kind": "ollama", "model": self.wrapper_model},
             {"lane_id": "trained_beast_lora_adapter", "kind": "loaded_lora_runtime", "model": "qwen_lora_fast_smoke"},
             {"lane_id": "crystal_only_route", "kind": "crystal_only", "model": "crystal_lora_route_head+semantic_pages"},
             {"lane_id": "cloud_provider_route", "kind": "cloud_provider", "model": "external_provider_fallback"},
@@ -122,6 +130,10 @@ class AdapterComparisonGauntlet:
                     live_cloud=live_cloud,
                 ))
         summary = self._summarize(results)
+        # Preserve the historical report key for dashboards while the actual
+        # lane is now configurable and defaults to the 3B baseline.
+        if "baseline_local_model" in summary:
+            summary.setdefault("baseline_qwen_05b", summary["baseline_local_model"])
         report = {
             "beast_object_type": "heldout_adapter_comparison_gauntlet",
             "version": "1.1",
@@ -143,7 +155,7 @@ class AdapterComparisonGauntlet:
         latest.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
         mode_latest_name = "heldout_adapter_comparison_offline_latest.json"
         if live_ollama:
-            ollama_rows = [item for item in results if item.get("lane_id") in {"baseline_qwen_05b", "beast_modelfile_wrapper"}]
+            ollama_rows = [item for item in results if item.get("lane_id") in {"baseline_local_model", "beast_modelfile_wrapper"}]
             any_live_ollama_measured = any(item.get("status") == "measured" for item in ollama_rows)
             mode_latest_name = (
                 "heldout_adapter_comparison_live_latest.json"
@@ -231,26 +243,26 @@ class AdapterComparisonGauntlet:
             "Do not move verifiers into action_ir. Do not omit task_envelope. "
             "No adapter can execute; this is proposal_only and BEAST verifiers decide."
         )
-        env = dict(os.environ)
-        env["OLLAMA_HOST"] = ollama_host
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "stream": False,
+            "format": "json",
+            "keep_alive": "5m",
+            "options": {"temperature": 0.0, "num_ctx": 2048, "num_predict": 96},
+        }
+        url = ollama_host.rstrip("/") + "/api/generate"
         try:
-            completed = subprocess.run(
-                ["ollama", "run", model],
-                input=prompt,
-                capture_output=True,
-                text=True,
-                timeout=90,
-                check=False,
-                env=env,
-            )
-            output = (completed.stdout or "") + (completed.stderr or "")
-            if completed.returncode == 0:
-                return output, _rough_token_count(output), "measured"
-            if "operation not permitted" in output.lower() and "127.0.0.1:11434" in output:
-                return output, _rough_token_count(output), "blocked_ollama_socket_permission_denied"
-            return output, _rough_token_count(output), f"ollama_returncode_{completed.returncode}"
-        except (OSError, subprocess.SubprocessError) as exc:
+            with self._ollama_slots:
+                request = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, method="POST")
+                with urllib.request.urlopen(request, timeout=90) as response:
+                    body = json.loads(response.read().decode("utf-8", errors="replace"))
+            output = str(body.get("response") or "") if isinstance(body, dict) else ""
+            return output, int((body or {}).get("eval_count") or _rough_token_count(output)), "measured"
+        except urllib.error.URLError as exc:
             return str(exc), 0, "blocked_or_unavailable"
+        except (OSError, json.JSONDecodeError) as exc:
+            return str(exc), 0, "ollama_response_error"
 
     def _lora_artifact_output(self, task: Dict[str, Any]) -> tuple[str, str]:
         verification = Path("benchmarks/results/crystal_to_adapter_distillation/micro_lora_verification_latest.json")

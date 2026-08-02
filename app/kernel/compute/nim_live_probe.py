@@ -64,6 +64,7 @@ class NvidiaNIMLiveProbe:
         self,
         *,
         prompt: str = "Return exactly: BEAST_NIM_LIVE_OK",
+        system_prompt: str = "You are a concise health-check responder.",
         requested_model: str = "",
         timeout_seconds: float = 30.0,
         max_tokens: int = 32,
@@ -97,7 +98,7 @@ class NvidiaNIMLiveProbe:
             candidates = self._dedupe([*candidates, *discovered.get("candidate_models", [])])
 
         for model in candidates:
-            attempt = self._complete(cfg, api_key, model, prompt)
+            attempt = self._complete(cfg, api_key, model, prompt, system_prompt)
             receipt["live_call_attempted"] = True
             receipt["attempted_models"].append(attempt)
             if attempt.get("status") == "ok":
@@ -151,7 +152,7 @@ class NvidiaNIMLiveProbe:
                 "latency_ms": round((time.perf_counter() - started) * 1000, 3),
             }
 
-    def _complete(self, cfg: NIMProbeConfig, api_key: str, model: str, prompt: str) -> Dict[str, Any]:
+    def _complete(self, cfg: NIMProbeConfig, api_key: str, model: str, prompt: str, system_prompt: str) -> Dict[str, Any]:
         started = time.perf_counter()
         try:
             response = self.client.post(
@@ -160,7 +161,7 @@ class NvidiaNIMLiveProbe:
                 json={
                     "model": model,
                     "messages": [
-                        {"role": "system", "content": "You are a concise health-check responder."},
+                        {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt},
                     ],
                     "temperature": 0,

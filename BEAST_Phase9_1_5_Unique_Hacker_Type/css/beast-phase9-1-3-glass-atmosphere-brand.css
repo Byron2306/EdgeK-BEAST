@@ -1,0 +1,316 @@
+/* ========================================================================== 
+   BEAST Phase 9.1.3 — Glass Atmosphere + Brand Scale
+   Engineering fix for atmosphere layers hidden by opaque page surfaces.
+   The shell remains readable, but panels now behave as tinted glass so matrix
+   rain, the square grid, and the page scanner remain visibly alive beneath it.
+   ========================================================================== */
+:root {
+  --beast-header-h: 214px;
+  --beast-glass-soft: rgba(3, 10, 6, .38);
+  --beast-glass: rgba(2, 8, 5, .50);
+  --beast-glass-strong: rgba(1, 6, 4, .66);
+  --beast-glass-edge: rgba(196, 214, 202, .18);
+  --beast-glass-blur: blur(11px) saturate(1.16) contrast(1.03);
+  --beast-glass-blur-strong: blur(15px) saturate(1.19) contrast(1.04);
+}
+body { --beast-visual-build: "9.1.3"; }
+
+/* --------------------------------------------------------------------------
+   Atmosphere ownership
+   -------------------------------------------------------------------------- */
+html, body { background:#010302 !important; }
+body::before {
+  opacity:.24 !important;
+  z-index:0 !important;
+  background-image:
+    linear-gradient(rgba(119,255,61,.20) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.20) 1px,transparent 1px) !important;
+  background-size:52px 52px !important;
+  mix-blend-mode:screen !important;
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.84),rgba(0,0,0,.36) 62%,rgba(0,0,0,.62));
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.84),rgba(0,0,0,.36) 62%,rgba(0,0,0,.62));
+}
+#beastMatrix {
+  z-index:0 !important;
+  opacity:.56 !important;
+  display:block !important;
+  filter:brightness(1.48) contrast(1.28) saturate(1.13) !important;
+}
+#beastGridLayer {
+  z-index:0 !important;
+  opacity:.48 !important;
+  display:block !important;
+  mix-blend-mode:screen !important;
+  background-size:48px 48px !important;
+  filter:brightness(1.22) drop-shadow(0 0 13px rgba(119,255,61,.30)) !important;
+  animation:beast-grid-advance 7.2s linear infinite !important;
+}
+#beastMatrixFront {
+  z-index:8 !important;
+  opacity:.065 !important;
+  display:block !important;
+  pointer-events:none !important;
+  mix-blend-mode:screen !important;
+  filter:brightness(1.36) contrast(1.22) !important;
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.18) 56%,rgba(0,0,0,.32));
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.18) 56%,rgba(0,0,0,.32));
+}
+.beast-shell {
+  z-index:2 !important;
+  background:transparent !important;
+}
+
+/* --------------------------------------------------------------------------
+   Global glass contract.  The frame art remains crisp, while the centre of
+   every operational panel becomes genuinely translucent.
+   -------------------------------------------------------------------------- */
+.beast-surface,
+.beast-card,
+.beast-rail-card,
+.beast-page-actions,
+#beastPageOutlet :where(
+  [class$="-panel"], [class*="-panel "],
+  [class$="-card"], [class*="-card "],
+  [class$="-stage"], [class*="-stage "],
+  [class$="-inspector"], [class*="-inspector "],
+  [class$="-detail"], [class*="-detail "],
+  [class$="-hero"], [class*="-hero "],
+  [class$="-screen"], [class*="-screen "],
+  [class$="-nexus"], [class*="-nexus "],
+  [class$="-forge"], [class*="-forge "],
+  [class$="-observatory"], [class*="-observatory "]
+) {
+  background-color:transparent !important;
+  background-image:
+    linear-gradient(135deg,rgba(255,255,255,.035),transparent 24%),
+    linear-gradient(180deg,var(--beast-glass-soft),var(--beast-glass-strong)) !important;
+  -webkit-backdrop-filter:var(--beast-glass-blur);
+  backdrop-filter:var(--beast-glass-blur);
+  background-blend-mode:normal !important;
+}
+
+/* Large shell regions receive a slightly stronger tint for legibility, but
+   never enough opacity to suffocate the rain and moving grid. */
+.beast-sidebar,
+.beast-viewport,
+.beast-rail,
+.beast-command {
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.025),transparent 20%),
+    linear-gradient(180deg,rgba(3,10,6,.56),rgba(1,5,3,.70)) !important;
+  -webkit-backdrop-filter:var(--beast-glass-blur-strong);
+  backdrop-filter:var(--beast-glass-blur-strong);
+}
+.beast-card,
+.beast-rail-card {
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.055),
+    inset 0 0 30px rgba(0,0,0,.20),
+    0 18px 42px rgba(0,0,0,.30) !important;
+}
+.beast-card::after,
+.beast-surface::after {
+  background:linear-gradient(90deg,transparent,rgba(119,255,61,.020),transparent) !important;
+  opacity:.34 !important;
+}
+
+/* Dense reading/editing surfaces stay darker, but are still glass. */
+:where(.terminal-screen,.terminal-output,.cortex-editor-stage,.monaco-editor,.sourceplan-diff-panel,
+       .review-diff-panel,.evidence-detail-panel,.tooling-raw-panel,.doctor-raw-panel) {
+  background:
+    linear-gradient(180deg,rgba(1,5,3,.72),rgba(0,3,2,.82)) !important;
+  -webkit-backdrop-filter:blur(8px) saturate(1.10);
+  backdrop-filter:blur(8px) saturate(1.10);
+}
+
+/* The page-heading PNG has an opaque black centre. Screen blending turns its
+   black field into glass while preserving the hi-def silver rails and green
+   circuit detail. */
+.beast-page-head {
+  background-image:
+    linear-gradient(90deg,rgba(1,6,3,.58),rgba(3,12,7,.34),rgba(1,5,3,.62)),
+    url("../assets/headers/header-page-hd.png") !important;
+  background-position:center,center !important;
+  background-size:100% 100%,100% 100% !important;
+  background-repeat:no-repeat,no-repeat !important;
+  background-blend-mode:normal,screen !important;
+  -webkit-backdrop-filter:blur(9px) saturate(1.18);
+  backdrop-filter:blur(9px) saturate(1.18);
+}
+
+/* --------------------------------------------------------------------------
+   Premium header rebuilt as a real grid. The brand is now a primary identity
+   element, not a postage stamp floating above the mission title.
+   -------------------------------------------------------------------------- */
+.beast-header.beast-header-premium {
+  min-height:var(--beast-header-h) !important;
+  display:grid !important;
+  grid-template-columns:170px minmax(520px,1fr) 128px 330px !important;
+  grid-template-rows:112px 58px !important;
+  align-items:center !important;
+  column-gap:20px !important;
+  row-gap:8px !important;
+  padding:18px 34px 18px !important;
+  background:
+    radial-gradient(ellipse at 49% -24%,rgba(119,255,61,.11),transparent 48%),
+    linear-gradient(90deg,rgba(1,6,3,.64),rgba(4,14,8,.46) 52%,rgba(1,5,3,.68)) !important;
+  -webkit-backdrop-filter:blur(15px) saturate(1.22);
+  backdrop-filter:blur(15px) saturate(1.22);
+}
+.beast-header-terminal,
+.beast-header-brandmark,
+.beast-header-emblem,
+.beast-title-row,
+.beast-header-state {
+  position:relative !important;
+  inset:auto !important;
+  max-height:none !important;
+}
+.beast-header-terminal {
+  grid-column:1 !important;
+  grid-row:1 !important;
+  align-self:center !important;
+  justify-self:stretch !important;
+  font-size:10px !important;
+  line-height:1.55 !important;
+  opacity:.96 !important;
+  padding:12px 10px !important;
+  border-left:1px solid rgba(119,255,61,.34);
+  background:linear-gradient(90deg,rgba(0,0,0,.36),transparent) !important;
+}
+.beast-header-brandmark {
+  grid-column:2 !important;
+  grid-row:1 !important;
+  width:100% !important;
+  height:108px !important;
+  min-width:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+}
+.beast-header-wordmark {
+  width:min(100%,860px) !important;
+  height:92px !important;
+  max-height:92px !important;
+  object-fit:contain !important;
+  filter:
+    drop-shadow(0 3px 0 #010201)
+    drop-shadow(0 0 10px rgba(238,246,241,.38))
+    drop-shadow(0 0 18px rgba(119,255,61,.18)) !important;
+}
+.beast-header-brandmark span {
+  position:absolute;
+  bottom:-1px;
+  font-size:11px !important;
+  letter-spacing:.42em !important;
+  color:#a7ff74 !important;
+}
+.beast-header-emblem {
+  grid-column:3 !important;
+  grid-row:1 !important;
+  width:122px !important;
+  height:112px !important;
+  justify-self:center !important;
+  align-self:center !important;
+}
+.beast-header-emblem img {
+  width:116px !important;
+  height:116px !important;
+  object-fit:contain !important;
+}
+.beast-header-state {
+  grid-column:4 !important;
+  grid-row:1 / span 2 !important;
+  justify-self:end !important;
+  align-self:center !important;
+  max-width:330px !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  justify-content:flex-end !important;
+}
+.beast-title-row {
+  grid-column:1 / 4 !important;
+  grid-row:2 !important;
+  width:100% !important;
+  min-height:58px !important;
+  max-height:58px !important;
+  padding:8px 16px 7px !important;
+  overflow:hidden !important;
+  border-left:2px solid rgba(119,255,61,.76) !important;
+  background:linear-gradient(90deg,rgba(0,0,0,.58),rgba(3,12,7,.42) 74%,transparent) !important;
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+.beast-header .beast-title {
+  font-size:clamp(20px,1.32vw,28px) !important;
+  line-height:1.08 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.beast-header .beast-kicker { font-size:11px !important; }
+.beast-header .beast-meta { font-size:11px !important; }
+
+/* Keep controls dark and legible inside the new glass shell. */
+.beast-button,
+.beast-page-actions button,
+.beast-command-tabs button,
+.beast-chip,
+input, select, textarea {
+  -webkit-backdrop-filter:blur(8px) saturate(1.10);
+  backdrop-filter:blur(8px) saturate(1.10);
+}
+
+@media (max-width:1540px) {
+  :root { --beast-header-h:194px; }
+  .beast-header.beast-header-premium {
+    grid-template-columns:138px minmax(400px,1fr) 108px 276px !important;
+    grid-template-rows:98px 54px !important;
+    padding:17px 28px !important;
+  }
+  .beast-header-brandmark { height:94px !important; }
+  .beast-header-wordmark { height:78px !important; max-height:78px !important; }
+  .beast-header-emblem,.beast-header-emblem img { width:102px !important; height:102px !important; }
+  .beast-title-row { min-height:54px !important; max-height:54px !important; }
+}
+@media (max-width:1280px) {
+  :root { --beast-header-h:174px; }
+  .beast-header.beast-header-premium {
+    grid-template-columns:minmax(390px,1fr) 96px 250px !important;
+    grid-template-rows:82px 52px !important;
+    padding:16px 24px !important;
+  }
+  .beast-header-terminal { display:none !important; }
+  .beast-header-brandmark { grid-column:1 !important; height:80px !important; }
+  .beast-header-wordmark { height:66px !important; max-height:66px !important; }
+  .beast-header-emblem { grid-column:2 !important; width:92px !important; height:86px !important; }
+  .beast-header-emblem img { width:88px !important; height:88px !important; }
+  .beast-header-state { grid-column:3 !important; }
+  .beast-title-row { grid-column:1 / 3 !important; }
+}
+@media (max-width:900px) {
+  :root { --beast-header-h:120px; }
+  .beast-header.beast-header-premium {
+    display:flex !important;
+    min-height:120px !important;
+    padding:14px 16px !important;
+  }
+  .beast-header-brandmark,.beast-header-terminal,.beast-header-emblem { display:none !important; }
+  .beast-title-row {
+    position:relative !important;
+    flex:1 1 auto !important;
+    min-height:auto !important;
+    max-height:none !important;
+    padding:8px 10px !important;
+  }
+  .beast-header-state { position:relative !important; flex:0 0 210px !important; }
+  .beast-page-head {
+    background:
+      linear-gradient(90deg,rgba(1,7,4,.76),rgba(2,10,6,.58)) !important;
+    background-blend-mode:normal !important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  #beastMatrixFront { display:none !important; }
+}

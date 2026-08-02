@@ -82,7 +82,10 @@ def capabilities() -> Dict[str, Any]:
     has_af_packet = hasattr(socket, "AF_PACKET")
     has_raw = hasattr(socket, "SOCK_RAW")
     effective_uid = os.geteuid() if hasattr(os, "geteuid") else None
-    interfaces = sorted(socket.if_nameindex(), key=lambda item: item[1]) if hasattr(socket, "if_nameindex") else []
+    try:
+        interfaces = sorted(socket.if_nameindex(), key=lambda item: item[1]) if hasattr(socket, "if_nameindex") else []
+    except (OSError, AttributeError, ValueError):
+        interfaces = []
     dpdk = DpdkBackend.detect()
     af_xdp = AfXdpBackend.detect()
     return {

@@ -23,6 +23,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -445,6 +446,132 @@ def extract_json_object(text: str) -> Dict[str, Any]:
     return {}
 
 
+def _prompt_expects_action_ir(prompt: str) -> bool:
+    lowered = str(prompt or "").lower()
+    return "beast.action_intent.v1" in lowered or '"actions"' in lowered
+
+
+def _prompt_expects_operations(prompt: str) -> bool:
+    lowered = str(prompt or "").lower()
+    return '"operations"' in lowered or "beast.source_patch.v1" in lowered or "beast.patch_intent.v1" in lowered
+
+
+def _payload_matches_prompt_contract(payload: Dict[str, Any], prompt: str) -> bool:
+    if not isinstance(payload, dict) or not payload:
+        return False
+    if _prompt_expects_action_ir(prompt):
+        return isinstance(payload.get("actions"), list) and bool(str(payload.get("provider_handoff_hash") or payload.get("handoff_hash") or "").strip())
+    if _prompt_expects_operations(prompt):
+        return isinstance(payload.get("operations"), list)
+    return bool(payload)
+
+
+def _repair_json_contract_prompt(original_prompt: str, invalid_text: str) -> str:
+    contract_hint = {
+        "kind": "beast.action_intent.v1" if _prompt_expects_action_ir(original_prompt) else "beast.source_patch.v1",
+        "rules": [
+            "Return exactly one JSON object.",
+            "Do not include prose, markdown, or explanation.",
+            "Start with { and end with }.",
+            "Match the requested schema exactly.",
+        ],
+    }
+    if _prompt_expects_action_ir(original_prompt):
+        contract_hint["required_fields"] = ["kind", "objective", "provider_handoff_hash", "actions", "verify"]
+    elif _prompt_expects_operations(original_prompt):
+        contract_hint["required_fields"] = ["kind", "operations"]
+    return "\n".join([
+        "Your previous response failed strict JSON contract compliance.",
+        "Return one corrected JSON object now. No prose. No markdown.",
+        json.dumps(contract_hint, separators=(",", ":"), sort_keys=True),
+        "",
+        "Original request:",
+        str(original_prompt or "")[:8000],
+        "",
+        "Previous invalid response:",
+        str(invalid_text or "")[:4000],
+    ])
+
+
+def _system_prompt_for_contract(prompt: str) -> str:
+    base = (
+        "You are a precise coding agent behind BEAST output governance. "
+        "Return exactly one strict JSON object and no markdown. "
+    )
+    if _prompt_expects_action_ir(prompt):
+        return (
+            base
+            + "Return BEAST Action IR only. "
+            + "Include top-level kind, objective, actions, verify, and handoff_hash or provider_handoff_hash. "
+            + "Do not return prose, diff text, or source patch operations."
+        )
+    if _prompt_expects_operations(prompt):
+        return (
+            base
+            + "If the user prompt includes an output.schema, your response must match it exactly. "
+            + "Return a source-patch object with an operations array when that schema is requested. "
+            + "Do not return BEAST Action IR unless the prompt explicitly asks for actions."
+        )
+    return (
+        base
+        + "If the user prompt includes an output.schema, your response must match it exactly."
+    )
+
+
+def _nvidia_nim_json_repair(
+    prompt: str,
+    text: str,
+    *,
+    base_url: str,
+    model: str,
+    api_key: str,
+    timeout: float,
+    output_tokens: int,
+    headers: Dict[str, str],
+) -> Dict[str, Any] | None:
+    payload = extract_json_object(text)
+    if _payload_matches_prompt_contract(payload, prompt):
+        return None
+    repair_prompt = _repair_json_contract_prompt(prompt, text)
+    repair_payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": _system_prompt_for_contract(prompt)
+                + " You are acting as a strict JSON repair layer. Return exactly one corrected JSON object and nothing else.",
+            },
+            {"role": "user", "content": repair_prompt},
+        ],
+        "temperature": 0,
+        "max_tokens": min(max(400, output_tokens), 1200),
+        "response_format": {"type": "json_object"},
+    }
+    started = time.perf_counter()
+    response = httpx.post(_chat_url(base_url), headers=headers, json=repair_payload, timeout=timeout)
+    latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
+    response.raise_for_status()
+    body = response.json()
+    choice = (body.get("choices") or [{}])[0]
+    message = choice.get("message") if isinstance(choice, dict) else {}
+    repaired_text = ""
+    if isinstance(message, dict):
+        repaired_text = str(message.get("content") or "")
+    if not repaired_text and isinstance(choice, dict):
+        repaired_text = str(choice.get("text") or "")
+    repaired_payload = extract_json_object(repaired_text)
+    if not _payload_matches_prompt_contract(repaired_payload, prompt):
+        return None
+    usage = body.get("usage") or {}
+    usage["nim_contract_repair"] = True
+    return {
+        "text": repaired_text,
+        "usage": usage,
+        "latency_ms": latency_ms,
+        "response_id": body.get("id"),
+    }
+
+
 def validate_operations(payload: Dict[str, Any]) -> List[Dict[str, str]]:
     operations = payload.get("operations")
     if not isinstance(operations, list):
@@ -477,6 +604,110 @@ def _chat_url(base_url: str) -> str:
     return f"{base}/chat/completions"
 
 
+def _is_local_ollama_base_url(base_url: str) -> bool:
+    parsed = urlparse(str(base_url or ""))
+    host = str(parsed.hostname or "").lower()
+    port = parsed.port
+    return host in {"127.0.0.1", "localhost"} and port == 11434
+
+
+def _normalize_ollama_native_base_url(base_url: str) -> str:
+    parsed = urlparse(str(base_url or ""))
+    scheme = parsed.scheme or "http"
+    host = parsed.hostname or "127.0.0.1"
+    port = parsed.port or 11434
+    return f"{scheme}://{host}:{port}"
+
+
+def _resolve_ollama_model_alias(base_url: str, requested_model: str, timeout: float) -> str:
+    model = str(requested_model or "").strip()
+    if not model or httpx is None:
+        return model
+    native_base = _normalize_ollama_native_base_url(base_url)
+    try:
+        response = httpx.get(f"{native_base}/api/tags", timeout=min(timeout, 10.0))
+        response.raise_for_status()
+        payload = response.json()
+    except Exception:
+        return model
+    models = payload.get("models") if isinstance(payload, dict) else []
+    names = {
+        str(item.get("name") or item.get("model") or "").strip()
+        for item in models
+        if isinstance(item, dict)
+    }
+    names.discard("")
+    if model in names:
+        return model
+    if model.endswith(":7b"):
+        family = model.rsplit(":", 1)[0]
+        if f"{family}:latest" in names:
+            return f"{family}:latest"
+    return model
+
+
+def _call_ollama_native_agent(
+    prompt: str,
+    base_url: str,
+    model: str,
+    timeout: float = 120.0,
+    max_tokens: int | None = None,
+    json_mode: bool | None = None,
+) -> Dict[str, Any]:
+    if httpx is None:
+        raise RuntimeError("httpx is not installed")
+    output_tokens = max_tokens
+    if output_tokens is None:
+        output_tokens = int(os.environ.get("LIVE_AGENT_MAX_TOKENS", "1200"))
+    resolved_model = _resolve_ollama_model_alias(base_url, model, timeout)
+    native_base = _normalize_ollama_native_base_url(base_url)
+    payload: Dict[str, Any] = {
+        "model": resolved_model,
+        "messages": [
+            {
+                "role": "system",
+                "content": _system_prompt_for_contract(prompt),
+            },
+            {"role": "user", "content": prompt},
+        ],
+        "stream": False,
+        "options": {
+            "temperature": 0,
+            "num_predict": output_tokens,
+        },
+    }
+    if json_mode is None:
+        json_mode = os.environ.get("LIVE_AGENT_JSON_MODE", "0").strip().lower() in {"1", "true", "yes", "on"}
+    if json_mode:
+        payload["format"] = "json"
+    started = time.perf_counter()
+    response = httpx.post(f"{native_base}/api/chat", json=payload, timeout=timeout)
+    latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
+    response.raise_for_status()
+    body = response.json()
+    message = body.get("message") if isinstance(body, dict) else {}
+    text = ""
+    if isinstance(message, dict):
+        text = str(message.get("content") or "")
+    if not text and isinstance(body, dict):
+        text = str(body.get("response") or "")
+    usage: Dict[str, Any] = {}
+    prompt_eval = body.get("prompt_eval_count") if isinstance(body, dict) else None
+    eval_count = body.get("eval_count") if isinstance(body, dict) else None
+    if isinstance(prompt_eval, int):
+        usage["prompt_tokens"] = prompt_eval
+    if isinstance(eval_count, int):
+        usage["completion_tokens"] = eval_count
+    usage["native_ollama"] = True
+    usage["resolved_model"] = resolved_model
+    return {
+        "text": text,
+        "usage": usage,
+        "latency_ms": latency_ms,
+        "response_id": body.get("created_at") if isinstance(body, dict) else None,
+    }
+
+
 def call_openai_compatible_agent(
     prompt: str,
     base_url: str,
@@ -499,12 +730,7 @@ def call_openai_compatible_agent(
         "messages": [
             {
                 "role": "system",
-                "content": (
-                    "You are a precise coding agent behind BEAST output governance. "
-                    "Return exactly one strict JSON object and no markdown. "
-                    "If the user prompt includes an output.schema, your response must match it exactly. "
-                    "For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash."
-                ),
+                "content": _system_prompt_for_contract(prompt),
             },
             {"role": "user", "content": prompt},
         ],
@@ -518,9 +744,26 @@ def call_openai_compatible_agent(
     if "openrouter.ai" in str(base_url).lower():
         payload["usage"] = {"include": True}
     started = time.perf_counter()
-    response = httpx.post(_chat_url(base_url), headers=headers, json=payload, timeout=timeout)
-    latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
-    response.raise_for_status()
+    try:
+        response = httpx.post(_chat_url(base_url), headers=headers, json=payload, timeout=timeout)
+        latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
+        response.raise_for_status()
+    except Exception as exc:
+        should_fallback = _is_local_ollama_base_url(base_url)
+        if isinstance(exc, httpx.HTTPStatusError):
+            should_fallback = should_fallback and exc.response is not None and int(exc.response.status_code) in {404, 405, 501}
+        else:
+            should_fallback = should_fallback and isinstance(exc, (httpx.TimeoutException, httpx.ConnectError, httpx.NetworkError))
+        if not should_fallback:
+            raise
+        return _call_ollama_native_agent(
+            prompt,
+            base_url=base_url,
+            model=model,
+            timeout=timeout,
+            max_tokens=output_tokens,
+            json_mode=json_mode,
+        )
     body = response.json()
     choice = (body.get("choices") or [{}])[0]
     message = choice.get("message") if isinstance(choice, dict) else {}
@@ -529,6 +772,20 @@ def call_openai_compatible_agent(
         text = str(message.get("content") or "")
     if not text and isinstance(choice, dict):
         text = str(choice.get("text") or "")
+    normalized_provider = str(base_url).lower()
+    if "integrate.api.nvidia.com" in normalized_provider and json_mode:
+        repaired = _nvidia_nim_json_repair(
+            prompt,
+            text,
+            base_url=base_url,
+            model=model,
+            api_key=api_key,
+            timeout=timeout,
+            output_tokens=output_tokens,
+            headers=headers,
+        )
+        if repaired is not None:
+            return repaired
     return {
         "text": text,
         "usage": body.get("usage") or {},

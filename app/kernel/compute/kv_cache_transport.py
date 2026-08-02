@@ -19,11 +19,15 @@ import hashlib
 import json
 import uuid
 import mmap
+import zlib
+import base64
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+
+import httpx
 
 from app.kernel.data_processing.inference_artifact_identity import InferenceArtifactIdentity
 
@@ -145,15 +149,138 @@ class CrossEngineKVCacheTransport:
 
     def __init__(
         self,
-        max_memory_bytes: int = 8 * 1024 * 1024 * 1024,
+        max_memory_bytes: int = 512 * 1024 * 1024,
         storage_dir: Optional[Path] = None,
     ):
         self.max_memory_bytes = max_memory_bytes
         self.storage_dir = storage_dir or Path(__file__).resolve().parents[2] / "data" / "kv_cache"
         self.blocks: Dict[str, KVCacheBlock] = {}
         self.tensor_payloads: Dict[str, bytes] = {}
+        self.network_senders: Dict[str, Callable[[Dict[str, Any], bytes], Dict[str, Any]]] = {}
         self.operations: List[KVCacheTransportOperation] = []
         self._current_memory_bytes = 0
+
+    def _memory_pressure_bytes(self) -> int | None:
+        """Read the kernel's cheap available-memory signal without psutil."""
+        try:
+            for line in Path("/proc/meminfo").read_text(encoding="utf-8").splitlines():
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) * 1024
+        except (OSError, ValueError, IndexError):
+            return None
+        return None
+
+    def register_network_sender(
+        self,
+        endpoint: str,
+        sender: Callable[[Dict[str, Any], bytes], Dict[str, Any]],
+    ) -> None:
+        """Register a real, authenticated byte-transfer implementation."""
+        if not str(endpoint).strip():
+            raise ValueError("network endpoint is required")
+        self.network_senders[str(endpoint)] = sender
+
+    def register_http_sender(self, endpoint: str, *, token: str, timeout_seconds: float = 10.0) -> None:
+        """Register an authenticated HTTP peer that implements BEAST's receive contract."""
+        target = str(endpoint).rstrip("/")
+        if not target.startswith(("http://", "https://")):
+            raise ValueError("KV HTTP transport endpoint must be an http(s) URL")
+        if not token:
+            raise ValueError("KV HTTP transport requires a non-empty peer token")
+
+        def sender(manifest: Dict[str, Any], payload: bytes) -> Dict[str, Any]:
+            response = httpx.post(
+                target,
+                json={"manifest": manifest, "payload_base64": base64.b64encode(payload).decode("ascii")},
+                headers={"X-BEAST-KV-Token": token},
+                timeout=max(0.1, min(float(timeout_seconds), 60.0)),
+            )
+            response.raise_for_status()
+            result = response.json()
+            if not isinstance(result, dict):
+                raise ValueError("KV HTTP peer returned a non-object acknowledgement")
+            return result
+
+        self.register_network_sender(target, sender)
+
+    def receive_network_transfer(self, manifest: Dict[str, Any], payload: bytes, *, max_bytes: int = 64 * 1024 * 1024) -> Dict[str, Any]:
+        """Verify and durably accept one authenticated network transfer.
+
+        Authentication is enforced by the hosting route. This method validates
+        payload identity and dimensions before making a received block reusable.
+        """
+        if not isinstance(manifest, dict):
+            raise ValueError("KV transfer manifest must be an object")
+        payload = bytes(payload)
+        if not payload or len(payload) > max(1, int(max_bytes)):
+            raise ValueError("KV transfer payload is empty or exceeds the configured limit")
+        checksum = "sha256:" + hashlib.sha256(payload).hexdigest()
+        if manifest.get("beast_object_type") != "kv_cache_network_manifest":
+            raise ValueError("unrecognized KV transfer manifest")
+        if str(manifest.get("tensor_payload_sha256") or manifest.get("checksum_sha256") or "") != checksum:
+            raise ValueError("KV transfer payload checksum mismatch")
+        block_id = str(manifest.get("block_id") or "")
+        if not block_id.startswith("kv_") or len(block_id) > 128:
+            raise ValueError("invalid KV transfer block id")
+        try:
+            engine = CacheEngine(str(manifest.get("target_engine") or manifest.get("engine") or CacheEngine.UNKNOWN.value))
+        except ValueError as exc:
+            raise ValueError("invalid KV transfer engine") from exc
+        required = ("model", "tokenizer", "prompt_prefix_hash", "system_prompt_hash", "precision")
+        if any(not str(manifest.get(field) or "") for field in required):
+            raise ValueError("KV transfer manifest is missing identity fields")
+        existing = self.blocks.get(block_id)
+        if existing and (
+            existing.model != str(manifest["model"])
+            or existing.prompt_prefix_hash != str(manifest["prompt_prefix_hash"])
+            or existing.system_prompt_hash != str(manifest["system_prompt_hash"])
+        ):
+            raise ValueError("KV transfer block id conflicts with an existing identity")
+        now = datetime.now(timezone.utc).isoformat()
+        block = KVCacheBlock(
+            block_id=block_id,
+            model=str(manifest["model"]),
+            tokenizer=str(manifest["tokenizer"]),
+            prompt_prefix_hash=str(manifest["prompt_prefix_hash"]),
+            system_prompt_hash=str(manifest["system_prompt_hash"]),
+            engine=engine,
+            location=CacheLocation.CPU,
+            precision=str(manifest["precision"]),
+            num_layers=max(0, int(manifest.get("num_layers") or 0)),
+            num_heads=max(0, int(manifest.get("num_heads") or 0)),
+            head_dim=max(0, int(manifest.get("head_dim") or 0)),
+            seq_len=max(0, int(manifest.get("seq_len") or 0)),
+            size_bytes=len(payload),
+            pinned=bool(manifest.get("pinned", False)),
+            created_at=str(manifest.get("created_at") or now),
+            last_accessed_at=now,
+            metadata={
+                "tensor_payload_sha256": checksum,
+                "tensor_payload_bytes": len(payload),
+                "tensor_payload_format": str(manifest.get("tensor_payload_format") or "raw"),
+                "engine_native_tensor_payload": True,
+                "received_from_network": True,
+                "source_node": str(manifest.get("source_node") or "unknown"),
+                "source_transfer_id": str(manifest.get("transfer_id") or ""),
+            },
+        )
+        self._current_memory_bytes += len(payload) - (existing.size_bytes if existing else 0)
+        self.blocks[block_id] = block
+        self.tensor_payloads[block_id] = payload
+        if not self.move(block_id, CacheLocation.STORAGE):
+            self.blocks.pop(block_id, None)
+            self.tensor_payloads.pop(block_id, None)
+            self._current_memory_bytes -= len(payload) - (existing.size_bytes if existing else 0)
+            if existing is not None:
+                self.blocks[block_id] = existing
+            raise RuntimeError("received KV payload could not be persisted")
+        self._record_operation(operation="receive_network", block_id=block_id, target_location=CacheLocation.STORAGE, target_engine=engine, bytes_moved=len(payload))
+        return {"accepted": True, "block_id": block_id, "transfer_id": manifest.get("transfer_id"), "tensor_payload_sha256": checksum, "stored_location": CacheLocation.STORAGE.value}
+
+    def has_reusable_payload(self, block_id: str) -> bool:
+        """Return true only for blocks with verified engine-native bytes."""
+        block = self.blocks.get(block_id)
+        return bool(block and block.metadata.get("engine_native_tensor_payload") and self.export_tensor_payload(block_id) is not None)
 
     def _compute_block_id(
         self,
@@ -258,13 +385,12 @@ class CrossEngineKVCacheTransport:
             target_engine=engine,
             bytes_moved=size_bytes,
         )
-        
         return block
 
     def export_tensor_payload(self, block_id: str) -> Optional[bytes]:
         """Return the exact engine-native tensor payload for a block, loading from storage if needed."""
         if block_id in self.tensor_payloads:
-            return self.tensor_payloads[block_id]
+            return self._decode_payload(block_id, self.tensor_payloads[block_id])
         block_file = self.storage_dir / f"{block_id}.bin"
         if not block_file.is_file():
             return None
@@ -273,17 +399,52 @@ class CrossEngineKVCacheTransport:
         except OSError:
             return None
         block = self.blocks.get(block_id)
+        decoded = self._decode_payload(block_id, payload)
+        if decoded is None:
+            return None
         expected = (block.metadata.get("tensor_payload_sha256") if block else None)
         if expected:
-            actual = "sha256:" + hashlib.sha256(payload).hexdigest()
+            actual = "sha256:" + hashlib.sha256(decoded).hexdigest()
             if actual != expected:
                 return None
         self.tensor_payloads[block_id] = payload
         self._record_operation(operation="export_tensor", block_id=block_id, bytes_moved=len(payload))
-        return payload
+        return decoded
+
+    def _decode_payload(self, block_id: str, payload: bytes) -> Optional[bytes]:
+        block = self.blocks.get(block_id)
+        if block is None:
+            return None
+        if str(block.metadata.get("payload_compression") or "") != "zlib":
+            return payload
+        try:
+            return zlib.decompress(payload)
+        except zlib.error:
+            self._record_operation(operation="export_tensor", block_id=block_id, error="zlib payload decompression failed")
+            return None
 
     def get_mmap_buffer(self, block_id: str) -> Optional[Tuple[mmap.mmap, Any]]:
         """Return a memory-mapped buffer for the engine to read tensors directly."""
+        import os
+        from app.kernel.system_monitor import ExecutionPrimitives
+        
+        block = self.blocks.get(block_id)
+        if not block:
+            return None
+            
+        if block.location == CacheLocation.CPU and block_id in self.tensor_payloads:
+            try:
+                fd = ExecutionPrimitives.memfd_create(f"kv_{block_id}", 0)
+                if fd >= 0:
+                    payload = self.tensor_payloads[block_id]
+                    os.write(fd, payload)
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    buf = mmap.mmap(fd, len(payload), access=mmap.ACCESS_READ)
+                    self._record_operation(operation="mmap_buffer", block_id=block_id, bytes_moved=len(payload))
+                    return buf, os.fdopen(fd, "rb")
+            except Exception:
+                pass
+                
         block_file = self.storage_dir / f"{block_id}.bin"
         if not block_file.is_file():
             return None
@@ -293,7 +454,8 @@ class CrossEngineKVCacheTransport:
             self._record_operation(operation="mmap_buffer", block_id=block_id)
             return buf, f
         except Exception as e:
-            logger.error(f"Failed to mmap block {block_id}: {e}")
+            import logging
+            logging.getLogger(__name__).error(f"Failed to mmap block {block_id}: {e}")
             return None
 
     def import_tensor_payload(
@@ -508,7 +670,7 @@ class CrossEngineKVCacheTransport:
         Since this system runs on CPU-only hosts (no GPU), movement is between:
         - CPU (in-memory dict)
         - STORAGE (serialized to disk under data/kv_cache/)
-        - NETWORK (placeholder for future RPC; currently writes a manifest)
+        - NETWORK (registered authenticated sender plus transfer receipt)
         
         This is a real data movement on CPU, not a simulation.
         GPU↔CPU transfers are explicitly out of scope on this host.
@@ -521,9 +683,8 @@ class CrossEngineKVCacheTransport:
             return True  # Already there
         
         new_engine = target_engine or block.engine
-        bytes_moved = len(self.tensor_payloads.get(block_id, b"")) or (
-            block.size_bytes if block.compressed else int(block.size_bytes * block.compression_ratio)
-        )
+        tensor_payload = self.tensor_payloads.get(block_id)
+        bytes_moved = len(tensor_payload or b"")
         
         # Real CPU movement
         storage_dir = self.storage_dir
@@ -533,31 +694,39 @@ class CrossEngineKVCacheTransport:
         
         try:
             if target_location == CacheLocation.STORAGE:
-                tensor_payload = self.tensor_payloads.get(block_id)
+                if tensor_payload is None:
+                    tensor_payload = self.export_tensor_payload(block_id)
+                if tensor_payload is None:
+                    raise ValueError("cannot persist a KV block without exact engine-native tensor payload")
                 payload = {
                     "block": block.to_dict(),
-                    "payload_size": bytes_moved,
-                    "note": (
-                        "Engine-native KV tensor payload persisted to disk"
-                        if tensor_payload is not None else
-                        "CPU-only KV cache block metadata persisted with bounded placeholder payload"
-                    ),
+                    "payload_size": len(tensor_payload),
+                    "note": "Engine-native KV tensor payload persisted to disk",
                 }
                 manifest_file.write_text(json.dumps(payload, indent=2))
-                if tensor_payload is not None:
-                    block_file.write_bytes(tensor_payload)
-                else:
-                    block_file.write_bytes(b"\x00" * min(bytes_moved, 1024 * 1024))  # cap at 1MB for safety
+                block_file.write_bytes(tensor_payload)
+                bytes_moved = len(tensor_payload)
             elif target_location == CacheLocation.CPU:
                 if block_file.exists() and block_id not in self.tensor_payloads:
                     loaded = block_file.read_bytes()
+                    decoded = self._decode_payload(block_id, loaded)
+                    if decoded is None:
+                        raise ValueError("stored tensor payload could not be decoded")
                     if block.metadata.get("tensor_payload_sha256"):
-                        actual = "sha256:" + hashlib.sha256(loaded).hexdigest()
+                        actual = "sha256:" + hashlib.sha256(decoded).hexdigest()
                         if actual != block.metadata.get("tensor_payload_sha256"):
                             raise ValueError("stored tensor payload checksum mismatch")
                     self.tensor_payloads[block_id] = loaded
             elif target_location == CacheLocation.NETWORK:
-                # Real network manifest format (ready for future RPC / object store)
+                endpoint = str(block.metadata.get("target_endpoint") or "")
+                sender = self.network_senders.get(endpoint)
+                if not endpoint or sender is None:
+                    raise ValueError("no registered network sender for KV transfer endpoint")
+                if tensor_payload is None:
+                    tensor_payload = self.export_tensor_payload(block_id)
+                if tensor_payload is None:
+                    raise ValueError("cannot transfer a KV block without exact engine-native tensor payload")
+                checksum = "sha256:" + hashlib.sha256(tensor_payload).hexdigest()
                 manifest = {
                     "beast_object_type": "kv_cache_network_manifest",
                     "version": "1.0",
@@ -567,9 +736,13 @@ class CrossEngineKVCacheTransport:
                     "prompt_prefix_hash": block.prompt_prefix_hash,
                     "system_prompt_hash": block.system_prompt_hash,
                     "engine": block.engine.value,
+                    "target_engine": new_engine.value,
                     "precision": block.precision,
+                    "num_layers": block.num_layers,
+                    "num_heads": block.num_heads,
+                    "head_dim": block.head_dim,
                     "seq_len": block.seq_len,
-                    "size_bytes": bytes_moved,
+                    "size_bytes": len(tensor_payload),
                     "compressed": block.compressed,
                     "compression_ratio": block.compression_ratio,
                     "pinned": block.pinned,
@@ -577,14 +750,23 @@ class CrossEngineKVCacheTransport:
                     "last_accessed_at": block.last_accessed_at,
                     "access_count": block.access_count,
                     "source_node": block.metadata.get("source_node", "unknown"),
-                    "target_endpoint": block.metadata.get("target_endpoint", "pending_registration"),
+                    "target_endpoint": endpoint,
                     "transfer_id": f"transfer_{uuid.uuid4().hex[:12]}",
-                    "checksum_sha256": hashlib.sha256(str(block.to_dict()).encode()).hexdigest(),
-                    "tensor_payload_sha256": block.metadata.get("tensor_payload_sha256"),
+                    "checksum_sha256": checksum,
+                    "tensor_payload_sha256": checksum,
+                    "tensor_payload_format": block.metadata.get("tensor_payload_format", "raw"),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "status": "manifest_ready",
+                    "status": "transfer_pending",
                 }
+                acknowledgement = sender(dict(manifest), tensor_payload)
+                if not isinstance(acknowledgement, dict) or not acknowledgement.get("accepted"):
+                    raise ValueError("network sender did not acknowledge KV transfer")
+                if str(acknowledgement.get("tensor_payload_sha256") or "") != checksum:
+                    raise ValueError("network sender acknowledgement checksum mismatch")
+                manifest["status"] = "transferred"
+                manifest["acknowledgement"] = acknowledgement
                 manifest_file.write_text(json.dumps(manifest, indent=2, sort_keys=True))
+                bytes_moved = len(tensor_payload)
         except Exception as e:
             self._record_operation(
                 operation="move",
@@ -639,30 +821,25 @@ class CrossEngineKVCacheTransport:
         return True
 
     def compress(self, block_id: str, target_ratio: float = 0.5) -> bool:
-        """Compress a cache block using numpy int8 quantization on CPU.
-        
-        This is a real (if simplified) CPU-based quantization path.
-        It creates a small representative array and quantizes it to prove the mechanism.
+        """Losslessly compress exact KV bytes for storage transport.
+
+        This is not fake quantization: the original engine-native payload is
+        restored by :meth:`export_tensor_payload` before it can be reused.
         """
         block = self.blocks.get(block_id)
         if not block or block.compressed:
             return False
-        
-        try:
-            import numpy as np
-            # Create a small representative array (simulating KV cache slice)
-            # In production this would be the actual key/value tensors
-            sample_size = min(1024, block.size_bytes // 4)
-            sample = np.random.randn(sample_size).astype(np.float16)
-            # Quantize to int8 (real CPU quantization)
-            quantized = np.clip((sample * 127).astype(np.int8), -128, 127)
-            # Compute actual compressed size
-            compressed_size = quantized.nbytes
-            achieved_ratio = compressed_size / sample.nbytes
-        except ImportError:
-            # Fallback if numpy unavailable
-            compressed_size = int(block.size_bytes * target_ratio)
-            achieved_ratio = target_ratio
+        payload = self.export_tensor_payload(block_id)
+        if payload is None:
+            self._record_operation(operation="compress", block_id=block_id, error="no exact tensor payload available")
+            return False
+        compressed_payload = zlib.compress(payload)
+        if len(compressed_payload) >= len(payload):
+            self._record_operation(operation="compress", block_id=block_id, error="zlib produced no storage reduction")
+            return False
+        self.tensor_payloads[block_id] = compressed_payload
+        compressed_size = len(compressed_payload)
+        achieved_ratio = compressed_size / len(payload)
         
         updated = KVCacheBlock(
             block_id=block.block_id,
@@ -672,7 +849,7 @@ class CrossEngineKVCacheTransport:
             system_prompt_hash=block.system_prompt_hash,
             engine=block.engine,
             location=block.location,
-            precision="int8",
+            precision=block.precision,
             num_layers=block.num_layers,
             num_heads=block.num_heads,
             head_dim=block.head_dim,
@@ -687,8 +864,8 @@ class CrossEngineKVCacheTransport:
             metadata={
                 **block.metadata,
                 "compressed_size_bytes": compressed_size,
-                "quantization": "int8",
-                "cpu_quantized": True,
+                "payload_compression": "zlib",
+                "uncompressed_payload_bytes": len(payload),
             },
         )
         self.blocks[block_id] = updated
@@ -703,7 +880,10 @@ class CrossEngineKVCacheTransport:
 
     def cleanup(self, force: bool = False) -> List[str]:
         """Evict unpinned blocks to free memory. Returns list of evicted block IDs."""
-        if not force and self._current_memory_bytes <= self.max_memory_bytes:
+        available = self._memory_pressure_bytes()
+        pressure_target = max(64 * 1024 * 1024, self.max_memory_bytes // 2)
+        pressure = available is not None and available < pressure_target
+        if not force and not pressure and self._current_memory_bytes <= self.max_memory_bytes:
             return []
         
         # Evict unpinned blocks, oldest first
@@ -715,9 +895,10 @@ class CrossEngineKVCacheTransport:
         
         evicted: List[str] = []
         for bid, block in candidates:
-            if force or self._current_memory_bytes > self.max_memory_bytes:
+            if force or pressure or self._current_memory_bytes > self.max_memory_bytes:
                 self._current_memory_bytes -= block.size_bytes
                 del self.blocks[bid]
+                self.tensor_payloads.pop(bid, None)
                 evicted.append(bid)
                 self._record_operation(operation="cleanup", block_id=bid, bytes_moved=block.size_bytes)
         
@@ -728,6 +909,7 @@ class CrossEngineKVCacheTransport:
         total_blocks = len(self.blocks)
         pinned = sum(1 for b in self.blocks.values() if b.pinned)
         compressed = sum(1 for b in self.blocks.values() if b.compressed)
+        reusable = sum(1 for block_id in self.blocks if self.has_reusable_payload(block_id))
         total_bytes = sum(b.size_bytes for b in self.blocks.values())
         compressed_bytes = sum(
             int(b.size_bytes * b.compression_ratio) for b in self.blocks.values() if b.compressed
@@ -745,6 +927,8 @@ class CrossEngineKVCacheTransport:
             "total_blocks": total_blocks,
             "pinned_blocks": pinned,
             "compressed_blocks": compressed,
+            "reusable_blocks": reusable,
+            "metadata_only_blocks": total_blocks - reusable,
             "total_size_bytes": total_bytes,
             "compressed_size_bytes": compressed_bytes,
             "memory_utilization": total_bytes / self.max_memory_bytes if self.max_memory_bytes > 0 else 0.0,
@@ -752,6 +936,8 @@ class CrossEngineKVCacheTransport:
             "blocks_by_engine": by_engine,
             "operations_logged": len(self.operations),
             "max_memory_bytes": self.max_memory_bytes,
+            "storage_dir": str(self.storage_dir),
+            "network_sender_count": len(self.network_senders),
         }
 
     def _record_operation(
@@ -764,6 +950,7 @@ class CrossEngineKVCacheTransport:
         target_engine: Optional[CacheEngine] = None,
         bytes_moved: int = 0,
         compression_ratio: float = 1.0,
+        error: Optional[str] = None,
     ) -> None:
         """Record a transport operation for audit/logging."""
         op = KVCacheTransportOperation(
@@ -776,6 +963,7 @@ class CrossEngineKVCacheTransport:
             target_engine=target_engine,
             bytes_moved=bytes_moved,
             compression_ratio=compression_ratio,
+            error=error,
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
         self.operations.append(op)

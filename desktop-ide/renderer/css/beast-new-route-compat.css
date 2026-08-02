@@ -1,0 +1,367 @@
+/* Compatibility only: new route content inherits the 9.1.5 shell and panels. */
+.fabric-route-map,.live-proof-strip,.closure-hero,.closure-timeline{border:1px solid var(--beast-line,rgba(122,255,54,.35));background:rgba(0,8,4,.72);box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 0 18px rgba(86,255,38,.08);}
+.fabric-route-map,.live-proof-strip,.closure-hero{padding:18px;}
+.fabric-grid,.live-fabric-layout,.closure-timeline{display:grid;gap:12px;}
+.fabric-route-map h2,.live-proof-strip h2,.closure-hero h2,.closure-timeline h2{margin:0 0 10px;color:var(--beast-accent,#8dff4d);font-family:Orbitron, sans-serif;letter-spacing:.08em;}
+.fabric-route-map article,.live-proof-strip article,.closure-timeline article{min-width:0;}
+.beast-commons-page .commons-forge-grid,
+.beast-commons-page .commons-node-grid,
+.beast-commons-page .commons-bucket-grid,
+.beast-commons-page .commons-revision-grid,
+.beast-commons-page .commons-discovery-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.beast-commons-page .commons-surface-card,
+.beast-commons-page .commons-node-card,
+.beast-commons-page .commons-bucket-card,
+.beast-commons-page .commons-revision-card,
+.beast-commons-page .commons-discovery-card{min-width:0;}
+.beast-commons-page>.p8-metric-grid,
+.beast-commons-page>.p8-economy-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.beast-commons-page>.p8-economy-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.beast-commons-page .commons-subgrid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;}
+#beastPageOutlet[data-transitioning="true"]>.beast-page{visibility:hidden;}
+/* One final header contract after the unchanged 9.1.5 cascade. */
+@media(min-width:1181px){
+  :root{--beast-header-h:184px!important;}
+  .beast-header.beast-header-premium{height:184px!important;min-height:184px!important;position:relative!important;box-sizing:border-box!important;}
+  .beast-header-brandmark{position:absolute!important;left:clamp(140px,12vw,220px)!important;top:2px!important;width:min(58vw,760px)!important;height:92px!important;max-height:92px!important;display:grid!important;overflow:visible!important;}
+  .beast-header-wordmark{width:100%!important;height:74px!important;max-height:74px!important;object-fit:contain!important;}
+  .beast-header-brandmark span{display:block!important;margin:0!important;line-height:10px!important;white-space:nowrap!important;}
+  .beast-title-row{top:94px!important;bottom:auto!important;min-height:58px!important;max-height:62px!important;}
+}
+@media(min-width:901px) and (max-width:1180px){
+  :root{--beast-header-h:162px!important;}
+  .beast-header.beast-header-premium{height:162px!important;min-height:162px!important;position:relative!important;box-sizing:border-box!important;}
+  .beast-header-brandmark{position:absolute!important;left:96px!important;top:2px!important;width:min(48vw,520px)!important;height:72px!important;max-height:72px!important;display:grid!important;}
+  .beast-header-wordmark{height:58px!important;max-height:58px!important;}
+  .beast-header-brandmark span{display:block!important;margin:0!important;line-height:9px!important;white-space:nowrap!important;}
+  .beast-title-row{top:70px!important;bottom:auto!important;min-height:58px!important;max-height:62px!important;}
+}
+@media(min-width:901px){
+  /* Keep the hacker atmosphere, but remove the expensive bright foreground
+     glyph layer and animated raster text overlays that read as ghost data. */
+  #beastMatrix{opacity:.64!important;filter:none!important;mix-blend-mode:screen!important;}
+  #beastGridLayer{opacity:.22!important;filter:none!important;}
+  #beastMatrixFront{display:block!important;opacity:.15!important;mix-blend-mode:screen!important;pointer-events:none!important;}
+  .beast-ascii[data-flicker="true"]{animation:none!important;clip-path:none!important;}
+  /* Static chrome is deliberate: the canvas rain is the only animated visual
+     owner. This removes compositor churn and prevents data-like ghost layers
+     from flashing behind live route content. */
+  .beast-shell *:not(#beastMatrix),
+  .beast-shell *:not(#beastMatrix)::before,
+  .beast-shell *:not(#beastMatrix)::after{animation:none!important;transition:none!important;}
+  body::before,body::after{animation:none!important;}
+  .fx-stream::before,
+  .fx-scan::after{animation:none!important;opacity:0!important;}
+  .beast-data-noise,
+  .memory-constellation::before,
+  .memory-constellation::after,
+  .beast-terminal-screen::after,
+  .terminal-output::after,
+  .p8-route-stage::after,
+  .p8-studio-core::after{animation:none!important;opacity:0!important;background-image:none!important;}
+  #beastGridLayer,
+  #beastGridLayer::before,
+  #beastGridLayer::after,
+  #beastGridFront,
+  #beastGridFront::after{animation:none!important;}
+  .beast-viz-heartbeat{opacity:.34!important;}
+  .beast-terminal-screen::after,
+  .terminal-output::after,
+  .p8-route-stage::after,
+  .memory-constellation::after,
+  .p8-studio-core::after,
+  .memory-constellation::before,
+  .trust-security-node::before{animation:none!important;opacity:0!important;}
+  .beast-grid-front{display:none!important;}
+  /* Route commits replace the outlet synchronously. Disable the legacy page
+     entrance filter and hide the transition surface so an old composited text
+     layer cannot flash through the new page. */
+  #beastPageOutlet>.beast-page{animation:none!important;filter:none!important;}
+  #beastPageOutlet[data-transitioning="true"]>.beast-page{visibility:hidden!important;opacity:0!important;}
+  #beastPageOutlet:not([data-transitioning="true"])>.beast-page{visibility:visible!important;opacity:1!important;}
+  #beastPageOutlet>.beast-page::before,
+  #beastPageOutlet>.beast-page::after{animation:none!important;}
+  /* Reserve the visual header explicitly; relying only on the custom
+     property allowed a later responsive rule to pull page headings upward. */
+  .beast-shell{grid-template-rows:184px minmax(0,1fr) var(--beast-command-h)!important;}
+  .beast-studio-page{padding-top:14px;}
+  .beast-studio-page>.beast-page-head{margin-top:4px;}
+  .beast-page{animation:none!important;}
+  #beastPageScan,.beast-header-premium::after,.beast-page-head::after,.beast-card::before{animation:none!important;}
+  .beast-card::before{opacity:.28!important;}
+  .beast-system-page .p8-system-grid{grid-template-columns:minmax(360px,.85fr) minmax(0,1.15fr);gap:18px;}
+  .beast-system-page .p8-system-health,.beast-system-page .p8-prec-panel{min-height:430px;}
+  .beast-system-page .p8-system-lower{gap:18px;}
+   .beast-system-page .p8-system-lower>.beast-card{min-width:0;}
+}
+
+/* Final compositor and editor-surface contract. The route scan is decorative
+   only and has repeatedly presented as a second data layer during navigation. */
+@media(min-width:901px){
+  #beastPageScan,.beast-viewport::after{display:none!important;}
+  #beastMatrixFront{display:none!important;}
+  .cortex-editor-stage .monaco-editor .minimap,
+  .cortex-editor-stage .monaco-editor .minimap canvas,
+  .cortex-editor-stage .monaco-editor .minimap-decorations-layer,
+  .cortex-editor-stage .monaco-editor .minimap-slider,
+  .cortex-editor-stage .monaco-editor .minimap-shadow-visible{
+    background-color:#020403!important;
+    opacity:1!important;
+    filter:none!important;
+  }
+  .cortex-editor-stage .monaco-editor .minimap-slider{mix-blend-mode:normal!important;background:rgba(119,255,61,.10)!important;border-left:1px solid rgba(119,255,61,.20)!important;}
+  .cortex-editor-stage .monaco-editor .minimap-shadow-visible{box-shadow:-6px 0 10px rgba(0,0,0,.45)!important;}
+
+  /* Hundreds of translucent framed surfaces force repeated backdrop-filter
+     passes. Keep the frame language, but let the compositor use opaque tinted
+     surfaces for interactive performance. */
+  .beast-shell .beast-surface,
+  .beast-shell .beast-card,
+  .beast-shell .beast-page-head,
+  .beast-shell .cortex-ai-panel,
+  .beast-shell .cortex-editor,
+  .beast-shell .cortex-explorer,
+  .beast-shell .cortex-editor-stage{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  /* Keep compatibility surfaces available. The workspace runtime now decides
+     which editor host is active; forcing the fallback host off in CSS made
+     renderer failure look like an empty black editor. */
+  .beast-workspace-page .legacy-editor-host{display:none!important;}
+}
+
+/* Final composition pass: keep every route inside the shared 9.1.5 frame. */
+@media(min-width:901px){
+  /* The workspace needs a real scroll surface.  Hidden overflow here caused
+     the editor and AI pane to climb under the shell header. */
+  body[data-beast-page="workspace"] .beast-viewport{
+    overflow:auto!important;
+    overflow-x:hidden!important;
+    scrollbar-gutter:stable;
+  }
+  #beastPageOutlet:has(.beast-workspace-page){height:auto!important;min-height:100%;display:block;}
+  .beast-workspace-page{
+    height:auto!important;
+    min-height:100%;
+    overflow:visible!important;
+    position:relative;
+    z-index:1;
+  }
+  .beast-header.beast-header-premium{z-index:20!important;position:relative!important;overflow:hidden!important;}
+  /* Keep the live mission label inside its header band.  The inherited
+     hi-def page-heading rules were allowing its transparent paint layer to
+     bleed into the active page strip. */
+  .beast-header .beast-title-row{
+    overflow:hidden!important;
+    background:linear-gradient(90deg,rgba(0,0,0,.96),rgba(2,10,5,.92) 78%,rgba(2,10,5,.7))!important;
+    mix-blend-mode:normal!important;
+  }
+  .beast-header .beast-title{
+    display:block!important;
+    max-width:100%!important;
+    font-size:clamp(16px,1vw,21px)!important;
+    line-height:1.08!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .beast-header .beast-kicker,.beast-header .beast-meta{font-size:10px!important;line-height:1.2!important;}
+  /* The left header pocket is intentionally reserved for live mission state.
+     Keeping it out of the centered identity/page-title lane removes the
+     remaining visual collision on Studio and other routes. */
+  .beast-header .beast-title-row{
+    position:absolute!important;
+    left:28px!important;
+    right:auto!important;
+    top:98px!important;
+    width:min(520px,38vw)!important;
+    min-width:330px!important;
+    max-width:520px!important;
+    min-height:52px!important;
+    padding:6px 12px 5px!important;
+    z-index:9!important;
+    background:linear-gradient(90deg,rgba(0,7,3,.96),rgba(0,7,3,.78),transparent)!important;
+    border-top:1px solid rgba(119,255,61,.26)!important;
+    border-bottom:1px solid rgba(119,255,61,.10)!important;
+  }
+  .beast-header .beast-title-row .beast-title{font-size:clamp(15px,1.12vw,22px)!important;}
+  .beast-workspace-page .cortex-layout.ai-open{
+    grid-template-columns:minmax(0,1fr) minmax(480px,560px)!important;
+    gap:16px!important;
+    align-items:stretch;
+    overflow:visible!important;
+  }
+  .beast-workspace-page .cortex-ai-panel{
+    min-width:0!important;
+    min-height:680px!important;
+    position:relative;
+    z-index:2;
+  }
+  .beast-workspace-page .cortex-editor,
+  .beast-workspace-page .cortex-editor-stage{min-height:680px!important;}
+  .beast-workspace-page .cortex-ai-chat,
+  .beast-workspace-page [data-ai-chat]{min-height:250px;}
+
+  /* Evidence cards: readable labels, while preserving the compact hacker UI. */
+  .beast-live-fabric-page .live-proof span{font-size:10px!important;}
+  .beast-live-fabric-page .live-proof b{font-size:13px!important;}
+  .beast-live-fabric-page .live-metric span{font-size:10px!important;}
+  .beast-live-fabric-page .live-metric b{font-size:15px!important;}
+  .beast-live-fabric-page .live-metric small,
+  .beast-live-fabric-page .live-event span,
+  .beast-live-fabric-page .live-event b,
+  .beast-live-fabric-page .live-event em{font-size:10px!important;}
+
+  /* Closure rows use a stable three-column contract instead of drifting text. */
+  .beast-grand-closure-page .closure-hero{
+    border:23px solid transparent!important;
+    border-image-source:url("../assets/frames/panel-hd-neutral.png")!important;
+    border-image-slice:120!important;
+    border-image-width:23px!important;
+    background:rgba(0,8,4,.72)!important;
+  }
+  .beast-grand-closure-page .closure-gate{
+    grid-template-columns:54px minmax(0,1fr) 110px!important;
+    align-items:center!important;
+  }
+  .beast-grand-closure-page .closure-gate>div{min-width:0;}
+  .beast-grand-closure-page .closure-gate b{font-size:12px;line-height:1.2;}
+  .beast-grand-closure-page .closure-gate small{font-size:10px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .beast-grand-closure-page .closure-gate em{font-size:10px;text-align:right;white-space:nowrap;}
+
+  /* Crystal and semantic-map panels fill the same row with no forced gaps. */
+  .beast-crystal-page .crystal-main-grid{
+    grid-template-columns:minmax(0,.8fr) minmax(0,1.55fr) minmax(0,.8fr)!important;
+    gap:16px!important;
+    align-items:stretch!important;
+  }
+  .beast-crystal-page .crystal-main-grid>.beast-card{min-height:640px;height:100%;min-width:0;}
+  .beast-map-page .map-main-grid{
+    grid-template-columns:minmax(0,1.7fr) minmax(0,.8fr)!important;
+    gap:16px!important;
+    align-items:stretch!important;
+  }
+  .beast-map-page .map-main-grid>.beast-card{min-height:640px;height:100%;min-width:0;}
+
+  /* Testing cards stretch to the route edge instead of inheriting narrow rows. */
+  .beast-testing-page .terminal-lower-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:16px!important;
+    align-items:stretch!important;
+  }
+  .beast-testing-page .terminal-lower-grid>.beast-card{width:100%;min-width:0;height:100%;}
+  .beast-testing-page>.beast-card,
+  .beast-testing-page .terminal-history-card,
+  .beast-testing-page [data-phase5-10-verification-console]{width:100%;max-width:none;min-width:0;}
+
+  /* Doctor ring stays centered inside its track rather than clipping at the rail. */
+  .beast-doctor-page .doctor-score-panel{min-width:0;overflow:hidden!important;}
+  .beast-doctor-page .doctor-core-display{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:4px!important;
+    overflow:visible!important;
+    justify-items:center;
+  }
+  .beast-doctor-page .doctor-orbit{width:128px;height:128px;}
+  .beast-doctor-page .doctor-orbit img{width:78px;height:78px;}
+  .beast-doctor-page .doctor-score-ring{width:128px;height:128px;margin-inline:auto;}
+
+  /* Deploy stages share a fixed visual rhythm so icons cannot drift right. */
+  .beast-deploy-page .p8-pipeline-track>div{
+    min-width:0;
+    grid-template-rows:26px 58px minmax(28px,auto) minmax(18px,auto);
+    place-items:center;
+    align-content:center;
+    text-align:center;
+  }
+  .beast-deploy-page .p8-pipeline-track>div img{width:38px!important;height:38px!important;margin:auto;object-fit:contain;}
+  .beast-deploy-page .p8-pipeline-track>div span,
+  .beast-deploy-page .p8-pipeline-track>div b,
+  .beast-deploy-page .p8-pipeline-track>div em{max-width:100%;overflow-wrap:anywhere;text-align:center;}
+  .beast-deploy-page .p8-deploy-lower{align-items:stretch;}
+  .beast-deploy-page .p8-deploy-lower>.beast-card{min-width:0;height:100%;}
+}
+
+@media(min-width:901px) and (max-width:1350px){
+  .beast-shell{grid-template-rows:184px minmax(0,1fr) var(--beast-command-h)!important;}
+  .beast-header .beast-title-row{left:24px!important;top:92px!important;width:min(420px,38vw)!important;min-width:320px!important;}
+  .beast-workspace-page .cortex-layout.ai-open{grid-template-columns:minmax(0,1fr) minmax(400px,46vw)!important;}
+  .beast-crystal-page .crystal-main-grid{grid-template-columns:minmax(0,.75fr) minmax(0,1.4fr) minmax(0,.75fr)!important;}
+  .beast-doctor-page .doctor-core-display{grid-template-columns:1fr!important;}
+}
+
+@media(max-width:900px){
+  .beast-shell{grid-template-rows:auto minmax(60vh,auto) var(--beast-command-h)!important;}
+  .beast-studio-page{padding-top:0;}
+  body[data-beast-page="workspace"] .beast-viewport{overflow:auto!important;}
+  .beast-workspace-page{height:auto!important;overflow:visible!important;}
+  .beast-workspace-page .cortex-layout.ai-open{grid-template-columns:minmax(0,1fr)!important;}
+  .beast-workspace-page .cortex-ai-panel{min-height:560px!important;}
+  .beast-testing-page .terminal-lower-grid{grid-template-columns:1fr!important;}
+  .beast-doctor-page .doctor-core-display{grid-template-columns:1fr!important;}
+}
+
+/* Keep one predictable left header pocket across every desktop route. */
+@media(min-width:901px){
+  .beast-header-terminal{
+    display:block!important;
+    position:absolute!important;
+    left:42px!important;
+    top:58px!important;
+    bottom:auto!important;
+    width:220px!important;
+    min-height:34px!important;
+    padding-left:10px!important;
+    color:#8dff55!important;
+    font:700 8px/1.35 var(--beast-mono)!important;
+    letter-spacing:.06em!important;
+    opacity:.88!important;
+    z-index:8!important;
+    overflow:hidden!important;
+  }
+}
+
+/* Keep the expensive visual runtime quiet, but bring back the crystallization
+   chamber's signal animation as an explicit, bounded allowlist. */
+@media(min-width:901px){
+  .beast-crystal-page .crystal-chamber::before{animation:crystal-grid-pulse 4s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-chamber::after{animation:crystal-scan 3.4s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-reactor-ring{animation:crystal-ring-spin 13s linear infinite!important;}
+  .beast-crystal-page .crystal-reactor-ring::before{animation:crystal-ring-reverse 9s linear infinite!important;}
+  .beast-crystal-page .crystal-reactor-ring::after{animation:crystal-ring-spin 6s linear infinite!important;}
+  .beast-crystal-page .crystal-energy-column{animation:crystal-column 2.8s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-shard{animation:crystal-float 4.2s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-core-line{animation:crystal-core-flare 2s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-platform{animation:crystal-platform-pulse 2.6s ease-in-out infinite!important;}
+  .beast-crystal-page .crystal-platform::before{animation:crystal-ring-spin 7s linear infinite!important;}
+  .beast-crystal-page .crystal-platform::after{animation:crystal-ring-spin 4.5s linear infinite reverse!important;}
+  .beast-crystal-page .crystal-particles i{animation:crystal-particle var(--duration) ease-in-out infinite!important;}
+}
+
+/* The test explorer is a real data surface, not a translucent overlay. Keep
+   stale route paint and inherited control layers from showing through it. */
+@media(min-width:901px){
+  #beastPageOutlet>.beast-page:not(:last-child){display:none!important;}
+  .beast-testing-page{position:relative;isolation:isolate;background:rgba(0,5,2,.94);}
+  .beast-testing-page>.beast-card,
+  .beast-testing-page .terminal-lower-grid>.beast-card,
+  .beast-testing-page [data-phase5-10-verification-console]{background:rgba(1,7,4,.97)!important;}
+  .beast-testing-page .terminal-chat-controls,
+  .beast-testing-page .terminal-problems,
+  .beast-testing-page .terminal-history-list,
+  .beast-testing-page .terminal-chat-output{position:relative;z-index:1;isolation:isolate;}
+  .beast-testing-page .terminal-chat-controls{background:rgba(1,7,4,.98)!important;}
+  .beast-testing-page .terminal-problems{background:rgba(0,4,2,.98)!important;}
+  .beast-testing-page .terminal-problems button{background:rgba(0,4,2,.98)!important;}
+}
+@media(max-width:900px){
+  .beast-commons-page .commons-forge-grid,
+  .beast-commons-page .commons-node-grid,
+  .beast-commons-page .commons-bucket-grid,
+  .beast-commons-page .commons-revision-grid,
+  .beast-commons-page .commons-discovery-grid{grid-template-columns:1fr;}
+  .beast-commons-page>.p8-metric-grid,
+  .beast-commons-page>.p8-economy-grid,
+  .beast-commons-page .commons-subgrid{grid-template-columns:1fr;}
+}

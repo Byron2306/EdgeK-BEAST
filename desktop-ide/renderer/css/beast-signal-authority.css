@@ -1,0 +1,41 @@
+/* Final categorical visual authority. Loaded after every route and override sheet. */
+:root{--signal-cyan:#5ce5f1;--signal-green:#68f5a7;--signal-amber:#f1bd58;--copy-mint:#b8ded8;--copy-steel:#9db9c6;--surface-navy:#1b3448;--surface-teal:#19464a}
+
+#beastPageOutlet *::first-letter,.beast-context-rail *::first-letter{color:inherit!important}
+#beastPageOutlet .beast-page-head h2{color:#a8dfe3!important;text-shadow:0 0 12px rgba(85,217,232,.13)!important}
+#beastPageOutlet :where(.beast-card,.beast-panel)>h3,.beast-context-rail h3{color:var(--signal-cyan)!important;-webkit-text-fill-color:var(--signal-cyan)!important;background:none!important;text-shadow:0 0 10px rgba(85,217,232,.3)!important}
+#beastPageOutlet .beast-card{background:linear-gradient(145deg,var(--surface-navy) 0 58%,var(--surface-teal) 100%)!important;border-color:rgba(92,229,241,.42)!important;box-shadow:inset 3px 0 #68f5a7,inset 0 1px rgba(190,244,238,.08),0 8px 20px rgba(5,18,29,.24)!important}
+#beastPageOutlet .beast-card:nth-of-type(even){background:linear-gradient(145deg,#1d4650 0 52%,#1b354b 100%)!important;border-color:rgba(104,245,167,.38)!important}
+.beast-context-rail,.beast-context-card{background:linear-gradient(145deg,#1a3549,#194348)!important;border-color:rgba(92,229,241,.4)!important}
+.beast-context-card{box-shadow:inset 2px 0 rgba(104,245,167,.8),0 5px 16px rgba(4,18,27,.22)!important}
+
+/* Nested operational blocks are opaque instruments, never translucent windows. */
+#beastPageOutlet :where(.route-map-node,.routing-rule,.model-registry-row,.model-runtime-card,.agent-session-row,.p8-route-node,.p8-facts>div,.beast-rail-facts>div,.terminal-problems button,[data-test-file],.map-node,.schema-node,.tooling-module-grid button){
+  background:#193b47!important;
+  border-color:rgba(92,229,241,.3)!important;
+}
+#beastPageOutlet :where(.route-map-node,.routing-rule,.model-registry-row,.model-runtime-card,.agent-session-row,.p8-route-node,.p8-facts>div,.beast-rail-facts>div):nth-child(even){
+  background:#1c4350!important;
+  border-color:rgba(104,245,167,.3)!important;
+}
+#beastPageOutlet :where(.route-map-node,.map-node,.schema-node,.tooling-module-grid button):hover{
+  border-color:#68f5a7!important;
+  box-shadow:0 0 18px rgba(104,245,167,.2),inset 0 0 18px rgba(92,229,241,.06)!important;
+}
+
+#beastPageOutlet :where(.beast-ring,.p8-ring,.review-test-ring,.audit-pack-ring,.doctor-score-ring),.beast-context-rail .beast-ring{background:radial-gradient(circle at 42% 34%,rgba(85,217,232,.27),transparent 42%),radial-gradient(circle,#173846 0 42%,#142936 43% 58%,rgba(91,236,181,.15) 59% 72%,transparent 73%)!important;border-color:rgba(91,236,181,.52)!important;box-shadow:inset 0 0 30px rgba(85,217,232,.2),0 0 20px rgba(91,236,181,.22),0 0 44px rgba(85,217,232,.1)!important;filter:drop-shadow(0 0 10px rgba(85,217,232,.24))!important}
+
+#beastPageOutlet .beast-models-page .model-route-map .route-line{stroke:var(--signal-green)!important;stroke-width:2.2!important;opacity:.92!important;filter:drop-shadow(0 0 5px rgba(99,242,184,.78))!important}
+#beastPageOutlet .beast-models-page .model-route-map .route-line.fallback{stroke:var(--signal-cyan)!important;filter:drop-shadow(0 0 5px rgba(85,217,232,.8))!important}
+#beastPageOutlet .beast-models-page .model-route-map .route-line.cloud{stroke:var(--signal-amber)!important;filter:drop-shadow(0 0 5px rgba(241,189,88,.74))!important}
+#beastPageOutlet .beast-map-page svg :where(path,line,polyline),#beastPageOutlet .beast-tooling-page svg :where(path,line,polyline),#beastPageOutlet .memory-constellation path{stroke:var(--signal-cyan)!important;opacity:.78!important;filter:drop-shadow(0 0 4px rgba(85,217,232,.7))!important}
+
+#beastPageOutlet .beast-deploy-page .p8-pipeline-track>div{background:linear-gradient(155deg,#182b3a 0 56%,#15363a 100%)!important;border-color:rgba(85,217,232,.34)!important;box-shadow:inset 0 1px rgba(190,236,239,.07),0 6px 14px rgba(4,15,24,.22)!important}
+#beastPageOutlet .beast-deploy-page .p8-pipeline-track>div:nth-child(3n+2){background:linear-gradient(155deg,#18343a,#17283a)!important}
+#beastPageOutlet .beast-deploy-page .p8-pipeline-track>div:nth-child(3n){background:linear-gradient(155deg,#17283a,#193633)!important}
+
+#beastPageOutlet .beast-workspace-page :where(.cortex-editor-stage,.cortex-explorer,.cortex-tab-strip,.terminal-chat-output,.terminal-problems,pre),#beastPageOutlet .beast-testing-page :where(.terminal-chat-output,.terminal-chat-controls,.terminal-problems,.terminal-history-list,[data-phase5-10-verification-console],pre),#beastPageOutlet .beast-worktrees-page :where(pre,[data-worktree-diff]){background:linear-gradient(145deg,#112638,#14363b)!important;border-color:rgba(85,217,232,.27)!important;color:var(--copy-mint)!important}
+#beastPageOutlet .beast-testing-page .terminal-problems button,#beastPageOutlet .beast-testing-page [data-test-file],#beastPageOutlet .beast-workspace-page :where(.cortex-tab,.cortex-tree-row){background:#172b3b!important;color:var(--copy-mint)!important;border-color:rgba(85,217,232,.2)!important}
+#beastPageOutlet :where(p,small,.sub,.beast-card span){color:var(--copy-steel)!important}
+#beastPageOutlet :where(b,strong,.metric-value,.metric-number){color:var(--copy-mint)!important}
+#beastPageOutlet :where(.live,.ok,[data-status="ready"]){color:var(--signal-green)!important}

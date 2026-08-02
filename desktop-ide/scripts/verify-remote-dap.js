@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const { IdeCompatibilityHost } = require('../ide-compatibility-host');
 
@@ -41,7 +42,10 @@ async function main() {
   if (containerId) await handshake('Container DAP handshake', { kind: 'container', containerId, workspaceFolder: process.env.BEAST_PARITY_CONTAINER_WORKSPACE || '/workspace' }, process.env.BEAST_PARITY_CONTAINER_DAP_ADAPTER || 'debugpy');
   else record('Container DAP handshake', 'skipped', 'Set BEAST_PARITY_CONTAINER_ID to validate a running container adapter.');
   const failed = rows.filter(row => row.status === 'failed');
-  console.log(JSON.stringify({ ok: failed.length === 0, checks: rows.length, passed: rows.filter(row => row.status === 'passed').length, skipped: rows.filter(row => row.status === 'skipped').length, failed }, null, 2));
+  const report = { ok: failed.length === 0, checks: rows.length, passed: rows.filter(row => row.status === 'passed').length, skipped: rows.filter(row => row.status === 'skipped').length, failed, rows };
+  fs.mkdirSync(path.join(repo, 'build'), { recursive: true });
+  fs.writeFileSync(path.join(repo, 'build', 'REMOTE_DAP_CONTRACT.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  console.log(JSON.stringify(report, null, 2));
   if (failed.length) process.exit(1);
 }
 

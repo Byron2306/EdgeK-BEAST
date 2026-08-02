@@ -3,7 +3,7 @@
   const DEFAULT_GATEWAY = 'http://127.0.0.1:8101';
   const EXPECTED_DESKTOP = [
     'status','chooseWorkspace','listFiles','readFile','fileOperation','toolingSnapshot','systemSnapshot',
-    'releaseReadiness','restartGateway','openWorkspaceWindow','openGateway','gatewayRequest',
+    'releaseReadiness','restartGateway','resetRuntimeStack','openWorkspaceWindow','openGateway','gatewayRequest',
     'readRemoteFile','writeRemoteFile','reconnectRemote','runRemoteTerminal','executeExtensionCommand',
     'onWorkspaceSelected','onRefresh','onGatewayLog','onDesktopVersion'
   ];
@@ -11,7 +11,10 @@
     initialized:false, mode:'offline', gatewayUrl:DEFAULT_GATEWAY, desktopCapabilities:{},
     endpointHealth:new Map(), inFlight:new Map(), cache:new Map(), exclusive:new Map(),
     listeners:new Map(), eventDisposers:[], controllers:new Set(), errors:[], visible:!document.hidden,
-    activeRequests:0, requestQueue:[], maxConcurrent:6, workspaceIdentityDigest:localStorage.getItem('beast.workspace.identity.digest')||'',
+    activeRequests:0, requestQueue:[],
+    // The local gateway serializes its heaviest snapshot work. A small client
+    // queue prevents boot-time request convoys without slowing light probes.
+    maxConcurrent:3, workspaceIdentityDigest:localStorage.getItem('beast.workspace.identity.digest')||'',
     bootedAt:0, lastProbeAt:0, desktopVersion:'', gatewayVersion:''
   };
 
@@ -115,7 +118,7 @@
   async function probe(options={}) {
     const started=performance.now(); let result=null; let mode='offline';
     try {
-      if(hasDesktop('status')) { result=await desktopCall('status',[]); mode='electron'; }
+      if(hasDesktop('status')) { result=await desktopCall('status',[{ lightweight:true }]); mode='electron'; }
       else { result=await request('/edgek/root-info',{...options,cacheTtl:0,attempts:1,timeoutMs:options.timeoutMs||3500}); mode='gateway'; }
       const url=result?.gatewayUrl||result?.gateway_url||state.gatewayUrl; setGatewayUrl(url);
       state.gatewayVersion=result?.version||result?.health?.version||'';

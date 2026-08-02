@@ -1,0 +1,67 @@
+contract_id: beast.agent-run.v2
+schema_version: 2
+published_at: '2026-07-18'
+status: phase2b_execution_ownership
+canonical_owner: app.kernel.agents.AgentRunEngine
+execution_owner: app.kernel.agents.AgentRunWorkerRegistry
+workspace_scope: required
+transport:
+  create: POST
+  subscribe: SSE by run_id
+  replay_cursor: event sequence
+  legacy_projection: supported
+  prompt_in_query_string: forbidden_for_pair_programmer_v2
+storage:
+  engine: sqlite
+  journal_mode: WAL
+  synchronous: FULL
+  event_chain: sha256_previous_hash
+execution:
+  launch_from_create: explicit launch=true
+  detached_from_renderer: true
+  duplicate_worker_guard: true
+  restart_policy: paused_then_explicit_resume
+  current_adapter: legacy_pair_programmer_v2
+approval:
+  durable: true
+  keyed_by: [run_id, approval_id]
+  wait_mode: persisted_poll
+  default_timeout_seconds: 3600
+  rejection_behavior: continue_with_original_scope
+cancellation:
+  durable_intent: true
+  live_task_registry: true
+  renderer_disconnect_does_not_cancel: true
+replay:
+  canonical_projection: true
+  legacy_projection: true
+  event_id_forwarding: true
+  renderer_cursor_persistence: true
+api:
+  create_and_optional_launch: POST /edgek/agent-runs
+  list: GET /edgek/agent-runs
+  detail: GET /edgek/agent-runs/{run_id}
+  replay: GET /edgek/agent-runs/{run_id}/events
+  cancel: POST /edgek/agent-runs/{run_id}/cancel
+  resume_and_relaunch: POST /edgek/agent-runs/{run_id}/resume
+  verify: GET /edgek/agent-runs/{run_id}/verify
+  approvals: GET /edgek/agent-runs/{run_id}/approvals
+  approval_resolution: POST /edgek/agent-runs/{run_id}/approvals/{approval_id}
+compatibility:
+  legacy_pair_programmer_route: preserved
+  renderer_public_api: preserved
+  sourceplan_boundary: preserved
+  direct_workspace_mutation: forbidden
+phase2b_guarantees:
+  - Pair Programmer creates a durable run through POST before subscribing to events.
+  - Prompt and context file paths no longer travel in the Pair Programmer SSE URL.
+  - The initiating renderer may disconnect without terminating the backend worker.
+  - Subscribers can replay either canonical or legacy event projections from an exact sequence.
+  - Electron forwards SSE event IDs so the renderer can persist a replay cursor.
+  - Approval waits are durable and are no longer limited to four seconds.
+  - Resume relaunches the persisted execution request after a process restart.
+phase2b_limits:
+  - The provider implementation is still the proven legacy Pair Programmer adapter.
+  - Resume restarts from the deterministic pre-dispatch execution request, not a serialized provider coroutine.
+  - Approval presentation still uses the current confirmation UI.
+  - Provider-neutral model-selected tools and worktree-first repair are Phase 2C work.

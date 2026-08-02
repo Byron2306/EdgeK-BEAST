@@ -1,0 +1,103 @@
+{
+  "phase": "2A",
+  "name": "Durable AgentRun Foundation",
+  "verified_at": "2026-07-18",
+  "status": "PASS",
+  "scope": "compatibility-wrapped durable runtime foundation; not the complete multi-turn AgentRunEngine",
+  "architecture": {
+    "agent_run_modules": 5,
+    "public_route_count": 61,
+    "legacy_routes_preserved": 52,
+    "agent_run_routes_added": 9,
+    "legacy_pair_programmer_stream": "wrapped",
+    "sourceplan_boundary": "preserved",
+    "direct_workspace_mutation": "still forbidden"
+  },
+  "foundation_checks": {
+    "passed": 16,
+    "total": 16
+  },
+  "focused_python_tests": {
+    "passed": 18,
+    "failed": 0,
+    "warnings": 2
+  },
+  "python_compilation": {
+    "files": 380,
+    "failures": 0
+  },
+  "javascript_syntax": {
+    "files": 109,
+    "failures": 0
+  },
+  "enterprise_runtime_contract": {
+    "status": "PASS"
+  },
+  "parity_foundation": {
+    "passed": 89,
+    "total": 89,
+    "lsp": "skipped",
+    "dap": "skipped",
+    "kernel": "skipped"
+  },
+  "execution_target_verification": {
+    "passed": 12,
+    "skipped": 3,
+    "failed": 0
+  },
+  "desktop_static_smoke": {
+    "passed": 24,
+    "total": 24
+  },
+  "desktop_launch_smoke": {
+    "passed": 9,
+    "total": 9
+  },
+  "visual_acceptance": {
+    "passed": 110,
+    "total": 110,
+    "status": "PASS"
+  },
+  "guarantees": [
+    "Every legacy Pair Programmer execution obtains a durable run_id before context loading.",
+    "Legacy SSE frames are projected into sequenced hash-chained AgentRun events.",
+    "Events can be replayed after renderer disconnect or backend restart.",
+    "Approval decisions are persisted against an exact run_id and approval_id.",
+    "Renderer cancellation reaches the backend AgentRun cancellation endpoint.",
+    "Registered asyncio tasks and process handles can be signalled by the cancellation registry.",
+    "Restart-orphaned active runs are paused rather than silently reported as live.",
+    "SourcePlan promotion authority remains human-controlled."
+  ],
+  "honest_limits": [
+    "POST-created records do not yet launch execution; execution remains compatibility-wrapped through the legacy stream.",
+    "Prompt and context transport still uses the legacy GET stream.",
+    "Approval presentation still uses the current confirmation UI.",
+    "Resume marks a run ready but does not yet reconstruct and relaunch the provider/tool coroutine.",
+    "Process-tree cancellation applies only to registered handles.",
+    "Automatic renderer replay and timeline reconstruction remain Phase 2B.",
+    "Worktree-first iterative edit, test, diagnose, and repair remains Phase 2B/2C."
+  ],
+  "checks": {
+    "modules_present": true,
+    "contract_present": true,
+    "sqlite_wal": true,
+    "sqlite_full_sync": true,
+    "hash_chain": true,
+    "routes_complete": true,
+    "legacy_stream_wrapped": true,
+    "early_run_registration": true,
+    "renderer_backend_cancel": true,
+    "renderer_run_identity": true,
+    "durable_approval_resolution": true,
+    "durable_replay": true,
+    "approval_durable": true,
+    "chain_integrity": true,
+    "registered_task_cancelled": true,
+    "cancel_terminal_state": true
+  },
+  "passed": 16,
+  "total": 16,
+  "route_count": 97,
+  "legacy_route_count_preserved": 52,
+  "agent_run_routes_added": 9
+}

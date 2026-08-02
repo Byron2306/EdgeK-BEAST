@@ -1,1 +1,0 @@
-# EdgeK BEAST Gateway - Kernel Package

@@ -96,6 +96,8 @@ def main() -> None:
         "BEAST_COMMONS_REMOTE_CLIENT_KEY": str(client_dir / "client.pem"),
         "BEAST_COMMONS_REMOTE_CLIENT_NODE_ID": args.client_node_id,
         "BEAST_COMMONS_REMOTE_CLIENT_KEY_ID": "beast-commons-client-v1",
+        "BEAST_COMMONS_TRUST_STORE": str(root / "trust-commons" / "commons-trust.yaml"),
+        "BEAST_COMMONS_LATTICE_TRUST_STORE": str(root / "trust-commons" / "lattice-trust.yaml"),
         "BEAST_COMMONS_REMOTE_ALLOWED_HOSTS": "127.0.0.1",
         "BEAST_COMMONS_REMOTE_ALLOW_HTTP_LOOPBACK": "1",
     }

@@ -26,12 +26,15 @@ def output_from(message):
     content = message.get("content", {})
     kind = message.get("msg_type", "output")
     if kind == "stream":
-        return {"type": "stream", "name": content.get("name", "stdout"), "text": compact(content.get("text", ""))}
+        return {"output_type": "stream", "type": "stream", "name": content.get("name", "stdout"), "text": compact(content.get("text", ""))}
     if kind in {"display_data", "execute_result"}:
         data = content.get("data", {})
-        return {"type": kind, "text": compact(data.get("text/plain", data)), "data": data}
+        output = {"output_type": kind, "type": kind, "text": compact(data.get("text/plain", data)), "data": data, "metadata": content.get("metadata", {})}
+        if kind == "execute_result":
+            output["execution_count"] = content.get("execution_count")
+        return output
     if kind == "error":
-        return {"type": "error", "ename": content.get("ename", "Error"), "evalue": content.get("evalue", ""), "traceback": content.get("traceback", [])[-12:]}
+        return {"output_type": "error", "type": "error", "ename": content.get("ename", "Error"), "evalue": content.get("evalue", ""), "traceback": content.get("traceback", [])[-12:]}
     return None
 
 

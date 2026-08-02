@@ -141,6 +141,24 @@ class SensoriumRuntime:
         )
         return reconciled
 
+    def collect_linux_sockets(self, *, workspace_id: str, lease_index: Optional[Dict[object, str]] = None,
+                              proc_root: Path | str = "/proc") -> Dict[str, Any]:
+        """Ingest a read-only procfs TCP/UDP inventory with explicit limits."""
+        from app.kernel.sensorium.linux_collectors import collect_socket_observations
+        observations, receipt = collect_socket_observations(
+            workspace_id=workspace_id, proc_root=proc_root,
+        )
+        admitted = 0
+        for observation in observations:
+            self.observe_socket(observation, lease_index=lease_index)
+            admitted += 1
+        self.read_model.set_collector_receipt(receipt)
+        self.observe_owned(event_type="sensorium.collector_snapshot", source="sensorium_linux_procfs",
+            payload_schema="beast.sensorium.collector_snapshot.v1",
+            payload={"collector": "procfs", "socket_count": admitted, "read_only": True,
+                     "limitations": receipt["limitations"]}, workspace_id=workspace_id)
+        return {**receipt, "admitted": admitted}
+
     def retire_socket(self, socket_identity: str, *, reason: str, workspace_id: str = "") -> bool:
         """Remove stale topology and make the disappearance observable."""
         removed = self.read_model.remove_socket(socket_identity)

@@ -1,0 +1,78 @@
+{
+  "base_url": "https://api.cohere.ai/compatibility/v1",
+  "beast_object_type": "mega_provider_call_receipt",
+  "clean_completed": false,
+  "cloud_calls": 1,
+  "completed": false,
+  "created_at": "2026-07-21T19:21:26Z",
+  "decision": "provider_execution",
+  "failure_bucket": "capability_failure",
+  "family": "syntax_check",
+  "files_changed": [],
+  "hidden_passed": false,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+    "fixture_family": "syntax_check",
+    "fixture_occurrence": 10,
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/config.py": {
+        "exists": true,
+        "file_hash": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+        "semantic_hash": "sha256:16673a7c838302213694bd80bfebd0ab7c47c93cbf458f3573afcdf80eb2d6c3",
+        "symbol_hashes": {
+          "gateway_config": "sha256:171f6e47d0812f321355effa37706b905963bc1ca710e03f8cb34386ee0d2b3f",
+          "parse_bool": "sha256:add0dfb73b3174171c36877068c28e272488f337e82b1eed4c6a1c39b3a6dd7a"
+        }
+      }
+    },
+    "tests": {
+      "tests/test_config.py": {
+        "exists": true,
+        "file_hash": "sha256:904a236cb6a987a61d95d2900c49032721661292b4ec3e835db97ee90b38c925",
+        "semantic_hash": "sha256:7fada9eb380e1daa1d59fac9c7045f905dfcd00112bbbce811a075feaecbaa9c",
+        "symbol_hashes": {
+          "test_boolean_parser_normalizes_common_shell_values": "sha256:f8d4d27cd8709c9036b1419696b53c7ed65f90ccc12e426b2503ec973ffafc3c",
+          "test_provider_has_openrouter_default": "sha256:86f43c81a01edcd871588de0630316c445094f08240d67497025dd919c1e62f3"
+        }
+      },
+      "tests/test_config_hidden.py": {
+        "exists": true,
+        "file_hash": "sha256:542cd1ad8544267eab96e4198a2c856cc1cdb0b4edb739bf7e4c2b7899f5ca2a",
+        "semantic_hash": "sha256:715aaa2dfff8749a1b3cc1ae0964ea2b931ecd64e2dd9d98fd0897b81c8bd8ca",
+        "symbol_hashes": {
+          "test_hidden_empty_and_on_values_are_normalized": "sha256:edb535bbf386bdb9d4cbe79521eafb4649b7bd72b77e8e40048b2d0440976913"
+        }
+      }
+    },
+    "tool_schema_hashes": [
+      "sha256:50db08487f8e7e571e535327e9018ef9026c04216100a2d4bbb82d0534571e89"
+    ],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:07907ada50b65f02a81f8899ba7c501fa1bfa91fdb091b041e4bc49c987423e7",
+  "latency_ms": 3922.154,
+  "live_lane": "live_cohere_schema_only",
+  "mega_lane": "beast_no_compute_governor",
+  "model": "command-a-03-2025",
+  "occurrence": 10,
+  "provider": "cohere",
+  "provider_completion_tokens": 273,
+  "provider_execution_requested": true,
+  "provider_prompt_tokens": 551,
+  "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+  "receipt_id": "mega_provider_call_8b975c944f50e900e6a1",
+  "rescued_completed": false,
+  "rollback_success": false,
+  "task": "config_validation_edge_case",
+  "task_id": "syntax_check_o10_v1",
+  "total_tokens": 824,
+  "version": "1.0",
+  "visible_passed": false
+}

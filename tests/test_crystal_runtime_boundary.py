@@ -32,6 +32,19 @@ class FastReadiness(ProductionReadinessHardeningGauntlet):
         }
 
 
+@pytest.mark.asyncio
+async def test_executor_binds_gateway_owned_runtime_services(tmp_path):
+    executor = Executor()
+    gateway = CrystalReuseGateway(storage=DurableInferenceStorage(tmp_path / "durable"))
+    harness = object()
+    try:
+        executor.bind_runtime_services(crystal_gateway=gateway, integration_harness=harness)
+        assert executor.crystal_runtime_boundary.gateway is gateway
+        assert executor.integration_harness is harness
+    finally:
+        await executor.http_client.aclose()
+
+
 def _integration_harness(tmp_path, provider_executor):
     seal = ResidueSeal(tmp_path / "keys")
     hull = MemoryHull(tmp_path / "vault", seal=seal)

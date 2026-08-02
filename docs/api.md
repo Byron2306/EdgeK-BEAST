@@ -145,7 +145,7 @@ OTLP export uses `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or `OTEL_EXPORTER_OTLP_END
 | `POST` | `/edgek/os-bypass/af-packet/probe` | Open and close an AF_PACKET TPACKET_V3 mmap ring |
 | `POST` | `/edgek/os-bypass/af-packet/capture-probe` | Emit a marked loopback UDP datagram and verify AF_PACKET sees it |
 | `POST` | `/edgek/os-bypass/dpdk/probe` | Initialize DPDK EAL and report available ethdev ports |
-| `POST` | `/edgek/os-bypass/af-xdp/probe` | Load AF_XDP/libxdp and report socket-create readiness |
+| `POST` | `/edgek/os-bypass/af-xdp/probe` | Load AF_XDP/libxdp and report socket-create readiness (not packet IO) |
 
 The AF_PACKET capture probe requires Linux packet sockets and `CAP_NET_RAW` or root. It is intended as a live host experiment: BEAST sends a small marked UDP packet to loopback, sniffs the raw packet path, parses captured frames, and reports whether the marker was observed.
 

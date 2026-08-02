@@ -1,0 +1,31 @@
+matrix_id: beast.languages.v1
+schema_version: 1
+adapters:
+  - id: typescript
+    server: typescript-language-server
+    status: operational
+    required_capabilities: [completion, hover, definition, references, rename, code-actions, formatting, symbols]
+  - id: python-pyright
+    server: pyright
+    status: operational
+    required_capabilities: [completion, hover, definition, references, rename, code-actions, diagnostics]
+  - id: python-pylsp
+    server: pylsp
+    status: operational
+    required_capabilities: [completion, hover, rename, formatting]
+  - id: bash
+    server: bash-language-server
+    status: operational
+    required_capabilities: [completion, hover, symbols]
+  - id: go
+    server: gopls
+    status: conditional
+    required_capabilities: [completion, hover, definition, references, rename]
+  - id: rust
+    server: rust-analyzer
+    status: conditional
+    required_capabilities: [completion, hover, definition, references, rename]
+  - id: cpp
+    server: clangd
+    status: conditional
+    required_capabilities: [completion, hover, definition, references, rename]

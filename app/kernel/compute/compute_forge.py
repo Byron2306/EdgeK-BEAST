@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -40,6 +41,17 @@ from app.kernel.security.crystal_chain import CrystalChainLedger
 from app.kernel.compute.kv_cache_transport import CrossEngineKVCacheTransport
 from app.kernel.compute.kv_engine_adapter import OptimizedKVEngineAdapter
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
+from app.kernel.compute.forge_kv_coordinator import ForgeKVCoordinator, ForgeKVRequest
+from app.kernel.local.ollama_kv_manager import OllamaKVManager
+
+
+class _ForgeModuleHTTPClient:
+    """Compatibility client that keeps existing httpx.post test hooks effective."""
+    def post(self, url: str, *, json: Dict[str, Any], timeout: float):
+        return httpx.post(url, json=json, timeout=timeout)
+
+    def close(self) -> None:
+        return None
 
 
 @dataclass
@@ -163,6 +175,10 @@ class ComputeForgeNode:
         hardware_profile: Dict[str, Any] = None,
         local_semantic_cache: Optional[LocalSemanticCache] = None,
         compute_plane: Any = None,
+        ollama_kv_manager: Optional[OllamaKVManager] = None,
+        sensorium_runtime: Any = None,
+        forge_kv_workers: int = 2,
+        forge_kv_queue_capacity: int = 256,
     ):
         self.profile = ForgeNodeProfile(
             node_id=node_id,
@@ -180,6 +196,7 @@ class ComputeForgeNode:
             timeout_seconds=config.OLLAMA_CIRCUIT_BREAKER_TIMEOUT,
         )
         self.compute_plane = compute_plane
+        self.sensorium_runtime = sensorium_runtime
 
         # Integration: KV Cache & Engine Adapter
         self.transport = CrossEngineKVCacheTransport(storage_dir=self.storage.storage_path / "kv_cache")
@@ -188,6 +205,15 @@ class ComputeForgeNode:
         self.engine_adapter = OptimizedKVEngineAdapter(
             transport=self.transport,
             tensor_parallel_size=self.hardware_profile.get("gpu_count", 1),
+        )
+        self.ollama_kv_manager = ollama_kv_manager or OllamaKVManager(
+            ollama_url=config.OLLAMA_URL, client=_ForgeModuleHTTPClient(),
+        )
+        self.forge_kv = ForgeKVCoordinator(
+            self.ollama_kv_manager,
+            workers=forge_kv_workers,
+            queue_capacity=forge_kv_queue_capacity,
+            event_sink=self._observe_forge_kv_event,
         )
 
         self.work_queue: List[ForgeWorkItem] = []
@@ -203,7 +229,7 @@ class ComputeForgeNode:
             raise PermissionError("forge isolation attestation node mismatch")
         self.profile.isolation_attestation = attestation.to_dict()
         return dict(self.profile.isolation_attestation)
-    def run_local_inference(self, work_item: ForgeWorkItem, prompt_prefix: str, system_prompt: str, tensor_payload: bytes) -> Dict[str, Any]:
+    def prepare_kv_prefill(self, work_item: ForgeWorkItem, prompt_prefix: str, system_prompt: str, tensor_payload: bytes) -> Dict[str, Any]:
         """Execute inference with Zero KV Cache (deterministic) or probabilistic KV caching."""
         self.profile.last_activity_at = datetime.now(timezone.utc).isoformat()
 
@@ -256,115 +282,196 @@ class ComputeForgeNode:
         
         return fingerprint
 
-    def run_local_inference(self, task_class: str, prompt: str, model: str = None) -> Dict[str, Any]:
-        """Run local inference via Ollama (CPU) and record the result as a semantic credit.
-        
-        Model selection:
-        - Default: Reads from BEAST_OLLAMA_MODEL env var, falls back to "llama3.2:3b" (larger, better quality)
-        - Can be overridden per-call for experimentation
-        - CPU-first: works on any machine with Ollama; larger models (7B/8B) work if CPU/RAM allow
-        """
-        if model is None:
-            model = config.OLLAMA_MODEL
-        
-        self.profile.last_activity_at = datetime.now(timezone.utc).isoformat()
-        
-        tokens_estimate = max(1, len(prompt) // 4)
-        actual_response = None
-        inference_success = False
-        
-        # Attempt real Ollama call (CPU inference)
-        inference_error = ""
-        try:
-            ollama_url = config.OLLAMA_URL.rstrip("/") + "/api/generate"
-            payload = {
-                "model": model,
-                "prompt": prompt,
-                "stream": False,
-                "options": {"num_predict": 128}  # Keep it cheap
-            }
-            def call_ollama():
-                response = httpx.post(ollama_url, json=payload, timeout=30)
-                response.raise_for_status()
-                return response
+    def prepare_agent_assistance(
+        self,
+        *,
+        objective: str,
+        workspace: str,
+        verifier_result: Dict[str, Any],
+        policy: Optional[Dict[str, Any]] = None,
+        target_paths: Optional[List[str]] = None,
+        target_symbol: str = "",
+        old: str = "",
+    ) -> Dict[str, Any]:
+        """Reduce repository uncertainty into receipt-backed assistance.
 
+        This is preparation only. It selects and describes a bounded target;
+        it never calls a model and never grants mutation authority.
+        """
+        root = Path(workspace).resolve()
+        candidates = [str(item) for item in target_paths or [] if item]
+        source_files = sorted(
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix in {".py", ".js", ".ts", ".tsx"} and ".git" not in path.parts and ".beast" not in path.parts
+        )
+        selected_file = candidates[0] if candidates else (source_files[0] if source_files else "")
+        selected_symbol = target_symbol
+        if not selected_symbol and selected_file:
+            content = (root / selected_file).read_text(encoding="utf-8", errors="replace")
+            match = re.search(r"(?:^|\n)\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)", content)
+            selected_symbol = match.group(1) if match else ""
+        failure_text = json.dumps(verifier_result, sort_keys=True).lower()
+        failure_class = "percentage arithmetic" if any(term in failure_text for term in ("percent", "discount", "arithmetic")) else "unclassified verifier failure"
+        fingerprint = self.watch_repo(str(root), target_paths=candidates)
+        receipt = {
+            "forge_node": "repository_scout",
+            "node_id": self.profile.node_id,
+            "input_files": len(source_files),
+            "candidate_files": len(candidates) or len(source_files),
+            "selected_file": selected_file,
+            "selected_symbol": selected_symbol,
+            "confidence": 0.98 if selected_file and selected_symbol else 0.5,
+            "fingerprint_hash": fingerprint.get("fingerprint_hash", ""),
+            "failure_classifier": {"forge_node": "failure_classifier", "family": failure_class},
+            "symbol_binder": {"forge_node": "symbol_binder", "file": selected_file, "symbol": selected_symbol},
+            "patch_template": {
+                "forge_node": "patch_template_compiler",
+                "kind": "replace_exact",
+                "path": selected_file,
+                "old": old,
+                "new": "<UNRESOLVED>",
+                "allowed_operations": ["replace_exact"],
+            },
+            "verifier": verifier_result,
+            "policy": dict(policy or {}),
+            "foreground_authority": False,
+            "mutation_applied": False,
+            "model_called": False,
+        }
+        receipt["assistance_digest"] = "sha256:" + hashlib.sha256(json.dumps(receipt, sort_keys=True, default=str).encode()).hexdigest()
+        self.profile.metadata["last_agent_assistance"] = receipt["assistance_digest"]
+        return receipt
+
+    def _observe_forge_kv_event(self, event_type: str, payload: Dict[str, Any], request: ForgeKVRequest) -> None:
+        """Project Forge-KV metadata into Sensorium without carrying prompts or context arrays."""
+        if self.sensorium_runtime is None:
+            return
+        safe_payload = {
+            key: value for key, value in payload.items()
+            if key not in {"prompt", "prompt_prefix", "system_prompt", "response"}
+        }
+        safe_payload.update({
+            "request_id": request.request_id,
+            "task_class": request.task_class,
+            "model": request.model,
+            "privacy_domain": request.privacy_domain,
+        })
+        self.sensorium_runtime.observe_owned(
+            event_type=event_type,
+            source="beast_forge_kv",
+            payload_schema="beast.sensor.forge_kv.v1",
+            payload=safe_payload,
+            mission_id=request.mission_id,
+            workspace_id=request.workspace_id,
+            privacy_class="internal",
+            export_allowed=False,
+        )
+
+    def run_local_inference(
+        self,
+        task_class: str,
+        prompt: str,
+        model: str = None,
+        *,
+        prompt_prefix: str = "",
+        system_prompt: str = "",
+        model_digest: str = "",
+        tokenizer_hint: str = "",
+        template: str = "",
+        options: Optional[Dict[str, Any]] = None,
+        workspace_id: str = "",
+        privacy_domain: str = "local",
+        mission_id: str = "",
+        max_tokens: int = 128,
+    ) -> Dict[str, Any]:
+        """Run governed CPU inference through the bounded Forge-KV coordinator."""
+        model = model or config.OLLAMA_MODEL
+        self.profile.last_activity_at = datetime.now(timezone.utc).isoformat()
+        request = ForgeKVRequest(
+            task_class=task_class, model=model, prompt=prompt,
+            prompt_prefix=prompt_prefix, system_prompt=system_prompt,
+            model_digest=model_digest, tokenizer_hint=tokenizer_hint, template=template,
+            options=dict(options or {}), workspace_id=workspace_id,
+            privacy_domain=privacy_domain, mission_id=mission_id, max_tokens=max_tokens,
+        )
+
+        def execute_kv() -> Dict[str, Any]:
+            return self.forge_kv.run(request)
+
+        try:
             if self.compute_plane is None:
-                resp = self.ollama_circuit_breaker.call(call_ollama)
+                kv_result = execute_kv()
             else:
-                resp = self.compute_plane.execute_operation(
+                kv_result = self.compute_plane.execute_operation(
                     lane="forge", provider="ollama",
                     authorize=lambda: self.compute_plane.isolation_verifier(self.profile.isolation_attestation),
-                    execute=lambda: self.ollama_circuit_breaker.call(call_ollama),
-                    verify=lambda response: int(getattr(response, "status_code", 0)) == 200,
+                    execute=execute_kv,
+                    verify=lambda value: isinstance(value, dict) and not value.get("inference", {}).get("error"),
                 )
-            data = resp.json()
-            actual_response = data.get("response", "")
-            if "eval_count" in data:
-                tokens_estimate = data["eval_count"]
-            inference_success = True
-        except OllamaUnavailable as exc:
-            inference_success = False
-            inference_error = str(exc)
-        
-        result = {
-            "task_class": task_class,
-            "model": model,
-            "tokens": tokens_estimate,
-            "timestamp": self.profile.last_activity_at,
-            "actual_inference": inference_success,
-            "response_preview": (actual_response or "")[:200] if actual_response else None,
-            "error": inference_error or None,
-        }
+        except (OllamaUnavailable, Exception) as exc:
+            result = {
+                "task_class": task_class, "model": model, "tokens": 0,
+                "timestamp": self.profile.last_activity_at, "actual_inference": False,
+                "response_preview": None, "error": str(exc), "reuse_mode": "miss",
+            }
+            return {"result": result, "credit": None, "forge_kv": self.forge_kv.state()}
 
-        if not inference_success:
-            return {"result": result, "credit": None}
+        inference = kv_result.get("inference", {})
+        actual_response = str(inference.get("response") or "")
+        tokens = max(0, int(inference.get("eval_count") or 0))
+        result = {
+            "task_class": task_class, "model": model, "tokens": tokens,
+            "timestamp": self.profile.last_activity_at,
+            "actual_inference": not bool(inference.get("error")),
+            "response_preview": actual_response[:200] if actual_response else None,
+            "error": inference.get("error"),
+            "reuse_mode": inference.get("reuse_mode", "miss"),
+            "native_context_supplied": bool(inference.get("native_context_supplied")),
+            "native_context_returned": bool(inference.get("native_context_returned")),
+            "prompt_eval_count": int(inference.get("prompt_eval_count") or 0),
+            "prompt_eval_duration": int(inference.get("prompt_eval_duration") or 0),
+            "latency_ms": float(inference.get("latency_ms") or 0.0),
+        }
+        if not result["actual_inference"]:
+            return {"result": result, "credit": None, "kv_execution": kv_result}
 
         credit = self.storage.store_semantic_result(
-            task_class=task_class,
-            repo_fingerprint="local_forge_node",
-            policy_version="forge_v1",
-            verified_tests=["local_run"],
-            avoided_tokens_estimate=result["tokens"],
-            confidence=0.70,
+            task_class=task_class, repo_fingerprint=workspace_id or "local_forge_node",
+            policy_version="forge_kv_l1", verified_tests=["local_run"],
+            avoided_tokens_estimate=0, confidence=0.70,
             metadata={
-                "source": "forge_node",
-                "node_id": self.profile.node_id,
-                "actual_inference_performed": inference_success,
-                "model": model,
+                "source": "forge_kv_coordinator", "node_id": self.profile.node_id,
+                "model": model, "reuse_mode": result["reuse_mode"],
+                "native_context_supplied": result["native_context_supplied"],
+                "prompt_eval_count": result["prompt_eval_count"],
+                "measured_savings_not_inferred": True,
             },
         )
         if self.local_semantic_cache is not None:
             self.local_semantic_cache.put(
-                credit_id=credit.credit_id,
-                prompt=prompt,
-                task_class=task_class,
-                repo_fingerprint="local_forge_node",
-                answer=actual_response or "",
-                confidence=credit.confidence,
-                verified=True,
-                policy_version="forge_v1",
-                metadata={
-                    "source": "compute_forge_run_local_inference",
-                    "node_id": self.profile.node_id,
-                    "model": model,
-                    "storage_credit_id": credit.credit_id,
-                },
+                credit_id=credit.credit_id, prompt=prompt, task_class=task_class,
+                repo_fingerprint=workspace_id or "local_forge_node", answer=actual_response,
+                confidence=credit.confidence, verified=True, policy_version="forge_kv_l1",
+                metadata={"source": "forge_kv_coordinator", "node_id": self.profile.node_id, "model": model},
             )
-        
+        # Preserve the historical profile counter for API compatibility, but do
+        # not use it as a net-savings claim. Level 1 records generated output
+        # tokens here and keeps avoided_tokens_estimate at zero until paired proof.
         self.profile.total_tokens_displaced += result["tokens"]
-        
-        work_credit = {
-            "node_id": self.profile.node_id,
-            "work_type": "local_inference",
-            "task_class": task_class,
-            "credit_id": credit.credit_id,
-            "tokens_displaced": result["tokens"],
-            "actual_inference": inference_success,
-            "timestamp": self.profile.last_activity_at,
-        }
-        self._credits_earned.append(work_credit)
-        
-        return {"result": result, "credit": credit.to_dict()}
+        self.profile.metadata["total_tokens_displaced_semantics"] = "legacy_gross_output_tokens_not_net_savings"
+        self._credits_earned.append({
+            "node_id": self.profile.node_id, "work_type": "local_inference",
+            "task_class": task_class, "credit_id": credit.credit_id,
+            "reuse_mode": result["reuse_mode"], "timestamp": self.profile.last_activity_at,
+            "net_savings_claimed": False,
+        })
+        return {"result": result, "credit": credit.to_dict(), "kv_execution": kv_result}
+
+    def close(self) -> None:
+        """Stop Forge-KV workers and release native context storage."""
+        self.forge_kv.close()
+        self.ollama_kv_manager.close()
 
     def update_test_impact_map(self, repo_path: str, test_paths: List[str]) -> Dict[str, Any]:
         """Update test-impact maps for the repository."""

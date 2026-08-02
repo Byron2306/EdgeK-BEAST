@@ -1,0 +1,74 @@
+name: Agentic Loop Endurance
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  planner-endurance:
+    name: Planner endurance and provider telemetry
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python test dependencies
+        run: python -m pip install -U pytest
+      - name: Run focused agentic loop contracts
+        run: python -m pytest tests/test_agent_planner_runtime.py -q -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"
+
+  ecosystem-adapters:
+    name: IDE ecosystem test adapters
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check desktop adapter syntax
+        run: node --check desktop-ide/main/task-test-host.js
+      - name: Verify broad ecosystem discovery
+        run: node desktop-ide/scripts/verify-ecosystem-test-adapters.js
+
+  extension-compatibility:
+    name: VS Code extension shim compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check extension host syntax
+        run: node --check desktop-ide/scripts/beast-extension-host.js desktop-ide/main/extension-host.js desktop-ide/scripts/verify-vscode-extension-shim.js desktop-ide/scripts/verify-vscode-extension-ecology-shim.js
+      - name: Verify package.json extension shim
+        run: node desktop-ide/scripts/verify-vscode-extension-shim.js
+      - name: Verify richer VS Code extension ecology shim
+        run: node desktop-ide/scripts/verify-vscode-extension-ecology-shim.js
+      - name: Verify integrated IDE services parity slice
+        run: node desktop-ide/scripts/verify-ide-services-parity.js
+
+  disposable-target-smoke:
+    name: Disposable SSH/devcontainer smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report Docker availability
+        run: docker version
+      - name: Run existing live disposable target contracts when available
+        run: |
+          if [ -f tests/phase2/test_live_remote_promotion_acceptance.py ]; then
+            python -m pip install -U pytest
+            python -m pytest tests/phase2/test_live_remote_promotion_acceptance.py -q -k "disposable or devcontainer or ssh" || true
+          else
+            echo "No disposable target contract file present."
+          fi

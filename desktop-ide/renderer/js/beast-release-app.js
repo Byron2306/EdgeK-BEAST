@@ -1,8 +1,10 @@
 (() => {
-  const pages = ['studio','workspace','compatibility','source','mission','models','agents','review','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
+  const pages = ['studio','workspace','compatibility','source','mission','models','compute-fabric','live-fabric','compute-control','agents','review','grand-closure','trust','memory','evidence','crystallization','commons','map','terminal','testing','tooling','doctor','reality','providers','system','atlas','worktrees','deploy','chronicle','economy','settings'];
   let railKey = '';
   let gatewayRecoveryAttempts = 0;
   let gatewayRecoveryTimer = 0;
+  let liveRefreshTimer = 0;
+  let liveRefreshBusy = false;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
 
   function placeholder({ page }) {
@@ -27,7 +29,7 @@
     pill.textContent = state.connection.status === 'online' ? '● SYSTEM ONLINE' : '○ GATEWAY OFFLINE';
     pill.classList.toggle('live', state.connection.status === 'online');
     pill.classList.toggle('bad', state.connection.status === 'offline');
-    const activeWork = ['studio','workspace','source','models','agents','evidence','trust','memory','map','terminal','tooling','doctor','providers','system','worktrees','deploy','chronicle','economy','settings'];
+    const activeWork = ['studio','workspace','source','models','agents','evidence','trust','memory','map','terminal','tooling','doctor','reality','providers','system','worktrees','deploy','chronicle','economy','settings'];
     const mascotState = page === 'review' ? 'alert' : activeWork.includes(page) ? 'working' : page === 'crystallization' ? 'finished' : 'idle';
     BeastMascot.setState(mascotState);
   }
@@ -254,18 +256,27 @@
   }
 
   function renderRail(state) {
-    const key = JSON.stringify({
-      route:state.route, connection:state.connection.status, health:state.mission.health,
-      workspace:{root:state.workspace.root,files:state.workspace.files.length}, editor:state.editor,
-      sourcePlan:{status:state.sourcePlan.status,id:state.sourcePlan.plan?.plan_id,selected:state.sourcePlan.selectedOperationIds,lifecycle:state.sourcePlan.lifecycle},
-      models:state.models, agents:state.agents, review:state.review, evidence:state.evidence, trust:state.trust,
-      memory:state.memory, map:state.map, crystal:state.crystal, terminal:state.terminal, tooling:state.tooling,
-      doctor:state.doctor, providers:state.providers, system:state.system, platform:state.platform, settings:state.settings, worktrees:state.worktrees, deploy:state.deploy, chronicle:state.chronicle, economy:state.economy, studio:state.studio, runtime:state.runtime, ledger:state.ledger, diagnostics:state.diagnostics
-    });
+    // Rail content only depends on these compact facts. Serializing full map,
+    // evidence, and memory arrays here made every live refresh an O(n) stall.
+    const compact = value => value == null ? '' : String(value);
+    const key = [
+      state.route, state.connection.status, state.mission.health, state.mission.status,
+      state.workspace.root, state.workspace.files.length, state.editor.activePath,
+      state.sourcePlan.status, state.sourcePlan.plan?.plan_id, state.sourcePlan.selectedOperationIds.length,
+      state.models.active, state.models.registry.length, state.agents.sessions.length,
+      state.review.updatedAt, state.evidence.updatedAt, state.trust.updatedAt, state.memory.updatedAt,
+      state.map.updatedAt, state.crystal.updatedAt, state.terminal.status, state.tooling.updatedAt,
+      state.doctor.updatedAt, state.providers.updatedAt, state.system.updatedAt, state.platform.updatedAt,
+      state.worktrees.updatedAt, state.deploy.updatedAt, state.chronicle.updatedAt, state.economy.updatedAt,
+      state.studio.updatedAt, state.runtime.inFlight, state.diagnostics.viewport,
+      state.diagnostics.duplicateIds, state.diagnostics.outletChildren, state.diagnostics.activeEditors,
+      state.diagnostics.activeDiffEditors, state.diagnostics.horizontalOverflow,
+      state.ledger[0]?.time, state.ledger[0]?.label
+    ].map(compact).join('|');
     if (key === railKey) return;
     railKey = key;
     const rail = document.getElementById('beastContextRail');
-    rail.innerHTML = `<div class="beast-rail-stack">
+    rail.innerHTML = `<div class="beast-rail-context-head"><span>CONTEXT</span><b>${esc(String(state.route||'studio').toUpperCase())}</b></div><div class="beast-rail-stack">
       <section class="beast-card beast-rail-card"><h3>Core Health</h3><div class="beast-ring" style="--value:${Math.max(0,Math.min(100,state.mission.health))}"><span>${state.mission.health}%</span></div><p class="centered">${esc(state.mission.status)}</p></section>
       ${contextFacts(state)}
       ${secondaryFacts(state)}
@@ -305,6 +316,7 @@
       if (['/deploy','/release','/deploy open'].includes(normalized)) return await BeastRouter.navigate('deploy');
       if (['/chronicle','/chronicle open'].includes(normalized)) return await BeastRouter.navigate('chronicle');
       if (['/economy','/compute economy'].includes(normalized)) return await BeastRouter.navigate('economy');
+      if (['/compute control','/control plane','/interception'].includes(normalized)) { await BeastUtilityOrchestrationBridge.refreshControl(); return await BeastRouter.navigate('compute-control'); }
       if (['/settings','/settings open'].includes(normalized)) return await BeastRouter.navigate('settings');
       if (normalized === '/remote dev') { await BeastRouter.navigate('compatibility'); document.dispatchEvent(new CustomEvent('beast:remote-dev-focus')); return; }
       if (normalized === '/extensions discover') { await BeastRouter.navigate('compatibility'); await BeastIDERuntime.discoverExtensions(); return; }
@@ -333,6 +345,17 @@
       if (normalized === '/tooling benchmark') { await BeastTerminalToolingDoctorBridge.runBenchmark(); return await BeastRouter.navigate('tooling'); }
       if (normalized === '/doctor scan') { await BeastTerminalToolingDoctorBridge.refreshDoctor(); return await BeastRouter.navigate('doctor'); }
       if (normalized === '/providers refresh') { await BeastUtilityOrchestrationBridge.refreshProviders(); return await BeastRouter.navigate('providers'); }
+      if (normalized === '/providers import-secrets' || normalized === '/providers secrets import') {
+        const sourcePath = window.prompt('Local secrets file to import (for example: /home/me/.config/beast/providers.env)', '');
+        if (!sourcePath?.trim()) return;
+        const result = await BeastRuntime.request('/edgek/providers/secrets/import', {
+          method:'POST', timeoutMs:30000,
+          body:{ source_path:sourcePath.trim(), overwrite:false, merge:true, load:true }
+        });
+        BeastStore.addLedger(`Provider secrets imported from ${sourcePath.trim()} · ${Number(result?.imported || result?.loaded || 0)} value(s) loaded`);
+        await BeastUtilityOrchestrationBridge.refreshProviders();
+        return await BeastRouter.navigate('providers');
+      }
       if (normalized === '/platform refresh' || normalized === '/atlas refresh') { await BeastUtilityOrchestrationBridge.refreshPlatform(); return await BeastRouter.navigate('atlas'); }
       if (normalized === '/system refresh') { await BeastUtilityOrchestrationBridge.refreshSystem(); return await BeastRouter.navigate('system'); }
       if (normalized === '/system sweep') { await BeastUtilityOrchestrationBridge.systemAction('sweep'); return await BeastRouter.navigate('system'); }
@@ -361,6 +384,17 @@
       if (normalized === '/refresh') { await Promise.allSettled([BeastDesktopBridge.status(),BeastModelAgentBridge.refreshModels(),BeastIDECompatibility.refresh(),BeastTerminalToolingDoctorBridge.refreshTooling()]); return; }
       if (normalized === '/layout reset') { window.BeastShellLayout?.reset?.(); window.BeastWorkbenchPanels?.reset?.(); BeastStore.addLedger('Workbench layout reset'); return; }
       if (normalized === '/runtime probe') { await BeastRuntime.probe(); await BeastDesktopBridge.status(); BeastRuntimeWatchdog.inspect(); return; }
+      if (normalized === '/runtime reset' || normalized === '/runtime restart all') {
+        if (!BeastRuntime.hasDesktop('resetRuntimeStack')) throw new Error('Runtime stack reset is available only inside the BEAST Electron shell.');
+        if (!window.confirm('Reset the BEAST runtime stack? This interrupts active model streams, terminals, gateway requests, Guardian consumers, Commons, LiteLLM, MCP, Ollama, and proxy traffic.')) return;
+        BeastStore.addLedger('Runtime stack reset started: Guardian, Commons, daemon, gateway, proxy, LiteLLM, MCP, Ollama, Nginx.');
+        const result = await BeastRuntime.desktopCall('resetRuntimeStack', [], { required:true });
+        const summary = (result?.components || []).map(item => `${item.component}: ${item.ok ? 'ok' : item.status}`).join(' · ');
+        BeastStore.addLedger(`Runtime stack reset ${result?.ok ? 'completed' : 'needs attention'}${summary ? ` · ${summary}` : ''}`);
+        await BeastDesktopBridge.status();
+        await Promise.allSettled([BeastTerminalToolingDoctorBridge.refreshDoctor(), BeastIDECompatibility.refresh(), BeastUtilityOrchestrationBridge.refreshProviders()]);
+        return await BeastRouter.navigate('doctor');
+      }
       if (normalized === '/runtime report') { console.table(BeastRuntime.diagnostics()); BeastStore.addLedger('Runtime report emitted to console'); return; }
       BeastStore.addLedger(`Command queued: ${command}`);
       document.dispatchEvent(new CustomEvent('beast:command',{detail:{command}}));
@@ -406,7 +440,7 @@
     return BeastRuntime.runExclusive('refresh:production', async () => {
       if (!BeastRuntime.visible && reason !== 'workspace') return [];
       const coreTasks=[
-        BeastDesktopBridge.status(),BeastDesktopBridge.snapshot(),BeastDesktopBridge.listFiles(),
+        BeastDesktopBridge.status({ lightweight:true }),BeastDesktopBridge.snapshot(),BeastDesktopBridge.listFiles(),
       ];
       // A full simultaneous sweep creates a local request convoy (especially
       // against the single-worker direct gateway).  Pages own their detailed
@@ -421,17 +455,13 @@
           BeastUtilityOrchestrationBridge.refreshProviders(),
           BeastMapCrystalBridge.refreshMap()
         ]);
-        // Hydrate every operator surface once after the bounded connection
-        // probe. Studio must reflect real availability, not whether a person
-        // happened to visit each page in this Electron session.
+        // Keep boot cheap. Route pages own their detailed refresh; hydrating
+        // every page here created a request convoy and repainted hidden DOM.
         await Promise.allSettled([
           BeastModelAgentBridge.refreshAgents(),
-          BeastReviewEvidenceBridge.refreshReview(),BeastReviewEvidenceBridge.refreshEvidence(),
-          BeastTrustMemoryBridge.refreshTrust(),BeastTrustMemoryBridge.refreshMemory(),
-          BeastMapCrystalBridge.refreshCrystal(),BeastTerminalToolingDoctorBridge.refreshTooling(),
-          BeastTerminalToolingDoctorBridge.refreshDoctor(),BeastUtilityOrchestrationBridge.refreshPlatform()
+          BeastUtilityOrchestrationBridge.refreshPlatform(),
+          BeastUtilityOrchestrationBridge.refreshControl()
         ]);
-        await BeastUtilityOrchestrationBridge.refreshStudio();
         // A managed direct gateway can take a few seconds to come up after the
         // Guardian listener has been rejected as incompatible.  Retry only the
         // bounded boot probe; never claim connectivity until status confirms it.
@@ -462,6 +492,44 @@
     });
   }
 
+  // Keep open pages honest after boot.  This is deliberately slower than the
+  // render loop and serialized through the runtime so live telemetry cannot
+  // create a request convoy or replace a page while it is being painted.
+  async function refreshLiveState() {
+    if (document.hidden || liveRefreshBusy || !BeastRuntime.visible) return;
+    liveRefreshBusy = true;
+    try {
+      await BeastRuntime.runExclusive('refresh:live', async () => {
+        await Promise.allSettled([
+          BeastDesktopBridge.status({ lightweight:true }),
+          BeastDesktopBridge.snapshot()
+        ]);
+        const route=BeastRouter.active;
+        const routeRefresh={
+          agents:()=>BeastModelAgentBridge.refreshAgents(),
+          review:()=>BeastReviewEvidenceBridge.refreshReview(),
+          evidence:()=>BeastReviewEvidenceBridge.refreshEvidence(),
+          trust:()=>BeastTrustMemoryBridge.refreshTrust(),
+          memory:()=>BeastTrustMemoryBridge.refreshMemory(),
+          map:()=>BeastMapCrystalBridge.refreshMap(),
+          crystallization:()=>BeastMapCrystalBridge.refreshCrystal(),
+          providers:()=>BeastUtilityOrchestrationBridge.refreshProviders(),
+          deploy:()=>BeastUtilityOrchestrationBridge.refreshDeploy(),
+          chronicle:()=>BeastUtilityOrchestrationBridge.refreshChronicle(),
+          economy:()=>BeastUtilityOrchestrationBridge.refreshEconomy(),
+          system:()=>BeastUtilityOrchestrationBridge.refreshSystem(),
+          atlas:()=>BeastUtilityOrchestrationBridge.refreshPlatform()
+        }[route];
+        if(routeRefresh) await Promise.allSettled([routeRefresh()]);
+      });
+    } finally { liveRefreshBusy=false; }
+  }
+
+  function startLiveRefresh() {
+    clearInterval(liveRefreshTimer);
+    liveRefreshTimer=setInterval(()=>{ refreshLiveState().catch(error=>BeastStore.addLedger(`Live refresh failed · ${String(error.message||error)}`)); },15000);
+  }
+
   function bindGlobalEvents() {
     document.querySelectorAll('[data-beast-route]').forEach(button => button.addEventListener('click',() => BeastRouter.navigate(button.dataset.beastRoute)));
     document.getElementById('beastCompactRoute')?.addEventListener('change',event => BeastRouter.navigate(event.target.value));
@@ -469,7 +537,7 @@
       const nav = event.target.closest('[data-nav]');
       if (nav) BeastRouter.navigate(nav.dataset.nav);
       const probe = event.target.closest('[data-runtime-probe]');
-      if (probe) { BeastRuntime.probe().then(()=>BeastDesktopBridge.status()).then(()=>BeastRuntimeWatchdog.inspect()).catch(error=>BeastStore.addLedger(`Runtime probe failed: ${String(error.message||error)}`)); }
+      if (probe) { BeastRuntime.probe().then(()=>BeastDesktopBridge.status({ lightweight:false })).then(()=>BeastRuntimeWatchdog.inspect()).catch(error=>BeastStore.addLedger(`Runtime probe failed: ${String(error.message||error)}`)); }
       const chip = event.target.closest('[data-command-chip]');
       if (chip) { const input=document.getElementById('beastCommandInput'); if(input){input.value=chip.dataset.commandChip||'';input.focus();} }
       const button = event.target.closest('button');
@@ -515,8 +583,12 @@
       page === 'source' ? BeastSourcePlanPage.renderer :
       page === 'mission' ? BeastMissionPage.renderer :
       page === 'models' ? BeastModelsPage.renderer :
+      page === 'compute-fabric' ? BeastComputeFabricPage.renderer :
+      page === 'live-fabric' ? BeastLiveFabricPage.renderer :
+      page === 'compute-control' ? BeastComputeControlPage.renderer :
       page === 'agents' ? BeastAgentsPage.renderer :
       page === 'review' ? BeastReviewPage.renderer :
+      page === 'grand-closure' ? BeastGrandClosurePage.renderer :
       page === 'evidence' ? BeastEvidencePage.renderer :
       page === 'trust' ? BeastTrustPage.renderer :
       page === 'memory' ? BeastMemoryPage.renderer :
@@ -527,6 +599,7 @@
       page === 'testing' ? BeastTestingPage.renderer :
       page === 'tooling' ? BeastToolingPage.renderer :
       page === 'doctor' ? BeastDoctorPage.renderer :
+      page === 'reality' ? BeastRealityPage.renderer :
       page === 'providers' ? BeastProvidersPage.renderer :
       page === 'system' ? BeastSystemPage.renderer :
       page === 'atlas' ? BeastAtlasPage.renderer :
@@ -542,7 +615,6 @@
     BeastRuntimeWatchdog.init();
     BeastMascot.init();
     BeastFX.matrix();
-    BeastFX.logoFlicker();
     window.BeastVisualRuntime?.init?.();
     window.BeastAccessibility?.init?.();
     BeastLayoutGuard.init();
@@ -550,7 +622,15 @@
     BeastTerminalToolingDoctorBridge.loadTerminalState();
     bindCommandDock();
     bindGlobalEvents();
-    BeastStore.subscribe(state => { updateHeader(state.route); renderRail(state); window.BeastVisualRuntime?.update?.(document.getElementById('beastPageOutlet') || document); });
+    let visualRoute = '';
+    BeastStore.subscribe(state => {
+      updateHeader(state.route);
+      renderRail(state);
+      if (state.route !== visualRoute) {
+        visualRoute = state.route;
+        window.BeastVisualRuntime?.update?.(document.getElementById('beastPageOutlet') || document);
+      }
+    });
     const captureMode = new URLSearchParams(location.search).get('capture') === '1';
     const requested = new URLSearchParams(location.search).get('page') || location.hash.replace(/^#/,'') || localStorage.getItem('beast.v2.route') || 'studio';
     if (captureMode) {
@@ -562,6 +642,7 @@
     window.BeastOnboarding?.init?.();
     BeastStore.addLedger('Desktop shell booted; awaiting live subsystem contracts');
     if (!captureMode) {
+      startLiveRefresh();
       queueMicrotask(async () => {
         try {
           await refreshProductionState('boot');
@@ -574,6 +655,7 @@
     }
   }
 
+  window.addEventListener('beforeunload',()=>clearInterval(liveRefreshTimer));
   window.addEventListener('DOMContentLoaded',() => boot().catch(error => {
     console.error('[BEAST RELEASE]',error);
     document.body.dataset.bootError='true';

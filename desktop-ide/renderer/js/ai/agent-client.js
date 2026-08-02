@@ -1,0 +1,919 @@
+// BEAST Pair Programmer renderer module: agent-client.js
+(() => {
+  const registry = window.BeastAICodingModules = window.BeastAICodingModules || {};
+  registry.createAgentClient = runtime => {
+  const api = runtime.api;
+  const root = runtime.root;
+  const gatewayUrl = runtime.gatewayUrl;
+  const stateKey = runtime.stateKey;
+  const now = runtime.now;
+  const openRunStream = runtime.openRunStream;
+  const parseActionIntent = runtime.parseActionIntent;
+  const looksLikeActionIntent = runtime.looksLikeActionIntent;
+  const MAX_CONTEXT_FILES = runtime.constants.MAX_CONTEXT_FILES;
+  const RELIABLE_LOCAL_CODER = runtime.constants.RELIABLE_LOCAL_CODER;
+  const RELIABLE_LOCAL_PROFILE = runtime.constants.RELIABLE_LOCAL_PROFILE;
+  const RELIABLE_PLANNER_PROFILE = runtime.constants.RELIABLE_PLANNER_PROFILE;
+  const addMessage = (...args) => api.addMessage(...args);
+  const agentTurnProfile = (...args) => api.agentTurnProfile(...args);
+  const appendAssistant = (...args) => api.appendAssistant(...args);
+  const appendProposalTurns = (...args) => api.appendProposalTurns(...args);
+  const appendTrace = (...args) => api.appendTrace(...args);
+  const appendTurn = (...args) => api.appendTurn(...args);
+  const applyCompute = (...args) => api.applyCompute(...args);
+  const applyCrystal = (...args) => api.applyCrystal(...args);
+  const armWatchdog = (...args) => api.armWatchdog(...args);
+  const clearWatchdog = (...args) => api.clearWatchdog(...args);
+  const contextFilesFor = (...args) => api.contextFilesFor(...args);
+  const draftPreviewFromRaw = (...args) => api.draftPreviewFromRaw(...args);
+  const eventPayload = (...args) => api.eventPayload(...args);
+  const finishProgress = (...args) => api.finishProgress(...args);
+  const initialAgentProgress = (...args) => api.initialAgentProgress(...args);
+  const initialAgentTurns = (...args) => api.initialAgentTurns(...args);
+  const instructionFor = (...args) => api.instructionFor(...args);
+  const isAgentAnalysisPrompt = (...args) => api.isAgentAnalysisPrompt(...args);
+  const isStructuredEditStream = (...args) => api.isStructuredEditStream(...args);
+  const mentionedFiles = (...args) => api.mentionedFiles(...args);
+  const normalizeContextFiles = (...args) => api.normalizeContextFiles(...args);
+  const patch = (...args) => api.patch(...args);
+  const persist = (...args) => api.persist(...args);
+  const proposalSummary = (...args) => api.proposalSummary(...args);
+  const resolvedModeForPrompt = (...args) => api.resolvedModeForPrompt(...args);
+  const runDoneSentence = (...args) => api.runDoneSentence(...args);
+  const stageSourcePlan = (...args) => api.stageSourcePlan(...args);
+  const structuredDraftStatus = (...args) => api.structuredDraftStatus(...args);
+  const updateAssistant = (...args) => api.updateAssistant(...args);
+  const updateAssistantPreview = (...args) => api.updateAssistantPreview(...args);
+  const updateProgress = (...args) => api.updateProgress(...args);
+  const handlePermissionRequest = (...args) => api.handlePermissionRequest(...args);
+
+  function providerTransportFailure(payload = {}, fallback = 'AI coding stream failed.') {
+    const receipt = payload && typeof payload.provider_transport === 'object'
+      ? payload.provider_transport
+      : payload && typeof payload.transport_receipt === 'object'
+        ? payload.transport_receipt
+        : null;
+    if (!receipt) return String(payload?.error || fallback);
+    const status = receipt.http_status ? `HTTP ${receipt.http_status}` : 'an invalid HTTP response';
+    const contentType = String(receipt.content_type || 'unknown content type');
+    const url = String(receipt.requested_url || 'the configured provider route');
+    const server = receipt.response_server ? ` (${receipt.response_server})` : '';
+    return [
+      'The Pair Programmer stopped before it produced a safe result. No files were changed.',
+      '',
+      `Provider transport rejected ${status}${server}: ${contentType}.`,
+      `Requested route: ${url}`,
+      '',
+      'This route returned a gateway page instead of a model response. Refresh the BEAST runtime or select a ready provider, then retry this unchanged request.'
+    ].join('\n');
+  }
+
+  async function runInWorktree(prompt, options = {}) {
+    const objective = String(prompt || BeastStore.get().aiCoding.prompt || '').trim();
+    if (!objective) throw new Error('Describe the coding task before creating an isolated mission.');
+    if (BeastStore.get().connection.status !== 'online' || BeastDesktopBridge.demoMode) throw new Error('An isolated agent mission requires a live BEAST gateway.');
+    if (BeastStore.get().aiCoding.streaming) throw new Error('Wait for the current AI turn to finish before isolating a new mission.');
+    const sourceRoot = root();
+    if (!sourceRoot) throw new Error('Choose a workspace before creating an isolated agent mission.');
+    const files = contextFilesFor(objective);
+    patch({ status:'creating-worktree', error:'' });
+    appendTrace('worktree', 'Creating isolated mission workspace…');
+    const mission = await BeastRuntime.request('/edgek/ide/worktree-mission/create', {
+      method:'POST', timeoutMs:60000,
+      body:{ root_path:sourceRoot, objective, mode:'editor_agent', risk:'high', provider:BeastStore.get().aiCoding.provider || localStorage.getItem('beast.provider') || '', files }
+    });
+    const task = mission?.task || {};
+    const worktreeRoot = String(task.worktree_path || '');
+    if (!mission?.ok || !worktreeRoot) throw new Error(mission?.error || 'BEAST could not create the isolated worktree mission.');
+    BeastDesktopBridge.setRoot(worktreeRoot, { preserveWorktreeRegistry:true });
+    await BeastDesktopBridge.listFiles({ limit:2000 });
+    patch({ open:true, mode:'agent', prompt:objective, contextFiles:files.filter(path => BeastStore.get().workspace.files.some(row => row.path === path)), status:'isolated-ready', error:'' });
+    appendTrace('worktree', `Isolated mission ready: ${task.branch || task.task_id || worktreeRoot}`);
+    BeastStore.patch('worktrees', { registryRoot:sourceRoot, selectedId:String(task.task_id || ''), updatedAt:now() });
+    await send(objective, { ...options, isolatedMission:task.task_id || '' });
+    return { ok:true, task };
+  }
+
+  async function retryLastRequest(options = {}) {
+    if (BeastStore.get().aiCoding.streaming) throw new Error('The current AI turn is still running.');
+    const previous = [...(BeastStore.get().aiCoding.messages || [])]
+      .reverse()
+      .find(message => message?.role === 'user' && String(message.content || '').trim());
+    if (!previous) throw new Error('There is no prior coding request to retry.');
+    const local=/^(?:ollama|local_ollama)$/i.test(String(BeastStore.get().aiCoding.provider||localStorage.getItem('beast.provider')||''))&&String(BeastStore.get().aiCoding.model||localStorage.getItem('beast.model')||'')===RELIABLE_LOCAL_CODER;
+    const focused=options.focused===undefined?local:Boolean(options.focused);
+    appendTrace('retry', focused?'Retrying with a focused one-file recovery profile.':'Retrying the last request with the retained locked context.');
+    return send(String(previous.content), {...options,focused,maxTokens:options.maxTokens||(focused?768:undefined),contextMaxCharsEach:options.contextMaxCharsEach||(focused?1800:undefined)});
+  }
+
+  async function recoverInvalidPacket(options = {}) {
+    if (BeastStore.get().aiCoding.streaming) throw new Error('The current AI turn is still running.');
+    const state = BeastStore.get();
+    const files = state.aiCoding.contextFiles || [];
+    appendTrace('recovery', `Repairing invalid Action IR with ${files.length} retained context file(s).`);
+    return retryLastRequest({
+      ...options,
+      focused:false,
+      preserveContext:true,
+      actionIrRecovery:true,
+      maxTokens:options.maxTokens || 4096,
+      contextMaxCharsEach:options.contextMaxCharsEach || 12000
+    });
+  }
+
+  async function continueWithAddedContext(options = {}) {
+    if (BeastStore.get().aiCoding.streaming) throw new Error('The current AI turn is still running.');
+    const state = BeastStore.get();
+    const contextFiles = state.aiCoding.contextFiles || [];
+    if (!contextFiles.length) throw new Error('Add at least one context file before continuing this agent loop.');
+    appendProposalTurns(String(state.sourcePlan?.plan?.plan_id || state.aiCoding.sourcePlanId || ''), {
+      kind:'context',
+      type:'context_continue',
+      role:'agent',
+      text:`Continuing with ${contextFiles.length} context file${contextFiles.length === 1 ? '' : 's'}.`,
+      state:'active',
+      tool:'Pair Programmer loop controller',
+      authority:'operator selected context'
+    }, { activity:'Continuing with added context' });
+    appendTrace('context', `Continuing the last request with ${contextFiles.length} retained context file(s).`);
+    return retryLastRequest({
+      ...options,
+      focused:false,
+      contextMaxCharsEach:options.contextMaxCharsEach || 50000
+    });
+  }
+
+  function syncModel(modelId = '') {
+    const app = BeastStore.get();
+    const selected = app.models.registry.find(row => row.id === modelId)
+      || app.models.registry.find(row => row.id === app.models.selectedId)
+      || app.models.registry[0] || {};
+    let model = String(selected.id || modelId || app.models.selectedId || app.models.active || localStorage.getItem('beast.model') || '');
+    let provider = String(selected.provider || app.models.provider || localStorage.getItem('beast.provider') || '');
+    let baseUrl = String(selected.baseUrl || selected.base_url || selected.endpoint || '');
+    // Migrate the pair programmer once to the installed, CPU-safe coder
+    // model. Later explicit model selections remain respected.
+    const isLocalOllama = /^(?:ollama|local_ollama)$/i.test(provider);
+    const preferred = app.models.registry.find(row => row.id === RELIABLE_LOCAL_CODER && /^(?:ollama|local_ollama)$/i.test(String(row.provider || '')));
+    if (isLocalOllama && preferred && localStorage.getItem('beast.pair-programmer.local-model-migrated') !== '1') {
+      model = RELIABLE_LOCAL_CODER;
+      provider = String(preferred.provider || provider);
+      localStorage.setItem('beast.pair-programmer.local-model-migrated', '1');
+      appendTrace('routing', `Reliable local coding profile selected: ${RELIABLE_LOCAL_CODER} · 8K context · 4K output`);
+    }
+    if (model) localStorage.setItem('beast.model', model);
+    if (provider) localStorage.setItem('beast.provider', provider);
+    patch({ model, provider });
+    persist();
+    return { model, provider, baseUrl };
+  }
+
+  function providerStateRoute(state = {}, modelHint = '') {
+    const providers = state && typeof state === 'object' && state.providers && typeof state.providers === 'object' ? state.providers : {};
+    const credentials = state && typeof state === 'object' && state.credentials && typeof state.credentials === 'object' ? state.credentials : {};
+    const route = state && typeof state === 'object' && (state.route || state.active_route || state.routing) || {};
+    const rows = Object.entries(providers).map(([id, provider]) => ({ id, ...(provider && typeof provider === 'object' ? provider : {}) }));
+    const credentialReady = row => {
+      if (/^(?:ollama|local_ollama|llama_cpp|vllm|tgi|sglang|tensorrt_llm)$/i.test(row.id)) return true;
+      if (typeof row.credential_ready === 'boolean') return row.credential_ready;
+      if (Object.prototype.hasOwnProperty.call(credentials, row.id)) return Boolean(credentials[row.id]);
+      return true;
+    };
+    const usable = row => row && row.enabled !== false && (row.default_model || row.model || row.models?.[0]) && credentialReady(row);
+    const hinted = String(modelHint || route.model || state.active_model || state.selected_model || '').trim();
+    const selected = rows.find(row => usable(row) && (row.default_model === hinted || row.model === hinted || (Array.isArray(row.models) && row.models.includes(hinted))))
+      || rows.find(row => row.id === 'nvidia_nim' && usable(row))
+      || rows.find(usable);
+    if (!selected) return { model:'', provider:'' };
+    return {
+      provider:String(selected.provider_id || selected.provider || selected.id || ''),
+      model:String(hinted && (selected.default_model === hinted || selected.model === hinted || (Array.isArray(selected.models) && selected.models.includes(hinted))) ? hinted : (selected.default_model || selected.model || selected.models?.[0] || '')),
+      baseUrl:String(selected.base_url || selected.endpoint || state.base_url || '')
+    };
+  }
+
+  function routeIsWeakLocalOllama(route = {}) {
+    return /^(?:ollama|local_ollama)$/i.test(String(route.provider || '')) && String(route.model || '') === RELIABLE_LOCAL_CODER;
+  }
+
+  function routeIsAnyLocalOllama(route = {}) {
+    return /^(?:ollama|local_ollama)$/i.test(String(route.provider || ''));
+  }
+
+  function routeUsesDetachedPlannerLaunch(route = {}) {
+    return /^(?:ollama|local_ollama|nvidia_nim|nim|local_nim)$/i.test(String(route.provider || ''));
+  }
+
+  function registryEscalationRoute(modelHint = '') {
+    const app = BeastStore.get();
+    const rows = Array.isArray(app.models?.registry) ? app.models.registry : [];
+    const hinted = String(modelHint || '').trim();
+    const usable = row => row && row.status !== 'error' && row.status !== 'missing' && (row.id || row.model || row.default_model) && !/^(?:ollama|local_ollama)$/i.test(String(row.provider || row.provider_id || ''));
+    const modelMatches = row => hinted && (row.id === hinted || row.model === hinted || row.default_model === hinted || (Array.isArray(row.models) && row.models.includes(hinted)));
+    const selected = rows.find(row => usable(row) && modelMatches(row))
+      || rows.find(row => usable(row) && /^(?:nvidia_nim|nim|local_nim)$/i.test(String(row.provider || row.provider_id || row.id || '')))
+      || rows.find(usable);
+    if (!selected) return { model:'', provider:'' };
+    return {
+      provider:String(selected.provider_id || selected.provider || selected.id || ''),
+      model:String(modelMatches(selected) ? hinted : (selected.default_model || selected.model || selected.id || selected.models?.[0] || '')),
+      source:'model_registry',
+    };
+  }
+
+  async function resolveCodingRoute(modelId = '') {
+    let route = syncModel(modelId);
+    if (route.model && route.provider) return route;
+    appendTrace('routing', 'Model registry was not ready; refreshing live providers before starting the Pair Programmer.');
+    try {
+      if (window.BeastModelAgentBridge?.refreshModels) {
+        await window.BeastModelAgentBridge.refreshModels({ timeoutMs:8000, cacheTtl:0 });
+        route = syncModel(modelId || BeastStore.get().aiCoding.model);
+        if (route.model && route.provider) return route;
+      }
+    } catch (error) {
+      appendTrace('routing', `Live model refresh did not complete: ${String(error.message || error)}`);
+    }
+    try {
+      const state = await BeastRuntime.request('/edgek/providers/state', { timeoutMs:6000, cacheTtl:0 });
+      route = providerStateRoute(state, modelId || BeastStore.get().aiCoding.model);
+      if (route.model && route.provider) {
+        localStorage.setItem('beast.model', route.model);
+        localStorage.setItem('beast.provider', route.provider);
+        patch({ model:route.model, provider:route.provider });
+        appendTrace('routing', `Recovered live provider route: ${route.provider}/${route.model}`);
+        persist();
+        return route;
+      }
+    } catch (error) {
+      appendTrace('routing', `Provider state fallback unavailable: ${String(error.message || error)}`);
+    }
+    return route;
+  }
+
+  async function resolveSemanticEscalationRoute(currentRoute = {}) {
+    const registryRoute = registryEscalationRoute();
+    if (registryRoute.model && registryRoute.provider) return registryRoute;
+    try {
+      const state = await BeastRuntime.request('/edgek/providers/state', { timeoutMs:6000, cacheTtl:0 });
+      const route = providerStateRoute(state, '');
+      if (route.model && route.provider && !/^(?:ollama|local_ollama)$/i.test(String(route.provider || ''))) return { ...route, source:'provider_state' };
+    } catch (error) {
+      appendTrace('routing', `Semantic escalation provider lookup unavailable: ${String(error.message || error)}`);
+    }
+    return { model:'', provider:'', source:'none', previous:currentRoute };
+  }
+
+
+  function durableRunEventUrl(runId, after = 0) {
+    const params = new URLSearchParams({
+      root_path:root(), after:String(Math.max(0, Number(after || 0))),
+      follow:'true', projection:'legacy', limit:'500', auto_recover:'true'
+    });
+    return `${gatewayUrl()}/edgek/agent-runs/${encodeURIComponent(runId)}/events?${params.toString()}`;
+  }
+
+  function executionTarget() {
+    return BeastStore.get().workspace.executionTarget || { kind:'local' };
+  }
+
+  function trimArray(value, limit) {
+    return Array.isArray(value) ? value.slice(0, limit) : [];
+  }
+
+  function compactIdeSemanticContext(snapshot = {}, activePath = '') {
+    const services = snapshot.services || {};
+    const index = services.index || snapshot.index || snapshot;
+    const semantic = index.semantic || snapshot.semantic || {};
+    const diagnostics = trimArray(index.diagnostics || services.diagnostics?.recent || snapshot.diagnostics, 40);
+    const codeActions = trimArray(index.codeActions || snapshot.codeActions, 30);
+    const workspaceSymbols = trimArray(semantic.workspaceSymbols, 120);
+    const topReferences = trimArray(semantic.topReferences, 30);
+    const importEdges = trimArray(semantic.importEdges, 80);
+    return {
+      source:'desktop-ide-live',
+      version:'1.0',
+      root:root(),
+      active_file:activePath || BeastStore.get().editor.activePath || '',
+      target:snapshot.target || services.target || executionTarget(),
+      score:snapshot.score || null,
+      services:{
+        index:{
+          ok:Boolean(index.ok || workspaceSymbols.length),
+          status:index.status || (index.ok ? 'ready' : 'limited'),
+          digest:index.digest || index.indexDigest || snapshot.indexDigest || '',
+          fileCount:Number(index.fileCount || index.summary?.fileCount || 0),
+          symbolCount:Number(index.symbolCount || index.summary?.symbolCount || workspaceSymbols.length || 0),
+          referenceCount:Number(index.referenceCount || index.summary?.referenceCount || semantic.referenceCount || 0),
+          importEdgeCount:Number(index.importEdgeCount || index.summary?.importEdgeCount || semantic.importEdgeCount || 0),
+          languages:index.languages || index.summary?.languages || {},
+          semantic:{
+            definitionCount:Number(semantic.definitionCount || workspaceSymbols.length || 0),
+            referenceCount:Number(semantic.referenceCount || index.referenceCount || 0),
+            importEdgeCount:Number(semantic.importEdgeCount || index.importEdgeCount || 0),
+            unresolvedImportCount:Number(semantic.unresolvedImportCount || 0),
+            workspaceSymbols,
+            topReferences,
+            importEdges,
+            dependents:semantic.dependents || {},
+          },
+          diagnostics,
+          codeActions,
+          truncated:Boolean(index.truncated || snapshot.truncated),
+        },
+        navigation:{
+          ...(services.navigation || {}),
+          supports:services.navigation?.supports || {
+            workspaceSymbols:Boolean(workspaceSymbols.length),
+            definitions:Boolean(workspaceSymbols.length),
+            references:Boolean(topReferences.length),
+            dependents:Boolean(Object.keys(semantic.dependents || {}).length),
+          },
+        },
+        diagnostics:{
+          ...(services.diagnostics || {}),
+          count:Number(services.diagnostics?.count || diagnostics.length || 0),
+          codeActionCount:Number(services.diagnostics?.codeActionCount || codeActions.length || 0),
+          recent:diagnostics,
+        },
+        refactor:{
+          ...(services.refactor || {}),
+          supportsRenamePreview:Boolean(services.refactor?.supportsRenamePreview || topReferences.length),
+          supportsCodeActions:Boolean(services.refactor?.supportsCodeActions || codeActions.length),
+        },
+      },
+    };
+  }
+
+  async function buildIdeSemanticContext(prompt, files = []) {
+    const desktop = window.beastDesktop;
+    const workspaceRoot = root();
+    if (!desktop || !workspaceRoot) return null;
+    const activePath = BeastStore.get().editor.activePath || files[0] || '';
+    const target = executionTarget();
+    try {
+      const snapshot = desktop.ideServicesSnapshot
+        ? await desktop.ideServicesSnapshot({ root:workspaceRoot, target })
+        : desktop.workspaceIndexSnapshot
+          ? await desktop.workspaceIndexSnapshot({ root:workspaceRoot, target })
+          : null;
+      if (!snapshot || snapshot.ok === false) return null;
+      const context = compactIdeSemanticContext(snapshot, activePath);
+      const query = activePath && desktop.workspaceIndexQuery
+        ? await desktop.workspaceIndexQuery({ root:workspaceRoot, target, file:activePath, query:String(prompt || '').slice(0, 120), mode:'dependents' }).catch(() => null)
+        : null;
+      if (query && query.ok !== false) context.active_file_query = {
+        file:activePath,
+        definitions:trimArray(query.definitions, 20),
+        references:trimArray(query.references, 30),
+        dependents:trimArray(query.dependents, 40),
+        importEdges:trimArray(query.importEdges, 40),
+        renamePreview:query.renamePreview || null,
+      };
+      appendTrace('context', `Attached IDE semantic context: ${context.services.index.symbolCount} symbol(s), ${context.services.index.referenceCount} reference(s), ${context.services.diagnostics.count} diagnostic(s).`);
+      return context;
+    } catch (error) {
+      appendTrace('context', `IDE semantic context unavailable; continuing without it: ${String(error.message || error)}`);
+      return null;
+    }
+  }
+
+  function semanticRiskFor(context = null, { mode = '', analysisRun = false, files = [] } = {}) {
+    if (!context || mode === 'ask' || analysisRun) return { high:false, score:0, reasons:[], metrics:{} };
+    const services = context.services || {};
+    const index = services.index || {};
+    const semantic = index.semantic || {};
+    const diagnostics = services.diagnostics || {};
+    const refactor = services.refactor || {};
+    const active = context.active_file_query || {};
+    const topReferenceFanout = Math.max(0, ...trimArray(semantic.topReferences, 20).map(item => Number(item.count || 0)));
+    const activeReferenceFanout = trimArray(active.references, 40).length;
+    const activeDependentFanout = trimArray(active.dependents, 40).length;
+    const renameFanout = Number(active.renamePreview?.editCount || active.renamePreview?.files?.length || 0);
+    const diagnosticCount = Number(diagnostics.count || index.diagnostics?.length || 0);
+    const codeActionCount = Number(diagnostics.codeActionCount || index.codeActions?.length || 0);
+    const importEdgeCount = Number(index.importEdgeCount || semantic.importEdgeCount || 0);
+    const reasons = [];
+    let score = 0;
+    if (renameFanout >= 8 || refactor.supportsRenamePreview && topReferenceFanout >= 12) { score += 4; reasons.push(`rename/reference fanout ${Math.max(renameFanout, topReferenceFanout)}`); }
+    if (activeReferenceFanout >= 12 || activeDependentFanout >= 6) { score += 3; reasons.push(`active file fanout ${activeReferenceFanout + activeDependentFanout}`); }
+    if (diagnosticCount >= 12) { score += 3; reasons.push(`${diagnosticCount} diagnostics`); }
+    else if (diagnosticCount >= 5) { score += 1; reasons.push(`${diagnosticCount} diagnostics`); }
+    if (codeActionCount >= 8) { score += 1; reasons.push(`${codeActionCount} code actions`); }
+    if (importEdgeCount >= 80) { score += 1; reasons.push(`${importEdgeCount} import edges`); }
+    if (files.length >= 4) { score += 1; reasons.push(`${files.length} scoped files`); }
+    return {
+      high:score >= 4,
+      score,
+      reasons:[...new Set(reasons)].slice(0, 6),
+      metrics:{ topReferenceFanout, activeReferenceFanout, activeDependentFanout, renameFanout, diagnosticCount, codeActionCount, importEdgeCount, scopedFiles:files.length },
+    };
+  }
+
+  async function createSession(prompt, files, model, provider, uiMode) {
+    // Agent is the full implementation lane.  It retains SourcePlan approval
+    // for mutations, but no longer degrades into a conversational planning
+    // session that cannot produce or verify a patch.
+    const mode = uiMode === 'ask' ? 'chat' : uiMode === 'analysis' ? 'analysis' : 'implementer';
+    const payload = await BeastRuntime.request('/edgek/ide/agent-sessions/create', {
+      method:'POST', timeoutMs:45000,
+      body:{
+        root_path:root(), objective:prompt, mode, provider, model, files,
+        tools:['Code Cortex Search','Workspace File Read','Verified Skill Recipes','Isolated Test Verifier','Crystal Reuse','SourcePlan','Evidence'],
+        budget:{ tokens:120000, seconds:3600, cost_usd:0 }
+      }
+    });
+    const sessionId = payload?.session?.session_id || payload?.session_id || payload?.id;
+    if (!sessionId) throw new Error('AI coding session returned no session id.');
+    patch({ sessionId:String(sessionId) });
+    persist();
+    return String(sessionId);
+  }
+
+  function agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch }) {
+    const localOllama = /^(?:ollama|local_ollama)$/i.test(String(route.provider || ''));
+    return {
+      root_path:root(), session_id:sessionId, objective:runPrompt, mode:analysisRun?'analysis':mode, provider:route.provider, model:route.model, launch:Boolean(launch),
+      request:{
+        transport:'durable_agent_run_v2', prompt:runPrompt, context_files:files, simulate:Boolean(options.simulate),
+        semantic_context:semanticContext, semantic_risk:semanticRisk,
+        launch_strategy:'typed_planner',
+        ...(localOllama && route.baseUrl ? { ollama_base_url:route.baseUrl, provider_base_url:route.baseUrl } : {}),
+        selection: selection ? { path:selection.path, text:String(selection.text||'').slice(0,12000), range:selection.range||{} } : null,
+        max_tokens:maxOutputTokens, context_max_chars_each:maxContextChars, max_repair_rounds:Number(options.maxRepairRounds || 3),
+        approval_timeout_seconds:Number(options.approvalTimeoutSeconds || 3600)
+      },
+      budget:{ tokens:120000, seconds:3600, cost_usd:0 }
+    };
+  }
+
+  function isGatewayTimeout(error) {
+    return /timeout|timed out|aborted/i.test(String(error?.message || error || ''));
+  }
+
+  async function createDurableAgentRun(payload, { localCoder = false, detachedPlannerLaunch = false, maxTurns = 5 } = {}) {
+    if (!detachedPlannerLaunch) {
+      return BeastRuntime.request('/edgek/agent-runs', {
+        method:'POST', timeoutMs:45000,
+        body:{ ...payload, launch:true }
+      });
+    }
+    const created = await BeastRuntime.request('/edgek/agent-runs', {
+      method:'POST', timeoutMs:15000,
+      body:{ ...payload, launch:false }
+    });
+    const runId = String(created?.run?.run_id || '');
+    if (!created?.ok || !runId) return created;
+    appendTrace('run', `Durable planner run created before background launch: ${runId}`);
+    try {
+      const execution = await BeastRuntime.request(`/edgek/agent-runs/${encodeURIComponent(runId)}/planner/execute`, {
+        method:'POST', timeoutMs:15000,
+        body:{ root_path:root(), max_turns:maxTurns }
+      });
+      return { ...created, execution:execution?.execution || execution };
+    } catch (error) {
+      if (!isGatewayTimeout(error)) throw error;
+      appendTrace('reconnect', `Planner launch acknowledgement timed out; keeping durable run ${runId} available for replay.`);
+      return { ...created, execution:{ active:true, pending_ack:true, error:String(error.message || error) } };
+    }
+  }
+
+  async function send(prompt, options = {}) {
+    const clean = String(prompt || BeastStore.get().aiCoding.prompt || '').trim();
+    if (!clean) throw new Error('Describe the coding task first.');
+    if (BeastStore.get().aiCoding.streaming) throw new Error('The current AI turn is still running.');
+    const selection = BeastStore.get().aiCoding.selection;
+    let route = await resolveCodingRoute(options.model || BeastStore.get().aiCoding.model);
+    if (!route.model || !route.provider) throw new Error('Select a ready model and provider before running AI coding.');
+    let localCoder = routeIsWeakLocalOllama(route);
+    // Pair Programmer scope is an operator boundary. Code Cortex can help
+    // discover files elsewhere, but it must never add files to this request.
+    let files = contextFilesFor(clean);
+    // ASK must be grounded in the file the operator is visibly reading, even
+    // when the renderer has no explicit attachment chip for it. Keep this
+    // bounded to the active file plus the existing operator-selected scope.
+    const activeContextFile = BeastStore.get().editor.activePath;
+    if (activeContextFile) {
+      files = normalizeContextFiles([activeContextFile, ...files]);
+    }
+    const selectedMode=BeastStore.get().aiCoding.mode;const mode=resolvedModeForPrompt(selectedMode,clean);
+    const analysisRun = mode === 'agent' && isAgentAnalysisPrompt(clean) && !options.actionIrRecovery && !options.forcePatch;
+    // An investigation starts from the active file, not every attachment
+    // accumulated by earlier turns. Additional files enter only through an
+    // explicit @mention or an approved capability request.
+    if (mode === 'agent' && !analysisRun && !options.focused && !options.preserveContext) {
+      const active=BeastStore.get().editor.activePath;
+      const scoped=normalizeContextFiles([active,...mentionedFiles(clean)].filter(Boolean));
+      if (files.length > scoped.length) appendTrace('context', `Agent investigation starts with ${scoped.length} explicit file(s); prior attachments remain available for approval, not automatically sent.`);
+      files=scoped;
+    }
+    if (options.focused && files.length > 1) { files=files.slice(0,1);appendTrace('retry', `Focused recovery retained ${files[0]} and excluded ${Math.max(0,contextFilesFor(clean).length-1)} additional context file(s).`); }
+    if(mode!=='ask'&&!files.length)throw new Error('Edit and Agent modes require an open or attached workspace file. Open the target file, then retry.');
+    const semanticContext = await buildIdeSemanticContext(clean, files);
+    const semanticRisk = semanticRiskFor(semanticContext, { mode, analysisRun, files });
+    if (localCoder && semanticRisk.high && !options.focused && !options.actionIrRecovery && !options.forceLocalOllama) {
+      const escalated = await resolveSemanticEscalationRoute(route);
+      if (escalated.model && escalated.provider) {
+        appendTrace('routing', `Semantic risk ${semanticRisk.score} (${semanticRisk.reasons.join(' · ') || 'high fanout'}) escalated first-pass patching from ${route.provider}/${route.model} to ${escalated.provider}/${escalated.model}.`);
+        route = { ...escalated, semanticRisk };
+        localStorage.setItem('beast.model', route.model);
+        localStorage.setItem('beast.provider', route.provider);
+        patch({ model:route.model, provider:route.provider });
+        persist();
+      } else {
+        appendTrace('routing', `Semantic risk ${semanticRisk.score} would avoid weak local Ollama, but no stronger ready provider was found; continuing guarded local route.`);
+      }
+      localCoder = routeIsWeakLocalOllama(route);
+    }
+    if (localCoder && files.length > RELIABLE_LOCAL_PROFILE.maxFiles) {
+      files = files.slice(0, RELIABLE_LOCAL_PROFILE.maxFiles);
+      appendTrace('routing', `Local coding context bounded to ${RELIABLE_LOCAL_PROFILE.maxFiles} files for responsive CPU inference.`);
+    }
+    const detachedPlanner = routeUsesDetachedPlannerLaunch(route);
+    if (detachedPlanner && !localCoder && files.length > RELIABLE_PLANNER_PROFILE.maxFiles) {
+      files = files.slice(0, RELIABLE_PLANNER_PROFILE.maxFiles);
+      appendTrace('routing', `Planner-backed context bounded to ${RELIABLE_PLANNER_PROFILE.maxFiles} files to keep workspace ingestion responsive.`);
+    }
+    const retryDirective=options.focused?'\n\nRecovery mode: make one exact, reviewable edit in the single attached file. Do not inspect or propose changes outside it; return valid Action IR JSON before output ends.':(options.actionIrRecovery?'\n\nRecovery mode: your previous response looked like an edit packet but failed BEAST SourcePlan compilation. Return one valid BEAST Action IR JSON object only. Include complete exact replacements, at most one source-edit action per file, and no markdown or prose. If you cannot make a safe exact edit, emit ask_for_context instead of advisory prose.':'');
+    const runPrompt = `${instructionFor(mode, clean, files, selection, localCoder)}${retryDirective}`;
+    const agentProfile = agentTurnProfile(clean, mode, analysisRun, files);
+    addMessage('user', clean, { mode, files, selection:selection ? { path:selection.path, range:selection.range } : null });
+    const assistantId = addMessage('assistant', '', {
+      streaming:true, mode, activity:mode === 'ask' ? 'Thinking…' : `Starting ${agentProfile.kind} loop…`,
+      agentProfile,
+      turns:mode === 'ask'
+        ? [{ id:`turn-${now()}-context`, kind:'context', type:'context_read', role:'tool', tool:'Workspace File Read', text:`Context gathered · ${files.length} file${files.length === 1 ? '' : 's'} in scope`, state:'done', authority:'selected files only', at:now() }]
+        : initialAgentTurns(agentProfile, files),
+      progress:mode === 'ask'
+        ? [{ phase:'context', label:'Context gathered', detail:`${files.length} file${files.length === 1 ? '' : 's'} in scope`, state:'done', at:now() }]
+        : initialAgentProgress(agentProfile, files)
+    });
+    patch({ streaming:true, status:'creating', activeRunId:'', activeRunSequence:0, error:'', prompt:'', sourcePlanReady:false, sourcePlanId:'', contextFiles:files });
+    let sessionId = analysisRun ? '' : BeastStore.get().aiCoding.sessionId;
+    let proposalReady = false;
+    let needsOperator = false;
+    let advisoryReceived = false;
+    let terminalEventSeen = false;
+    let rawAssistant = '';
+    let lastDraftProgressAt = 0;
+    try {
+      if (!sessionId) sessionId = await createSession(clean, files, route.model, route.provider, analysisRun ? 'analysis' : mode);
+      const maxOutputTokens = Number(options.maxTokens || (localCoder ? (mode === 'ask' ? RELIABLE_LOCAL_PROFILE.askTokens : RELIABLE_LOCAL_PROFILE.editTokens) : detachedPlanner ? (mode === 'ask' ? RELIABLE_PLANNER_PROFILE.askTokens : RELIABLE_PLANNER_PROFILE.editTokens) : (mode === 'ask' ? 6000 : 16000)));
+      const maxContextChars = Number(options.contextMaxCharsEach || (localCoder ? RELIABLE_LOCAL_PROFILE.contextChars : detachedPlanner ? RELIABLE_PLANNER_PROFILE.contextChars : 50000));
+      const created = await createDurableAgentRun(agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch:true }), {
+        localCoder,
+        detachedPlannerLaunch: detachedPlanner,
+        maxTurns:Number(options.maxTurns || (localCoder ? 5 : 8))
+      });
+      const durableRunId = String(created?.run?.run_id || '');
+      if (!created?.ok || !durableRunId) throw new Error(created?.error || 'BEAST could not create the durable coding run.');
+      runtime.streamState.runId = durableRunId; runtime.streamState.sequence = 0;
+      patch({ activeRunId:durableRunId, activeRunSequence:0, status:'connecting' });
+      appendTrace('run', `Durable execution launched: ${durableRunId}`);
+      persist();
+      const eventSource = await openRunStream(durableRunEventUrl(durableRunId, 0));
+      runtime.streamState.stream = eventSource;
+      updateProgress(assistantId,'connect','Connecting to model',`${route.provider} / ${route.model}`,'active');
+      armWatchdog(assistantId, eventSource);
+      eventSource.onopen = () => { if (runtime.streamState.stream === eventSource) { armWatchdog(assistantId,eventSource);patch({ status:'streaming' }); appendTrace('connection', `Connected to ${route.provider}/${route.model}`);appendTurn(assistantId,{type:'model_connection',kind:'connection',text:`Connected to ${route.provider}/${route.model}`,state:'done',role:'model'});updateProgress(assistantId,'connect','Model connected',`${route.provider} / ${route.model}`,'done');updateProgress(assistantId,'draft','Drafting response',mode === 'ask'||analysisRun ? 'Streaming answer' : 'Streaming model output','active'); } };
+      eventSource.addEventListener('agent_run_registered', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);runtime.streamState.runId=String(payload.run_id||'');patch({activeRunId:runtime.streamState.runId});appendTrace('run',`Durable run registered: ${runtime.streamState.runId||'unknown'}`);persist();} });
+      eventSource.addEventListener('agent_run_started', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);runtime.streamState.runId=String(payload.run_id||'');patch({activeRunId:runtime.streamState.runId});const detail=payload.run_id?`Run ${String(payload.run_id).slice(-8)}`:(payload.session_id?`Session ${String(payload.session_id).slice(-6)}`:'Session ready');mergeAssistantRoute(assistantId,{provider:String(payload.provider||route.provider||''),model:String(payload.model||route.model||''),execution_target:String(payload.execution_target||'local'),target_execution:String(payload.execution_target||'local'),reason:'initial_route_selected'});mergeAssistantPlanState(assistantId,{status:'running',active_step_id:'inspect_plan_dispatch',reason:'durable coding run active'});appendTurn(assistantId,{type:'agent_turn',kind:'run',text:`Coding run started · ${detail}`,state:'done',role:'agent',authority:'selected workspace scope',provider:String(payload.provider||route.provider||''),execution_target:String(payload.execution_target||'local')});updateProgress(assistantId,'run','Coding run started',detail,'done');persist();} });
+      eventSource.addEventListener('agent_run_preflight', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const recipes=Array.isArray(payload.recipes)?payload.recipes:[];const skipped=Array.isArray(payload.skipped_tools)?payload.skipped_tools:[];const detail=`Pathfinder ${payload.route_id||'ready'} · ${recipes.length} verified recipe(s) · ${skipped.length} optional tool(s) skipped`;appendTrace('preflight',detail);appendTurn(assistantId,{type:'tool_result',kind:'preflight',tool:'Pathfinder/SkillTree',text:detail,state:'done',role:'tool',authority:'advisory only'});updateProgress(assistantId,'preflight','Pathfinder preflight',`${recipes.length} verified recipe(s) · advisory only`,'done');} });
+      eventSource.addEventListener('agent_run_context', event => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const locked=Array.isArray(payload.files)?payload.files:files;const unreadable=Array.isArray(payload.unreadable_files)?payload.unreadable_files:[];const aliases=Array.isArray(payload.file_aliases)?payload.file_aliases:[];const lockedRefs=new Set([...locked,...aliases.map(item=>String(item.requested||'')),...aliases.map(item=>String(item.resolved||''))].filter(Boolean));const missing=files.filter(path=>!lockedRefs.has(path));const loaded=payload.content_loaded!==false&&locked.length>0&&!missing.length;patch({contextFiles:normalizeContextFiles([...files,...locked])});const failure=[...unreadable.map(item=>`${item.path||'file'}: ${item.error||'unreadable'}`),...missing.map(path=>`${path}: not locked by backend`)].join(' · ');const aliasText=aliases.length?` (${aliases.map(item=>`${item.requested} → ${item.resolved}`).join(', ')})`:'';const detail=loaded?`Content loaded: ${locked.join(', ')}${aliasText}`:`Context mismatch/read failure: ${failure||'no readable file reached the run'}`;updateProgress(assistantId,'context',loaded?'Context content loaded':'Context mismatch or read failure',loaded?`${locked.join(' · ')}${aliasText}`:failure||'No readable file reached the agent',loaded?'done':'failed');appendTrace('context',detail);appendTurn(assistantId,{type:'tool_result',kind:'context_read',tool:'Workspace File Read',text:detail,state:loaded?'done':'failed',role:'tool',authority:'selected files only'});} });
+      eventSource.addEventListener('agent_run_stage', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const text=String(eventPayload(event).text||'Working').replaceAll('_',' ');appendTrace('stage',text);appendTurn(assistantId,{type:'agent_reasoning',kind:'stage',text,state:'active',role:'agent'});updateProgress(assistantId,'stage',text,'Agent stage','active');} });
+      eventSource.addEventListener('agent_run_tool', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const text=String(payload.text||'Using repository tool');const turnType=payload.type||'tool_result';const turnState=payload.status==='deferred'?'failed':turnType==='tool_call'?'active':'done';appendTrace('tool',text);appendTurn(assistantId,{type:turnType,kind:payload.phase||'tool',tool:payload.tool||'BEAST governed tool',text,state:turnState,role:'tool',authority:payload.authority||'read-only/governed',evidence:payload.evidence||''});updateProgress(assistantId,'tools',turnType==='tool_call'?'Using repository tool':'Repository tool finished',`${payload.tool?`${payload.tool}: `:''}${text}`,turnState);} });
+      eventSource.addEventListener('agent_run_permission_request', async event => {
+        await handlePermissionRequest({ event, assistantId, eventSource });
+      });
+      eventSource.addEventListener('agent_run_token', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId,eventSource);
+        const text=String(eventPayload(event).text||'');rawAssistant=`${rawAssistant}${text}`.slice(-60000);
+        if(mode==='ask'||analysisRun)appendAssistant(assistantId,text);
+        else if(isStructuredEditStream(rawAssistant)){const draft=draftPreviewFromRaw(rawAssistant);const current=BeastStore.get().aiCoding.messages.find(message=>message.id===assistantId)||{};updateAssistant(assistantId,{content:current.narrating&&current.content?current.content:structuredDraftStatus(draft),draftPreview:draft,internalFormat:'beast.action_intent.v1'});}
+        else appendAssistant(assistantId,text);
+        if(now()-lastDraftProgressAt>=120){lastDraftProgressAt=now();updateProgress(assistantId,'draft',mode==='ask'||analysisRun?'Streaming answer':'Streaming model output',`${rawAssistant.length.toLocaleString()} characters received`,'active');if(mode!=='ask'&&!analysisRun)updateAssistantPreview(assistantId,draftPreviewFromRaw(rawAssistant));}
+      });
+      eventSource.addEventListener('agent_run_provider_done', () => { if(runtime.streamState.stream===eventSource){armWatchdog(assistantId,eventSource);patch({status:mode==='ask'||analysisRun?'finishing':'building-changes'});appendTurn(assistantId,{type:'model_output',kind:'provider',text:`Provider stream complete · ${rawAssistant.length.toLocaleString()} characters`,state:'done',role:'model',authority:analysisRun?'read-only analysis':'draft only'});if(mode!=='ask'&&!analysisRun)updateAssistantPreview(assistantId,draftPreviewFromRaw(rawAssistant));updateProgress(assistantId,'draft',mode==='ask'||analysisRun?'Answer received':'Model output received',`${rawAssistant.length.toLocaleString()} characters`,'done');updateProgress(assistantId,'compile',mode==='ask'||analysisRun?'Finalizing answer':'Compiling reviewable patch',mode==='ask'||analysisRun?'Formatting response':'Translating Action IR into safe operations','active');} });
+      eventSource.addEventListener('agent_run_validation', event => {
+        if(runtime.streamState.stream!==eventSource)return;armWatchdog(assistantId,eventSource);const payload=eventPayload(event);const status=String(payload.status||'checking');const verifiers=payload.isolated_verifiers||{};const approvalNeeded=verifiers.status==='approval_required';const strategy=payload.validation_strategy&&typeof payload.validation_strategy==='object'?payload.validation_strategy:{};const priorFailure=payload.prior_failure&&typeof payload.prior_failure==='object'?payload.prior_failure:{};const targetExecution=String(strategy.mode||payload.target_execution||payload.execution_target||'local');const verifierDetail=verifiers.status?` · isolated ${verifiers.status}${Number(verifiers.passed||0)?` (${Number(verifiers.passed)} passed)`:''}${Number(verifiers.skipped||0)?` · ${Number(verifiers.skipped)} skipped`:''}`:'';const strategyDetail=strategy.mode?` · ${String(strategy.mode).replaceAll('_',' ')}${strategy.family?` · ${strategy.family}`:''}`:'';const detail=approvalNeeded?`Test approval needed${verifierDetail}${strategyDetail}`:`${status} · ${Number(payload.check_count||0)} checks${verifierDetail}${strategyDetail}`;patch({status:approvalNeeded?'test-approval-needed':'validating-changes'});mergeAssistantPlanState(assistantId,{status:approvalNeeded?'awaiting_verifier_approval':status,active_step_id:payload.repair?'verify_repaired_patch':'verify_patch',reason:detail,repair_cycle:Number(payload.repair_round||0)});mergeAssistantRoute(assistantId,{execution_target:String(payload.execution_target||strategy.base||'local'),target_execution:targetExecution,verification_strategy:strategy,prior_failure:priorFailure});updateProgress(assistantId,'compile','Patch compiled','Operations are bounded to attached files','done');updateProgress(assistantId,'validate',approvalNeeded?'Test approval needed':(payload.repair?'Rechecking repaired edits':'Validating proposed files'),approvalNeeded?'Approve the isolated verifier capability; BEAST will continue the governed loop when the approval reaches the run.':detail,approvalNeeded?'active':status==='passed'||status==='partial'?'done':'active');appendTrace('validation',detail);appendTurn(assistantId,{type:'verification',kind:'validation',text:detail,state:approvalNeeded?'active':status==='passed'||status==='partial'?'done':'active',role:'verifier',authority:'local syntax/sourceplan',validation_strategy:strategy,prior_failure:priorFailure,execution_target:String(payload.execution_target||strategy.base||'local'),target_execution:targetExecution,repair_cycle:Number(payload.repair_round||0)});
+        (Array.isArray(verifiers.commands)?verifiers.commands:[]).slice(0,6).forEach(item=>appendTurn(assistantId,{type:approvalNeeded?'command_request':'command_result',kind:'command',command:String(item.command||'verifier'),text:String(item.message||item.status||'verifier'),state:approvalNeeded?'active':String(item.status||'done'),role:'command',authority:'isolated temporary workspace'}));
+      });
+      eventSource.addEventListener('agent_provider_switch', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId, eventSource);
+        const payload = eventPayload(event);
+        const from = String(payload.from || 'unknown');
+        const to = String(payload.to || 'unknown');
+        const reason = String(payload.reason || 'runtime routing');
+        const taskType = String(payload.task_type || '');
+        const hardEdit = payload.semantic_hard_edit === true;
+        const detail = `Provider switch ${from} -> ${to} · ${reason}${taskType ? ` · ${taskType}` : ''}${hardEdit ? ' · semantic hard edit' : ''}`;
+        mergeAssistantRoute(assistantId, { provider:to, previous_provider:from, reason, task_type:taskType, semantic_hard_edit:hardEdit, switched:true });
+        appendTrace('routing', detail);
+        appendTurn(assistantId, { type:'provider_switch', kind:'routing', text:detail, state:'done', role:'agent', authority:'runtime provider selection', from, to, reason });
+        updateProgress(assistantId, 'connect', 'Provider route adapted', `${from} -> ${to}`, 'done');
+      });
+      eventSource.addEventListener('agent_provider_fallback', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId, eventSource);
+        const payload = eventPayload(event);
+        const detail = `Provider fallback ${String(payload.from||'unknown')} -> ${String(payload.to||'unknown')} · ${String(payload.reason||'runtime fallback')}`;
+        mergeAssistantRoute(assistantId, { provider:String(payload.to||''), previous_provider:String(payload.from||''), reason:String(payload.reason||'runtime fallback'), fallback:true });
+        appendTrace('routing', detail);
+        appendTurn(assistantId, { type:'provider_fallback', kind:'routing', text:detail, state:'done', role:'agent', authority:'runtime provider fallback', from:String(payload.from||''), to:String(payload.to||''), reason:String(payload.reason||'runtime fallback') });
+      });
+      eventSource.addEventListener('agent_provider_sticky_fallback', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId, eventSource);
+        const payload = eventPayload(event);
+        const slowMs = Number(payload.slow_ms || 0);
+        const detail = `Sticky fallback ${String(payload.from||'unknown')} -> ${String(payload.to||'unknown')} · ${String(payload.reason||'slow or unstable route')}${slowMs ? ` · ${slowMs}ms` : ''}`;
+        mergeAssistantRoute(assistantId, { provider:String(payload.to||''), previous_provider:String(payload.from||''), reason:String(payload.reason||'slow or unstable route'), sticky_fallback:true, slow_ms:slowMs });
+        appendTrace('routing', detail);
+        appendTurn(assistantId, { type:'provider_sticky_fallback', kind:'routing', text:detail, state:'done', role:'agent', authority:'runtime provider resilience', from:String(payload.from||''), to:String(payload.to||''), reason:String(payload.reason||'slow or unstable route') });
+      });
+      eventSource.addEventListener('agent_repair_required', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId, eventSource);
+        const payload = eventPayload(event);
+        const analysis = payload.failure_analysis || {};
+        const failureClass = String(analysis.failure_class || 'unknown');
+        const nextAction = String(analysis.next_action || 'inspect_failure_context');
+        const remaining = Number(payload.remaining_repairs || 0);
+        const targetPaths = Array.isArray(payload.target_paths) ? payload.target_paths.filter(Boolean) : [];
+        const detail = `Repair required · ${failureClass}${targetPaths.length ? ` · ${targetPaths.slice(0,2).join(', ')}` : ''} · next ${nextAction.replaceAll('_',' ')} · ${remaining} repair cycle(s) left`;
+        mergeAssistantFailure(assistantId, { ...analysis, remaining_repairs:remaining, target_paths:targetPaths });
+        mergeAssistantPlanState(assistantId, { status:'repair_required', active_step_id:'repair_patch', reason:detail, repair_cycle:Number(payload.repair_cycle || 1) });
+        appendTrace('recovery', detail);
+        appendTurn(assistantId, { type:'repair_required', kind:'recovery', text:detail, state:'failed', role:'verifier', authority:'verifier failure classification', failure_analysis:analysis, repair_cycle:Number(payload.repair_cycle || 1) });
+        updateProgress(assistantId, 'validate', 'Repair required', `${failureClass} · ${remaining} retry cycle(s) left`, 'failed');
+      });
+      eventSource.addEventListener('agent_run_request', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId,eventSource);
+        const payload=eventPayload(event);
+        appendTrace('request', String(payload.text || payload.command || payload.query || 'Agent requested a follow-up action'));
+        appendTurn(assistantId,{type:payload.type||'agent_request',kind:payload.request_type||'request',text:String(payload.text||payload.query||payload.command||'Agent requested a follow-up action'),command:String(payload.command||''),state:'active',role:'agent',authority:payload.authority||'operator approval required'});
+      });
+      eventSource.addEventListener('agent_run_crystal', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);applyCrystal(eventPayload(event));} });
+      eventSource.addEventListener('agent_run_compute', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);applyCompute(eventPayload(event));} });
+      eventSource.addEventListener('agent_run_scorecard', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const score=eventPayload(event);const lattice=score.lattice?.match_strength?` · crystal match ${Math.round(Number(score.lattice.match_strength)*100)}%`:'';const worktree=score.worktree?.recommended?' · worktree advised':'';appendTrace('review',`Scorecard: ${score.risk_level||'unknown'} risk · ${score.decision||'review'}${lattice}${worktree}`);updateProgress(assistantId,'scorecard','BEAST review scorecard',`${score.risk_level||'unknown'} risk · ${score.decision||'review'}`,'done');} });
+      eventSource.addEventListener('agent_run_intelligence', event => { if (runtime.streamState.stream === eventSource) {armWatchdog(assistantId,eventSource);const data=eventPayload(event);appendTrace('intelligence',`Pathfinder + Quality Cascade ${data.quality||'completed'} · Conductor ${data.workflow||'advisory'} (${data.dispatch||'not dispatched'}) · Canon ${data.canon_valid?'valid':'review'}${data.tool_skips?` · ${data.tool_skips} optional tool(s) skipped`:''}`);updateProgress(assistantId,'intelligence','Intelligence fabric',`Quality ${data.quality||'completed'} · Canon ${data.canon_valid?'valid':'review'}`,'done');} });
+      eventSource.addEventListener('agent_run_sourceplan', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId,eventSource);
+        const payload = eventPayload(event);
+        const proposal = stageSourcePlan(payload.plan);
+        proposalReady = Boolean(proposal?.ready);
+        if (proposal) updateAssistant(assistantId,{ content:proposalSummary(proposal, payload.plan?.objective), proposal, activity:'Changes ready for review', internalFormat:'beast.action_intent.v1' });
+        mergeAssistantPlanState(assistantId,{ status:'sourceplan_ready', active_step_id:'review_sourceplan', reason:`${payload.operation_count || proposal?.operations?.length || 0} governed operation(s) ready` });
+        mergeAssistantRoute(assistantId,{ execution_target:String(payload.plan?.execution_target||'local'), target_execution:String(payload.plan?.output_evidence?.execution_target_validation_strategy?.mode||'local'), verification_strategy:payload.plan?.validation?.validation_strategy||payload.plan?.output_evidence?.execution_target_validation_strategy||{} });
+        updateProgress(assistantId,'review','Changes ready for review',`${payload.operation_count || proposal?.operations?.length || 0} governed operation(s)`,'ready');
+        patch({ status:'ready-to-review', error:'' });
+        appendTrace('sourceplan', `${payload.operation_count || 0} governed operation(s) ready`);
+        appendTurn(assistantId,'sourceplan',`${payload.operation_count || 0} governed operation(s) ready for review`,'done');
+      });
+      eventSource.addEventListener('agent_run_advisory', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId, eventSource);
+        advisoryReceived = true;
+        const payload = eventPayload(event);
+        const text = String(payload.text || '').trim();
+        const invalidPacket = looksLikeActionIntent(text);
+        if (invalidPacket) {
+          needsOperator = true;
+          const recovery = {
+            type:'invalid_action_ir',
+            title:'Edit packet needs repair',
+            message:'The model produced a structured edit draft, but BEAST could not compile it into a safe SourcePlan. No files changed.',
+            actions:[
+              { id:'agent-repair-packet', label:'Repair edit packet', detail:'rerun with stricter Action IR contract' },
+              { id:'retry', label:'Retry normally', detail:'same request and context' }
+            ]
+          };
+          updateAssistant(assistantId, { content:'BEAST caught an edit-packet problem before it could become a patch. No files changed.', recovery, activity:'Recovery needed', error:false, internalFormat:'beast.action_intent.v1' });
+          updateProgress(assistantId,'compile','Edit packet needs repair','No files changed; repair or retry from the retained context.','failed');
+          patch({ status:'review-needed', error:'' });
+          appendTrace('recovery', 'Invalid Action IR held for recovery. No SourcePlan was created.');
+          appendTurn(assistantId,{type:'recovery_request',kind:'recovery',text:'I caught a structured edit draft that needs repair before it can become a SourcePlan.',state:'failed',role:'agent',authority:'no source mutation'});
+          return;
+        }
+        const content = text || 'The model returned an advisory response. No files were changed.';
+        updateAssistant(assistantId, { content, activity:'Advisory response', error:false, internalFormat:'' });
+        updateProgress(assistantId,'compile','Advisory response',String(payload.message || 'No files were changed.'),'done');
+        patch({ status:'complete', error:'' });
+        appendTrace('advisory', String(payload.message || 'Model returned advice without a patch.'));
+        appendTurn(assistantId,'advisory',String(payload.message || 'Model returned advice without a patch.'),'done');
+      });
+      eventSource.addEventListener('agent_run_needs_operator', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        armWatchdog(assistantId,eventSource);
+        const payload = eventPayload(event);
+        needsOperator = true;
+        const reason=String(payload.error || 'The model response could not be translated into a safe patch.');
+        // A raw Action IR is not a proposal. The backend just rejected it, so
+        // rendering its claimed edits as a preview makes a failed compile look
+        // like a safe, reviewable patch.
+        const intent=parseActionIntent(rawAssistant);const proposal=null;
+        const returned=String(payload.assistant_text||rawAssistant||'').trim();const readable=returned&&!/^[\s`]*[\[{]/.test(returned)?returned:'';
+        const failureCopy=readable?`The agent inspected the selected file but returned advice instead of reviewable edits. No file was changed.\n\n${readable}\n\nPatch compiler: ${reason}`:`I could not safely turn the model response into file edits. No file was changed.\n\nPatch compiler: ${reason}\n\nThe selected file remained attached; retry Edit/Agent or select the exact code range.`;
+        updateAssistant(assistantId,{ content:failureCopy, proposal, draftPreview:draftPreviewFromRaw(returned), activity:'Needs your input', error:true, internalFormat:intent?'beast.action_intent.v1':'' });
+        patch({ status:'review-needed', error:reason });
+        appendTrace('review', payload.error || 'Operator translation required');
+        appendTurn(assistantId,'review',reason,'failed');
+      });
+      eventSource.addEventListener('agent_run_done', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        terminalEventSeen = true;
+        eventSource.close(); runtime.streamState.stream = null; runtime.streamState.runId = ''; runtime.streamState.sequence = 0; patch({activeRunId:'',activeRunSequence:0}); clearWatchdog();
+        const payload = eventPayload(event);
+        const recoveredPlan=payload.session?.output?.sourceplan_plan;
+        if(!proposalReady&&recoveredPlan?.operations?.length){const proposal=stageSourcePlan(recoveredPlan);proposalReady=Boolean(proposal?.ready);if(proposal)updateAssistant(assistantId,{content:proposalSummary(proposal,recoveredPlan.objective),proposal,internalFormat:'beast.action_intent.v1'});}
+        const current=BeastStore.get().aiCoding.messages.find(message=>message.id===assistantId);
+        let fallback='';
+        if((mode==='ask'||analysisRun)&&!String(current?.content||'').trim())fallback='I did not receive a text response. Try again or choose another model.';
+        if(mode!=='ask'&&!analysisRun&&!proposalReady&&!needsOperator&&!advisoryReceived)fallback=`I finished investigating, but no safe patch was produced. The locked context was kept (${files.join(', ') || 'no files'}). Retry with the exact selection or ask for a smaller governed patch.`;
+        finishProgress(assistantId,fallback?'Stopped before a safe result was produced':'Run complete');
+        mergeAssistantPlanState(assistantId,{ status:payload.sourceplan_status || (fallback ? 'stopped_without_safe_result' : 'complete'), active_step_id:proposalReady?'review_sourceplan':needsOperator?'operator_review':'complete', reason:fallback || runDoneSentence(payload.sourceplan_status || 'complete', { needsOperator, proposalReady, advisoryReceived, analysisRun }) });
+        updateAssistant(assistantId,{ streaming:false, activity:'', ...(fallback?{content:fallback,error:true}:{}) });
+        patch({ streaming:false, status:proposalReady?'ready-to-review':needsOperator||fallback?'review-needed':'complete', error:needsOperator?BeastStore.get().aiCoding.error:fallback });
+        const completeText = runDoneSentence(payload.sourceplan_status || 'complete', { needsOperator, proposalReady, advisoryReceived, analysisRun });
+        appendTrace('complete', completeText);
+        appendTurn(assistantId,'complete',completeText,'done');
+        BeastStore.addLedger(`AI coding turn complete: ${clean.slice(0,80)}`);
+        BeastMascot.setState('finished');
+        persist();
+      });
+      eventSource.addEventListener('agent_run_error', event => {
+        if (runtime.streamState.stream !== eventSource) return;
+        terminalEventSeen = true;
+        let error = 'AI coding stream failed.';
+        try { error = providerTransportFailure(eventPayload(event), error); } catch (_) {}
+        fail(error, assistantId, eventSource);
+      });
+      eventSource.addEventListener('error', () => {
+        if (runtime.streamState.stream === eventSource && BeastStore.get().aiCoding.streaming) disconnect('AI coding stream disconnected. The durable run is still active and can reconnect.', assistantId, eventSource);
+      });
+      eventSource.addEventListener('end', () => {
+        // Electron distinguishes a normal finite SSE close from a transport
+        // error. A completed run closes itself on agent_run_done; reaching
+        // here therefore means the gateway ended before a terminal result.
+        if (terminalEventSeen) return;
+        if (runtime.streamState.stream === eventSource && BeastStore.get().aiCoding.streaming) disconnect('The gateway stream ended before a terminal result. The durable run remains available for replay.', assistantId, eventSource);
+      });
+      BeastMascot.setState('working');
+      persist();
+      return { ok:true, session_id:sessionId, run_id:String(runtime.streamState.runId || '') };
+    } catch (error) {
+      if (runtime.streamState.runId) disconnect(String(error.message || error), assistantId);
+      else fail(String(error.message || error), assistantId);
+      throw error;
+    }
+  }
+
+  async function reconnectActiveRun(runId, after = 0) {
+    const identifier = String(runId || '').trim();
+    if (!identifier || !root() || runtime.streamState.stream) return { ok:false, skipped:true };
+    const detail = await BeastRuntime.request(`/edgek/agent-runs/${encodeURIComponent(identifier)}?root_path=${encodeURIComponent(root())}&auto_recover=true`, { timeoutMs:10000, cacheTtl:0 });
+    const run = detail?.run || {};
+    const terminal = ['completed','cancelled','failed','budget_exhausted','policy_blocked','rejected','rolled_back'].includes(String(run.state || ''));
+    if (terminal) {
+      runtime.streamState.runId = ''; runtime.streamState.sequence = 0;
+      patch({ activeRunId:'', activeRunSequence:0, streaming:false, status:String(run.state || 'complete'), error:String(run.error || '') });
+      persist();
+      return { ok:true, terminal:true, run };
+    }
+    const messages = BeastStore.get().aiCoding.messages || [];
+    let assistant = [...messages].reverse().find(message => message?.role === 'assistant');
+    const assistantId = assistant?.id || addMessage('assistant', '', { streaming:true, mode:BeastStore.get().aiCoding.mode, activity:'Reconnecting to durable run…', turns:[], progress:[] });
+    runtime.streamState.runId = identifier;
+    runtime.streamState.sequence = Math.max(0, Number(after || 0));
+    patch({ activeRunId:identifier, activeRunSequence:runtime.streamState.sequence, streaming:true, status:'reconnecting', error:'' });
+    appendTrace('reconnect', `Replaying durable run ${identifier} after event ${runtime.streamState.sequence}.`);
+    const eventSource = await openRunStream(durableRunEventUrl(identifier, runtime.streamState.sequence));
+    runtime.streamState.stream = eventSource;
+    let terminalEventSeen = false;
+    let proposalReady = Boolean(BeastStore.get().aiCoding.sourcePlanReady);
+    armWatchdog(assistantId, eventSource);
+    eventSource.onopen = () => {
+      if (runtime.streamState.stream !== eventSource) return;
+      patch({ status:'streaming' });
+      updateAssistant(assistantId, { streaming:true, activity:'Durable run reconnected' });
+      appendTrace('reconnect', `Durable run ${identifier} reconnected.`);
+    };
+    eventSource.addEventListener('agent_run_registered', event => { eventPayload(event); });
+    eventSource.addEventListener('agent_run_started', event => { eventPayload(event); updateProgress(assistantId,'run','Durable run resumed',identifier.slice(-12),'done'); });
+    eventSource.addEventListener('agent_run_stage', event => { const payload=eventPayload(event); const text=String(payload.text||'Working').replaceAll('_',' '); appendTrace('stage',text); updateProgress(assistantId,'stage',text,'Recovered event','active'); });
+    eventSource.addEventListener('agent_run_context', event => { const payload=eventPayload(event); const files=Array.isArray(payload.files)?payload.files:[]; if(files.length) patch({contextFiles:normalizeContextFiles([...BeastStore.get().aiCoding.contextFiles,...files])}); updateProgress(assistantId,'context','Context restored',`${files.length} file(s)`,'done'); });
+    eventSource.addEventListener('agent_run_tool', event => { const payload=eventPayload(event); appendTrace('tool',String(payload.text||payload.tool||'Tool event')); appendTurn(assistantId,{type:payload.type||'tool_result',kind:payload.phase||'tool',tool:payload.tool||'BEAST tool',text:String(payload.text||''),state:payload.status==='deferred'?'failed':payload.type==='tool_call'?'active':'done',role:'tool',authority:payload.authority||'governed'}); });
+    eventSource.addEventListener('agent_run_permission_request', async event => { await handlePermissionRequest({ event, assistantId, eventSource }); });
+    eventSource.addEventListener('agent_run_token', event => { const payload=eventPayload(event); appendAssistant(assistantId,String(payload.text||'')); updateAssistant(assistantId,{streaming:true,activity:'Durable model stream'}); });
+    eventSource.addEventListener('agent_run_provider_done', event => { eventPayload(event); updateProgress(assistantId,'draft','Model output received','Replayed durable provider completion','done'); });
+    eventSource.addEventListener('agent_run_validation', event => { const payload=eventPayload(event); const status=String(payload.status||'checking'); appendTrace('validation',status); updateProgress(assistantId,'validate','Verification',status,status==='passed'||status==='partial'?'done':'active'); });
+    eventSource.addEventListener('agent_provider_switch', event => { const payload=eventPayload(event); appendTrace('routing', `Recovered provider switch ${String(payload.from||'unknown')} -> ${String(payload.to||'unknown')} · ${String(payload.reason||'runtime routing')}`); });
+    eventSource.addEventListener('agent_provider_fallback', event => { const payload=eventPayload(event); appendTrace('routing', `Recovered provider fallback ${String(payload.from||'unknown')} -> ${String(payload.to||'unknown')} · ${String(payload.reason||'runtime fallback')}`); });
+    eventSource.addEventListener('agent_provider_sticky_fallback', event => { const payload=eventPayload(event); appendTrace('routing', `Recovered sticky fallback ${String(payload.from||'unknown')} -> ${String(payload.to||'unknown')} · ${String(payload.reason||'slow or unstable route')}`); });
+    eventSource.addEventListener('agent_repair_required', event => { const payload=eventPayload(event); const analysis=payload.failure_analysis||{}; appendTrace('recovery', `Recovered repair requirement ${String(analysis.failure_class||'unknown')} · ${String(analysis.next_action||'inspect_failure_context').replaceAll('_',' ')}`); });
+    eventSource.addEventListener('agent_run_sourceplan', event => {
+      const payload=eventPayload(event); const proposal=stageSourcePlan(payload.plan); proposalReady=Boolean(proposal?.ready);
+      if(proposal) updateAssistant(assistantId,{content:proposalSummary(proposal,payload.plan?.objective),proposal,streaming:false,activity:'Changes ready for review',internalFormat:'beast.action_intent.v1'});
+      patch({status:'ready-to-review',error:''});
+    });
+    eventSource.addEventListener('agent_run_advisory', event => { const payload=eventPayload(event); updateAssistant(assistantId,{content:String(payload.text||'The run returned advisory output.'),streaming:false,activity:''}); patch({status:'complete',error:''}); });
+    eventSource.addEventListener('agent_run_needs_operator', event => { const payload=eventPayload(event); updateAssistant(assistantId,{content:String(payload.assistant_text||payload.error||'The durable run needs operator input.'),streaming:false,activity:'Needs your input',error:true}); patch({status:'review-needed',error:String(payload.error||'Operator input required')}); });
+    eventSource.addEventListener('agent_run_done', event => {
+      terminalEventSeen=true; const payload=eventPayload(event); eventSource.close(); runtime.streamState.stream=null; runtime.streamState.runId=''; runtime.streamState.sequence=0; clearWatchdog();
+      updateAssistant(assistantId,{streaming:false,activity:''}); patch({streaming:false,activeRunId:'',activeRunSequence:0,status:proposalReady?'ready-to-review':payload.ok===false?'review-needed':'complete'}); appendTrace('complete','Recovered durable run reached a terminal result.'); persist();
+    });
+    eventSource.addEventListener('agent_run_error', event => { terminalEventSeen=true; const payload=eventPayload(event); fail(providerTransportFailure(payload, 'Durable run failed.'),assistantId,eventSource); });
+    eventSource.addEventListener('error', () => { if(runtime.streamState.stream===eventSource&&BeastStore.get().aiCoding.streaming) disconnect('Durable run event replay disconnected. Reconnect will resume from the last stored event.',assistantId,eventSource); });
+    eventSource.addEventListener('end', () => { if(!terminalEventSeen&&runtime.streamState.stream===eventSource&&BeastStore.get().aiCoding.streaming) disconnect('Durable run event stream ended before a terminal event. The run remains replayable.',assistantId,eventSource); });
+    BeastMascot.setState('working'); persist();
+    return { ok:true, run_id:identifier };
+  }
+
+  function disconnect(error, assistantId, eventSource = null) {
+    const reconnectRunId = String(runtime.streamState.runId || BeastStore.get().aiCoding.activeRunId || '');
+    const reconnectAfter = Number(runtime.streamState.sequence || BeastStore.get().aiCoding.activeRunSequence || 0);
+    if (eventSource) eventSource.close();
+    if (!eventSource || runtime.streamState.stream === eventSource) runtime.streamState.stream = null;
+    clearWatchdog();
+    const messages = BeastStore.get().aiCoding.messages.map(message => message.id === assistantId ? { ...message, streaming:false, activity:'Run continues in backend', error:false, progress:(message.progress||[]).map(item=>item.state==='active'?{...item,state:'paused',detail:'Renderer disconnected; durable run continues'}:item) } : message);
+    patch({ streaming:false, status:'interrupted', error:String(error || 'Durable run disconnected.'), messages, activeRunId:reconnectRunId, activeRunSequence:reconnectAfter });
+    appendTrace('reconnect', String(error || 'Durable run disconnected; replay remains available.'));
+    if (reconnectRunId) {
+      setTimeout(() => {
+        if (runtime.streamState.stream || BeastStore.get().aiCoding.streaming) return;
+        reconnectActiveRun(reconnectRunId, reconnectAfter).catch(reconnectError => {
+          appendTrace('reconnect', `Automatic durable replay retry failed: ${String(reconnectError.message || reconnectError)}`);
+        });
+      }, 1200);
+    }
+    BeastMascot.setState('alert');
+    persist();
+  }
+
+  function fail(error, assistantId, eventSource = null) {
+    if (eventSource) eventSource.close();
+    if (!eventSource || runtime.streamState.stream === eventSource) runtime.streamState.stream = null;
+    runtime.streamState.runId = '';
+    clearWatchdog();
+    const messages = BeastStore.get().aiCoding.messages.map(message => message.id === assistantId ? { ...message, content:String(message.content||'').trim()||`The coding run stopped before it produced a safe result.\n\n${String(error||'AI coding failed.')}`, streaming:false, activity:'', error:true, progress:(message.progress||[]).map(item=>item.state==='active'?{...item,state:'failed',detail:String(error||'AI coding failed.').slice(0,240)}:item) } : message);
+    patch({ streaming:false, status:'error', activeRunId:'', activeRunSequence:0, error:String(error || 'AI coding failed.'), messages });
+    appendTrace('error', error);
+    BeastMascot.setState('alert');
+    persist();
+  }
+
+  function mergeAssistantRoute(messageId, updates = {}) {
+    const current = BeastStore.get().aiCoding.messages.find(message => message.id === messageId) || {};
+    const next = { ...(current.route || {}), ...updates };
+    updateAssistant(messageId, { route: next });
+    return next;
+  }
+
+  function mergeAssistantFailure(messageId, updates = {}) {
+    const current = BeastStore.get().aiCoding.messages.find(message => message.id === messageId) || {};
+    const next = { ...(current.failureAnalysis || {}), ...updates };
+    updateAssistant(messageId, { failureAnalysis: next });
+    return next;
+  }
+
+  function mergeAssistantPlanState(messageId, updates = {}) {
+    const current = BeastStore.get().aiCoding.messages.find(message => message.id === messageId) || {};
+    const next = { ...(current.planState || {}), ...updates };
+    updateAssistant(messageId, { planState: next });
+    return next;
+  }
+
+  function cancel() {
+    const activeRunId = String(runtime.streamState.runId || BeastStore.get().aiCoding.activeRunId || '');
+    if (activeRunId && root()) {
+      BeastRuntime.request(`/edgek/agent-runs/${encodeURIComponent(activeRunId)}/cancel`, {
+        method:'POST', timeoutMs:10000,
+        body:{ root_path:root(), reason:'operator_cancelled_from_pair_programmer' }
+      }).catch(error => appendTrace('cancel', `Backend cancellation acknowledgement failed: ${String(error.message || error)}`));
+    }
+    if (runtime.streamState.stream) { runtime.streamState.stream.close(); runtime.streamState.stream = null; }
+    runtime.streamState.runId = '';
+    clearWatchdog();
+    if (BeastStore.get().aiCoding.streaming) {
+      const messages=BeastStore.get().aiCoding.messages.map(message=>message.streaming?{...message,streaming:false,activity:'',content:String(message.content||'').trim()||'Run stopped. No files were changed.',progress:(message.progress||[]).map(item=>item.state==='active'?{...item,state:'failed',detail:'Stopped by operator'}:item)}:message);
+      patch({ streaming:false, status:'cancelled', activeRunId:'', activeRunSequence:0, error:'Stopped by operator. No files were changed.', messages });
+    } else {
+      patch({ activeRunId:'', activeRunSequence:0 });
+    }
+    BeastMascot.setState('idle');
+    persist();
+  }
+
+  function clear() {
+    cancel();
+    patch({ sessionId:'', activeRunId:'', activeRunSequence:0, messages:[], trace:[], status:'idle', error:'', prompt:'', selection:null, sourcePlanReady:false, sourcePlanId:'', crystal:{ action:'', source:'', confidence:0, reused:false, avoidedTokens:0, decisionId:'', recorded:false, candidate:false }, compute:{ selectedFiles:0, readableFiles:0, sourceChars:0, suppliedChars:0, truncatedFiles:0, policy:'', kvCache:'', crystal:'' } });
+    persist();
+  }
+
+    return { runInWorktree, retryLastRequest, recoverInvalidPacket, continueWithAddedContext, syncModel, providerStateRoute, resolveCodingRoute, createSession, send, reconnectActiveRun, disconnect, fail, cancel, clear };
+  };
+})();

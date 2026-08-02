@@ -10262,7 +10262,7 @@ class BeastMissionConsole(App):
     def __init__(self, base_url: str | None = None):
         super().__init__()
         self.base_url = base_url or os.environ.get(
-            "BEAST_GATEWAY_URL", "http://127.0.0.1:8000"
+            "BEAST_GATEWAY_URL", "http://127.0.0.1:8101"
         )
         self.chat_lines: List[Dict[str, str]] = []
         self.tool_events: List[str] = []
@@ -11730,6 +11730,11 @@ class BeastMissionConsole(App):
         self._set_mascot_state("working")
         mode = "upgrade patch" if upgrade else "source patch"
         self.tool_events.append(f"{mode} draft requested via {provider}")
+        authority = BeastApiClient(self.base_url).least_authority_plan(
+            [{"name": "tui:sourceplan_draft", "category": "sourceplan", "bucket": "Reason", "mutating": False}],
+            phase="implementer", risk="medium",
+        )
+        self.tool_events.append(f"authority {((authority.get('tools') or [{}])[0]).get('receipt_id', 'checked')}")
         self._sync()
         if self.tiny_demo.get("active"):
             result = self._build_tiny_demo_patch_plan()
@@ -11832,6 +11837,11 @@ class BeastMissionConsole(App):
             self._set_mascot_state("alert", hold_ticks=12)
             return
         self._set_mascot_state("working")
+        authority = BeastApiClient(self.base_url).least_authority_plan(
+            [{"name": "tui:verify_sourceplan", "category": "audit", "bucket": "Verify", "mutating": False}],
+            phase="review", risk=str(plan.get("risk_level") or "medium"),
+        )
+        self.tool_events.append(f"authority {((authority.get('tools') or [{}])[0]).get('receipt_id', 'checked')}")
         result = BeastApiClient(self.base_url).verify_patch_plan(plan)
         self.tool_events.append(result.brief(320))
         self.chat_lines.append({"role": "tool", "content": result.brief(1200)})

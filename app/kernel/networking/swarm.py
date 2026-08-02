@@ -4,6 +4,8 @@ Deterministic role-based state machine for governed agentic workflows.
 """
 
 import json
+import hashlib
+import re
 import sqlite3
 import uuid
 import threading
@@ -12,6 +14,11 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from app.kernel.networking.swarm_services import SwarmKernelServices
+from app.kernel.networking.swarm_contracts import role_result_from_details
+from app.kernel.networking.swarm_lifecycle import HermesLifecycle
+from app.kernel.agents.phase_e_learning import Archivist, Scribe
 
 
 PROFILE_BINDINGS: Dict[str, Dict[str, Any]] = {
@@ -51,6 +58,16 @@ PROFILE_BINDINGS: Dict[str, Dict[str, Any]] = {
 
 
 ROLE_LANES: Dict[str, Dict[str, Any]] = {
+    "failure_analyst": {
+        "lane": "failure_analyst",
+        "purpose": "failure signatures, historical evidence, operation family",
+        "default_risk": "read_only",
+    },
+    "crystalist": {
+        "lane": "crystalist",
+        "purpose": "reuse, staleness, compatibility, and interception decisions",
+        "default_risk": "read_only",
+    },
     "cartographer": {
         "lane": "cartographer",
         "purpose": "context, graph, memory, schema, exact files",
@@ -147,9 +164,15 @@ class SwarmKernel:
         policies: Optional[Dict[str, Any]] = None,
         db_path: Optional[str] = None,
         workspace_graph: Optional[Any] = None,
+        services: Optional[SwarmKernelServices] = None,
     ):
         self.policies = policies or {}
         self.workspace_graph = workspace_graph
+        self.services = services or SwarmKernelServices.from_runtime(
+            policies=self.policies,
+            workspace_graph=workspace_graph,
+        )
+        self.lifecycle = HermesLifecycle()
         if db_path is None:
             db_path = Path(__file__).resolve().parents[2] / "data" / "swarm.db"
         self.db_path = Path(db_path)
@@ -237,15 +260,21 @@ class SwarmKernel:
         metadata = dict(payload.get("metadata") or {})
         metadata["execution_profile"] = profile
         metadata["role_lanes"] = self._lane_briefs()
+        metadata["service_inventory"] = self.services.inventory()
+        lifecycle = self.lifecycle.decide(payload)
+        metadata["hermes_lifecycle"] = lifecycle.to_dict()
         state = SwarmState.RECEIVED
         events: List[RoleEvent] = []
 
         plan = self._conductor_plan(objective, task_type, risk_level, payload, profile)
         state = SwarmState.PLANNED
+        route_decision = self._hermes_route(payload, task_type, risk_level)
         events.append(self._event(run_id, "hermes", state, "role_briefs_routed", {
             "profile": profile,
             "role_lanes": self._lane_briefs(),
             "plan_shape": plan,
+            "route_decision": route_decision,
+            "lifecycle": lifecycle.to_dict(),
         }))
         events.append(self._event(run_id, "conductor", state, "plan_selected", {
             "task_type": task_type,
@@ -280,9 +309,19 @@ class SwarmKernel:
         state = SwarmState.CONTEXT_MAPPED
         events.append(self._event(run_id, "cartographer", state, "context_selected", context_plan))
 
+        failure_analysis = self._failure_analysis(payload, objective, task_type, context_plan)
+        events.append(self._event(run_id, "failure_analyst", state, "failure_signature_normalized", failure_analysis))
+
         compression = self._compressor_plan(payload, context_plan)
         state = SwarmState.COMPRESSED
         events.append(self._event(run_id, "compressor", state, "context_budgeted", compression))
+
+        crystal_decision = self._crystalist_decision(
+            payload,
+            context_plan=context_plan,
+            failure_analysis=failure_analysis,
+        )
+        events.append(self._event(run_id, "crystalist", state, "reuse_classified", crystal_decision))
 
         verifier = self._verifier_checks(payload, task_type)
         if verifier["checks"]:
@@ -300,13 +339,30 @@ class SwarmKernel:
 
         status = self._final_status(supervision, critic)
         value = self._value_metrics(payload, plan, gates, status, compression=compression, critic=critic)
+        learning = (self.services.scribe or Scribe()).compile_episode(
+            task_class=task_type,
+            events=[_json_safe(event) for event in events],
+            execution=payload.get("execution_result"),
+            verification={"status": "passed" if status in ("ready", "succeeded") else "failed"},
+            critic=critic,
+        )
+        archive = (self.services.archivist or Archivist()).archive(
+            learning,
+            execution=payload.get("execution_result"),
+            verification={"status": "passed" if status in ("ready", "succeeded") else "failed"},
+            critic=critic,
+        )
         events.append(self._event(run_id, "scribe", SwarmState.ARCHIVED, "chronicle_trace_prepared", {
             "value": value,
-            "promotion_candidate": status in ("succeeded", "needs_revision", "approval_required"),
+            "promotion_candidate": learning["promotion_candidate"],
+            "classifications": learning["classifications"],
+            "promotion_authorized": learning["promotion_authorized"],
             "event_count": len(events) + 2,
         }))
         events.append(self._event(run_id, "archivist", SwarmState.ARCHIVED, "run_archived", {
             "value": value,
+            "packet_hash": archive["packet"]["packet_hash"],
+            "promotion_authorized": archive["promotion_authorized"],
             "event_count": len(events) + 1,
         }))
 
@@ -488,7 +544,9 @@ class SwarmKernel:
         base = [
             {"role": "hermes", "action": "route_role_briefs", "profile": profile["profile"]},
             {"role": "cartographer", "action": "select_relevant_context"},
+            {"role": "failure_analyst", "action": "normalize_failure_signature"},
             {"role": "compressor", "action": "fit_context_budget"},
+            {"role": "crystalist", "action": "classify_reuse_without_authority"},
             {"role": "supervisor", "action": "check_success_criteria"},
             {"role": "scribe", "action": "record_chronicle_and_promotion_signal"},
         ]
@@ -573,6 +631,10 @@ class SwarmKernel:
             )
         return {
             "files": files[:20],
+            "selection_evidence": [
+                "caller_supplied_context" if files or graph_nodes else "no_caller_files",
+                "semantic_workspace_match" if semantic.get("result_count") else "no_semantic_match",
+            ],
             "workspace_nodes": graph_nodes[:20],
             "semantic_context": semantic,
             "compact_context": [
@@ -585,6 +647,83 @@ class SwarmKernel:
                 for item in semantic.get("results", [])
             ],
             "retrieval_mode": "semantic_rag" if semantic.get("result_count") else ("targeted" if files or graph_nodes else "none_supplied"),
+            "read_only": True,
+        }
+
+    def _hermes_route(self, payload: Dict[str, Any], task_type: str, risk_level: str) -> Dict[str, Any]:
+        """Return a read-only economic route recommendation for this mission."""
+        candidates = payload.get("provider_candidates") or payload.get("routes") or []
+        if candidates and self.services.economist is not None:
+            from app.kernel.adapters.provider_economist import EconomistPolicy
+
+            selected = self.services.economist.select(
+                candidates,
+                EconomistPolicy(
+                    requested_role=str(payload.get("requested_role") or "primary_patch_provider"),
+                    task_class=task_type,
+                    max_latency_ms=payload.get("max_latency_ms"),
+                    max_usd_per_fix=payload.get("max_usd_per_fix"),
+                    friction_mode=str(payload.get("friction_mode") or "shadow"),
+                ),
+                negative_capabilities=payload.get("negative_capabilities") or [],
+                friction_profiles=payload.get("friction_profiles") or [],
+            )
+            route = selected.get("selected") or {}
+            return {
+                "route": route.get("provider") or route.get("route") or "refusal",
+                "reason": selected.get("reason") or "ProviderEconomist returned no eligible route",
+                "predicted_cost": payload.get("predicted_cost") or {},
+                "selected": route,
+                "alternatives_rejected": selected.get("excluded") or [],
+                "read_only": True,
+            }
+        if payload.get("deterministic_crystal") or payload.get("crystal_solution"):
+            route, reason = "deterministic_crystal", "caller supplied a deterministic candidate for inspection"
+        elif payload.get("use_ollama") is not False:
+            route, reason = "ollama_residual", "no complete deterministic route was supplied; residual local reasoning remains bounded"
+        else:
+            route, reason = "local_first_inspection", "provider inference disabled for this read-only mission"
+        return {
+            "route": route,
+            "reason": reason,
+            "predicted_cost": payload.get("predicted_cost") or {"cloud_cost": 0, "latency_class": "unmeasured"},
+            "alternatives_rejected": [],
+            "read_only": True,
+            "risk_level": risk_level,
+        }
+
+    def _failure_analysis(
+        self,
+        payload: Dict[str, Any],
+        objective: str,
+        task_type: str,
+        context_plan: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        result = payload.get("execution_result") or {}
+        failure = str(
+            payload.get("failure")
+            or payload.get("baseline_failure")
+            or result.get("error")
+            or result.get("stderr")
+            or objective
+        ).strip()
+        tokens = sorted(set(re.findall(r"[a-zA-Z][a-zA-Z0-9_.:-]{2,}", failure.lower())))[:40]
+        signature_input = {"task_type": task_type, "failure": failure, "files": context_plan.get("files", [])[:20]}
+        signature = str(payload.get("failure_signature") or "").strip()
+        if not signature:
+            signature = "sha256:" + hashlib.sha256(json.dumps(signature_input, sort_keys=True).encode()).hexdigest()
+        operation_family = "replace_exact" if any(word in objective.lower() for word in ("fix", "replace", "repair")) else "inspect"
+        historical = payload.get("historical_evidence") or payload.get("evidence_matches") or []
+        return {
+            "task_family": task_type,
+            "failure_signature": signature,
+            "failure_terms": tokens,
+            "historical_matches": len(historical) if isinstance(historical, list) else 0,
+            "strongest_prior_evidence": (historical[0] if isinstance(historical, list) and historical else None),
+            "likely_target": payload.get("target") or (context_plan.get("files") or [None])[0],
+            "likely_operation_family": operation_family,
+            "confidence": 0.5 if failure else 0.0,
+            "read_only": True,
         }
 
     def _compressor_plan(self, payload: Dict[str, Any], context_plan: Dict[str, Any]) -> Dict[str, Any]:
@@ -596,6 +735,15 @@ class SwarmKernel:
         if semantic_chunks and original_tokens == 0:
             original_tokens = semantic_chunks * 1000
             final_tokens = min(target_tokens, semantic_chunks * 180)
+        exact_payload = {
+            "objective": str(payload.get("objective") or payload.get("task") or ""),
+            "target": payload.get("target") or {"path": (context_plan.get("files") or [None])[0]},
+            "current_code": payload.get("current_code") or "",
+            "failure": payload.get("failure") or payload.get("baseline_failure") or "",
+            "crystal_guidance": payload.get("crystal_guidance") or [],
+            "allowed_output": payload.get("allowed_output") or {"kind": "bounded_action_ir_field"},
+        }
+        discarded_tools = max(0, len(payload.get("tools") or []) - 4)
         return {
             "original_tokens": original_tokens,
             "target_tokens": target_tokens,
@@ -603,6 +751,40 @@ class SwarmKernel:
             "estimated_tokens_saved": max(0, original_tokens - final_tokens),
             "retrieval_mode": context_plan["retrieval_mode"],
             "semantic_chunks_shared": semantic_chunks,
+            "exact_model_payload": exact_payload,
+            "discarded_tool_schemas": discarded_tools,
+            "reduction_ratio": round(max(0, original_tokens - final_tokens) / max(1, original_tokens), 4),
+            "read_only": True,
+        }
+
+    def _crystalist_decision(
+        self,
+        payload: Dict[str, Any],
+        *,
+        context_plan: Dict[str, Any],
+        failure_analysis: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        advisory = list(payload.get("advisory_matches") or payload.get("crystal_matches") or [])
+        scaffold = list(payload.get("scaffold_matches") or [])
+        exact = list(payload.get("execution_matches") or [])
+        target_fingerprint = payload.get("target_fingerprint")
+        compatible = bool(payload.get("compatibility_verified"))
+        execution_matches = exact if target_fingerprint and compatible else []
+        refusal = []
+        if exact and not execution_matches:
+            refusal.append("target fingerprint or compatibility proof missing")
+        if not advisory and not scaffold and not execution_matches:
+            refusal.append("no verified reuse candidate supplied")
+        return {
+            "assistance_mode": "execution_candidate" if execution_matches else ("scaffolded" if scaffold else "advisory" if advisory else "none"),
+            "advisory_matches": advisory[:8],
+            "scaffold_matches": scaffold[:8],
+            "execution_matches": execution_matches[:8],
+            "execution_refused_because": refusal,
+            "failure_signature": failure_analysis["failure_signature"],
+            "retrieval_mode": context_plan.get("retrieval_mode"),
+            "mutation_authorized": False,
+            "read_only": True,
         }
 
     def _supervisor_check(self, payload: Dict[str, Any], plan: List[Dict[str, Any]], gates: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -694,7 +876,25 @@ class SwarmKernel:
         }
 
     def _event(self, run_id: str, role: str, state: SwarmState, decision: str, details: Dict[str, Any]) -> RoleEvent:
-        return RoleEvent(run_id, role, state.value, decision, details, _utc_now())
+        """Persist legacy event fields plus the validated shared role contract."""
+        payload = dict(details or {})
+        status = "blocked" if decision in {"blocked", "approval_required", "refused"} else "failed" if decision in {"failed", "error"} else "completed"
+        next_role = {
+            "hermes": "sentinel",
+            "sentinel": "cartographer",
+            "cartographer": "failure_analyst",
+            "failure_analyst": "compressor",
+            "compressor": "crystalist",
+            "crystalist": "verifier",
+            "verifier": "supervisor",
+            "supervisor": "critic",
+            "critic": "scribe",
+            "scribe": "archivist",
+            "archivist": None,
+        }.get(role)
+        typed = role_result_from_details(role, payload, next_role=next_role, status=status)
+        payload["role_result"] = typed.to_dict()
+        return RoleEvent(run_id, role, state.value, decision, payload, _utc_now())
 
     def _execution_profile(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         requested = str(
@@ -708,7 +908,7 @@ class SwarmKernel:
         return dict(PROFILE_BINDINGS[requested])
 
     def _lane_briefs(self) -> List[Dict[str, Any]]:
-        return [dict(ROLE_LANES[key]) for key in ("cartographer", "compressor", "sentinel", "verifier", "scribe", "critic")]
+        return [dict(ROLE_LANES[key]) for key in ("cartographer", "failure_analyst", "compressor", "crystalist", "sentinel", "verifier", "scribe", "critic")]
 
     def _store_run(self, run: SwarmRun, events: List[RoleEvent]):
         with self._connect() as conn:

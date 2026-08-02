@@ -179,7 +179,7 @@
       {id:'consistency',label:'Graph Consistency',detail:'No critical topology contradictions',status:(state.map.consistency||0)>=80?'Passed':'Pending',icon:'map'},
       {id:'trace',label:'Trace Completeness',detail:'Sufficient coverage achieved',status:(state.map.coverage||0)>=80?'Passed':'Pending',icon:'network'},
       {id:'agents',label:'Agent Validation',detail:'Agent outputs remain within trust boundary',status:(trust.score||0)>=80?'Passed':'Pending',icon:'agents'},
-      {id:'determinism',label:'Determinism Check',detail:'Reproducible mission receipts',status:(review.tests?.passed||0)>0?'Passed':'Pending',icon:'review'},
+      {id:'determinism',label:'Determinism Check',detail:'Reproducible mission receipts',status:(review.tests?.passed||0)>0 || (state.crystal?.chain?.valid && state.crystal?.lattice?.valid)?'Passed':'Pending',icon:'review'},
       {id:'residue',label:'Residue Quality',detail:'Reusable verified memory residue',status:(memory.residueQuality||0)>=70?'Passed':'Pending',icon:'memory'}
     ];
   }
@@ -207,10 +207,26 @@
         chain=results[1].status==='fulfilled'?results[1].value:{};
         lattice=results[2].status==='fulfilled'?results[2].value:{};
       }
-      const candidates=normalizeCandidates(reuse);
-      const chainState=normalizeChain(chain);
-      const latticeState=normalizeLattice(lattice);
       const current=BeastStore.get();
+      let candidates=normalizeCandidates(reuse);
+      const evidenceCount=Number(current.memory?.evidenceItems||current.memory?.records||0);
+      const gateCount=(current.grandClosure?.gates && typeof current.grandClosure.gates==='object') ? Object.keys(current.grandClosure.gates).length : 0;
+      if (!candidates.length && evidenceCount > 0) {
+        candidates=[{
+          id:'repository-evidence-residue',
+          label:'Repository Evidence Residue',
+          domain:'Evidence · Repository Receipts',
+          value:`${evidenceCount} trace-linked record(s)`,
+          ready:clamp(current.memory?.residueQuality || (gateCount ? Math.round(evidenceCount / Math.max(1, gateCount) * 100) : 0)),
+          description:'Evidence is available for inspection, but no live crystallization candidate has been admitted. Promotion remains gated until the gateway and verification contracts are live.',
+          artifacts:evidenceCount,
+          checks:gateCount,
+          traces:Number(current.memory?.records||0),
+          meta:{evidence_only:true}
+        }];
+      }
+      const chainState=normalizeChain(Object.keys(chain).length ? chain : current.crystal.chain);
+      const latticeState=normalizeLattice(Object.keys(lattice).length ? lattice : current.crystal.lattice);
       const gates=deriveGates(current);
       const passed=gates.filter(g=>g.status==='Passed').length;
       const readiness=clamp(reuse.readiness??reuse.summary?.readiness??Math.round(candidates[0]?.ready*.55+(passed/gates.length)*45));

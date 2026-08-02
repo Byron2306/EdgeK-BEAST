@@ -1,0 +1,64 @@
+{
+  "authority": "controlled_host_observation_lab",
+  "correlation_audit": "/var/lib/beast-x2/correlation-audit.jsonl",
+  "created_at_ns": 1784659067611927617,
+  "receipt_digest": "sha256:7f5e3c1a9408c1eab6fca17b6d709876144a6cfa6a594b3bbf021b0b26379ad7",
+  "validated": true,
+  "x1": {
+    "bpf_object": "bpf/build/beast_x1_observer.bpf.o",
+    "bpf_object_digest": "sha256:01433e88bb74863c7a613b8d582bf8fb053d1621081daca00fa2414cdf7e5674",
+    "live_bpf_loaded": true
+  },
+  "x2": {
+    "events_consumed": 435,
+    "links_detached_cleanly": true,
+    "loss_counters_reconciled": true,
+    "loss_total": 0,
+    "process_lease_correlation_performed": true,
+    "programs_attached": [
+      {
+        "kind": "tracepoint",
+        "program": "on_exec",
+        "required": true,
+        "target": "sched/sched_process_exec"
+      },
+      {
+        "kind": "tracepoint",
+        "program": "on_exit",
+        "required": true,
+        "target": "sched/sched_process_exit"
+      },
+      {
+        "kind": "tracepoint",
+        "program": "on_wakeup",
+        "required": true,
+        "target": "sched/sched_wakeup"
+      },
+      {
+        "kind": "tracepoint",
+        "program": "on_switch",
+        "required": true,
+        "target": "sched/sched_switch"
+      },
+      {
+        "kind": "tracepoint",
+        "program": "on_tcp_connect",
+        "required": false,
+        "target": "syscalls/sys_enter_connect"
+      },
+      {
+        "kind": "tracepoint",
+        "program": "on_bind",
+        "required": false,
+        "target": "syscalls/sys_enter_bind"
+      },
+      {
+        "kind": "kprobe",
+        "program": "on_write",
+        "required": false,
+        "target": "vfs_write"
+      }
+    ]
+  },
+  "x2_runtime_receipt": "/var/lib/beast-x2/x2_observation_20260721T183731Z.json"
+}

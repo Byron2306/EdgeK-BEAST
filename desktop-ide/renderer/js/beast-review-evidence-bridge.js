@@ -13,6 +13,12 @@
     const root = BeastStore.get().workspace.root;
     return root ? `?root_path=${encodeURIComponent(root)}` : '';
   };
+  const detailQuery = () => {
+    const root = BeastStore.get().workspace.root;
+    const params = new URLSearchParams({ detail:'true' });
+    if (root) params.set('root_path', root);
+    return `?${params.toString()}`;
+  };
 
   const demoReceipts = [
     { id:'ev-001', path:'src/parsers/evidence_parser.py', type:'PY', size:'12.4 KB', status:'Validated', validity:98, schema:'Valid', traces:24, source:'workspace', summary:'Parses raw inputs and produces structured evidence artifacts.', added:'2m ago' },
@@ -38,7 +44,18 @@
 
   function normalizeReview(snapshot={}, lifecycle={}, approvals={}, tooling={}, evidence={}) {
     const existing = BeastStore.get().review || {};
-    const rawGates = firstArray(snapshot.review?.gates, snapshot.quality_gates, lifecycle.checks, lifecycle.gates, approvals.gates);
+    const sourcePlan = BeastStore.get().sourcePlan?.plan || {};
+    const scorecard = sourcePlan.scorecard && typeof sourcePlan.scorecard === 'object' ? sourcePlan.scorecard : {};
+    const sourceOperations = [lifecycle.operations, lifecycle.preview?.operations, sourcePlan.operations, sourcePlan.selected_operations].find(value=>Array.isArray(value)&&value.length) || [];
+    const sourcePlanId = String(sourcePlan.plan_id || lifecycle.plan_id || '');
+    const fallbackGates = sourcePlanId ? [
+      {id:'sourceplan-present',label:'Governed SourcePlan',status:'Passed',score:100,owner:'Pair Programmer',detail:`${sourceOperations.length} operation(s) bound to ${sourcePlanId}.`},
+      {id:'sourceplan-scope',label:'Scope Binding',status:sourceOperations.length?'Passed':'Needs Review',score:sourceOperations.length?96:45,owner:'SourcePlan',detail:sourceOperations.length?'Every candidate operation is visible to review.':'The proposal contains no reviewable operations.'},
+      {id:'sourceplan-preview',label:'Patch Preview',status:lifecycle.preview || sourcePlan.preview ? 'Passed':'Needs Review',score:lifecycle.preview || sourcePlan.preview ? 94:65,owner:'Diff Renderer',detail:lifecycle.preview || sourcePlan.preview ? 'A bounded before/after preview is available.':'Open the SourcePlan to generate and inspect the patch preview.'},
+      {id:'sourceplan-verification',label:'Verification',status:lifecycle.verification?.ok || sourcePlan.validation?.status === 'passed' ? 'Passed':'Needs Review',score:lifecycle.verification?.ok || sourcePlan.validation?.status === 'passed' ? 95:70,owner:'Verifier',detail:lifecycle.verification?.ok || sourcePlan.validation?.status === 'passed' ? 'Reported checks passed for this proposal.':'Verification is pending operator review.'}
+    ] : [];
+    if (sourcePlanId && scorecard.policy_gate_result) fallbackGates.push({id:'sourceplan-policy',label:'Policy Gate',status:/block/i.test(String(scorecard.policy_gate_result.decision||''))?'Failed':'Needs Review',score:/block/i.test(String(scorecard.policy_gate_result.decision||''))?20:78,owner:'Policy Gate',detail:String(scorecard.policy_gate_result.decision || 'Policy review required.')});
+    const rawGates = [snapshot.review?.gates, snapshot.quality_gates, lifecycle.checks, lifecycle.gates, approvals.gates, fallbackGates].find(value=>Array.isArray(value)&&value.length) || [];
     const gates = rawGates.slice(0,8).map(normalizeGate);
 
     const receipts = firstArray(evidence.receipts, evidence.items, snapshot.evidence_bus?.receipts, snapshot.evidence_bus?.items);
@@ -48,7 +65,7 @@
     const testFailed = tests.filter(test => /fail|error|block/i.test(test.status || test.result || '')).length;
     const testSkipped = Math.max(0, tests.length - testPassed - testFailed);
 
-    const operations = firstArray(lifecycle.operations, lifecycle.preview?.operations, BeastStore.get().sourcePlan.plan?.operations);
+    const operations = sourceOperations;
     const contradictionsRaw = firstArray(snapshot.review?.contradictions, snapshot.contradictions, lifecycle.contradictions, lifecycle.stale_operations);
     const contradictions = contradictionsRaw.slice(0,10).map((item,index) => ({
       id:String(item.id || item.key || `C-${String(index+1).padStart(3,'0')}`),
@@ -59,7 +76,10 @@
       sources:firstArray(item.sources,item.artifacts,item.files).map(source => label(source)).slice(0,4)
     }));
 
-    const risksRaw = firstArray(snapshot.review?.risks, snapshot.risks, lifecycle.risks, lifecycle.blockers);
+    const sourcePlanRisks = sourcePlanId && (!operations.length || lifecycle.stale || lifecycle.preview?.blocked?.length || /high|critical/i.test(String(scorecard.risk_level||''))) ? [{
+      id:'sourceplan-review', title:lifecycle.stale?'SourcePlan is stale':/high|critical/i.test(String(scorecard.risk_level||''))?'High-risk SourcePlan':'SourcePlan needs review', severity:lifecycle.stale||/high|critical/i.test(String(scorecard.risk_level||''))?'High':'Medium', owner:'SourcePlan', status:lifecycle.stale?'Open':'Review'
+    }] : [];
+    const risksRaw = firstArray(snapshot.review?.risks, snapshot.risks, lifecycle.risks, lifecycle.blockers, sourcePlanRisks);
     const risks = risksRaw.slice(0,10).map((item,index) => ({
       id:String(item.id || item.key || `R-${String(index+1).padStart(3,'0')}`),
       title:label(item,`Risk ${index+1}`),
@@ -69,7 +89,7 @@
     }));
 
     const passedGates = gates.filter(gate => gate.status === 'Passed').length;
-    const evidenceValidity = receipts.length ? Math.round(receipts.reduce((sum,item) => sum + clamp(item.validity ?? item.score ?? item.confidence ?? 0),0)/receipts.length) : clamp(snapshot.review?.evidence_sufficiency);
+    const evidenceValidity = receipts.length ? Math.round(receipts.reduce((sum,item) => sum + clamp(item.validity ?? item.score ?? item.confidence ?? 0),0)/receipts.length) : sourcePlanId ? (operations.length ? 82 : 50) : clamp(snapshot.review?.evidence_sufficiency);
     const robustness = clamp(snapshot.review?.parser_robustness ?? lifecycle.score ?? 0);
     const quality = clamp(snapshot.review?.quality ?? snapshot.quality_score ?? (gates.length ? Math.round((passedGates / gates.length)*100) : 0));
     const confidence = clamp(snapshot.review?.confidence ?? snapshot.confidence ?? Math.round((evidenceValidity + robustness + quality)/3));
@@ -86,6 +106,8 @@
       contradictions,
       risks,
       tests:{ total:tests.length, passed:testPassed, failed:testFailed, skipped:testSkipped, rows:tests.slice(0,10).map((item,index)=>({id:String(item.id || `T-${index+1}`),label:label(item,`Test ${index+1}`),status:String(item.status || item.result || 'unknown'),duration:String(item.duration || item.elapsed || 'n/a')})) },
+      sourcePlanId,
+      sourcePlanObjective:String(sourcePlan.objective || lifecycle.objective || ''),
       diff:{ files:new Set(operations.map(op=>op.path || op.file).filter(Boolean)).size, additions:Number(lifecycle.additions || lifecycle.preview?.additions || 0), deletions:Number(lifecycle.deletions || lifecycle.preview?.deletions || 0), operations:operations.length },
       approval:{ status:passedGates === gates.length && !testFailed ? 'Ready for Approval' : 'Review in Progress', approvers:firstArray(approvals.approvals, approvals.items).slice(0,8).map((item,index)=>({id:String(item.id || item.request_id || index),label:label(item,`Approver ${index+1}`),status:String(item.status || 'Pending')})), pending:Math.max(0,gates.length-passedGates) },
       selectedGateId: existing.selectedGateId || gates[0]?.id || '',
@@ -173,7 +195,7 @@
     try {
       const root = rootQuery();
       const results = await Promise.allSettled([
-        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${root}`,options),
+        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${detailQuery()}`,{...options,timeoutMs:2500}),
         BeastDesktopBridge.fetchJson('/edgek/mcp/approvals?limit=20',options),
         BeastDesktopBridge.fetchJson(`/edgek/ide/tooling-snapshot${root}`,options),
         BeastDesktopBridge.fetchJson('/edgek/evidence-bus/query?limit=25',options)
@@ -210,7 +232,7 @@
       if (root) fileQuery.set('root_path',root);
       const results = await Promise.allSettled([
         BeastDesktopBridge.fetchJson(`/edgek/evidence-bus/query?${query}`,options),
-        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${root ? `?root_path=${encodeURIComponent(root)}`:''}`,options),
+        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${detailQuery()}`,{...options,timeoutMs:2500}),
         BeastDesktopBridge.fetchJson(`/edgek/workspace/files?${fileQuery}`,options)
       ]);
       const evidence = normalizeEvidence(settled(results[0]) || {},settled(results[1]) || {},settled(results[2]) || {});

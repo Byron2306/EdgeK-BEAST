@@ -1,7 +1,9 @@
-"""Lightweight repository code indexing helpers for WorkspaceGraph.
+"""Repository code indexing helpers for :class:`WorkspaceGraph`.
 
-These helpers intentionally stay dependency-free. They give BEAST a richer
-local graph baseline before any optional tree-sitter/Gortex integration.
+The standard-library indexers below are deliberate fallbacks.  When the
+optional ``tree-sitter-language-pack`` is installed, its parsers are used for
+source symbols first so partially-valid code and modern JS/TS syntax do not
+silently degrade the workspace graph to regular-expression results.
 """
 
 from __future__ import annotations
@@ -9,6 +11,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List
@@ -30,6 +33,54 @@ LANGUAGE_BY_SUFFIX = {
 
 SOURCE_SUFFIXES = set(LANGUAGE_BY_SUFFIX)
 TEST_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx"}
+
+# Keep grammar artifacts inside the BEAST state directory rather than the
+# user's home cache.  Desktop, CLI, TUI, and MCP executions therefore use the
+# same parsers, including when they are launched by a service account.
+_TREE_SITTER_CACHE_DIR = Path(
+    os.environ.get(
+        "BEAST_TREE_SITTER_CACHE",
+        str(Path(__file__).resolve().parents[3] / ".beast" / "tree-sitter"),
+    )
+)
+_tree_sitter_process = None
+_tree_sitter_error = "not_initialized"
+
+
+def _tree_sitter_processor():
+    """Return the optional language-pack processor without making it required.
+
+    ``process`` will use the prefetched grammars under ``.beast/tree-sitter``.
+    A missing grammar or a package problem is intentionally non-fatal: the
+    deterministic Python/regex extractors remain available below.
+    """
+    global _tree_sitter_process, _tree_sitter_error
+    if _tree_sitter_process is not None:
+        return _tree_sitter_process
+    if _tree_sitter_error != "not_initialized":
+        return None
+    try:
+        from tree_sitter_language_pack import configure, process
+
+        _TREE_SITTER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        configure({"cache_dir": str(_TREE_SITTER_CACHE_DIR)})
+        _tree_sitter_process = process
+        _tree_sitter_error = ""
+    except Exception as exc:  # Optional acceleration must never break indexing.
+        _tree_sitter_error = f"{type(exc).__name__}: {exc}"
+    return _tree_sitter_process
+
+
+def tree_sitter_status() -> Dict[str, Any]:
+    """Expose parser readiness accurately to diagnostics and the IDE."""
+    processor = _tree_sitter_processor()
+    return {
+        "available": bool(processor),
+        "mode": "tree_sitter_language_pack" if processor else "stdlib_regex_fallback",
+        "cache_dir": str(_TREE_SITTER_CACHE_DIR),
+        "languages": ["python", "javascript", "typescript", "tsx"] if processor else [],
+        "error": _tree_sitter_error or None,
+    }
 
 
 def sha256_text(text: str) -> str:
@@ -84,13 +135,77 @@ def file_metadata(path: Path, root: Path, content: str) -> Dict[str, Any]:
 
 
 def extract_symbols(content: str, language: str, rel_path: str) -> List[Dict[str, Any]]:
+    tree_sitter_symbols = _extract_tree_sitter_symbols(content, language, rel_path)
     if language == "python":
-        return _extract_python_symbols(content, rel_path)
-    if language in {"javascript", "typescript"}:
-        return _extract_jsts_symbols(content, rel_path)
-    if language == "markdown":
-        return _extract_markdown_sections(content, rel_path)
-    return []
+        fallback_symbols = _extract_python_symbols(content, rel_path)
+    elif language in {"javascript", "typescript"}:
+        fallback_symbols = _extract_jsts_symbols(content, rel_path)
+    elif language == "markdown":
+        fallback_symbols = _extract_markdown_sections(content, rel_path)
+    else:
+        fallback_symbols = []
+    if not tree_sitter_symbols:
+        return fallback_symbols
+
+    # Language-pack symbol queries are intentionally conservative.  Preserve
+    # the mature fallback coverage (notably JS/TS arrow assignments) while
+    # preferring parser spans and kinds where both identify the same symbol.
+    merged = list(tree_sitter_symbols)
+    seen = {(str(item.get("name")), int(item.get("line") or 0)) for item in merged}
+    for item in fallback_symbols:
+        key = (str(item.get("name")), int(item.get("line") or 0))
+        if key not in seen:
+            merged.append(item)
+            seen.add(key)
+    return sorted(merged, key=lambda item: (int(item.get("line") or 0), str(item.get("name") or "")))
+
+
+def _extract_tree_sitter_symbols(content: str, language: str, rel_path: str) -> List[Dict[str, Any]]:
+    """Extract parser-backed symbols for the source languages BEAST indexes.
+
+    The language pack returns normalized ``SymbolInfo`` records.  Keep the
+    existing workspace-graph schema and discard unnamed/internal nodes rather
+    than leaking parser-specific structures across the rest of the system.
+    """
+    if language not in {"python", "javascript", "typescript"}:
+        return []
+    processor = _tree_sitter_processor()
+    if processor is None:
+        return []
+    parser_language = "tsx" if rel_path.lower().endswith(".tsx") else language
+    try:
+        result = processor(content, {"language": parser_language, "symbols": True})
+        raw_symbols = getattr(result, "symbols", None) or []
+    except Exception:
+        return []
+
+    symbols: List[Dict[str, Any]] = []
+    seen = set()
+    for raw in raw_symbols:
+        name = str(getattr(raw, "name", "") or "").strip()
+        span = getattr(raw, "span", None)
+        if not name or span is None:
+            continue
+        line = int(getattr(span, "start_line", 0) or 0) + 1
+        end_line = int(getattr(span, "end_line", line - 1) or line - 1) + 1
+        key = (name, line, end_line)
+        if key in seen:
+            continue
+        seen.add(key)
+        kind = str(getattr(raw, "kind", "symbol") or "symbol").lower()
+        item: Dict[str, Any] = {
+            "name": name,
+            "kind": kind,
+            "file": rel_path,
+            "line": line,
+            "end_line": max(line, end_line),
+            "parser": "tree_sitter",
+        }
+        if language == "python" and name.startswith("async "):
+            item["name"] = name.removeprefix("async ")
+            item["async"] = True
+        symbols.append(item)
+    return sorted(symbols, key=lambda item: (int(item["line"]), str(item["name"])))
 
 
 def _extract_python_symbols(content: str, rel_path: str) -> List[Dict[str, Any]]:

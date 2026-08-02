@@ -23,6 +23,9 @@ from app.kernel.compute.kv_cache_transport import CacheEngine, CacheLocation, Cr
 from app.kernel.compute.local_route_optimizer import LocalRouteOptimizer
 from app.kernel.compute.local_semantic_cache import LocalSemanticCache
 from app.kernel.compute.semantic_matchers.beast_local_semantic_matcher import BeastLocalSemanticMatcher
+from app.kernel.compute.semantic_matchers.gptcache_matcher import GPTCacheSemanticMatcher
+from app.kernel.compute.semantic_matchers.hybrid_semantic_matcher import HybridSemanticMatcher
+from app.kernel.compute.semantic_matchers.local_embedding_matcher import LocalEmbeddingMatcher
 from app.kernel.evals.local_eval_gate import LocalEvalGate
 from app.kernel.observability.local_trace_ledger import LocalTraceLedger
 from app.kernel.security.residue_seal import ResidueSeal
@@ -125,7 +128,20 @@ class CrystalReuseGateway:
         self.seal = seal or ResidueSeal()
         self.memory_hull = memory_hull
         self.local_semantic_cache = local_semantic_cache
-        self.semantic_matcher = semantic_matcher or (BeastLocalSemanticMatcher(local_semantic_cache) if local_semantic_cache else None)
+        # Compose every verified local matcher behind one production decision
+        # point. Exact durable replay still runs first in ``decide``; these are
+        # the semantic fallbacks in decreasingly specific order.
+        if semantic_matcher is not None:
+            self.semantic_matcher = semantic_matcher
+        else:
+            matchers: list[Callable[[CrystalReuseRequest], Optional[RuntimeReplayResult]]] = []
+            if local_semantic_cache is not None:
+                matchers.append(BeastLocalSemanticMatcher(local_semantic_cache))
+            matchers.extend((
+                GPTCacheSemanticMatcher(self.storage, threshold=reuse_threshold),
+                LocalEmbeddingMatcher(self.storage, threshold=max(float(reuse_threshold), 0.90)),
+            ))
+            self.semantic_matcher = HybridSemanticMatcher(matchers, threshold=reuse_threshold)
         self.reuse_threshold = max(0.0, min(1.0, float(reuse_threshold)))
         self.local_capabilities = local_capabilities or LocalCapabilityRegistry()
         self.trace_ledger = trace_ledger
@@ -209,6 +225,7 @@ class CrystalReuseGateway:
                     "request": request.to_dict(),
                     "evidence": evidence or {},
                     "local_eval_gate": eval_result,
+                    "semantic_index": self.storage.semantic_index(request.prompt),
                 },
             )
             if self.local_semantic_cache is not None:
@@ -477,6 +494,7 @@ class CrystalReuseGateway:
             return None
         return replay
 
+
     def _lookup_kv_block(self, request: CrystalReuseRequest) -> Optional[KVCacheBlock]:
         if not request.tokenizer:
             return None
@@ -486,13 +504,18 @@ class CrystalReuseGateway:
                 preferred_engine = CacheEngine(request.preferred_engine)
             except ValueError:
                 preferred_engine = None
-        return self.kv_transport.lookup(
+        block = self.kv_transport.lookup(
             request.model,
             request.tokenizer,
             request.effective_prompt_prefix,
             request.system_prompt,
             preferred_engine=preferred_engine,
         )
+        # Metadata alone is not a usable prefill.  The engine must be able to
+        # recover exact native bytes before this route may claim KV reuse.
+        if block is None or not self.kv_transport.has_reusable_payload(block.block_id):
+            return None
+        return block
 
     def _decision_from_replay(
         self,

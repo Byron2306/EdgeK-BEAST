@@ -1,0 +1,982 @@
+{
+  "beast_object_type": "crystallized_compute_hypothesis_proof",
+  "capability": {
+    "candidate_id": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+    "confidence": 0.93,
+    "fingerprint_boundary": {
+      "reason": "fingerprint_active",
+      "valid": true
+    },
+    "promotion_status": "promoted",
+    "proof": {
+      "allowed_transform": "bounded_discount_repair_recipe",
+      "approved_for_enforcement": true,
+      "beast_object_type": "deterministic_displacement_proof",
+      "candidate_name": "bounded_discount_repair_recipe",
+      "confidence": 0.93,
+      "created_at": "2026-07-22T10:10:53.620552+00:00",
+      "expected_output_sha256": "",
+      "hidden_tests_equal_or_better": true,
+      "impact_fingerprint": {
+        "crystal_chain_block_hash": "sha256:4be725c20529ce906e969cdb6fd53e94da07e337b08fbf97a881e4ac42c8a123",
+        "fingerprint_hash": "sha256:102f7ac66dda434473114a77851c299fa8b137e1a549c8cda70d3e822a8daa6c",
+        "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+        "state": "active",
+        "task_class": "bounded_discount_math_repair"
+      },
+      "paired_ablation_runs": 3,
+      "policy_version": "phase6_crystallization_v1",
+      "proof_id": "crystal_proof_crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+      "risk_class": "low",
+      "rollback_equal_or_better": true,
+      "scope_checks_equal_or_better": true,
+      "security_checks_equal_or_better": true,
+      "task_class": "bounded_discount_math_repair",
+      "verifier_command": "crystallized_bounded_discount_repair_recipe",
+      "version": "1.0",
+      "visible_tests_equal_or_better": true
+    }
+  },
+  "cloud_calls_after": 3,
+  "cloud_calls_before": 0,
+  "cloud_calls_during_local_completion": 0,
+  "completion": {
+    "answer": "{\"beast_object_type\": \"CRYSTAL_CODE_RECIPE\", \"body_template\": [\"    try:\", \"        numeric_price = float(price)\", \"        numeric_percent = float(percent)\", \"    except (TypeError, ValueError):\", \"        raise ValueError(\\\"price and percent must be numeric\\\")\", \"    clamped_percent = max(0.0, min(100.0, numeric_percent))\", \"    discounted = numeric_price * (1.0 - clamped_percent / 100.0)\", \"    return round(discounted, 2)\"], \"function_role\": \"discount_total\", \"imports\": [], \"invariants\": [\"coerce numeric strings\", \"reject nonnumeric input\", \"clamp percent to 0..100\", \"round to cents\"], \"operation\": \"replace_function\", \"skill_contract\": \"discount_math_guardrails\", \"task_family\": \"bounded_discount_math_repair\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+    "basis": {
+      "capability_id": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+      "fused_crystal_id": "fused_crystal_d80992dfa37c4783f45a",
+      "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+      "semantic_credit_id": "scc_4c91f36da8e0ed25",
+      "semantic_pages": {
+        "intermediate_summary": {
+          "content_hash": "sha256:78028cc2db07bb517c664619d22355bfae0f743894240991c2aea5fbf4011f6e",
+          "identity_hash": "sha256:d04cd5184229e53fa4d46cda2e03b0689f3b4c4ffe6b6f58600c57cee13ea319",
+          "lookup_hit": true,
+          "page_id": "scp_470f9bca490a0b8dce784bd7"
+        },
+        "route_card": {
+          "content_hash": "sha256:67aebeae35ee9cc1f853a8c522b7eebcb4fed6ef77cb1c5cf9d1c38b7c8b0cc4",
+          "identity_hash": "sha256:45a6df8dc59ae827473fee61d8095a9fe985745c0b8e36422ace42b8ae1ccce3",
+          "lookup_hit": true,
+          "page_id": "scp_1f95ff77ad8f1da820e94f1f"
+        },
+        "verifier_plan": {
+          "content_hash": "sha256:eee1568559f29eba0a5c986a5ea29c6e61659040274140809c75cc55f024c103",
+          "identity_hash": "sha256:1cdf2e23577737a89951a1f0735f7dadb82b5ec78a95dd3575fbe8bb063e1cd5",
+          "lookup_hit": true,
+          "page_id": "scp_57ee5ad1926d4455da90c4ab"
+        }
+      },
+      "skills": [
+        {
+          "category": "code_repair",
+          "name": "discount_math_guardrails",
+          "version": "1.0"
+        },
+        {
+          "category": "compute_reduction",
+          "name": "semantic_crystal_reuse",
+          "version": "1.0"
+        }
+      ],
+      "tools": [
+        {
+          "name": "python_ast_function_rewriter",
+          "risk_class": "low",
+          "role": "apply_verified_recipe"
+        },
+        {
+          "name": "pytest",
+          "risk_class": "low",
+          "role": "verify_behavior"
+        },
+        {
+          "name": "py_compile",
+          "risk_class": "low",
+          "role": "verify_syntax"
+        }
+      ]
+    },
+    "cloud_calls_during_completion": 0,
+    "completed_locally": true,
+    "decision": {
+      "action": "reuse_semantic_credit",
+      "avoided_tokens_estimate": 191,
+      "beast_object_type": "crystal_reuse_decision",
+      "confidence": 0.88,
+      "decision_id": "crystal_reuse_e75eb9ccf6a2846e86c1",
+      "payload": {
+        "request": {
+          "beast_object_type": "crystal_reuse_request",
+          "metadata": {
+            "capability_id": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+            "fused_crystal_id": "fused_crystal_d80992dfa37c4783f45a",
+            "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+            "semantic_page_ids": {
+              "intermediate_summary": "scp_470f9bca490a0b8dce784bd7",
+              "route_card": "scp_1f95ff77ad8f1da820e94f1f",
+              "verifier_plan": "scp_57ee5ad1926d4455da90c4ab"
+            }
+          },
+          "model": "nvidia-nim-code-repair-proof-model",
+          "parameters": {
+            "max_tokens": 128,
+            "temperature": 0
+          },
+          "policy_version": "crystal_reuse_v1",
+          "preferred_engine": null,
+          "prompt_hash": "sha256:6ee99867ae43f022e7b53a29285a939b75db97a53c2263c82e9b27212de60802",
+          "prompt_prefix": "",
+          "prompt_preview": "BEAST code repair bounded discount math bug fix numeric coercion clamp percent round cents ValueError invalid input deterministic AST rewrite pytest skill discount_repair_crystal_term_0 discount_repair_crystal_term_1 discount_repair_crystal_term_2 discount_repair_crystal_term_3 discount_repair_crystal_term_4 discount_repair_crystal_term_5 discount_repair_crystal_term_6 discount_repair_crystal_term_7 discount_repair_crystal_term_8 discount_repair_crystal_term_9 discount_repair_crystal_term_10 dis",
+          "provider": "nvidia_nim",
+          "repo_fingerprint": "repo-code-repair-mega-gauntlet",
+          "system_prompt": "",
+          "task_class": "bounded_discount_math_repair",
+          "tokenizer": "",
+          "version": "1.0"
+        },
+        "reuse": {
+          "avoided_tokens_estimate": 191,
+          "beast_object_type": "runtime_replay_result",
+          "confidence": 0.88,
+          "credit_id": "scc_4c91f36da8e0ed25",
+          "payload": {
+            "answer": "{\"beast_object_type\": \"CRYSTAL_CODE_RECIPE\", \"body_template\": [\"    try:\", \"        numeric_price = float(price)\", \"        numeric_percent = float(percent)\", \"    except (TypeError, ValueError):\", \"        raise ValueError(\\\"price and percent must be numeric\\\")\", \"    clamped_percent = max(0.0, min(100.0, numeric_percent))\", \"    discounted = numeric_price * (1.0 - clamped_percent / 100.0)\", \"    return round(discounted, 2)\"], \"function_role\": \"discount_total\", \"imports\": [], \"invariants\": [\"coerce numeric strings\", \"reject nonnumeric input\", \"clamp percent to 0..100\", \"round to cents\"], \"operation\": \"replace_function\", \"skill_contract\": \"discount_math_guardrails\", \"task_family\": \"bounded_discount_math_repair\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+            "answer_credit_id": "cache_c7f03138365a994d",
+            "artifact_type": "verified_capability",
+            "chronicle_lesson_id": null,
+            "evidence_packet_id": "",
+            "impact_fingerprint_hash": "sha256:6ef48f874dde35c6d092363bb8cfdcbfbbbccbf2c16607a7dfaefcaddc30e9fc",
+            "metadata": {
+              "answer_credit_id": "cache_c7f03138365a994d",
+              "evidence": {
+                "latency_ms": 1203.0,
+                "local_eval_rules": [
+                  {
+                    "type": "must_contain",
+                    "value": "CRYSTAL_CODE_RECIPE"
+                  },
+                  {
+                    "type": "must_contain",
+                    "value": "python_ast_function_rewriter"
+                  }
+                ],
+                "provider_result_id": "code_repair_cloud_result_3",
+                "runtime_engine": "beast_local_semantic_cache",
+                "teacher_engine": "nvidia_nim_or_external_teacher",
+                "usage": {
+                  "total_tokens": 191
+                },
+                "verification": "code_recipe_passed_hidden_and_visible_tests"
+              },
+              "local_eval_gate": {
+                "beast_object_type": "local_eval_gate_result",
+                "checks": [
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "must_contain",
+                      "value": "CRYSTAL_CODE_RECIPE"
+                    }
+                  },
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "must_contain",
+                      "value": "python_ast_function_rewriter"
+                    }
+                  },
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "max_length",
+                      "value": 200000
+                    }
+                  },
+                  {
+                    "passed": true,
+                    "rule": {
+                      "type": "no_secret_patterns"
+                    }
+                  }
+                ],
+                "passed": true,
+                "promotion_allowed": true,
+                "version": "1.0"
+              },
+              "model": "nvidia-nim-code-repair-proof-model",
+              "provider": "nvidia_nim",
+              "request": {
+                "beast_object_type": "crystal_reuse_request",
+                "metadata": {},
+                "model": "nvidia-nim-code-repair-proof-model",
+                "parameters": {
+                  "max_tokens": 128,
+                  "temperature": 0
+                },
+                "policy_version": "crystal_reuse_v1",
+                "preferred_engine": null,
+                "prompt_hash": "sha256:a8e0d8b618ecb9ef56613f53880b623cf0413908b7f4ada61be5c849dd65d87d",
+                "prompt_prefix": "",
+                "prompt_preview": "BEAST code repair bounded discount math bug fix numeric coercion clamp percent round cents ValueError invalid input deterministic AST rewrite pytest skill discount_repair_crystal_term_0 discount_repair_crystal_term_1 discount_repair_crystal_term_2 discount_repair_crystal_term_3 discount_repair_crystal_term_4 discount_repair_crystal_term_5 discount_repair_crystal_term_6 discount_repair_crystal_term_7 discount_repair_crystal_term_8 discount_repair_crystal_term_9 discount_repair_crystal_term_10 dis",
+                "provider": "nvidia_nim",
+                "repo_fingerprint": "repo-code-repair-mega-gauntlet",
+                "system_prompt": "",
+                "task_class": "bounded_discount_math_repair",
+                "tokenizer": "",
+                "version": "1.0"
+              },
+              "semantic_index": {
+                "dimensions": 256,
+                "token_hashes": [
+                  "00497d1565f4b4d4850d80af",
+                  "0221962221bb2ac2d9759ffe",
+                  "028b72c6d5867c3675a71adf",
+                  "02fbe41b682c8e2243570cf9",
+                  "07094fc2a2ac201a0ca3f2b8",
+                  "08298976529268605e142507",
+                  "0c312c69420ef45091b3fa5b",
+                  "1a6ffb23ef38c64c20e9f6fd",
+                  "1ba3f318e73215001d6f6e67",
+                  "1c73c0c02c435e7f4c665803",
+                  "1e54ed1c0b725919f9b09e77",
+                  "1e790818d339613253e7cc56",
+                  "1f87056353728ee9447b8c3c",
+                  "1fb449904e454afe144cfa7c",
+                  "214eee66b0204ffa3a0b9123",
+                  "21c985e05c957074e887f21b",
+                  "2533577ae463eaf6a36878cd",
+                  "297567edb7698575af50d24e",
+                  "2c85630f776300c9d434febd",
+                  "2c9f44e700ffb03d8a42a2a1",
+                  "31df8cba9f74c2b6b5b82c9c",
+                  "3494576800d74c568c090255",
+                  "34d57f4af0e94f519cb6acf2",
+                  "383eb1918991c228a72343b7",
+                  "395a61ae5814ef48d50c04d3",
+                  "3bd9177143ba18f2e07f70e9",
+                  "3be2bc2b79f8f656102b166b",
+                  "3daa6f23528a2e92671ad254",
+                  "3eb4fa3fc1343de7ad851f78",
+                  "421dff78638c9c8949ab62f3",
+                  "43bf98604d8c0ffbdb14882b",
+                  "465bc13abdee65c486053ff2",
+                  "4d24cb7c1ddb1cd590b906f1",
+                  "4d7bb1aafdf618ae540e6d0c",
+                  "4f983a69fb9476b07cf1e581",
+                  "505c12dfae04b9863f626b73",
+                  "5143ca3fa7671664a7fdc651",
+                  "5bd9f06a73cea68bd2ffb147",
+                  "602f99bebde66148118c670b",
+                  "6197cc520436bb53ac81c0e9",
+                  "61cf6d98df0421d7022a6865",
+                  "648dce057372ffc7c97b8062",
+                  "65d341054f42b4411d580e45",
+                  "6ba7dfe31ac0686a0f3a5c2c",
+                  "6e89086cee3449b7dfcf5516",
+                  "6f3a62694913d1c54f2fa177",
+                  "707e773b53e3e52307e0388e",
+                  "70c267571c3e203a2aea48a4",
+                  "715f446522e39b2833815874",
+                  "747eb6aa5201fbe2d97c4509",
+                  "75d1fec63f815206898ec0d5",
+                  "769405ec04ef586a50edb2bc",
+                  "77e7ec4a982990922feb249e",
+                  "7827ba4169204c04f5a6b895",
+                  "790ffc8ab03d28afc14366e1",
+                  "7c7456531adc8839131c8bc1",
+                  "7d1c1e581b6909857a8fb04f",
+                  "8137a339daf6fef295783b47",
+                  "83ec7663332e910454be3f7a",
+                  "84066c682dec66a4b81b7c7b",
+                  "85f63c249a8b981a485c6c85",
+                  "870a56f3bc24cee16f274cea",
+                  "8c0eab49d01cda6e88eddddf",
+                  "8f7dd58493d178db8c245a2c",
+                  "9124f3d0cb2ebcab7f9add0e",
+                  "928ddb0804b0e2f475592a68",
+                  "95910d65ab0d10a259117674",
+                  "96aec4cacfcc906fa941ea89",
+                  "989225eb3638ce3ebfcec634",
+                  "a203f6259126c4bd7ae5d2fc",
+                  "a2f81b4ec3b7c1b3189e4028",
+                  "a4775d42fd0fb06faa2daa23",
+                  "a521aa48a6fdc0964bb9176b",
+                  "aad40ab1c7ce4aa1f7aa09ab",
+                  "affd989315d62de596d122a3",
+                  "b1972b62ea24b69fcccae116",
+                  "b2ca2ffd90f0a986e89f861c",
+                  "b42bc61d8034078d3a58e785",
+                  "b94d27e705f174383267d538",
+                  "ba4ad1d35208109306ec67d5",
+                  "baefac3be78324ee558348ad",
+                  "bd539b0458920343de2dc85d",
+                  "be2f4d07f13483d92ef49760",
+                  "bf58bbc1fe0decba7c53d937",
+                  "c0922b577d53c1b8a50c2336",
+                  "c318618598965fa833e32112",
+                  "c31b3e20b5806423c457c420",
+                  "ca1b167369f096cd05797dbb",
+                  "cad52dae8ab0ab47b8569e6b",
+                  "caebb45d426d4006edc6e99b",
+                  "cbd3f0865f3d5baaeb7ad183",
+                  "cbf76df2336d409efdc82336",
+                  "ceb1dbbd2344679a470c9f30",
+                  "cec2a10049e344399b52c6bc",
+                  "cf467a0d067bf4be8339048e",
+                  "d59642994f9ecece37a4c0bb",
+                  "db52bae5be2e9d62885b78fc",
+                  "defd4ab4eca09bd6d7115707",
+                  "e06620b841d350173e6a9d4e",
+                  "e0e276461daf60ea2208790c",
+                  "e286efcd047ba720aaf3626a",
+                  "e2c240ca71a3c0a545f3ac2d",
+                  "e31294f249d4d040188cea46",
+                  "e3287d1bd7f2fd9e1131067e",
+                  "e500369b6575b963c04ae606",
+                  "e6478d093fb8491b111f42f1",
+                  "e7dd5c18e5b7916f310873ee",
+                  "e80ab3f1f207961d3bf6fdc0",
+                  "eb2cf8b937b8e1261d0b1ee7",
+                  "f113780e78f3ba0dd499e474",
+                  "f280afe8b44196af60c7552b",
+                  "f2f96464cadb2a62531e0203",
+                  "f743ab9520d1ecc57dc40450",
+                  "f9739ee96fc3c55d6e913aae",
+                  "f9eb7bf8f90b38199b2e169f",
+                  "fae1862baf12ad9f65457d7f",
+                  "fb1b37989d4a12d19bd46713",
+                  "fb6f48d62cf7526537decbff",
+                  "fef925fa85ae954b2a43ee7b"
+                ],
+                "vector": [
+                  -0.19886307,
+                  -0.00207149,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  0.00414298,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00414298,
+                  0.20093456,
+                  -0.00207149,
+                  0.00207149,
+                  0.00207149,
+                  0.00207149,
+                  -0.19886307,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -0.20714903,
+                  0.00621447,
+                  0.0,
+                  -0.00207149,
+                  0.20300605,
+                  0.0,
+                  0.0,
+                  0.00414298,
+                  0.0,
+                  0.0,
+                  -0.00828596,
+                  0.00414298,
+                  0.00207149,
+                  0.00414298,
+                  -0.19886307,
+                  0.00207149,
+                  0.0,
+                  -0.00207149,
+                  -0.00414298,
+                  -0.20093456,
+                  0.00207149,
+                  0.19886307,
+                  0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.20093456,
+                  -0.00207149,
+                  0.00414298,
+                  -0.00207149,
+                  0.21957797,
+                  -0.00414298,
+                  -0.00828596,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  -0.00414298,
+                  0.00414298,
+                  -0.00207149,
+                  0.0,
+                  0.00207149,
+                  -0.00414298,
+                  0.00621447,
+                  0.0,
+                  -0.17814816,
+                  0.19472009,
+                  0.0,
+                  0.0,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  -0.00414298,
+                  -0.01035745,
+                  -0.00207149,
+                  0.00207149,
+                  0.00207149,
+                  0.0,
+                  -0.02485788,
+                  -0.0207149,
+                  0.0,
+                  0.0,
+                  0.00414298,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  0.00414298,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  0.02278639,
+                  -0.00207149,
+                  0.0,
+                  0.00207149,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  0.00207149,
+                  -0.19472009,
+                  0.0,
+                  0.00207149,
+                  0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.00414298,
+                  -0.00207149,
+                  0.0,
+                  -0.00207149,
+                  -0.00207149,
+                  0.00828596,
+                  -0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  -0.00414298,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  -0.00207149,
+                  0.02692937,
+                  0.00414298,
+                  -0.00207149,
+                  0.0,
+                  -0.00414298,
+                  0.0,
+                  0.0,
+                  0.00414298,
+                  -0.00207149,
+                  -0.00207149,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  -0.00621447,
+                  -0.00207149,
+                  0.0,
+                  -0.00414298,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  -0.00621447,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  -0.00207149,
+                  0.00414298,
+                  0.00207149,
+                  -0.19886307,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  0.00207149,
+                  0.0,
+                  -0.00414298,
+                  0.0,
+                  0.00414298,
+                  -0.01864341,
+                  0.19679158,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.19886307,
+                  0.00207149,
+                  0.0,
+                  -0.20093456,
+                  -0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.00414298,
+                  -0.00414298,
+                  0.0,
+                  0.00621447,
+                  -0.00207149,
+                  0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.19886307,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  0.00207149,
+                  -0.00414298,
+                  0.0,
+                  -0.00207149,
+                  0.00207149,
+                  0.0207149,
+                  0.0,
+                  -0.00207149,
+                  -0.20093456,
+                  0.0,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.00207149,
+                  0.0,
+                  -0.00207149,
+                  -0.00207149,
+                  -0.00621447,
+                  0.39979762,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  -0.00207149,
+                  -0.00207149,
+                  0.00207149,
+                  -0.00207149,
+                  -0.00207149,
+                  0.00207149,
+                  0.0,
+                  -0.00207149,
+                  0.0,
+                  0.0,
+                  0.00207149,
+                  0.19886307,
+                  0.0,
+                  0.00828596,
+                  -0.19679158,
+                  -0.00207149,
+                  -0.00207149,
+                  0.0,
+                  0.00207149,
+                  0.00207149,
+                  0.0,
+                  0.0
+                ],
+                "version": "beast_hashed_embedding_v1"
+              },
+              "source": "provider_response_crystallized"
+            },
+            "policy_version": "crystal_reuse_v1",
+            "repo_fingerprint": "repo-code-repair-mega-gauntlet",
+            "response": "{\"beast_object_type\": \"CRYSTAL_CODE_RECIPE\", \"body_template\": [\"    try:\", \"        numeric_price = float(price)\", \"        numeric_percent = float(percent)\", \"    except (TypeError, ValueError):\", \"        raise ValueError(\\\"price and percent must be numeric\\\")\", \"    clamped_percent = max(0.0, min(100.0, numeric_percent))\", \"    discounted = numeric_price * (1.0 - clamped_percent / 100.0)\", \"    return round(discounted, 2)\"], \"function_role\": \"discount_total\", \"imports\": [], \"invariants\": [\"coerce numeric strings\", \"reject nonnumeric input\", \"clamp percent to 0..100\", \"round to cents\"], \"operation\": \"replace_function\", \"skill_contract\": \"discount_math_guardrails\", \"task_family\": \"bounded_discount_math_repair\", \"tool_contract\": \"python_ast_function_rewriter\", \"version\": \"1.0\"}",
+            "task_class": "bounded_discount_math_repair",
+            "verified_tests": [
+              "visible",
+              "hidden"
+            ]
+          },
+          "reason": "semantic_credit_replayed",
+          "replay_type": "semantic_credit",
+          "reusable": true,
+          "version": "1.0"
+        }
+      },
+      "reason": "semantic_credit_replayed",
+      "residue_seal": {},
+      "source": "durable_inference_storage",
+      "telemetry": {
+        "action": "reuse_semantic_credit",
+        "beast_object_type": "crystal_reuse_telemetry",
+        "created_at": "2026-07-22T10:10:53.628371+00:00",
+        "latency_ms": 1.65,
+        "source": "durable_inference_storage",
+        "version": "1.0"
+      },
+      "version": "1.0"
+    },
+    "provider_displaced": true,
+    "request_hash": "sha256:6ee99867ae43f022e7b53a29285a939b75db97a53c2263c82e9b27212de60802"
+  },
+  "execution_lineage": {
+    "cloud_used_for_completion": false,
+    "cloud_used_for_training": true,
+    "completion_route_recorded_as_runtime": true,
+    "execution_mode": "local_reuse",
+    "runtime_engine": "beast_local_semantic_cache",
+    "teacher_engine": "nvidia_nim_or_external_teacher",
+    "training_route_recorded_as_teacher": true
+  },
+  "fused_crystal": {
+    "component_counts": {
+      "crystals": 1,
+      "meta_tools": 3,
+      "reuse_observations": 3,
+      "skills": 2,
+      "swarm_recipes": 1,
+      "unique_crystals": 1
+    },
+    "components": {
+      "crystals": [
+        {
+          "capability": "crystal_bounded_discount_repair_recipe_bounded_discount_math_repair",
+          "crystal_id": "scc_4c91f36da8e0ed25",
+          "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+          "reuse_count": 3,
+          "task_class": "bounded_discount_math_repair",
+          "tokens_displaced_estimate": 75,
+          "unique": true
+        }
+      ],
+      "meta_tools": [
+        {
+          "name": "python_ast_function_rewriter",
+          "risk_class": "low",
+          "role": "apply_verified_recipe"
+        },
+        {
+          "name": "pytest",
+          "risk_class": "low",
+          "role": "verify_behavior"
+        },
+        {
+          "name": "py_compile",
+          "risk_class": "low",
+          "role": "verify_syntax"
+        }
+      ],
+      "skills": [
+        {
+          "category": "code_repair",
+          "name": "discount_math_guardrails",
+          "version": "1.0"
+        },
+        {
+          "category": "compute_reduction",
+          "name": "semantic_crystal_reuse",
+          "version": "1.0"
+        }
+      ],
+      "swarm_recipes": [
+        {
+          "name": "zeroclaw_no_tool_execution_replay",
+          "role": "plan_only"
+        }
+      ]
+    },
+    "fusion_id": "fused_crystal_d80992dfa37c4783f45a",
+    "seal_verified": true,
+    "tokens_displaced_estimate": 2975
+  },
+  "hypothesis": "Repeated cloud completions can be captured as verified BEAST crystals and later complete same-family problems locally through deterministic cached crystals, semantic pages, tools, skills, and a capability lattice.",
+  "lattice": {
+    "lattice_hash": "sha256:68bfa3294e87269a427b3942d56e5f0a4535be644dd5524f98a1dea6b1cecab8",
+    "node_count": 1,
+    "signal_count": 3,
+    "top_node": {
+      "behavior_labels": [
+        "provider_displacement",
+        "retry_policy_completion",
+        "semantic_reuse"
+      ],
+      "fingerprint_hashes": [
+        "sha256:17b74a7d8bf0463e117efdf2ce02e24637ae09f9e1bcfe049a9569b508583b88"
+      ],
+      "negative_count": 0,
+      "positive_count": 3,
+      "proof_density": 1.0,
+      "providers": [
+        "nvidia_nim"
+      ],
+      "signal_count": 3,
+      "task_family": "bounded_discount_math_repair",
+      "training_priority": 0.6625,
+      "verifier_labels": [
+        "hidden",
+        "local_eval_gate",
+        "visible"
+      ]
+    }
+  },
+  "memory_hull": {
+    "beast_object_type": "memory_hull_inventory",
+    "editable": true,
+    "failed_sidecars": 0,
+    "index_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/.index/residue_index.json",
+    "root": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault",
+    "sections": {
+      "decisions": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "policies": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "projects": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "provider_receipts": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "quality_cascade": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      },
+      "residue": {
+        "failed": 0,
+        "markdown": 3,
+        "sidecars": 3,
+        "verified": 3
+      },
+      "tasks": {
+        "failed": 0,
+        "markdown": 0,
+        "sidecars": 0,
+        "verified": 0
+      }
+    },
+    "sidecar_sealed": true,
+    "verified_sidecars": 3,
+    "version": "2.0"
+  },
+  "metrics": {
+    "actual_reuse_count": 1,
+    "beast_object_type": "crystallized_compute_evidence_metrics",
+    "capability_total_compute_displaced_tokens": 191,
+    "cloud_calls_completion": 0,
+    "cloud_calls_training": 3,
+    "fused_crystal_estimate": 2975,
+    "runtime_tokens_avoided": 191,
+    "storage_total_avoided_tokens": 191,
+    "training_tokens_observed": 570,
+    "version": "1.0"
+  },
+  "provider_displaced": true,
+  "receipt_hash": "sha256:e966a24408e91805bed1c7787f399bcbf684d536bf8d9351b889c94d01590a33",
+  "route_optimizer_choice": "beast_local_semantic_cache",
+  "semantic_pages": {
+    "intermediate_summary": {
+      "content_hash": "sha256:78028cc2db07bb517c664619d22355bfae0f743894240991c2aea5fbf4011f6e",
+      "identity_hash": "sha256:d04cd5184229e53fa4d46cda2e03b0689f3b4c4ffe6b6f58600c57cee13ea319",
+      "lookup_hit": true,
+      "page_id": "scp_470f9bca490a0b8dce784bd7"
+    },
+    "route_card": {
+      "content_hash": "sha256:67aebeae35ee9cc1f853a8c522b7eebcb4fed6ef77cb1c5cf9d1c38b7c8b0cc4",
+      "identity_hash": "sha256:45a6df8dc59ae827473fee61d8095a9fe985745c0b8e36422ace42b8ae1ccce3",
+      "lookup_hit": true,
+      "page_id": "scp_1f95ff77ad8f1da820e94f1f"
+    },
+    "verifier_plan": {
+      "content_hash": "sha256:eee1568559f29eba0a5c986a5ea29c6e61659040274140809c75cc55f024c103",
+      "identity_hash": "sha256:1cdf2e23577737a89951a1f0735f7dadb82b5ec78a95dd3575fbe8bb063e1cd5",
+      "lookup_hit": true,
+      "page_id": "scp_57ee5ad1926d4455da90c4ab"
+    }
+  },
+  "trace_ledger_bytes": 23307,
+  "training_cloud_calls": 3,
+  "training_observations": 3,
+  "training_receipts": [
+    {
+      "answer_credit_id": "cache_527406ff31a943ea",
+      "cloud_used": true,
+      "iteration": 1,
+      "memory_hull": {
+        "beast_object_type": "memory_hull_write_receipt",
+        "index_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/.index/residue_index.json",
+        "markdown_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_332ffc170bffa0b38b69.md",
+        "residue_id": "residue_332ffc170bffa0b38b69",
+        "residue_seal": {
+          "algorithm": "Ed25519",
+          "beast_object_type": "beast_residue_seal",
+          "created_at": "2026-07-22T10:10:53.557266+00:00",
+          "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+          "message_sha256": "sha256:7ebcff0909b411cf9a74d177cf2dfc903bc40f3dab4fb9649abdbc34e3f99b18",
+          "payload_sha256": "sha256:540edae2855bafe54802f142cc389333d7913e6abcc33d89212e06eb761844ef",
+          "provider": "cryptography",
+          "public_key_hash": "sha256:fdf45d19fb5738cec21b1e8e6a9e3b568c970b4f9295ce04a94779b96f2f8c2b",
+          "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQWdORUo4RnpnZE05U2pjU2ljTzdwekZlZFFzaHpuS0FxU3UrYzVpV3NjaVE9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+          "purpose": "memory_hull_residue",
+          "signature_b64": "+qvUm9dgv7i3DJCqRbj86EIUetPgqzG/KzgG9CXZjRmsq73wgAf6sPjIV9O149RL7mV/DgguB9q55wKeefUvDQ==",
+          "version": "2.0"
+        },
+        "section": "residue",
+        "sidecar_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_332ffc170bffa0b38b69.residue.json",
+        "verified": true,
+        "version": "2.0"
+      },
+      "observed_tokens": 189,
+      "promotion_allowed": true,
+      "request_hash": "sha256:35cc66161e7b875c080d8b4ee58b0b22e88d3055e360cebf4637dab5078b5dd0",
+      "route_feedback": {
+        "beast_object_type": "local_route_optimizer_feedback",
+        "engine_id": "beast_local_semantic_cache",
+        "latency_ms": 1201.0,
+        "model": "nvidia-nim-code-repair-proof-model",
+        "runtime_engine": "beast_local_semantic_cache",
+        "success": true,
+        "task_class": "bounded_discount_math_repair",
+        "teacher_engine": "nvidia_nim_or_external_teacher",
+        "tokens": 189,
+        "version": "1.0"
+      },
+      "runtime_engine": "beast_local_semantic_cache",
+      "semantic_credit_id": "scc_4c91f36da8e0ed25",
+      "teacher_engine": "nvidia_nim_or_external_teacher"
+    },
+    {
+      "answer_credit_id": "cache_1c252a6d9f500bc6",
+      "cloud_used": true,
+      "iteration": 2,
+      "memory_hull": {
+        "beast_object_type": "memory_hull_write_receipt",
+        "index_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/.index/residue_index.json",
+        "markdown_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_b115ffcc28ad95198281.md",
+        "residue_id": "residue_b115ffcc28ad95198281",
+        "residue_seal": {
+          "algorithm": "Ed25519",
+          "beast_object_type": "beast_residue_seal",
+          "created_at": "2026-07-22T10:10:53.583919+00:00",
+          "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+          "message_sha256": "sha256:efad779f80dae035a588fcc9bf08821815b44474132927d30b45a661af144c1b",
+          "payload_sha256": "sha256:0c8726e67f4e7c2d18b64c20e7dd2ada4c544b06d6b8c17f32eb86a9ab277b4f",
+          "provider": "cryptography",
+          "public_key_hash": "sha256:fdf45d19fb5738cec21b1e8e6a9e3b568c970b4f9295ce04a94779b96f2f8c2b",
+          "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQWdORUo4RnpnZE05U2pjU2ljTzdwekZlZFFzaHpuS0FxU3UrYzVpV3NjaVE9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+          "purpose": "memory_hull_residue",
+          "signature_b64": "OlWw9zMTcJrDKyZ155oTgaO7LSyD9Z8de2ydm++B4FvhKihXUTBRHW0aOlCtb9DUQqW25Qb1KZyYuBcZpeOEDw==",
+          "version": "2.0"
+        },
+        "section": "residue",
+        "sidecar_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_b115ffcc28ad95198281.residue.json",
+        "verified": true,
+        "version": "2.0"
+      },
+      "observed_tokens": 190,
+      "promotion_allowed": true,
+      "request_hash": "sha256:eae4a0e7d2574264225ddf45f6387284be94c08f0425d1e1bd2bff0a93486f6c",
+      "route_feedback": {
+        "beast_object_type": "local_route_optimizer_feedback",
+        "engine_id": "beast_local_semantic_cache",
+        "latency_ms": 1202.0,
+        "model": "nvidia-nim-code-repair-proof-model",
+        "runtime_engine": "beast_local_semantic_cache",
+        "success": true,
+        "task_class": "bounded_discount_math_repair",
+        "teacher_engine": "nvidia_nim_or_external_teacher",
+        "tokens": 190,
+        "version": "1.0"
+      },
+      "runtime_engine": "beast_local_semantic_cache",
+      "semantic_credit_id": "scc_4c91f36da8e0ed25",
+      "teacher_engine": "nvidia_nim_or_external_teacher"
+    },
+    {
+      "answer_credit_id": "cache_c7f03138365a994d",
+      "cloud_used": true,
+      "iteration": 3,
+      "memory_hull": {
+        "beast_object_type": "memory_hull_write_receipt",
+        "index_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/.index/residue_index.json",
+        "markdown_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_7c9f62a5168f2f90952f.md",
+        "residue_id": "residue_7c9f62a5168f2f90952f",
+        "residue_seal": {
+          "algorithm": "Ed25519",
+          "beast_object_type": "beast_residue_seal",
+          "created_at": "2026-07-22T10:10:53.610041+00:00",
+          "key_boundary": "purpose_specific_residue_key_not_mtls_not_federation",
+          "message_sha256": "sha256:0f2eae6a657e1a0c365b24e644b77017b3651dd578dc5f0e0d1263256dcd1e27",
+          "payload_sha256": "sha256:38dd60e4495e803a14e5174bdfc4f49136b316dd641286950be3db07b37ed315",
+          "provider": "cryptography",
+          "public_key_hash": "sha256:fdf45d19fb5738cec21b1e8e6a9e3b568c970b4f9295ce04a94779b96f2f8c2b",
+          "public_key_pem_b64": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQWdORUo4RnpnZE05U2pjU2ljTzdwekZlZFFzaHpuS0FxU3UrYzVpV3NjaVE9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+          "purpose": "memory_hull_residue",
+          "signature_b64": "YGcahcUJd1gkQ3Kq7c/zdbwcFJr7Oya+7HiGmVnclM5w4l3aBIk4X+ZXztgfON772mpBwe2g1SlYJySb0PyTAg==",
+          "version": "2.0"
+        },
+        "section": "residue",
+        "sidecar_path": "/home/byron/EdgeK-BEAST/benchmarks/results/crystal_ir_full_gauntlet_v2/vault/residue/residue_7c9f62a5168f2f90952f.residue.json",
+        "verified": true,
+        "version": "2.0"
+      },
+      "observed_tokens": 191,
+      "promotion_allowed": true,
+      "request_hash": "sha256:a8e0d8b618ecb9ef56613f53880b623cf0413908b7f4ada61be5c849dd65d87d",
+      "route_feedback": {
+        "beast_object_type": "local_route_optimizer_feedback",
+        "engine_id": "beast_local_semantic_cache",
+        "latency_ms": 1203.0,
+        "model": "nvidia-nim-code-repair-proof-model",
+        "runtime_engine": "beast_local_semantic_cache",
+        "success": true,
+        "task_class": "bounded_discount_math_repair",
+        "teacher_engine": "nvidia_nim_or_external_teacher",
+        "tokens": 191,
+        "version": "1.0"
+      },
+      "runtime_engine": "beast_local_semantic_cache",
+      "semantic_credit_id": "scc_4c91f36da8e0ed25",
+      "teacher_engine": "nvidia_nim_or_external_teacher"
+    }
+  ],
+  "verdict": "proved",
+  "version": "1.0"
+}

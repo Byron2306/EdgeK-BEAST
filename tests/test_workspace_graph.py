@@ -419,7 +419,9 @@ def test_workspace_graph_semantic_index_context_and_dedupe(tmp_path):
     assert context["result_count"] >= 1
     assert "enforce_budget" in context["results"][0]["content"]
     assert dedupe["duplicates"] >= 1
-    assert graph.stats()["semantic"]["embeddings"] >= 1
+    # Offline/local-first runs may intentionally refuse an uncached embedding
+    # model and still provide the lexical semantic context.
+    assert graph.stats()["semantic"]["embeddings"] >= 1 or getattr(graph, "_embedding_unavailable", False)
 
 
 def test_workspace_graph_indexes_lexical_chunks_without_embedding_model(tmp_path, monkeypatch):

@@ -1,0 +1,48 @@
+{
+  "phase": 3,
+  "name": "Model Router and Agent Constellation",
+  "retained_from_phase2": [
+    "Core Shell v2",
+    "Editor Cortex",
+    "SourcePlan Forge",
+    "Desktop bridge",
+    "Render scheduler",
+    "Single mascot controller"
+  ],
+  "repairs": {
+    "sourceplan_zoom_scroll": {
+      "status": "implemented",
+      "scroll_owner": ".beast-viewport",
+      "diff_inline_threshold_css_px": 760,
+      "shell_collapse_threshold_css_px": 900,
+      "resize_observer": true
+    }
+  },
+  "new_pages": {
+    "models": {
+      "renderer": "js/pages/beast-models-page.js",
+      "bridge": "js/beast-model-agent-bridge.js",
+      "routes": [
+        "/edgek/providers/registry",
+        "/edgek/providers/state",
+        "/edgek/ide/tooling-snapshot",
+        "/edgek/tools/integrations",
+        "/edgek/providers/inference-stats"
+      ]
+    },
+    "agents": {
+      "renderer": "js/pages/beast-agents-page.js",
+      "bridge": "js/beast-model-agent-bridge.js",
+      "routes": [
+        "/edgek/ide/snapshot",
+        "/edgek/ide/tooling-snapshot",
+        "/edgek/ide/agent-sessions/create",
+        "/edgek/ide/agent-sessions/pause",
+        "/edgek/ide/agent-sessions/resume",
+        "/edgek/ide/agent-sessions/cancel"
+      ]
+    }
+  },
+  "legacy_scripts_loaded": [],
+  "next_phase": "Review Center and Evidence Forge"
+}

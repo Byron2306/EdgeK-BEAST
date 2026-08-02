@@ -1,0 +1,4722 @@
+{
+  "ok": true,
+  "checks": 40,
+  "failed": [],
+  "snapshot": {
+    "ok": true,
+    "beast_object_type": "beast_ide_services_snapshot",
+    "version": "1.0",
+    "root": "/tmp/beast-ide-services-qq9Unh",
+    "target": {
+      "kind": "local",
+      "root": "/tmp/beast-ide-services-qq9Unh"
+    },
+    "updatedAt": "2026-07-31T11:53:13.305Z",
+    "score": {
+      "ready": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "services": {
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "lsp": {
+        "status": "ready",
+        "languages": [
+          {
+            "id": "typescript",
+            "label": "TypeScript / JavaScript",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/typescript-language-server",
+            "languages": [
+              "typescript",
+              "javascript",
+              "typescriptreact",
+              "javascriptreact"
+            ]
+          },
+          {
+            "id": "pyright",
+            "label": "Python (Pyright)",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/pyright-langserver",
+            "languages": [
+              "python"
+            ]
+          },
+          {
+            "id": "pylsp",
+            "label": "Python (pylsp)",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /usr/bin/python3",
+            "languages": [
+              "python"
+            ]
+          },
+          {
+            "id": "rust",
+            "label": "Rust Analyzer",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /usr/bin/rust-analyzer",
+            "languages": [
+              "rust"
+            ]
+          },
+          {
+            "id": "go",
+            "label": "Go (gopls)",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/.local/share/beast-ide/tools/bin/gopls",
+            "languages": [
+              "go"
+            ]
+          },
+          {
+            "id": "clangd",
+            "label": "C / C++ (clangd)",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /usr/bin/clangd",
+            "languages": [
+              "c",
+              "cpp"
+            ]
+          },
+          {
+            "id": "bash",
+            "label": "Shell (bash-language-server)",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/bash-language-server",
+            "languages": [
+              "shell"
+            ]
+          },
+          {
+            "id": "json",
+            "label": "JSON Language Server",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/vscode-json-language-server",
+            "languages": [
+              "json"
+            ]
+          },
+          {
+            "id": "html",
+            "label": "HTML Language Server",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/vscode-html-language-server",
+            "languages": [
+              "html"
+            ]
+          },
+          {
+            "id": "css",
+            "label": "CSS Language Server",
+            "kind": "lsp",
+            "status": "ready",
+            "detail": "ready · /home/byron/EdgeK-BEAST/desktop-ide/node_modules/.bin/vscode-css-language-server",
+            "languages": [
+              "css",
+              "scss",
+              "less"
+            ]
+          }
+        ],
+        "sessions": [],
+        "matrix": [
+          {
+            "language": "javascript",
+            "files": 4,
+            "lspReady": true,
+            "debugReady": false,
+            "testsReady": true,
+            "percent": 67,
+            "expected": {
+              "lsp": [
+                "typescript"
+              ],
+              "debug": [
+                "node"
+              ],
+              "tests": [
+                "npm",
+                "node:test",
+                "jest",
+                "vitest",
+                "playwright",
+                "cypress"
+              ]
+            }
+          },
+          {
+            "language": "json",
+            "files": 3,
+            "lspReady": true,
+            "debugReady": true,
+            "testsReady": true,
+            "percent": 100,
+            "expected": {
+              "lsp": [],
+              "debug": [],
+              "tests": []
+            }
+          },
+          {
+            "language": "nim",
+            "files": 2,
+            "lspReady": false,
+            "debugReady": true,
+            "testsReady": true,
+            "percent": 67,
+            "expected": {
+              "lsp": [
+                "nimlangserver"
+              ],
+              "debug": [],
+              "tests": []
+            }
+          },
+          {
+            "language": "python",
+            "files": 1,
+            "lspReady": true,
+            "debugReady": true,
+            "testsReady": true,
+            "percent": 100,
+            "expected": {
+              "lsp": [
+                "pyright",
+                "pylsp"
+              ],
+              "debug": [
+                "debugpy"
+              ],
+              "tests": [
+                "pytest",
+                "django"
+              ]
+            }
+          }
+        ]
+      },
+      "debug": {
+        "status": "ready",
+        "adapters": [
+          {
+            "id": "debugpy",
+            "label": "Python debugpy",
+            "kind": "dap",
+            "status": "ready",
+            "detail": "ready · /usr/bin/python3 · loopback verification deferred (local loopback is unavailable (PermissionError: [Errno 1] Operation not permitted))"
+          },
+          {
+            "id": "lldb",
+            "label": "LLDB DAP",
+            "kind": "dap",
+            "status": "ready",
+            "detail": "ready · /usr/bin/lldb-dap-19"
+          },
+          {
+            "id": "delve",
+            "label": "Go Delve DAP",
+            "kind": "dap",
+            "status": "ready",
+            "detail": "ready · /home/byron/.local/share/beast-ide/tools/bin/dlv · loopback verification deferred (local loopback is unavailable (PermissionError: [Errno 1] Operation not permitted))"
+          }
+        ],
+        "sessions": [],
+        "profiles": [
+          {
+            "id": "python:file",
+            "label": "Python file",
+            "adapter": "debugpy",
+            "available": true,
+            "handoff": "active Python file or launch.json"
+          },
+          {
+            "id": "launch:Debug sample Python",
+            "label": "Debug sample Python",
+            "adapter": "debugpy",
+            "available": true,
+            "handoff": "launch.json",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/test_sample.py"
+          },
+          {
+            "id": "launch:Debug node sample",
+            "label": "Debug node sample",
+            "adapter": "node",
+            "available": false,
+            "handoff": "launch.json",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/sample.test.js"
+          }
+        ],
+        "launch": {
+          "ok": true,
+          "file": ".vscode/launch.json",
+          "configurations": [
+            {
+              "name": "Debug sample Python",
+              "type": "python",
+              "request": "launch",
+              "program": "${workspaceFolder}/tests/test_sample.py",
+              "cwd": "${workspaceFolder}"
+            },
+            {
+              "name": "Debug node sample",
+              "type": "node",
+              "request": "launch",
+              "program": "${workspaceFolder}/tests/sample.test.js",
+              "cwd": ""
+            }
+          ],
+          "compounds": [
+            {
+              "name": "Debug all samples",
+              "configurations": [
+                "Debug sample Python",
+                "Debug node sample"
+              ]
+            }
+          ]
+        }
+      },
+      "index": {
+        "ok": true,
+        "status": "ready",
+        "digest": "sha256:aa61fa046d5ee589a3555f86ddb619c260980d1f9856860ffea07e801f547e0d",
+        "fileCount": 10,
+        "symbolCount": 9,
+        "importCount": 5,
+        "referenceCount": 28,
+        "importEdgeCount": 2,
+        "languages": {
+          "json": 3,
+          "nim": 2,
+          "javascript": 4,
+          "python": 1
+        },
+        "symbolKinds": {
+          "function": 5,
+          "type": 1,
+          "variable": 3
+        },
+        "semantic": {
+          "definitionCount": 9,
+          "referenceCount": 28,
+          "importEdgeCount": 2,
+          "unresolvedImportCount": 3,
+          "topReferences": [
+            {
+              "name": "test",
+              "count": 8,
+              "files": [
+                "package.json",
+                ".vscode/tasks.json",
+                ".vscode/launch.json",
+                "tests/sample.test.js"
+              ],
+              "definitions": [
+                {
+                  "file": "tests/sample.test.js",
+                  "line": 1,
+                  "kind": "variable"
+                }
+              ]
+            },
+            {
+              "name": "answer",
+              "count": 4,
+              "files": [
+                "src/index.js",
+                "tests/sample.test.js"
+              ],
+              "definitions": [
+                {
+                  "file": "src/index.js",
+                  "line": 2,
+                  "kind": "variable"
+                }
+              ]
+            },
+            {
+              "name": "assert",
+              "count": 4,
+              "files": [
+                "tests/test_sample.py",
+                "tests/sample.test.js"
+              ],
+              "definitions": [
+                {
+                  "file": "tests/sample.test.js",
+                  "line": 2,
+                  "kind": "variable"
+                }
+              ]
+            },
+            {
+              "name": "double",
+              "count": 4,
+              "files": [
+                "src/index.js",
+                "src/helper.js"
+              ],
+              "definitions": [
+                {
+                  "file": "src/helper.js",
+                  "line": 2,
+                  "kind": "function"
+                }
+              ]
+            },
+            {
+              "name": "answerLabel",
+              "count": 2,
+              "files": [
+                "src/index.js"
+              ],
+              "definitions": [
+                {
+                  "file": "src/index.js",
+                  "line": 3,
+                  "kind": "function"
+                }
+              ]
+            },
+            {
+              "name": "test_sample",
+              "count": 2,
+              "files": [
+                ".vscode/launch.json",
+                "tests/test_sample.py"
+              ],
+              "definitions": [
+                {
+                  "file": "tests/test_sample.py",
+                  "line": 1,
+                  "kind": "function"
+                }
+              ]
+            },
+            {
+              "name": "triple",
+              "count": 2,
+              "files": [
+                "src/math.nim",
+                "src/beast_math.nim"
+              ],
+              "definitions": [
+                {
+                  "file": "src/beast_math.nim",
+                  "line": 1,
+                  "kind": "function"
+                }
+              ]
+            },
+            {
+              "name": "beastAdd",
+              "count": 1,
+              "files": [
+                "src/math.nim"
+              ],
+              "definitions": [
+                {
+                  "file": "src/math.nim",
+                  "line": 6,
+                  "kind": "function"
+                }
+              ]
+            },
+            {
+              "name": "BeastNumber",
+              "count": 1,
+              "files": [
+                "src/math.nim"
+              ],
+              "definitions": [
+                {
+                  "file": "src/math.nim",
+                  "line": 3,
+                  "kind": "type"
+                }
+              ]
+            }
+          ],
+          "importEdges": [
+            {
+              "file": "src/math.nim",
+              "target": "std/strutils",
+              "kind": "import",
+              "resolved": ""
+            },
+            {
+              "file": "src/math.nim",
+              "target": "beast_math",
+              "kind": "import",
+              "resolved": "src/beast_math.nim"
+            },
+            {
+              "file": "src/index.js",
+              "target": "./helper",
+              "kind": "require",
+              "resolved": "src/helper.js"
+            },
+            {
+              "file": "tests/sample.test.js",
+              "target": "node:test",
+              "kind": "require",
+              "resolved": ""
+            },
+            {
+              "file": "tests/sample.test.js",
+              "target": "node:assert/strict",
+              "kind": "require",
+              "resolved": ""
+            }
+          ],
+          "dependents": {
+            "src/beast_math.nim": [
+              "src/math.nim"
+            ],
+            "src/helper.js": [
+              "src/index.js"
+            ]
+          },
+          "workspaceSymbols": [
+            {
+              "name": "beastAdd",
+              "kind": "function",
+              "file": "src/math.nim",
+              "line": 6
+            },
+            {
+              "name": "BeastNumber",
+              "kind": "type",
+              "file": "src/math.nim",
+              "line": 3
+            },
+            {
+              "name": "answerLabel",
+              "kind": "function",
+              "file": "src/index.js",
+              "line": 3
+            },
+            {
+              "name": "answer",
+              "kind": "variable",
+              "file": "src/index.js",
+              "line": 2
+            },
+            {
+              "name": "double",
+              "kind": "function",
+              "file": "src/helper.js",
+              "line": 2
+            },
+            {
+              "name": "triple",
+              "kind": "function",
+              "file": "src/beast_math.nim",
+              "line": 1
+            },
+            {
+              "name": "test_sample",
+              "kind": "function",
+              "file": "tests/test_sample.py",
+              "line": 1
+            },
+            {
+              "name": "test",
+              "kind": "variable",
+              "file": "tests/sample.test.js",
+              "line": 1
+            },
+            {
+              "name": "assert",
+              "kind": "variable",
+              "file": "tests/sample.test.js",
+              "line": 2
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          }
+        ],
+        "codeActions": [
+          {
+            "title": "Track TODO in workspace",
+            "kind": "source.organize",
+            "diagnostic": {
+              "file": "src/helper.js",
+              "line": 1,
+              "severity": "hint",
+              "code": "todo-comment",
+              "source": "beast-index",
+              "message": "// TODO: tighten helper coverage"
+            },
+            "command": "beast.openWorkspace",
+            "arguments": [
+              {
+                "file": "src/helper.js",
+                "line": 1
+              }
+            ]
+          }
+        ],
+        "source": "desktop-local-index",
+        "truncated": false,
+        "error": ""
+      },
+      "navigation": {
+        "ok": true,
+        "status": "ready",
+        "workspaceSymbolCount": 9,
+        "topReferenceCount": 9,
+        "importEdgeCount": 2,
+        "supports": {
+          "workspaceSymbols": true,
+          "definitions": true,
+          "references": true,
+          "dependents": true
+        }
+      },
+      "diagnostics": {
+        "ok": true,
+        "status": "ready",
+        "count": 1,
+        "bySeverity": {
+          "hint": 1
+        },
+        "codeActionCount": 1,
+        "recent": [
+          {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          }
+        ]
+      },
+      "refactor": {
+        "ok": true,
+        "status": "ready",
+        "supportsRenamePreview": true,
+        "supportsCodeActions": true,
+        "symbolCount": 9
+      },
+      "tests": {
+        "ok": true,
+        "status": "ready",
+        "testCount": 2,
+        "fileCount": 2,
+        "nodeCount": 3,
+        "frameworks": [
+          "node:test",
+          "pytest"
+        ],
+        "historyCount": 2,
+        "flakyCount": 0,
+        "flaky": [],
+        "recent": [
+          {
+            "kind": "test",
+            "id": "TEST-83F0BAA4B4251202",
+            "digest": "sha256:83f0baa4b4251202b582e9c130043e46b0f912af8024cc992ef56aee510eafb9",
+            "ok": true,
+            "returncode": 0,
+            "test": {
+              "id": "npm:test",
+              "label": "npm: test",
+              "framework": "node:test"
+            },
+            "file": "tests/sample.test.js",
+            "node": "",
+            "navigation": {
+              "path": "tests/sample.test.js",
+              "line": 0,
+              "framework": "node:test"
+            },
+            "executionTarget": {
+              "kind": "local",
+              "root": "/tmp/beast-ide-services-qq9Unh"
+            },
+            "flaky": false,
+            "retryCount": 0,
+            "stdoutTail": "",
+            "stderrTail": "",
+            "recordedAt": 1785498792412
+          },
+          {
+            "kind": "test",
+            "id": "TEST-83F0BAA4B4251202",
+            "digest": "sha256:83f0baa4b4251202b582e9c130043e46b0f912af8024cc992ef56aee510eafb9",
+            "ok": true,
+            "returncode": 0,
+            "test": {
+              "id": "npm:test",
+              "label": "npm: test",
+              "framework": "node:test"
+            },
+            "file": "tests/sample.test.js",
+            "node": "",
+            "navigation": {
+              "path": "tests/sample.test.js",
+              "line": 0,
+              "framework": "node:test"
+            },
+            "executionTarget": {
+              "kind": "local",
+              "root": "/tmp/beast-ide-services-qq9Unh"
+            },
+            "flaky": false,
+            "retryCount": 0,
+            "stdoutTail": "",
+            "stderrTail": "",
+            "recordedAt": 1785498790694
+          }
+        ],
+        "executionTarget": {
+          "kind": "local",
+          "root": "/tmp/beast-ide-services-qq9Unh"
+        },
+        "error": ""
+      },
+      "tasks": {
+        "ok": true,
+        "status": "ready",
+        "taskCount": 4,
+        "backgroundCount": 0,
+        "dependencyTaskCount": 1,
+        "presentationCount": 2,
+        "problemMatcherCount": 1,
+        "historyCount": 3,
+        "recent": [
+          {
+            "kind": "task",
+            "id": "TASK-9A804788AFD2798F",
+            "digest": "sha256:9a804788afd2798fbe1133fc60b84072fee9d0b36add2e1d7086467a9d759748",
+            "ok": true,
+            "returncode": 0,
+            "task": {
+              "id": "vscode:2:6176a9aa26fb080b",
+              "label": "aggregate",
+              "source": ".vscode/tasks.json",
+              "kind": "shell",
+              "dependsOn": [
+                "prep"
+              ],
+              "dependsOrder": "sequence",
+              "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+              },
+              "dependencyCount": 1
+            },
+            "dependencies": [
+              {
+                "ok": true,
+                "task": {
+                  "id": "vscode:1:f72fa417cbe419fa",
+                  "label": "prep",
+                  "source": ".vscode/tasks.json",
+                  "kind": "shell",
+                  "dependsOn": [],
+                  "dependsOrder": "parallel",
+                  "presentation": {
+                    "reveal": "always",
+                    "panel": "shared",
+                    "clear": false
+                  },
+                  "dependencyCount": 0
+                },
+                "receipt": {
+                  "id": "TASK-9BFEB1BF946C9A6F",
+                  "digest": "sha256:9bfeb1bf946c9a6f207545ce31ed9132fb700e5f366856f4cce8cbd347ce3d45",
+                  "evidence": "operator-initiated",
+                  "mode": ".vscode/tasks.json:local"
+                }
+              }
+            ],
+            "executionTarget": {
+              "kind": "local",
+              "root": "/tmp/beast-ide-services-qq9Unh"
+            },
+            "stdoutTail": "",
+            "stderrTail": "",
+            "recordedAt": 1785498791013
+          },
+          {
+            "kind": "task",
+            "id": "TASK-9BFEB1BF946C9A6F",
+            "digest": "sha256:9bfeb1bf946c9a6f207545ce31ed9132fb700e5f366856f4cce8cbd347ce3d45",
+            "ok": true,
+            "returncode": 0,
+            "task": {
+              "id": "vscode:1:f72fa417cbe419fa",
+              "label": "prep",
+              "source": ".vscode/tasks.json",
+              "kind": "shell",
+              "dependsOn": [],
+              "dependsOrder": "parallel",
+              "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": false
+              },
+              "dependencyCount": 0
+            },
+            "dependencies": [],
+            "executionTarget": {
+              "kind": "local",
+              "root": "/tmp/beast-ide-services-qq9Unh"
+            },
+            "stdoutTail": "",
+            "stderrTail": "",
+            "recordedAt": 1785498790888
+          },
+          {
+            "kind": "task",
+            "id": "TASK-A5CED4FE0395C221",
+            "digest": "sha256:a5ced4fe0395c221dabd050d022f87e3e1ce52e6edac558cefb32a2300d12b09",
+            "ok": true,
+            "returncode": 0,
+            "task": {
+              "id": "npm:check",
+              "label": "npm: check",
+              "source": "package.json",
+              "kind": "npm",
+              "dependsOn": [],
+              "dependsOrder": "parallel",
+              "presentation": {},
+              "dependencyCount": 0
+            },
+            "dependencies": [],
+            "executionTarget": {
+              "kind": "local",
+              "root": "/tmp/beast-ide-services-qq9Unh"
+            },
+            "stdoutTail": "",
+            "stderrTail": "",
+            "recordedAt": 1785498790853
+          }
+        ],
+        "error": ""
+      },
+      "scm": {
+        "ok": true,
+        "target": {
+          "kind": "local",
+          "root": "/tmp/beast-ide-services-qq9Unh"
+        },
+        "mode": "local-git-host",
+        "branch": "master",
+        "branchName": "master",
+        "counts": {
+          "staged": 0,
+          "unstaged": 3,
+          "conflicts": 0
+        },
+        "changes": [
+          {
+            "index": " M",
+            "path": "src/index.js",
+            "originalPath": "",
+            "staged": false,
+            "unstaged": true,
+            "conflict": false,
+            "untracked": false
+          },
+          {
+            "index": "??",
+            "path": ".beast/",
+            "originalPath": "",
+            "staged": false,
+            "unstaged": true,
+            "conflict": false,
+            "untracked": true
+          },
+          {
+            "index": "??",
+            "path": "src/generated.js",
+            "originalPath": "",
+            "staged": false,
+            "unstaged": true,
+            "conflict": false,
+            "untracked": true
+          }
+        ],
+        "remotes": [],
+        "error": ""
+      },
+      "extensions": {
+        "status": "idle",
+        "runtimeReady": true,
+        "lifecycle": {
+          "status": "idle",
+          "health": "healthy",
+          "mode": "declarative-manifests",
+          "extensionCount": 0
+        },
+        "targets": []
+      }
+    }
+  },
+  "semanticQueries": {
+    "symbolQuery": {
+      "ok": true,
+      "beast_object_type": "beast_workspace_semantic_query",
+      "mode": "symbols",
+      "query": "answer",
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "digest": "sha256:b93e89caf905743cba08630a898e9348dd4b347dd88d2c18a97a642265fe4993",
+      "degraded": false,
+      "symbols": [
+        {
+          "name": "answerLabel",
+          "kind": "function",
+          "file": "src/index.js",
+          "line": 3
+        },
+        {
+          "name": "answer",
+          "kind": "variable",
+          "file": "src/index.js",
+          "line": 2
+        }
+      ],
+      "definitions": [
+        {
+          "name": "answer",
+          "kind": "variable",
+          "file": "src/index.js",
+          "line": 2,
+          "preview": "const answer = double(22);"
+        }
+      ],
+      "references": [
+        {
+          "name": "answer",
+          "file": "src/index.js",
+          "preview": "const { double } = require('./helper');"
+        },
+        {
+          "name": "answer",
+          "file": "tests/sample.test.js",
+          "preview": "const test = require('node:test');"
+        }
+      ],
+      "dependents": [],
+      "importEdges": [
+        {
+          "file": "src/math.nim",
+          "target": "std/strutils",
+          "kind": "import",
+          "resolved": ""
+        },
+        {
+          "file": "src/math.nim",
+          "target": "beast_math",
+          "kind": "import",
+          "resolved": "src/beast_math.nim"
+        },
+        {
+          "file": "src/index.js",
+          "target": "./helper",
+          "kind": "require",
+          "resolved": "src/helper.js"
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:test",
+          "kind": "require",
+          "resolved": ""
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:assert/strict",
+          "kind": "require",
+          "resolved": ""
+        }
+      ],
+      "diagnostics": [
+        {
+          "file": "src/helper.js",
+          "line": 1,
+          "severity": "hint",
+          "code": "todo-comment",
+          "source": "beast-index",
+          "message": "// TODO: tighten helper coverage"
+        }
+      ],
+      "codeActions": [
+        {
+          "title": "Track TODO in workspace",
+          "kind": "source.organize",
+          "diagnostic": {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          },
+          "command": "beast.openWorkspace",
+          "arguments": [
+            {
+              "file": "src/helper.js",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "renamePreview": {
+        "ok": false,
+        "symbol": "answer",
+        "newName": "",
+        "fileCount": 0,
+        "editCount": 0,
+        "files": []
+      },
+      "error": ""
+    },
+    "definitionQuery": {
+      "ok": true,
+      "beast_object_type": "beast_workspace_semantic_query",
+      "mode": "definition",
+      "query": "double",
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "digest": "sha256:b93e89caf905743cba08630a898e9348dd4b347dd88d2c18a97a642265fe4993",
+      "degraded": false,
+      "symbols": [
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2
+        }
+      ],
+      "definitions": [
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2,
+          "preview": "function double(value) { return value * 2; }"
+        }
+      ],
+      "references": [
+        {
+          "name": "double",
+          "file": "src/index.js",
+          "preview": "const { double } = require('./helper');"
+        },
+        {
+          "name": "double",
+          "file": "src/helper.js",
+          "preview": "// TODO: tighten helper coverage"
+        }
+      ],
+      "dependents": [],
+      "importEdges": [
+        {
+          "file": "src/math.nim",
+          "target": "std/strutils",
+          "kind": "import",
+          "resolved": ""
+        },
+        {
+          "file": "src/math.nim",
+          "target": "beast_math",
+          "kind": "import",
+          "resolved": "src/beast_math.nim"
+        },
+        {
+          "file": "src/index.js",
+          "target": "./helper",
+          "kind": "require",
+          "resolved": "src/helper.js"
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:test",
+          "kind": "require",
+          "resolved": ""
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:assert/strict",
+          "kind": "require",
+          "resolved": ""
+        }
+      ],
+      "diagnostics": [
+        {
+          "file": "src/helper.js",
+          "line": 1,
+          "severity": "hint",
+          "code": "todo-comment",
+          "source": "beast-index",
+          "message": "// TODO: tighten helper coverage"
+        }
+      ],
+      "codeActions": [
+        {
+          "title": "Track TODO in workspace",
+          "kind": "source.organize",
+          "diagnostic": {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          },
+          "command": "beast.openWorkspace",
+          "arguments": [
+            {
+              "file": "src/helper.js",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "renamePreview": {
+        "ok": false,
+        "symbol": "double",
+        "newName": "",
+        "fileCount": 0,
+        "editCount": 0,
+        "files": []
+      },
+      "error": ""
+    },
+    "referenceQuery": {
+      "ok": true,
+      "beast_object_type": "beast_workspace_semantic_query",
+      "mode": "references",
+      "query": "triple",
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "digest": "sha256:b93e89caf905743cba08630a898e9348dd4b347dd88d2c18a97a642265fe4993",
+      "degraded": false,
+      "symbols": [
+        {
+          "name": "triple",
+          "kind": "function",
+          "file": "src/beast_math.nim",
+          "line": 1
+        }
+      ],
+      "definitions": [
+        {
+          "name": "triple",
+          "kind": "function",
+          "file": "src/beast_math.nim",
+          "line": 1,
+          "preview": "proc triple*(value: int): int = value * 3"
+        }
+      ],
+      "references": [
+        {
+          "name": "triple",
+          "file": "src/math.nim",
+          "preview": "import std/strutils"
+        },
+        {
+          "name": "triple",
+          "file": "src/beast_math.nim",
+          "preview": "proc triple*(value: int): int = value * 3"
+        }
+      ],
+      "dependents": [],
+      "importEdges": [
+        {
+          "file": "src/math.nim",
+          "target": "std/strutils",
+          "kind": "import",
+          "resolved": ""
+        },
+        {
+          "file": "src/math.nim",
+          "target": "beast_math",
+          "kind": "import",
+          "resolved": "src/beast_math.nim"
+        },
+        {
+          "file": "src/index.js",
+          "target": "./helper",
+          "kind": "require",
+          "resolved": "src/helper.js"
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:test",
+          "kind": "require",
+          "resolved": ""
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:assert/strict",
+          "kind": "require",
+          "resolved": ""
+        }
+      ],
+      "diagnostics": [
+        {
+          "file": "src/helper.js",
+          "line": 1,
+          "severity": "hint",
+          "code": "todo-comment",
+          "source": "beast-index",
+          "message": "// TODO: tighten helper coverage"
+        }
+      ],
+      "codeActions": [
+        {
+          "title": "Track TODO in workspace",
+          "kind": "source.organize",
+          "diagnostic": {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          },
+          "command": "beast.openWorkspace",
+          "arguments": [
+            {
+              "file": "src/helper.js",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "renamePreview": {
+        "ok": false,
+        "symbol": "triple",
+        "newName": "",
+        "fileCount": 0,
+        "editCount": 0,
+        "files": []
+      },
+      "error": ""
+    },
+    "dependentsQuery": {
+      "ok": true,
+      "beast_object_type": "beast_workspace_semantic_query",
+      "mode": "dependents",
+      "query": "",
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "digest": "sha256:b93e89caf905743cba08630a898e9348dd4b347dd88d2c18a97a642265fe4993",
+      "degraded": false,
+      "symbols": [
+        {
+          "name": "beastAdd",
+          "kind": "function",
+          "file": "src/math.nim",
+          "line": 6
+        },
+        {
+          "name": "BeastNumber",
+          "kind": "type",
+          "file": "src/math.nim",
+          "line": 3
+        },
+        {
+          "name": "answerLabel",
+          "kind": "function",
+          "file": "src/index.js",
+          "line": 3
+        },
+        {
+          "name": "answer",
+          "kind": "variable",
+          "file": "src/index.js",
+          "line": 2
+        },
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2
+        },
+        {
+          "name": "triple",
+          "kind": "function",
+          "file": "src/beast_math.nim",
+          "line": 1
+        },
+        {
+          "name": "test_sample",
+          "kind": "function",
+          "file": "tests/test_sample.py",
+          "line": 1
+        },
+        {
+          "name": "test",
+          "kind": "variable",
+          "file": "tests/sample.test.js",
+          "line": 1
+        },
+        {
+          "name": "assert",
+          "kind": "variable",
+          "file": "tests/sample.test.js",
+          "line": 2
+        }
+      ],
+      "definitions": [
+        {
+          "name": "beastAdd",
+          "kind": "function",
+          "file": "src/math.nim",
+          "line": 6,
+          "preview": ""
+        },
+        {
+          "name": "BeastNumber",
+          "kind": "type",
+          "file": "src/math.nim",
+          "line": 3,
+          "preview": ""
+        },
+        {
+          "name": "answerLabel",
+          "kind": "function",
+          "file": "src/index.js",
+          "line": 3,
+          "preview": "function answerLabel() { return String(answer); }"
+        },
+        {
+          "name": "answer",
+          "kind": "variable",
+          "file": "src/index.js",
+          "line": 2,
+          "preview": "const answer = double(22);"
+        },
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2,
+          "preview": "function double(value) { return value * 2; }"
+        },
+        {
+          "name": "triple",
+          "kind": "function",
+          "file": "src/beast_math.nim",
+          "line": 1,
+          "preview": "proc triple*(value: int): int = value * 3"
+        },
+        {
+          "name": "test_sample",
+          "kind": "function",
+          "file": "tests/test_sample.py",
+          "line": 1,
+          "preview": "def test_sample():"
+        },
+        {
+          "name": "test",
+          "kind": "variable",
+          "file": "tests/sample.test.js",
+          "line": 1,
+          "preview": "const test = require('node:test');"
+        },
+        {
+          "name": "assert",
+          "kind": "variable",
+          "file": "tests/sample.test.js",
+          "line": 2,
+          "preview": "const assert = require('node:assert/strict');"
+        }
+      ],
+      "references": [
+        {
+          "name": "test",
+          "file": "package.json"
+        },
+        {
+          "name": "test",
+          "file": ".vscode/tasks.json"
+        },
+        {
+          "name": "test",
+          "file": ".vscode/launch.json"
+        },
+        {
+          "name": "test",
+          "file": "tests/sample.test.js"
+        },
+        {
+          "name": "answer",
+          "file": "src/index.js"
+        },
+        {
+          "name": "answer",
+          "file": "tests/sample.test.js"
+        },
+        {
+          "name": "assert",
+          "file": "tests/test_sample.py"
+        },
+        {
+          "name": "assert",
+          "file": "tests/sample.test.js"
+        },
+        {
+          "name": "double",
+          "file": "src/index.js"
+        },
+        {
+          "name": "double",
+          "file": "src/helper.js"
+        },
+        {
+          "name": "answerLabel",
+          "file": "src/index.js"
+        },
+        {
+          "name": "test_sample",
+          "file": ".vscode/launch.json"
+        },
+        {
+          "name": "test_sample",
+          "file": "tests/test_sample.py"
+        },
+        {
+          "name": "triple",
+          "file": "src/math.nim"
+        },
+        {
+          "name": "triple",
+          "file": "src/beast_math.nim"
+        },
+        {
+          "name": "beastAdd",
+          "file": "src/math.nim"
+        },
+        {
+          "name": "BeastNumber",
+          "file": "src/math.nim"
+        }
+      ],
+      "dependents": [
+        "src/index.js"
+      ],
+      "importEdges": [
+        {
+          "file": "src/index.js",
+          "target": "./helper",
+          "kind": "require",
+          "resolved": "src/helper.js"
+        }
+      ],
+      "diagnostics": [
+        {
+          "file": "src/helper.js",
+          "line": 1,
+          "severity": "hint",
+          "code": "todo-comment",
+          "source": "beast-index",
+          "message": "// TODO: tighten helper coverage"
+        }
+      ],
+      "codeActions": [
+        {
+          "title": "Track TODO in workspace",
+          "kind": "source.organize",
+          "diagnostic": {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          },
+          "command": "beast.openWorkspace",
+          "arguments": [
+            {
+              "file": "src/helper.js",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "renamePreview": {
+        "ok": false,
+        "symbol": "",
+        "newName": "",
+        "fileCount": 0,
+        "editCount": 0,
+        "files": []
+      },
+      "error": ""
+    },
+    "renamePreview": {
+      "ok": true,
+      "beast_object_type": "beast_workspace_semantic_query",
+      "mode": "renamePreview",
+      "query": "double",
+      "target": {
+        "kind": "local",
+        "root": "/tmp/beast-ide-services-qq9Unh"
+      },
+      "digest": "sha256:b93e89caf905743cba08630a898e9348dd4b347dd88d2c18a97a642265fe4993",
+      "degraded": false,
+      "symbols": [
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2
+        }
+      ],
+      "definitions": [
+        {
+          "name": "double",
+          "kind": "function",
+          "file": "src/helper.js",
+          "line": 2,
+          "preview": "function double(value) { return value * 2; }"
+        }
+      ],
+      "references": [
+        {
+          "name": "double",
+          "file": "src/index.js",
+          "preview": "const { double } = require('./helper');"
+        },
+        {
+          "name": "double",
+          "file": "src/helper.js",
+          "preview": "// TODO: tighten helper coverage"
+        }
+      ],
+      "dependents": [],
+      "importEdges": [
+        {
+          "file": "src/math.nim",
+          "target": "std/strutils",
+          "kind": "import",
+          "resolved": ""
+        },
+        {
+          "file": "src/math.nim",
+          "target": "beast_math",
+          "kind": "import",
+          "resolved": "src/beast_math.nim"
+        },
+        {
+          "file": "src/index.js",
+          "target": "./helper",
+          "kind": "require",
+          "resolved": "src/helper.js"
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:test",
+          "kind": "require",
+          "resolved": ""
+        },
+        {
+          "file": "tests/sample.test.js",
+          "target": "node:assert/strict",
+          "kind": "require",
+          "resolved": ""
+        }
+      ],
+      "diagnostics": [
+        {
+          "file": "src/helper.js",
+          "line": 1,
+          "severity": "hint",
+          "code": "todo-comment",
+          "source": "beast-index",
+          "message": "// TODO: tighten helper coverage"
+        }
+      ],
+      "codeActions": [
+        {
+          "title": "Track TODO in workspace",
+          "kind": "source.organize",
+          "diagnostic": {
+            "file": "src/helper.js",
+            "line": 1,
+            "severity": "hint",
+            "code": "todo-comment",
+            "source": "beast-index",
+            "message": "// TODO: tighten helper coverage"
+          },
+          "command": "beast.openWorkspace",
+          "arguments": [
+            {
+              "file": "src/helper.js",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "renamePreview": {
+        "ok": true,
+        "symbol": "double",
+        "newName": "doubleValue",
+        "fileCount": 2,
+        "editCount": 4,
+        "files": [
+          {
+            "file": "src/index.js",
+            "edits": [
+              {
+                "line": 1,
+                "column": 9,
+                "oldText": "double",
+                "newText": "doubleValue",
+                "preview": "const { double } = require('./helper');"
+              },
+              {
+                "line": 2,
+                "column": 16,
+                "oldText": "double",
+                "newText": "doubleValue",
+                "preview": "const answer = double(22);"
+              }
+            ]
+          },
+          {
+            "file": "src/helper.js",
+            "edits": [
+              {
+                "line": 2,
+                "column": 10,
+                "oldText": "double",
+                "newText": "doubleValue",
+                "preview": "function double(value) { return value * 2; }"
+              },
+              {
+                "line": 3,
+                "column": 20,
+                "oldText": "double",
+                "newText": "doubleValue",
+                "preview": "module.exports = { double };"
+              }
+            ]
+          }
+        ]
+      },
+      "error": ""
+    }
+  },
+  "extensionWorkload": {
+    "discoveryResponse": {
+      "extensions": [
+        {
+          "id": "publisher.asset-runtime-check",
+          "name": "Asset Runtime Check",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.assetRuntime.run",
+                "title": "Run Asset Runtime Check",
+                "category": ""
+              }
+            ],
+            "languages": [
+              {
+                "id": "javascript",
+                "extensions": [
+                  ".js"
+                ]
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 1,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onLanguage:javascript",
+            "onCommand:publisher.assetRuntime.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.asset-runtime-check/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.asset-runtime-check",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "beast-persistence-check",
+          "name": "BEAST Persistence Check",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "beast.persistenceCheck.report",
+                "title": "Report Persistence State",
+                "category": ""
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:beast.persistenceCheck.report"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-persistence-check/beast-extension.json",
+          "manifestKind": "beast-extension.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-persistence-check",
+          "compatibility": "beast-extension-json"
+        },
+        {
+          "id": "beast-workload-check",
+          "name": "BEAST Workload Check",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read",
+            "terminal.execute"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "beast.workloadCheck.run",
+                "title": "Run Workload Check",
+                "category": ""
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onStartupFinished",
+            "workspaceContains:src/*.js"
+          ],
+          "extensionDependencies": [
+            "beast.workload-dependency"
+          ],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-workload-check/beast-extension.json",
+          "manifestKind": "beast-extension.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-workload-check",
+          "compatibility": "beast-extension-json"
+        },
+        {
+          "id": "beast.workload-dependency",
+          "name": "BEAST Workload Dependency",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "beast.workloadDependency.touch",
+                "title": "Touch Dependency State",
+                "category": ""
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onStartupFinished"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-workload-dependency/beast-extension.json",
+          "manifestKind": "beast-extension.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/beast-workload-dependency",
+          "compatibility": "beast-extension-json"
+        },
+        {
+          "id": "publisher.event-lifecycle-workload",
+          "name": "Event Lifecycle Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read",
+            "workspace.write"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.eventLifecycle.run",
+                "title": "Run Event Lifecycle Workload",
+                "category": ""
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.eventLifecycle.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.event-lifecycle-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.event-lifecycle-workload",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.lifecycle-workload",
+          "name": "Lifecycle Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.lifecycle.run",
+                "title": "Run Lifecycle Workload",
+                "category": ""
+              }
+            ],
+            "views": {
+              "explorer": [
+                {
+                  "id": "publisher.lifecycle.tree",
+                  "name": "Lifecycle Tree"
+                }
+              ]
+            },
+            "debuggers": [
+              {
+                "type": "node",
+                "label": "Node Debugger"
+              }
+            ],
+            "taskDefinitions": [
+              {
+                "type": "beast",
+                "required": []
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 1,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onView:publisher.lifecycle.tree",
+            "onDebug:node",
+            "onTaskType:beast",
+            "onCommand:publisher.lifecycle.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.lifecycle-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.lifecycle-workload",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.terminal-task-workload",
+          "name": "Terminal Task Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "terminal.execute"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.terminalTask.run",
+                "title": "Run Terminal Task Workload",
+                "category": ""
+              }
+            ],
+            "taskDefinitions": [
+              {
+                "type": "publisher-terminal",
+                "required": []
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.terminalTask.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.terminal-task-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.terminal-task-workload",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.tree-file-workload",
+          "name": "Tree File Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read",
+            "workspace.write"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.treeFile.run",
+                "title": "Run Tree File Workload",
+                "category": ""
+              }
+            ],
+            "views": {
+              "explorer": [
+                {
+                  "id": "publisher.treeFile.tree",
+                  "name": "Tree File View"
+                }
+              ]
+            }
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.treeFile.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.tree-file-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.tree-file-workload",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.vscode-shim-check",
+          "name": "VS Code Shim Check",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.vscodeShim.run",
+                "title": "Run VS Code Shim Check",
+                "category": ""
+              }
+            ]
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.vscodeShim.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.vscode-shim-check/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.vscode-shim-check",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.webview-state-workload",
+          "name": "Webview State Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.webviewState.run",
+                "title": "Run Webview State Workload",
+                "category": ""
+              }
+            ],
+            "views": {
+              "explorer": [
+                {
+                  "id": "publisher.webviewState.tree",
+                  "name": "Webview State Tree"
+                }
+              ]
+            }
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.webviewState.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.webview-state-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.webview-state-workload",
+          "compatibility": "vscode-package-json"
+        },
+        {
+          "id": "publisher.webview-view-workload",
+          "name": "Webview View Workload",
+          "version": "1.0.0",
+          "description": "",
+          "capabilities": [
+            "workspace.read"
+          ],
+          "contributes": {
+            "commands": [
+              {
+                "id": "publisher.webviewView.run",
+                "title": "Run Webview View Workload",
+                "category": ""
+              }
+            ],
+            "views": {
+              "explorer": [
+                {
+                  "id": "publisher.webviewView.host",
+                  "name": "Webview View Host"
+                }
+              ]
+            }
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onView:publisher.webviewView.host",
+            "onCommand:publisher.webviewView.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "origin": "workspace",
+          "manifest": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.webview-view-workload/package.json",
+          "manifestKind": "package.json",
+          "main": "extension.js",
+          "root": "/tmp/beast-ide-services-qq9Unh/.beast/extensions/publisher.webview-view-workload",
+          "compatibility": "vscode-package-json"
+        }
+      ]
+    },
+    "startupActivationResponse": {
+      "ok": true,
+      "activationEvent": "onStartupFinished",
+      "matched": 2,
+      "activated": 2,
+      "failed": 0,
+      "durationMs": 13,
+      "results": [
+        {
+          "id": "beast-workload-check",
+          "ok": true,
+          "activationEvent": "onStartupFinished",
+          "dependencies": [
+            "beast.workload-dependency"
+          ],
+          "registeredCommands": [
+            "beast.workloadCheck.run"
+          ],
+          "actionCount": 3,
+          "actionKinds": [
+            "storage",
+            "secret"
+          ],
+          "actionSummary": {
+            "actionCount": 3,
+            "kinds": {
+              "storage": 2,
+              "secret": 1
+            },
+            "commands": [],
+            "webviews": [],
+            "trees": [],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 2,
+            "secretWrites": 1
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        },
+        {
+          "id": "beast.workload-dependency",
+          "ok": true,
+          "activationEvent": "onStartupFinished",
+          "dependencies": [],
+          "registeredCommands": [],
+          "actionCount": 0,
+          "actionKinds": [],
+          "actionSummary": {
+            "actionCount": 0,
+            "kinds": {},
+            "commands": [],
+            "webviews": [],
+            "trees": [],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "dependency.started",
+            "size": 4,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "dependency.workspace",
+            "size": 7,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        },
+        {
+          "kind": "secret",
+          "payload": {
+            "key": "dependency.secret",
+            "stored": true,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "secret"
+      ]
+    },
+    "executeResponse": {
+      "extensionId": "beast-workload-check",
+      "manifestKind": "beast-extension.json",
+      "compatibility": "beast-extension-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read",
+        "terminal.execute"
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "dependency.started",
+            "size": 4,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "dependency.workspace",
+            "size": 7,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        },
+        {
+          "kind": "secret",
+          "payload": {
+            "key": "dependency.secret",
+            "stored": true,
+            "persisted": true
+          },
+          "extensionId": "beast.workload-dependency",
+          "dependencyFor": "beast-workload-check"
+        },
+        {
+          "kind": "status",
+          "payload": {
+            "id": "beast.workload.status",
+            "text": "BEAST workload ready",
+            "tooltip": "",
+            "command": "beast.openCompatibility"
+          }
+        },
+        {
+          "kind": "watcher",
+          "payload": {
+            "id": "beast-workload-check.watcher.bqeqxg",
+            "pattern": "src/*.js",
+            "created": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "beast.workload.tree",
+            "registered": true,
+            "canSelectMany": false
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "beast.workload.tree",
+            "provider": true,
+            "hasGetChildren": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "beast.workload.tree",
+            "reveal": {
+              "id": "root",
+              "label": "BEAST workload root"
+            }
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "beast.workload.webview",
+            "title": "BEAST Workload",
+            "created": true,
+            "enableScripts": false
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "beast.workload.webview",
+            "title": "BEAST Workload",
+            "htmlBytes": 23
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "beast.workload.webview",
+            "postMessage": {
+              "type": "hydrate",
+              "files": 2
+            }
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "beast.workload.webview",
+            "reveal": true,
+            "showOptions": -1
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "BEAST workload terminal",
+            "created": true
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "BEAST workload terminal",
+            "text": "echo workload"
+          }
+        },
+        {
+          "kind": "config",
+          "payload": {
+            "section": "beast.workload",
+            "key": "enabled",
+            "target": 2,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.open",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/index.js",
+            "untitled": false
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "set-language",
+            "language": "javascript",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/index.js"
+          }
+        },
+        {
+          "kind": "task",
+          "payload": {
+            "execute": true,
+            "id": "beast-workload-check.task.1",
+            "name": "Workload Task",
+            "source": "beast",
+            "commandLine": "echo workload"
+          }
+        },
+        {
+          "kind": "config",
+          "payload": {
+            "section": "beast.workload",
+            "key": "mode",
+            "target": 2,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "command",
+          "payload": {
+            "id": "clipboard.writeText",
+            "text": "beast workload"
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "workload.lastRun",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "workload.fileCount",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "secret",
+          "payload": {
+            "key": "workload.secret",
+            "stored": true,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "workload files: 2",
+            "choices": []
+          }
+        },
+        {
+          "kind": "navigate",
+          "payload": {
+            "route": "compatibility"
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "beast.workload.webview",
+            "disposed": true
+          }
+        },
+        {
+          "kind": "watcher",
+          "payload": {
+            "id": "beast-workload-check.watcher.bqeqxg",
+            "disposed": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "beast.workload.tree",
+            "disposed": true
+          }
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "secret",
+        "status",
+        "watcher",
+        "tree",
+        "webview",
+        "terminal",
+        "config",
+        "language",
+        "task",
+        "command",
+        "notice",
+        "navigate"
+      ],
+      "actionSummary": {
+        "actionCount": 28,
+        "kinds": {
+          "storage": 4,
+          "secret": 2,
+          "status": 1,
+          "watcher": 2,
+          "tree": 4,
+          "webview": 5,
+          "terminal": 2,
+          "config": 2,
+          "language": 2,
+          "task": 1,
+          "command": 1,
+          "notice": 1,
+          "navigate": 1
+        },
+        "commands": [
+          "clipboard.writeText"
+        ],
+        "webviews": [
+          {
+            "viewType": "beast.workload.webview",
+            "title": "BEAST Workload"
+          },
+          {
+            "viewType": "beast.workload.webview",
+            "title": "BEAST Workload"
+          },
+          {
+            "viewType": "beast.workload.webview",
+            "title": ""
+          },
+          {
+            "viewType": "beast.workload.webview",
+            "title": ""
+          },
+          {
+            "viewType": "beast.workload.webview",
+            "title": ""
+          }
+        ],
+        "trees": [
+          {
+            "id": "beast.workload.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "beast.workload.tree",
+            "provider": true,
+            "refresh": false
+          },
+          {
+            "id": "beast.workload.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "beast.workload.tree",
+            "provider": false,
+            "refresh": false
+          }
+        ],
+        "statuses": [
+          {
+            "id": "beast.workload.status",
+            "text": "BEAST workload ready",
+            "hidden": false
+          }
+        ],
+        "watchers": 1,
+        "tasks": 1,
+        "terminals": 2,
+        "languages": [
+          "textDocument.open",
+          "set-language"
+        ],
+        "debuggers": [],
+        "configs": 2,
+        "storageWrites": 4,
+        "secretWrites": 2
+      },
+      "registeredCommands": [
+        "beast.workloadCheck.run"
+      ]
+    },
+    "vscodeShimResponse": {
+      "extensionId": "publisher.vscode-shim-check",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "shim bytes: 159 answer=true",
+            "choices": []
+          }
+        },
+        {
+          "kind": "navigate",
+          "payload": {
+            "route": "workspace"
+          }
+        }
+      ],
+      "actionKinds": [
+        "notice",
+        "navigate"
+      ],
+      "actionSummary": {
+        "actionCount": 2,
+        "kinds": {
+          "notice": 1,
+          "navigate": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.vscodeShim.run"
+      ]
+    },
+    "languageActivationResponse": {
+      "ok": true,
+      "activationEvent": "onLanguage:javascript",
+      "matched": 1,
+      "activated": 1,
+      "failed": 0,
+      "durationMs": 4,
+      "results": [
+        {
+          "id": "publisher.asset-runtime-check",
+          "ok": true,
+          "activationEvent": "onLanguage:javascript",
+          "dependencies": [],
+          "registeredCommands": [
+            "publisher.assetRuntime.run"
+          ],
+          "actionCount": 0,
+          "actionKinds": [],
+          "actionSummary": {
+            "actionCount": 0,
+            "kinds": {},
+            "commands": [],
+            "webviews": [],
+            "trees": [],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 1,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [],
+      "actionKinds": []
+    },
+    "assetRuntimeResponse": {
+      "extensionId": "publisher.asset-runtime-check",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 1,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "asset banner: BEAST asset runtime ready",
+            "choices": []
+          }
+        },
+        {
+          "kind": "navigate",
+          "payload": {
+            "route": "compatibility"
+          }
+        }
+      ],
+      "actionKinds": [
+        "notice",
+        "navigate"
+      ],
+      "actionSummary": {
+        "actionCount": 2,
+        "kinds": {
+          "notice": 1,
+          "navigate": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.assetRuntime.run"
+      ]
+    },
+    "viewActivationResponse": {
+      "ok": true,
+      "activationEvent": "onView:publisher.lifecycle.tree",
+      "matched": 1,
+      "activated": 1,
+      "failed": 0,
+      "durationMs": 2,
+      "results": [
+        {
+          "id": "publisher.lifecycle-workload",
+          "ok": true,
+          "activationEvent": "onView:publisher.lifecycle.tree",
+          "dependencies": [],
+          "registeredCommands": [
+            "publisher.lifecycle.run"
+          ],
+          "actionCount": 4,
+          "actionKinds": [
+            "tree",
+            "debug",
+            "task"
+          ],
+          "actionSummary": {
+            "actionCount": 4,
+            "kinds": {
+              "tree": 2,
+              "debug": 1,
+              "task": 1
+            },
+            "commands": [],
+            "webviews": [],
+            "trees": [
+              {
+                "id": "publisher.lifecycle.tree",
+                "provider": false,
+                "refresh": false
+              },
+              {
+                "id": "publisher.lifecycle.tree",
+                "provider": true,
+                "refresh": false
+              }
+            ],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 1,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [
+              "node"
+            ],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 1,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.lifecycle.tree",
+            "registered": true,
+            "canSelectMany": false
+          },
+          "extensionId": "publisher.lifecycle-workload"
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.lifecycle.tree",
+            "provider": true,
+            "hasGetChildren": true
+          },
+          "extensionId": "publisher.lifecycle-workload"
+        },
+        {
+          "kind": "debug",
+          "payload": {
+            "type": "node",
+            "provider": true
+          },
+          "extensionId": "publisher.lifecycle-workload"
+        },
+        {
+          "kind": "task",
+          "payload": {
+            "type": "beast",
+            "provider": true
+          },
+          "extensionId": "publisher.lifecycle-workload"
+        }
+      ],
+      "actionKinds": [
+        "tree",
+        "debug",
+        "task"
+      ]
+    },
+    "webviewViewActivationResponse": {
+      "ok": true,
+      "activationEvent": "onView:publisher.webviewView.host",
+      "matched": 1,
+      "activated": 1,
+      "failed": 0,
+      "durationMs": 3,
+      "results": [
+        {
+          "id": "publisher.webview-view-workload",
+          "ok": true,
+          "activationEvent": "onView:publisher.webviewView.host",
+          "dependencies": [],
+          "registeredCommands": [
+            "publisher.webviewView.run"
+          ],
+          "actionCount": 4,
+          "actionKinds": [
+            "status",
+            "webview"
+          ],
+          "actionSummary": {
+            "actionCount": 4,
+            "kinds": {
+              "status": 1,
+              "webview": 3
+            },
+            "commands": [],
+            "webviews": [
+              {
+                "viewType": "publisher.webviewView.host",
+                "title": ""
+              },
+              {
+                "viewType": "publisher.webviewView.host",
+                "title": "publisher.webviewView.host"
+              },
+              {
+                "viewType": "publisher.webviewView.host",
+                "title": ""
+              }
+            ],
+            "trees": [],
+            "statuses": [
+              {
+                "id": "publisher.webviewView.status",
+                "text": "Webview view ready",
+                "hidden": false
+              }
+            ],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [
+        {
+          "kind": "status",
+          "payload": {
+            "id": "publisher.webviewView.status",
+            "text": "Webview view ready",
+            "tooltip": "Hosted webview view provider active",
+            "command": ""
+          },
+          "extensionId": "publisher.webview-view-workload"
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "viewProvider": true,
+            "retainContextWhenHidden": true
+          },
+          "extensionId": "publisher.webview-view-workload"
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "title": "publisher.webviewView.host",
+            "htmlBytes": 38
+          },
+          "extensionId": "publisher.webview-view-workload"
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "postMessage": {
+              "type": "restore",
+              "scope": "hosted-view"
+            }
+          },
+          "extensionId": "publisher.webview-view-workload"
+        }
+      ],
+      "actionKinds": [
+        "status",
+        "webview"
+      ]
+    },
+    "debugActivationResponse": {
+      "ok": true,
+      "activationEvent": "onDebug:node",
+      "matched": 1,
+      "activated": 1,
+      "failed": 0,
+      "durationMs": 0,
+      "results": [
+        {
+          "id": "publisher.lifecycle-workload",
+          "ok": true,
+          "activationEvent": "onDebug:node",
+          "dependencies": [],
+          "registeredCommands": [
+            "publisher.lifecycle.run"
+          ],
+          "actionCount": 0,
+          "actionKinds": [],
+          "actionSummary": {
+            "actionCount": 0,
+            "kinds": {},
+            "commands": [],
+            "webviews": [],
+            "trees": [],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 1,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [],
+      "actionKinds": []
+    },
+    "taskActivationResponse": {
+      "ok": true,
+      "activationEvent": "onTaskType:beast",
+      "matched": 1,
+      "activated": 1,
+      "failed": 0,
+      "durationMs": 0,
+      "results": [
+        {
+          "id": "publisher.lifecycle-workload",
+          "ok": true,
+          "activationEvent": "onTaskType:beast",
+          "dependencies": [],
+          "registeredCommands": [
+            "publisher.lifecycle.run"
+          ],
+          "actionCount": 0,
+          "actionKinds": [],
+          "actionSummary": {
+            "actionCount": 0,
+            "kinds": {},
+            "commands": [],
+            "webviews": [],
+            "trees": [],
+            "statuses": [],
+            "watchers": 0,
+            "tasks": 0,
+            "terminals": 0,
+            "languages": [],
+            "debuggers": [],
+            "configs": 0,
+            "storageWrites": 0,
+            "secretWrites": 0
+          },
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 1,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          }
+        }
+      ],
+      "actions": [],
+      "actionKinds": []
+    },
+    "lifecycleCommandResponse": {
+      "extensionId": "publisher.lifecycle-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 1,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 1,
+        "taskDefinitions": 1,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.lifecycle.tree",
+            "registered": true,
+            "canSelectMany": false
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.lifecycle.tree",
+            "provider": true,
+            "hasGetChildren": true
+          }
+        },
+        {
+          "kind": "debug",
+          "payload": {
+            "type": "node",
+            "provider": true
+          }
+        },
+        {
+          "kind": "task",
+          "payload": {
+            "type": "beast",
+            "provider": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.lifecycle.tree",
+            "reveal": {
+              "id": "lifecycle-node",
+              "label": "Lifecycle node"
+            }
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "lifecycle workload ready",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "tree",
+        "debug",
+        "task",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 6,
+        "kinds": {
+          "tree": 3,
+          "debug": 1,
+          "task": 1,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [
+          {
+            "id": "publisher.lifecycle.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "publisher.lifecycle.tree",
+            "provider": true,
+            "refresh": false
+          },
+          {
+            "id": "publisher.lifecycle.tree",
+            "provider": false,
+            "refresh": false
+          }
+        ],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 1,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [
+          "node"
+        ],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.lifecycle.run"
+      ]
+    },
+    "persistenceWarmResponse": {
+      "extensionId": "beast-persistence-check",
+      "activationEvent": "onCommand:beast.persistenceCheck.report",
+      "manifestKind": "beast-extension.json",
+      "compatibility": "beast-extension-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "launches",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "lastLaunch",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "secret",
+          "payload": {
+            "key": "session",
+            "stored": true,
+            "persisted": true
+          }
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "secret"
+      ],
+      "actionSummary": {
+        "actionCount": 3,
+        "kinds": {
+          "storage": 2,
+          "secret": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 2,
+        "secretWrites": 1
+      },
+      "registeredCommands": [
+        "beast.persistenceCheck.report"
+      ]
+    },
+    "persistenceReportResponse": {
+      "extensionId": "beast-persistence-check",
+      "manifestKind": "beast-extension.json",
+      "compatibility": "beast-extension-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "launches",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "lastLaunch",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "secret",
+          "payload": {
+            "key": "session",
+            "stored": true,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "persist launches=2 last=2 previous=persisted-1 secret=persisted-2",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "secret",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 4,
+        "kinds": {
+          "storage": 2,
+          "secret": 1,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 2,
+        "secretWrites": 1
+      },
+      "registeredCommands": [
+        "beast.persistenceCheck.report"
+      ]
+    },
+    "webviewStateWarmResponse": {
+      "extensionId": "publisher.webview-state-workload",
+      "activationEvent": "onCommand:publisher.webviewState.run",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 1,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "restoreCount",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "selectedNode",
+            "size": 8,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.webviewState.tree",
+            "registered": true,
+            "canSelectMany": false
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.webviewState.tree",
+            "provider": true,
+            "hasGetChildren": true
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State",
+            "created": true,
+            "enableScripts": false
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State",
+            "htmlBytes": 37
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "postMessage": {
+              "type": "restore",
+              "restoreCount": 1,
+              "selectedNode": "node-1"
+            }
+          }
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "tree",
+        "webview"
+      ],
+      "actionSummary": {
+        "actionCount": 7,
+        "kinds": {
+          "storage": 2,
+          "tree": 2,
+          "webview": 3
+        },
+        "commands": [],
+        "webviews": [
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State"
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State"
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": ""
+          }
+        ],
+        "trees": [
+          {
+            "id": "publisher.webviewState.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "publisher.webviewState.tree",
+            "provider": true,
+            "refresh": false
+          }
+        ],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 2,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.webviewState.run"
+      ]
+    },
+    "webviewStateReportResponse": {
+      "extensionId": "publisher.webview-state-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 1,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "global",
+            "key": "restoreCount",
+            "size": 1,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "storage",
+          "payload": {
+            "scope": "workspace",
+            "key": "selectedNode",
+            "size": 8,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.webviewState.tree",
+            "registered": true,
+            "canSelectMany": false
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.webviewState.tree",
+            "provider": true,
+            "hasGetChildren": true
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State",
+            "created": true,
+            "enableScripts": false
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State",
+            "htmlBytes": 37
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "postMessage": {
+              "type": "restore",
+              "restoreCount": 2,
+              "selectedNode": "node-2"
+            }
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.webviewState.tree",
+            "reveal": {
+              "id": "node-2",
+              "label": "State node 2"
+            }
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "postMessage": {
+              "type": "refresh",
+              "restoreCount": 2,
+              "selectedNode": "node-2"
+            }
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewState.panel",
+            "postMessage": {
+              "type": "snapshot",
+              "restoreCount": 2,
+              "selectedNode": "node-2",
+              "persisted": true
+            }
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "webview state restore=2 node=node-2",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "storage",
+        "tree",
+        "webview",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 11,
+        "kinds": {
+          "storage": 2,
+          "tree": 3,
+          "webview": 5,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State"
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": "Webview State"
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": ""
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": ""
+          },
+          {
+            "viewType": "publisher.webviewState.panel",
+            "title": ""
+          }
+        ],
+        "trees": [
+          {
+            "id": "publisher.webviewState.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "publisher.webviewState.tree",
+            "provider": true,
+            "refresh": false
+          },
+          {
+            "id": "publisher.webviewState.tree",
+            "provider": false,
+            "refresh": false
+          }
+        ],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 2,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.webviewState.run"
+      ]
+    },
+    "webviewViewCommandResponse": {
+      "extensionId": "publisher.webview-view-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 1,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read"
+      ],
+      "actions": [
+        {
+          "kind": "status",
+          "payload": {
+            "id": "publisher.webviewView.status",
+            "text": "Webview view ready",
+            "tooltip": "Hosted webview view provider active",
+            "command": ""
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "viewProvider": true,
+            "retainContextWhenHidden": true
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "title": "publisher.webviewView.host",
+            "htmlBytes": 38
+          }
+        },
+        {
+          "kind": "webview",
+          "payload": {
+            "viewType": "publisher.webviewView.host",
+            "postMessage": {
+              "type": "restore",
+              "scope": "hosted-view"
+            }
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "channel": "Webview View Workload",
+            "message": "running webview view workload"
+          }
+        },
+        {
+          "kind": "navigate",
+          "payload": {
+            "route": "compatibility"
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "webview view workload ready",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "status",
+        "webview",
+        "notice",
+        "navigate"
+      ],
+      "actionSummary": {
+        "actionCount": 7,
+        "kinds": {
+          "status": 1,
+          "webview": 3,
+          "notice": 2,
+          "navigate": 1
+        },
+        "commands": [],
+        "webviews": [
+          {
+            "viewType": "publisher.webviewView.host",
+            "title": ""
+          },
+          {
+            "viewType": "publisher.webviewView.host",
+            "title": "publisher.webviewView.host"
+          },
+          {
+            "viewType": "publisher.webviewView.host",
+            "title": ""
+          }
+        ],
+        "trees": [],
+        "statuses": [
+          {
+            "id": "publisher.webviewView.status",
+            "text": "Webview view ready",
+            "hidden": false
+          }
+        ],
+        "watchers": 0,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.webviewView.run"
+      ]
+    },
+    "eventLifecycleResponse": {
+      "extensionId": "publisher.event-lifecycle-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read",
+        "workspace.write"
+      ],
+      "actions": [
+        {
+          "kind": "watcher",
+          "payload": {
+            "id": "publisher.event-lifecycle-workload.watcher.bq71dr",
+            "pattern": "src/generated*.js",
+            "created": true
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.open",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/index.js",
+            "untitled": false
+          }
+        },
+        {
+          "kind": "config",
+          "payload": {
+            "section": "publisher.eventLifecycle",
+            "key": "mode",
+            "target": 2,
+            "persisted": true
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.create",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/generated.js",
+            "language": "js"
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.save",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/generated.js"
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.change",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/generated.js",
+            "language": "js"
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.save",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/generated.js"
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "events open=1 change=2 save=2 config=1 create=1 watcherChange=1 file=index.js",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "watcher",
+        "language",
+        "config",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 8,
+        "kinds": {
+          "watcher": 1,
+          "language": 5,
+          "config": 1,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 1,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [
+          "textDocument.open",
+          "textDocument.create",
+          "textDocument.save",
+          "textDocument.change"
+        ],
+        "debuggers": [],
+        "configs": 1,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.eventLifecycle.run"
+      ]
+    },
+    "treeFileResponse": {
+      "extensionId": "publisher.tree-file-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 1,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 0,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "workspace.read",
+        "workspace.write"
+      ],
+      "actions": [
+        {
+          "kind": "watcher",
+          "payload": {
+            "id": "publisher.tree-file-workload.watcher.vxtypx",
+            "pattern": "src/tree-*.js",
+            "created": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.treeFile.tree",
+            "provider": true,
+            "hasGetChildren": true
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.treeFile.tree",
+            "registered": true,
+            "canSelectMany": false
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.create",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/tree-source.js",
+            "language": "js"
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.save",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/tree-source.js"
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.treeFile.tree",
+            "refresh": true,
+            "item": {
+              "id": "tree-refresh-1"
+            }
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.rename",
+            "from": "file:///tmp/beast-ide-services-qq9Unh/src/tree-source.js",
+            "to": "file:///tmp/beast-ide-services-qq9Unh/src/tree-moved.js"
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.treeFile.tree",
+            "refresh": true,
+            "item": {
+              "id": "tree-refresh-2"
+            }
+          }
+        },
+        {
+          "kind": "tree",
+          "payload": {
+            "id": "publisher.treeFile.tree",
+            "reveal": {
+              "id": "tree-node",
+              "label": "Tree node"
+            }
+          }
+        },
+        {
+          "kind": "language",
+          "payload": {
+            "feature": "textDocument.delete",
+            "uri": "file:///tmp/beast-ide-services-qq9Unh/src/tree-moved.js"
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "tree files create=1 rename=1 delete=1 refresh=2 watcherDelete=2",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "watcher",
+        "tree",
+        "language",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 11,
+        "kinds": {
+          "watcher": 1,
+          "tree": 5,
+          "language": 4,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [
+          {
+            "id": "publisher.treeFile.tree",
+            "provider": true,
+            "refresh": false
+          },
+          {
+            "id": "publisher.treeFile.tree",
+            "provider": false,
+            "refresh": false
+          },
+          {
+            "id": "publisher.treeFile.tree",
+            "provider": false,
+            "refresh": true
+          },
+          {
+            "id": "publisher.treeFile.tree",
+            "provider": false,
+            "refresh": true
+          },
+          {
+            "id": "publisher.treeFile.tree",
+            "provider": false,
+            "refresh": false
+          }
+        ],
+        "statuses": [],
+        "watchers": 1,
+        "tasks": 0,
+        "terminals": 0,
+        "languages": [
+          "textDocument.create",
+          "textDocument.save",
+          "textDocument.rename",
+          "textDocument.delete"
+        ],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.treeFile.run"
+      ]
+    },
+    "terminalTaskResponse": {
+      "extensionId": "publisher.terminal-task-workload",
+      "manifestKind": "package.json",
+      "compatibility": "vscode-package-json",
+      "contributionSummary": {
+        "commands": 1,
+        "views": 0,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 0,
+        "debuggers": 0,
+        "taskDefinitions": 1,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "granted": [
+        "terminal.execute"
+      ],
+      "actions": [
+        {
+          "kind": "task",
+          "payload": {
+            "type": "publisher-terminal",
+            "provider": true
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "Parity terminal",
+            "created": true
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "Parity terminal",
+            "show": true
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "Parity terminal",
+            "text": "echo parity"
+          }
+        },
+        {
+          "kind": "task",
+          "payload": {
+            "execute": true,
+            "id": "publisher.terminal-task-workload.task.1",
+            "name": "Parity Task",
+            "source": "publisher",
+            "commandLine": "echo parity-task"
+          }
+        },
+        {
+          "kind": "terminal",
+          "payload": {
+            "name": "Parity terminal",
+            "disposed": true
+          }
+        },
+        {
+          "kind": "notice",
+          "payload": {
+            "severity": "info",
+            "message": "terminal events open=1 close=1 taskStart=1 taskEnd=1",
+            "choices": []
+          }
+        }
+      ],
+      "actionKinds": [
+        "task",
+        "terminal",
+        "notice"
+      ],
+      "actionSummary": {
+        "actionCount": 7,
+        "kinds": {
+          "task": 2,
+          "terminal": 4,
+          "notice": 1
+        },
+        "commands": [],
+        "webviews": [],
+        "trees": [],
+        "statuses": [],
+        "watchers": 0,
+        "tasks": 2,
+        "terminals": 2,
+        "languages": [],
+        "debuggers": [],
+        "configs": 0,
+        "storageWrites": 0,
+        "secretWrites": 0
+      },
+      "registeredCommands": [
+        "publisher.terminalTask.run"
+      ]
+    },
+    "stressResponse": {
+      "ok": true,
+      "mode": "bounded_extension_ecology_stress_probe",
+      "extensionCount": 10,
+      "commandCount": 10,
+      "capabilityCount": 13,
+      "contributionSummary": {
+        "commands": 10,
+        "views": 3,
+        "viewsContainers": 0,
+        "menus": 0,
+        "configuration": 0,
+        "languages": 1,
+        "debuggers": 1,
+        "taskDefinitions": 2,
+        "themes": 0,
+        "grammars": 0,
+        "jsonValidation": 0
+      },
+      "durationMs": 122,
+      "failures": [],
+      "results": [
+        {
+          "id": "publisher.asset-runtime-check",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 1,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onLanguage:javascript",
+            "onCommand:publisher.assetRuntime.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 768,
+          "commands": [
+            "publisher.assetRuntime.run"
+          ]
+        },
+        {
+          "id": "beast-persistence-check",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:beast.persistenceCheck.report"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 967,
+          "commands": [
+            "beast.persistenceCheck.report"
+          ]
+        },
+        {
+          "id": "beast-workload-check",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 2,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onStartupFinished",
+            "workspaceContains:src/*.js"
+          ],
+          "extensionDependencies": [
+            "beast.workload-dependency"
+          ],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": true,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 2249,
+          "commands": [
+            "beast.workloadCheck.run"
+          ]
+        },
+        {
+          "id": "beast.workload-dependency",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onStartupFinished"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": true,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 257,
+          "commands": [
+            "beast.workloadDependency.touch"
+          ]
+        },
+        {
+          "id": "publisher.event-lifecycle-workload",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 2,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.eventLifecycle.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 1668,
+          "commands": [
+            "publisher.eventLifecycle.run"
+          ]
+        },
+        {
+          "id": "publisher.lifecycle-workload",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 1,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onView:publisher.lifecycle.tree",
+            "onDebug:node",
+            "onTaskType:beast",
+            "onCommand:publisher.lifecycle.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": true,
+            "onDebug": true,
+            "onTaskType": true
+          },
+          "entrypointBytes": 766,
+          "commands": [
+            "publisher.lifecycle.run"
+          ]
+        },
+        {
+          "id": "publisher.terminal-task-workload",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 1,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.terminalTask.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 1275,
+          "commands": [
+            "publisher.terminalTask.run"
+          ]
+        },
+        {
+          "id": "publisher.tree-file-workload",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 2,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.treeFile.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 1740,
+          "commands": [
+            "publisher.treeFile.run"
+          ]
+        },
+        {
+          "id": "publisher.vscode-shim-check",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 0,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.vscodeShim.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 531,
+          "commands": [
+            "publisher.vscodeShim.run"
+          ]
+        },
+        {
+          "id": "publisher.webview-state-workload",
+          "origin": "workspace",
+          "manifestOk": true,
+          "commandCount": 1,
+          "capabilityCount": 1,
+          "contributionSummary": {
+            "commands": 1,
+            "views": 1,
+            "viewsContainers": 0,
+            "menus": 0,
+            "configuration": 0,
+            "languages": 0,
+            "debuggers": 0,
+            "taskDefinitions": 0,
+            "themes": 0,
+            "grammars": 0,
+            "jsonValidation": 0
+          },
+          "activationEvents": [
+            "onCommand:publisher.webviewState.run"
+          ],
+          "extensionDependencies": [],
+          "extensionPack": [],
+          "lifecycleMatches": {
+            "onStartupFinished": false,
+            "workspaceContains": false,
+            "onView": false,
+            "onDebug": false,
+            "onTaskType": false
+          },
+          "entrypointBytes": 1548,
+          "commands": [
+            "publisher.webviewState.run"
+          ]
+        }
+      ]
+    }
+  }
+}

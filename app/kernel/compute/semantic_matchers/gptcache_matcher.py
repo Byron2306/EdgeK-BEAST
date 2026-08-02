@@ -14,6 +14,8 @@ class GPTCacheSemanticMatcher:
             task_class=request.task_class,
             prompt=request.prompt,
             threshold=self.threshold,
+            repo_fingerprint=request.repo_fingerprint,
+            model=request.model,
             require_repo_fingerprint=self.require_repo_fingerprint,
             require_verified=self.require_verified,
         )

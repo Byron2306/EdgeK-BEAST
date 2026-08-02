@@ -1,0 +1,24 @@
+{
+  "phase": 6,
+  "name": "Mission Map and Crystallization Chamber",
+  "replaces": [
+    "legacy OPCB Map renderer",
+    "legacy OPCB Crystallization renderer",
+    "legacy cube-zone crystal card",
+    "static thick-green card emphasis"
+  ],
+  "owners": {
+    "map": "js/pages/beast-map-page.js",
+    "crystallization": "js/pages/beast-crystallization-page.js",
+    "bridge": "js/beast-map-crystal-bridge.js",
+    "application": "js/beast-phase6-app.js",
+    "polish": "css/beast-phase6-polish.css"
+  },
+  "contracts": {
+    "map_read": ["/edgek/workspace/graph", "/edgek/ide/snapshot"],
+    "crystal_read": ["/edgek/crystal-reuse", "/edgek/crystal-chain", "/edgek/crystal-lattice"],
+    "crystal_write": ["/edgek/crystal-chain/attest", "/edgek/crystal-lattice/checkpoint"]
+  },
+  "retire_after_overlay": ["js/beast-phase5-app.js"],
+  "forbidden_reintroductions": ["app.js", "opcb-renderers.js", "opcb-state.js", "beast-studio-integrations.js"]
+}

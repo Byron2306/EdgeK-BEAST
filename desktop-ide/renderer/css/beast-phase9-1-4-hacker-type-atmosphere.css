@@ -1,0 +1,254 @@
+/* ========================================================================== 
+   BEAST Phase 9.1.4 — Hacker Type + Visible Atmosphere
+   Code-only corrective layer.
+   - removes the remaining generic desktop typography
+   - makes matrix rain and square/perspective grids visibly present
+   - reduces backdrop blur that was physically smearing the effects away
+   - keeps controls readable through disciplined tint and contrast
+   ========================================================================== */
+:root {
+  --beast-header-h: 214px;
+  --beast-ui: "Rajdhani", "Chakra Petch", "Oxanium", system-ui, sans-serif;
+  --beast-tech: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --beast-display: "Orbitron", "Oxanium", "Chakra Petch", system-ui, sans-serif;
+  --beast-mono: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --beast-text-1:#f1f7f3;
+  --beast-text-2:#c8d4cc;
+  --beast-text-3:#9dacA2;
+  --beast-text-4:#7f9186;
+  --beast-glass-soft:rgba(2,9,5,.24);
+  --beast-glass:rgba(1,7,4,.34);
+  --beast-glass-strong:rgba(0,5,3,.48);
+  --beast-grid-cell:58px;
+}
+body { --beast-visual-build:"9.1.4"; }
+
+/* --------------------------------------------------------------------------
+   Industrial hacker typography. No remote or bundled font files are needed.
+   -------------------------------------------------------------------------- */
+html, body {
+  font-family:var(--beast-tech) !important;
+  font-size:16px !important;
+  font-weight:500;
+  line-height:1.52;
+  font-variant-numeric:tabular-nums slashed-zero;
+  text-rendering:geometricPrecision;
+  -webkit-font-smoothing:antialiased;
+}
+button, input, select, textarea, option {
+  font-family:var(--beast-tech) !important;
+  font-variant-numeric:tabular-nums slashed-zero;
+}
+:where(h1,h2,h3,h4,h5,h6,
+  .beast-title,.beast-page-head h2,.beast-panel-head h2,.beast-panel-head h3,
+  .panel-head h2,.panel-head h3,.p8-panel-head h2,.p8-panel-head h3,
+  .metric,.metric-value,.metric-number,.beast-metric-value) {
+  font-family:var(--beast-display) !important;
+  font-stretch:condensed;
+  font-weight:900 !important;
+  text-transform:uppercase;
+  letter-spacing:.055em !important;
+}
+:where(.beast-nav .label,.beast-button,.beast-page-actions button,.beast-command-tabs button,
+  .beast-chip,.beast-pill,.phase-pill,[class*="-actions"] button,[class*="-toolbar"] button,
+  [class*="-tabs"] button,[class*="-filter"] button) {
+  font-family:var(--beast-ui) !important;
+  font-stretch:condensed;
+  font-weight:800 !important;
+  text-transform:uppercase;
+  letter-spacing:.075em !important;
+}
+.beast-nav button .label {
+  font-size:13px !important;
+  line-height:1.05 !important;
+  color:#d8e2dc !important;
+  text-shadow:0 1px 1px #000,0 0 7px rgba(217,232,222,.10);
+}
+.beast-nav button.active .label,
+.beast-nav button:hover .label { color:#f5faf7 !important; }
+.beast-page-head h2 {
+  color:#edf3ef !important;
+  background:none !important;
+  -webkit-background-clip:initial !important;
+  background-clip:initial !important;
+  -webkit-text-fill-color:#edf3ef !important;
+  -webkit-text-stroke:.7px #111713 !important;
+  text-shadow:0 2px 0 #030504,0 0 2px #fff,0 0 10px rgba(217,230,222,.22),0 0 12px rgba(119,255,61,.08) !important;
+}
+.beast-header .beast-title {
+  color:#edf3ef !important;
+  background:none !important;
+  -webkit-background-clip:initial !important;
+  background-clip:initial !important;
+  -webkit-text-fill-color:#edf3ef !important;
+  -webkit-text-stroke:.55px #111713 !important;
+  text-shadow:0 2px 0 #010201,0 0 2px #fff,0 0 10px rgba(218,231,223,.20) !important;
+}
+.beast-card > h3,.beast-rail-card > h3,.panel-head h3,.p8-panel-head h3 {
+  font-family:var(--beast-ui) !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  letter-spacing:.09em !important;
+  color:#e7eee9 !important;
+  text-transform:uppercase;
+  text-shadow:0 1px 0 #000,0 0 7px rgba(224,236,228,.13);
+}
+.beast-kicker,.beast-meta,.sub,.muted,small,
+[class*="-eyebrow"],[class*="-kicker"],[class*="-meta"] {
+  font-family:var(--beast-tech) !important;
+  letter-spacing:.045em;
+}
+#beastPageOutlet :where(p,li,td,th,label,small,span,em),
+#beastContextRail :where(p,li,td,th,label,small,span,em) {
+  font-family:var(--beast-tech);
+}
+#beastPageOutlet :where(p,li,td,th,label),
+#beastContextRail :where(p,li,td,th,label) {
+  line-height:1.48;
+}
+#beastPageOutlet small,#beastContextRail small { font-size:max(11px,.82em) !important; }
+.beast-page-actions button,.beast-button,[class*="-actions"] button {
+  min-height:34px;
+  font-size:12px !important;
+}
+.beast-command input { font-size:13px !important; letter-spacing:.025em; }
+
+/* --------------------------------------------------------------------------
+   The rain and grid are now intentionally visible. They are composited above
+   dark panels using screen blend, while remaining pointer transparent.
+   -------------------------------------------------------------------------- */
+#beastMatrix {
+  z-index:1 !important;
+  opacity:.78 !important;
+  filter:brightness(1.72) contrast(1.35) saturate(1.20) !important;
+  mix-blend-mode:screen !important;
+}
+#beastMatrixFront {
+  z-index:7990 !important;
+  opacity:.23 !important;
+  filter:brightness(1.58) contrast(1.30) saturate(1.18) drop-shadow(0 0 5px rgba(119,255,61,.20)) !important;
+  mix-blend-mode:screen !important;
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.94),rgba(0,0,0,.66) 56%,rgba(0,0,0,.84)) !important;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.94),rgba(0,0,0,.66) 56%,rgba(0,0,0,.84)) !important;
+}
+#beastGridLayer {
+  z-index:2 !important;
+  opacity:.68 !important;
+  filter:brightness(1.48) contrast(1.24) drop-shadow(0 0 13px rgba(119,255,61,.38)) !important;
+  background-size:58px 58px !important;
+  mix-blend-mode:screen !important;
+}
+#beastGridFront {
+  position:fixed;
+  inset:0;
+  z-index:7980;
+  pointer-events:none;
+  opacity:.17;
+  mix-blend-mode:screen;
+  background-image:
+    linear-gradient(rgba(122,255,67,.23) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(122,255,67,.23) 1px,transparent 1px);
+  background-size:var(--beast-grid-cell) var(--beast-grid-cell);
+  background-position:0 0,0 0;
+  filter:drop-shadow(0 0 5px rgba(119,255,61,.18));
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.40) 42%,rgba(0,0,0,.62));
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.40) 42%,rgba(0,0,0,.62));
+  animation:beast-grid-front-shift 16s linear infinite;
+}
+#beastGridFront::after {
+  content:"";
+  position:absolute;
+  left:-18vw;right:-18vw;bottom:-38vh;height:86vh;
+  transform-origin:center bottom;
+  transform:perspective(760px) rotateX(63deg) translateY(4%);
+  background-image:
+    linear-gradient(rgba(119,255,61,.30) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.27) 1px,transparent 1px);
+  background-size:64px 64px;
+  opacity:.72;
+  filter:drop-shadow(0 0 9px rgba(119,255,61,.32));
+  -webkit-mask-image:linear-gradient(to top,black 4%,rgba(0,0,0,.72) 48%,transparent 94%);
+  mask-image:linear-gradient(to top,black 4%,rgba(0,0,0,.72) 48%,transparent 94%);
+  animation:beast-floor-grid-drive 7.5s linear infinite;
+}
+body::before {
+  z-index:3 !important;
+  opacity:.24 !important;
+  background-size:58px 58px !important;
+  animation:beast-wall-grid-drive 22s linear infinite !important;
+}
+
+/* The previous 11–15px backdrop blur was physically erasing the rain/grid.
+   Keep glass tint, but retain crisp environmental detail. */
+.beast-surface,
+.beast-card,
+.beast-rail-card,
+.beast-page-actions,
+.beast-glass-panel,
+#beastPageOutlet :where(
+  [class$="-panel"],[class*="-panel "],[class$="-card"],[class*="-card "],
+  [class$="-stage"],[class*="-stage "],[class$="-inspector"],[class*="-inspector "],
+  [class$="-detail"],[class*="-detail "],[class$="-hero"],[class*="-hero "],
+  [class$="-screen"],[class*="-screen "],[class$="-nexus"],[class*="-nexus "],
+  [class$="-forge"],[class*="-forge "],[class$="-observatory"],[class*="-observatory "]
+) {
+  background-color:transparent !important;
+  background-image:
+    linear-gradient(rgba(119,255,61,.038) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.038) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(255,255,255,.032),transparent 24%),
+    linear-gradient(180deg,rgba(2,9,5,.27),rgba(0,5,3,.43)) !important;
+  background-size:46px 46px,46px 46px,auto,auto !important;
+  background-position:0 0,0 0,0 0,0 0 !important;
+  background-blend-mode:screen,screen,normal,normal !important;
+  -webkit-backdrop-filter:saturate(1.12) contrast(1.08) !important;
+  backdrop-filter:saturate(1.12) contrast(1.08) !important;
+}
+.beast-sidebar,.beast-viewport,.beast-rail,.beast-command {
+  background-image:
+    linear-gradient(rgba(119,255,61,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.028) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(255,255,255,.022),transparent 22%),
+    linear-gradient(180deg,rgba(2,9,5,.38),rgba(0,5,3,.54)) !important;
+  background-size:58px 58px,58px 58px,auto,auto !important;
+  -webkit-backdrop-filter:blur(1.5px) saturate(1.12) contrast(1.07) !important;
+  backdrop-filter:blur(1.5px) saturate(1.12) contrast(1.07) !important;
+}
+:where(.terminal-screen,.terminal-output,.cortex-editor-stage,.monaco-editor,.sourceplan-diff-panel,
+  .review-diff-panel,.evidence-detail-panel,.tooling-raw-panel,.doctor-raw-panel,pre,code) {
+  background-color:rgba(0,4,2,.74) !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  font-family:var(--beast-tech) !important;
+}
+
+/* Ensure foreground environmental layers cannot intercept or alter layout. */
+#beastMatrixFront,#beastGridFront { pointer-events:none !important; }
+.beast-shell { isolation:isolate; }
+
+@keyframes beast-grid-front-shift {
+  from { background-position:0 0,0 0; }
+  to { background-position:58px 58px,58px 58px; }
+}
+@keyframes beast-floor-grid-drive {
+  from { background-position:0 0,0 0; }
+  to { background-position:0 128px,128px 0; }
+}
+@keyframes beast-wall-grid-drive {
+  from { background-position:0 0,0 0; }
+  to { background-position:58px 58px,58px 58px; }
+}
+
+body[data-beast-atmosphere="quiet"] #beastGridFront,
+body[data-beast-atmosphere="matrix"] #beastGridFront::after { display:none !important; }
+body[data-beast-atmosphere="grid"] #beastMatrixFront { display:none !important; }
+
+@media (max-width:1280px) {
+  #beastGridFront { opacity:.13; --beast-grid-cell:52px; }
+  #beastMatrixFront { opacity:.18 !important; }
+  .beast-nav button .label { font-size:12px !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #beastMatrixFront { display:none !important; }
+  #beastGridFront,#beastGridFront::after { animation:none !important; }
+}

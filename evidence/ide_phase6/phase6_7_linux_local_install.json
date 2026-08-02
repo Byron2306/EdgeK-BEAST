@@ -1,0 +1,188 @@
+{
+  "beast_object_type": "beast_phase6_7_platform_exit_receipt",
+  "schema": "beast.ide.phase6.platform-exit.v1",
+  "created_at": "2026-07-21T17:23:05.514Z",
+  "platform": "linux",
+  "arch": "x64",
+  "target": "local",
+  "node": "v24.18.0",
+  "desktop": "/home/byron/EdgeK-BEAST/desktop-ide",
+  "mode": {
+    "live": false,
+    "package": false
+  },
+  "status": "partial",
+  "validated": false,
+  "summary": {
+    "checks": 24,
+    "passed": 20,
+    "failed": 0,
+    "environment_gated": 4
+  },
+  "checks": [
+    {
+      "name": "platform_matches",
+      "passed": true,
+      "observed": "linux",
+      "expected": "linux"
+    },
+    {
+      "name": "supported_platform",
+      "passed": true,
+      "observed": "linux"
+    },
+    {
+      "name": "supported_target",
+      "passed": true,
+      "target": "local"
+    },
+    {
+      "name": "file:package.json",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/package.json"
+    },
+    {
+      "name": "file:main.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/main.js"
+    },
+    {
+      "name": "file:preload.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/preload.js"
+    },
+    {
+      "name": "file:main/ipc-registry.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/main/ipc-registry.js"
+    },
+    {
+      "name": "file:main/workspace-file-host.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/main/workspace-file-host.js"
+    },
+    {
+      "name": "file:main/workspace-state-host.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/main/workspace-state-host.js"
+    },
+    {
+      "name": "file:renderer/index.html",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/renderer/index.html"
+    },
+    {
+      "name": "file:renderer/js/beast-release-app.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/renderer/js/beast-release-app.js"
+    },
+    {
+      "name": "file:scripts/smoke-desktop-ide.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/scripts/smoke-desktop-ide.js"
+    },
+    {
+      "name": "file:scripts/verify-execution-target-parity.js",
+      "passed": true,
+      "path": "/home/byron/EdgeK-BEAST/desktop-ide/scripts/verify-execution-target-parity.js"
+    },
+    {
+      "name": "beast-desktop-ide",
+      "passed": true,
+      "version": "0.1.2"
+    },
+    {
+      "name": "electron_dependency_declared",
+      "passed": true
+    },
+    {
+      "name": "monaco_dependency_declared",
+      "passed": true
+    },
+    {
+      "name": "javascript_syntax",
+      "passed": true,
+      "checked": 131,
+      "failures": []
+    },
+    {
+      "name": "desktop_renderer_smoke",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "command": "/usr/bin/node /home/byron/EdgeK-BEAST/desktop-ide/scripts/smoke-desktop-ide.js",
+        "returncode": 0,
+        "signal": null,
+        "duration_ms": 158,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "error": "spawnSync /usr/bin/node EPERM"
+      }
+    },
+    {
+      "name": "parity_foundation",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "process sandbox blocked parity subprocess launch; rerun on the host desktop shell",
+      "detail": {
+        "ok": false,
+        "command": "/usr/bin/node /home/byron/EdgeK-BEAST/desktop-ide/scripts/verify-parity-foundation-static.js",
+        "returncode": 1,
+        "signal": null,
+        "duration_ms": 3534,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "error": "spawnSync /usr/bin/node EPERM"
+      }
+    },
+    {
+      "name": "execution_target_contract",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "command": "/usr/bin/node /home/byron/EdgeK-BEAST/desktop-ide/scripts/verify-execution-target-parity.js",
+        "returncode": 0,
+        "signal": null,
+        "duration_ms": 2859,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "error": "spawnSync /usr/bin/node EPERM"
+      }
+    },
+    {
+      "name": "builder_target_declared",
+      "passed": true,
+      "platform": "linux",
+      "build_keys": [
+        "appId",
+        "productName",
+        "icon",
+        "directories",
+        "files",
+        "extraResources",
+        "asarUnpack",
+        "linux"
+      ]
+    },
+    {
+      "name": "live_electron_launch",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "rerun with --live on an interactive or CI desktop host"
+    },
+    {
+      "name": "platform_package_directory",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "rerun with --package on the native platform"
+    },
+    {
+      "name": "operator_journey_attestation",
+      "passed": null,
+      "status": "environment_gated",
+      "reason": "supply --journey <receipt.json>"
+    }
+  ],
+  "journey": null,
+  "receipt_digest": "sha256:c35421b72a0e63db6815e58e3d3b0c765191d51c1e32de096416c91353748a77"
+}

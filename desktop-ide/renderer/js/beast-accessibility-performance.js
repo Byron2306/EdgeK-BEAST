@@ -2,7 +2,7 @@
   'use strict';
   const KEY='beast.rc4.preferences';
   const defaults={textScale:'normal',contrast:'normal',motion:'full',atmosphere:'matrix-grid',adaptive:true};
-  const pages=['studio','workspace','source','mission','models','agents','review','trust','memory','evidence','crystallization','map','terminal','tooling','doctor','providers','system','worktrees','deploy','chronicle','economy','settings'];
+  const pages=['studio','workspace','source','mission','models','compute-control','agents','review','trust','memory','evidence','crystallization','map','terminal','tooling','doctor','providers','system','worktrees','deploy','chronicle','economy','settings'];
   let settings={...defaults};let initialized=false;let observer=null;let resizeTimer=0;let perfRAF=0;let performanceObserver=null;
   const $=id=>document.getElementById(id);
   const announce=message=>{const live=$('beastA11yLive');if(!live)return;live.textContent='';requestAnimationFrame(()=>{live.textContent=message;});};
@@ -16,11 +16,11 @@
     window.BeastVisualRuntime?.setTier?.(tier);
     document.dispatchEvent(new CustomEvent('beast:performance-tier',{detail:{tier,reason}}));
   }
-  function initialTier(){const cores=navigator.hardwareConcurrency||4,memory=navigator.deviceMemory||4,dpr=devicePixelRatio||1;if(cores<=4||memory<=4||dpr>2.25)return'medium';return'high';}
+  function initialTier(){const cores=navigator.hardwareConcurrency||4,memory=navigator.deviceMemory||4,dpr=devicePixelRatio||1;if(cores>=16&&memory>=16&&dpr<=1.25)return'medium';return'low';}
   function monitorPerformance(){
     cancelAnimationFrame(perfRAF);performanceObserver?.disconnect?.();
     let samples=[],previous=performance.now(),started=previous,longTasks=0;
-    function sample(now){const delta=now-previous;previous=now;if(delta<250)samples.push(delta);if(now-started<4200){perfRAF=requestAnimationFrame(sample);return;}const avg=samples.length?samples.reduce((a,b)=>a+b,0)/samples.length:33;const fps=Math.round(1000/avg);let tier=fps<38?'low':fps<53?'medium':'high';if(longTasks>=3&&tier==='high')tier='medium';if(settings.adaptive)setTier(tier,`${fps} fps`);else setTier(initialTier(),'manual effects');}
+    function sample(now){const delta=now-previous;previous=now;if(delta<250)samples.push(delta);if(now-started<4200){perfRAF=requestAnimationFrame(sample);return;}const avg=samples.length?samples.reduce((a,b)=>a+b,0)/samples.length:33;const fps=Math.round(1000/avg);let tier=fps<38?'low':fps<53?'medium':'high';if(longTasks>=3&&tier==='high')tier='medium';if(settings.adaptive){if(tier==='high'&&((navigator.hardwareConcurrency||4)<16||(navigator.deviceMemory||4)<16))tier='medium';setTier(tier,`${fps} fps`);}else setTier(initialTier(),'manual effects');}
     perfRAF=requestAnimationFrame(sample);
     if('PerformanceObserver'in window){try{performanceObserver=new PerformanceObserver(list=>{longTasks+=list.getEntries().length;});performanceObserver.observe({entryTypes:['longtask']});}catch(_){performanceObserver=null;}}
   }
@@ -62,9 +62,14 @@
     document.addEventListener('keydown',event=>{const mod=event.ctrlKey||event.metaKey;if(mod&&event.key.toLowerCase()==='k'){event.preventDefault();$('beastCommandInput')?.focus();announce('Command input focused');}if(mod&&event.shiftKey&&event.key.toLowerCase()==='l'){event.preventDefault();openPanel($('beastAccessPanel')?.hidden);}if(event.key==='F6'){event.preventDefault();cycleRegions();}if(event.altKey&&event.key==='ArrowRight'){event.preventDefault();routeStep(1);}if(event.altKey&&event.key==='ArrowLeft'){event.preventDefault();routeStep(-1);}if(event.key==='Escape'&&!$('beastAccessPanel')?.hidden)openPanel(false);});
     document.addEventListener('beast:route-start',()=>{$('beastPageOutlet')?.setAttribute('aria-busy','true');});
     document.addEventListener('beast:route-complete',event=>{const outlet=$('beastPageOutlet');outlet?.setAttribute('aria-busy','false');repairA11y(outlet||document);const page=event.detail?.page||window.BeastRouter?.active;announce(`${page} workspace loaded`);requestAnimationFrame(()=>$('beastMainViewport')?.focus({preventScroll:true}));});
+    document.addEventListener('pointerdown',event=>{if(event.button===0)document.documentElement.classList.add('is-clicking');},{passive:true});
+    document.addEventListener('pointerup',()=>document.documentElement.classList.remove('is-clicking'),{passive:true});
+    document.addEventListener('pointercancel',()=>document.documentElement.classList.remove('is-clicking'),{passive:true});
+    document.addEventListener('dragstart',()=>document.documentElement.classList.add('is-dragging'),{passive:true});
+    document.addEventListener('dragend',()=>document.documentElement.classList.remove('is-dragging'),{passive:true});
     addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{syncControls();document.body.dataset.viewport=innerWidth<760?'compact':innerWidth<1180?'narrow':innerWidth<1540?'medium':'wide';},120);},{passive:true});
   }
-  function init(){if(initialized)return;initialized=true;settings=read();document.body.dataset.viewport=innerWidth<760?'compact':innerWidth<1180?'narrow':innerWidth<1540?'medium':'wide';setTier(initialTier(),'hardware profile');bind();applySettings({persist:false});repairA11y(document);observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeType===1)repairA11y(node);});observer.observe(document.body,{childList:true,subtree:true});monitorPerformance();announce('BEAST IDE RC4 accessibility and performance layer online');}
+  function init(){if(initialized)return;initialized=true;settings=read();document.body.dataset.viewport=innerWidth<760?'compact':innerWidth<1180?'narrow':innerWidth<1540?'medium':'wide';setTier(initialTier(),'hardware profile');bind();applySettings({persist:false});repairA11y(document);const outlet=$('beastPageOutlet');observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeType===1)repairA11y(node);});observer.observe(outlet||document.body,{childList:true,subtree:Boolean(outlet)});monitorPerformance();announce('BEAST IDE RC4 accessibility and performance layer online');}
   function destroy(){observer?.disconnect();observer=null;cancelAnimationFrame(perfRAF);performanceObserver?.disconnect?.();performanceObserver=null;initialized=false;}
   window.BeastAccessibility={init,destroy,applySettings,repairA11y,setTier,get settings(){return{...settings};}};
 })();

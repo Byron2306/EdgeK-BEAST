@@ -287,6 +287,58 @@ async def test_stream_chat_completion_accepts_complete_action_ir_without_termina
 
 
 @pytest.mark.asyncio
+async def test_stream_chat_completion_records_html_404_as_transport_failure(monkeypatch):
+    client = BeastApiClient("http://gateway")
+
+    class FakeResponse:
+        status_code = 404
+        headers = {"content-type": "text/html", "server": "nginx"}
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def aread(self):
+            return b"<html><h1>404 Not Found</h1></html>"
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        def stream(self, *args, **kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr("app.cli.api.httpx.AsyncClient", FakeClient)
+    events = [
+        event async for event in client.stream_chat_completion(
+            "ollama", [{"role": "user", "content": "Repair this function."}]
+        )
+    ]
+
+    assert events[-1]["type"] == "error"
+    receipt = events[-1]["transport_receipt"]
+    assert receipt == {
+        "failure_stage": "provider_transport",
+        "safe_result_produced": False,
+        "http_status": 404,
+        "content_type": "text/html",
+        "requested_url": "http://gateway/proxy/v1/chat/completions",
+        "response_server": "nginx",
+        "body_preview": "<html><h1>404 Not Found</h1></html>",
+        "retry_safe": True,
+        "workspace_mutated": False,
+    }
+
+
+@pytest.mark.asyncio
 async def test_google_stream_uses_native_gemini_adapter(monkeypatch):
     client = BeastApiClient("http://gateway")
     observed = {}

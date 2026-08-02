@@ -1,0 +1,77 @@
+{
+  "avoided_tokens_estimate": 1547,
+  "beast_object_type": "mega_compute_governor_receipt",
+  "cloud_calls": 0,
+  "created_at": "2026-07-21T14:10:28Z",
+  "cross_provider_reuse": false,
+  "decision": "deterministic_reuse",
+  "false_reuse_warning": false,
+  "family": "schema_validation",
+  "hidden_passed": true,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+    "fixture_family": "schema_validation",
+    "fixture_occurrence": 3,
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/output_guard.py": {
+        "exists": true,
+        "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+        "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+        "symbol_hashes": {
+          "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+        }
+      }
+    },
+    "tests": {
+      "tests/test_output_guard_hidden.py": {
+        "exists": true,
+        "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+        "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+        "symbol_hashes": {
+          "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+        }
+      },
+      "tests/test_output_guard_public.py": {
+        "exists": true,
+        "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+        "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+        "symbol_hashes": {
+          "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+        }
+      }
+    },
+    "tool_schema_hashes": [
+      "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+    ],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+  "lane": "full_beast_compute_governor",
+  "occurrence": 3,
+  "policy_version": "mega_controlled_v1",
+  "provider": "nvidia_nim",
+  "provider_execution_requested": false,
+  "receipt_id": "mega_cg_e08d1f1af889ffccbddf",
+  "rollback_success": true,
+  "semantic_credit_id": "scc_ad2959ad3ee2b091",
+  "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_ad2959ad3ee2b091.json",
+  "source_occurrences": [
+    1,
+    2
+  ],
+  "source_provider": "nvidia_nim",
+  "source_task_ids": [
+    "schema_validation_o01_v1",
+    "schema_validation_o02_v1"
+  ],
+  "task_id": "schema_validation_o03_v1",
+  "version": "1.0",
+  "visible_passed": true
+}

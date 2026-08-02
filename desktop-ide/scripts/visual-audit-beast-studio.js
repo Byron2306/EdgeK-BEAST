@@ -1,16 +1,26 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+// This harness runs in the managed CI/container desktop where Chromium's
+// sandbox teardown can be denied by the host kernel. The packaged IDE does
+// not use this switch; it is limited to deterministic visual capture.
+app.commandLine.appendSwitch('no-sandbox');
 const fs = require('fs');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
 const outDir = path.join(repoRoot, 'desktop-ide', 'visual-audit');
 const allPages = [
+  'studio',
   'workspace',
   'terminal',
   'mission',
   'models',
+  'compute-fabric',
+  'live-fabric',
+  'compute-control',
+  'economy',
   'agents',
   'review',
+  'grand-closure',
   'evidence',
   'crystallization',
   'commons',
@@ -18,10 +28,18 @@ const allPages = [
   'memory',
   'map',
   'source',
+  'testing',
   'tooling',
   'system',
   'doctor',
+  'reality',
   'compatibility',
+  'providers',
+  'atlas',
+  'worktrees',
+  'deploy',
+  'chronicle',
+  'settings',
 ];
 const requestedPages = String(process.env.BEAST_VISUAL_PAGES || '').split(',').map(value => value.trim()).filter(Boolean);
 const pages = requestedPages.length ? allPages.filter(page => requestedPages.includes(page)) : allPages;
@@ -85,6 +103,21 @@ function quickFiles(root, limit = 80) {
 function registerIpc() {
   let protocolSequence=0;
   let zoomLevel=0;
+  const editorDocuments = new Map();
+  let editorSequence = 0;
+  function documentPayload(id, payload = {}) {
+    return {
+      ok: true,
+      document_id: id,
+      id,
+      path: payload.path || '',
+      text: payload.text || '',
+      language: payload.language || 'plaintext',
+      dirty: Boolean(payload.dirty),
+      binary: false,
+      updated_at: new Date().toISOString(),
+    };
+  }
   ipcMain.handle('beast:status', async () => ({
     ok: true,
     repoRoot,
@@ -106,13 +139,40 @@ function registerIpc() {
   });
   ipcMain.handle('beast:zoom-reset', async () => {
     zoomLevel = 0;
-    return { level: zoomLevel, factor: 1 };
+    return { level: zoomLevel, factor: Math.pow(1.2, zoomLevel) };
   });
-  ipcMain.handle('beast:gateway-request', async (_event, request = {}) => ({
-    ok: false,
-    status: 503,
-    error: `visual audit fixture has no live route for ${request.path || request.url || 'request'}`,
+  ipcMain.handle('beast:execution-target-list', async (_event, payload = {}) => ({
+    ok: true,
+    targets: [{
+      id: 'local',
+      kind: 'local',
+      label: 'Local workspace',
+      healthy: true,
+      capabilities: ['explorer', 'tasks', 'tests', 'lsp', 'dap', 'extensions'],
+      rootPath: payload.rootPath || repoRoot,
+      source: 'visual-audit',
+    }],
+    active: {
+      id: 'local',
+      kind: 'local',
+      label: 'Local workspace',
+      healthy: true,
+      capabilities: ['explorer', 'tasks', 'tests', 'lsp', 'dap', 'extensions'],
+      rootPath: payload.rootPath || repoRoot,
+      source: 'visual-audit',
+    },
   }));
+  ipcMain.handle('beast:gateway-request', async (_event, request = {}) => {
+    const route = String(request.path || request.url || '');
+    if (route.includes('/edgek/runtime/state')) {
+      return { ok:true, status:200, data:{ status:'ready', gateway:'visual-audit', provider:'fixture', model:'fixture-model', active_runs:0, target:'local', updated_at:new Date().toISOString() } };
+    }
+    return {
+      ok: false,
+      status: 503,
+      error: `visual audit fixture has no live route for ${route || 'request'}`,
+    };
+  });
   ipcMain.handle('beast:list-files', async (_event, root, limit) => [...quickFiles(root || repoRoot, Math.max(1, (limit || 80) - 1)), { path:notebookVisualPath, size:Buffer.byteLength(notebookVisualDocument), ext:'.ipynb' }]);
   ipcMain.handle('beast:read-file', async (_event, root, rel, maxChars) => {
     if (rel === notebookVisualPath) return { ok:true, path:rel, text:notebookVisualDocument.slice(0, maxChars || 200000) };
@@ -121,6 +181,29 @@ function registerIpc() {
     if (target !== safeRoot && !target.startsWith(safeRoot + path.sep)) return { ok: false, error: 'path escaped workspace' };
     return { ok: true, path: rel, text: fs.readFileSync(target, 'utf8').slice(0, maxChars || 200000) };
   });
+  ipcMain.handle('beast:editor-document-create', async (_event, payload = {}) => {
+    const id = payload.id || `visual-doc-${++editorSequence}`;
+    const record = documentPayload(id, payload);
+    editorDocuments.set(id, record);
+    return record;
+  });
+  ipcMain.handle('beast:editor-document-get', async (_event, id) => editorDocuments.get(id) || { ok:false, error:'document not found', id });
+  ipcMain.handle('beast:editor-document-list', async () => ({ ok:true, documents:[...editorDocuments.values()] }));
+  ipcMain.handle('beast:editor-document-update', async (_event, id, payload = {}) => {
+    const current = editorDocuments.get(id) || documentPayload(id, payload);
+    const next = { ...current, ...payload, ok:true, document_id:id, id, updated_at:new Date().toISOString() };
+    editorDocuments.set(id, next);
+    return next;
+  });
+  ipcMain.handle('beast:editor-document-refresh', async (_event, id) => editorDocuments.get(id) || { ok:false, error:'document not found', id });
+  ipcMain.handle('beast:editor-document-save', async (_event, id, payload = {}) => {
+    const current = editorDocuments.get(id) || documentPayload(id, payload);
+    const next = { ...current, ...payload, ok:true, document_id:id, id, dirty:false, updated_at:new Date().toISOString(), receipt:{ id:'EDITOR-SAVE-VISUAL', digest:'sha256:fixture' } };
+    editorDocuments.set(id, next);
+    return next;
+  });
+  ipcMain.handle('beast:editor-document-binary-preview', async (_event, id) => ({ ok:true, id, binary:false, preview:'' }));
+  ipcMain.handle('beast:editor-document-open-external', async (_event, id) => ({ ok:true, id }));
   ipcMain.handle('beast:file-operation', async () => ({ ok: true }));
   ipcMain.handle('beast:workspace-git-status', async () => ({ ok:true,branch:'feature/visual-audit...origin/feature/visual-audit [ahead 2]',branchName:'feature/visual-audit',branches:[{name:'feature/visual-audit',current:true},{name:'main',current:false}],changes:[{index:'M ',path:'README.md',originalPath:'',staged:true,unstaged:false,conflict:false,untracked:false},{index:' M',path:'desktop-ide/main.js',originalPath:'',staged:false,unstaged:true,conflict:false,untracked:false},{index:'??',path:'docs/source-control-notes.md',originalPath:'',staged:false,unstaged:true,conflict:false,untracked:true}],counts:{staged:1,unstaged:2,conflicts:0},diffStat:'2 files changed, 18 insertions(+), 4 deletions(-)',stagedDiffStat:'1 file changed, 6 insertions(+)',error:'' }));
   ipcMain.handle('beast:workspace-git-diff', async (_event,payload={}) => ({ ok:true,path:payload.path||'desktop-ide/main.js',originalPath:payload.originalPath||'',mode:payload.mode||'worktree',originalText:'function createWorkbench() {\n  return "baseline";\n}\n',modifiedText:'function createWorkbench() {\n  return "BEAST source control";\n}\n\n// Verified Monaco diff fixture\n',patch:'@@ -1,3 +1,5 @@',truncated:false }));
@@ -157,9 +240,25 @@ function registerIpc() {
   ipcMain.handle('beast:extension-host-grant', async () => ({ status:'running',pid:4243,mode:'declarative-manifests',extensions:[{id:'beast.companion',name:'BEAST Companion',version:'1.0.0',capabilities:['workspace.read','language.client'],granted:['workspace.read','language.client'],needsApproval:[]}]}));
   ipcMain.handle('beast:extension-host-stop', async () => ({ ok:true,status:'stopped' }));
   ipcMain.handle('beast:choose-workspace', async () => repoRoot);
+  ipcMain.handle('beast:workspace-trust-get', async () => ({ ok:true, mode:'trusted', workspaceRoot:repoRoot, trusted:true, source:'visual-audit' }));
+  ipcMain.handle('beast:workspace-trust-set', async (_event, payload) => ({ ok:true, mode:payload?.mode || 'trusted', workspaceRoot:payload?.workspaceRoot || repoRoot, trusted:payload?.mode !== 'restricted', source:'visual-audit' }));
   ipcMain.handle('beast:workspace-folders', async () => ({root:repoRoot,folders:[{id:'EdgeK-BEAST',name:'EdgeK-BEAST',path:repoRoot,primary:true}]}));
   ipcMain.handle('beast:workspace-folder-add', async () => ({root:repoRoot,folders:[{id:'EdgeK-BEAST',name:'EdgeK-BEAST',path:repoRoot,primary:true}]}));
   ipcMain.handle('beast:workspace-folder-remove', async () => ({ok:false,error:'Visual audit keeps its primary workspace folder.'}));
+  ipcMain.handle('beast:phase-evidence', async () => ({ ok:true, phases:[], summary:{ total:0, passed:0, failed:0 }, source:'visual-audit' }));
+  ipcMain.handle('beast:workspace-target-list-files', async (_event, payload = {}) => {
+    const root = payload.rootPath || payload.root || repoRoot;
+    return { ok:true, files:[...quickFiles(root, Math.max(1, Number(payload.limit || 80) - 1)), { path:notebookVisualPath, size:Buffer.byteLength(notebookVisualDocument), ext:'.ipynb' }] };
+  });
+  ipcMain.handle('beast:workspace-target-read-file', async (_event, payload = {}) => {
+    const rel = payload.path || '';
+    if (rel === notebookVisualPath) return { ok:true, path:rel, text:notebookVisualDocument };
+    const target = path.resolve(payload.rootPath || repoRoot, rel);
+    const safeRoot = path.resolve(payload.rootPath || repoRoot);
+    if (target !== safeRoot && !target.startsWith(safeRoot + path.sep)) return { ok:false, error:'path escaped workspace', path:rel };
+    return { ok:true, path:rel, text:fs.readFileSync(target, 'utf8') };
+  });
+  ipcMain.handle('beast:workspace-target-write-file', async () => ({ ok:true, receipt:{ id:'TARGET-WRITE-VISUAL', digest:'sha256:fixture' } }));
   ipcMain.handle('beast:restart-gateway', async () => ({ ok: true }));
   ipcMain.handle('beast:open-gateway', async () => ({ ok: true }));
 }
@@ -168,13 +267,24 @@ async function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function auditLog(message, extra = '') {
+  const suffix = extra ? ` ${extra}` : '';
+  process.stdout.write(`[visual-audit] ${message}${suffix}\n`);
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   registerIpc();
+  auditLog('waiting-for-app-ready');
   await app.whenReady();
+  auditLog('app-ready');
+  const auditWidth = Math.max(1100, Number(process.env.BEAST_VISUAL_WIDTH) || 1920);
+  const auditHeight = Math.max(460, Number(process.env.BEAST_VISUAL_HEIGHT) || 1080);
+  const auditZoomLevel = Math.max(-3, Math.min(5, Number(process.env.BEAST_VISUAL_ZOOM_LEVEL) || 1));
+  zoomLevel = auditZoomLevel;
   const win = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: auditWidth,
+    height: auditHeight,
     show: false,
     webPreferences: {
       preload: path.join(repoRoot, 'desktop-ide', 'preload.js'),
@@ -188,13 +298,23 @@ async function main() {
   win.webContents.on('console-message', (_event, level, message, line, sourceId) => {
     messages.push({ level, message, line, sourceId });
   });
+  win.webContents.on('did-finish-load', () => auditLog('did-finish-load'));
+  win.webContents.on('did-fail-load', (_event, code, description, validatedURL) => auditLog('did-fail-load', `${code} ${description} ${validatedURL || ''}`));
+  win.webContents.on('render-process-gone', (_event, details) => auditLog('render-process-gone', JSON.stringify(details || {})));
+  win.on('unresponsive', () => auditLog('window-unresponsive'));
+  auditLog('load-file');
   await win.loadFile(path.join(repoRoot, 'desktop-ide', 'renderer', 'index.html'));
+  auditLog('load-file-complete');
   // Dynamic fixed overlays are not guaranteed to reach Chromium's compositor
   // surface while a BrowserWindow has never been shown. Render inactive so the
   // audit exercises the same paint path as the packaged desktop application.
   win.showInactive();
+  win.webContents.setZoomFactor(Math.pow(1.2, auditZoomLevel));
+  auditLog('post-load-delay');
   await delay(2500);
+  auditLog('post-load-delay-complete');
   const onboardingVisible = await win.webContents.executeJavaScript(`Boolean(document.querySelector('[data-onboarding]:not(.hidden)'))`);
+  auditLog('onboarding-visible', String(onboardingVisible));
   if (onboardingVisible) {
     // The first-run journey is mounted after the initial store hydration. Give
     // Chromium two committed frames before capture so a hidden BrowserWindow
@@ -213,12 +333,16 @@ async function main() {
       if (window.refreshFiles) await window.refreshFiles({ force: true }).catch(() => {});
     })()
   `);
+  auditLog('initial-refresh-complete');
   await delay(1000);
 
   for (const page of pages) {
+    auditLog('route-begin', page);
+    win.webContents.setZoomFactor(Math.pow(1.2, auditZoomLevel));
     // RC4 uses the contract router; the old setDesktopPage helper no longer
     // exists and caused every audit capture to remain on Studio.
     await win.webContents.executeJavaScript(`window.BeastRouter && window.BeastRouter.navigate(${JSON.stringify(page)}, { force: true });`);
+    await win.webContents.executeJavaScript(`(() => { const viewport=document.getElementById('beastMainViewport'); if(viewport) viewport.scrollTop=0; })()`);
     await win.webContents.executeJavaScript(`
       new Promise(resolve => {
         const started = Date.now();
@@ -237,7 +361,10 @@ async function main() {
       new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
     `);
     await delay(900);
+    await win.webContents.executeJavaScript(`(() => { const viewport=document.getElementById('beastMainViewport'); if(viewport) viewport.scrollTop=0; })()`);
+    await win.webContents.executeJavaScript(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
     const screenshot = path.join(outDir, `${String(pages.indexOf(page) + 1).padStart(2, '0')}-${page}.png`);
+    auditLog('capture', screenshot);
     const diag = await win.webContents.executeJavaScript(`
       (() => {
         const visible = [...document.querySelectorAll('[data-page-panel]')].filter(el => {
@@ -254,6 +381,10 @@ async function main() {
         const centerText = document.querySelector('.content-panel')?.textContent.replace(/\\s+/g, ' ').trim() || '';
         const fileBody = document.querySelector('#fileExplorerBody')?.getBoundingClientRect();
         const fileRows = document.querySelectorAll('#fileList .file-item, #fileList .mini-card, #fileList .tree-file').length;
+        const pageHead = document.querySelector('.beast-page-head');
+        const pageHeadCopy = pageHead?.firstElementChild;
+        const pageHeadActions = pageHead?.querySelector('.beast-page-actions');
+        const rect = node => { const r=node?.getBoundingClientRect(); return r?{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),position:getComputedStyle(node).position,display:getComputedStyle(node).display}:null; };
         return {
           page: ${JSON.stringify(page)},
           bodyPage: document.body.dataset.beastPage || '',
@@ -263,6 +394,10 @@ async function main() {
           contentRect: content ? { x: Math.round(content.x), y: Math.round(content.y), w: Math.round(content.width), h: Math.round(content.height) } : null,
           contentChars: centerText.length,
           fileExplorer: fileBody ? { x: Math.round(fileBody.x), y: Math.round(fileBody.y), w: Math.round(fileBody.width), h: Math.round(fileBody.height), rows: fileRows } : null,
+          pageHead: rect(pageHead),
+          pageHeadCopy: rect(pageHeadCopy),
+          pageHeadActions: rect(pageHeadActions),
+          viewport: { width: window.innerWidth, height: window.innerHeight, devicePixelRatio: window.devicePixelRatio },
           horizontalOverflow: document.documentElement.scrollWidth - window.innerWidth,
           verticalOverflow: document.documentElement.scrollHeight - window.innerHeight
         };
@@ -273,6 +408,8 @@ async function main() {
     `);
     const image = await win.webContents.capturePage();
     fs.writeFileSync(screenshot, image.toPNG());
+    auditLog('capture-complete', page);
+    diag.zoomFactor = win.webContents.getZoomFactor();
     diag.screenshot = screenshot;
     results.push(diag);
     if (page === 'compatibility') {
@@ -286,6 +423,57 @@ async function main() {
       results.push({ page:'compatibility-runtime', bodyPage:'compatibility', screenshot:runtimeScreenshot, ...runtimeDiag });
     }
     if (page === 'workspace') {
+      await win.webContents.executeJavaScript(`(async () => {
+        const rows = Array.from(document.querySelectorAll('[data-file-path]'));
+        const target = rows.find(node => /\\.(js|ts|py|json|md|html|css)$/i.test(node.dataset.filePath || ''))?.dataset.filePath
+          || rows[0]?.dataset.filePath
+          || 'desktop-ide/renderer/js/pages/beast-workspace-page.js';
+        if (target) {
+          await window.BeastEditorCortex?.openFile(target);
+          await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+      })()`);
+      await delay(350);
+      const openDiag = await win.webContents.executeJavaScript(`(() => {
+        const state = window.BeastStore?.get?.() || {};
+        const host = document.querySelector('[data-editor-host]');
+        const workbench = document.querySelector('[data-editor-workbench]');
+        const monaco = document.querySelector('.monaco-editor');
+        const lines = document.querySelector('.monaco-editor .view-lines');
+        const margin = document.querySelector('.monaco-editor .margin');
+        const currentText = state.workspace?.currentText || '';
+        const rect = node => {
+          const r = node?.getBoundingClientRect?.();
+          return r ? { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) } : null;
+        };
+        return {
+          page: 'workspace-open-file',
+          bodyPage: document.body.dataset.beastPage || '',
+          activePath: state.editor?.activePath || '',
+          owner: state.editor?.owner || '',
+          openTabs: Array.isArray(state.editor?.openTabs) ? state.editor.openTabs.slice(0, 6) : [],
+          currentTextChars: currentText.length,
+          currentTextHead: currentText.slice(0, 80),
+          groupCount: Object.keys(window.BeastEditorGroups?.snapshot?.().groups || {}).length,
+          monacoEditors: document.querySelectorAll('.monaco-editor').length,
+          viewLines: document.querySelectorAll('.monaco-editor .view-line').length,
+          hasViewLinesNode: Boolean(lines),
+          hostHidden: host?.classList.contains('hidden') || false,
+          workbenchHidden: workbench?.classList.contains('hidden') || false,
+          hostRect: rect(host),
+          workbenchRect: rect(workbench),
+          monacoRect: rect(monaco),
+          linesRect: rect(lines),
+          marginRect: rect(margin),
+          monacoTextSample: [...document.querySelectorAll('.monaco-editor .view-line')]
+            .slice(0, 3)
+            .map(node => (node.textContent || '').trim())
+            .filter(Boolean),
+          horizontalOverflow: document.documentElement.scrollWidth - window.innerWidth,
+          verticalOverflow: document.documentElement.scrollHeight - window.innerHeight
+        };
+      })()`);
+      results.push(openDiag);
       const aiFixture=aiVisualFixture();
       await win.webContents.executeJavaScript(`(async () => { const fixture=${JSON.stringify(aiFixture)};const model=window.BeastStore.get().models.registry[0]||{};const proposal=fixture.messages.find(message=>message.proposal)?.proposal;await window.BeastEditorCortex?.openFile(proposal.files[0]);window.BeastStore?.patch('sourcePlan',{status:'draft',plan:{plan_id:proposal.planId,kind:'beast_ide_agent_action_ir_sourceplan',objective:'Visual AI hunk audit',validation:proposal.validation,operations:proposal.operations.map(item=>({op_id:item.id,op:item.op,path:item.path,old:item.old,new:item.new,description:item.intent}))},selectedOperationIds:proposal.operations.map(item=>item.id)});window.BeastStore?.patch('aiCoding',{...fixture,model:model.id||'',provider:model.provider||''});})()`);
       await win.webContents.executeJavaScript(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
@@ -354,13 +542,19 @@ async function main() {
       await win.webContents.executeJavaScript(`window.BeastCommandPalette && window.BeastCommandPalette.close();`);
     }
   }
+  auditLog('report-write');
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify({ results, console: messages }, null, 2));
   console.log(JSON.stringify({ outDir, results, consoleErrors: messages.filter(item => item.level >= 2).slice(0, 20) }, null, 2));
-  await win.close();
-  app.quit();
+  // In restricted Linux desktop shells Electron's graceful shutdown can
+  // trigger a Chromium sandbox teardown assertion after the screenshots and
+  // report are already complete. Destroy the hidden audit window and exit
+  // directly so the captured artifacts remain usable to CI.
+  if (!win.isDestroyed()) win.destroy();
+  app.exit(0);
 }
 
 main().catch(error => {
+  auditLog('fatal', String(error && error.stack || error));
   console.error(error);
   app.exit(1);
 });

@@ -1,0 +1,58 @@
+contract_id: beast.agent-run.v1
+schema_version: 1
+published_at: '2026-07-18'
+status: phase2a_foundation
+canonical_owner: app.kernel.agents.AgentRunEngine
+workspace_scope: required
+storage:
+  engine: sqlite
+  journal_mode: WAL
+  synchronous: FULL
+  event_chain: sha256_previous_hash
+  tables:
+    - agent_runs
+    - agent_run_events
+    - agent_run_approvals
+identity:
+  run_id: durable
+  session_id: required
+  execution_target: local_compatibility_in_phase2a
+lifecycle:
+  initial: created
+  resumable: [created, paused]
+  terminal:
+    - completed
+    - cancelled
+    - failed
+    - budget_exhausted
+    - policy_blocked
+    - rejected
+    - rolled_back
+api:
+  create: POST /edgek/agent-runs
+  list: GET /edgek/agent-runs
+  detail: GET /edgek/agent-runs/{run_id}
+  replay: GET /edgek/agent-runs/{run_id}/events
+  cancel: POST /edgek/agent-runs/{run_id}/cancel
+  resume: POST /edgek/agent-runs/{run_id}/resume
+  verify: GET /edgek/agent-runs/{run_id}/verify
+  approvals: GET /edgek/agent-runs/{run_id}/approvals
+  approval_resolution: POST /edgek/agent-runs/{run_id}/approvals/{approval_id}
+compatibility:
+  legacy_pair_programmer_stream: wrapped
+  legacy_routes_preserved: true
+  sourceplan_boundary_preserved: true
+  direct_workspace_mutation: forbidden
+phase2a_guarantees:
+  - Every live Pair Programmer stream receives a durable run_id before context loading.
+  - Every legacy SSE event is projected into a sequenced hash-chained event record.
+  - Event replay survives renderer disconnect and process restart.
+  - A backend cancellation request sets durable cancellation intent and cancels registered async work.
+  - Capability decisions are stored against the exact run and request identifier.
+  - Sensorium receives metadata-only best-effort mirrors; source payload is not duplicated.
+phase2a_limits:
+  - The existing provider loop remains the execution implementation.
+  - Prompt transport still uses the legacy GET stream until Phase 2B migration.
+  - Approval presentation still uses the current renderer confirmation surface.
+  - Process-tree cancellation is complete only for registered handles.
+  - Worktree-first iterative repair remains Phase 2B/2C work.

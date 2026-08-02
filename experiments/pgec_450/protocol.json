@@ -1,0 +1,92 @@
+{
+  "beast_object_type": "pgec_450_preregistered_protocol",
+  "version": "1.0",
+  "frozen_at": "2026-07-20",
+  "title": "Proof-Governed Experiential Compilation 450-Observation Controlled Matrix",
+  "design": {
+    "task_families": [
+      "schema_validation",
+      "provider_alias_normalization",
+      "patch_compilation",
+      "syntax_check",
+      "route_diagnostics",
+      "secret_redaction"
+    ],
+    "routes": ["ollama", "nvidia_nim", "mistral", "cohere", "groq"],
+    "occurrence_points": [1, 2, 3, 5, 10],
+    "lanes": ["raw", "beast_no_compute_governor", "full_beast_compute_governor"],
+    "expected_observations": 450
+  },
+  "primary_route_of_interest": "ollama",
+  "control_route": "nvidia_nim",
+  "route_contract": {
+    "ollama": {
+      "kind": "local_openai_compatible",
+      "base_url_env": "OLLAMA_OPENAI_BASE_URL",
+      "default_base_url": "http://127.0.0.1:11434/v1",
+      "model_env": "BEAST_OLLAMA_MODEL",
+      "default_model": "qwen2.5-coder:7b",
+      "api_key_env": "OLLAMA_API_KEY",
+      "timeout_seconds": 240
+    },
+    "nvidia_nim": {"preset": "nvidia_nim"},
+    "mistral": {"preset": "mistral"},
+    "cohere": {"preset": "cohere"},
+    "groq": {"preset": "groq"}
+  },
+  "hypotheses": {
+    "H1": "The full PGEC lane preserves or improves verified completion relative to governed no-compilation and raw lanes.",
+    "H2": "For compatible repeated tasks, the full PGEC lane reduces provider calls without increasing false reuse.",
+    "H3": "Ollama can originate and consume verified capabilities under the same governance contract as external providers.",
+    "H4": "Material drift causes refusal, revalidation, or escalation rather than incorrect recurrence.",
+    "H5": "Provider-independent capability consumption depends on evidence compatibility rather than source-provider identity."
+  },
+  "primary_metrics": [
+    "verified_completion",
+    "hidden_pass",
+    "quality_preserving_cloud_call_displacement",
+    "false_reuse",
+    "correct_refusal",
+    "unnecessary_refusal"
+  ],
+  "secondary_metrics": [
+    "provider_calls",
+    "generated_tokens",
+    "latency_ms",
+    "rescue_required",
+    "repair_count",
+    "verifier_cost_ms",
+    "lookup_cost_ms",
+    "operator_intervention_count"
+  ],
+  "redlines": {
+    "false_reuse_rate": 0.0,
+    "unattributed_observations": 0,
+    "missing_hidden_verifier_for_completed_case": 0,
+    "silent_cell_substitution": 0
+  },
+  "exclusion_policy": {
+    "allowed": [
+      "provider_auth_missing_before launch",
+      "provider endpoint unavailable before launch",
+      "fixture corruption proven by checksum",
+      "host interruption with external evidence",
+      "duplicate observation detected before analysis"
+    ],
+    "forbidden": [
+      "exclude because result is poor",
+      "replace provider after observing outcome",
+      "change verifier after observing outcome",
+      "reclassify refusal as failure or success post hoc"
+    ],
+    "rule": "Every exclusion remains in the ledger with reason, timestamp, evidence reference, and replacement_status=false."
+  },
+  "analysis_policy": {
+    "paired_binary": "exact McNemar where task/provider/occurrence pairs are complete",
+    "paired_counts": "exact sign test; Wilcoxon only when assumptions and sample size are adequate",
+    "proportions": "Wilson 95 percent confidence intervals",
+    "full_matrix": "mixed-effects logistic regression may be exploratory, with task family and provider route as grouping factors",
+    "confirmatory_boundary": "Only preregistered metrics and contrasts are confirmatory"
+  },
+  "claim_boundary": "The experiment tests bounded task families and declared routes. It does not establish universal coding-agent competence, universal cloud displacement, or production economics."
+}
