@@ -78,7 +78,9 @@ _bootstrap_tui_runtime()
 # with the gateway's durable stores before Uvicorn has started, leaving a
 # desktop-managed gateway alive but not listening.  Keep eager setup for CLI
 # commands that need it, but let server processes initialise once in-app.
-if (sys.argv[1] if len(sys.argv) > 1 else "") not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"}:
+_command_name = sys.argv[1] if len(sys.argv) > 1 else ""
+_lightweight_verify = _command_name == "verify" and len(sys.argv) > 2 and sys.argv[2] == "release-contract"
+if _command_name not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"} and not _lightweight_verify:
     with contextlib.redirect_stdout(sys.stderr):
         from app.kernel.compute.factory import ServiceFactory
         ServiceFactory.initialize()
@@ -260,6 +262,8 @@ def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, lis
         "/edgek/capability-exchange",
         "/edgek/plugins",
         "/edgek/compute",
+        "/edgek/swarm/state",
+        "/edgek/prec/state",
     ]
     root_param = urllib.parse.quote(str(ROOT), safe="")
     active_required = [
@@ -270,6 +274,8 @@ def gateway_routes_ready(base_url: str, timeout: float = 2.0) -> tuple[bool, lis
         f"/edgek/ide/system-snapshot?root_path={root_param}&port_limit=5&process_limit=5",
         "/edgek/mcp/state",
         "/edgek/plugins",
+        "/edgek/swarm/state",
+        "/edgek/prec/state",
     ]
     try:
         with urllib.request.urlopen(f"{base_url.rstrip('/')}/edgek/root-info", timeout=timeout) as response:
@@ -780,6 +786,10 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
     nginx_port = int(args.nginx_port)
     if bool_value(getattr(args, "force_gateway", "false")):
         results.append(stop_managed_process(run_dir() / "gateway.pid", "gateway"))
+        # Force means ownership recovery, not just PID-file cleanup. A stale
+        # unmanaged listener otherwise survives and makes `up` report a false
+        # healthy state while serving old in-memory code.
+        results.append(kill_listeners_on_port("gateway", host, gateway_port, dry_run=False))
 
     surfaces = command_reinstall_surfaces(argparse.Namespace(
         workspace=str(ROOT),
@@ -801,7 +811,11 @@ def command_up(args: argparse.Namespace) -> Dict[str, Any]:
         "ollama": {"ok": url_ready(f"http://{args.ollama_host}/api/tags", timeout=2.0), "path": f"http://{args.ollama_host}/api/tags"},
         "nginx": {"ok": url_ready(f"http://127.0.0.1:{nginx_port}/health", timeout=2.0), "path": f"http://127.0.0.1:{nginx_port}/health"},
     }
-    ready = all(check.get("ok") for check in checks.values() if isinstance(check, dict))
+    gateway_routes_ok, gateway_missing = gateway_routes_ready(gateway_base)
+    checks["gateway"]["routes_ok"] = gateway_routes_ok
+    if gateway_missing:
+        checks["gateway"]["missing_routes"] = gateway_missing
+    ready = all(check.get("ok") for check in checks.values() if isinstance(check, dict)) and gateway_routes_ok
     return {
         "command": "up",
         "status": "ready" if ready else "attention",
@@ -1331,7 +1345,82 @@ def command_route(args: argparse.Namespace) -> Dict[str, Any]:
     return {"command": "route", "authority": _authority_receipt("route", phase="architect"), **_gateway_or_local(args, "POST", "/edgek/pathfinder/route-card", payload, local)}
 
 
+def _phase0_step(name: str, command: list[str], cwd: Path | None = None, timeout: int = 180) -> Dict[str, Any]:
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=str(cwd or ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=timeout,
+            check=False,
+        )
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": completed.returncode == 0,
+            "returncode": completed.returncode,
+            "stdout": completed.stdout.strip()[-12000:],
+            "stderr": completed.stderr.strip()[-8000:],
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": False,
+            "returncode": 124,
+            "stdout": str(exc.stdout or "")[-12000:],
+            "stderr": f"timeout after {timeout}s",
+        }
+    except OSError as exc:
+        return {
+            "name": name,
+            "command": command,
+            "cwd": str(cwd or ROOT),
+            "ok": False,
+            "returncode": 127,
+            "stdout": "",
+            "stderr": str(exc),
+        }
+
+
+def command_release_contract(args: argparse.Namespace) -> Dict[str, Any]:
+    all_checks = bool(getattr(args, "all", False))
+    steps = [
+        _phase0_step("build_identity", [sys.executable, "scripts/phase0/generate_build_identity.py"], timeout=60),
+        _phase0_step("phase0_contracts", [sys.executable, "scripts/phase0/verify_phase0.py"], timeout=90),
+    ]
+    if all_checks:
+        desktop = ROOT / "desktop-ide"
+        steps.extend([
+            _phase0_step("parity_foundation", ["npm", "run", "smoke:parity:foundation"], cwd=desktop, timeout=240),
+            _phase0_step("execution_targets", ["npm", "run", "smoke:targets"], cwd=desktop, timeout=240),
+        ])
+    steps.append(_phase0_step("release_contract_report", [sys.executable, "scripts/phase0/generate_release_contract.py"], timeout=180))
+    status_path = ROOT / "build" / "PHASE0_STATUS.json"
+    status: Dict[str, Any] = {}
+    if status_path.exists():
+        try:
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            status = {"status": "FAIL", "error": f"invalid phase0 status artifact: {exc}"}
+    ok = all(step.get("ok") for step in steps) and str(status.get("status") or "PASS") == "PASS"
+    return {
+        "command": "verify release-contract",
+        "ok": ok,
+        "mode": "all" if all_checks else "structural",
+        "status_artifact": str(status_path.relative_to(ROOT)),
+        "steps": steps,
+        "bundle": status,
+    }
+
+
 def command_verify(args: argparse.Namespace) -> Dict[str, Any]:
+    if getattr(args, "verify_target", None) == "release-contract":
+        return command_release_contract(args)
     payload = {
         "provider": args.provider,
         "user_request": args.objective or "Run local quality cascade",
@@ -2450,8 +2539,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     verify = subparsers.add_parser("verify", help="Run Quality Cascade checks")
     verify.set_defaults(handler=command_verify)
+    verify.add_argument("verify_target", nargs="?", choices=["release-contract"], help="Special verifier target, e.g. release-contract")
+    verify.add_argument("--all", action="store_true", help="For release-contract, run structural, parity-foundation, and execution-target checks")
     verify.add_argument("--provider")
-    verify.add_argument("--objective", "--task", dest="objective", required=True)
+    verify.add_argument("--objective", "--task", dest="objective")
     verify.add_argument("--task-class", default="general_software_task")
     verify.add_argument("--local-only", action="store_true", help="Skip gateway and use local builder")
 

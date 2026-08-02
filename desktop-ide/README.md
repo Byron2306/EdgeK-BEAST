@@ -21,6 +21,11 @@ npm run smoke
 npm start
 ```
 
+`npm start` now launches through `scripts/start-desktop-ide.js`, which strips
+inherited `ELECTRON_RUN_AS_NODE=1` shells and applies Linux/container-safe
+Electron flags by default. Set `BEAST_ELECTRON_SANDBOX=1` to force the normal
+Chromium sandbox path on trusted hosts.
+
 ## Packaging
 
 ```bash

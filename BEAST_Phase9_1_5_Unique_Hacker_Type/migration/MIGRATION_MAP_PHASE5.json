@@ -1,0 +1,23 @@
+{
+  "phase": 5,
+  "name": "Trust Posture and Memory Observatory",
+  "replaces": [
+    "legacy trust page panel",
+    "legacy memory page panel",
+    "crop-derived panel frame assets"
+  ],
+  "owners": {
+    "trust": "js/pages/beast-trust-page.js",
+    "memory": "js/pages/beast-memory-page.js",
+    "bridge": "js/beast-trust-memory-bridge.js",
+    "app": "js/beast-phase5-app.js"
+  },
+  "new_styles": [
+    "css/beast-trust-memory.css"
+  ],
+  "new_frame_contract": "assets/frames/*.png with shared 512x512 nine-slice geometry",
+  "retire": [
+    "js/beast-phase4-app.js when overlaying the patch"
+  ],
+  "next": "Phase 6 Mission Map and Crystallization Chamber"
+}

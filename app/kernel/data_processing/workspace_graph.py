@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import re
+import os
 from app.kernel.compute.container import container
 from app.kernel.data_processing.code_indexers import (
     SOURCE_SUFFIXES,
@@ -36,6 +37,19 @@ class WorkspaceGraph:
         self._bulk_conn = None
         self._bulk_node_ids = None
         self._bulk_edge_keys = None
+
+        try:
+            import chromadb
+            chroma_dir = self.db_path.parent / "chroma"
+            chroma_dir.mkdir(parents=True, exist_ok=True)
+            self._chroma_client = chromadb.PersistentClient(path=str(chroma_dir))
+            self._chroma_collection = self._chroma_client.get_or_create_collection(
+                name="workspace_nodes",
+                metadata={"hnsw:space": "cosine"}
+            )
+            self._chroma_available = True
+        except ImportError:
+            self._chroma_available = False
 
     def _utc_now(self) -> str:
         return datetime.now(timezone.utc).isoformat()
@@ -125,11 +139,7 @@ class WorkspaceGraph:
             """, (source_id, target_id, type, json.dumps(properties), timestamp))
 
     def semantic_available(self, load_model: bool = False) -> bool:
-        try:
-            import sentence_transformers  # noqa: F401
-            return True
-        except Exception:
-            return False
+        return getattr(self, "_chroma_available", False)
 
     def _chunk_text(self, content: str, rel_path: str) -> List[Dict[str, Any]]:
         lines = content.splitlines()
@@ -165,9 +175,29 @@ class WorkspaceGraph:
             return [chunk for chunk in chunks if chunk.get("text")] or [{"text": content, "start_line": 1, "end_line": len(lines), "chunk_kind": "markdown_section", "context_header": current_header}]
         return [{"text": content, "start_line": 1, "end_line": len(lines), "chunk_kind": "code_window", "context_header": ""}]
 
+    def _get_embedding_model(self):
+        if not hasattr(self, "_embedding_model"):
+            # Embedding downloads are not allowed on the foreground IDE path.
+            # Operators can opt into a pre-cached local model explicitly.
+            if os.environ.get("BEAST_ENABLE_LOCAL_EMBEDDINGS", "0") != "1":
+                raise RuntimeError("local embeddings disabled; using lexical retrieval")
+            from sentence_transformers import SentenceTransformer
+            self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        return self._embedding_model
+
     def _generate_embedding(self, text: str) -> Optional[List[float]]:
-        digest = hashlib.sha256((text or "").encode("utf-8")).digest()
-        return [byte / 255.0 for byte in digest[:16]]
+        if not self.semantic_available():
+            return None
+        if getattr(self, "_embedding_unavailable", False):
+            return None
+        try:
+            model = self._get_embedding_model()
+            return model.encode(text).tolist()
+        except Exception:
+            # A semantic miss must degrade to local lexical search, never block
+            # a mission on network access or a multi-gigabyte model load.
+            self._embedding_unavailable = True
+            return None
 
     def _store_embedding(self, node_id: str, embedding: List[float]):
         self.ensure_db()
@@ -176,9 +206,43 @@ class WorkspaceGraph:
                 "INSERT OR REPLACE INTO embeddings (node_id, embedding) VALUES (?, ?)",
                 (node_id, json.dumps(embedding)),
             )
+        if getattr(self, "_chroma_available", False):
+            node = self.get_node(node_id)
+            if node:
+                meta = {k: str(v) for k, v in node.get("properties", {}).items() if v is not None and isinstance(v, (str, int, float, bool))}
+                text_content = node.get("properties", {}).get("content") or node.get("label", "")
+                self._chroma_collection.upsert(
+                    ids=[node_id],
+                    embeddings=[embedding],
+                    documents=[text_content],
+                    metadatas=[meta] if meta else None
+                )
 
     def vector_search(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
-        return []
+        if not getattr(self, "_chroma_available", False):
+            return []
+        try:
+            model = self._get_embedding_model()
+            query_embedding = model.encode(query).tolist()
+            
+            results = self._chroma_collection.query(
+                query_embeddings=[query_embedding],
+                n_results=limit
+            )
+            
+            if not results or not results['ids'] or not results['ids'][0]:
+                return []
+                
+            nodes = []
+            for i, node_id in enumerate(results['ids'][0]):
+                node = self.get_node(node_id)
+                if node:
+                    if 'distances' in results and results['distances'] and len(results['distances'][0]) > i:
+                        node['similarity'] = 1.0 - results['distances'][0][i]
+                    nodes.append(node)
+            return nodes
+        except Exception as e:
+            return []
 
     def _lexical_semantic_search(self, query: str, limit: int = 5, node_types: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         return []
@@ -407,6 +471,23 @@ class WorkspaceGraph:
                 "l2_entries": 0,
             },
         }
+
+    def graph_snapshot(self, *, node_limit: int = 80, edge_limit: int = 160) -> Dict[str, Any]:
+        """Return a bounded graph payload for the IDE Semantic Map."""
+        self.ensure_db()
+        with self._connect() as conn:
+            node_rows = conn.execute(
+                "SELECT id, type, label, properties, first_seen, last_seen FROM nodes ORDER BY last_seen DESC LIMIT ?",
+                (max(1, min(int(node_limit), 500)),),
+            ).fetchall()
+            edge_rows = conn.execute(
+                "SELECT id, source_id, target_id, type, properties, created_at FROM edges ORDER BY created_at DESC LIMIT ?",
+                (max(1, min(int(edge_limit), 1000)),),
+            ).fetchall()
+        nodes = [self._row_to_node(row) for row in node_rows]
+        known = {node["id"] for node in nodes}
+        edges = [self._row_to_edge(row) for row in edge_rows if row[1] in known and row[2] in known]
+        return {"nodes": nodes, "edges": edges, "stats": self.stats(), "coverage": 100 if nodes else 0}
 
     def _paths_from_text(self, text: str) -> List[str]:
         paths = []
@@ -1108,6 +1189,11 @@ class WorkspaceGraph:
         """Search embedded semantic chunks, falling back to local lexical scoring."""
         self.ensure_db()
         query_embedding = self._generate_embedding(query or "")
+        if not query_embedding:
+            return self._lexical_semantic_search(
+                query, limit=limit,
+                node_types=["semantic_chunk", "file", "symbol", "route", "beast_artifact"],
+            )
         scored: List[Dict[str, Any]] = []
         with self._connect() as conn:
             rows = conn.execute("SELECT node_id, embedding FROM embeddings LIMIT 2000").fetchall()

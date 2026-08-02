@@ -1,0 +1,77 @@
+{
+  "batch_index": 4,
+  "beast_object_type": "pgec_450_continuity_final",
+  "blocked_reasons": [],
+  "contiguous_policy_sequence": true,
+  "experiment_id": "pgec_mistral_schema_validation_20260721T2048Z",
+  "families": {
+    "route_diagnostics": {
+      "contiguous_policy_sequence": true,
+      "mutation_challenge_at": 10,
+      "observed_occurrences": [
+        1,
+        2,
+        3,
+        5,
+        10
+      ],
+      "passed": true,
+      "preflight_family": {
+        "applicability_fingerprint": "sha256:6e2059a2fcf815a59cb87c860470c8354f3d3280566b314d6141bfe9a4ac81ac",
+        "candidate_state": "observed",
+        "contiguous_prefix": [],
+        "crystal_key": "sha256:624bbe0490b37f5d694a3eeda4c19c2aca11aeb73290136d632646eda5b0e222",
+        "family": "route_diagnostics",
+        "family_fingerprint": "sha256:11cba7847ab7cbb51719a6db52961d52a82eea8d73959a40d643d976f00f1786",
+        "next_expected_occurrence": 1,
+        "policy_generation": "pgec_450_policy_v1",
+        "prior_occurrences": [],
+        "prior_occurrences_found": 0,
+        "reuse_windows": {
+          "active_reuse_ready": false,
+          "mutation_challenge_seen": false,
+          "shadow_reuse_ready": false
+        },
+        "tool_schema_digest": "7199dc52e034baaa374efdd4f6dc9756f0d0ec8fefdb964515258a88947ca6d0",
+        "verifier_contract_digest": "d5098c7e2d95566f06c242e7f8e18cded4513e28bbc0ee83acbc1fb14f709ba5",
+        "workspace_domain": "edgek_beast_repo"
+      },
+      "reuse_at": [
+        3,
+        5
+      ],
+      "same_family_fingerprint": true,
+      "same_state_root": true,
+      "same_verifier_contract": true
+    }
+  },
+  "family": "route_diagnostics",
+  "generated_at": "2026-07-21T20:48:54Z",
+  "lane_state_dirs": {
+    "beast_no_compute_governor": "benchmarks/state/pgec_450_mistral_schema_validation/mistral/governed_no_pgec/route_diagnostics",
+    "full_beast_compute_governor": "benchmarks/state/pgec_450_mistral_schema_validation/mistral/full_pgec/route_diagnostics",
+    "raw": "benchmarks/state/pgec_450_mistral_schema_validation/mistral/raw/route_diagnostics"
+  },
+  "mutation_challenge_at": 10,
+  "observed_occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "passed": true,
+  "policy_generation": "pgec_450_policy_v1",
+  "preflight_ref": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_mistral_schema_validation_20260721T2048Z_b004/continuity_preflight.json",
+  "provider": "mistral",
+  "reuse_at": [
+    3,
+    5
+  ],
+  "run_id": "pgec_mistral_schema_validation_20260721T2048Z",
+  "same_family_fingerprint": true,
+  "same_state_root": true,
+  "same_verifier_contract": true,
+  "state_dir": "benchmarks/state/pgec_450_mistral_schema_validation/mistral",
+  "version": "1.1"
+}

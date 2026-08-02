@@ -45,6 +45,20 @@ def test_governed_live_sse_emits_status_before_completed_response():
     assert any('"content":"governed output"' in frame for frame in rest)
 
 
+def test_governed_live_sse_surfaces_governed_error_envelope():
+    async def deferred_response():
+        return JSONResponse({
+            "error": {"code": "RUNTIME_DEFERRED", "retry_after_seconds": 1},
+        })
+
+    async def collect():
+        return [item async for item in _governed_openai_sse_live(deferred_response(), provider="ollama")]
+
+    frames = asyncio.run(collect())
+    assert any(frame.startswith("event: edgek_error\n") for frame in frames)
+    assert not any('"finish_reason":"stop"' in frame for frame in frames)
+
+
 def test_executor_relays_structured_provider_deltas_before_final_response():
     async def upstream(_provider_type, _ir):
         yield {"choices": [{"delta": {"content": '{"kind":"beast.'}}]}

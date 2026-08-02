@@ -10,6 +10,11 @@ from typing import Dict, Mapping, Optional
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_ENV_PATH = ROOT / ".beast" / "beast.env"
+REMOTE_COMMONS_GATEWAY_ENV_PATH = ROOT / ".beast" / "remote-commons-lab" / "gateway.env"
+HOST_CONFIG_ROOT = Path(
+    os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
+) / "beast"
+HOST_SOCKET_CONSUMER_ENV_PATH = HOST_CONFIG_ROOT / "socket-consumer.env"
 
 
 def parse_env_file(path: Path) -> Dict[str, str]:
@@ -29,12 +34,21 @@ def parse_env_file(path: Path) -> Dict[str, str]:
 
 
 def load_local_env(path: Optional[Path] = None, *, override: bool = False) -> Dict[str, str]:
-    target = path or DEFAULT_ENV_PATH
-    values = parse_env_file(target)
-    for key, value in values.items():
-        if override or key not in os.environ:
-            os.environ[key] = value
-    return values
+    targets = [path] if path else [
+        DEFAULT_ENV_PATH,
+        REMOTE_COMMONS_GATEWAY_ENV_PATH,
+        HOST_SOCKET_CONSUMER_ENV_PATH,
+    ]
+    loaded: Dict[str, str] = {}
+    for target in targets:
+        if target is None:
+            continue
+        values = parse_env_file(target)
+        loaded.update(values)
+        for key, value in values.items():
+            if override or key not in os.environ:
+                os.environ[key] = value
+    return loaded
 
 
 def write_local_env(updates: Mapping[str, str], path: Optional[Path] = None) -> Dict[str, str]:

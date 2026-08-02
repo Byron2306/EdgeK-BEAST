@@ -93,3 +93,42 @@ def collect_socket_observations(*, workspace_id: str, proc_root: Path | str = "/
                "socket_count": len(rows), "families": ["AF_INET", "AF_INET6"], "protocols": ["TCP", "UDP"],
                "limitations": ["no_fanotify_file_attribution", "no_bpf_lifecycle_ordering", "no_packet_payload_or_vrf_resolution"]}
     return rows, receipt
+
+def collect_bpf_socket_observations(*, workspace_id: str, service_prefix: str = "pid") -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Return normalized socket observations using BPF ring buffer sock_diag."""
+    from app.kernel.observability.bpf_ring_buffer import BpfRingBuffer
+    import socket
+    
+    if not workspace_id:
+        raise ValueError("workspace_id is required for socket attribution")
+        
+    try:
+        bpf = BpfRingBuffer(queue_size=0)
+        diags = bpf.query_sock_diag()
+    except Exception:
+        return [], {}
+        
+    rows: list[dict[str, Any]] = []
+    for diag in diags:
+        try:
+            family = "AF_INET6" if diag['family'] == socket.AF_INET6 else "AF_INET"
+            protocol = "UDP" if diag['state'] == 7 else "TCP"
+            
+            src_addr, src_port = diag['src']
+            address_class = "loopback" if src_addr.endswith("00000000") and src_addr != "00000000" else "any"
+            pid = diag.get('pid', None) 
+            
+            rows.append({"family": family, "protocol": protocol, "local_address_class": address_class,
+                         "local_port": src_port, "remote_scope": "bpf_observed", "owning_process": str(pid),
+                         "service_id": f"{service_prefix}-{pid}", "workspace_id": workspace_id,
+                         "cgroup_id": "", "listener_generation": 0,
+                         "opened_at_monotonic_ns": time.monotonic_ns(), "policy_class": "observed_bpf",
+                         "network_namespace": "host", "vrf": "unknown"})
+        except Exception:
+            continue
+            
+    receipt = {"beast_object_type": "sensorium_linux_socket_snapshot", "version": "1.0",
+               "collector": "bpf_sock_diag", "read_only": True, "packet_payloads_retained": False,
+               "socket_count": len(rows), "families": ["AF_INET", "AF_INET6"], "protocols": ["TCP", "UDP"],
+               "limitations": ["no_fanotify_file_attribution", "no_packet_payload_or_vrf_resolution"]}
+    return rows, receipt

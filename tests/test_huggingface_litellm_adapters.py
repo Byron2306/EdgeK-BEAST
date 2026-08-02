@@ -131,6 +131,40 @@ def test_executor_routes_provider_prefixes():
         assert executor._determine_provider_type(ir) == expected
 
 
+def test_executor_honors_ollama_backend_marker_when_route_metadata_is_minimized():
+    executor = Executor()
+    ir = EdgeKIR(
+        messages=[{"role": "user", "content": "hi"}],
+        model="qwen2.5-coder:1.5b",
+        # This is the durable marker injected by the registry proxy before
+        # policy transformations; no OpenAI fallback is allowed here.
+        metadata={"edgek_provider_backend": "ollama", "provider": "openai"},
+    )
+
+    assert executor._determine_provider_type(ir) == ProviderType.OLLAMA
+
+
+def test_pair_programmer_ollama_context_plan_reuses_only_stable_system_context(monkeypatch):
+    monkeypatch.delenv("BEAST_OLLAMA_NATIVE_CONTEXT_REUSE", raising=False)
+    executor = Executor()
+    ir = EdgeKIR(
+        messages=[
+            {"role": "system", "content": "Selected source: def target(): pass"},
+            {"role": "assistant", "content": "I am ready."},
+            {"role": "user", "content": "Add a regression test."},
+        ],
+        model="qwen2.5-coder:1.5b",
+        metadata={"edgek_surface": "beast_tui_live_session_stream"},
+    )
+
+    plan = executor._ollama_pair_context_plan(ir, ir.model)
+
+    assert plan is not None
+    assert plan["prefix"] == "Selected source: def target(): pass"
+    assert "system:" not in plan["continuation"]
+    assert "Add a regression test." in plan["continuation"]
+
+
 @pytest.mark.asyncio
 async def test_executor_routes_nvidia_nim_through_its_registry_lane(monkeypatch):
     monkeypatch.delenv("NVIDIA_API_KEY", raising=False)

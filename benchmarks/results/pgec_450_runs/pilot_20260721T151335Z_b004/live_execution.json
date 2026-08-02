@@ -1,0 +1,2913 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 0,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T15:14:27Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "ollama",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_1069385d9edfd003a6b5",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_9564cd48c121b50a.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "ollama",
+      "source_task_ids": [
+        "secret_redaction_o01_v1",
+        "secret_redaction_o02_v1"
+      ],
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 0,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T15:14:35Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "ollama",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_761d880c663503dd99b3",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_c994d9bed8869f2d",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_c994d9bed8869f2d.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "ollama",
+      "source_task_ids": [
+        "secret_redaction_o01_v1",
+        "secret_redaction_o02_v1"
+      ],
+      "task_id": "secret_redaction_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_3b53301ebbcdb1d76026.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8f09e2b9a37caa391508.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fda6cfb78d982d101d1c.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_ollama_full_beast",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "completed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fb3985fd0c56cb1c2ac0.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_86dfda6f27326af0bb94.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_66a58507e705813c779b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_ollama_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0835c9f12372a4c28cdd.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e8f8602ff9d43889b088.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_33ebe6966fcae6cd1d70.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_ollama_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e7998eecaa983323351b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_67151c78e49c2c64821d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_1069385d9edfd003a6b5.json"
+      },
+      "avoided_tokens_estimate": 0,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 3,
+      "provider": "ollama",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_9564cd48c121b50a",
+      "source_provider": "ollama",
+      "status": "completed",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_809b17a905d25b236671.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_d1c1acaf512dd422faf5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_761d880c663503dd99b3.json"
+      },
+      "avoided_tokens_estimate": 0,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 5,
+      "provider": "ollama",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_c994d9bed8869f2d",
+      "source_provider": "ollama",
+      "status": "completed",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c3e51f5afd5f02e549a4.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "raw",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_raw",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fc3583f9304835b83c76.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_ollama_schema_only",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "failed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_702e212b11c967dc00de.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "fixture_anchor": "provider_config_secret_redaction,otel_attribute_secret_redaction",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": null,
+      "mode": "controlled",
+      "objective": "Preserve useful evidence while excluding secrets, prompts, code, and paths.",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_ollama_full_beast",
+      "source_live_task": "provider_config_secret_redaction",
+      "status": "completed",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T15:14:27Z",
+      "cross_provider_reuse": false,
+      "family": "secret_redaction",
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "occurrence": 3,
+      "provider": "ollama",
+      "receipt_id": "mega_cg_1069385d9edfd003a6b5",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "ollama",
+      "state": "crystallized",
+      "task_id": "secret_redaction_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T15:14:35Z",
+      "cross_provider_reuse": false,
+      "family": "secret_redaction",
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "occurrence": 5,
+      "provider": "ollama",
+      "receipt_id": "mega_cg_761d880c663503dd99b3",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "ollama",
+      "state": "crystallized",
+      "task_id": "secret_redaction_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "route_diagnostics",
+    "secret_redaction"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_ollama_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+      },
+      "prompt_tokens": 3074,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.03s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_ollama_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+      },
+      "prompt_tokens": 3074,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 281,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'target': {'file_ref': 'F1', 'anchor_ref': 'A1'}, 'old': 'copied', 'new': 'x'})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 281,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'target': {'file_ref': 'F1', 'anchor_ref': 'A1'}, 'old': 'copied', 'new': 'x'})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {}
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_ollama_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+      },
+      "prompt_tokens": 3097,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_raw",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_ollama_schema_only",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false
+      },
+      "prompt_tokens": 300,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "{'provider': 'nvidia_nim'}\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': True}\nE         Use -v to get more diff\n\ntests/test_provider_config.py:6: AssertionError\n___________ test_hidden_missing_key_is_false_and_secret_never_leaks ____________\n\n    def test_hidden_missing_key_is_false_and_secret_never_leaks():\n        result = provider_env(\"openrouter\", {})\n>       assert result == {\"provider\": \"openrouter\", \"api_key_present\": False}\nE       AssertionError: assert {'provider': ...'api_key': ''} == {'provider': ...esent': False}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Left contains 1 more item:\nE         {'api_key': ''}\nE         Right contains 1 more item:\nE         {'api_key_present': False}\nE         Use -v to get more diff\n\ntests/test_provider_config_hidden.py:6: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_config.py::test_provider_config_normalizes_and_redacts_secret\nFAILED tests/test_provider_config_hidden.py::test_hidden_missing_key_is_false_and_secret_never_leaks\n2 failed in 0.02s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_config.py\n+++ b/app/provider_config.py\n@@ -1,3 +1,8 @@\n+def normalize_provider_id(provider_id):\n+    return str(provider_id or \"\").strip().lower().replace(\"-\", \"_\")\n+\n+\n def provider_env(provider_id, env):\n-    key = provider_id.upper() + \"_API_KEY\"\n-    return {\"provider\": provider_id, \"api_key\": env.get(key, \"\")}\n+    normalized = normalize_provider_id(provider_id)\n+    key = normalized.upper() + \"_API_KEY\"\n+    return {\"provider\": normalized, \"api_key_present\": bool(env.get(key))}\n",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "lane": "live_ollama_full_beast",
+      "latency_ms": null,
+      "output_evidence": {
+        "canonicalized": false,
+        "initial_validation_error": "Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_config.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+      },
+      "prompt_tokens": 3074,
+      "provider": "ollama",
+      "provider_text_excerpt": "",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "provider_config_secret_redaction",
+      "usage": {}
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "tests:tests/test_provider_config.py:semantic_change",
+        "tests:tests/test_provider_config.py:symbol_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "secret_redaction",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:0e059360467fd25b765b6b2b2d0f71be0725a2dba5da3a8f1922648cf1944931",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:3d9ea72562a2c03074b4d851feaab8d594e644f5534d4eaefbcb8cfc020dfe32",
+            "semantic_hash": "sha256:f6afe6b5ba449a3a8f074a049e7ae22a00a63cf3655815485811a4bf73a20813",
+            "symbol_hashes": {
+              "test_mutation_contract_sentinel": "sha256:ce3375caaa586cb65b64122d4728e4c04d655e0a29382a05d9f4da10b03184ba",
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:0e059360467fd25b765b6b2b2d0f71be0725a2dba5da3a8f1922648cf1944931",
+      "mutation_type": "test_contract_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "provider": "ollama",
+      "recovered_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "tests:tests/test_provider_config.py:semantic_change",
+          "tests:tests/test_provider_config.py:symbol_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:03Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_fb3985fd0c56cb1c2ac0",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:03Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_86dfda6f27326af0bb94",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T15:14:03Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 1,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_66a58507e705813c779b",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o01_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:19Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_0835c9f12372a4c28cdd",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:19Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_e8f8602ff9d43889b088",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T15:14:19Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 2,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_33ebe6966fcae6cd1d70",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o02_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:27Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 3,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_e7998eecaa983323351b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:27Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 3,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_67151c78e49c2c64821d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o03_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:35Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 5,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_809b17a905d25b236671",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:35Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 5,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_d1c1acaf512dd422faf5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o05_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:50Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_3b53301ebbcdb1d76026",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:14:50Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_8f09e2b9a37caa391508",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T15:14:50Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": null,
+      "live_lane": "live_ollama_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_fda6cfb78d982d101d1c",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:15:11Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_raw",
+      "mega_lane": "raw",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_c3e51f5afd5f02e549a4",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T15:15:11Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "secret_redaction",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_fc3583f9304835b83c76",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T15:15:11Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "secret_redaction",
+      "files_changed": [
+        "app/provider_config.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+        "fixture_family": "secret_redaction",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+            "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+            "symbol_hashes": {
+              "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_config.py": {
+            "exists": true,
+            "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+            "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+            "symbol_hashes": {
+              "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+            }
+          },
+          "tests/test_provider_config_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+            "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+            "symbol_hashes": {
+              "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+      "latency_ms": null,
+      "live_lane": "live_ollama_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "qwen2.5-coder:7b",
+      "occurrence": 10,
+      "provider": "ollama",
+      "provider_completion_tokens": null,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": null,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "receipt_id": "mega_provider_call_702e212b11c967dc00de",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_config_secret_redaction",
+      "task_id": "secret_redaction_o10_v1",
+      "total_tokens": null,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "ollama": {
+      "live_failures_by_bucket": {
+        "capability_failure": 0,
+        "excluded_infra_failure": 0,
+        "infra_failure": 16,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "ollama": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": false,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": false,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 0.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 0.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 0.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "route_degraded_exclude_cost_rank",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "degraded",
+          "sample_size": 3,
+          "score": 0.25,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "ollama": {
+          "average_latency_ms": null,
+          "average_provider_prompt_tokens": null,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_ollama_raw",
+              "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+              "task": "provider_config_secret_redaction"
+            },
+            {
+              "lane": "live_ollama_schema_only",
+              "reason": "live provider failed or produced invalid scoped edit: Client error '404 Not Found' for url 'http://127.0.0.1:11434/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+              "task": "provider_config_secret_redaction"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": null,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": null,
+          "recommended_role": "route_degraded_exclude_cost_rank",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "degraded",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "ollama"
+  ],
+  "raw_live_result_count": 16,
+  "resume_source": null
+}

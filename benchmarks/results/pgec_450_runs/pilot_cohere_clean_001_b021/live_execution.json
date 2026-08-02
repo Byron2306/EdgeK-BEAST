@@ -1,0 +1,798 @@
+{
+  "compute_governor_receipts": [],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4859fa2d4d9edd80c6d5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 7186.66,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 188,
+      "provider_prompt_tokens": 376,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 564,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e279a40782331086619b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2132.339,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 188,
+      "provider_prompt_tokens": 376,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 564,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c4f0159f4a5a09630f74.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4674.152,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 345,
+      "provider_prompt_tokens": 3988,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "completed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 4333,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [],
+  "families": [
+    "route_diagnostics"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,3 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get('target', {})\n+    return 'anchor_ref' in target and 'file_ref' in target\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 7186.66,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 7186.66,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 603,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 188,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 376,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 564
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get('target', {})\\n    return 'anchor_ref' in target and 'file_ref' in target\\n\",\n      \"why\": \"Ensure anchor refs are used without requiring copied old snippets, validating both file_ref and anchor_ref presence.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 188,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 376,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 564
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,3 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get('target', {})\n+    return 'anchor_ref' in target and 'file_ref' in target\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2132.339,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2132.339,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 603,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 188,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 376,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 564
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\\n\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get('target', {})\\n    return 'anchor_ref' in target and 'file_ref' in target\\n\",\n      \"why\": \"Ensure anchor refs are used without requiring copied old snippets, validating both file_ref and anchor_ref presence.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.04s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 188,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 376,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 564
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4674.152,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4674.152,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 843,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 345,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3988,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4333
+        }
+      },
+      "prompt_tokens": 3097,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update validation to check for both file_ref and anchor_ref without requiring old snippet\",\n      \"new\": \"def validate_nim_action(action):\\n    target = action.get(\\\"target\\\", {})\\n    return bool(target.get(\\\"file_ref\\\") and target.get(\\\"anchor_ref\\\"))\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:479450a532bf41438a6460943a42e31c3c9d32635891f913e329cc8f639f014a\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:479450a532bf41438a6460943a42e31c3c9d32635891f913e329cc8f639f014a\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 345,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3988,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4333
+      }
+    }
+  ],
+  "mutation_recovery_cases": [],
+  "occurrences": [
+    2
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:22:02Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 7186.66,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 188,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 376,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_4859fa2d4d9edd80c6d5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 564,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:22:02Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 2132.339,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 188,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 376,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_e279a40782331086619b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 564,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T19:22:02Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 4674.152,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 345,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3988,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_c4f0159f4a5a09630f74",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 4333,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "cohere": {
+      "live_failures_by_bucket": {
+        "capability_failure": 3,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "cohere": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.55,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "cohere": {
+          "average_latency_ms": 4664.384,
+          "average_provider_prompt_tokens": 1580.0,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_cohere_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "nim_refs_only_contract"
+            },
+            {
+              "lane": "live_cohere_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "nim_refs_only_contract"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 4674.152,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 4333.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "cohere"
+  ],
+  "raw_live_result_count": 3,
+  "resume_source": null
+}

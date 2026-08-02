@@ -1,0 +1,66 @@
+{
+  "authority": "reachability_audit_only",
+  "candidate_routes": [
+    "semantic_result"
+  ],
+  "created_at": "2026-07-20T10:32:41.463713+00:00",
+  "discovered_services": [
+    "candidate_sources",
+    "route_executors",
+    "sensorium_sink"
+  ],
+  "executor_routes": [
+    "semantic_result"
+  ],
+  "fail_closed": true,
+  "gate": "G3",
+  "metadata": {
+    "authority_minting": false,
+    "automatic_permissive_fallback": false,
+    "discovery_mode": "explicit_import_paths_only",
+    "g2_receipt_digest": "sha256:b8465ac1cb3a3c4af38748a984c52794002012101baa15005309f9da5600b3fc"
+  },
+  "missing_services": [],
+  "mounted": false,
+  "probes": [
+    {
+      "detail": "dict",
+      "name": "candidate_sources_mapping",
+      "passed": true,
+      "required": true
+    },
+    {
+      "detail": "dict",
+      "name": "route_executors_mapping",
+      "passed": true,
+      "required": true
+    },
+    {
+      "detail": "function",
+      "name": "sensorium_sink_callable",
+      "passed": true,
+      "required": true
+    },
+    {
+      "detail": "route=True;callable=True;signature=True",
+      "name": "executor:semantic_result",
+      "passed": true,
+      "required": true
+    },
+    {
+      "detail": "function",
+      "name": "candidate_source:verified_semantic",
+      "passed": true,
+      "required": true
+    },
+    {
+      "detail": "closed",
+      "name": "candidate_executor_route_closure",
+      "passed": true,
+      "required": true
+    }
+  ],
+  "production_ready": true,
+  "raw_payload_retained": false,
+  "status": "passed"
+}

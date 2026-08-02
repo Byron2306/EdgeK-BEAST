@@ -1,0 +1,16 @@
+{
+  "phase": "2C.2",
+  "title": "Durable Planner Loop",
+  "status": "PASS",
+  "architecture_checks": {"passed": 12, "total": 12},
+  "focused_tests": {"passed": 15, "failed": 0},
+  "public_routes_added": 2,
+  "decision_types": ["tool", "complete", "blocked"],
+  "mutation_authority": false,
+  "promotion_authority": false,
+  "notes": [
+    "Planner state is checkpointed under the durable AgentRun record.",
+    "Every decision and observation is appended to the hash-chained event ledger.",
+    "The production provider adapter uses the existing BeastApiClient; offline tests use deterministic scripted decisions."
+  ]
+}

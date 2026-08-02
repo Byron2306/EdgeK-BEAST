@@ -149,7 +149,7 @@ class CrossEngineKVCacheTransport:
 
     def __init__(
         self,
-        max_memory_bytes: int = 8 * 1024 * 1024 * 1024,
+        max_memory_bytes: int = 512 * 1024 * 1024,
         storage_dir: Optional[Path] = None,
     ):
         self.max_memory_bytes = max_memory_bytes
@@ -159,6 +159,16 @@ class CrossEngineKVCacheTransport:
         self.network_senders: Dict[str, Callable[[Dict[str, Any], bytes], Dict[str, Any]]] = {}
         self.operations: List[KVCacheTransportOperation] = []
         self._current_memory_bytes = 0
+
+    def _memory_pressure_bytes(self) -> int | None:
+        """Read the kernel's cheap available-memory signal without psutil."""
+        try:
+            for line in Path("/proc/meminfo").read_text(encoding="utf-8").splitlines():
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) * 1024
+        except (OSError, ValueError, IndexError):
+            return None
+        return None
 
     def register_network_sender(
         self,
@@ -375,7 +385,6 @@ class CrossEngineKVCacheTransport:
             target_engine=engine,
             bytes_moved=size_bytes,
         )
-        
         return block
 
     def export_tensor_payload(self, block_id: str) -> Optional[bytes]:
@@ -416,6 +425,26 @@ class CrossEngineKVCacheTransport:
 
     def get_mmap_buffer(self, block_id: str) -> Optional[Tuple[mmap.mmap, Any]]:
         """Return a memory-mapped buffer for the engine to read tensors directly."""
+        import os
+        from app.kernel.system_monitor import ExecutionPrimitives
+        
+        block = self.blocks.get(block_id)
+        if not block:
+            return None
+            
+        if block.location == CacheLocation.CPU and block_id in self.tensor_payloads:
+            try:
+                fd = ExecutionPrimitives.memfd_create(f"kv_{block_id}", 0)
+                if fd >= 0:
+                    payload = self.tensor_payloads[block_id]
+                    os.write(fd, payload)
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    buf = mmap.mmap(fd, len(payload), access=mmap.ACCESS_READ)
+                    self._record_operation(operation="mmap_buffer", block_id=block_id, bytes_moved=len(payload))
+                    return buf, os.fdopen(fd, "rb")
+            except Exception:
+                pass
+                
         block_file = self.storage_dir / f"{block_id}.bin"
         if not block_file.is_file():
             return None
@@ -425,7 +454,8 @@ class CrossEngineKVCacheTransport:
             self._record_operation(operation="mmap_buffer", block_id=block_id)
             return buf, f
         except Exception as e:
-            logger.error(f"Failed to mmap block {block_id}: {e}")
+            import logging
+            logging.getLogger(__name__).error(f"Failed to mmap block {block_id}: {e}")
             return None
 
     def import_tensor_payload(
@@ -850,7 +880,10 @@ class CrossEngineKVCacheTransport:
 
     def cleanup(self, force: bool = False) -> List[str]:
         """Evict unpinned blocks to free memory. Returns list of evicted block IDs."""
-        if not force and self._current_memory_bytes <= self.max_memory_bytes:
+        available = self._memory_pressure_bytes()
+        pressure_target = max(64 * 1024 * 1024, self.max_memory_bytes // 2)
+        pressure = available is not None and available < pressure_target
+        if not force and not pressure and self._current_memory_bytes <= self.max_memory_bytes:
             return []
         
         # Evict unpinned blocks, oldest first
@@ -862,9 +895,10 @@ class CrossEngineKVCacheTransport:
         
         evicted: List[str] = []
         for bid, block in candidates:
-            if force or self._current_memory_bytes > self.max_memory_bytes:
+            if force or pressure or self._current_memory_bytes > self.max_memory_bytes:
                 self._current_memory_bytes -= block.size_bytes
                 del self.blocks[bid]
+                self.tensor_payloads.pop(bid, None)
                 evicted.append(bid)
                 self._record_operation(operation="cleanup", block_id=bid, bytes_moved=block.size_bytes)
         

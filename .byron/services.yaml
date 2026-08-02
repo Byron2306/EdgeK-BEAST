@@ -4,14 +4,14 @@ services:
     port: 80
   beast:
     hostname: beast.test
-    upstream: 127.0.0.1:8102
-    port: 8102
+    upstream: 127.0.0.1:8101
+    port: 8101
     health_path: /health
     trust_domain: operator
   commons:
     hostname: commons.test
-    upstream: 127.0.0.1:8601
-    port: 8601
+    upstream: 127.0.0.1:8111
+    port: 8111
     health_path: /edgek/control-plane/commons
     trust_domain: commons
   arda:

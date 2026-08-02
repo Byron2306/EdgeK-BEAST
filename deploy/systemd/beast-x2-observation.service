@@ -1,0 +1,50 @@
+[Unit]
+Description=BEAST X2 governed BPF observation runtime
+After=network-online.target
+Wants=network-online.target
+# X1 observes host-wide tracepoints.  A root operator must create this approval
+# file only after reviewing the object, manifest, retention policy, and host.
+ConditionPathExists=/etc/edgek-beast/x2-observation-approved
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/edgek-beast-x2
+RuntimeDirectory=beast-x2
+RuntimeDirectoryMode=0750
+StateDirectory=beast-x2
+StateDirectoryMode=0750
+# X1's ring-buffer map reserves 16 MiB; retain headroom for map metadata.
+LimitMEMLOCK=32M
+Environment=PYTHONPATH=/opt/edgek-beast-x2
+StandardOutput=append:/var/lib/beast-x2/x2-service.log
+StandardError=append:/var/lib/beast-x2/x2-service.log
+ExecStartPre=/bin/sh -c 'grep "^Cap" /proc/self/status > /var/lib/beast-x2/effective-capabilities.txt'
+ExecStart=/opt/edgek-beast-x2/run_x2_observer.sh
+ExecStopPost=/usr/bin/test ! -e /run/beast-x2/attach-in-progress
+Restart=no
+
+# This Debian RT host requires CAP_SYS_ADMIN for perf tracepoint attachment even
+# with CAP_PERFMON.  Keep the exception explicit and limited to this reviewed,
+# root-owned observer runtime.
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_BPF CAP_PERFMON CAP_NET_ADMIN CAP_NET_RAW
+AmbientCapabilities=CAP_SYS_ADMIN CAP_BPF CAP_PERFMON CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ProtectSystem=strict
+ProtectKernelLogs=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+ReadWritePaths=/run/beast-x2 /var/lib/beast-x2
+RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,219 @@
+{
+  "beast_object_type": "proper_coding_matrix_receipt",
+  "claim_boundary": "Crystal lane proves physical fixture repairs; live lane is sampled and does not claim general coding capability.",
+  "live_sample": 1,
+  "metrics": {
+    "cpu_seconds": 0.019367,
+    "crystal_verified": 2,
+    "live_failures": 1,
+    "live_verified": 0,
+    "provider_calls": 2,
+    "repair_attempts": 1,
+    "wall_seconds": 32.5
+  },
+  "model": "qwen2.5:3b",
+  "receipt_hash": "sha256:05f50294a530a0e9ebc94be795190a95f222b002728cbf834bf0562a2873d952",
+  "rows": [
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:46598ab4a8bb47f2760aa7f8fd238dfc620c752bdeb93d59b81b7399912e8c0f",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:7712525bc61a3607488d434da376e5e6abf4ba46be507d94dfaa3610ce5932a6",
+            "crystal_ir_digest": "sha256:44ccfa53b462d17a82a300b40f0fe14d0ae3565e78d8bf0309a68948f1d5834d",
+            "mutation_performed": true,
+            "path": "app/kernel/provider_registry.py",
+            "receipt_digest": "sha256:a9487f9966582d6a76d9a14f18488a1a9ed1ebc0ac32abd633950aed5f28850c",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/kernel/provider_registry.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_model_wiring-adapter_for"
+          },
+          {
+            "after_sha256": "sha256:b2f1982ec86903cf933458a0dc124f620cdf521e08061a490473550219c9e322",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:0f831b3ae092419ff1ce2d7bc278bc145b3eaeca9e6eb79cd21fa474929bca59",
+            "crystal_ir_digest": "sha256:4da07e812b0328f4c5d366551a7b80bb53eb7969262eab086b4ea917f1ea60a9",
+            "mutation_performed": true,
+            "path": "app/cli/api.py",
+            "receipt_digest": "sha256:f674db602a5e8d8ed69ee909d39649155ad08f67ac1c69b552aa1e60ba20eb2d",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/cli/api.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-provider_model_wiring-_chat_model_for_provider"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 444.92,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "....                                                                     [100%]\n4 passed in 0.02s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:7712525bc61a3607488d434da376e5e6abf4ba46be507d94dfaa3610ce5932a6",
+        "old_sha256": "sha256:53c07ba0d183582b2938d5e85260f7c79319240afc6a8b6163d0fe18f08d204f",
+        "target_id": "T:provider_model_wiring:adapter_for"
+      },
+      "live": {
+        "provider_calls": 0,
+        "status": "not_sampled"
+      },
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "provider_calls": 0,
+      "repair": {
+        "attempted": false
+      },
+      "targets": [
+        {
+          "path": "app/kernel/provider_registry.py",
+          "symbol": "adapter_for"
+        },
+        {
+          "path": "app/cli/api.py",
+          "symbol": "_chat_model_for_provider"
+        }
+      ],
+      "task": "provider_model_wiring"
+    },
+    {
+      "crystal": {
+        "file_receipts": [
+          {
+            "after_sha256": "sha256:f28a593d9d948235ca6308b6a8dddd906df402b8c7cc72c75a5577f519a11fc6",
+            "approval_id": "matrix-approval",
+            "authority": {
+              "authorize": false,
+              "execute": false,
+              "model_authority": {
+                "authorize": false,
+                "declare_success": false,
+                "execute": false,
+                "interpret": true,
+                "propose": true
+              }
+            },
+            "beast_object_type": "crystal_execution_receipt",
+            "before_sha256": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+            "crystal_ir_digest": "sha256:73fcb9c885e80f164011fc45aabdc4f947233958c4502499bc4aa41fda80baf4",
+            "mutation_performed": true,
+            "path": "app/config.py",
+            "receipt_digest": "sha256:3654fa7515d915f15ef67e7061b562293f71f1582f453608280612ad32fb79d7",
+            "rollback_performed": false,
+            "status": "verified",
+            "verification": [
+              {
+                "command": [
+                  "python",
+                  "-m",
+                  "py_compile",
+                  "app/config.py"
+                ],
+                "ok": true,
+                "returncode": 0,
+                "stderr": "",
+                "stdout": ""
+              }
+            ],
+            "version": "1.0",
+            "worktree_task_id": "crystal-config_validation_edge_case-parse_bool"
+          }
+        ],
+        "provider_calls": 0,
+        "status": "verified",
+        "verification": {
+          "latency_ms": 258.42,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n"
+        }
+      },
+      "grounding": {
+        "file_sha256": "sha256:3335a8b5822db15df7363576782871ea0ade51bf2ac5a66cd1ba48238f4c7133",
+        "old_sha256": "sha256:f9b64076797dd1c8afedd818ea4312f2db51bb0d8eed6561b42ec929f84fae17",
+        "target_id": "T:config_validation_edge_case:parse_bool"
+      },
+      "live": {
+        "error": "RuntimeError: RuntimeError: Ollama HTTP 500: {\"error\":\"model runner has unexpectedly stopped, this may be due to resource limitations or an internal error, check ollama server logs for details\"}",
+        "status": "failed"
+      },
+      "objective": "Fix config parsing defaults and shell-style boolean normalization.",
+      "provider_calls": 2,
+      "raw_ollama": {
+        "mutation_performed": false,
+        "status": "not_sent_isolated_boundary"
+      },
+      "repair": {
+        "attempted": true,
+        "error": "RuntimeError: RuntimeError: Ollama HTTP 500: {\"error\":\"model runner has unexpectedly stopped, this may be due to resource limitations or an internal error, check ollama server logs for details\"}",
+        "status": "failed"
+      },
+      "targets": [
+        {
+          "path": "app/config.py",
+          "symbol": "parse_bool"
+        }
+      ],
+      "task": "config_validation_edge_case"
+    }
+  ],
+  "tasks": 2,
+  "version": "1.0"
+}

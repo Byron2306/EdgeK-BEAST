@@ -1,0 +1,3841 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 999,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:44:19Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_3c790c6b363faa2109ca",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_7bee1e4d807ba833.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "provider_alias_normalization_o01_v1",
+        "provider_alias_normalization_o02_v1"
+      ],
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 999,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:44:26Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_cfece000794a29d77e8a",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_66472efea4a9d21b",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_66472efea4a9d21b.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "provider_alias_normalization_o01_v1",
+        "provider_alias_normalization_o02_v1"
+      ],
+      "task_id": "provider_alias_normalization_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_72ccb626054f28f06a4b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 6838.775,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 232,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 741,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4b1ce70d9af4891cc721.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3345.065,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_18c2b75f142f950325f2.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2403.517,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 307,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 4334,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1183cbed9832bad7801a.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 3220.913,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_5d6808034c9321a424ad.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2611.506,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 714,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8d5735156dda5c32a4e5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2591.244,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 311,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 4338,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b9ea173511b5385a85c1.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 4712.159,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_7551f8585eea73a3f0a9.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3293.193,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_3c790c6b363faa2109ca.json"
+      },
+      "avoided_tokens_estimate": 999,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_f6b89c4b324c4600c4d8.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 2005.743,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 232,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 741,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_d9a8e644e7fe4e5e317b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3252.797,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_cfece000794a29d77e8a.json"
+      },
+      "avoided_tokens_estimate": 999,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_66472efea4a9d21b",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_74011610773fc15ee58d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 4395.159,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_98b3e653dbf2ff51d270.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3297.342,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 999,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e44a2d6f0bc3cb783a99.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2938.111,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 307,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 4334,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:089657acd7cf96402ba6c36fa4fec04daba7102c5747c4e58383235e5aafb3e0",
+      "applicability_fingerprint": "sha256:4a8c99eb90ece9f42af590c749349efdc7ba0ff1e81e17611c235f362ecf7da0",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:cd02dc967b84dec269cd4dd0827601cfff5cc5c91aef97c7bd0aa81992dbe1d8",
+      "applicability_fingerprint": "sha256:8d00fb9b784c3914d1c890e8beb5d534bd892ff50e0c02decf3e1dfae40aad03",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4b1ce70d9af4891cc721.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:0b90b6cdb70b6f0cdbe46abb8b8080b43bb92df92c6af38f3bff86cf3aff560f",
+      "applicability_fingerprint": "sha256:f2cecdd01f3917bd5bae28a16c37a420815e9d0478d86cc220ad594774a26daf",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_4b1ce70d9af4891cc721.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:3d748caf963b2adf805286aec9a5772d02795a81d75b4696529af0a80359cf18",
+      "applicability_fingerprint": "sha256:4a8c99eb90ece9f42af590c749349efdc7ba0ff1e81e17611c235f362ecf7da0",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:3efbfefc2ab21ebe7cda26159897b091660f7750b20c4d17ca52375dd9be2b67",
+      "applicability_fingerprint": "sha256:8d00fb9b784c3914d1c890e8beb5d534bd892ff50e0c02decf3e1dfae40aad03",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_5d6808034c9321a424ad.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:0790412d26044f770459bf0356161ffc6e7c2df24db5a19e7a7c65699e6efed6",
+      "applicability_fingerprint": "sha256:f2cecdd01f3917bd5bae28a16c37a420815e9d0478d86cc220ad594774a26daf",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_5d6808034c9321a424ad.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:895eb766c7a65b8e628ecc6113f838befca00b1b4acf04fc6db565faef5dc81a",
+      "applicability_fingerprint": "sha256:4a8c99eb90ece9f42af590c749349efdc7ba0ff1e81e17611c235f362ecf7da0",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:789d39c25f034c02f9e9708b0798a6e1f15cf4359a47b5cd9757a61e2c69e530",
+      "applicability_fingerprint": "sha256:8d00fb9b784c3914d1c890e8beb5d534bd892ff50e0c02decf3e1dfae40aad03",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_7551f8585eea73a3f0a9.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:53802f8b4fa3ac267c6a604f2dbe3c46a659b55b0157c24d65f71a2e8b5b1a5b",
+      "applicability_fingerprint": "sha256:f2cecdd01f3917bd5bae28a16c37a420815e9d0478d86cc220ad594774a26daf",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_7551f8585eea73a3f0a9.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:94e71766ef172dfb64c2439f0eeb8e8dd4b12a08972dbbdf512cd096dde7d429",
+      "applicability_fingerprint": "sha256:4a8c99eb90ece9f42af590c749349efdc7ba0ff1e81e17611c235f362ecf7da0",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6a8e4a3c5262d2f4a77e28f563c4f26cc5c6235c7f02546de2fde0776a784776",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:7b27bbe792d4b84ce23d961aa78b32b41c6483b17b0671a3432fd5f5e7a9d295",
+      "applicability_fingerprint": "sha256:8d00fb9b784c3914d1c890e8beb5d534bd892ff50e0c02decf3e1dfae40aad03",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_d9a8e644e7fe4e5e317b.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:cdfe11402b6097dbb2b165f89c23ad0aeb09ed4615e6efc8d03b62dc9e016472",
+      "applicability_fingerprint": "sha256:f2cecdd01f3917bd5bae28a16c37a420815e9d0478d86cc220ad594774a26daf",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_d9a8e644e7fe4e5e317b.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:1cce1633f5df12371f36c7282676ad51ea447edf2fb16bac880b79db0da0d783",
+      "applicability_fingerprint": "sha256:4a8c99eb90ece9f42af590c749349efdc7ba0ff1e81e17611c235f362ecf7da0",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:ec288a462a006755804c0a49eda8783c238303463eb73f0e8929192db847ddf8",
+      "applicability_fingerprint": "sha256:8d00fb9b784c3914d1c890e8beb5d534bd892ff50e0c02decf3e1dfae40aad03",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:036dd7f6a865f5773c74acfa5b3148738c62284f40f8e5a52a965471520e44b6",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_98b3e653dbf2ff51d270.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:c54b26489ad6c1f5e27021b4445ceb483607c73d1e3dc31ce044335b5e518478",
+      "applicability_fingerprint": "sha256:f2cecdd01f3917bd5bae28a16c37a420815e9d0478d86cc220ad594774a26daf",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_98b3e653dbf2ff51d270.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:a725753f53dd9bc72d91be27e2fdf5c0838e705c5ae911897bf9decf4cb1fb2c",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:44:19Z",
+      "cross_provider_reuse": false,
+      "family": "provider_alias_normalization",
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "occurrence": 3,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_3c790c6b363faa2109ca",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "validated_first_recurrence",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:44:26Z",
+      "cross_provider_reuse": false,
+      "family": "provider_alias_normalization",
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "occurrence": 5,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_cfece000794a29d77e8a",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "active_recurrence",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "provider_alias_normalization"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,7 @@\n \"\"\"Provider id parser with incomplete normalization.\"\"\"\n \n-\n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").lower().replace(\" \", \"_\").replace(\"-\", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 6838.775,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6838.775,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 790,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 232,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 741
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"why\": \"Fix provider-id normalization for hyphen and space variants.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "========================= FAILURES ===================================\n_________ test_normalize_provider_id_accepts_hyphen_and_space_variants _________\n\n    def test_normalize_provider_id_accepts_hyphen_and_space_variants():\n>       assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\nE       AssertionError: assert '_nvidia_nim_' == 'nvidia_nim'\nE         \nE         - nvidia_nim\nE         + _nvidia_nim_\nE         ? +          +\n\ntests/test_provider_parser.py:5: AssertionError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter_' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter_\nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n2 failed, 1 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 232,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 741
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 3345.065,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 3345.065,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.05s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2403.517,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2403.517,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 722,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 307,
+          "prompt_tokens": 4027,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 4334
+        }
+      },
+      "prompt_tokens": 3191,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize hyphen and space variants in provider_id\",\n      \"new\": \"    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"provider_handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 307,
+        "prompt_tokens": 4027,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 4334
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 3220.913,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 3220.913,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,7 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").lower().replace(\" \", \"_\").replace(\"-\", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2611.506,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2611.506,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 669,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 205,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 714
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\",\n      \"new\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"why\": \"Fix provider-id normalization for hyphen and space variants.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "========================= FAILURES ===================================\n_________ test_normalize_provider_id_accepts_hyphen_and_space_variants _________\n\n    def test_normalize_provider_id_accepts_hyphen_and_space_variants():\n>       assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\nE       AssertionError: assert '_nvidia_nim_' == 'nvidia_nim'\nE         \nE         - nvidia_nim\nE         + _nvidia_nim_\nE         ? +          +\n\ntests/test_provider_parser.py:5: AssertionError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter_' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter_\nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 205,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 714
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2591.244,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2591.244,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 742,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 311,
+          "prompt_tokens": 4027,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4338
+        }
+      },
+      "prompt_tokens": 3191,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize provider ID by replacing hyphens and spaces with underscores\",\n      \"new\": \"    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"provider_handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 311,
+        "prompt_tokens": 4027,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4338
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 4712.159,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 4712.159,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 3293.193,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 3293.193,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,7 @@\n \"\"\"Provider id parser with incomplete normalization.\"\"\"\n \n-\n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").lower().replace(\" \", \"_\").replace(\"-\", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2005.743,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2005.743,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 790,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 232,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 741
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"op\": \"create_or_replace\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"why\": \"Fix provider-id normalization for hyphen and space variants.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "========================= FAILURES ===================================\n_________ test_normalize_provider_id_accepts_hyphen_and_space_variants _________\n\n    def test_normalize_provider_id_accepts_hyphen_and_space_variants():\n>       assert normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\"\nE       AssertionError: assert '_nvidia_nim_' == 'nvidia_nim'\nE         \nE         - nvidia_nim\nE         + _nvidia_nim_\nE         ? +          +\n\ntests/test_provider_parser.py:5: AssertionError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter_' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter_\nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n2 failed, 1 passed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 232,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 741
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 3252.797,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 3252.797,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 4395.159,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 4395.159,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.05s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 3297.342,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].old matched 0 times in app/provider_parser.py",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 3297.342,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].old matched 0 times in app/provider_parser.py"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1698,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 490,
+          "prompt_tokens": 509,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 999
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"new\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n\\n\\ndef route_for(provider_id):\\n    normalized = normalize_provider_id(provider_id)\\n    routes = {\\n        \\\"openrouter\\\": \\\"/proxy/openrouter\\\",\\n        \\\"nvidia_nim\\\": \\\"/proxy/nvidia\\\",\\n        \\\"local_nim\\\": \\\"/proxy/local-nim\\\",\\n    }\\n    return routes[normalized]\\n\",\n      \"old\": \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\\n\\ndef normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\\n\\n\\ndef route_for(",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 490,
+        "prompt_tokens": 509,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 999
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2938.111,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2938.111,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 722,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 307,
+          "prompt_tokens": 4027,
+          "prompt_tokens_details": {
+            "cached_tokens": 3968
+          },
+          "total_tokens": 4334
+        }
+      },
+      "prompt_tokens": 3191,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Normalize hyphen and space variants in provider_id\",\n      \"new\": \"    return str(value or \\\"\\\").lower().replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"provider_handoff_hash\": \"sha256:3b70528668cacf256667761bfb093dc30892722d8d93077c2ea9533c51bf7207\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.01s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 307,
+        "prompt_tokens": 4027,
+        "prompt_tokens_details": {
+          "cached_tokens": 3968
+        },
+        "total_tokens": 4334
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "tests:tests/test_provider_parser.py:semantic_change",
+        "tests:tests/test_provider_parser.py:symbol_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:af92a49e7cefceeee851385c0344bed167881cc3a341b226a9f8e524bb1f58b2",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2df4e91472447bcb3c5484631f674b712e41ee06604a6bfc0b21590f69f513d2",
+            "semantic_hash": "sha256:7a06fde99523105684f26b6257cb2b73fe8e2a1db6c403a7bffead3f84cb42b2",
+            "symbol_hashes": {
+              "test_mutation_contract_sentinel": "sha256:ce3375caaa586cb65b64122d4728e4c04d655e0a29382a05d9f4da10b03184ba",
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:af92a49e7cefceeee851385c0344bed167881cc3a341b226a9f8e524bb1f58b2",
+      "mutation_type": "test_contract_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "provider": "mistral",
+      "recovered_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "tests:tests/test_provider_parser.py:semantic_change",
+          "tests:tests/test_provider_parser.py:symbol_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:43:55Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 6838.775,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 232,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_72ccb626054f28f06a4b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 741,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:43:56Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3345.065,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_4b1ce70d9af4891cc721",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:43:56Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2403.517,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 307,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_18c2b75f142f950325f2",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 4334,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:07Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3220.913,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_1183cbed9832bad7801a",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:07Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2611.506,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_5d6808034c9321a424ad",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 714,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:44:08Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2591.244,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 311,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8d5735156dda5c32a4e5",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 4338,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:17Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4712.159,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_b9ea173511b5385a85c1",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:18Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3293.193,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_7551f8585eea73a3f0a9",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2005.743,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 232,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_f6b89c4b324c4600c4d8",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 741,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:26Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3252.797,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_d9a8e644e7fe4e5e317b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:39Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4395.159,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_74011610773fc15ee58d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:44:40Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3297.342,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 490,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 509,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+      "receipt_id": "mega_provider_call_98b3e653dbf2ff51d270",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 999,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:44:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2938.111,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 307,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4027,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_e44a2d6f0bc3cb783a99",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 4334,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "mistral": {
+      "live_failures_by_bucket": {
+        "capability_failure": 13,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "mistral": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 0.3333,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 0.3333,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.35,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "mistral": {
+          "average_latency_ms": 3543.537,
+          "average_provider_prompt_tokens": 1681.667,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_mistral_raw",
+              "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+              "task": "provider_id_parser"
+            },
+            {
+              "lane": "live_mistral_schema_only",
+              "reason": "live provider failed or produced invalid scoped edit: operations[0].old matched 0 times in app/provider_parser.py",
+              "task": "provider_id_parser"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 2938.111,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 4334.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "mistral"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_mistral_schema_validation_20260721T2048Z_b000/live_execution.json"
+}

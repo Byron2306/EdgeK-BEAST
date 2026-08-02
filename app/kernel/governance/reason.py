@@ -437,10 +437,16 @@ class Reasoner:
         # Only evaluate the request authored by the caller.  System context,
         # tool output, and retrieved documentation frequently mention secrets
         # while describing redaction or configuration procedures.
+        # Retrieved workspace source is evidence, not operator intent. The
+        # IDE marks the explicit grounding turn so words such as `secret`,
+        # `provide`, or `credential` inside legitimate source/docstrings do
+        # not become a false exfiltration request. The actual user prompt is
+        # still evaluated normally.
         content = " ".join(
             str(message.get("content", ""))
             for message in (ir.messages or [])
             if str(message.get("role", "user")).lower() == "user"
+            and not str(message.get("content", "")).lstrip().startswith("AUTHORITATIVE SOURCE EVIDENCE.")
         ).lower()
         credential_material = (
             r"(?:api[ _-]?key|secret(?:[ _-]?(?:key|token|value))?|"

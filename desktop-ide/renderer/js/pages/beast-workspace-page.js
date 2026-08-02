@@ -1,4 +1,15 @@
 (() => {
+  function emitWorkspaceDebug(event, details = {}) {
+    try {
+      window.beastDesktop?.workspaceDebugLog?.({
+        scope: 'workspace-page',
+        event,
+        route: 'workspace',
+        ...details,
+      });
+    } catch (_) {}
+  }
+
   function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[char]); }
   function formatSize(value) {
     const size = Number(value); if (!Number.isFinite(size) || size <= 0) return '';
@@ -40,6 +51,17 @@
     const last=[...turns].reverse().find(item=>String(item.text||'').trim());
     const validation=turns.findLast?.(item=>item.kind==='validation')||turns.slice().reverse().find(item=>item.kind==='validation');
     const sourceplan=turns.findLast?.(item=>item.kind==='sourceplan')||turns.slice().reverse().find(item=>item.kind==='sourceplan');
+    const routeTurn=turns.findLast?.(item=>/provider|route/i.test(`${item.type||''} ${item.kind||''} ${item.text||''}`))||turns.slice().reverse().find(item=>/provider|route/i.test(`${item.type||''} ${item.kind||''} ${item.text||''}`));
+    const failureTurn=turns.findLast?.(item=>/failure|repair|required|verification failed/i.test(`${item.type||''} ${item.kind||''} ${item.text||''}`))||turns.slice().reverse().find(item=>/failure|repair|required|verification failed/i.test(`${item.type||''} ${item.kind||''} ${item.text||''}`));
+    const testTurn=turns.findLast?.(item=>/pytest|vitest|jest|go test|cargo test|mvn test|gradle test|dotnet test|playwright|cypress|verif/i.test(`${item.command||''} ${item.text||''}`))||turns.slice().reverse().find(item=>/pytest|vitest|jest|go test|cargo test|mvn test|gradle test|dotnet test|playwright|cypress|verif/i.test(`${item.command||''} ${item.text||''}`));
+    const route=message.route||message.providerRoute||routeTurn?.route||{};
+    const failure=message.failureAnalysis||message.repair||failureTurn?.failure_analysis||failureTurn?.analysis||{};
+    const planState=message.planState||message.objectivePlan||{};
+    const verifierStrategy=route.verification_strategy||message.verificationStrategy||validation?.validation_strategy||{};
+    const priorFailure=route.prior_failure||validation?.prior_failure||{};
+    const routeMode=String(route.target_execution||verifierStrategy.mode||route.execution_target||'local');
+    const failureRationale=failure.escalation_hint||priorFailure.failure_class||'no escalation pressure';
+    const score=value=>Number.isFinite(Number(value))?`${Math.round(Number(value)*100)}%`:'n/a';
     const cards=[
       ['Intent',profile.kind||message.mode||'agent',profile.mutating===false?'ready':'active'],
       ['Context',count(/context|read|provider input|content loaded/),turns.some(item=>item.kind==='context'&&item.state==='failed')?'attention':'ready'],
@@ -48,8 +70,18 @@
       ['Verify',validation?validation.text:'waiting',validation?.state||'idle'],
       ['SourcePlan',sourceplan?sourceplan.text:(proposal.operations?.length?`${proposal.operations.length} ready`:'pending'),sourceplan?.state||(proposal.ready?'ready':'idle')],
     ];
+    const cockpitDetails=[
+      ['Provider route',route.provider||routeTurn?.provider||routeTurn?.text||'unreported',route.reason||route.route_kind||'selection evidence'],
+      ['Execution target',route.execution_target||validation?.execution_target||'local',routeMode],
+      ['Route fitness',route.quality_score!=null?`quality ${score(route.quality_score)} · health ${score(route.route_health)}`:'waiting for telemetry',route.task_type||'task type pending'],
+      ['Verifier strategy',verifierStrategy.mode||validation?.validation_strategy?.mode||'pending',verifierStrategy.summary||verifierStrategy.family||'target-native verifier selection'],
+      ['Failure class',failure.failure_class||failureTurn?.failure_class||'none active',failure.next_action||failureRationale||failureTurn?.text||'no repair required'],
+      ['Prior verifier failure',priorFailure.failure_class||'none',priorFailure.target_execution||priorFailure.execution_target||'no degraded verifier history'],
+      ['Test selection',testTurn?.command||testTurn?.text||validation?.command||'not selected yet',testTurn?.framework||verifierStrategy.family||'focused verifier/test adapter'],
+      ['Plan state',planState.active_step_id||planState.status||'durable plan synced',planState.reason||'inspect → plan → edit → verify → repair → SourcePlan'],
+    ];
     const draftLine=draft.chars?`${Number(draft.chars).toLocaleString()} streamed chars · ${Number(draft.actions||0)} structured edit${Number(draft.actions||0)===1?'':'s'}`:(proposal.operations?.length?'SourcePlan draft ready':'Reading workspace context');
-    return `<section class="cortex-ai-cockpit" aria-label="Agent cockpit"><header><span><b>Agent cockpit</b><small>${escapeHtml(draftLine)}</small></span><em>${escapeHtml(last?.text||message.activity||'Working')}</em></header><div>${cards.map(([label,value,state])=>`<p class="${escapeHtml(state||'idle')}"><b>${escapeHtml(label)}</b><span>${escapeHtml(value)}</span></p>`).join('')}</div></section>`;
+    return `<section class="cortex-ai-cockpit" aria-label="Agent cockpit"><header><span><b>Agent cockpit</b><small>${escapeHtml(draftLine)}</small></span><em>${escapeHtml(last?.text||message.activity||'Working')}</em></header><div>${cards.map(([label,value,state])=>`<p class="${escapeHtml(state||'idle')}"><b>${escapeHtml(label)}</b><span>${escapeHtml(value)}</span></p>`).join('')}</div><details class="cortex-ai-cockpit-depth" open><summary>Route, repair, tests, and plan state</summary>${cockpitDetails.map(([label,value,detail])=>`<p><b>${escapeHtml(label)}</b><span>${escapeHtml(value)}</span><small>${escapeHtml(detail)}</small></p>`).join('')}</details></section>`;
   }
   function aiNarrationSentence(item) {
     const text=String(item?.text||'').replace(/\s+/g,' ').trim();const command=String(item?.command||'').trim();const type=String(item?.type||item?.kind||'');const tool=String(item?.tool||'').trim();const lower=`${tool} ${text}`.toLowerCase();
@@ -113,7 +145,7 @@
   }
   function aiTurns(message) {
     const rows=Array.isArray(message?.turns)?message.turns:[];if(!rows.length)return '';
-    return `<details class="cortex-ai-turns" aria-label="Debug agent transcript"><summary><b>Debug transcript</b><small>${rows.length} typed event${rows.length===1?'':'s'}</small></summary><div>${rows.slice(-18).map(item=>`<p class="${escapeHtml(`${item.state||'active'} ${item.type||''}`)}"><i>${escapeHtml(item.type||item.kind||'event')}</i><span>${item.command?`<code>${escapeHtml(item.command)}</code>`:escapeHtml(item.text||'')}${item.authority?`<small>${escapeHtml(item.authority)}</small>`:''}</span></p>`).join('')}</div></details>`;
+    return `<details class="cortex-ai-turns" aria-label="Debug agent transcript"><summary><b>Debug transcript</b><small>${rows.length} typed event${rows.length===1?'':'s'}</small></summary><div>${rows.slice(-18).map(item=>`<p class="${escapeHtml(`${item.state||'active'} ${item.type||''}`)}"><i>${escapeHtml(item.type||item.kind||'event')}</i><span>${item.command?`<code>${escapeHtml(item.command)}</code>`:escapeHtml(item.text||'')}${item.authority?`<small>${escapeHtml(item.authority)}</small>`:''}${item.execution_target||item.target_execution?`<small>${escapeHtml([item.execution_target,item.target_execution].filter(Boolean).join(' · '))}</small>`:''}${item.reason?`<small>${escapeHtml(item.reason)}</small>`:''}${item.validation_strategy?.mode?`<small>${escapeHtml(`${item.validation_strategy.mode}${item.validation_strategy.family?` · ${item.validation_strategy.family}`:''}`)}</small>`:''}</span></p>`).join('')}</div></details>`;
   }
   function aiActiveAgentRequests(message) {
     if(message?.role!=='assistant'||message?.mode==='ask'||message?.proposal?.operations?.length)return '';
@@ -232,6 +264,50 @@
     }
   }
 
+  function collectWorkspaceProblems(state) {
+    const monaco = window.monaco;
+    if (!monaco?.editor?.getModelMarkers) return [];
+    const workspaceFiles = new Set((state.workspace.files || []).map(file => String(file.path || '')));
+    const severityLabel = severity => {
+      if (severity === monaco.MarkerSeverity.Error) return 'error';
+      if (severity === monaco.MarkerSeverity.Warning) return 'warning';
+      if (severity === monaco.MarkerSeverity.Info) return 'info';
+      return 'hint';
+    };
+    return monaco.editor.getModelMarkers({}).map(marker => {
+      const path = decodeURIComponent(String(marker.resource?.path || '')).replace(/^\/+/, '');
+      if (!path || (workspaceFiles.size && !workspaceFiles.has(path))) return null;
+      return {
+        path,
+        severity: severityLabel(marker.severity),
+        message: String(marker.message || 'Language diagnostic'),
+        source: String(marker.source || 'LSP'),
+        code: marker.code == null ? '' : String(typeof marker.code === 'object' ? (marker.code.value || '') : marker.code),
+        line: Number(marker.startLineNumber || 1),
+        column: Number(marker.startColumn || 1),
+      };
+    }).filter(Boolean).sort((left, right) => {
+      const severityRank = { error: 0, warning: 1, info: 2, hint: 3 };
+      return (
+        (severityRank[left.severity] ?? 9) - (severityRank[right.severity] ?? 9) ||
+        left.path.localeCompare(right.path) ||
+        left.line - right.line ||
+        left.column - right.column
+      );
+    });
+  }
+
+  function summarizeProblems(problems) {
+    return problems.reduce((summary, problem) => {
+      summary.total += 1;
+      if (problem.severity === 'error') summary.errors += 1;
+      else if (problem.severity === 'warning') summary.warnings += 1;
+      else if (problem.severity === 'info') summary.info += 1;
+      else summary.hints += 1;
+      return summary;
+    }, { total: 0, errors: 0, warnings: 0, info: 0, hints: 0 });
+  }
+
   function template() {
     const root = document.createElement('div');
     root.className = 'beast-page beast-workspace-page phase2-workspace';
@@ -268,7 +344,7 @@
       </section>
       <div class="cortex-layout">
         <aside class="beast-card cortex-explorer">
-          <div class="cortex-tabbar" aria-label="Workspace views"><button data-explorer-tab="files" class="active" aria-label="Files" title="Files"><img src="${BeastAssets.icon('files')}" alt=""></button><button data-explorer-tab="outline" aria-label="Outline" title="Outline"><img src="${BeastAssets.icon('map')}" alt=""></button><button data-explorer-tab="recent" aria-label="Recent files" title="Recent files"><img src="${BeastAssets.icon('evidence')}" alt=""></button><button data-explorer-tab="changes" aria-label="Source Control" title="Source Control (Ctrl Shift G)"><img src="${BeastAssets.icon('source')}" alt=""></button><button data-explorer-tab="search" aria-label="Search" title="Search"><img src="${BeastAssets.icon('context')}" alt=""></button></div>
+          <div class="cortex-tabbar" aria-label="Workspace views"><button data-explorer-tab="files" class="active" aria-label="Files" title="Files"><img src="${BeastAssets.icon('files')}" alt=""></button><button data-explorer-tab="outline" aria-label="Outline" title="Outline"><img src="${BeastAssets.icon('map')}" alt=""></button><button data-explorer-tab="recent" aria-label="Recent files" title="Recent files"><img src="${BeastAssets.icon('evidence')}" alt=""></button><button data-explorer-tab="changes" aria-label="Source Control" title="Source Control (Ctrl Shift G)"><img src="${BeastAssets.icon('source')}" alt=""></button><button data-explorer-tab="search" aria-label="Search" title="Search"><img src="${BeastAssets.icon('context')}" alt=""></button><button data-explorer-tab="problems" aria-label="Problems" title="Problems (Ctrl Shift M)"><img src="${BeastAssets.icon('diagnostics')}" alt=""></button></div>
           <div class="cortex-explorer-tools">
             <input class="beast-filter" data-file-filter placeholder="Filter workspace…" autocomplete="off">
             <button title="New file" data-file-op="new-file">＋</button><button title="New folder" data-file-op="new-folder">⌑</button><button title="Toggle tree/flat" data-file-op="toggle-mode">≋</button>
@@ -278,16 +354,26 @@
         </aside>
         <section class="beast-card cortex-editor wide">
           <div class="cortex-editor-top">
-            <div class="cortex-tabs" data-editor-tabs></div>
-            <div class="cortex-editor-tools"><span class="cortex-git-toolbar-label hidden" data-git-diff-toolbar>READ-ONLY SOURCE CONTROL DIFF</span><button data-editor-action="split">Split</button><button data-editor-action="revert">Revert</button><button data-editor-action="save-remote">Save Remote</button><button data-editor-action="assist">Ask AI</button><button class="hot" data-editor-action="draft">Draft SourcePlan</button></div>
+            <div class="cortex-tabs legacy-editor-tabs" data-editor-tabs></div><div class="beast-workbench-indicator"><b data-workbench-group-count>1 PANE</b><span>PHYSICAL GROUP LAYOUT</span></div>
+            <div class="cortex-editor-tools"><span class="cortex-git-toolbar-label hidden" data-git-diff-toolbar>READ-ONLY SOURCE CONTROL DIFF</span><button data-editor-action="split">Split</button><button data-editor-action="split-vertical" title="Split vertically">Split V</button><button data-editor-action="move-group" title="Move active editor to next group">Move</button><button data-editor-action="close-group" title="Merge active group into its sibling">Merge</button><button data-editor-action="pin" title="Pin or unpin the active editor">Pin</button><button data-editor-action="reopen" title="Reopen the most recently closed editor">Reopen</button><button data-compare-action="disk" title="Compare active buffer with disk">Compare</button><button data-editor-action="revert">Revert</button><button data-editor-action="save-remote">Save Remote</button><button data-editor-action="assist">Ask AI</button><button class="hot" data-editor-action="draft">Draft SourcePlan</button></div>
           </div>
           <nav class="cortex-breadcrumbs" data-editor-breadcrumbs aria-label="Editor breadcrumbs"><span>No file open</span></nav>
+          <div class="cortex-editor-safety-banner hidden" data-editor-safety-banner></div>
           <div class="cortex-editor-stage" data-editor-stage>
-            <div class="cortex-editor-pane" data-editor-host></div>
-            <textarea class="beast-editor-fallback hidden" data-editor-fallback spellcheck="false" aria-label="BEAST editor"></textarea>
-            <div class="cortex-editor-pane hidden" data-editor-split-host></div>
-            <textarea class="beast-editor-fallback hidden" data-editor-split-fallback spellcheck="false" aria-label="BEAST split editor"></textarea>
+            <div class="cortex-editor-text-surface" data-editor-text-surface>
+              <div data-editor-workbench></div>
+              <div class="cortex-editor-pane" data-editor-host></div>
+              <div class="beast-editor-fallback hidden" data-editor-fallback contenteditable="true" spellcheck="false" aria-label="BEAST editor" role="textbox"></div>
+              <div class="cortex-editor-pane hidden" data-editor-split-host></div>
+              <div class="beast-editor-fallback hidden" data-editor-split-fallback contenteditable="true" spellcheck="false" aria-label="BEAST split editor" role="textbox"></div>
+            </div>
+            <section class="cortex-editor-safety-workbench hidden" data-editor-safety-workbench aria-label="Large file and binary safety mode"></section>
             <section class="beast-notebook-workbench hidden" data-notebook-workbench aria-label="Notebook editor"></section>
+            <section class="cortex-compare-workbench hidden" data-compare-workbench aria-label="Compare editors">
+              <header><span><small data-compare-meta>COMPARE EDITORS</small><strong data-compare-title>Document comparison</strong></span><div><button type="button" data-compare-action="previous" title="Previous change">↑</button><span data-compare-position>No changes</span><button type="button" data-compare-action="next" title="Next change">↓</button><button type="button" data-compare-action="toggle-view">Inline</button><button type="button" data-compare-action="file">Compare file</button><button type="button" data-compare-action="sourceplan">SourcePlan</button><button type="button" data-compare-action="accept-left">Use left</button><button type="button" data-compare-action="accept-right">Use right</button><button type="button" data-compare-action="close" aria-label="Close compare editor">×</button></div></header>
+              <div class="cortex-compare-host" data-compare-host></div>
+              <pre class="cortex-compare-fallback hidden" data-compare-fallback></pre>
+            </section>
             <section class="cortex-git-diff hidden" data-git-diff-workbench aria-label="Source control diff">
               <header><span><small data-git-diff-mode>WORKTREE</small><strong data-git-diff-title>Change preview</strong></span><div><button type="button" class="hidden" data-git-diff-action="sourceplan">Full review</button><button type="button" data-git-diff-action="stage">Stage</button><button type="button" data-git-diff-action="unstage">Unstage</button><button type="button" data-git-diff-action="close" aria-label="Close change diff">×</button></div></header>
               <div class="cortex-git-diff-host" data-git-diff-host></div>
@@ -303,7 +389,7 @@
               <div class="cortex-empty-trust"><i></i> Context-aware <i></i> Reuse-first <i></i> SourcePlan governed</div>
             </div>
           </div>
-          <footer class="cortex-statusbar"><button type="button" data-status-action="changes" aria-label="Open Source Control"><span data-git-branch>no repository</span></button><span data-editor-status>No active buffer.</span><span data-editor-position>Ln 1, Col 1</span><span data-layout-status></span></footer>
+          <footer class="cortex-statusbar"><button type="button" data-status-action="changes" aria-label="Open Source Control"><span data-git-branch>no repository</span></button><span data-editor-status>No active buffer.</span><span data-editor-position>Ln 1, Col 1</span><span data-layout-status></span><span data-editor-debug>editor debug pending</span></footer>
         </section>
         <aside class="beast-card cortex-ai-panel" data-ai-panel>
           <header class="cortex-ai-head">
@@ -314,11 +400,30 @@
             <button type="button" data-ai-mode="ask"><img src="${BeastAssets.icon('chat')}" alt=""><span><b>Ask</b><small>Explain</small></span></button>
             <button type="button" data-ai-mode="edit"><img src="${BeastAssets.icon('source')}" alt=""><span><b>Edit</b><small>Propose</small></span></button>
             <button type="button" data-ai-mode="agent"><img src="${BeastAssets.icon('orchestrator')}" alt=""><span><b>Agent</b><small>Implement</small></span></button>
+            <button type="button" data-ai-mode="review"><img src="${BeastAssets.icon('review')}" alt=""><span><b>Review</b><small>Critique</small></span></button>
           </div>
+          <section class="cortex-ai-objective" aria-label="Current objective and success criteria">
+            <header><span>Objective</span><b data-ai-objective-mode>Ask</b></header>
+            <p data-ai-objective>Describe the outcome BEAST should achieve.</p>
+            <div class="cortex-ai-success-grid">
+              <span data-ai-success-plan>Plan: waiting</span>
+              <span data-ai-success-tools>Tools: governed</span>
+              <span data-ai-success-verify>Verify: waiting</span>
+              <span data-ai-success-sourceplan>SourcePlan: pending</span>
+            </div>
+          </section>
           <details class="cortex-ai-context">
             <summary><span><b>Context</b><small data-ai-context-count>Active file</small></span><span class="cortex-ai-compute" data-ai-compute><img src="${BeastAssets.icon('crystal')}" alt=""><strong data-ai-crystal>Reuse ready</strong><i data-ai-crystal-confidence>Ready</i></span></summary>
-            <div class="cortex-ai-context-body"><div class="cortex-ai-context-actions"><button type="button" data-ai-action="active-file">Add active file</button><button type="button" data-ai-action="selection">Add selection</button><button type="button" data-ai-action="context-file">Add file…</button><button type="button" data-ai-action="suggest-context">Suggest context</button></div><div class="cortex-ai-chips" data-ai-context></div><div class="cortex-ai-context-suggestions" data-ai-context-suggestions></div><p data-ai-crystal-detail>Prior verified work is checked before inference.</p><p class="cortex-ai-compute-summary" data-ai-compute-summary>Context economics will appear when a run starts.</p></div>
+            <div class="cortex-ai-context-body"><div class="cortex-ai-context-actions"><button type="button" data-ai-action="active-file">Add active file</button><button type="button" data-ai-action="selection">Add selection</button><button type="button" data-ai-action="context-file">Add file…</button><button type="button" data-ai-action="suggest-context">Suggest context</button></div><div class="cortex-ai-chips" data-ai-context></div><div class="cortex-ai-context-suggestions" data-ai-context-suggestions></div><section class="phase5-context-manifest"><header><b>Durable Context Manifest</b><span data-phase5-context-summary>no durable run</span></header><div data-phase5-context-list><div class="cortex-empty-list">Start or select an AgentRun to review durable context.</div></div></section><p data-ai-crystal-detail>Prior verified work is checked before inference.</p><p class="cortex-ai-compute-summary" data-ai-compute-summary>Context economics will appear when a run starts.</p></div>
           </details>
+          <section class="cortex-ai-ops-console" aria-label="Live agent operations console">
+            <article><b>Plan</b><span data-ai-console-plan>waiting</span></article>
+            <article><b>Timeline</b><span data-ai-console-timeline>0 events</span></article>
+            <article><b>Tools & approvals</b><span data-ai-console-tools>governed</span></article>
+            <article><b>Worktree</b><span data-ai-console-worktree>operator workspace protected</span></article>
+            <article><b>Verification</b><span data-ai-console-verify>waiting</span></article>
+            <article><b>Budget</b><span data-ai-console-budget>120k tokens · governed</span></article>
+          </section>
           <div class="cortex-ai-conversation"><div class="cortex-ai-messages" data-ai-messages aria-live="polite" aria-label="BEAST Agent conversation"></div><button type="button" class="cortex-ai-jump-latest hidden" data-ai-action="jump-latest" aria-label="Jump to latest BEAST Agent output">Jump to latest <span data-ai-unread-count></span>↓</button></div>
           <details class="cortex-ai-trace"><summary>Run details <span data-ai-trace-count>0</span></summary><div data-ai-trace></div></details>
           <div class="cortex-ai-compose">
@@ -338,11 +443,14 @@
     const root = template();
     const explorer = root.querySelector('[data-explorer-body]');
     const filter = root.querySelector('[data-file-filter]');
+    const workbenchHost = root.querySelector('[data-editor-workbench]');
     const editorHost = root.querySelector('[data-editor-host]');
     const fallback = root.querySelector('[data-editor-fallback]');
     const splitHost = root.querySelector('[data-editor-split-host]');
     const splitFallback = root.querySelector('[data-editor-split-fallback]');
     let disposed = false;
+    let durableConsoleKey = '';
+    let durableConsoleTimer = null;
     let lastExplorerKey = '';
     let lastTabsKey = '';
     let lastAiMessagesKey = '';
@@ -357,21 +465,25 @@
     let gitDiffState={status:'idle',path:'',originalPath:'',mode:'worktree',originalText:'',modifiedText:'',patch:'',error:'',truncated:false};
     let gitHunksState={status:'idle',path:'',mode:'worktree',hunks:[],error:''};let gitConflictState={status:'idle',path:'',baseText:'',currentText:'',incomingText:'',resultText:'',digest:'',regions:0,error:''};
     let gitDiffCleanup=null;let gitDiffKey='';let gitDiffMountToken=0;
+    let workbenchMounted = false;
     let aiPreviewPlanId='';
     let aiFollowOutput=true;let aiUnreadOutput=0;let aiScrollFrame=0;let visualWorkload='';
     let searchState={status:'idle',query:'',replacement:'',results:[],preview:[],total:0,error:'',message:'Search the active workspace.'};
     const layout=root.querySelector('.cortex-layout');
-    const layoutStorageKey='beast.workspace.layout.v1';const zoomStorageKey='beast.desktop.zoom-level.v1';
+    const layoutStorageKey='beast.workspace.layout.v1';const zoomStorageKey='beast.desktop.zoom-level.v2';
     let zoomLevel=0;let resizeCleanup=null;
 
     function savedLayout(){try{return JSON.parse(localStorage.getItem(layoutStorageKey)||'{}')||{};}catch(_){return {};}}
-    function saveLayout(){try{localStorage.setItem(layoutStorageKey,JSON.stringify({explorer:Number.parseInt(layout.style.getPropertyValue('--cortex-explorer-width'),10)||205,ai:Number.parseInt(layout.style.getPropertyValue('--cortex-ai-width'),10)||430}));}catch(_){}}
-    function setPaneWidth(pane,width,{persist=true}={}){const max=Math.max(pane==='ai'?520:360,Math.floor(window.innerWidth*(pane==='ai'?.72:.48)));const bounds=pane==='ai'?[280,max]:[160,max];const value=Math.max(bounds[0],Math.min(bounds[1],Math.round(Number(width)||bounds[0])));layout.style.setProperty(pane==='ai'?'--cortex-ai-width':'--cortex-explorer-width',`${value}px`);if(persist)saveLayout();}
+    function currentPaneWidth(pane){return Number.parseInt(layout.style.getPropertyValue(pane==='ai'?'--cortex-ai-width':'--cortex-explorer-width'),10)||(pane==='ai'?460:280);}
+    function paneBounds(pane){const viewport=Math.max(window.innerWidth||0,960);if(pane==='ai'){const min=360;const max=Math.max(520,Math.min(920,Math.floor(viewport*.46)));return [min,max];}const min=248;const max=Math.max(320,Math.min(420,Math.floor(viewport*.28)));return [min,max];}
+    function saveLayout(){try{localStorage.setItem(layoutStorageKey,JSON.stringify({explorer:currentPaneWidth('explorer'),ai:currentPaneWidth('ai')}));}catch(_){}}
+    function setPaneWidth(pane,width,{persist=true}={}){const [min,max]=paneBounds(pane);const value=Math.max(min,Math.min(max,Math.round(Number(width)||min)));layout.style.setProperty(pane==='ai'?'--cortex-ai-width':'--cortex-explorer-width',`${value}px`);if(persist)saveLayout();}
+    function normalizePaneLayout({persist=false}={}){setPaneWidth('explorer',currentPaneWidth('explorer'),{persist:false});setPaneWidth('ai',currentPaneWidth('ai'),{persist:false});if(persist)saveLayout();}
     function updateZoomControls(){const label=root.querySelector('[data-zoom-label]');if(label)label.textContent=`${Math.round(Math.pow(1.2,zoomLevel)*100)}%`;}
     async function applyZoom(level,{reset=false}={}){if(!window.beastDesktop?.setZoom)return;const result=reset?await window.beastDesktop.resetZoom():await window.beastDesktop.setZoom(level);zoomLevel=Number(result?.level)||0;try{localStorage.setItem(zoomStorageKey,String(zoomLevel));}catch(_){}updateZoomControls();}
-    async function restoreViewPreferences(){const saved=savedLayout();if(saved.explorer)setPaneWidth('explorer',saved.explorer,{persist:false});if(saved.ai)setPaneWidth('ai',saved.ai,{persist:false});const stored=Number(localStorage.getItem(zoomStorageKey));try{const result=Number.isFinite(stored)&&stored!==0?await window.beastDesktop?.setZoom(stored):await window.beastDesktop?.getZoom?.();zoomLevel=Number(result?.level)||0;}catch(_){zoomLevel=0;}updateZoomControls();}
+    async function restoreViewPreferences(){const saved=savedLayout();if(saved.explorer)setPaneWidth('explorer',saved.explorer,{persist:false});if(saved.ai)setPaneWidth('ai',saved.ai,{persist:false});normalizePaneLayout();const stored=Number(localStorage.getItem(zoomStorageKey));try{const result=Number.isFinite(stored)?await window.beastDesktop?.setZoom(stored):await window.beastDesktop?.getZoom?.();zoomLevel=Number.isFinite(Number(result?.level))?Number(result.level):Number.isFinite(stored)?stored:0;}catch(_){zoomLevel=Number.isFinite(stored)?stored:0;}updateZoomControls();}
     function beginPaneResize(event,pane){if(window.innerWidth<=900||(pane==='ai'&&(!layout.classList.contains('ai-open')||layout.classList.contains('ai-focus'))))return;event.preventDefault();const pointerId=event.pointerId;const rect=layout.getBoundingClientRect();const resizer=event.currentTarget;resizer.setPointerCapture?.(pointerId);root.classList.add('resizing-pane');const move=moveEvent=>{if(moveEvent.pointerId===pointerId)setPaneWidth(pane,pane==='ai'?rect.right-moveEvent.clientX:moveEvent.clientX-rect.left,{persist:false});};const finish=finishEvent=>{if(finishEvent.pointerId!==pointerId)return;resizer.removeEventListener('pointermove',move);resizer.removeEventListener('pointerup',finish);resizer.removeEventListener('pointercancel',finish);root.classList.remove('resizing-pane');saveLayout();resizeCleanup=null;};resizeCleanup=()=>finish({pointerId});resizer.addEventListener('pointermove',move);resizer.addEventListener('pointerup',finish);resizer.addEventListener('pointercancel',finish);}
-    root.querySelectorAll('[data-pane-resizer]').forEach(resizer=>{resizer.addEventListener('pointerdown',event=>beginPaneResize(event,resizer.dataset.paneResizer));resizer.addEventListener('keydown',event=>{const pane=resizer.dataset.paneResizer;if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const current=Number.parseInt(layout.style.getPropertyValue(pane==='ai'?'--cortex-ai-width':'--cortex-explorer-width'),10)||(pane==='ai'?430:205);const direction=event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0;const target=event.key==='Home'?(pane==='ai'?280:160):event.key==='End'?(pane==='ai'?Math.floor(window.innerWidth*.72):Math.floor(window.innerWidth*.48)):current+(pane==='ai'?-direction:direction)*20;setPaneWidth(pane,target);});});
+    root.querySelectorAll('[data-pane-resizer]').forEach(resizer=>{resizer.addEventListener('pointerdown',event=>beginPaneResize(event,resizer.dataset.paneResizer));resizer.addEventListener('keydown',event=>{const pane=resizer.dataset.paneResizer;if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const current=currentPaneWidth(pane);const direction=event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0;const [min,max]=paneBounds(pane);const target=event.key==='Home'?min:event.key==='End'?max:current+(pane==='ai'?-direction:direction)*24;setPaneWidth(pane,target);});});
 
     function aiAtBottom(host) { return host.scrollHeight-host.scrollTop-host.clientHeight<28; }
     function syncAiFollowControl() {
@@ -397,7 +509,7 @@
       catch(error) { gitState={...gitState,status:'error',error:String(error.message||error),updatedAt:Date.now()}; }
       patch(BeastStore.get());
     }
-    async function refreshGitDetails(){if(!window.beastDesktop?.workspaceGitHistory)return;gitDetails={...gitDetails,loading:true,error:''};renderExplorer(BeastStore.get());try{const scope=gitRootPayload();const [history,remotes]=await Promise.all([window.beastDesktop.workspaceGitHistory({...scope,limit:40}),window.beastDesktop.workspaceGitRemotes(scope)]);gitDetails={...gitDetails,history:history?.commits||[],remotes:remotes?.remotes||[],loading:false,error:''};}catch(error){gitDetails={...gitDetails,loading:false,error:String(error.message||error)};}renderExplorer(BeastStore.get());}
+    async function refreshGitDetails(){if(!window.beastDesktop?.workspaceGitHistory)return;gitDetails={...gitDetails,loading:true,error:''};renderExplorer(BeastStore.get());try{const scope=gitRootPayload();const [history,remotes]=await Promise.all([window.beastDesktop.workspaceGitHistory({...scope,limit:40}),window.beastDesktop.workspaceGitRemotes(scope)]);const selected=gitDetails.selectedCommit&&((history?.commits||[]).find(commit=>commit.hash===gitDetails.selectedCommit)||null);gitDetails={...gitDetails,history:history?.commits||[],remotes:remotes?.remotes||[],selectedCommit:selected?.hash||history?.commits?.[0]?.hash||'',loading:false,error:''};}catch(error){gitDetails={...gitDetails,loading:false,error:String(error.message||error)};}renderExplorer(BeastStore.get());}
     async function runGitOperation(action){if(!window.beastDesktop?.workspaceGitOperation)throw new Error('Advanced Git operations are available only in the BEAST desktop shell.');const payload={...gitRootPayload(),action,remote:gitDetails.remotes[0]?.name||'origin',base:gitDetails.rebaseBase,revision:gitDetails.cherryPick};const result=await window.beastDesktop.workspaceGitOperation(payload);if(!result?.ok)throw new Error(result?.error||result?.stderr||`Git ${action} failed.`);gitState={...gitState,message:`${action.replaceAll('-',' ')} complete · ${result.receipt?.id||'verified'}`,error:''};BeastStore.addLedger(`Git ${action} · ${result.receipt?.id||''}`);await Promise.all([refreshGit(),refreshGitDetails()]);}
     async function runGitAction(action,path='') {
       if(!window.beastDesktop?.workspaceGitAction)throw new Error('Source Control is available only in the BEAST desktop shell.');
@@ -467,21 +579,100 @@
       renderExplorer(BeastStore.get());
     }
 
+    async function refreshDurableConsole(state, force = false) {
+      const runId = String(state.aiCoding.activeRunId || state.aiCoding.sessionId || '').trim();
+      if (!runId || !window.BeastOperationsConsole) return;
+      const key = `${state.workspace.root || ''}:${runId}`;
+      if (!force && key === durableConsoleKey) return;
+      durableConsoleKey = key;
+      try {
+        const [snapshot, mission] = await Promise.all([
+          BeastOperationsConsole.load(runId, { force:true }),
+          BeastOperationsConsole.loadMission(runId).catch(() => null)
+        ]);
+        if (disposed) return;
+        const objective = mission?.current?.objective || mission?.objective || snapshot?.run?.objective || '';
+        const criteria = mission?.current?.success_criteria || mission?.success_criteria || snapshot?.run?.success_criteria || [];
+        const plan = mission?.current?.plan || mission?.plan || snapshot?.plan || {};
+        const activeStep = plan?.steps?.find?.(step => step.status === 'active') || null;
+        if (objective) root.querySelector('[data-ai-objective]').textContent = objective;
+        root.querySelector('[data-ai-success-plan]').textContent = `Plan v${mission?.current?.plan_version || mission?.plan_version || plan?.version || '—'}: ${activeStep?.title || plan?.active_step_id || plan?.status || 'waiting'}`;
+        root.querySelector('[data-ai-console-plan]').textContent = activeStep?.title || plan?.active_step_id || plan?.status || 'waiting';
+        root.querySelector('[data-ai-console-timeline]').textContent = `${snapshot?.timeline?.event_count || 0} durable events`;
+        root.querySelector('[data-ai-console-tools]').textContent = `${snapshot?.tool_activity?.count || 0} tools · ${snapshot?.approvals?.pending || 0} pending approvals`;
+        root.querySelector('[data-ai-console-worktree]').textContent = snapshot?.worktree?.status || 'operator workspace protected';
+        root.querySelector('[data-ai-console-verify]').textContent = snapshot?.verification?.status || 'waiting';
+        const used = snapshot?.budget?.used_tokens ?? snapshot?.budget?.tokens_used;
+        const limit = snapshot?.budget?.token_limit ?? snapshot?.budget?.max_tokens;
+        root.querySelector('[data-ai-console-budget]').textContent = used != null ? `${used}${limit ? ` / ${limit}` : ''} tokens` : 'governed';
+        if (criteria.length) root.querySelector('[data-ai-success-verify]').title = criteria.join('\n');
+        const contextPayload = await BeastOperationsConsole.loadSurface('context', runId).catch(() => null);
+        const contextItems = contextPayload?.items || contextPayload?.cards || [];
+        const contextSummary = contextPayload?.summary || {};
+        root.querySelector('[data-phase5-context-summary]').textContent = `${contextSummary.selected_items ?? contextSummary.accepted_count ?? 0} selected · ${contextSummary.admitted_items ?? contextSummary.admitted_count ?? 0} admitted`;
+        const contextList = root.querySelector('[data-phase5-context-list]');
+        contextList.innerHTML = '';
+        if (contextItems.length) {
+          const fragment = document.createDocumentFragment();
+          contextItems.slice(0, 12).forEach(item => {
+            const article = document.createElement('article');
+            article.className = 'phase5-context-card';
+            article.innerHTML = `<div><b>${BeastOperationsConsole.esc(item.source_reference || item.path || item.source || 'context item')}</b><small>${BeastOperationsConsole.esc(item.status || 'DISCOVERED')} · ${BeastOperationsConsole.esc(item.privacy_level || 'INTERNAL')} · ${BeastOperationsConsole.esc(item.provider_visibility || 'LOCAL_ONLY')}</small></div><span>${Number(item.token_estimate || 0)} tok</span><div class="phase5-context-actions">${(item.valid_actions || []).map(action => `<button type="button" data-phase5-context-action="${BeastOperationsConsole.esc(action)}" data-context-item-id="${BeastOperationsConsole.esc(item.item_id)}">${BeastOperationsConsole.esc(action.replaceAll('_',' '))}</button>`).join('')}</div>`;
+            fragment.appendChild(article);
+          });
+          contextList.appendChild(fragment);
+        } else {
+          contextList.innerHTML = '<div class="cortex-empty-list">No durable context items recorded.</div>';
+        }
+      } catch (error) {
+        if (!disposed) root.querySelector('[data-ai-console-timeline]').textContent = `durable console unavailable: ${String(error.message || error)}`;
+      }
+    }
+
     function renderAi(state) {
       const ai = state.aiCoding;
       const nextWorkload=ai.streaming?'interactive':'idle';
       if(nextWorkload!==visualWorkload){visualWorkload=nextWorkload;window.BeastVisualRuntime?.setWorkload?.(nextWorkload);}
-      const modeCopy={ask:{description:'Ask about the codebase. BEAST answers from your selected context.',placeholder:'Ask a question about this codebase…',send:'Ask BEAST'},edit:{description:'Describe a focused change. BEAST prepares a reviewable patch.',placeholder:'Describe the change you want to make…',send:'Propose edit'},agent:{description:'BEAST searches and reads the workspace, uses verified skills, asks before expanded capabilities, runs isolated checks, then prepares governed changes.',placeholder:'Describe the outcome you want BEAST to implement…',send:'Run agent'}}[ai.mode]||{};
+      const modeCopy={ask:{description:'Read-only answers from explicitly selected context.',placeholder:'Ask a question about this codebase…',send:'Ask BEAST'},edit:{description:'One bounded proposal, one repair turn, SourcePlan required.',placeholder:'Describe the focused change you want to make…',send:'Propose edit'},agent:{description:'Durable isolated execution with governed tools, verification, and SourcePlan promotion boundary.',placeholder:'Describe the outcome you want BEAST to implement…',send:'Run agent'},review:{description:'Critic and verifier roles only. Convert explicitly to Agent before mutation.',placeholder:'Describe what BEAST should review or verify…',send:'Run review'}}[ai.mode]||{};
       root.classList.toggle('ai-open', Boolean(ai.open));
       root.classList.toggle('ai-focus', Boolean(ai.open&&ai.expanded));
       root.querySelector('.cortex-layout').classList.toggle('ai-open', ai.open);
       root.querySelector('.cortex-layout').classList.toggle('ai-focus', Boolean(ai.open&&ai.expanded));
       root.querySelector('[data-ai-panel]').classList.toggle('hidden', !ai.open);
+      emitWorkspaceDebug('render-ai', {
+        aiOpen: Boolean(ai.open),
+        aiFocus: Boolean(ai.open && ai.expanded),
+        aiMode: ai.mode || '',
+        sessionId: ai.sessionId || '',
+        streaming: Boolean(ai.streaming),
+      });
       root.querySelectorAll('[data-ai-mode]').forEach(button => {const active=button.dataset.aiMode===ai.mode;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       const expand=root.querySelector('[data-ai-expand]');expand.setAttribute('aria-pressed',String(Boolean(ai.expanded)));expand.title=ai.expanded?'Return to normal workbench layout':'Expand Pair Programmer';root.querySelector('[data-ai-expand-label]').textContent=ai.expanded?'Workbench':'Focus';
       const prompt = root.querySelector('[data-ai-prompt]');
       if (document.activeElement !== prompt && prompt.value !== ai.prompt) prompt.value = ai.prompt || '';
       prompt.placeholder=modeCopy.placeholder||'Describe what you want to build or change…';root.querySelector('[data-ai-mode-description]').textContent=modeCopy.description||'';root.querySelector('[data-ai-send-label]').textContent=modeCopy.send||'Send';
+      const objectiveText=(ai.prompt||ai.messages.slice().reverse().find(message=>message.role==='user')?.content||modeCopy.placeholder||'Describe the outcome BEAST should achieve.').trim();
+      root.querySelector('[data-ai-objective-mode]').textContent=(ai.mode||'ask').toUpperCase();
+      root.querySelector('[data-ai-objective]').textContent=objectiveText.length>180?`${objectiveText.slice(0,177)}…`:objectiveText;
+      refreshDurableConsole(state);
+      const latestAssistant=ai.messages.slice().reverse().find(message=>message.role==='assistant')||{};
+      const turns=Array.isArray(latestAssistant.turns)?latestAssistant.turns:[];
+      const progress=Array.isArray(latestAssistant.progress)?latestAssistant.progress:[];
+      const toolCount=turns.filter(turn=>/tool|context|search|read|verify|approval/i.test(`${turn.type||''} ${turn.kind||''}`)).length;
+      const doneCount=progress.filter(item=>item.state==='done').length;
+      const failedCount=progress.filter(item=>item.state==='failed').length;
+      const planState=ai.sourcePlanReady?'ready':latestAssistant.proposal?.ready?'drafted':ai.streaming?'planning':'waiting';
+      const verifyState=failedCount?'failed':progress.some(item=>String(item.phase||'').includes('verify')&&item.state==='done')?'checked':ai.streaming?'waiting':'idle';
+      root.querySelector('[data-ai-success-plan]').textContent=`Plan: ${planState}`;
+      root.querySelector('[data-ai-success-tools]').textContent=`Tools: ${toolCount || 'governed'}`;
+      root.querySelector('[data-ai-success-verify]').textContent=`Verify: ${verifyState}`;
+      root.querySelector('[data-ai-success-sourceplan]').textContent=`SourcePlan: ${ai.sourcePlanReady?'ready':'pending'}`;
+      root.querySelector('[data-ai-console-plan]').textContent=planState;
+      root.querySelector('[data-ai-console-timeline]').textContent=`${ai.trace.length} event${ai.trace.length===1?'':'s'}`;
+      root.querySelector('[data-ai-console-tools]').textContent=toolCount?`${toolCount} visible turn${toolCount===1?'':'s'}`:'governed';
+      root.querySelector('[data-ai-console-worktree]').textContent=ai.mode==='agent'?'isolate available · no direct workspace write':'no worktree needed';
+      root.querySelector('[data-ai-console-verify]').textContent=verifyState;
+      root.querySelector('[data-ai-console-budget]').textContent=ai.streaming?'active budget':'120k tokens · governed';
       const modelKey = JSON.stringify([state.models.registry.map(row => [row.id,row.provider,row.status]), ai.model]);
       if (modelKey !== lastAiModelsKey) {
         lastAiModelsKey = modelKey;
@@ -557,11 +748,17 @@
       if (key === lastTabsKey) return; lastTabsKey = key;
       const host = root.querySelector('[data-editor-tabs]');
       const fragment = document.createDocumentFragment();
+      const layout = window.BeastEditorGroups?.snapshot?.();
+      const owningGroup = path => Object.values(layout?.groups || {}).find(group => group.tabs.includes(path));
       state.editor.openTabs.forEach(path => {
+        const group = owningGroup(path);
         const tab = document.createElement('button'); tab.type = 'button'; tab.className = 'cortex-tab'; tab.dataset.editorTab = path;
+        tab.draggable = true; tab.dataset.editorGroup = group?.groupId || '';
         if (path === state.editor.activePath&&gitDiffState.status==='idle') tab.classList.add('active');
         if (state.editor.dirtyPaths.includes(path)) tab.classList.add('dirty');
-        tab.innerHTML = `<img src="${iconFor(path, 'file')}" alt=""><span>${escapeHtml(fileName(path))}</span><i data-close-tab="${escapeHtml(path)}">×</i>`;
+        if (group?.pinnedDocumentIds?.includes(path)) tab.classList.add('pinned');
+        if (group?.previewDocumentId === path) tab.classList.add('preview');
+        tab.innerHTML = `<img src="${iconFor(path, 'file')}" alt=""><span>${escapeHtml(fileName(path))}</span>${group?.pinnedDocumentIds?.includes(path)?'<em title="Pinned editor">◆</em>':''}<i data-close-tab="${escapeHtml(path)}">×</i>`;
         fragment.append(tab);
       });
       if(gitDiffState.status!=='idle'){
@@ -577,11 +774,98 @@
       if(gitDiffState.status!=='idle')host.insertAdjacentHTML('afterbegin',`<b>${gitDiffState.mode==='ai'?'AI Changes':'Source Control'}</b><i aria-hidden="true">›</i>`);
     }
 
-    function notebookOutput(output = {}) {
+    function notebookTrust() {
+      const value = window.BeastWorkspaceTrust?.get?.() || BeastStore.get().trust?.workspaceTrust || {};
+      return { trusted: value.trusted === true || value.mode === 'trusted', restricted: value.restricted !== false && value.mode !== 'trusted' };
+    }
+    function notebookMimeText(value) {
+      if (Array.isArray(value)) return value.join('');
+      return typeof value === 'string' ? value : JSON.stringify(value ?? '', null, 2);
+    }
+    function sanitizeNotebookHtml(value) {
+      return notebookMimeText(value)
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+        .replace(/\s(?:href|src)\s*=\s*(?:"\s*javascript:[^"]*"|'\s*javascript:[^']*'|javascript:[^\s>]+)/gi, '');
+    }
+    function notebookDataUri(mime, value) {
+      const text = notebookMimeText(value);
+      if (/^image\/(?:png|jpeg|gif|webp)$/.test(mime) && /^[A-Za-z0-9+/=\s]+$/.test(text)) return `data:${mime};base64,${text.replace(/\s+/g, '')}`;
+      if (mime === 'image/svg+xml') return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(text)}`;
+      return '';
+    }
+    function notebookMimeBundle(output = {}) {
       const data = output.data || {};
-      const image = typeof data['image/png'] === 'string' && /^[A-Za-z0-9+/=]+$/.test(data['image/png']) ? `<img src="data:image/png;base64,${data['image/png']}" alt="Notebook output">` : '';
-      const text = output.type === 'error' ? `${output.ename || 'Error'}: ${output.evalue || ''}\n${(output.traceback || []).join('\n')}` : output.text || data['text/plain'] || '';
-      return `<div class="beast-notebook-output ${output.type === 'error' ? 'error' : ''}">${image}${text ? `<pre>${escapeHtml(typeof text === 'string' ? text : JSON.stringify(text, null, 2))}</pre>` : ''}</div>`;
+      const order = ['application/vnd.jupyter.widget-view+json','application/vnd.plotly.v1+json','application/vnd.vega.v5+json','application/vnd.vegalite.v5+json','application/javascript','image/png','image/jpeg','image/svg+xml','text/html','text/markdown','application/json','text/plain'];
+      const mime = output.primary_mime && data[output.primary_mime] != null ? output.primary_mime : order.find(item => data[item] != null) || '';
+      const trust = notebookTrust();
+      if (output.type === 'error' || output.output_type === 'error') {
+        const text = `${output.ename || 'Error'}: ${output.evalue || ''}\n${(output.traceback || []).join('\n')}`;
+        return `<pre>${escapeHtml(text)}</pre>`;
+      }
+      if (mime === 'application/vnd.jupyter.widget-view+json') {
+        return trust.trusted
+          ? `<div class="notebook-output-trust-note">Widget state recorded; rich widget runtime is not embedded in this shell.</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`
+          : `<div class="notebook-output-trust-note">Widget output held until this workspace is trusted.</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+      }
+      if (mime === 'application/javascript') {
+        return trust.trusted
+          ? `<div class="notebook-output-trust-note">JavaScript output captured in trusted review mode.</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`
+          : `<div class="notebook-output-trust-note">JavaScript output rendered as text until this workspace is trusted.</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+      }
+      if (/^application\/vnd\.(plotly|vega|vegalite)/.test(mime)) {
+        const note = trust.trusted
+          ? 'Structured visualization bundle captured; interactive runtime is not embedded in this shell.'
+          : 'Visualization bundle rendered as structured text until this workspace is trusted.';
+        return `<div class="notebook-output-trust-note">${note}</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+      }
+      if (/^image\/(?:png|jpeg|gif|webp|svg\+xml)$/.test(mime)) {
+        if (mime === 'image/svg+xml' && !trust.trusted) return `<div class="notebook-output-trust-note">SVG output held in restricted render mode.</div><pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+        const uri = notebookDataUri(mime, data[mime]);
+        return uri ? `<img src="${uri}" alt="Notebook ${escapeHtml(mime)} output">` : `<pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+      }
+      if (mime === 'text/html') {
+        const html = sanitizeNotebookHtml(data[mime]);
+        return trust.trusted ? `<div class="notebook-output-html trusted">${html}</div>` : `<div class="notebook-output-trust-note">HTML output rendered as text until this workspace is trusted.</div><pre>${escapeHtml(html)}</pre>`;
+      }
+      if (mime === 'text/markdown') return `<div class="notebook-output-markdown">${markdownPreview(notebookMimeText(data[mime]))}</div>`;
+      if (/json$|\+json$/.test(mime)) return `<pre>${escapeHtml(notebookMimeText(data[mime]))}</pre>`;
+      const text = output.text || data['text/plain'] || '';
+      return text ? `<pre>${escapeHtml(notebookMimeText(text))}</pre>` : '<pre class="empty">No displayable notebook output.</pre>';
+    }
+    function notebookOutput(output = {}) {
+      const mime = escapeHtml(output.primary_mime || Object.keys(output.data || {})[0] || output.output_type || output.type || 'output');
+      const className = output.type === 'error' || output.output_type === 'error' ? ' error' : '';
+      const summary = output.metadata?.beast_output_summary || output.metadata?.beast?.output_mime_summary || {};
+      const trustState = output.metadata?.beast_trust_state || output.metadata?.beast?.trust_state || '';
+      const summaryLine = summary && typeof summary === 'object' && (summary.outputCount || Array.isArray(summary.mimeTypes))
+        ? `<em>${Number(summary.outputCount || 1)} output${Number(summary.outputCount || 1) === 1 ? '' : 's'} · ${(summary.mimeTypes || []).length} mime type${(summary.mimeTypes || []).length === 1 ? '' : 's'}${summary.trustSensitive ? ' · trust-sensitive' : ''}</em>`
+        : '';
+      return `<div class="beast-notebook-output${className}" data-notebook-output-mime="${mime}" ${trustState ? `data-notebook-output-trust="${escapeHtml(trustState)}"` : ''}><small>${mime}</small>${summaryLine}${notebookMimeBundle(output)}</div>`;
+    }
+    function notebookRuntimeSummary(notebook = {}) {
+      const since = Number(notebook.sessionStartedAt || 0);
+      const lastEvent = Number(notebook.lastKernelEventAt || notebook.lastRunAt || 0);
+      const mime = notebook.lastMimeSummary || {};
+      const trust = notebookTrust();
+      const trustedTypes = Array.isArray(mime.trustedTypes) ? mime.trustedTypes : [];
+      const primary = Array.isArray(mime.primary) ? mime.primary.filter(Boolean) : [];
+      const rows = [
+        ['Kernel', notebook.kernel || 'beast-python'],
+        ['Trust', trust.trusted ? 'trusted execution + rich review' : 'restricted execution gate'],
+        ['PID', notebook.pid || 'none'],
+        ['Workspace', notebook.workspaceRoot ? fileName(notebook.workspaceRoot) : 'unbound'],
+        ['Started', since ? new Date(since).toLocaleTimeString() : 'not started'],
+        ['Last event', lastEvent ? new Date(lastEvent).toLocaleTimeString() : 'none'],
+        ['MIME', Array.isArray(mime.mimeTypes) && mime.mimeTypes.length ? `${mime.mimeTypes.length} type${mime.mimeTypes.length === 1 ? '' : 's'}${mime.trustSensitive ? ' · trust-sensitive' : ''}` : 'no outputs'],
+        ['Primary', primary.length ? primary.slice(0, 3).join(', ') : 'plain text'],
+        ['Trusted MIME', trustedTypes.length ? trustedTypes.slice(0, 3).join(', ') : 'none'],
+      ];
+      const stderr = String(notebook.lastKernelStderr || '').trim();
+      const trustNote = trust.trusted
+        ? 'Rich MIME bundles are rendered in trusted review mode. Widget and JS outputs remain captured rather than fully embedded.'
+        : 'Notebook execution is gated. Trust-sensitive MIME bundles stay in restricted review form until this workspace is trusted.';
+      return `<section class="beast-notebook-runtime" data-notebook-runtime-summary><div>${rows.map(([label, value]) => `<p><b>${escapeHtml(label)}</b><span>${escapeHtml(String(value))}</span></p>`).join('')}</div><div class="beast-notebook-runtime-note">${escapeHtml(trustNote)}</div>${stderr ? `<pre>${escapeHtml(stderr.slice(-1200))}</pre>` : ''}</section>`;
     }
     function markdownPreview(source) {
       return escapeHtml(source).replace(/^### (.*)$/gm, '<h4>$1</h4>').replace(/^## (.*)$/gm, '<h3>$1</h3>').replace(/^# (.*)$/gm, '<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
@@ -594,21 +878,25 @@
       host.classList.toggle('hidden', !isActive);
       if (isActive) [editorHost, fallback, splitHost, splitFallback].forEach(node => node.classList.add('hidden'));
       else {
-        const monacoActive = state.editor.owner === 'monaco';
-        editorHost.classList.toggle('hidden', !monacoActive); fallback.classList.toggle('hidden', monacoActive);
-        splitHost.classList.toggle('hidden', !monacoActive || !state.editor.split); splitFallback.classList.toggle('hidden', monacoActive || !state.editor.split);
+        syncPrimaryEditorSurface(state);
         lastNotebookKey = ''; return;
       }
       const cellKey = document.cells.map(cell => `${cell.id}:${cell.cell_type}:${cell.execution_count}:${JSON.stringify(cell.outputs || [])}`).join('|');
-      const key = `${path}:${document.parseError}:${cellKey}:${state.compatibility?.runtime?.notebook?.kernelStatus || ''}`;
+      const trust = notebookTrust();
+      const notebookRuntime = state.compatibility?.runtime?.notebook || {};
+      const trustHint = trust.trusted ? 'trusted MIME rendering' : 'restricted render · execution blocked';
+      const runDisabled = trust.trusted ? '' : 'disabled title="Notebook execution is disabled in restricted workspace mode."';
+      const key = `${path}:${document.parseError}:${cellKey}:${state.compatibility?.runtime?.notebook?.kernelStatus || ''}:${trust.trusted}`;
       if (key === lastNotebookKey) return; lastNotebookKey = key;
       const remote = Boolean(BeastDesktopBridge.parseRemoteRef?.(path));
-      host.innerHTML = `<header class="beast-notebook-head"><div><small>JUPYTER NOTEBOOK</small><strong>${escapeHtml(fileName(path))}</strong><span>${document.cells.length} cell${document.cells.length === 1 ? '' : 's'} · ${remote ? 'verified remote save' : 'SourcePlan governed save'}</span></div><div><span class="beast-notebook-kernel ${escapeHtml(state.compatibility?.runtime?.notebook?.kernelStatus || 'idle')}">${escapeHtml((state.compatibility?.runtime?.notebook?.kernelStatus || 'kernel idle').toUpperCase())}</span><button data-notebook-action="run-all">Run all</button><button data-notebook-action="add-code">+ Code</button><button data-notebook-action="add-markdown">+ Markdown</button></div></header>${document.parseError ? `<div class="beast-notebook-warning">${escapeHtml(document.parseError)} — editing will create a valid notebook document.</div>` : ''}<main class="beast-notebook-cells">${document.cells.map((cell, index) => `<article class="beast-notebook-cell ${cell.cell_type}" data-notebook-cell="${escapeHtml(cell.id)}"><header><span><b>In&nbsp;[${cell.execution_count ?? ' '}]</b><em>${cell.cell_type}</em></span><div><button title="Move cell up" data-notebook-action="move-up" data-notebook-cell-id="${escapeHtml(cell.id)}" ${index === 0 ? 'disabled' : ''}>↑</button><button title="Move cell down" data-notebook-action="move-down" data-notebook-cell-id="${escapeHtml(cell.id)}" ${index === document.cells.length - 1 ? 'disabled' : ''}>↓</button>${cell.cell_type === 'code' ? `<button class="run" data-notebook-action="run-cell" data-notebook-cell-id="${escapeHtml(cell.id)}">Run</button>` : ''}<button title="Delete cell" data-notebook-action="delete-cell" data-notebook-cell-id="${escapeHtml(cell.id)}" ${document.cells.length === 1 ? 'disabled' : ''}>×</button></div></header>${cell.cell_type === 'markdown' ? `<div class="beast-notebook-markdown" data-notebook-markdown-preview="${escapeHtml(cell.id)}">${markdownPreview(cell.source)}</div>` : ''}<textarea data-notebook-cell-source="${escapeHtml(cell.id)}" spellcheck="false" aria-label="${cell.cell_type} notebook cell">${escapeHtml(cell.source)}</textarea>${cell.cell_type === 'code' ? `<section class="beast-notebook-outputs">${(cell.outputs || []).map(notebookOutput).join('')}</section>` : ''}</article>`).join('')}</main>`;
+      host.innerHTML = `<header class="beast-notebook-head"><div><small>JUPYTER NOTEBOOK</small><strong>${escapeHtml(fileName(path))}</strong><span>${document.cells.length} cell${document.cells.length === 1 ? '' : 's'} · ${remote ? 'verified remote save' : 'SourcePlan governed save'} · ${escapeHtml(trustHint)}</span></div><div><span class="beast-notebook-trust ${trust.trusted ? 'trusted' : 'restricted'}">${trust.trusted ? 'TRUSTED' : 'RESTRICTED'}</span><span class="beast-notebook-kernel ${escapeHtml(state.compatibility?.runtime?.notebook?.kernelStatus || 'idle')}">${escapeHtml((state.compatibility?.runtime?.notebook?.kernelStatus || 'kernel idle').toUpperCase())}</span><button data-notebook-action="run-all" ${runDisabled}>Run all</button><button data-notebook-action="add-code">+ Code</button><button data-notebook-action="add-markdown">+ Markdown</button></div></header>${notebookRuntimeSummary(notebookRuntime)}${document.parseError ? `<div class="beast-notebook-warning">${escapeHtml(document.parseError)} — editing will create a valid notebook document.</div>` : ''}<main class="beast-notebook-cells">${document.cells.map((cell, index) => `<article class="beast-notebook-cell ${cell.cell_type}" data-notebook-cell="${escapeHtml(cell.id)}"><header><span><b>In&nbsp;[${cell.execution_count ?? ' '}]</b><em>${cell.cell_type}</em></span><div><button title="Move cell up" data-notebook-action="move-up" data-notebook-cell-id="${escapeHtml(cell.id)}" ${index === 0 ? 'disabled' : ''}>↑</button><button title="Move cell down" data-notebook-action="move-down" data-notebook-cell-id="${escapeHtml(cell.id)}" ${index === document.cells.length - 1 ? 'disabled' : ''}>↓</button>${cell.cell_type === 'code' ? `<button class="run" data-notebook-action="run-cell" data-notebook-cell-id="${escapeHtml(cell.id)}" ${runDisabled}>Run</button>` : ''}<button title="Delete cell" data-notebook-action="delete-cell" data-notebook-cell-id="${escapeHtml(cell.id)}" ${document.cells.length === 1 ? 'disabled' : ''}>×</button></div></header>${cell.metadata?.beast?.receipt_id ? `<div class="beast-notebook-warning">Execution ${escapeHtml(cell.metadata.beast.receipt_id)} · ${escapeHtml(cell.metadata.beast.trust_state || 'trusted')} · ${Number(cell.metadata.beast.duration_ms || 0)} ms</div>` : ''}${cell.cell_type === 'markdown' ? `<div class="beast-notebook-markdown" data-notebook-markdown-preview="${escapeHtml(cell.id)}">${markdownPreview(cell.source)}</div>` : ''}<textarea data-notebook-cell-source="${escapeHtml(cell.id)}" spellcheck="false" aria-label="${cell.cell_type} notebook cell">${escapeHtml(cell.source)}</textarea>${cell.cell_type === 'code' ? `<section class="beast-notebook-outputs">${(cell.outputs || []).map(notebookOutput).join('')}</section>` : ''}</article>`).join('')}</main>`;
     }
 
     function renderExplorer(state) {
       const query = filter.value.trim().toLowerCase();
-      const key = `${state.editor.explorerTab}|${state.editor.explorerMode}|${state.workspace.files.map(file => file.path).join('|')}|${state.editor.collapsedFolders.join('|')}|${state.editor.activePath}|${state.editor.outline.map(row => `${row.name}:${row.line}`).join('|')}|${state.editor.recentFiles.join('|')}|${gitState.status}|${gitState.branch}|${gitState.message}|${gitState.error}|${gitNewBranchOpen}|${gitState.changes.map(row=>`${row.index}:${row.path}`).join('|')}|${gitDetails.loading}|${gitDetails.error}|${gitDetails.history.map(row=>row.hash).join('|')}|${gitDetails.remotes.map(row=>row.name).join('|')}|${searchState.status}|${searchState.query}|${searchState.replacement}|${searchState.message}|${searchState.results.map(row=>`${row.path}:${row.line}`).join('|')}|${searchState.preview.map(row=>`${row.path}:${row.count}`).join('|')}|${query}`;
+      const problems = collectWorkspaceProblems(state);
+      const problemSummary = summarizeProblems(problems);
+      const key = `${state.editor.explorerTab}|${state.editor.explorerMode}|${state.workspace.files.map(file => file.path).join('|')}|${state.editor.collapsedFolders.join('|')}|${state.editor.activePath}|${state.editor.outline.map(row => `${row.name}:${row.line}`).join('|')}|${state.editor.recentFiles.join('|')}|${gitState.status}|${gitState.branch}|${gitState.message}|${gitState.error}|${gitNewBranchOpen}|${gitState.changes.map(row=>`${row.index}:${row.path}`).join('|')}|${gitDetails.loading}|${gitDetails.error}|${gitDetails.history.map(row=>row.hash).join('|')}|${gitDetails.remotes.map(row=>row.name).join('|')}|${searchState.status}|${searchState.query}|${searchState.replacement}|${searchState.message}|${searchState.results.map(row=>`${row.path}:${row.line}`).join('|')}|${searchState.preview.map(row=>`${row.path}:${row.count}`).join('|')}|${problems.map(row=>`${row.severity}:${row.path}:${row.line}:${row.column}:${row.message}`).join('|')}|${query}`;
       if (key === lastExplorerKey) return; lastExplorerKey = key;
       const fragment = document.createDocumentFragment();
       if (state.editor.explorerTab === 'outline') {
@@ -643,11 +931,15 @@
             <p class="${gitState.error?'error':''}" data-git-feedback>${escapeHtml(gitState.error||gitState.message||(gitState.counts.conflicts?`${gitState.counts.conflicts} conflict(s) require resolution.`:'Working tree ready.'))}</p>
             <section><header><span>STAGED CHANGES</span><b>${staged.length}</b><button type="button" data-git-panel-action="unstage-all" ${staged.length?'':'disabled'}>− ALL</button></header><div>${staged.map(change=>changeRow(change,'staged')).join('')||'<p class="empty">Stage changes to prepare a commit.</p>'}</div></section>
             <section><header><span>CHANGES</span><b>${unstaged.length}</b><button type="button" data-git-panel-action="stage-all" ${unstaged.length?'':'disabled'}>＋ ALL</button></header><div>${unstaged.map(change=>changeRow(change,'worktree')).join('')||'<p class="empty">No unstaged changes.</p>'}</div></section>
-            <section class="cortex-scm-advanced"><header><span>HISTORY + REMOTES</span><button type="button" data-git-panel-action="details-refresh">${gitDetails.loading?'…':'↻'}</button></header><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="fetch">Fetch</button><button type="button" data-git-operation="pull">Pull FF</button><button type="button" data-git-operation="push">Push</button></div><div class="cortex-scm-remotes">${gitDetails.remotes.length?gitDetails.remotes.map(remote=>`<small><b>${escapeHtml(remote.name)}</b> ${escapeHtml(remote.fetch||remote.push||'')}</small>`).join(''):'Load to inspect remotes.'}</div><div class="cortex-scm-history">${gitDetails.history.slice(0,12).map(commit=>`<button type="button" data-git-history-commit="${escapeHtml(commit.hash)}" title="Use ${escapeHtml(commit.shortHash)} for cherry-pick"><b>${escapeHtml(commit.shortHash)}</b><span>${escapeHtml(commit.subject)}</span></button>`).join('')||'<small>Load to inspect recent commits.</small>'}</div><label class="cortex-scm-inline"><span>REBASE ON</span><input data-git-rebase-base value="${escapeHtml(gitDetails.rebaseBase)}" placeholder="origin/main"></label><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="rebase-start">Rebase</button><button type="button" data-git-operation="rebase-continue">Continue</button><button type="button" data-git-operation="rebase-abort">Abort</button></div><label class="cortex-scm-inline"><span>CHERRY-PICK SHA</span><input data-git-cherry-pick value="${escapeHtml(gitDetails.cherryPick)}" placeholder="7+ hex SHA"></label><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="cherry-pick">Cherry-pick</button><button type="button" data-git-operation="cherry-pick-abort">Abort pick</button></div>${gitDetails.error?`<p class="error">${escapeHtml(gitDetails.error)}</p>`:''}</section>
+            <section class="cortex-scm-advanced"><header><span>HISTORY + REMOTES</span><button type="button" data-git-panel-action="details-refresh">${gitDetails.loading?'…':'↻'}</button></header><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="fetch">Fetch</button><button type="button" data-git-operation="pull">Pull FF</button><button type="button" data-git-operation="push">Push</button></div><div class="cortex-scm-remotes">${gitDetails.remotes.length?gitDetails.remotes.map(remote=>`<small><b>${escapeHtml(remote.name)}</b> ${escapeHtml(remote.fetch||remote.push||'')}</small>`).join(''):'Load to inspect remotes.'}</div><div class="cortex-scm-history">${gitDetails.history.slice(0,12).map(commit=>`<button type="button" class="${gitDetails.selectedCommit===commit.hash?'active':''}" data-git-history-commit="${escapeHtml(commit.hash)}" title="Use ${escapeHtml(commit.shortHash)} for cherry-pick"><b>${escapeHtml(commit.shortHash)}</b><span>${escapeHtml(commit.subject)}</span><small>${escapeHtml(commit.author||'')} · ${escapeHtml(String(commit.date||'').replace('T',' ').replace('Z',' UTC'))}</small></button>`).join('')||'<small>Load to inspect recent commits.</small>'}</div>${(()=>{const commit=gitDetails.history.find(item=>item.hash===gitDetails.selectedCommit)||gitDetails.history[0];return commit?`<div class="cortex-scm-remotes" data-git-commit-inspector><small><b>${escapeHtml(commit.shortHash)}</b> ${escapeHtml(commit.subject)}</small><small>${escapeHtml(commit.author||'')} · ${escapeHtml(commit.date||'')}</small><div class="cortex-scm-remote-actions"><button type="button" data-git-history-copy="${escapeHtml(commit.hash)}">Copy SHA</button><button type="button" data-git-history-search="${escapeHtml(commit.hash)}">Find in workspace</button></div></div>`:'';})()}<label class="cortex-scm-inline"><span>REBASE ON</span><input data-git-rebase-base value="${escapeHtml(gitDetails.rebaseBase)}" placeholder="origin/main"></label><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="rebase-start">Rebase</button><button type="button" data-git-operation="rebase-continue">Continue</button><button type="button" data-git-operation="rebase-abort">Abort</button></div><label class="cortex-scm-inline"><span>CHERRY-PICK SHA</span><input data-git-cherry-pick value="${escapeHtml(gitDetails.cherryPick)}" placeholder="7+ hex SHA"></label><div class="cortex-scm-remote-actions"><button type="button" data-git-operation="cherry-pick">Cherry-pick</button><button type="button" data-git-operation="cherry-pick-abort">Abort pick</button></div>${gitDetails.error?`<p class="error">${escapeHtml(gitDetails.error)}</p>`:''}</section>
           </div>`;
         }
       } else if (state.editor.explorerTab === 'search') {
         explorer.innerHTML=`<div class="cortex-search-pane"><label>FIND<input data-workspace-search-query value="${escapeHtml(searchState.query)}" placeholder="Text across workspace"></label><label>REPLACE<input data-workspace-search-replace value="${escapeHtml(searchState.replacement)}" placeholder="Optional replacement"></label><div><button data-workspace-search-action="search">Search</button><button data-workspace-search-action="preview">Preview</button><button data-workspace-search-action="apply">Apply</button></div><small class="${searchState.error?'error':''}">${escapeHtml(searchState.error||searchState.message)}</small><section>${searchState.results.map(row=>`<button class="beast-file-row" data-file-path="${escapeHtml(row.path)}" data-goto-line="${row.line}"><span class="beast-tree-caret">${row.line}</span><span class="beast-file-copy"><strong>${escapeHtml(fileName(row.path))}</strong><small>${escapeHtml(row.path)}:${row.line}:${row.column} · ${escapeHtml(row.preview)}</small></span></button>`).join('')}${searchState.preview.map(row=>`<button class="beast-file-row" data-file-path="${escapeHtml(row.path)}"><span class="beast-tree-caret">±</span><span class="beast-file-copy"><strong>${escapeHtml(fileName(row.path))}</strong><small>${row.count} replacement(s) · ${escapeHtml(row.path)}</small></span></button>`).join('')}</section></div>`;
+      } else if (state.editor.explorerTab === 'problems') {
+        explorer.innerHTML = problems.length
+          ? `<div class="cortex-search-pane"><small>${problemSummary.errors} error(s) · ${problemSummary.warnings} warning(s) · ${problemSummary.info} info · ${problemSummary.hints} hint(s)</small><section>${problems.map(problem=>`<button class="beast-file-row ${escapeHtml(problem.severity)}" data-file-path="${escapeHtml(problem.path)}" data-goto-line="${problem.line}"><span class="beast-tree-caret">${problem.severity === 'error' ? '×' : problem.severity === 'warning' ? '!' : problem.severity === 'info' ? 'i' : '·'}</span><span class="beast-file-copy"><strong>${escapeHtml(fileName(problem.path))}</strong><small>${escapeHtml(problem.path)}:${problem.line}:${problem.column} · ${escapeHtml(problem.source)}${problem.code ? ` · ${escapeHtml(problem.code)}` : ''}</small><small>${escapeHtml(problem.message)}</small></span></button>`).join('')}</section></div>`
+          : '<div class="cortex-empty-list">No workspace problems. Language servers have not reported any markers for the open workspace.</div>';
       } else if (state.editor.explorerMode === 'flat') {
         state.workspace.files.filter(item => !query || item.path.toLowerCase().includes(query)).slice(0, 1400).forEach(item => {
           const row = document.createElement('button'); row.className = 'beast-file-row'; row.dataset.filePath = item.path;
@@ -660,20 +952,131 @@
       }
     }
 
+    function activeWorkbenchDocument() {
+      const layout = window.BeastEditorGroups?.snapshot?.();
+      if (!layout?.groups) return '';
+      const activeGroup = layout.groups[layout.activeGroupId];
+      if (activeGroup?.activeDocumentId) return activeGroup.activeDocumentId;
+      return Object.values(layout.groups).find(group => group?.activeDocumentId)?.activeDocumentId || '';
+    }
+
+    function activeEditorGroupLayout() {
+      const layout = window.BeastEditorGroups?.snapshot?.();
+      const groups = Object.values(layout?.groups || {});
+      const populatedGroups = groups.filter(group => Array.isArray(group?.tabs) && group.tabs.length);
+      return {
+        totalGroups: groups.length,
+        populatedGroups: populatedGroups.length,
+        useWorkbench: false,
+      };
+    }
+
+    async function ensureWorkbenchMounted(state) {
+      const { useWorkbench } = activeEditorGroupLayout();
+      const activeNotebook = BeastEditorCortex.isNotebook(state?.editor?.activePath);
+      const shouldMount = useWorkbench && !activeNotebook && gitDiffState.status === 'idle';
+      if (shouldMount) {
+        if (!workbenchMounted) {
+          await window.BeastEditorWorkbench.mount(workbenchHost);
+          workbenchMounted = true;
+        } else {
+          window.BeastEditorWorkbench?.render?.();
+        }
+      } else if (workbenchMounted) {
+        window.BeastEditorWorkbench?.unmount?.();
+        workbenchMounted = false;
+      } else {
+        workbenchHost.replaceChildren();
+      }
+      return shouldMount;
+    }
+
+    function syncPrimaryEditorSurface(state) {
+      const { useWorkbench } = activeEditorGroupLayout();
+      const activeNotebook = BeastEditorCortex.isNotebook(state.editor.activePath);
+      const workbenchVisible = useWorkbench && !activeNotebook && gitDiffState.status === 'idle';
+      const editorDebug = state.editor.activePath ? (window.BeastEditorCortex?.debugState?.(state.editor.activePath) || null) : null;
+      const editorOwner = String(editorDebug?.owner || state.editor.owner || '');
+      const fallbackActive = editorOwner === 'fallback';
+      const monacoActive = !workbenchVisible && !fallbackActive;
+      const surfaceState = [
+        [workbenchHost, workbenchVisible, 'grid'],
+        [editorHost, !workbenchVisible && monacoActive, 'block'],
+        [fallback, !workbenchVisible && fallbackActive, 'block'],
+        [splitHost, !workbenchVisible && monacoActive && state.editor.split, 'block'],
+        [splitFallback, !workbenchVisible && fallbackActive && state.editor.split, 'block'],
+      ];
+      surfaceState.forEach(([node, visible, displayMode]) => {
+        if (!node) return;
+        node.classList.toggle('hidden', !visible);
+        node.style.display = visible ? displayMode : 'none';
+        node.style.visibility = visible ? 'visible' : 'hidden';
+        node.style.pointerEvents = visible ? 'auto' : 'none';
+      });
+      emitWorkspaceDebug('sync-primary-editor-surface', {
+        editorOwner,
+        fallbackActive,
+        monacoActive,
+        workbenchVisible,
+        split: Boolean(state.editor.split),
+        aiOpen: root.querySelector('.cortex-layout')?.classList.contains('ai-open') || false,
+        aiFocus: root.querySelector('.cortex-layout')?.classList.contains('ai-focus') || false,
+        surfaceState: {
+          workbench: !workbenchHost?.classList.contains('hidden'),
+          editorHost: !editorHost?.classList.contains('hidden'),
+          fallback: !fallback?.classList.contains('hidden'),
+          splitHost: !splitHost?.classList.contains('hidden'),
+          splitFallback: !splitFallback?.classList.contains('hidden'),
+        },
+      });
+      if (!workbenchVisible) {
+        if (editorOwner !== 'fallback') window.BeastStore?.patch?.('editor', { owner: monacoActive ? 'monaco' : state.editor.owner });
+        window.BeastEditorCortex?.layout?.();
+      } else if (state.editor.owner !== 'workbench-monaco' && state.editor.owner !== 'workbench-fallback') {
+        window.BeastStore?.patch?.('editor', { owner: 'workbench-monaco' });
+      }
+    }
+
     function patch(state) {
       if (disposed) return;
+      const workbenchActivePath = gitDiffState.status === 'idle' ? activeWorkbenchDocument() : '';
+      if (!state.editor.activePath && workbenchActivePath) {
+        queueMicrotask(() => {
+          try { BeastEditorCortex.activate(workbenchActivePath); } catch (_) {}
+        });
+      }
       root.querySelector('[data-workspace-root]').textContent = state.workspace.root || 'No workspace selected';
       const folders=root.querySelector('[data-workspace-folders]');if(folders)folders.innerHTML=(state.workspace.roots||[]).map(folder=>`<span class="${folder.primary?'primary':''}" title="${escapeHtml(folder.path)}">${escapeHtml(folder.name||folder.id)}${folder.primary?'':'<button type="button" data-workspace-folder-remove="'+escapeHtml(folder.id)+'" aria-label="Remove workspace folder">×</button>'}</span>`).join('');
       root.querySelector('[data-workspace-count]').textContent = state.workspace.loading ? 'indexing…' : `${state.workspace.files.length} files`;
       root.querySelector('[data-model-count]').textContent = `${state.editor.modelCount} models`;
       const dirty = root.querySelector('[data-workspace-dirty]'); dirty.textContent = state.editor.dirtyPaths.length ? `● ${state.editor.dirtyPaths.length} unsaved` : 'clean'; dirty.classList.toggle('warn', Boolean(state.editor.dirtyPaths.length));
-      root.querySelector('[data-explorer-status]').textContent = state.workspace.error || (state.workspace.loading ? 'indexing' : `${state.editor.explorerMode} mode`);
+      const problems = collectWorkspaceProblems(state);
+      const problemSummary = summarizeProblems(problems);
+      root.querySelector('[data-explorer-status]').textContent = state.workspace.error || (state.workspace.loading ? 'indexing' : state.editor.explorerTab === 'problems' ? `${problemSummary.total} problem(s)` : `${state.editor.explorerMode} mode`);
       const activeNotebook = BeastEditorCortex.isNotebook(state.editor.activePath);
-      root.querySelector('[data-editor-status]').textContent = state.workspace.error || (state.editor.activePath ? (activeNotebook ? `Jupyter notebook · ${state.workspace.dirty ? (BeastDesktopBridge.parseRemoteRef?.(state.editor.activePath) ? 'verified remote save ready' : 'SourcePlan required before write') : 'clean notebook document'} · ${state.editor.owner}` : `${state.workspace.language} · ${state.workspace.dirty ? 'SourcePlan required before write' : 'clean buffer'} · ${state.editor.owner}`) : 'No active buffer.');
+      const editorDebug = state.editor.activePath ? (window.BeastEditorCortex?.debugState?.(state.editor.activePath) || null) : null;
+      const effectiveOwner = editorDebug?.owner || state.editor.owner || 'none';
+      const editorBaseline = state.editor.activePath ? (activeNotebook ? `Jupyter notebook · ${state.workspace.dirty ? (BeastDesktopBridge.parseRemoteRef?.(state.editor.activePath) ? 'verified remote save ready' : 'SourcePlan required before write') : 'clean notebook document'} · ${effectiveOwner}` : `${state.workspace.language} · ${state.workspace.dirty ? 'SourcePlan required before write' : 'clean buffer'} · ${effectiveOwner}`) : 'No active buffer.';
+      const problemLabel = problemSummary.total ? ` · ${problemSummary.errors} error(s), ${problemSummary.warnings} warning(s)` : '';
+      root.querySelector('[data-editor-status]').textContent = state.workspace.error || `${editorBaseline}${problemLabel}`;
       root.querySelector('[data-editor-position]').textContent = `Ln ${state.editor.cursor.line}, Col ${state.editor.cursor.column}`;
       root.querySelector('[data-layout-status]').textContent = `${state.diagnostics.viewport || ''} · ${state.diagnostics.horizontalOverflow ? 'overflow!' : 'stable'}`;
+      root.querySelector('[data-editor-debug]').textContent = editorDebug
+        ? `owner ${editorDebug.owner || state.editor.owner || 'none'} · model ${editorDebug.hasModel ? 'yes' : 'no'} · host ${editorDebug.hostVisible ? 'visible' : 'hidden'} · fallback ${editorDebug.fallbackVisible ? 'visible' : 'hidden'} · buf ${editorDebug.bufferLength} · model ${editorDebug.modelLength} · text ${editorDebug.visibleTextLength} · fallbackText ${editorDebug.fallbackTextLength}`
+        : `owner ${state.editor.owner || 'none'} · model no · host hidden`;
       root.querySelector('[data-git-branch]').textContent = `${gitState.branchName||'no repository'}${gitState.changes.length?` · ${gitState.changes.length} change${gitState.changes.length===1?'':'s'}`:''}`;
-      root.querySelector('[data-editor-empty]').classList.toggle('hidden', Boolean(state.editor.activePath));
+      root.querySelector('[data-editor-empty]').classList.toggle('hidden', Boolean(state.editor.activePath || workbenchActivePath));
+      emitWorkspaceDebug('patch', {
+        activePath: state.editor.activePath || '',
+        workspaceSelectedPath: state.workspace.selectedPath || '',
+        owner: state.editor.owner || '',
+        aiOpen: Boolean(state.aiCoding?.open),
+        aiFocus: Boolean(state.aiCoding?.open && state.aiCoding?.expanded),
+        split: Boolean(state.editor.split),
+        activeWorkbenchPath: workbenchActivePath || '',
+        editorDebug,
+      });
+      syncPrimaryEditorSurface(state);
       root.querySelectorAll('[data-explorer-tab]').forEach(button => button.classList.toggle('active', button.dataset.explorerTab === state.editor.explorerTab));
       root.querySelector('[data-editor-action="split"]').classList.toggle('active', state.editor.split);
       const ai = state.aiCoding;
@@ -696,14 +1099,33 @@
       const aiPlan=state.sourcePlan?.plan;const nextAiPlanId=String(aiPlan?.plan_id||'');
       if(ai.sourcePlanReady&&nextAiPlanId&&aiPlan?.kind==='beast_ide_agent_action_ir_sourceplan'&&nextAiPlanId!==aiPreviewPlanId){aiPreviewPlanId=nextAiPlanId;queueMicrotask(()=>openAiDiff(aiPlan,state.editor.activePath));}
       if(!ai.sourcePlanReady&&!ai.streaming)aiPreviewPlanId='';
-      renderTabs(state); renderExplorer(state); renderAi(state); renderNotebook(state);renderBreadcrumbs(state);renderGitDiff(state);
+      renderTabs(state); const groupCount=Object.keys(window.BeastEditorGroups?.snapshot?.().groups||{}).length; const groupLabel=root.querySelector('[data-workbench-group-count]'); if(groupLabel)groupLabel.textContent=`${groupCount} PANE${groupCount===1?'':'S'}`; renderExplorer(state); renderAi(state); renderNotebook(state);renderBreadcrumbs(state);renderGitDiff(state);
     }
 
     const handleAiProposalReady = event => { const plan=event.detail?.plan; if(plan?.operations?.length) queueMicrotask(()=>openAiDiff(plan, BeastStore.get().editor.activePath)); };
     document.addEventListener('beast:ai-proposal-ready', handleAiProposalReady);
-    const unsubscribe = BeastStore.subscribe(patch);
+    const unsubscribe = BeastStore.subscribe(state => {
+      ensureWorkbenchMounted(state)
+        .then(() => patch(state))
+        .catch(error => {
+          BeastStore.patch('workspace', { error: String(error.message || error) });
+          patch(state);
+        });
+    });
+    const handleViewportResize=()=>{normalizePaneLayout({persist:true});window.BeastEditorWorkbench?.render?.();window.BeastEditorCortex?.layout?.();window.BeastCompareEditors?.layout?.();};
+    window.addEventListener('resize',handleViewportResize);
     const selectRepository=event=>{const id=String(event.detail?.rootId||'');if(!(BeastStore.get().workspace.roots||[]).some(folder=>folder.id===id))return;selectedGitRootId=id;refreshGit();refreshGitDetails();};document.addEventListener('beast:source-control-root',selectRepository);
-    queueMicrotask(() => { BeastEditorCortex.mount({ host: editorHost, fallback, splitHost, splitFallback });refreshGit();refreshGitDetails();restoreViewPreferences(); });
+    window.BeastEditorSafety?.mount?.(root);
+    queueMicrotask(async () => {
+      await BeastEditorCortex.mount({ host: editorHost, fallback, splitHost, splitFallback });
+      // Group layout is persisted independently from editor buffers.  Hydrate
+      // the saved tabs after mounting so an active tab can never render as an
+      // empty Monaco pane merely because its file text has not been restored.
+      await BeastEditorCortex.restoreTabs();
+      await ensureWorkbenchMounted(BeastStore.get());
+      patch(BeastStore.get());
+      refreshGit();refreshGitDetails();restoreViewPreferences();
+    });
 
     root.addEventListener('click', async event => {
       const gitDiffAction=event.target.closest('[data-git-diff-action]')?.dataset.gitDiffAction;
@@ -738,7 +1160,11 @@
       const gitOperation=event.target.closest('[data-git-operation]')?.dataset.gitOperation;
       if(gitOperation){try{await runGitOperation(gitOperation);}catch(error){gitDetails={...gitDetails,error:String(error.message||error)};renderExplorer(BeastStore.get());}return;}
       const historyCommit=event.target.closest('[data-git-history-commit]')?.dataset.gitHistoryCommit;
-      if(historyCommit){gitDetails={...gitDetails,cherryPick:historyCommit};lastExplorerKey='';renderExplorer(BeastStore.get());return;}
+      if(historyCommit){gitDetails={...gitDetails,selectedCommit:historyCommit,cherryPick:historyCommit};lastExplorerKey='';renderExplorer(BeastStore.get());return;}
+      const historyCopy=event.target.closest('[data-git-history-copy]')?.dataset.gitHistoryCopy;
+      if(historyCopy){try{await navigator.clipboard.writeText(historyCopy);gitState={...gitState,message:`Copied commit SHA ${historyCopy.slice(0,12)}`,error:''};renderExplorer(BeastStore.get());}catch(error){gitState={...gitState,error:String(error.message||error)};renderExplorer(BeastStore.get());}return;}
+      const historySearch=event.target.closest('[data-git-history-search]')?.dataset.gitHistorySearch;
+      if(historySearch){BeastEditorCortex.setExplorerTab('search');searchState={...searchState,query:historySearch,replacement:'',status:'ready',message:`Search prepared for commit ${historySearch.slice(0,12)}.`,error:''};lastExplorerKey='';renderExplorer(BeastStore.get());queueMicrotask(()=>root.querySelector('[data-workspace-search-query]')?.focus());return;}
       const statusAction=event.target.closest('[data-status-action]')?.dataset.statusAction;
       if(statusAction==='changes'){BeastEditorCortex.setExplorerTab('changes');await refreshGit();queueMicrotask(()=>root.querySelector('[data-git-commit-message]')?.focus());return;}
       const breadcrumbFilter=event.target.closest('[data-breadcrumb-filter]');
@@ -761,9 +1187,9 @@
         return;
       }
       const close = event.target.closest('[data-close-tab]');
-      if (close) { event.stopPropagation(); BeastEditorCortex.closeTab(close.dataset.closeTab); return; }
-      const tab = event.target.closest('[data-editor-tab]'); if (tab) { if(gitDiffState.status!=='idle')closeGitDiff();BeastEditorCortex.activate(tab.dataset.editorTab); return; }
-      const file = event.target.closest('[data-file-path]'); if (file) { if(gitDiffState.status!=='idle')closeGitDiff();await BeastEditorCortex.openFile(file.dataset.filePath, { signal });if(file.dataset.gotoLine)BeastEditorCortex.gotoLine(Number(file.dataset.gotoLine)); BeastMascot.setState('working'); setTimeout(() => BeastMascot.setState('idle'), 650); return; }
+      if (close) { event.stopPropagation(); await BeastEditorCortex.closeTab(close.dataset.closeTab); return; }
+      const tab = event.target.closest('[data-editor-tab]'); if (tab) { emitWorkspaceDebug('click-editor-tab', { path: tab.dataset.editorTab || '' }); if(gitDiffState.status!=='idle')closeGitDiff();BeastEditorCortex.activate(tab.dataset.editorTab); return; }
+      const file = event.target.closest('[data-file-path]'); if (file) { emitWorkspaceDebug('click-file', { path: file.dataset.filePath || '', gotoLine: Number(file.dataset.gotoLine || 0) || 0, aiOpen: Boolean(BeastStore.get().aiCoding?.open), aiFocus: Boolean(BeastStore.get().aiCoding?.open && BeastStore.get().aiCoding?.expanded) }); if(gitDiffState.status!=='idle')closeGitDiff();await BeastEditorCortex.openFile(file.dataset.filePath, { signal });if(file.dataset.gotoLine)BeastEditorCortex.gotoLine(Number(file.dataset.gotoLine)); BeastMascot.setState('working'); setTimeout(() => BeastMascot.setState('idle'), 650); return; }
       const folder = event.target.closest('[data-folder-path]'); if (folder) { BeastEditorCortex.toggleFolder(folder.dataset.folderPath); return; }
       const symbol = event.target.closest('[data-goto-line]'); if (symbol) { BeastEditorCortex.gotoLine(Number(symbol.dataset.gotoLine)); return; }
       const explorerTab = event.target.closest('[data-explorer-tab]'); if (explorerTab) { BeastEditorCortex.setExplorerTab(explorerTab.dataset.explorerTab); if(explorerTab.dataset.explorerTab==='changes')refreshGit(); return; }
@@ -784,7 +1210,12 @@
       if (intelAction === 'crystal') { await BeastRouter.navigate('crystallization'); return; }
       if (intelAction === 'governance') { await BeastRouter.navigate('source'); return; }
       const editorAction = event.target.closest('[data-editor-action]')?.dataset.editorAction;
-      if (editorAction === 'split') { BeastEditorCortex.toggleSplit(); return; }
+      if (editorAction === 'split') { BeastEditorCortex.splitGroup('horizontal'); return; }
+      if (editorAction === 'split-vertical') { BeastEditorCortex.splitGroup('vertical'); return; }
+      if (editorAction === 'move-group') { BeastEditorCortex.moveActiveToNextGroup(); return; }
+      if (editorAction === 'close-group') { BeastEditorCortex.closeActiveGroup(); return; }
+      if (editorAction === 'pin') { try { const active=BeastStore.get().editor.activePath; const owner=Object.values(window.BeastEditorGroups.snapshot().groups).find(group=>group.tabs.includes(active)); if(owner?.pinnedDocumentIds.includes(active)) BeastEditorCortex.unpinActive(); else BeastEditorCortex.pinActive(); } catch(error) { BeastStore.patch('workspace',{error:String(error.message||error)}); } return; }
+      if (editorAction === 'reopen') { try { await BeastEditorCortex.reopenClosedEditor(); } catch(error) { BeastStore.patch('workspace',{error:String(error.message||error)}); } return; }
       if (editorAction === 'revert') { BeastEditorCortex.revertActive(); return; }
       if (editorAction === 'save-remote') { try { await BeastEditorCortex.saveActive(); BeastFX.trigger('success',event.target,{size:180}); } catch(error) { BeastStore.patch('workspace',{error:String(error.message||error)});BeastFX.trigger('warning',event.target,{size:180}); } return; }
       if (editorAction === 'assist') {
@@ -852,6 +1283,12 @@
       if(event.target.matches('[data-git-rebase-base]'))gitDetails={...gitDetails,rebaseBase:event.target.value};
       if(event.target.matches('[data-git-cherry-pick]'))gitDetails={...gitDetails,cherryPick:event.target.value};
     });
+    root.addEventListener('dblclick', event => { const tab=event.target.closest('[data-editor-tab]'); if(tab) window.BeastTabLifecycle?.pin?.(tab.dataset.editorTab, tab.dataset.editorGroup); });
+    root.addEventListener('auxclick', event => { const tab=event.target.closest('[data-editor-tab]'); if(tab && event.button===1) BeastEditorCortex.closeTab(tab.dataset.editorTab); });
+    root.addEventListener('dragstart', event => { const tab=event.target.closest('[data-editor-tab]'); if(tab){ event.dataTransfer.setData('text/beast-editor-tab', JSON.stringify({documentId:tab.dataset.editorTab,groupId:tab.dataset.editorGroup})); event.dataTransfer.effectAllowed='move'; } });
+    root.addEventListener('dragover', event => { if(event.target.closest('[data-editor-tabs]')) event.preventDefault(); });
+    root.addEventListener('drop', event => { const host=event.target.closest('[data-editor-tabs]'); if(!host)return; event.preventDefault(); try{ const data=JSON.parse(event.dataTransfer.getData('text/beast-editor-tab')); const target=window.BeastEditorGroups.snapshot().activeGroupId; if(data.groupId===target){ const tabs=[...host.querySelectorAll('[data-editor-tab]')]; const targetTab=event.target.closest('[data-editor-tab]'); const index=targetTab?Math.max(0,tabs.indexOf(targetTab)):tabs.length; window.BeastEditorGroups.reorderDocument(data.documentId,target,index); } else window.BeastEditorGroups.moveDocument(data.documentId,data.groupId,target,{preview:false}); }catch(error){ BeastStore.patch('workspace',{error:String(error.message||error)}); } });
+
     root.addEventListener('keydown', event => {
       if(event.key==='Escape'&&BeastStore.get().aiCoding.expanded&&event.target.closest('[data-ai-panel]')){event.preventDefault();BeastAICoding.setExpanded(false);return;}
       const mod=event.ctrlKey||event.metaKey;
@@ -862,6 +1299,7 @@
       if(event.target.matches('[data-git-commit-message]')&&(event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();commitGit();return;}
       if(event.target.matches('[data-git-new-branch]')&&event.key==='Enter'){event.preventDefault();changeGitBranch('create',gitNewBranchName);return;}
       if((event.ctrlKey||event.metaKey)&&event.shiftKey&&event.key.toLowerCase()==='g'){event.preventDefault();BeastEditorCortex.setExplorerTab('changes');refreshGit().then(()=>root.querySelector('[data-git-commit-message]')?.focus());return;}
+      if((event.ctrlKey||event.metaKey)&&event.shiftKey&&event.key.toLowerCase()==='m'&&!event.target.matches('input,textarea,[contenteditable="true"]')){event.preventDefault();BeastEditorCortex.setExplorerTab('problems');return;}
       if (event.target.matches('[data-notebook-cell-source]') && (event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         const cell = event.target.closest('[data-notebook-cell]');
         if (cell?.classList.contains('code')) { event.preventDefault(); BeastEditorCortex.runNotebookCell(event.target.dataset.notebookCellSource).catch(error => BeastStore.patch('workspace', { error: String(error.message || error) })); }
@@ -888,6 +1326,15 @@
       if (copyId) {
         const message = BeastStore.get().aiCoding.messages.find(item => item.id === copyId);
         if (message?.content && navigator.clipboard?.writeText) await navigator.clipboard.writeText(message.content);
+        return;
+      }
+      const contextAction = event.target.closest('[data-phase5-context-action]');
+      if (contextAction) {
+        try {
+          await BeastOperationsConsole.decideContext(contextAction.dataset.contextItemId, contextAction.dataset.phase5ContextAction, { provider:'ollama' });
+          durableConsoleKey = '';
+          await refreshDurableConsole(BeastStore.get(), true);
+        } catch (error) { BeastStore.patch('aiCoding', { status:'error', error:String(error.message || error) }); }
         return;
       }
       const mode = event.target.closest('[data-ai-mode]')?.dataset.aiMode;
@@ -939,7 +1386,7 @@
     if (!BeastStore.get().models.registry.length) queueMicrotask(() => BeastModelAgentBridge.refreshModels({signal}).catch(() => {}));
     if (!BeastStore.get().workspace.indexedAt && BeastStore.get().workspace.root) queueMicrotask(() => BeastDesktopBridge.listFiles({ signal }));
 
-    return { node: root, dispose() { disposed = true;if(aiScrollFrame)cancelAnimationFrame(aiScrollFrame);window.BeastVisualRuntime?.setWorkload?.('idle');resizeCleanup?.();gitDiffMountToken+=1;gitDiffCleanup?.();unsubscribe();document.removeEventListener('beast:source-control-root',selectRepository);document.removeEventListener('beast:ai-proposal-ready',handleAiProposalReady); BeastEditorCortex.unmount(); } };
+    return { node: root, dispose() { disposed = true;if(aiScrollFrame)cancelAnimationFrame(aiScrollFrame);window.BeastVisualRuntime?.setWorkload?.('idle');resizeCleanup?.();gitDiffMountToken+=1;gitDiffCleanup?.();unsubscribe();window.removeEventListener('resize',handleViewportResize);document.removeEventListener('beast:source-control-root',selectRepository);document.removeEventListener('beast:ai-proposal-ready',handleAiProposalReady); window.BeastEditorWorkbench?.unmount?.(); workbenchMounted = false; BeastEditorCortex.unmount(); } };
   }
 
   window.BeastWorkspacePage = { renderer };

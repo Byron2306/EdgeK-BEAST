@@ -1,0 +1,44 @@
+
+:root {
+  color-scheme: dark;
+  --beast-bg-0: #010302;
+  --beast-bg-1: #030806;
+  --beast-bg-2: #07100b;
+  --beast-panel: rgba(4, 9, 6, .94);
+  --beast-panel-strong: rgba(7, 13, 9, .98);
+  --beast-green: #77ff3d;
+  --beast-green-hot: #a3ff5a;
+  --beast-green-deep: #176b22;
+  --beast-silver: #d2d9d5;
+  --beast-gunmetal: #242b27;
+  --beast-muted: #839087;
+  --beast-amber: #ffbd32;
+  --beast-red: #ff4938;
+  --beast-violet: #9a70ff;
+  --beast-cyan: #52e7ff;
+  --beast-border: rgba(150, 170, 158, .22);
+  --beast-border-hot: rgba(119, 255, 61, .52);
+  --beast-glow: 0 0 18px rgba(105, 255, 52, .18);
+  --beast-shadow: 0 22px 70px rgba(0,0,0,.48);
+  --beast-sidebar-w: clamp(230px, 15vw, 286px);
+  --beast-rail-w: clamp(292px, 19vw, 368px);
+  --beast-header-h: 88px;
+  --beast-command-h: clamp(116px, 13vh, 142px);
+  --beast-gap: clamp(8px, .65vw, 13px);
+  --beast-radius: 9px;
+  --beast-display: "Orbitron", "Oxanium", "Chakra Petch", system-ui, sans-serif;
+  --beast-mono: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { width:100%; height:100%; margin:0; overflow:hidden; cursor:url("../assets/cursors/claw-tip-32.png") 3 3, auto; }
+button, input, textarea, select { font:inherit; color:inherit; }
+button, a, [role="button"], [data-nav], [data-beast-route], .beast-clickable { cursor:url("../assets/cursors/claw-hover-32.png") 4 4, pointer; }
+button:active, [aria-pressed="true"], .is-selected { cursor:url("../assets/cursors/claw-select-32.png") 4 4, pointer; }
+input, textarea, [contenteditable="true"], .monaco-editor .view-lines { cursor:url("../assets/cursors/signal-beam-32.png") 16 16, text; }
+[draggable="true"], .is-draggable { cursor:url("../assets/cursors/vector-grip-32.png") 16 16, move; }
+button:disabled, [aria-disabled="true"], .is-blocked { cursor:url("../assets/cursors/hex-seal-32.png") 16 16, not-allowed !important; }
+.is-busy, [aria-busy="true"] { cursor:url("../assets/cursors/busy-ring-32.png") 16 16, progress !important; }
+.beast-target, .graph-node, .trust-control-node { cursor:url("../assets/cursors/target-lock-32.png") 16 16, crosshair; }
+.hidden { display:none !important; }
+.mono { font-family:var(--beast-mono); }
+.muted { color:var(--beast-muted); }

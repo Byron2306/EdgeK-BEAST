@@ -1,0 +1,33 @@
+[Unit]
+Description=BEAST BPF loopback laboratory preflight
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=byron
+Group=byron
+WorkingDirectory=/home/byron/EdgeK-BEAST
+RuntimeDirectory=beast-bpf-lab
+RuntimeDirectoryMode=0750
+Environment=BEAST_BPF_LAB_INTERFACE=lo
+Environment=PYTHONPATH=/home/byron/EdgeK-BEAST
+ExecStart=/home/byron/EdgeK-BEAST/scripts/verify_bpf_loopback_lab.sh
+
+# The lab receives only the privileges required for BPF/AF_XDP readiness
+# checks.  It intentionally has no CAP_SYS_ADMIN and never attaches a BPF/XDP
+# program or modifies a non-loopback interface.
+CapabilityBoundingSet=CAP_BPF CAP_PERFMON CAP_NET_ADMIN CAP_NET_RAW
+AmbientCapabilities=CAP_BPF CAP_PERFMON CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ProtectSystem=strict
+ReadWritePaths=/run/beast-bpf-lab /home/byron/EdgeK-BEAST/evidence/high_velocity_fabric
+RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target

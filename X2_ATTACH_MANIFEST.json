@@ -1,0 +1,17 @@
+{
+  "object_path": "bpf/build/beast_x1_observer.bpf.o",
+  "ring_map": "events",
+  "loss_map": "loss_counters",
+  "poll_timeout_ms": 100,
+  "health_interval_s": 5.0,
+  "attachments": [
+    {"program":"on_exec","kind":"tracepoint","target":"sched/sched_process_exec","required":true},
+    {"program":"on_exit","kind":"tracepoint","target":"sched/sched_process_exit","required":true},
+    {"program":"on_wakeup","kind":"tracepoint","target":"sched/sched_wakeup","required":true},
+    {"program":"on_switch","kind":"tracepoint","target":"sched/sched_switch","required":true},
+    {"program":"on_tcp_connect","kind":"tracepoint","target":"syscalls/sys_enter_connect","required":false},
+    {"program":"on_bind","kind":"tracepoint","target":"syscalls/sys_enter_bind","required":false},
+    {"program":"on_write","kind":"kprobe","target":"vfs_write","required":false},
+    {"program":"on_pwrite","kind":"kprobe","target":"vfs_pwrite","required":false}
+  ]
+}

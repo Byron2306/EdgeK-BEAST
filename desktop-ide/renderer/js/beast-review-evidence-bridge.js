@@ -13,6 +13,12 @@
     const root = BeastStore.get().workspace.root;
     return root ? `?root_path=${encodeURIComponent(root)}` : '';
   };
+  const detailQuery = () => {
+    const root = BeastStore.get().workspace.root;
+    const params = new URLSearchParams({ detail:'true' });
+    if (root) params.set('root_path', root);
+    return `?${params.toString()}`;
+  };
 
   const demoReceipts = [
     { id:'ev-001', path:'src/parsers/evidence_parser.py', type:'PY', size:'12.4 KB', status:'Validated', validity:98, schema:'Valid', traces:24, source:'workspace', summary:'Parses raw inputs and produces structured evidence artifacts.', added:'2m ago' },
@@ -189,7 +195,7 @@
     try {
       const root = rootQuery();
       const results = await Promise.allSettled([
-        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${root}`,options),
+        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${detailQuery()}`,{...options,timeoutMs:2500}),
         BeastDesktopBridge.fetchJson('/edgek/mcp/approvals?limit=20',options),
         BeastDesktopBridge.fetchJson(`/edgek/ide/tooling-snapshot${root}`,options),
         BeastDesktopBridge.fetchJson('/edgek/evidence-bus/query?limit=25',options)
@@ -226,7 +232,7 @@
       if (root) fileQuery.set('root_path',root);
       const results = await Promise.allSettled([
         BeastDesktopBridge.fetchJson(`/edgek/evidence-bus/query?${query}`,options),
-        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${root ? `?root_path=${encodeURIComponent(root)}`:''}`,options),
+        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${detailQuery()}`,{...options,timeoutMs:2500}),
         BeastDesktopBridge.fetchJson(`/edgek/workspace/files?${fileQuery}`,options)
       ]);
       const evidence = normalizeEvidence(settled(results[0]) || {},settled(results[1]) || {},settled(results[2]) || {});

@@ -1,0 +1,3763 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 575,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:48:32Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_7d9d36632f3195e98ff6",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_eb8febc0b04307dc",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_eb8febc0b04307dc.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "route_diagnostics_o01_v1",
+        "route_diagnostics_o02_v1"
+      ],
+      "task_id": "route_diagnostics_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 575,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:48:39Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_e8cc8ca6f88afa50df23",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_525399d541e4e202",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_525399d541e4e202.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "route_diagnostics_o01_v1",
+        "route_diagnostics_o02_v1"
+      ],
+      "task_id": "route_diagnostics_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_2c42eb5e579392ef845f.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 6996.287,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ee4e673d28440191a185.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 1723.913,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 582,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fb5de12eb9c08dc36416.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2452.009,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 324,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "completed",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 4231,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_d684fa0880e0f27e2d6e.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 1630.453,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_94750d56971d58bea9a0.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 1851.789,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0d52453249bbb3372228.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2579.423,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 323,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "completed",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 4230,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_0b64a41aef1ac934b977.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 1928.973,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 582,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_22c4b874951d0f74666e.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3008.777,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_7d9d36632f3195e98ff6.json"
+      },
+      "avoided_tokens_estimate": 575,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_eb8febc0b04307dc",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8dac9be859541ded0650.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 1820.518,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o05_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_503a99eecf0caf68ceb9.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2493.499,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o05_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_e8cc8ca6f88afa50df23.json"
+      },
+      "avoided_tokens_estimate": 575,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_525399d541e4e202",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "route_diagnostics_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8d34dbc55c64c8917273.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "raw",
+      "latency_ms": 2948.905,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_67d829c213c57e27319b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 1576.315,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "failed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 575,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_fd318937e3c9133bf551.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "fixture_anchor": "network_probe_failure_classification,route_diagnostics",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 3395.769,
+      "mode": "controlled",
+      "objective": "Separate route/network/auth failure from model capability.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 324,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "nim_refs_only_contract",
+      "status": "completed",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 4231,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:7f00bd353f5e6572041e2aa836874510f015a1ba030903f61927cc83023581e9",
+      "applicability_fingerprint": "sha256:948a6c8850561b521665309af5b772e4d12fa8caa2944dc668039aa812d59b1d",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:46503d141c8cb752c7fbe4425c70ffa4cf4aa8ba5024b2f05d6a35a48aefc74b",
+      "applicability_fingerprint": "sha256:65c60324657c8dbc6dd82fbe895530e367ac249385251b0cbe5309f5615bd02e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ee4e673d28440191a185.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:70d7cb38f22a020de8f75dc5dac45a479f55702481ac6d8ef17ee2b05af9a832",
+      "applicability_fingerprint": "sha256:cc3bff28efb0175b3c0d10332f2d08d9a1002775dd2a95c39411dd1838b94b74",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ee4e673d28440191a185.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:28061ae799d1b9cc578ba54712ad0a2848a2abc93d73bb355fd515b5985bd272",
+      "applicability_fingerprint": "sha256:948a6c8850561b521665309af5b772e4d12fa8caa2944dc668039aa812d59b1d",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:746a424123e0095e4ef86bcfc7e311b27966d62a569c0419dbffb16927666f88",
+      "applicability_fingerprint": "sha256:65c60324657c8dbc6dd82fbe895530e367ac249385251b0cbe5309f5615bd02e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_94750d56971d58bea9a0.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:1ce8ad08c39a7942fa524fc7f7149ac2e33fc2e0e187f90153ed96cbeabe8e5e",
+      "applicability_fingerprint": "sha256:cc3bff28efb0175b3c0d10332f2d08d9a1002775dd2a95c39411dd1838b94b74",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_94750d56971d58bea9a0.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:76f857a987af3be87537803b849f79cb50cdf7153f27e1273f45cef751142018",
+      "applicability_fingerprint": "sha256:948a6c8850561b521665309af5b772e4d12fa8caa2944dc668039aa812d59b1d",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:002bfb6d0755b5f7a04f91411d0f34c7a288599c7220067938daf91fb962e9fa",
+      "applicability_fingerprint": "sha256:65c60324657c8dbc6dd82fbe895530e367ac249385251b0cbe5309f5615bd02e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_22c4b874951d0f74666e.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:23305e1b7ec8cd6abfede7c8688182c2f0ddb66036bf10ac5ef214979001492c",
+      "applicability_fingerprint": "sha256:cc3bff28efb0175b3c0d10332f2d08d9a1002775dd2a95c39411dd1838b94b74",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_22c4b874951d0f74666e.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:1d6514521c1196a00d46e18daa14346d00dd73619921bc3e67e9c6efb53a068a",
+      "applicability_fingerprint": "sha256:948a6c8850561b521665309af5b772e4d12fa8caa2944dc668039aa812d59b1d",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:5370d29bc525dda4cbe61e98c0b7736a959a54792ab24dd26436e0be2e5d5359",
+      "applicability_fingerprint": "sha256:65c60324657c8dbc6dd82fbe895530e367ac249385251b0cbe5309f5615bd02e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_503a99eecf0caf68ceb9.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:df30ca0484f0118108a50f24456519cb5cb4e9b1685eb3767d54ebde4900876b",
+      "applicability_fingerprint": "sha256:cc3bff28efb0175b3c0d10332f2d08d9a1002775dd2a95c39411dd1838b94b74",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_503a99eecf0caf68ceb9.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:eab7ce8683ec933798d6737240877fa7ce9d54ab2d510e6adc7e9e7a617ea191",
+      "applicability_fingerprint": "sha256:948a6c8850561b521665309af5b772e4d12fa8caa2944dc668039aa812d59b1d",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:4c4834b8ae68ed9633d333dad89656cec161f594a9d21ab2a35aca527e35a42e",
+      "applicability_fingerprint": "sha256:65c60324657c8dbc6dd82fbe895530e367ac249385251b0cbe5309f5615bd02e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:6aac13af4f6ffe45a101a2de8a0af1a4d3410dc5a79b03a25bdfa98ede40a6ce",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_67d829c213c57e27319b.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:c62686ca5129462a3b6bf3d43ce7532dc99bbd0c7c80c74d173cc8f632547d3b",
+      "applicability_fingerprint": "sha256:cc3bff28efb0175b3c0d10332f2d08d9a1002775dd2a95c39411dd1838b94b74",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_67d829c213c57e27319b.json"
+      },
+      "family": "route_diagnostics",
+      "family_fingerprint": "sha256:56ab13611ea314a40f0e42530b91e58e83864a730350794fb46d93b22ede8c4e",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2a160d2a9af2cdf57daa0efc38860d16e09728a6970bbd988f1449f4d8c5a91c"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:09f995b630a2190e5e817921780d827c5b9efbfbef37815a838daf88ef9c94f3",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:48:32Z",
+      "cross_provider_reuse": false,
+      "family": "route_diagnostics",
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "occurrence": 3,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_7d9d36632f3195e98ff6",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "validated_first_recurrence",
+      "task_id": "route_diagnostics_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:48:39Z",
+      "cross_provider_reuse": false,
+      "family": "route_diagnostics",
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "occurrence": 5,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_e8cc8ca6f88afa50df23",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "active_recurrence",
+      "task_id": "route_diagnostics_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "route_diagnostics"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 6996.287,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 6996.287,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.03s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 1723.913,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1723.913,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 675,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 205,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 582
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.03s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 205,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 582
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2452.009,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2452.009,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 804,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 324,
+          "prompt_tokens": 3907,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 4231
+        }
+      },
+      "prompt_tokens": 3097,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update the NIM action validation to require file_ref and anchor_ref\",\n      \"new\": \"    return bool(action.get(\\\"target\\\", {}).get(\\\"file_ref\\\")) and bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 324,
+        "prompt_tokens": 3907,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 4231
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 1630.453,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1630.453,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 1851.789,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1851.789,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.03s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2579.423,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2579.423,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 800,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 323,
+          "prompt_tokens": 3907,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4230
+        }
+      },
+      "prompt_tokens": 3097,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update NIM action validation to require file_ref and anchor_ref\",\n      \"new\": \"    return bool(action.get(\\\"target\\\", {}).get(\\\"file_ref\\\")) and bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 323,
+        "prompt_tokens": 3907,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4230
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 1928.973,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1928.973,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 675,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 205,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 582
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 205,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 582
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 3008.777,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3008.777,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 1820.518,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1820.518,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2493.499,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2493.499,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2948.905,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2948.905,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 1576.315,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 1576.315,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 642,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 198,
+          "prompt_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 256
+          },
+          "total_tokens": 575
+        }
+      },
+      "prompt_tokens": 281,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"new\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"old\": \"def validate_nim_action(action):\\n    return bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/nim_contract.py\",\n      \"why\": \"Ensure anchor refs are used without copied old snippets\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n_________________ test_hidden_nim_refs_only_rejects_copied_old _________________\n\n    def test_hidden_nim_refs_only_rejects_copied_old():\n>       assert validate_nim_action({\"target\": {\"file_ref\": \"F1\", \"anchor_ref\": \"A1\"}, \"old\": \"copied\", \"new\": \"x\"}) is False\nE       AssertionError: assert True is False\nE        +  where True = validate_nim_action({'new': 'x', 'old': 'copied', 'target': {'anchor_ref': 'A1', 'file_ref': 'F1'}})\n\ntests/test_nim_contract_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_nim_contract_hidden.py::test_hidden_nim_refs_only_rejects_copied_old\n1 failed, 1 passed in 0.02s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 198,
+        "prompt_tokens": 377,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "total_tokens": 575
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/nim_contract.py\n+++ b/app/nim_contract.py\n@@ -1,2 +1,5 @@\n def validate_nim_action(action):\n-    return bool(action.get(\"target\", {}).get(\"anchor_ref\"))\n+    target = action.get(\"target\", {})\n+    if not target.get(\"file_ref\") or not target.get(\"anchor_ref\"):\n+        return False\n+    return \"old\" not in action\n",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 3395.769,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3395.769,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/nim_contract.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 804,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 324,
+          "prompt_tokens": 3907,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4231
+        }
+      },
+      "prompt_tokens": 3097,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Update the NIM action validation to require file_ref and anchor_ref\",\n      \"new\": \"    return bool(action.get(\\\"target\\\", {}).get(\\\"file_ref\\\")) and bool(action.get(\\\"target\\\", {}).get(\\\"anchor_ref\\\"))\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix NIM refs-only output validation so anchor refs are used without copied old snippets.\",\n  \"provider_handoff_hash\": \"sha256:05ed119a290993621d34e9c6a416c4d427addb637b7eb82edbf0d527e600af04\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "nim_refs_only_contract",
+      "usage": {
+        "completion_tokens": 324,
+        "prompt_tokens": 3907,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4231
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "targets:app/nim_contract.py:semantic_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "route_diagnostics",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:bc70d74a294d926c6dd6cf58c2cd007e6556364dd14bb441930db589c131ed23",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:615e3abff9de9e3a3e0769d8adee83d4bfeab295d9b45836c4787034f55b6a0f",
+            "semantic_hash": "sha256:a0d578c335cc857b095bff41e239b8f93d5a6f6518c92e7f7817803f89700b46",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:bc70d74a294d926c6dd6cf58c2cd007e6556364dd14bb441930db589c131ed23",
+      "mutation_type": "target_semantic_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "provider": "mistral",
+      "recovered_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "targets:app/nim_contract.py:semantic_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:14Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 6996.287,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_2c42eb5e579392ef845f",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:15Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1723.913,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_ee4e673d28440191a185",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 582,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:48:15Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 2452.009,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 324,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_fb5de12eb9c08dc36416",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o01_v1",
+      "total_tokens": 4231,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:23Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1630.453,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_d684fa0880e0f27e2d6e",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:24Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1851.789,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_94750d56971d58bea9a0",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:48:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 2579.423,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 323,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_0d52453249bbb3372228",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o02_v1",
+      "total_tokens": 4230,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:31Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1928.973,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 205,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_0b64a41aef1ac934b977",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 582,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:32Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 3008.777,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_22c4b874951d0f74666e",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o03_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:38Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1820.518,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8dac9be859541ded0650",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o05_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:38Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 2493.499,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_503a99eecf0caf68ceb9",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o05_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:49Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 2948.905,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8d34dbc55c64c8917273",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:48:50Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "route_diagnostics",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 1576.315,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 198,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 377,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_67d829c213c57e27319b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 575,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:48:50Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "route_diagnostics",
+      "files_changed": [
+        "app/nim_contract.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+        "fixture_family": "route_diagnostics",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/nim_contract.py": {
+            "exists": true,
+            "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+            "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+            "symbol_hashes": {
+              "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_nim_contract_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+            "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+            "symbol_hashes": {
+              "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+            }
+          },
+          "tests/test_nim_contract_public.py": {
+            "exists": true,
+            "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+            "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+            "symbol_hashes": {
+              "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+      "latency_ms": 3395.769,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 324,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3907,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_fd318937e3c9133bf551",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "nim_refs_only_contract",
+      "task_id": "route_diagnostics_o10_v1",
+      "total_tokens": 4231,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "mistral": {
+      "live_failures_by_bucket": {
+        "capability_failure": 13,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "mistral": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.55,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "mistral": {
+          "average_latency_ms": 2640.33,
+          "average_provider_prompt_tokens": 1553.667,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_mistral_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "nim_refs_only_contract"
+            },
+            {
+              "lane": "live_mistral_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "nim_refs_only_contract"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 3395.769,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 4231.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "mistral"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_mistral_schema_validation_20260721T2048Z_b003/live_execution.json"
+}

@@ -95,6 +95,25 @@ def test_provider_adapter_registry_assigns_dedicated_adapter_classes():
     assert adapters["ollama"]["adapter_class"] == "ollama"
 
 
+def test_ollama_adapter_emits_native_bounded_request_policy(monkeypatch):
+    monkeypatch.delenv("BEAST_OLLAMA_MODEL", raising=False)
+    monkeypatch.delenv("OLLAMA_MODEL", raising=False)
+    plan = ProviderAdapterRegistry().adapter_for("ollama").plan_chat("beast-auto")
+
+    assert plan.model == "qwen2.5:0.5b"
+    assert plan.base_url == "http://127.0.0.1:11434"
+    assert plan.request_policy["api"] == "/api/generate"
+    assert plan.request_policy["num_ctx"] == 2048
+    assert plan.request_policy["portable_kv"] is False
+    assert plan.request_policy["prompt_cache"] == "runner_local"
+
+
+def test_ollama_model_can_be_overridden_without_changing_other_providers(monkeypatch):
+    monkeypatch.setenv("BEAST_OLLAMA_MODEL", "qwen2.5:3b")
+    plan = ProviderAdapterRegistry().adapter_for("ollama").plan_chat()
+    assert plan.model == "qwen2.5:3b"
+
+
 def test_xai_and_replicate_have_distinct_route_contracts():
     records = {record.provider_id: record for record in ProviderRegistry().records()}
 
@@ -127,7 +146,7 @@ def test_codex_and_beast_auto_have_concrete_provider_contracts():
         "openrouter": "litellm/openrouter/auto",
         "nvidia_nim": "nvidia/nemotron-3-super-120b-a12b",
         "local_nim": "local-nim-model",
-        "ollama": "llama3.2:3b",
+        "ollama": "qwen2.5:0.5b",
     }
     for provider_id, expected_model in expected_models.items():
         plan = adapters.adapter_for(provider_id).plan_chat("beast-auto")

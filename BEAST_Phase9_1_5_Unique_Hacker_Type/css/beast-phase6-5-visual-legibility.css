@@ -1,0 +1,437 @@
+/* ========================================================================== 
+   BEAST Phase 6.5 — Visual Systems + Legibility Refit
+   Purpose:
+   - replace static green frame paint with neutral chrome + travelling energy
+   - establish 100% zoom as the readability baseline
+   - add restrained matrix/grid atmosphere behind content
+   - remove placeholder-looking SVG/CSS visuals from Models, Agents, Trust, Memory
+   ========================================================================== */
+
+@property --beast-pulse-x { syntax:'<percentage>'; inherits:false; initial-value:-28%; }
+@property --beast-pulse-y { syntax:'<percentage>'; inherits:false; initial-value:-28%; }
+
+:root {
+  --beast-text-1:#f4f8f5;
+  --beast-text-2:#c7d1ca;
+  --beast-text-3:#9eaaa2;
+  --beast-text-4:#7f8d84;
+  --beast-muted:#a5b1a9;
+  --beast-border:rgba(190,207,196,.25);
+  --beast-border-hot:rgba(119,255,61,.56);
+  --beast-panel:rgba(4,9,6,.965);
+  --beast-sidebar-w:clamp(260px,15.6vw,312px);
+  --beast-rail-w:clamp(328px,19.5vw,404px);
+  --beast-header-h:96px;
+  --beast-command-h:clamp(126px,14vh,154px);
+  --beast-gap:clamp(10px,.72vw,15px);
+  --beast-readable-xs:12px;
+  --beast-readable-sm:13px;
+  --beast-readable-md:14px;
+  --beast-readable-lg:16px;
+}
+
+html { font-size:16px; }
+body {
+  color:var(--beast-text-1);
+  font:500 16px/1.56 var(--beast-display);
+  letter-spacing:.006em;
+  background:
+    radial-gradient(ellipse at 52% -15%,rgba(86,255,42,.10),transparent 40%),
+    radial-gradient(circle at 86% 84%,rgba(60,150,80,.055),transparent 30%),
+    linear-gradient(145deg,#010302,#030705 42%,#010201);
+}
+
+/* Background atmosphere remains behind readable surfaces. */
+#beastMatrix {
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  opacity:.13;
+  mix-blend-mode:screen;
+  pointer-events:none;
+  filter:contrast(1.08) saturate(.9);
+}
+#beastGridLayer {
+  position:fixed;
+  z-index:0;
+  left:-12vw;
+  right:-12vw;
+  bottom:-28vh;
+  height:78vh;
+  pointer-events:none;
+  opacity:.15;
+  transform-origin:center bottom;
+  transform:perspective(700px) rotateX(63deg) translateY(10%);
+  background-image:
+    linear-gradient(rgba(119,255,61,.22) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.18) 1px,transparent 1px);
+  background-size:54px 54px;
+  mask-image:linear-gradient(to top,black 8%,rgba(0,0,0,.62) 48%,transparent 95%);
+  animation:beast-grid-advance 13s linear infinite;
+}
+#beastGridLayer::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 50% 70%,rgba(119,255,61,.22),transparent 48%);
+  animation:beast-grid-breathe 4.8s ease-in-out infinite;
+}
+
+body::before {
+  opacity:.16;
+  background-size:44px 44px;
+  animation:beast-wall-grid 28s linear infinite;
+}
+body::after { opacity:.11; }
+
+/* Shell scale and reliable scroll ownership. */
+.beast-shell { min-width:0; }
+.beast-viewport {
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-gutter:stable both-edges;
+}
+#beastPageOutlet { padding:16px; }
+.beast-page { gap:16px; min-width:0; }
+.beast-grid { gap:14px; }
+.beast-rail { padding:12px; }
+.beast-command { padding:11px 14px; }
+
+/* --------------------------------------------------------------------------
+   Neutral chrome frame masters. Green is now motion, not permanent paint.
+   -------------------------------------------------------------------------- */
+.beast-card {
+  color:var(--beast-text-1);
+  border-image-source:url("../assets/frames/panel-card-neutral.png") !important;
+  background:
+    radial-gradient(circle at 14% 0,rgba(255,255,255,.026),transparent 26%),
+    linear-gradient(180deg,rgba(6,12,8,.975),rgba(2,5,3,.992));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.035),
+    inset 0 0 34px rgba(0,0,0,.32),
+    0 16px 35px rgba(0,0,0,.34);
+  filter:none;
+}
+.beast-card.wide { border-image-source:url("../assets/frames/panel-wide-neutral.png") !important; }
+.beast-card.compact { border-image-source:url("../assets/frames/panel-card-compact-neutral.png") !important; }
+.beast-card.tall { border-image-source:url("../assets/frames/panel-tall-neutral.png") !important; }
+.beast-card.warning { border-image-source:url("../assets/frames/panel-amber.png") !important; }
+.beast-card.danger { border-image-source:url("../assets/frames/panel-warning.png") !important; }
+.beast-card.silver { border-image-source:url("../assets/frames/panel-silver.png") !important; }
+
+/* Kill the former all-card rotating neon cage. */
+.beast-card::before {
+  content:"";
+  position:absolute;
+  inset:10px;
+  z-index:7;
+  pointer-events:none;
+  border-radius:5px;
+  padding:0;
+  opacity:.42;
+  filter:drop-shadow(0 0 4px rgba(119,255,61,.28));
+  -webkit-mask:none;
+  mask:none;
+  background:
+    linear-gradient(90deg,transparent 0,rgba(119,255,61,.08) 28%,rgba(196,255,172,.92) 50%,rgba(119,255,61,.10) 72%,transparent 100%) var(--beast-pulse-x) 0/27% 2px no-repeat,
+    linear-gradient(180deg,transparent 0,rgba(119,255,61,.07) 28%,rgba(183,255,151,.78) 50%,rgba(119,255,61,.08) 72%,transparent 100%) 100% var(--beast-pulse-y)/2px 24% no-repeat;
+  animation:beast-edge-travel 7.2s linear infinite;
+}
+.beast-card::after {
+  inset:13px;
+  border-color:rgba(119,255,61,.045);
+  background:
+    linear-gradient(90deg,transparent,rgba(119,255,61,.025),transparent),
+    repeating-linear-gradient(0deg,transparent 0 16px,rgba(119,255,61,.012) 16px 17px);
+}
+.beast-card:hover::before,
+.beast-card:focus-within::before,
+.beast-card.is-active::before,
+.beast-card:has(.selected)::before {
+  opacity:.88;
+  filter:drop-shadow(0 0 6px rgba(119,255,61,.55));
+  animation-duration:3.6s;
+}
+.beast-card.warning::before { background-image:linear-gradient(90deg,transparent,rgba(255,189,50,.9),transparent),linear-gradient(180deg,transparent,rgba(255,189,50,.7),transparent); }
+.beast-card.danger::before { background-image:linear-gradient(90deg,transparent,rgba(255,73,56,.9),transparent),linear-gradient(180deg,transparent,rgba(255,73,56,.7),transparent); }
+
+/* Shell surfaces receive a single restrained current, not a glowing outline stack. */
+.beast-surface::before {
+  animation:beast-surface-current 9.5s linear infinite !important;
+  opacity:.48 !important;
+  background:
+    linear-gradient(90deg,transparent 0 28%,rgba(119,255,61,.06) 40%,rgba(176,255,139,.62) 50%,rgba(119,255,61,.06) 60%,transparent 72%) top/35% 1px no-repeat,
+    linear-gradient(180deg,transparent 0 30%,rgba(119,255,61,.36) 50%,transparent 70%) left/1px 28% no-repeat !important;
+}
+.beast-surface::after {
+  opacity:.28 !important;
+  animation:beast-shell-soft-breathe 5.2s ease-in-out infinite !important;
+  border-color:rgba(119,255,61,.06) !important;
+  box-shadow:inset 0 0 18px rgba(119,255,61,.018) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Typography and contrast: designed for 100% browser zoom.
+   -------------------------------------------------------------------------- */
+.beast-title { font-size:clamp(21px,1.25vw,25px); line-height:1.2; }
+.beast-kicker { font:800 12px/1.2 var(--beast-mono); }
+.beast-meta { color:var(--beast-text-3); font:12px/1.4 var(--beast-mono); }
+.beast-page-head h2 { font-size:clamp(21px,1.35vw,27px); line-height:1.2; }
+.beast-page-head .sub { color:var(--beast-text-3); font:12px/1.55 var(--beast-mono); }
+.beast-panel-head h3,
+.beast-card h3 { color:var(--beast-green-hot); font-size:14px; line-height:1.3; letter-spacing:.075em; }
+.beast-panel-head span { color:var(--beast-text-3); font:12px/1.45 var(--beast-mono); }
+.beast-card p { color:var(--beast-text-2); font-size:14px; line-height:1.58; }
+.beast-card .tiny,.tiny { color:var(--beast-text-3) !important; font:12px/1.45 var(--beast-mono) !important; }
+.beast-pill { font:12px/1.2 var(--beast-mono); padding:8px 11px; }
+.beast-button,
+.beast-page-actions button,
+.agent-control-row button,
+.beast-command-tabs button,
+.beast-chip {
+  min-height:38px;
+  font:700 13px/1.2 var(--beast-mono) !important;
+  letter-spacing:.025em;
+}
+.beast-filter,
+input,
+select,
+textarea { font-size:14px !important; }
+.beast-command-line input { height:46px; font-size:15px !important; color:var(--beast-text-1); }
+.beast-send { height:46px; }
+.beast-chip { font-size:12px !important; }
+
+.beast-nav button { min-height:48px; padding:7px 10px; color:#b9c4bd; }
+.beast-nav .label { font-size:15px; line-height:1.2; }
+.beast-nav img { width:30px; height:30px; }
+.beast-brand-copy small { color:#b7c1bb; font:11px/1.45 var(--beast-mono); }
+.beast-sidebar-foot { color:#9daaa2; font:11px/1.5 var(--beast-mono); }
+
+/* General rescue for legacy microtype across transplanted pages. */
+:where(
+  .model-summary-card span,.agent-summary-card span,.review-summary-card span,.evidence-summary-card span,
+  .trust-summary-card span,.memory-summary-card span,.map-summary-card span,.crystal-summary-card span,
+  .route-map-node span,.route-map-node em,.routing-rule small,.model-registry-row small,.model-registry-row em,
+  .model-runtime-card span,.model-benchmark-row small,.agent-orbit-node span,.agent-orbit-node i,
+  .agent-session-row small,.agent-session-row em,.agent-handoff-row,.agent-tool-cloud span,
+  .trust-security-node span,.trust-security-node small,.trust-security-node em,.trust-canary small,.trust-canary em,
+  .trust-control-node span,.trust-control-node em,.trust-permission-table,.trust-attestation small,.trust-attestation em,
+  .memory-recall-row small,.memory-layer-row small,.memory-layer-row em,.memory-security-stack span,.memory-security-stack em,
+  .memory-truth-list small,.memory-truth-list em,.memory-view-cloud span,.memory-record-detail small,
+  .map-node small,.map-node em,.map-inspector-row,.crystal-candidate small,.crystal-ledger,
+  .beast-ledger,.beast-rail-facts,.cortex-empty-list
+) {
+  font-size:12px !important;
+  line-height:1.45 !important;
+  color:var(--beast-text-3);
+}
+
+:where(
+  .model-registry-row b,.model-runtime-card b,.model-benchmark-row b,.agent-orbit-node b,.agent-session-row b,
+  .trust-security-node b,.trust-canary b,.trust-control-detail h4,.trust-attestation b,
+  .memory-recall-row b,.memory-layer-row b,.memory-truth-list b,.memory-record-detail h4,
+  .beast-rail-facts b
+) { font-size:13px !important; line-height:1.4 !important; color:var(--beast-text-1); }
+
+.beast-rail-facts div { min-height:34px; padding:7px 0; }
+.beast-rail-facts span { color:var(--beast-text-3); font-size:12px !important; }
+.beast-rail-facts b { overflow-wrap:anywhere; text-align:right; }
+.beast-ledger div { grid-template-columns:74px 1fr; min-height:38px; }
+.cortex-empty-list { color:var(--beast-text-3) !important; padding:24px 16px !important; }
+
+/* More breathable cards and list rows. */
+.beast-card { padding:20px; }
+.beast-card.compact { padding:15px; }
+.model-registry-row,.agent-session-row,.memory-layer-row,.memory-recall-row,
+.trust-attestation,.trust-security-node,.trust-canary { min-height:66px; padding:10px 11px; }
+.model-registry-row img,.agent-session-row img { width:42px !important; height:42px !important; object-fit:contain; }
+
+/* --------------------------------------------------------------------------
+   Premium visual systems. Canvas handles links; PNG emblems handle identity.
+   -------------------------------------------------------------------------- */
+.premium-route-canvas,
+.premium-orbit-canvas,
+.premium-memory-canvas {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:1;
+  opacity:.82;
+}
+.model-route-map > :not(canvas),
+.agent-orbit > :not(canvas),
+.memory-constellation > :not(canvas) { position:absolute; z-index:3; }
+
+.model-route-map,
+.agent-orbit,
+.memory-constellation {
+  background:
+    radial-gradient(circle at 50% 50%,rgba(119,255,61,.075),transparent 46%),
+    linear-gradient(rgba(119,255,61,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.025) 1px,transparent 1px),
+    #020503 !important;
+  background-size:auto,34px 34px,34px 34px,auto !important;
+}
+.model-route-map::after,
+.agent-orbit::after,
+.memory-constellation::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  opacity:.20;
+  background:url("../assets/effects/matrix-grid-veil.png") center/cover no-repeat;
+  mix-blend-mode:screen;
+  animation:beast-veil-drift 10s steps(18,end) infinite;
+}
+
+.route-map-node,.agent-orbit-node,.memory-star {
+  box-shadow:inset 0 0 18px rgba(0,0,0,.55),0 0 0 1px rgba(119,255,61,.11),0 0 14px rgba(119,255,61,.07);
+}
+.route-map-node img,.agent-orbit-node img,.memory-star img {
+  filter:drop-shadow(0 0 7px rgba(119,255,61,.42));
+}
+
+/* Trust proof identity: premium PNG core instead of basic concentric CSS doodles. */
+.trust-proof-emblem {
+  position:relative;
+  min-height:190px;
+  display:grid;
+  place-items:center;
+  isolation:isolate;
+}
+.trust-proof-emblem img { width:min(190px,82%); aspect-ratio:1; object-fit:contain; filter:drop-shadow(0 0 16px rgba(119,255,61,.28)); z-index:2; }
+.trust-proof-emblem::before,
+.trust-proof-emblem::after {
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(119,255,61,.22);
+  animation:beast-proof-ring 4.4s ease-in-out infinite;
+}
+.trust-proof-emblem::before { width:72%; aspect-ratio:1; }
+.trust-proof-emblem::after { width:48%; aspect-ratio:1; animation-delay:-2.2s; }
+
+.trust-chain-premium {
+  align-self:center;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(34px,1fr));
+  gap:6px;
+  position:relative;
+  padding:20px 4px;
+}
+.trust-chain-premium::before {
+  content:"";
+  position:absolute;
+  left:7%;right:7%;top:50%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--beast-green),rgba(119,255,61,.18),var(--beast-green),transparent);
+  background-size:220% 100%;
+  box-shadow:0 0 9px rgba(119,255,61,.46);
+  animation:beast-chain-current 3.2s linear infinite;
+}
+.trust-chain-premium span {
+  position:relative;
+  z-index:2;
+  width:25px;height:25px;
+  margin:auto;
+  transform:rotate(45deg);
+  border:1px solid rgba(119,255,61,.55);
+  background:#050a06;
+  box-shadow:0 0 10px rgba(119,255,61,.28);
+}
+
+/* Memory core becomes a premium emblem with readable health, not a basic 3-face cube. */
+.memory-core-emblem {
+  position:relative;
+  width:210px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  margin:auto;
+}
+.memory-core-emblem img { width:82%; height:82%; object-fit:contain; filter:drop-shadow(0 0 20px rgba(119,255,61,.28)); }
+.memory-core-emblem::before,.memory-core-emblem::after {
+  content:"";position:absolute;border-radius:50%;border:1px solid rgba(119,255,61,.24);
+}
+.memory-core-emblem::before { inset:5%; animation:beast-core-orbit 9s linear infinite; border-style:dashed; }
+.memory-core-emblem::after { inset:20%; animation:beast-core-orbit 5.5s linear infinite reverse; }
+.memory-core-emblem strong { position:absolute; bottom:14%; font:900 27px var(--beast-mono); color:var(--beast-text-1); text-shadow:0 0 8px rgba(119,255,61,.6); }
+.memory-core-emblem small { position:absolute; bottom:5%; color:var(--beast-green); font:11px var(--beast-mono); text-transform:uppercase; }
+.memory-skill-radar {
+  border:0 !important;
+  background:url("../assets/icons/skill-core.png") center/contain no-repeat !important;
+  width:180px !important;
+  box-shadow:none !important;
+}
+.memory-skill-radar::before { opacity:.34; }
+
+/* Icons never render as empty mystery squares. */
+img.beast-icon-fallback { opacity:.92; filter:drop-shadow(0 0 6px rgba(119,255,61,.4)); }
+.beast-button img,.beast-page-actions img,.agent-control-row img { width:20px; height:20px; }
+
+/* Accessibility and keyboard clarity. */
+:focus-visible { outline:2px solid var(--beast-green-hot) !important; outline-offset:2px; box-shadow:0 0 0 4px rgba(119,255,61,.13) !important; }
+::selection { background:rgba(119,255,61,.28); color:#fff; }
+
+/* Responsive scale. 100% zoom remains readable while dense layouts stack instead of shrink. */
+@media (max-width:1650px) {
+  :root { --beast-sidebar-w:260px; --beast-rail-w:330px; }
+  .beast-grid.cols-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .model-summary-grid,.agent-summary-grid,.memory-summary-grid,.trust-summary-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+}
+@media (max-width:1380px) {
+  :root { --beast-sidebar-w:236px; --beast-rail-w:306px; }
+  body { font-size:15px; }
+  .beast-nav .label { font-size:14px; }
+  .beast-card { padding:17px; }
+  .beast-title { font-size:20px; }
+  .beast-page-head h2 { font-size:21px; }
+  .models-main-grid,.agents-main-grid,.trust-main-grid,.memory-main-grid { grid-template-columns:1fr !important; }
+}
+@media (max-width:1120px) {
+  .beast-shell {
+    grid-template-columns:220px minmax(0,1fr);
+    grid-template-areas:"sidebar header" "sidebar viewport" "sidebar command";
+  }
+  .beast-rail { display:none; }
+  .model-summary-grid,.agent-summary-grid,.memory-summary-grid,.trust-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+}
+@media (max-width:820px) {
+  :root { --beast-header-h:auto; --beast-command-h:auto; }
+  .beast-shell { display:block; overflow:auto; padding:8px; }
+  .beast-sidebar { position:sticky; top:0; z-index:30; min-height:auto; }
+  .beast-brand,.beast-sidebar-foot { display:none; }
+  .beast-nav { grid-template-columns:repeat(5,minmax(0,1fr)); overflow:visible; }
+  .beast-nav button { grid-template-columns:1fr; justify-items:center; padding:6px; }
+  .beast-nav button > :last-child,.beast-nav .label { display:none; }
+  .beast-header,.beast-viewport,.beast-command { margin-top:8px; }
+  .beast-viewport { max-height:none; }
+  .model-summary-grid,.agent-summary-grid,.memory-summary-grid,.trust-summary-grid { grid-template-columns:1fr !important; }
+}
+
+@keyframes beast-edge-travel {
+  0% { --beast-pulse-x:-28%; --beast-pulse-y:-28%; }
+  48% { --beast-pulse-x:104%; --beast-pulse-y:-28%; }
+  52% { --beast-pulse-x:104%; --beast-pulse-y:-28%; }
+  100% { --beast-pulse-x:104%; --beast-pulse-y:108%; }
+}
+@keyframes beast-shell-soft-breathe { 0%,100%{opacity:.18} 50%{opacity:.38} }
+@keyframes beast-grid-advance { from{background-position:0 0,0 0} to{background-position:0 108px,108px 0} }
+@keyframes beast-grid-breathe { 0%,100%{opacity:.45} 50%{opacity:.9} }
+@keyframes beast-wall-grid { from{background-position:0 0} to{background-position:88px 44px} }
+@keyframes beast-veil-drift { 0%{background-position:48% 50%;opacity:.12} 50%{background-position:52% 49%;opacity:.23} 100%{background-position:48% 50%;opacity:.12} }
+@keyframes beast-proof-ring { 0%,100%{transform:scale(.88);opacity:.20} 50%{transform:scale(1.06);opacity:.70} }
+@keyframes beast-chain-current { from{background-position:120% 0} to{background-position:-120% 0} }
+@keyframes beast-core-orbit { to{transform:rotate(360deg)} }
+
+@media (prefers-reduced-motion:reduce) {
+  #beastGridLayer,.beast-card::before,.beast-surface::before,.beast-surface::after,
+  .model-route-map::after,.agent-orbit::after,.memory-constellation::after,
+  .trust-proof-emblem::before,.trust-proof-emblem::after,.trust-chain-premium::before,
+  .memory-core-emblem::before,.memory-core-emblem::after { animation:none !important; }
+}

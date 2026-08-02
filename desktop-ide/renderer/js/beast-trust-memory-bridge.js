@@ -17,6 +17,12 @@
     const root = BeastStore.get().workspace.root;
     return root ? `?root_path=${encodeURIComponent(root)}` : '';
   };
+  const detailQuery = () => {
+    const root = BeastStore.get().workspace.root;
+    const params = new URLSearchParams({ detail:'true' });
+    if (root) params.set('root_path', root);
+    return `?${params.toString()}`;
+  };
 
   const demoTrust = {
     score: 96,
@@ -105,9 +111,12 @@
     const seal = payload.residue_seal || payload.seal || {};
     const passport = payload.agent_passport || payload.passport || {};
     const lint = passport.policy_lint || passport.lint || {};
-    const verified = Number(hull.verified_sidecars ?? hull.verified ?? hull.ok ?? 0);
-    const failed = Number(hull.failed_sidecars ?? hull.failed ?? hull.errors ?? 0);
-    const exists = Boolean(seal.key_exists ?? seal.exists ?? seal.key_mode);
+    const sectionRows = Object.values(hull.sections || {}).filter(item => item && typeof item === 'object');
+    const sectionVerified = sectionRows.reduce((sum, item) => sum + Number(item.verified || 0), 0);
+    const sectionFailed = sectionRows.reduce((sum, item) => sum + Number(item.failed || 0), 0);
+    const verified = Number(hull.verified_sidecars ?? sectionVerified ?? hull.verified ?? hull.ok ?? 0);
+    const failed = Number(hull.failed_sidecars ?? sectionFailed ?? hull.failed ?? hull.errors ?? 0);
+    const exists = Boolean(seal.key_exists ?? seal.exists ?? seal.key_mode ?? seal.private_key);
     const policies = Number(lint.policy_count ?? passport.policy_count ?? passport.policies ?? 0);
     const valid = Boolean(lint.valid ?? passport.valid ?? policies > 0);
     return {
@@ -134,7 +143,12 @@
     // not evidence that a healthy local runtime is untrusted.  Show an honest
     // observed-runtime baseline until those controls report in.
     const observedScore = runtimeObserved ? 65 : 0;
-    const score = clamp(healthRaw == null ? (optionalAttestationOnly ? observedScore : inferredScore) : healthRaw);
+    // Snapshot health includes optional, timeout-bounded observability probes.
+    // It must not override the stronger live security signals: a slow Code
+    // Cortex or safety scan is degraded telemetry, not degraded trust.
+    const score = clamp(security.hull.verified || security.seal.exists || security.passport.valid
+      ? Math.max(inferredScore, Number(healthRaw) || 0)
+      : (healthRaw == null ? (optionalAttestationOnly ? observedScore : inferredScore) : healthRaw));
     const total = Math.max(0, Number(integrity.total ?? integrity.checks ?? decisions ?? 0) || inferredSignals);
     const healthy = Math.max(0, Number(integrity.passed ?? integrity.healthy ?? 0) || inferredSignals);
     const agentRows = firstArray(snapshot.agent_sessions?.sessions,snapshot.agent_sessions,system.agents);
@@ -247,12 +261,27 @@
     const viewsRaw = firstArray(memoryPayload.retrieval_views,memoryPayload.views,memoryPayload.retrievers);
     const eventsRaw = firstArray(memoryPayload.events,memoryPayload.recent,memoryPayload.timeline,chronicle.entries,chronicle.records);
     const evidenceRows = firstArray(evidence.receipts,evidence.items,evidence.records);
+    const layerRecords = item => {
+      const counts = item?.counts && typeof item.counts === 'object' ? item.counts : {};
+      const skills = counts.skills && typeof counts.skills === 'object' ? counts.skills : {};
+      const runtimeStatuses = counts.runtime_attempt_statuses && typeof counts.runtime_attempt_statuses === 'object'
+        ? counts.runtime_attempt_statuses : {};
+      return Number(item?.records ?? item?.count ?? item?.total ?? counts.records ?? counts.total
+        ?? counts.nodes ?? counts.chronicles ?? counts.meta_rules ?? skills.total
+        ?? Object.values(runtimeStatuses).reduce((sum,value)=>sum + Number(value || 0),0)
+        ?? item?.items?.length ?? 0) || 0;
+    };
+    const layerFreshness = item => {
+      const explicit = item?.freshness ?? item?.freshness_score ?? item?.health;
+      if (explicit != null) return clamp(explicit);
+      return /active|ready|healthy|stable/i.test(String(item?.status || '')) && layerRecords(item) > 0 ? 100 : 0;
+    };
     const layers = layersRaw.slice(0,8).map((item,index)=>({
       id:String(item.id || item.layer_id || `L${index}`),
       name:label(item,`Memory Layer ${index}`),
       scope:String(item.scope || item.description || item.purpose || 'Governed memory layer'),
-      records:Number(item.records ?? item.count ?? item.items?.length ?? 0),
-      freshness:clamp(item.freshness ?? item.health ?? 0),
+      records:layerRecords(item),
+      freshness:layerFreshness(item),
       status:String(item.status || item.temperature || 'reported')
     }));
     const truthStores = truthRaw.slice(0,8).map((item,index)=>({
@@ -262,13 +291,16 @@
       status:String(item.status || item.health || 'Healthy')
     }));
     const retrievalViews = viewsRaw.map(item=>label(item)).slice(0,10);
-    const records = Number(memoryPayload.total ?? memoryPayload.count ?? recordsRaw.length ?? layers.reduce((sum,item)=>sum+item.records,0)) || layers.reduce((sum,item)=>sum+item.records,0);
+    const records = Number(memoryPayload.total ?? memoryPayload.count ?? (recordsRaw.length || 0)) || layers.reduce((sum,item)=>sum+item.records,0);
     const evidenceItems = Number(evidence.total ?? evidence.count ?? evidenceRows.length ?? current.evidenceItems ?? 0);
-    const recallHealth = clamp(memoryPayload.health ?? memoryPayload.recall_health ?? memoryPayload.score ?? 0);
+    const activeLayers = layers.filter(item=>/active|ready|healthy|stable/i.test(item.status)).length;
+    const recallHealth = clamp(memoryPayload.health ?? memoryPayload.recall_health ?? memoryPayload.score
+      ?? (records > 0 && activeLayers ? Math.round(activeLayers / Math.max(1,layers.length) * 100) : 0));
     const freshness = clamp(memoryPayload.freshness ?? memoryPayload.freshness_score ?? (layers.length ? Math.round(layers.reduce((s,item)=>s+item.freshness,0)/layers.length):0));
     const compactionQueue = Number(memoryPayload.compaction_queue ?? memoryPayload.queue ?? memoryPayload.pending_compaction ?? 0);
     const skillCandidates = Number(memoryPayload.skill_candidates ?? memoryPayload.skills?.length ?? memoryPayload.candidates?.length ?? 0);
-    const residueQuality = clamp(memoryPayload.residue_quality ?? evidence.validity ?? evidence.validity_score ?? 0);
+    const residueQuality = clamp(memoryPayload.residue_quality ?? evidence.validity ?? evidence.validity_score
+      ?? (security.hull.failed ? 0 : security.hull.verified > 0 && security.seal.exists && security.passport.valid ? 100 : 0));
     const events = eventsRaw.slice(0,10).map(item=>({time:timeLabel(item.time || item.timestamp || item.created_at),label:label(item,'Memory event')}));
     const queryText = String(query || current.query || '').trim();
     let recallRaw = firstArray(memoryPayload.recall_results,memoryPayload.matches,memoryPayload.results);
@@ -305,7 +337,7 @@
     try {
       const root=rootQuery();
       const results=await Promise.allSettled([
-        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${root}`,options),
+        BeastDesktopBridge.fetchJson(`/edgek/ide/snapshot${detailQuery()}`,{...options,timeoutMs:2500}),
         BeastDesktopBridge.fetchJson(`/edgek/ide/system-snapshot${root}`,options),
         BeastDesktopBridge.fetchJson('/edgek/memory-security?verify=true',options),
         BeastDesktopBridge.fetchJson('/edgek/mcp/approvals?limit=20',options),

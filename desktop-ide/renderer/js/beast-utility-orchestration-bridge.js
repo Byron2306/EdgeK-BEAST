@@ -212,6 +212,99 @@
     }
   }
 
+  // Phase pages are backed by signed receipts in the selected workspace.  Project
+  // them as soon as Electron returns them; platform telemetry is an optional,
+  // slower enrichment and must never hold these pages in a loading state.
+  function projectPhaseEvidence(evidence) {
+    if (evidence?.ok !== true) return false;
+    const state = BeastStore.get();
+    const pressure = evidence.system?.pressure;
+    BeastStore.patch('computeFabric', {...(state.computeFabric || {}), ...(evidence.computeFabric || {})});
+    BeastStore.patch('liveFabric', {...(state.liveFabric || {}), ...(evidence.liveFabric || {})});
+    BeastStore.patch('grandClosure', {...(state.grandClosure || {}), ...(evidence.grandClosure || {})});
+    BeastStore.patch('reality', {...(state.reality || {}), ...(evidence.reality || {})});
+    if (evidence.sensorium) {
+      const currentChronicle = state.chronicle || {};
+      const seededEvents = Array.isArray(currentChronicle.events) && currentChronicle.events.length
+        ? currentChronicle.events
+        : (evidence.sensorium.recent_events || []).map((row, index) => ({
+            id: row.id || `phase-sensorium-${index + 1}`,
+            time: row.timestamp || row.time || 'historical receipt',
+            kind: row.kind || 'runtime',
+            label: row.summary || row.message || row.program || 'Sensorium receipt',
+            detail: row.message || row.target || 'Projected from repository proof receipts.',
+            actor: row.program || row.target || 'Sensorium',
+            severity: row.status === 'verified' ? 'success' : 'info',
+          }));
+      const filtered = Array.isArray(currentChronicle.filtered) && currentChronicle.filtered.length ? currentChronicle.filtered : seededEvents;
+      BeastStore.patch('chronicle', {
+        sensorium: { ...(currentChronicle.sensorium || {}), ...evidence.sensorium },
+        events: seededEvents,
+        filtered,
+        selectedId: currentChronicle.selectedId || seededEvents[0]?.id || '',
+        updatedAt: now(),
+      });
+    }
+    if (evidence.providers?.kv) BeastStore.patch('providers', {kv:{...(state.providers?.kv || {}), ...evidence.providers.kv}});
+    if (evidence.economy) BeastStore.patch('economy', {...(state.economy || {}), ...evidence.economy});
+    const gates = evidence.grandClosure?.gates || {};
+    const gateRows = Object.values(gates).filter(item => item && typeof item === 'object');
+    const verifiedGates = gateRows.filter(item => item.validated === true || String(item.status).toLowerCase() === 'pass').length;
+    const sensorEvents = Array.isArray(evidence.sensorium?.recent_events) ? evidence.sensorium.recent_events.length : 0;
+    const residue = Math.max(verifiedGates, sensorEvents, evidence.providers?.kv ? 1 : 0);
+    const memoryLayers = ['L0 governance', 'L1 hot context', 'L2 workspace graph', 'L4 forensic archive'].map((name, index) => ({
+      id: `L${[0, 1, 2, 4][index]}`,
+      name,
+      scope: 'Projected from repository evidence receipts',
+      records: index === 1 ? residue : index === 3 ? sensorEvents : 1,
+      freshness: 100,
+      status: 'evidence'
+    }));
+    BeastStore.patch('memory', {
+      loading:false,
+      records: Math.max(Number(state.memory?.records || 0), residue),
+      evidenceItems: Math.max(Number(state.memory?.evidenceItems || 0), residue),
+      freshness: 100,
+      residueQuality: verifiedGates ? Math.round(verifiedGates / Math.max(1, gateRows.length) * 100) : 0,
+      skillCandidates: Number(state.memory?.skillCandidates || 0),
+      layers: state.memory?.layers?.length ? state.memory.layers : memoryLayers,
+      updatedAt:now()
+    });
+    if (pressure) BeastStore.patch('system', {
+      loading:false,
+      status:'Evidence available',
+      score: Math.round((verifiedGates / Math.max(1, gateRows.length)) * 100),
+      pressure,
+      updatedAt:now()
+    });
+    const existingPlatform = BeastStore.get().platform || {};
+    const sections = existingPlatform.sections?.length ? existingPlatform.sections : evidencePlatformSections(evidence, residue, verifiedGates, sensorEvents);
+    BeastStore.patch('platform', {
+      loading:false,
+      status:'evidence',
+      health: Math.round((verifiedGates / Math.max(1, gateRows.length)) * 100),
+      summary: { ...(existingPlatform.summary || {}), memory_layers: memoryLayers.length, evidence_residue: residue, pipeline_status: 'evidence', route_cards: 0 },
+      sections,
+      updatedAt:now()
+    });
+    return true;
+  }
+
+  function evidencePlatformSections(evidence, residue, verifiedGates, sensorEvents) {
+    const status = verifiedGates ? 'evidence' : 'watch';
+    const row = (id, title, summary, metrics) => ({id, title, status, summary, metrics, source:'Electron repository phase receipts', payload:{deferred:true, reason:'Evidence projection; gateway telemetry unavailable.'}});
+    return [
+      row('pipeline', 'Task Pipeline', 'Repository proof receipts are available; live route telemetry is deferred.', [['Gates', verifiedGates, 'validated receipts'], ['Evidence residue', residue, 'proof objects']].map(([label,value,detail])=>({label,value,detail}))),
+      row('system', 'Runtime And PREC', 'Historical lifecycle evidence is present; live runtime health requires the gateway.', [{label:'Pressure',value:evidence.system?.pressure?.status || 'UNREPORTED',detail:'evidence receipt'}, {label:'Gateway',value:'offline',detail:'live probe unavailable'}]),
+      row('memory', 'L0-L4 Memory', 'Memory layers projected from governed repository evidence.', [{label:'Layers',value:4,detail:'L0, L1, L2, L4'}, {label:'Residue',value:residue,detail:'verified proof objects'}]),
+      row('capabilities', 'Capabilities And Skills', 'Capability proof is available through phase receipts.', [{label:'Verified gates',value:verifiedGates,detail:'promotion evidence'}, {label:'Skills',value:0,detail:'no candidate receipt'}]),
+      row('vectors', 'Vector RAG And KV Cache', 'Cache and residual-route receipts are projected from evidence.', [{label:'KV',value:evidence.providers?.kv ? 'verified' : 'unreported',detail:'repository receipt'}]),
+      row('swarm', 'Swarm And Orchestration', 'Swarm route is known, but no live run stream is available.', [{label:'Runs',value:0,detail:'live gateway unavailable'}, {label:'Evidence',value:residue,detail:'shared proof objects'}]),
+      row('sensorium', 'Sensorium And Interception', 'Historical sensorium receipts are available.', [{label:'Events',value:sensorEvents,detail:'repository receipts'}]),
+      row('tools', 'Chronicle And Tool Laziness', 'Tool telemetry is deferred until the gateway returns.', [{label:'Status',value:'deferred',detail:'live route unavailable'}])
+    ];
+  }
+
   async function refreshPlatform() {
     ensureState();
     BeastStore.patch('platform',{loading:true,error:''});
@@ -224,17 +317,37 @@
     try {
       const params=new URLSearchParams({session_id:'default',limit:'8',route_limit:'10',event_limit:'8',process_limit:'30',port_limit:'40'});
       if(workspaceRoot()) params.set('root_path',workspaceRoot());
-      const [platformPayload,rootPayload,enforcementPayload]=await Promise.all([request(`/edgek/platform/snapshot?${params}`,{timeout:15000}),request('/edgek/root-info'),request('/edgek/host-enforcement/state').catch(()=>({capabilities:[],authority:'unavailable'}))]);
-      const snapshot = platformPayload;
+      const localPhaseEvidence = typeof window.beastDesktop?.phaseEvidence === 'function'
+        ? window.beastDesktop.phaseEvidence().catch(()=>null)
+        : Promise.resolve(null);
+      // Do not wait for an offline gateway's timeout before rendering receipts.
+      localPhaseEvidence.then(projectPhaseEvidence).catch(()=>{});
+      const [platformPayload,rootPayload,enforcementPayload,systemTelemetryPayload,runtimeStatePayload,sensoriumPayload,osBypassPayload,phaseEvidencePayload,phaseEvidenceLocal]=await Promise.all([
+        // Repository evidence comes from Electron IPC. Gateway telemetry is optional:
+        // a stopped gateway must not prevent the phase pages from being populated.
+        request(`/edgek/platform/snapshot?${params}`,{timeout:15000}).catch(()=>null),
+        request('/edgek/root-info').catch(()=>({})),
+        request('/edgek/host-enforcement/state').catch(()=>({capabilities:[],authority:'unavailable'})),
+        request(`/edgek/ide/system-snapshot?${params}`).catch(()=>null),
+        request('/edgek/runtime/state').catch(()=>null),
+        request('/edgek/sensorium/state?event_limit=25&episode_limit=10').catch(()=>null),
+        request('/edgek/os-bypass/capabilities').catch(()=>null),
+        request('/edgek/ide/phase-evidence').catch(()=>null),
+        localPhaseEvidence,
+      ]);
+      const snapshot = platformPayload || {};
       const systemPayload = snapshot.snapshots?.system || snapshot.system || {};
-      const runtimePayload = snapshot.snapshots?.runtime || snapshot.runtime || {};
+      const systemInventory = systemTelemetryPayload || {};
+      const systemTelemetry = systemTelemetryPayload?.summary || {};
+      const resourcePayload = systemPayload?.resources || systemTelemetry?.resources || {};
+      const runtimePayload = runtimeStatePayload || snapshot.snapshots?.runtime || snapshot.runtime || {};
       const precPayload = snapshot.snapshots?.prec || snapshot.prec || {};
       const ports = list(systemPayload,'ports','listening_ports').map((row,index)=>({port:row.port||row.local_port||index,service:row.service||row.process||row.name||'unknown',status:row.status||'listening',pid:row.pid,address:row.address||row.host||'127.0.0.1'}));
       const processes = list(systemPayload,'processes','process_list').map(row=>({pid:row.pid,name:row.name||row.command||'process',cpu:numeric(row.cpu||row.cpu_percent),memory:row.memory||row.rss||'n/a',status:row.status||'running'}));
-      const cpuValue=systemPayload?.cpu?.percent ?? systemPayload?.cpu_percent ?? systemPayload?.resources?.cpu;
-      const memoryValue=systemPayload?.memory?.percent ?? systemPayload?.memory_percent ?? systemPayload?.resources?.memory;
-      const diskValue=systemPayload?.disk?.percent ?? systemPayload?.disk_percent ?? systemPayload?.resources?.disk;
-      const hasResourceTelemetry=[cpuValue,memoryValue,diskValue].some(value=>Number.isFinite(Number(value)));
+      const cpuValue=systemPayload?.cpu?.percent ?? systemPayload?.cpu_percent ?? resourcePayload?.cpu?.percent ?? resourcePayload?.cpu;
+      const memoryValue=systemPayload?.memory?.percent ?? systemPayload?.memory_percent ?? resourcePayload?.memory?.percent ?? resourcePayload?.memory;
+      const diskValue=systemPayload?.disk?.percent ?? systemPayload?.disk_percent ?? resourcePayload?.disk?.percent ?? resourcePayload?.disk;
+      const hasResourceTelemetry=[cpuValue,memoryValue,diskValue].some(value=>Number.isFinite(Number(value))) || Boolean(resourcePayload?.network?.available);
       const cpu=numeric(cpuValue,0);
       const memory=numeric(memoryValue,0);
       const disk=numeric(diskValue,0);
@@ -244,9 +357,52 @@
       const precTraceCount=precCounts.reduce((sum,row)=>sum+Number(row.count||0),0);
       const precStage=recentPrec.current_phase||precPayload?.stage||precPayload?.lifecycle_stage||'perceive';
       const precHealth=Number(precPayload?.health||precPayload?.score)|| (precTraceCount?Math.min(100,Math.round(60+Math.log10(precTraceCount+1)*12)):0);
-      const sections = Array.isArray(snapshot.sections) ? snapshot.sections : [];
-      BeastStore.patch('platform',{loading:false,status:snapshot.status||'watch',health:numeric(snapshot.health,Math.round(sections.length?sections.filter(section=>!/needs attention|watch|failed/i.test(String(section.status||''))).length/sections.length*100:0)),summary:snapshot.summary||{},sections,snapshots:snapshot.snapshots||{},raw:snapshot,updatedAt:now()});
-      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):'Unreported',cpu,memory,disk,network:numeric(systemPayload?.network?.percent||0),ports,processes,environment:Object.entries(rootPayload||{}).slice(0,10),hostEnforcement:enforcementPayload,prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'unknown',circuits:numeric(runtimePayload?.circuit_breakers?.open)},updatedAt:now()});
+      const evidence = phaseEvidenceLocal?.ok === true ? phaseEvidenceLocal : (phaseEvidencePayload && typeof phaseEvidencePayload === 'object' ? phaseEvidencePayload : {});
+      const gateRows = Object.values(evidence.grandClosure?.gates || {}).filter(item => item && typeof item === 'object');
+      const verifiedGates = gateRows.filter(item => item.validated === true || String(item.status).toLowerCase() === 'pass').length;
+      const evidenceResidue = Math.max(verifiedGates, Number(evidence.sensorium?.recent_events?.length || 0), evidence.providers?.kv ? 1 : 0);
+      const sections = Array.isArray(snapshot.sections) && snapshot.sections.length
+        ? snapshot.sections
+        : evidencePlatformSections(evidence, evidenceResidue, verifiedGates, Number(evidence.sensorium?.recent_events?.length || 0));
+      const snapshots = snapshot.snapshots || {};
+      const currentState = BeastStore.get();
+      const projection = (camel, snake, fallback={}) => snapshot[camel] || snapshot[snake] || snapshots[camel] || snapshots[snake] || fallback;
+      const recentEvents = Array.isArray(sensoriumPayload?.recent_events) ? sensoriumPayload.recent_events : [];
+      const sequencer = sensoriumPayload?.sequencer || {};
+      const eventCount = Number(sequencer.published ?? sequencer.admitted ?? sequencer.events ?? recentEvents.length) || recentEvents.length;
+      const xdpAvailable = osBypassPayload?.supported_modes?.af_xdp;
+      const observedFabric = {
+        events: recentEvents,
+        x2: {
+          live: eventCount > 0 ? true : undefined,
+          events_consumed: eventCount,
+          process_lease_correlation_performed: sensoriumPayload?.socket_topology?.some(row=>row?.lease_match === true) || undefined,
+        },
+        xdp: {
+          installed: xdpAvailable === true,
+          ready: xdpAvailable === true,
+          live: undefined,
+          verified: undefined,
+        },
+      };
+      const observedReality = {
+        bpf: { installed: osBypassPayload?.linux === true, ready: osBypassPayload?.af_packet_available === true, live: undefined, verified: undefined, note: 'No BPF load receipt projected.' },
+        x2: { installed: Boolean(sensoriumPayload), ready: Boolean(sensoriumPayload), live: eventCount > 0 ? true : undefined, verified: undefined, note: sensoriumPayload ? 'Sensorium read model' : 'No Sensorium projection.' },
+        x3: { installed: xdpAvailable === true, ready: xdpAvailable === true, live: undefined, verified: undefined, note: xdpAvailable === true ? 'AF_XDP userspace support detected; no live probe receipt.' : 'AF_XDP support is not reported by this host.' },
+      };
+      const evidenceSystem = evidence.system && typeof evidence.system === 'object' ? evidence.system : {};
+      projectPhaseEvidence(evidence);
+      const preserved = BeastStore.get().platform || {};
+      BeastStore.patch('platform',{loading:false,status:snapshot.status||(evidence.ok?'evidence':'offline'),health:numeric(snapshot.health, preserved.health || Math.round(sections.length?sections.filter(section=>!/needs attention|watch|failed/i.test(String(section.status||''))).length/sections.length*100:0)),summary:Object.keys(snapshot.summary||{}).length?snapshot.summary:(preserved.summary||{}),sections,snapshots:snapshot.snapshots||{},raw:snapshot,updatedAt:now()});
+      BeastStore.patch('computeFabric', {...(currentState.computeFabric || {}),...projection('computeFabric','compute_fabric', projection('prism','prism',{})),...(evidence.computeFabric || {})});
+      BeastStore.patch('liveFabric', {...observedFabric,...(currentState.liveFabric || {}),...projection('liveFabric','live_fabric', projection('evidenceFabric','evidence_fabric',{})),...(evidence.liveFabric || {})});
+      BeastStore.patch('grandClosure', {...(currentState.grandClosure || {}),...projection('grandClosure','grand_closure', projection('closure','closure',{})),...(evidence.grandClosure || {})});
+      BeastStore.patch('reality', {...observedReality,...(currentState.reality || {}),...projection('reality','reality', systemPayload?.reality || {}),...(evidence.reality || {})});
+      if (evidence.providers?.kv) BeastStore.patch('providers',{kv:{...(currentState.providers?.kv || {}),...evidence.providers.kv}});
+      if (evidence.economy) BeastStore.patch('economy',{...(currentState.economy || {}),...evidence.economy});
+      const network=numeric(systemPayload?.network?.percent ?? resourcePayload?.network?.percent,0);
+      const openCircuits=Object.values(runtimePayload?.circuits||runtimePayload?.circuit_breakers||{}).filter(item=>String(item?.state||'').toLowerCase()==='open').length;
+      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):(evidenceSystem.pressure?'Evidence available':'Unreported'),cpu,memory,disk,network,ports:ports.length?ports:list(systemInventory,'ports','listening_ports').map((row,index)=>({port:row.port||row.local_port||index,service:row.service||row.process||row.name||'unknown',status:row.status||'listening',pid:row.pid,address:row.address||row.host||'127.0.0.1'})),processes:processes.length?processes:list(systemInventory,'processes','process_list').map(row=>({pid:row.pid,name:row.name||row.command||'process',cpu:numeric(row.cpu||row.cpu_percent),memory:row.memory||row.rss||'n/a',status:row.status||'running'})),environment:Object.entries(rootPayload||{}).slice(0,10),hostEnforcement:enforcementPayload,telemetry:resourcePayload,prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'healthy',circuits:openCircuits},pressure:evidenceSystem.pressure || currentState.system?.pressure,updatedAt:now()});
       return snapshot;
     } catch(error){
       BeastStore.patch('platform',{loading:false,error:String(error.message||error),status:'offline',health:0,sections:[],summary:{},snapshots:{},raw:null,updatedAt:now()});
@@ -355,22 +511,55 @@
     ensureState(); BeastStore.patch('chronicle',{loading:true,error:''});
     if(demoMode){ BeastStore.patch('chronicle',{loading:false,events:seeded.chronicle,filtered:seeded.chronicle,selectedId:BeastStore.get().chronicle.selectedId||seeded.chronicle[0].id,insights:['Local-first routing displaced 17 cloud calls.','Evidence closure improved from 82% to 96%.','One memory compaction warning remains.'],updatedAt:now()}); return; }
     try{
+      const state = BeastStore.get();
       const [payload,sensorium,observatory]=await Promise.all([
-        request('/edgek/chronicle?limit=80'),
-        request('/edgek/sensorium/state?event_limit=25&episode_limit=10'),
-        request('/edgek/observatory')
+        request('/edgek/chronicle?limit=80').catch(()=>null),
+        request('/edgek/sensorium/state?event_limit=25&episode_limit=10').catch(()=>null),
+        request('/edgek/observatory').catch(()=>null)
       ]);
+      const fallbackEvents = Array.isArray(state.liveFabric?.events) ? state.liveFabric.events : [];
+      const fallbackSensorium = {
+        authority: state.reality?.x2?.verified === true ? 'controlled_host_observation_lab' : 'read_only',
+        recent_events: fallbackEvents,
+        sequencer: {
+          published: state.liveFabric?.x2?.events_consumed || fallbackEvents.length || 0,
+          retained: fallbackEvents.length || 0,
+        },
+        episodes: {
+          open_missions: {},
+          closed_count: 0,
+        },
+        actuator_available: false,
+      };
       const rows=list(payload,'chronicles','entries','events','records','items').map((row,index)=>{
         const category=String(row.kind||row.category||row.type||row.chronicle_type||'system').toLowerCase();
         const kind=/provider/.test(category)||row.provider&&row.provider!=='local'?'provider':/evidence|intercept/.test(category)?'evidence':/agent|swarm/.test(category)?'agent':/runtime|sensor/.test(category)?'runtime':/govern|trust|policy/.test(category)?'governance':'system';
         const severity=row.severity||row.status||(/auth|error|fail|warning/.test(category)?'warning':row.memory_candidate?'success':'info');
         return {...row,id:idOf(row,index),time:row.time||row.timestamp||row.created_at||'',kind,label:row.label||row.event||row.title||row.action||row.summary||'BEAST event',detail:row.detail||row.message||row.root_cause||row.summary||'',actor:row.actor||row.source||row.agent||row.provider||row.task_id||'BEAST',severity};
       });
-      const current=BeastStore.get().chronicle;
+      const current=state.chronicle;
       const query=String(current.query||'').toLowerCase(), filter=current.filter||'all';
       const filtered=rows.filter(row=>(filter==='all'||row.kind===filter||row.severity===filter)&&(!query||`${row.label} ${row.detail} ${row.actor}`.toLowerCase().includes(query)));
-      BeastStore.patch('chronicle',{loading:false,events:rows,filtered,selectedId:current.selectedId&&rows.some(row=>row.id===current.selectedId)?current.selectedId:filtered[0]?.id||rows[0]?.id||'',sensorium:{...sensorium,observatory},updatedAt:now()});
-    }catch(error){BeastStore.patch('chronicle',{loading:false,error:String(error.message||error),events:[],filtered:[],selectedId:'',updatedAt:now()});}
+      BeastStore.patch('chronicle',{
+        loading:false,
+        events:rows,
+        filtered,
+        selectedId:current.selectedId&&rows.some(row=>row.id===current.selectedId)?current.selectedId:filtered[0]?.id||rows[0]?.id||'',
+        sensorium:{...(sensorium || fallbackSensorium),observatory:observatory || current.sensorium?.observatory || {}},
+        updatedAt:now()
+      });
+    }catch(error){
+      const current = BeastStore.get().chronicle;
+      BeastStore.patch('chronicle',{
+        loading:false,
+        error:String(error.message||error),
+        events:current.events||[],
+        filtered:current.filtered||current.events||[],
+        selectedId:current.selectedId||'',
+        sensorium:current.sensorium||{},
+        updatedAt:now()
+      });
+    }
   }
 
   function filterChronicle({query,filter}={}) {
@@ -385,24 +574,35 @@
     ensureState(); BeastStore.patch('economy',{loading:true,error:''});
     if(demoMode){ BeastStore.patch('economy',{loading:false,tokensSaved:1240000,reuseRate:78,compression:63,cacheHit:84,costAvoided:'R18,420',callsDisplaced:317,providerMix:[{label:'Local',value:72},{label:'NIM',value:18},{label:'Other Cloud',value:10}],strategies:[{label:'Local-first cascade',gain:94,status:'active'},{label:'Crystal reuse',gain:78,status:'active'},{label:'Context compression',gain:63,status:'active'},{label:'KV cache',gain:84,status:'active'}],history:[42,48,55,61,67,72,78,84],updatedAt:now()}); return; }
     try{
-      const [economy,reuse,compression,kv,providers]=await Promise.all([request('/edgek/commons-economy'),request('/edgek/crystal-reuse'),request('/edgek/compression/pipeline'),request('/edgek/kv-cache/state'),request('/edgek/providers/state')]);
+      const results=await Promise.allSettled([
+        request('/edgek/commons-economy'),
+        request('/edgek/crystal-reuse'),
+        request('/edgek/compression/pipeline'),
+        request('/edgek/kv-cache/state'),
+        request('/edgek/providers/state')
+      ]);
+      const value=index=>results[index]?.status==='fulfilled' ? results[index].value : {};
+      const current=BeastStore.get().economy||{};
+      const economy=value(0),reuse=value(1),compression=value(2),kv=value(3),providers=value(4);
       const storage=reuse?.storage||{};
-      const tokens=numeric(economy?.tokens_saved||economy?.saved_tokens||reuse?.measured_saved_tokens||storage?.measured_reuse_tokens_saved||storage?.total_avoided_tokens);
-      const calls=numeric(economy?.calls_displaced||reuse?.reuse_hit_count||storage?.total_reuse_count);
-      const reuseRate=numeric(reuse?.reuse_rate??reuse?.hit_rate, 0);
-      const comp=numeric(compression?.ratio_percent||compression?.saving_percent||compression?.compression_rate);
-      const cache=numeric(kv?.hit_rate||kv?.hit_percent||kv?.stats?.hit_rate);
+      const tokens=numeric(economy?.tokens_saved||economy?.saved_tokens||reuse?.measured_saved_tokens||storage?.measured_reuse_tokens_saved||storage?.total_avoided_tokens,current.tokensSaved||0);
+      const calls=numeric(economy?.calls_displaced||reuse?.reuse_hit_count||storage?.total_reuse_count,current.callsDisplaced||0);
+      const reuseRate=numeric(reuse?.reuse_rate??reuse?.hit_rate,current.reuseRate||0);
+      const comp=numeric(compression?.ratio_percent||compression?.saving_percent||compression?.compression_rate,current.compression||0);
+      const cache=numeric(kv?.hit_rate||kv?.hit_percent||kv?.stats?.hit_rate,current.cacheHit||0);
       const creditUnits=numeric(economy?.issued_units);
       const measuredStrategies=list(economy,'strategies','interventions').map(row=>({label:row.label||row.name||'Measured intervention',gain:numeric(row.gain||row.value||row.score),status:row.status||'unreported'}));
-      const strategies=measuredStrategies.length?measuredStrategies:[
+      const strategies=measuredStrategies.length?measuredStrategies:(current.strategies?.length?current.strategies:[
         {label:'Crystal reuse',gain:reuseRate,status:calls?`${calls} recorded reuse event(s)`:'no recorded reuse events'},
         {label:'Context compression',gain:comp,status:compression?.enabled?`${compression.backend||'local'} ready; no measured reduction yet`:'disabled'},
         {label:'KV cache',gain:cache,status:Number(kv?.total_blocks||0)?`${kv.total_blocks} cache block(s) observed`:'no cache blocks observed'}
-      ];
+      ]);
       const providerMix=list(providers,'mix','provider_mix');
-      const observedMix=providerMix.length?providerMix:(calls?[{label:'Local crystal reuse',value:calls}]:[]);
-      BeastStore.patch('economy',{loading:false,tokensSaved:tokens,reuseRate,compression:comp,cacheHit:cache,costAvoided:economy?.cost_avoided||economy?.saved_cost||'unreported',callsDisplaced:calls,providerMix:observedMix,strategies,history:list(economy,'history','series').map(row=>numeric(row.value??row)),measurement:`${tokens} observed avoided token(s) · ${creditUnits} non-financial verified credit unit(s) · ${Number(economy?.adoption_history?.verified_count||0)} verified adoption(s)`,updatedAt:now()});
-    }catch(error){BeastStore.patch('economy',{loading:false,error:String(error.message||error),updatedAt:now()});}
+      const observedMix=providerMix.length?providerMix:(calls?[{label:'Local crystal reuse',value:calls}]:current.providerMix||[]);
+      const history=list(economy,'history','series').map(row=>numeric(row.value??row));
+      const failures=results.filter(result=>result.status==='rejected').length;
+      BeastStore.patch('economy',{loading:false,error:failures?`${failures} economy source${failures===1?'':'s'} unavailable; showing retained evidence`:'' ,tokensSaved:tokens,reuseRate,compression:comp,cacheHit:cache,costAvoided:economy?.cost_avoided||economy?.saved_cost||current.costAvoided||'unreported',callsDisplaced:calls,providerMix:observedMix,strategies,history:history.length?history:(current.history||[]),measurement:`${tokens} observed avoided token(s) · ${creditUnits} non-financial verified credit unit(s) · ${Number(economy?.adoption_history?.verified_count||0)} verified adoption(s)`,updatedAt:now()});
+    }catch(error){BeastStore.patch('economy',{...BeastStore.get().economy,loading:false,error:String(error.message||error),updatedAt:now()});}
   }
 
   async function refreshControl() {

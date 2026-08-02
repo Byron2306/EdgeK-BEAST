@@ -19,18 +19,32 @@ class CrystalMessage:
     message_type: str
     message_id: str
     payload: Mapping[str, Any]
+    # ADDED: Sequence number, capability, and ARDA bindings
+    sequence: int = 0
+    capability_lease_id: str = ""
+    arda_appraisal_ref: str = ""
 
     def encode(self) -> bytes:
         if self.message_type not in MESSAGE_TYPES or not self.message_id:
             raise ValueError("invalid crystal bus message")
-        return json.dumps({"type": self.message_type, "id": self.message_id, "payload": dict(self.payload)}, sort_keys=True, separators=(",", ":")).encode()
+        data = {
+            "type": self.message_type, 
+            "id": self.message_id, 
+            "payload": dict(self.payload),
+            "seq": self.sequence,
+            "cap_id": self.capability_lease_id,
+            "arda_ref": self.arda_appraisal_ref
+        }
+        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode()
 
     @classmethod
     def decode(cls, data: bytes) -> "CrystalMessage":
         value = json.loads(data)
-        message = cls(value["type"], value["id"], value.get("payload", {}))
-        message.encode()
-        return message
+        # Handle original decode, map new fields
+        return cls(
+            value["type"], value["id"], value.get("payload", {}),
+            value.get("seq", 0), value.get("cap_id", ""), value.get("arda_ref", "")
+        )
 
 
 def peer_credentials(sock: socket.socket) -> tuple[int, int, int]:
@@ -57,12 +71,22 @@ class CrystalBusTransport:
 
     def send(self, message: CrystalMessage, *, fds: tuple[int, ...] = ()) -> None:
         self._send_sequence += 1
-        payload = dict(message.payload)
-        payload["_bus"] = {"sequence": self._send_sequence, "schema": hashlib.sha256(message.encode()).hexdigest()}
-        wire_message = CrystalMessage(message.message_type, message.message_id, payload)
-        encoded = wire_message.encode()
+        # Bind sequence and make the schema digest part of the transmitted payload.
+        wire_message = CrystalMessage(
+            message.message_type, message.message_id, message.payload, 
+            self._send_sequence, message.capability_lease_id, message.arda_appraisal_ref
+        )
+        schema_hash = hashlib.sha256(wire_message.encode()).hexdigest()
+        payload = dict(wire_message.payload)
+        payload["_schema"] = schema_hash
+        encoded = CrystalMessage(
+            wire_message.message_type, wire_message.message_id, payload,
+            wire_message.sequence, wire_message.capability_lease_id, wire_message.arda_appraisal_ref,
+        ).encode()
         if len(encoded) > self.max_frame:
             raise ValueError("crystal bus frame exceeds maximum")
+        
+        # SCM_RIGHTS transfer
         ancillary = []
         if fds:
             ancillary.append((socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", fds)))
@@ -73,26 +97,37 @@ class CrystalBusTransport:
             max_bytes = self.max_frame
         if self.expected_uid is not None and peer_credentials(self.sock)[1] != self.expected_uid:
             raise PermissionError("crystal bus peer uid is not authorized")
+        
         data, ancdata, flags, _ = self.sock.recvmsg(max_bytes, socket.CMSG_SPACE(16 * array.array("i").itemsize))
+        
+        # Reconstruct FDs
         fds = []
         for level, kind, payload in ancdata:
             if level == socket.SOL_SOCKET and kind == socket.SCM_RIGHTS:
                 values = array.array("i"); values.frombytes(payload[:len(payload) - (len(payload) % values.itemsize)])
                 fds.extend(values.tolist())
+
         try:
             if flags & getattr(socket, "MSG_TRUNC", 0):
                 raise ValueError("crystal bus frame was truncated")
+            
             message = CrystalMessage.decode(data)
-            bus = message.payload.get("_bus") or {}
-            sequence = int(bus.get("sequence", 0))
-            if sequence != self._recv_sequence + 1:
-                self.dropped_frames += max(1, sequence - self._recv_sequence - 1)
-                raise ValueError("crystal bus sequence gap or replay")
-            original_payload = {key: value for key, value in message.payload.items() if key != "_bus"}
-            original = CrystalMessage(message.message_type, message.message_id, original_payload)
-            if bus.get("schema") != hashlib.sha256(original.encode()).hexdigest():
-                raise ValueError("crystal bus frame schema/content binding is invalid")
-            self._recv_sequence = sequence
+            schema_hash = message.payload.get("_schema")
+            payload = dict(message.payload)
+            payload.pop("_schema", None)
+            unsigned = CrystalMessage(
+                message.message_type, message.message_id, payload,
+                message.sequence, message.capability_lease_id, message.arda_appraisal_ref,
+            )
+            if not isinstance(schema_hash, str) or schema_hash != hashlib.sha256(unsigned.encode()).hexdigest():
+                raise ValueError("crystal bus schema digest mismatch")
+            
+            # Replay protection: sequence validation
+            if message.sequence != self._recv_sequence + 1:
+                self.dropped_frames += max(1, message.sequence - self._recv_sequence - 1)
+                raise ValueError("crystal bus sequence gap or replay attempt")
+            
+            self._recv_sequence = message.sequence
             return message, tuple(fds)
         except Exception:
             for fd in fds:

@@ -36,7 +36,21 @@ class PluginMarketplace:
                 os.environ.get("BEAST_STATE_ROOT")
                 or (Path(os.environ.get("XDG_STATE_HOME") or "~/.local/state").expanduser() / "beast")
             ).expanduser()
+            if not self._can_write_state(state_root):
+                state_root = Path(__file__).resolve().parents[3] / ".beast" / "state"
             self.registry_dir = state_root / "plugins"
+
+    @staticmethod
+    def _can_write_state(state_root: Path) -> bool:
+        """Use implicit workspace state when XDG state is unavailable."""
+        try:
+            state_root.mkdir(parents=True, exist_ok=True)
+            probe = state_root / ".beast-write-probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink(missing_ok=True)
+            return True
+        except OSError:
+            return False
 
     def prepare(self, manifest: Dict[str, Any]) -> Dict[str, Any]:
         prepared = deepcopy(manifest)

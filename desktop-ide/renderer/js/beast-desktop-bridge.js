@@ -29,7 +29,7 @@
     }
     const api = desktop();
     try {
-      const result = api?.status ? await BeastRuntime.desktopCall('status',[]) : await fetchJson('/edgek/root-info', options);
+      const result = api?.status ? await BeastRuntime.desktopCall('status',[options || {}]) : await fetchJson('/edgek/root-info', options);
       const gateway = result?.gatewayUrl || BeastRuntime.gatewayUrl || window.gatewayUrl || 'http://127.0.0.1:8101';
       BeastStore.patch('connection', {
         status: result?.health?.ok === false ? 'offline' : 'online', gatewayUrl: gateway,
@@ -49,13 +49,17 @@
   function setWorkspaceFolders(folders) { const rows=(Array.isArray(folders)?folders:[]).filter(item=>item&&item.path).slice(0,12).map(item=>({id:String(item.id||''),name:String(item.name||item.id||''),path:String(item.path),primary:Boolean(item.primary)}));try { localStorage.setItem('beast.v2.workspace.folders',JSON.stringify(rows)); } catch (_) {} BeastStore.patch('workspace',{roots:rows});return rows; }
   function setExecutionTarget(target={}) { const next=['local','ssh','container'].includes(target.kind)?{...target,kind:target.kind}:{kind:'local'};try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(next));}catch(_){}BeastStore.patch('workspace',{executionTarget:next});const api=desktop();if(api?.setExecutionTarget)BeastRuntime.desktopCall('setExecutionTarget',[next]).then(result=>{if(result?.target){try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(result.target));}catch(_){}BeastStore.patch('workspace',{executionTarget:result.target});}}).catch(error=>BeastStore.patch('workspace',{error:String(error.message||error)}));return next; }
   async function listExecutionTargets(payload={}) { const api=desktop();if(!api?.listExecutionTargets)return {ok:true,active:BeastStore.get().workspace.executionTarget,targets:[{kind:'local',label:'Local workspace',root:workspaceRoot(),active:true}]};const result=await BeastRuntime.desktopCall('listExecutionTargets',[payload],{required:true});if(result?.active){try{localStorage.setItem('beast.v2.workspace.execution-target',JSON.stringify(result.active));}catch(_){}BeastStore.patch('workspace',{executionTarget:result.active});}return result; }
+  async function executionTargetSessions() { const api=desktop(); if(!api?.executionTargetSessions) return {ok:true,sessions:[],active:BeastStore.get().workspace.executionTarget || {kind:'local'}}; return await BeastRuntime.desktopCall('executionTargetSessions',[],{required:true}); }
   function setRoot(root, options = {}) {
-    const value = String(root || '');
-    if (value === workspaceRoot()) { if(Array.isArray(options.folders))setWorkspaceFolders(options.folders); return value; }
+    const value = String(root || '').trim();
+    const explicitFolders = Array.isArray(options.folders) ? options.folders.filter(item => item && item.path) : [];
+    const rootName = value ? value.replace(/[\/]+$/, '').split(/[\/]/).pop() || 'workspace' : 'workspace';
+    const activeFolders = explicitFolders.length ? explicitFolders : (value ? [{ id:'active-workspace', name:rootName, path:value, primary:true }] : []);
+    if (value === workspaceRoot()) { if(activeFolders.length)setWorkspaceFolders(activeFolders); return value; }
     window.BeastAICoding?.cancel?.();
     localStorage.setItem('beast.v2.workspace.root', value);
     BeastStore.transaction(next => {
-      next.workspace = { ...next.workspace, root: value, roots:Array.isArray(options.folders)&&options.folders.length?options.folders:next.workspace.roots, selectedPath: '', currentText: '', originalText: '', dirty: false, error: '', indexedAt: 0 };
+      next.workspace = { ...next.workspace, root: value, roots:activeFolders, selectedPath: '', currentText: '', originalText: '', dirty: false, error: '', indexedAt: 0 };
       next.editor = { ...next.editor, openTabs: [], activePath: '', dirtyPaths: [], outline: [], owner: 'unmounted' };
       next.sourcePlan = { ...next.sourcePlan, status: 'idle', message: 'No editor draft yet.', plan: null, lifecycle: null, selectedOperationIds: [], previewText: '', originalText: '', proposedText: '', activeOperationId: '', stale: false, error: '', lastApply: null };
       next.aiCoding = { ...next.aiCoding, sessionId:'', streaming:false, status:'idle', error:'', messages:[], trace:[], contextFiles:[], selection:null, sourcePlanReady:false, sourcePlanId:'', crystal:{ action:'', source:'', confidence:0, reused:false, avoidedTokens:0, decisionId:'', recorded:false } };
@@ -103,8 +107,12 @@
         const api = desktop();
         let payload;
         const target=BeastStore.get().workspace.executionTarget || {kind:'local'};
-        if (api?.listTargetFiles) payload = await BeastRuntime.desktopCall('listTargetFiles',[{rootId:workspaceFolderForPath('').folder?.id || '',limit:options.limit || 2000,target}]);
-        else if (api?.listFiles) payload = await BeastRuntime.desktopCall('listFiles',[root, options.limit || 2000]);
+        // Local worktrees must be listed by their absolute active root. Using the
+        // previous workspace-folder ID here makes a freshly created worktree look
+        // empty even though Git checked out every tracked file correctly.
+        if (target.kind === 'local' && api?.listFiles) payload = await BeastRuntime.desktopCall('listFiles',[root, options.limit || 2000],{required:true});
+        else if (api?.listTargetFiles) payload = await BeastRuntime.desktopCall('listTargetFiles',[{rootId:workspaceFolderForPath('').folder?.id || '',rootPath:root,limit:options.limit || 2000,target}],{required:true});
+        else if (api?.listFiles) payload = await BeastRuntime.desktopCall('listFiles',[root, options.limit || 2000],{required:true});
         else payload = await fetchJson(`/edgek/workspace/files?${new URLSearchParams({ root_path: root, limit: String(options.limit || 1000) })}`, options);
         files = normalizeFiles(payload);
       }
@@ -415,7 +423,7 @@
   function on(type, listener) { listeners[type]?.add(listener); return () => listeners[type]?.delete(listener); }
 
   window.BeastDesktopBridge = {
-    status, chooseWorkspace, setRoot, setWorkspaceFolders, setExecutionTarget, listExecutionTargets, refreshWorkspaceFolders, addWorkspaceFolder, removeWorkspaceFolder, listFiles, loadFile, readFile, snapshot, actionsManifest,
+    status, chooseWorkspace, setRoot, setWorkspaceFolders, setExecutionTarget, listExecutionTargets, executionTargetSessions, refreshWorkspaceFolders, addWorkspaceFolder, removeWorkspaceFolder, listFiles, loadFile, readFile, snapshot, actionsManifest,
     inferLanguage, workspaceFolderForPath, remoteRef, parseRemoteRef, saveRemoteFile, saveTargetFile, classifyFileOperation, fileOperation, draftSourcePlan, sourcePlanLifecycle,
     verifySourcePlan, applySourcePlan, rollbackLatestSourcePlan, localDiff, bindDesktopEvents, on, fetchJson,
     get workspaceRoot() { return workspaceRoot(); }, get gatewayUrl() { return gatewayUrl(); }, get demoMode() { return demoMode; }

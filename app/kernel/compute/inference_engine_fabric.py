@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, Iterable, List, Optional
 
 import httpx
+from app.kernel.compute.accelerator_stack import accelerator_execution_enabled
 
 
 @dataclass(frozen=True)
@@ -148,21 +149,33 @@ class InferenceEngineFabric:
             return {"engine_id": engine_id, "ready": False, "reason": "unknown_engine"}
         if not profile.configured:
             return {**profile.to_dict(), "ready": False, "reason": "endpoint_not_configured"}
-        path = "/api/tags" if engine_id == "ollama" else "/v1/models"
+        if engine_id == "ollama":
+            path = "/api/tags"
+        elif engine_id == "tgi":
+            path = "/health"
+        elif engine_id == "tensorrt_llm" and os.environ.get("TENSORRT_LLM_API_MODE", "openai").lower() == "triton":
+            path = "/v2/health/ready"
+        else:
+            path = "/v1/models"
         started = time.perf_counter()
         try:
             response = self.client.get(profile.endpoint + path, timeout=timeout_seconds)
             response.raise_for_status()
-            body = response.json()
+            try:
+                body = response.json()
+            except ValueError:
+                body = {}
             return {
                 **profile.to_dict(), "ready": True, "reason": "live_probe_passed",
                 "latency_ms": round((time.perf_counter() - started) * 1000, 3),
                 "model_count": len(body.get("models") or body.get("data") or []),
+                "execution_allowed": bool(profile.cpu_supported or accelerator_execution_enabled()),
             }
         except (httpx.HTTPError, ValueError) as exc:
             return {
                 **profile.to_dict(), "ready": False, "reason": type(exc).__name__,
                 "latency_ms": round((time.perf_counter() - started) * 1000, 3),
+                "execution_allowed": bool(profile.cpu_supported or accelerator_execution_enabled()),
             }
 
     def generate(
@@ -179,7 +192,7 @@ class InferenceEngineFabric:
         profile = next((item for item in self.profiles() if item.engine_id == engine_id), None)
         if profile is None:
             raise ValueError("unknown inference engine")
-        if not profile.cpu_supported:
+        if not profile.cpu_supported and not accelerator_execution_enabled():
             raise ValueError(f"{engine_id} is unavailable under the CPU-only host policy")
         if not profile.configured:
             raise ValueError(f"{engine_id} endpoint is not configured")
@@ -198,6 +211,34 @@ class InferenceEngineFabric:
             text = str(body.get("response") or "")
             prompt_tokens = int(body.get("prompt_eval_count") or 0)
             output_tokens = int(body.get("eval_count") or 0)
+        elif engine_id == "tensorrt_llm" and os.environ.get("TENSORRT_LLM_API_MODE", "openai").lower() == "triton":
+            response = self.client.post(
+                profile.endpoint + f"/v2/models/{os.environ.get('TENSORRT_LLM_MODEL_NAME', model)}/generate",
+                json={"text_input": (system_prompt + "\n" if system_prompt else "") + prompt, "max_tokens": max(1, int(max_tokens))},
+                timeout=timeout_seconds,
+            )
+            response.raise_for_status()
+            body = response.json()
+            text = str(body.get("text_output") or "")
+            prompt_tokens = int(body.get("prompt_tokens") or 0)
+            output_tokens = int(body.get("completion_tokens") or 0)
+        elif engine_id == "tgi":
+            messages = ([{"role": "system", "content": system_prompt}] if system_prompt else []) + [{"role": "user", "content": prompt}]
+            try:
+                response = self.client.post(profile.endpoint + "/v1/chat/completions", json={"model": model, "messages": messages, "max_tokens": max(1, int(max_tokens)), "stream": False}, timeout=timeout_seconds)
+                response.raise_for_status()
+                body = response.json()
+                choices = body.get("choices") or []
+                text = str(((choices[0] if choices else {}).get("message") or {}).get("content") or "")
+                usage = body.get("usage") or {}
+                prompt_tokens, output_tokens = int(usage.get("prompt_tokens") or 0), int(usage.get("completion_tokens") or 0)
+            except httpx.HTTPStatusError as exc:
+                if exc.response.status_code not in {404, 405}:
+                    raise
+                response = self.client.post(profile.endpoint + "/generate", json={"inputs": (system_prompt + "\n" if system_prompt else "") + prompt, "parameters": {"max_new_tokens": max(1, int(max_tokens))}}, timeout=timeout_seconds)
+                response.raise_for_status()
+                body = response.json()
+                text, prompt_tokens, output_tokens = str(body.get("generated_text") or ""), 0, int((body.get("details") or {}).get("generated_tokens") or 0)
         else:
             messages = []
             if system_prompt:
@@ -221,6 +262,7 @@ class InferenceEngineFabric:
             "response": text, "prompt_tokens": prompt_tokens, "output_tokens": output_tokens,
             "latency_ms": round((time.perf_counter() - started) * 1000, 3),
             "host_policy": "cpu_first_capability_gated",
+            "accelerator_execution_enabled": accelerator_execution_enabled(),
         }
     def inventory(self, *, probe: bool = False) -> Dict[str, Any]:
         engines = [self.probe(item.engine_id) if probe else item.to_dict() for item in self.profiles()]

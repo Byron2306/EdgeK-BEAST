@@ -1,0 +1,1071 @@
+{
+  "beast_object_type": "crystal_ir_local_matrix_gauntlet_receipt",
+  "claim_boundary": "Synthetic local repositories prove Crystal IR execution and safety controls, not model intelligence.",
+  "matrix": [
+    {
+      "capability": "typed string normalization",
+      "id": "provider_identifier_normalization",
+      "objective": "provider identifier normalization"
+    },
+    {
+      "capability": "dependency/import repair",
+      "id": "missing_import_repair",
+      "objective": "missing import repair"
+    },
+    {
+      "capability": "semantic arithmetic correction",
+      "id": "arithmetic_correction",
+      "objective": "one function arithmetic correction"
+    },
+    {
+      "capability": "configuration contract enforcement",
+      "id": "configuration_validation",
+      "objective": "configuration validation"
+    },
+    {
+      "capability": "secret handling policy",
+      "id": "secret_redaction",
+      "objective": "secret redaction policy"
+    },
+    {
+      "capability": "security boundary enforcement",
+      "id": "path_traversal_guard",
+      "objective": "security path traversal repair"
+    },
+    {
+      "capability": "bounded exponential retry policy",
+      "id": "retry_backoff_policy",
+      "objective": "retry policy correction"
+    },
+    {
+      "capability": "async cancellation and timeout",
+      "id": "async_timeout_boundary",
+      "objective": "async request timeout repair"
+    }
+  ],
+  "metrics": {
+    "cases": 8,
+    "cpu_seconds": 0.04131,
+    "hostile_blocks": 8,
+    "placeholder_blocks": 8,
+    "provider_calls": 0,
+    "rollback_probes_passed": 8,
+    "stale_blocks": 8,
+    "unsafe_target_refusals": 8,
+    "verified_repairs": 8,
+    "wall_seconds": 2.64
+  },
+  "provider_calls": 0,
+  "receipt_hash": "sha256:c51466752e158229ddadf3fa16877c1d176d2e5a6a4d45076dfc0324269cd0d2",
+  "rows": [
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "identifier_alias_mismatch",
+        "intent_family": "provider_normalization",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "canonicalize",
+        "status": "interpreted",
+        "target_symbol_hint": "normalize_provider",
+        "uncertainties": []
+      },
+      "id": "provider_identifier_normalization",
+      "latency_ms": 347.252,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:1af619469f1489f95d5e3412fc9de6088336c0067da27f3bc02eaaec58828c4f",
+          "old_sha256": "sha256:ebbf9390b7e485c4147e239cb9f6dafea272af5c3cad9204af107e8108a0c892",
+          "path": "workload/provider.py",
+          "slot_type": "function",
+          "symbol": "normalize_provider"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/provider.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_provider_identifier_normalization.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:2d791225b8fd63549961fafb5effd60df0bd09b2d082082ef5d717b158c25d01",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:49fd518340a3f0910ecdd6e05948157c15ff82a529f3894460f5d2bd32319a83",
+        "crystal_ir_digest": "sha256:8de604686664ead8c139ea38e6caa00adbfbd7d6262c424e020537b9f49b3088",
+        "mutation_performed": true,
+        "path": "workload/provider.py",
+        "receipt_digest": "sha256:3a58091bfa1c5deb761b44b3bc79e471f9d7342245b8f79c6e599a5bc9624c2d",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/provider.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_provider_identifier_normalization.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-provider_identifier_normalization"
+      },
+      "source_fingerprints": {
+        "after": "sha256:2d791225b8fd63549961fafb5effd60df0bd09b2d082082ef5d717b158c25d01",
+        "before": "sha256:ebbf9390b7e485c4147e239cb9f6dafea272af5c3cad9204af107e8108a0c892"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "missing_import",
+        "intent_family": "missing_import",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "add_import",
+        "status": "interpreted",
+        "target_symbol_hint": "parse_amount",
+        "uncertainties": []
+      },
+      "id": "missing_import_repair",
+      "latency_ms": 266.64,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:37ab815bb731b40a4c8f63579437ff30436935fa1e940db4cae67c7868da7a47",
+          "old_sha256": "sha256:9ed6c9a01cd189f93d6b5eece0c85a862f53466a2555eec92b3b6250e763beea",
+          "path": "workload/amount.py",
+          "slot_type": "file",
+          "symbol": "parse_amount"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/amount.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_missing_import_repair.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:81a800678505e384f96d2ae7de0b98a72cc44bd38ccd9afbdebca96cce8a63d6",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:798052d8cc427b42fad9aad254bf4bc874f7cc03f2ab0f52a85fcc18fadf258c",
+        "crystal_ir_digest": "sha256:bc6511bc4e2e0f7025a30539a8ca0b931199257778ff21e5ce4d8bcf93e24e95",
+        "mutation_performed": true,
+        "path": "workload/amount.py",
+        "receipt_digest": "sha256:0cec83f53471931cd0a38024c4d65da5ca59c21e3f4106c2ccd298ec72ef9cdf",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/amount.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_missing_import_repair.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-missing_import_repair"
+      },
+      "source_fingerprints": {
+        "after": "sha256:81a800678505e384f96d2ae7de0b98a72cc44bd38ccd9afbdebca96cce8a63d6",
+        "before": "sha256:9ed6c9a01cd189f93d6b5eece0c85a862f53466a2555eec92b3b6250e763beea"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "arithmetic_invariant_failure",
+        "intent_family": "arithmetic_repair",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "correct_arithmetic",
+        "status": "interpreted",
+        "target_symbol_hint": "calculate_total",
+        "uncertainties": []
+      },
+      "id": "arithmetic_correction",
+      "latency_ms": 300.671,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:6d803196dfe7c3073c91a2b0c5c1f322758de214eba3d5c93049a24fc967af93",
+          "old_sha256": "sha256:c9f90e09476803a97e2aea71f0919c71e9bf88e5056268b723b1c3ad9f628a60",
+          "path": "workload/math_ops.py",
+          "slot_type": "function",
+          "symbol": "calculate_total"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/math_ops.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_arithmetic_correction.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:b2df9b05c8b31398c57eefb724a23dea447b80bdb0f4a1cddd171ec6cd33d1b4",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:f264333533124fe14a996d4db81a1fa881b6a9169f0fcffca88c65c9e08353e2",
+        "crystal_ir_digest": "sha256:38419cc73a11611ff063739722d74bf506d1a48eb55cdc8bff20782cc93697b4",
+        "mutation_performed": true,
+        "path": "workload/math_ops.py",
+        "receipt_digest": "sha256:8f765e95663f6340cc1c093504905075dc9ba0edea8b7fc2fbbfc264d53bf7bf",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/math_ops.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_arithmetic_correction.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-arithmetic_correction"
+      },
+      "source_fingerprints": {
+        "after": "sha256:b2df9b05c8b31398c57eefb724a23dea447b80bdb0f4a1cddd171ec6cd33d1b4",
+        "before": "sha256:c9f90e09476803a97e2aea71f0919c71e9bf88e5056268b723b1c3ad9f628a60"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "configuration_contract_failure",
+        "intent_family": "configuration_validation",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "validate_configuration",
+        "status": "interpreted",
+        "target_symbol_hint": "validate_config",
+        "uncertainties": []
+      },
+      "id": "configuration_validation",
+      "latency_ms": 424.205,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:f6001707adca9d03ae8b849b2aba637d45eb06c59260248e69c782e94b056cb5",
+          "old_sha256": "sha256:43a03ec472635c53b5c34f08d65a4002b46b18a3718caee46e3858c592aec224",
+          "path": "workload/config.py",
+          "slot_type": "function",
+          "symbol": "validate_config"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/config.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_configuration_validation.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:fe0b698c0646680d16eb7b1963a4b62f15da7c28a8c8d49e09f84a0dab691719",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:8a48599f52a7bdc78a191373d8f5b3a296a62e8140795df7f7dbc82f10962b57",
+        "crystal_ir_digest": "sha256:ef9a93fecc8bf8e14b8860c20a199aef31f78e9b9a236ccd61b6548f24130cdc",
+        "mutation_performed": true,
+        "path": "workload/config.py",
+        "receipt_digest": "sha256:d9277da4a67cd755228f226e2cfa62a4e2fc82c72f6fc62d4f5d25eb116cc1b3",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/config.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_configuration_validation.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-configuration_validation"
+      },
+      "source_fingerprints": {
+        "after": "sha256:fe0b698c0646680d16eb7b1963a4b62f15da7c28a8c8d49e09f84a0dab691719",
+        "before": "sha256:43a03ec472635c53b5c34f08d65a4002b46b18a3718caee46e3858c592aec224"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "secret_exposure",
+        "intent_family": "secret_redaction",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "redact_secret",
+        "status": "interpreted",
+        "target_symbol_hint": "redact_secret",
+        "uncertainties": []
+      },
+      "id": "secret_redaction",
+      "latency_ms": 436.378,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:b208c7658d24075de96dd7705fbacefee8f7152db531030275b2cb9def8428ce",
+          "old_sha256": "sha256:2572707eb55c865e0961c1649b6260a15a7c3f6a9a4397c5f1d9dbeb8aaf2791",
+          "path": "workload/secrets.py",
+          "slot_type": "function",
+          "symbol": "redact_secret"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/secrets.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_secret_redaction.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:1ad0ef07bc09be2947dc546c06227bd23013cf63b1aad9d89ea463df4f6414fd",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:015e73f8164b3a4466f260695323da1f738812da2814f9c85dc40f32e470a536",
+        "crystal_ir_digest": "sha256:3f50026c1605d85528683701ebf83ba286471c7d6bde75bd391f7f86d74d0770",
+        "mutation_performed": true,
+        "path": "workload/secrets.py",
+        "receipt_digest": "sha256:95b84a1f5aa0e4640f7420635bee9c83d4634da18aebe4588c98f0a5a9eab999",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/secrets.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_secret_redaction.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-secret_redaction"
+      },
+      "source_fingerprints": {
+        "after": "sha256:1ad0ef07bc09be2947dc546c06227bd23013cf63b1aad9d89ea463df4f6414fd",
+        "before": "sha256:2572707eb55c865e0961c1649b6260a15a7c3f6a9a4397c5f1d9dbeb8aaf2791"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "path_traversal_guard_failure",
+        "intent_family": "path_traversal_guard",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "bounded_local_repair",
+        "status": "interpreted",
+        "target_symbol_hint": "safe_join",
+        "uncertainties": []
+      },
+      "id": "path_traversal_guard",
+      "latency_ms": 285.343,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:5be4ebb2ce6e9d9928446e4f0dd328aad9f811686afe598ec595e3c7e0bb3e45",
+          "old_sha256": "sha256:2c375bf1fd6faf3aeb163a685cc6f0a381bc873b5fe74a798ef232bcb830f0c2",
+          "path": "workload/paths.py",
+          "slot_type": "file",
+          "symbol": "safe_join"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/paths.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_path_traversal_guard.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:3b2bc0473d56c4cae9be104311a6bb6cadd017f95bf75f29d1dfe1180a965b7b",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:d09246701dfdae15c1093593dce1a4fac9de66324149dabb1e9bc6cc06982ed6",
+        "crystal_ir_digest": "sha256:54a6230310f9661d039ec07002d50142d3b42662409b278e962e162c45876d43",
+        "mutation_performed": true,
+        "path": "workload/paths.py",
+        "receipt_digest": "sha256:740a68828435404e0f557bf0154307c8a3f065f21f3a0992144a7234cab85f54",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/paths.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_path_traversal_guard.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-path_traversal_guard"
+      },
+      "source_fingerprints": {
+        "after": "sha256:3b2bc0473d56c4cae9be104311a6bb6cadd017f95bf75f29d1dfe1180a965b7b",
+        "before": "sha256:2c375bf1fd6faf3aeb163a685cc6f0a381bc873b5fe74a798ef232bcb830f0c2"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "retry_backoff_policy_failure",
+        "intent_family": "retry_backoff_policy",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "bounded_local_repair",
+        "status": "interpreted",
+        "target_symbol_hint": "retry_delay",
+        "uncertainties": []
+      },
+      "id": "retry_backoff_policy",
+      "latency_ms": 287.968,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:d743a0b9bc5428a16e401ac1e668c88e799c65433bb4833d15e61a8f88623c8b",
+          "old_sha256": "sha256:fad9d5fafe87afa18cf95824004b12075cdb155515f0d331f183d36db7416586",
+          "path": "workload/retry.py",
+          "slot_type": "function",
+          "symbol": "retry_delay"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/retry.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_retry_backoff_policy.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:5d61ef954527fc07b574203c25b65292c8517bb62e3e83785955ce2268d2a359",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:83e7b397fc4c19b08ef6cece2cbd9def6187d10fad1814bbf8b0bb958b258489",
+        "crystal_ir_digest": "sha256:62ab1890e635d1e46589b0bdf97f5e522878a363cd12b143c0d6fe8357bb30bc",
+        "mutation_performed": true,
+        "path": "workload/retry.py",
+        "receipt_digest": "sha256:89ff0202df5b6a5f0c8f64ed42de89194e2bf9b20f5ca1ece7dd36fa83f72f07",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/retry.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_retry_backoff_policy.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.01s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-retry_backoff_policy"
+      },
+      "source_fingerprints": {
+        "after": "sha256:5d61ef954527fc07b574203c25b65292c8517bb62e3e83785955ce2268d2a359",
+        "before": "sha256:fad9d5fafe87afa18cf95824004b12075cdb155515f0d331f183d36db7416586"
+      },
+      "status": "verified"
+    },
+    {
+      "candidate": {
+        "constraints": [
+          "tests_immutable",
+          "network_forbidden",
+          "single_effect",
+          "minimal_scope"
+        ],
+        "evidence": [],
+        "examples": [],
+        "failure_class": "async_timeout_boundary_failure",
+        "intent_family": "async_timeout_boundary",
+        "question": "",
+        "reason_code": "",
+        "requested_effect": "bounded_local_repair",
+        "status": "interpreted",
+        "target_symbol_hint": "fetch_with_timeout",
+        "uncertainties": []
+      },
+      "id": "async_timeout_boundary",
+      "latency_ms": 288.18,
+      "negative_controls": {
+        "hostile_near_match_blocked": true,
+        "placeholder_blocked": true,
+        "stale_fingerprint_blocked": true,
+        "unsafe_target_refused": true
+      },
+      "pipeline": {
+        "action_ir": {
+          "kind": "replace_exact",
+          "maximum_effects": 1,
+          "new_sha256": "sha256:61acbab6e61af0833b36993f121387e391c5fdd5ce7b0861afa916c1e08af48d",
+          "old_sha256": "sha256:34556fcda03180e4bc5bbe1c7d78149a59e21037d2a79a4fc285ea1b64db0af2",
+          "path": "workload/async_ops.py",
+          "slot_type": "file",
+          "symbol": "fetch_with_timeout"
+        },
+        "cartographer_grounding": "exact",
+        "deterministic_preflight": "clear",
+        "isolated_mutation": true,
+        "rollback_probe": {
+          "failed_candidate_rolled_back": true
+        },
+        "syntax_preflight": "passed",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/async_ops.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_async_timeout_boundary.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.02s\n"
+          }
+        ]
+      },
+      "receipt": {
+        "after_sha256": "sha256:4105988bc940844ab0d8fe11661e7884ce8721dd633dc8746cb90113c76842d4",
+        "approval_id": "local-gauntlet-approval",
+        "authority": {
+          "authorize": false,
+          "execute": false,
+          "model_authority": {
+            "authorize": false,
+            "declare_success": false,
+            "execute": false,
+            "interpret": true,
+            "propose": true
+          }
+        },
+        "beast_object_type": "crystal_execution_receipt",
+        "before_sha256": "sha256:9d362ad7c6054e78b75e936fe5783b0a40bf8a606b066ab5b66edb19b9682c9a",
+        "crystal_ir_digest": "sha256:cd07d33e625d5f41d178c412e6b3ac301ab8a35b8ba105c0305bb86978dde719",
+        "mutation_performed": true,
+        "path": "workload/async_ops.py",
+        "receipt_digest": "sha256:66c1a9906645076bae8691253c019d1d6d6ae51b16101417d54a9839b5cd1cb4",
+        "rollback_performed": false,
+        "status": "verified",
+        "verification": [
+          {
+            "command": [
+              "python",
+              "-m",
+              "py_compile",
+              "workload/async_ops.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          {
+            "command": [
+              "pytest",
+              "-q",
+              "tests/test_async_timeout_boundary.py"
+            ],
+            "ok": true,
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ".                                                                        [100%]\n1 passed in 0.02s\n"
+          }
+        ],
+        "version": "1.0",
+        "worktree_task_id": "local-gauntlet-async_timeout_boundary"
+      },
+      "source_fingerprints": {
+        "after": "sha256:4105988bc940844ab0d8fe11661e7884ce8721dd633dc8746cb90113c76842d4",
+        "before": "sha256:34556fcda03180e4bc5bbe1c7d78149a59e21037d2a79a4fc285ea1b64db0af2"
+      },
+      "status": "verified"
+    }
+  ],
+  "version": "1.0"
+}

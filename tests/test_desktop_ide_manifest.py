@@ -701,7 +701,17 @@ def test_desktop_ide_backend_uses_request_base_url_for_live_routes():
 
 
 def test_pair_programmer_refreshes_live_provider_route_before_starting():
-    js = Path("desktop-ide/renderer/js/beast-ai-coding.js").read_text(encoding="utf-8")
+    ai_root = Path("desktop-ide/renderer/js/ai")
+    module_names = (
+        "agent-client.js", "agent-store.js", "agent-events.js", "agent-view.js",
+        "context-picker.js", "context-manifest.js", "approval-cards.js", "tool-cards.js",
+        "plan-view.js", "verification-view.js", "sourceplan-handoff.js",
+        "conversation-renderer.js", "mode-controller.js", "budget-view.js",
+    )
+    js = "\n".join(
+        [Path("desktop-ide/renderer/js/beast-ai-coding.js").read_text(encoding="utf-8")]
+        + [(ai_root / name).read_text(encoding="utf-8") for name in module_names]
+    )
     page = Path("desktop-ide/renderer/js/pages/beast-workspace-page.js").read_text(encoding="utf-8")
     css = Path("desktop-ide/renderer/css/beast-production.css").read_text(encoding="utf-8")
     routes = Path("app/routes/ide.py").read_text(encoding="utf-8")

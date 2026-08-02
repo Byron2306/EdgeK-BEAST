@@ -1,0 +1,24 @@
+schema: beast.agent-tool-contract.v1
+version: 1
+principles:
+  - tools_are_typed
+  - authority_is_explicit
+  - observations_are_structured
+  - workspace_paths_are_bounded
+  - promotion_is_never_agent_executable
+  - mutation_requires_worktree
+  - consequential_tools_require_approval
+required_fields:
+  - tool_id
+  - version
+  - category
+  - risk
+  - effect
+  - input_schema
+  - timeout_seconds
+  - max_output_bytes
+builtin_tools:
+  - workspace.list
+  - workspace.read_range
+  - workspace.search_text
+  - git.status

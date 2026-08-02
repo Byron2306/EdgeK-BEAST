@@ -1,0 +1,115 @@
+{
+  "aggregate": {
+    "baseline": {
+      "avg_prompt_chars": 18109.0,
+      "avg_verification_latency_ms": 319.65,
+      "provider_calls": 1,
+      "tasks": 1,
+      "verified_completions": 0
+    },
+    "compact": {
+      "avg_c1_chars": 999.0,
+      "avg_c2_prefix_chars": 0.0,
+      "avg_c2_suffix_chars": 0.0,
+      "avg_prompt_chars": 3384.0,
+      "avg_verification_latency_ms": 0.0,
+      "prompt_reduction_pct_vs_baseline": 81.31,
+      "provider_calls": 1,
+      "tasks": 1,
+      "verified_completions": 0
+    },
+    "crystal": {
+      "avg_prompt_chars": 0.0,
+      "avg_verification_latency_ms": 0.0,
+      "provider_calls": 0,
+      "tasks": 1,
+      "verified_completions": 0
+    }
+  },
+  "beast_object_type": "real_ide_task_layer_benchmark",
+  "claim_boundary": "Uses real BEAST coding fixtures and verification; live Ollama quality requires --live.",
+  "live": false,
+  "live_broad_control": false,
+  "live_fast": true,
+  "model": "offline-real-task-measurement",
+  "task_source": "benchmarks.xai_omni_tasks.omni_tasks",
+  "tasks": [
+    {
+      "baseline": {
+        "error": "",
+        "latency_ms": 0.0,
+        "prompt_chars": 18109,
+        "provider_calls": 1,
+        "status": "offline",
+        "usage": {},
+        "verification": {
+          "latency_ms": 319.65,
+          "ok": false,
+          "returncode": 2,
+          "stderr_tail": "",
+          "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_provider_contracts.py:2: in <module>\n    from app.kernel.registry.provider_registry import ProviderAdapterRegistry, ProviderRegistry\nE   ModuleNotFoundError: No module named 'app.kernel.registry'\n___________ ERROR collecting tests/test_provider_contracts_hidden.py ___________\nImportError while importing test module '/tmp/beast-real-task-provider_model_wiring-436h42dm/tests/test_provider_contracts_hidden.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.13/importlib/__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_provider_contracts_hidden.py:2: in <module>\n    from app.kernel.registry.provider_registry import ProviderAdapterRegistry\nE   ModuleNotFoundError: No module named 'app.kernel.registry'\n=========================== short test summary info ============================\nERROR tests/test_provider_contracts.py\nERROR tests/test_provider_contracts_hidden.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.07s\n"
+        }
+      },
+      "compact": {
+        "critic": {
+          "candidate": "<residual-measured>ith the same bug shape as the BEAST TUI wiring issue.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass ProviderRecord:\n    provider_id: str\n    backend: str\n    default_model: str\n    env: list[str]\n\n\nclass ProviderRegistry:\n    DEFAULTS = {\n        \"openai\": {\n            \"backend\": \"openai_compatible\",\n            \"env\": [\"OPENAI_API_KEY\"],\n        },\n        \"litellm\": {\n            \"backend\": \"litellm\",\n            \"default_model\": \"ollama\",\n            \"env\": [\"LITELLM_BASE_URL\"],\n        },\n        \"nvidia_nim\": {\n            \"backend\": \"openai_compatible\",\n            \"default_model\": \"nvidia/nemotron-3-super-120b-a12b\",\n            \"env\": [\"NVIDIA_API_KEY\"],\n        },\n    }\n\n    def records(self):\n        return [\n            ProviderRecord(\n                provider_id=name,\n                backend=config.get(\"backend\", \"litellm\"),\n                default_model=config.get(\"default_model\", name),\n                env=list(config.get(\"env\", [])),\n            )\n            for name, config in sorted(self.DEFAULTS.items())\n        ]\n\n\nclass ProviderAdapterRegistry:\n    def adapter_for(self, provider_id):\n        for record in ProviderRegistry().records():\n            if record.provider_id == provider_id:\n                return record\n        raise KeyError(provider_id)\n",
+          "errors": [
+            "syntax:unterminated triple-quoted string literal (detected at line 49)"
+          ],
+          "mutation_authorized": false,
+          "stage_order": [
+            "schema",
+            "placeholder",
+            "ast",
+            "scope",
+            "exact_match"
+          ],
+          "status": "blocked"
+        },
+        "crystal_metrics": {
+          "c1_chars": 999,
+          "c2_prefix_chars": 0,
+          "c2_suffix_chars": 0,
+          "protocol": "c1",
+          "vector_runtime": "ollama_text_fallback"
+        },
+        "error": "",
+        "latency_ms": 0.37,
+        "prompt_chars": 3384,
+        "provider_calls": 1,
+        "status": "solved",
+        "usage": {},
+        "verification": {
+          "ok": null,
+          "status": "deferred"
+        }
+      },
+      "crystal": {
+        "latency_ms": 0.02,
+        "prompt_chars": 0,
+        "provider_calls": 0,
+        "rescue": {
+          "attempted": false,
+          "provider_calls": 0,
+          "status": "unavailable"
+        },
+        "status": "reused",
+        "verification": {
+          "ok": null,
+          "status": "deferred"
+        }
+      },
+      "objective": "Fix provider/model wiring so beast-auto resolves concrete coding-agent models.",
+      "repair_handoff": {
+        "failure_class": "unknown",
+        "missing_symbol": "",
+        "next_action": "recompile_typed_slot",
+        "repair_required": true,
+        "slot_type": "python_expression"
+      },
+      "repair_rounds": [],
+      "task": "provider_model_wiring"
+    }
+  ],
+  "version": "1.0"
+}

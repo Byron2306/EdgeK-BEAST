@@ -1,0 +1,57 @@
+{
+  "schema": "beast.phase1-status.v1",
+  "phase": "1B",
+  "status": "PASS",
+  "date": "2026-07-18",
+  "objective": "Extract Electron desktop service families behind explicit factories without changing public behaviour.",
+  "entrypoint": {
+    "path": "desktop-ide/main.js",
+    "phase1a_lines": 1831,
+    "phase1b_lines": 1350,
+    "lines_extracted_this_slice": 481,
+    "pre_phase1_lines": 2030,
+    "total_lines_extracted": 680,
+    "phase1a_bytes": 160491,
+    "phase1b_bytes": 66194,
+    "bytes_extracted_this_slice": 94297
+  },
+  "created_modules": [
+    "desktop-ide/main/workspace-paths.js",
+    "desktop-ide/main/process-host.js",
+    "desktop-ide/main/workspace-file-host.js",
+    "desktop-ide/main/git-host.js",
+    "desktop-ide/main/task-test-host.js",
+    "desktop-ide/main/notebook-execution-host.js",
+    "desktop-ide/main/execution-target-host.js",
+    "desktop-ide/main/extension-host.js"
+  ],
+  "ownership": {
+    "workspace_paths": "workspace-paths.js",
+    "bounded_processes": "process-host.js",
+    "workspace_files": "workspace-file-host.js",
+    "git": "git-host.js",
+    "tasks_and_tests": "task-test-host.js",
+    "one_shot_notebooks": "notebook-execution-host.js",
+    "execution_targets_and_sessions": "execution-target-host.js",
+    "extensions": "extension-host.js"
+  },
+  "checks": {
+    "phase1_module_boundaries": "passed",
+    "parity_foundation": "89/89",
+    "execution_target_contract": "12 passed, 3 environment-gated skips, 0 failed",
+    "enterprise_runtime_contract": "passed",
+    "visual_acceptance": "110 scenarios, passed",
+    "javascript_syntax": "88 files checked, passed",
+    "focused_python_regressions": "10 passed"
+  },
+  "behavioural_contract": {
+    "route_paths_changed": false,
+    "ipc_channels_changed": false,
+    "preload_contract_changed": false,
+    "renderer_public_api_changed": false,
+    "sourceplan_boundary_changed": false,
+    "execution_target_semantics_changed": false,
+    "silent_remote_fallback_added": false
+  },
+  "next_slice": "Extract workspace state, diagnostics, gateway lifecycle, window creation, IPC registration, and application lifecycle from main.js."
+}

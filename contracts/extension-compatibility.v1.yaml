@@ -1,0 +1,25 @@
+contract_id: beast.extensions.v1
+schema_version: 1
+claim: Published BEAST extension compatibility subset
+security_boundary: separate mediated extension host with capability grants
+tiers:
+  E0:
+    status: operational
+    capabilities: [themes, snippets, languages, settings, commands]
+  E1:
+    status: partial
+    capabilities: [sandboxed-code, notices, configuration, bounded-workspace-read, bounded-command]
+  E2:
+    status: planned
+    capabilities: [tree-views, status-bar, diagnostics, code-actions, testing]
+  E3:
+    status: planned
+    capabilities: [sandboxed-webviews, custom-editors]
+  E4:
+    status: planned
+    capabilities: [notebooks, scm, debuggers, language-model-tools, agents]
+release_invariants:
+  - No claim of full Marketplace parity.
+  - Every advertised contribution point has a fixture extension.
+  - Extension permissions are scoped by workspace and execution target.
+  - Repeated crashes or policy violations trigger quarantine.

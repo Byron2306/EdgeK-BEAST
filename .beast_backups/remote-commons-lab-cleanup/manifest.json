@@ -1,0 +1,30 @@
+{
+  "beast_object_type": "remote_commons_lab_provisioning",
+  "client_public_key_sha256": "sha256:ab8e2c4c02deaf00c4e17f26cd60d32812266530df8ee2da207587862e8bd6ba",
+  "gateway_env": {
+    "BEAST_COMMONS_REMOTE_ALLOWED_HOSTS": "127.0.0.1",
+    "BEAST_COMMONS_REMOTE_ALLOW_HTTP_LOOPBACK": "1",
+    "BEAST_COMMONS_REMOTE_CLIENT_KEY": "/home/byron/EdgeK-BEAST/.beast/remote-commons-lab/control-plane/client.pem",
+    "BEAST_COMMONS_REMOTE_CLIENT_KEY_ID": "beast-commons-client-v1",
+    "BEAST_COMMONS_REMOTE_CLIENT_NODE_ID": "beast-control-plane"
+  },
+  "nodes": [
+    {
+      "node_id": "commons-node-a",
+      "port": 8111,
+      "public_key": "svp5UUoSPJq9aCXLR35Xou3EYHCDNiRVWm6XBxO4NLo="
+    },
+    {
+      "node_id": "commons-node-b",
+      "port": 8112,
+      "public_key": "kTDvosBx8Uglq3EzqslyQwB7N12seaQL1nJgMkyYXek="
+    },
+    {
+      "node_id": "commons-node-c",
+      "port": 8113,
+      "public_key": "tluJ68Ms+wdZ6TKQaTgXvF1b9QhVOv2B7qlOQlI9hPw="
+    }
+  ],
+  "root": "/home/byron/EdgeK-BEAST/.beast/remote-commons-lab",
+  "version": "1.0"
+}

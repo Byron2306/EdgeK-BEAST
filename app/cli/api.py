@@ -210,6 +210,41 @@ def classify_stream_failure(exc: Exception | str) -> Dict[str, Any]:
     }
 
 
+def provider_transport_receipt(
+    response: Any,
+    *,
+    requested_url: str,
+    body: bytes | str = b"",
+) -> Dict[str, Any]:
+    """Describe an unusable provider response without attempting to parse it.
+
+    Pair Programmer requests pass through the BEAST proxy.  A reverse proxy
+    can return an HTML error page which is not provider output and must never
+    be presented as a model answer or treated as an Action IR.
+    """
+    headers = getattr(response, "headers", {}) or {}
+    content_type = str(headers.get("content-type") or "").lower()
+    server = str(headers.get("server") or "")
+    request = getattr(response, "request", None)
+    actual_url = str(getattr(request, "url", "") or requested_url)
+    if isinstance(body, bytes):
+        preview = body.decode("utf-8", errors="replace")[:500]
+    else:
+        preview = str(body)[:500]
+    status = int(getattr(response, "status_code", 0) or 0)
+    return {
+        "failure_stage": "provider_transport",
+        "safe_result_produced": False,
+        "http_status": status or None,
+        "content_type": content_type,
+        "requested_url": actual_url,
+        "response_server": server,
+        "body_preview": preview,
+        "retry_safe": True,
+        "workspace_mutated": False,
+    }
+
+
 def _as_dict(value: Any) -> Dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
@@ -1247,7 +1282,18 @@ class BeastApiClient:
         workspace: str | Path | None=None,
         workspace_graph: Optional[Any]=None,
     ):
-        self.base_url = (base_url or os.environ.get("BEAST_GATEWAY_URL") or "http://127.0.0.1:8101").rstrip("/")
+        candidate_base_url = (base_url or os.environ.get("BEAST_GATEWAY_URL") or "http://127.0.0.1:8101").rstrip("/")
+        # Detached durable workers replay through an in-process ASGI origin.
+        # Provider calls must escape that origin and reach the live gateway;
+        # otherwise native Gemini requests return a misleading 404.
+        if candidate_base_url in {
+            "http://beast.internal",
+            "https://beast.internal",
+            "http://testserver",
+            "https://testserver",
+        }:
+            candidate_base_url = (os.environ.get("BEAST_GATEWAY_URL") or "http://127.0.0.1:8101").rstrip("/")
+        self.base_url = candidate_base_url
         self.timeout = timeout
         self._explicit_workspace = workspace is not None
         self._workspace_root = resolve_active_workspace(workspace)
@@ -7457,15 +7503,39 @@ class BeastApiClient:
                     ) as response:
                         if response.status_code >= 400:
                             body = await response.aread()
+                            receipt = provider_transport_receipt(
+                                response, requested_url=stream_url, body=body
+                            )
                             yield {
                                 "type": "error",
-                                "error": body.decode("utf-8", errors="replace")[:1200],
+                                "error": (
+                                    f"Provider HTTP {receipt['http_status']}; "
+                                    f"content_type={receipt['content_type']!r}; "
+                                    f"url={receipt['requested_url']}; "
+                                    f"body={receipt['body_preview']!r}"
+                                )[:1200],
+                                "transport_receipt": receipt,
                             }
                             return
                         content_type = response.headers.get("content-type", "")
                         if "text/event-stream" not in content_type:
                             body = await response.aread()
                             text = body.decode("utf-8", errors="replace")
+                            if "application/json" not in content_type.lower():
+                                receipt = provider_transport_receipt(
+                                    response, requested_url=stream_url, body=body
+                                )
+                                yield {
+                                    "type": "error",
+                                    "error": (
+                                        "Expected JSON or SSE provider response but received "
+                                        f"{receipt['content_type']!r} from "
+                                        f"{receipt['requested_url']}; "
+                                        f"body={receipt['body_preview']!r}"
+                                    )[:1200],
+                                    "transport_receipt": receipt,
+                                }
+                                return
                             try:
                                 data = json.loads(text)
                             except Exception:
@@ -7654,6 +7724,7 @@ class BeastApiClient:
         context_max_files: int=64,
         context_max_chars_each: int=4200,
         governance_level: str="governed",
+        action_ir_required: bool=False,
         allow_fallback: bool=True,
     ) -> AsyncIterator[Dict[str, Any]]:
         """Streaming version of live_turn.
@@ -7910,6 +7981,17 @@ class BeastApiClient:
                     +context_message,
                 }
             ]
+            # Gemini can be overly conservative when source is supplied only
+            # as a system attachment. Repeat the same bounded, authoritative
+            # context as an explicit user evidence turn so ASK answers are
+            # grounded in the file rather than a generic uncertainty script.
+            chat_history = chat_history + [
+                {
+                    "role": "user",
+                    "content": "AUTHORITATIVE SOURCE EVIDENCE. Use this exact file for the next answer; do not claim it is unavailable or speculate beyond it:\n\n"
+                    + context_message,
+                }
+            ]
         chat_history = chat_history + [{"role": "user", "content": text}]
 
         provider_error = ""
@@ -7934,7 +8016,7 @@ class BeastApiClient:
                 max_tokens=max_tokens,
                 max_continuations=max_continuations,
                 accept_unmarked_action_ir=governance_level.startswith("ide_agent"),
-                action_ir_required=governance_level.startswith("ide_agent"),
+                action_ir_required=action_ir_required,
             ):
                 event_type = str(event.get("type") or "")
                 if event_type == "token":
@@ -7970,6 +8052,9 @@ class BeastApiClient:
                         or event.get("kind")
                         or "provider stream failed"
                     )
+                    transport_receipt = event.get("transport_receipt")
+                    if isinstance(transport_receipt, dict):
+                        provider_failure["transport_receipt"] = transport_receipt
                     tool_events.append(f"provider stream error: {provider_error[:160]}")
                     yield {
                         "type": "tool",
@@ -7982,7 +8067,13 @@ class BeastApiClient:
                 )
 
         if not provider_completed and not provider_ok and not allow_fallback:
-            yield {"type": "error", "error": provider_error or "Provider did not produce a response.", "provider": provider or DEFAULT_PROVIDER, "model": model}
+            yield {
+                "type": "error",
+                "error": provider_error or "Provider did not produce a response.",
+                "provider": provider or DEFAULT_PROVIDER,
+                "model": model,
+                "transport_receipt": provider_failure.get("transport_receipt"),
+            }
             return
 
         if not provider_completed and not provider_ok:

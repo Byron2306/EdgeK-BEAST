@@ -1,0 +1,149 @@
+{
+  "beast_object_type": "ide_phase6_scale_gauntlet_receipt",
+  "schema": "beast.ide.scale-gauntlet.v1",
+  "created_at": "2026-07-21T12:53:50.277Z",
+  "platform": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.18.0",
+    "kernel": "6.12.95+deb13-rt-amd64",
+    "cpuCount": 12,
+    "totalMemoryBytes": 7950245888,
+    "filesystem": "tmpfs"
+  },
+  "desktopHost": "/home/byron/EdgeK-BEAST/desktop-ide/main/workspace-file-host.js",
+  "runs": [
+    {
+      "fileCount": 10000,
+      "root": "temporary",
+      "generated": {
+        "created": 10000,
+        "ignoredGenerated": 2000,
+        "deepPathLevels": 96,
+        "generationMs": 793.972
+      },
+      "tree": {
+        "probes": [
+          {
+            "offset": 0,
+            "elapsedMs": 138.386,
+            "rows": 1000,
+            "nextOffset": 1000,
+            "scannedFiles": 1000,
+            "scannedDirectories": 1090,
+            "virtualized": true
+          },
+          {
+            "offset": 5000,
+            "elapsedMs": 364.007,
+            "rows": 1000,
+            "nextOffset": 6000,
+            "scannedFiles": 6000,
+            "scannedDirectories": 6110,
+            "virtualized": true
+          },
+          {
+            "offset": 9000,
+            "elapsedMs": 330.959,
+            "rows": 1000,
+            "nextOffset": 10000,
+            "scannedFiles": 10000,
+            "scannedDirectories": 10126,
+            "virtualized": true
+          }
+        ],
+        "quickOpenCandidateMs": 19.633,
+        "quickOpenCandidates": 400,
+        "p50Ms": 330.959,
+        "p95Ms": 330.959,
+        "ignoredGeneratedVisible": false
+      },
+      "git": {
+        "tracked": 5000,
+        "modified": 3000,
+        "untracked": 3000,
+        "addMs": 1289.896,
+        "trackedStatusMs": 72.197,
+        "fullStatusMs": 98.038,
+        "statusLines": 6000,
+        "gitAvailable": true
+      },
+      "externalMutations": {
+        "supported": true,
+        "mode": "native_fs_watch",
+        "events": 120,
+        "errorEvents": 0,
+        "mutations": 240
+      },
+      "threshold": {
+        "limits": {
+          "first": 2500,
+          "middle": 5000,
+          "last": 7500,
+          "quick": 2500,
+          "git": 10000
+        },
+        "checks": [
+          {
+            "name": "first_page_bounded",
+            "passed": true,
+            "observed": 138.386,
+            "limit": 2500
+          },
+          {
+            "name": "middle_page_bounded",
+            "passed": true,
+            "observed": 364.007,
+            "limit": 5000
+          },
+          {
+            "name": "last_page_bounded",
+            "passed": true,
+            "observed": 330.959,
+            "limit": 7500
+          },
+          {
+            "name": "quick_candidates_bounded",
+            "passed": true,
+            "observed": 19.633,
+            "limit": 2500
+          },
+          {
+            "name": "git_status_bounded",
+            "passed": true,
+            "observed": 98.038,
+            "limit": 10000
+          },
+          {
+            "name": "external_mutations_visible",
+            "passed": true,
+            "observed": 120,
+            "limit": ">0"
+          },
+          {
+            "name": "virtualized_contract",
+            "passed": true,
+            "observed": [
+              1000,
+              1000,
+              1000
+            ],
+            "limit": 1000
+          }
+        ],
+        "passed": true
+      }
+    }
+  ],
+  "slowFilesystem": {
+    "status": "environment_gated",
+    "reason": "No --slow-root mount supplied. A delay simulator is not accepted as network-filesystem proof."
+  },
+  "validated": true,
+  "claim_boundary": {
+    "local_scale": "physically_measured",
+    "slow_network_filesystem": "not_proven",
+    "cross_platform": "not_proven_by_single_host"
+  },
+  "receipt_digest": "sha256:25670748ae53fe14206233ca5cfdbce3ee64ee886c179a40595384ea121de9c3"
+}

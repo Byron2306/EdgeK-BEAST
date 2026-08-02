@@ -1,0 +1,80 @@
+{
+  "base_url": "https://api.mistral.ai/v1",
+  "beast_object_type": "mega_provider_call_receipt",
+  "clean_completed": false,
+  "cloud_calls": 1,
+  "completed": true,
+  "created_at": "2026-07-21T20:43:56Z",
+  "decision": "provider_execution",
+  "failure_bucket": null,
+  "family": "provider_alias_normalization",
+  "files_changed": [
+    "app/provider_parser.py"
+  ],
+  "hidden_passed": true,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+    "fixture_family": "provider_alias_normalization",
+    "fixture_occurrence": 1,
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/provider_parser.py": {
+        "exists": true,
+        "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+        "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+        "symbol_hashes": {
+          "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+          "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+        }
+      }
+    },
+    "tests": {
+      "tests/test_provider_parser.py": {
+        "exists": true,
+        "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+        "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+        "symbol_hashes": {
+          "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+          "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+        }
+      },
+      "tests/test_provider_parser_hidden.py": {
+        "exists": true,
+        "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+        "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+        "symbol_hashes": {
+          "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+        }
+      }
+    },
+    "tool_schema_hashes": [
+      "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+    ],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+  "latency_ms": 2403.517,
+  "live_lane": "live_mistral_full_beast",
+  "mega_lane": "full_beast_compute_governor",
+  "model": "codestral-latest",
+  "occurrence": 1,
+  "provider": "mistral",
+  "provider_completion_tokens": 307,
+  "provider_execution_requested": true,
+  "provider_prompt_tokens": 4027,
+  "reason": "live provider returned scoped operations; pytest judged completion",
+  "receipt_id": "mega_provider_call_18c2b75f142f950325f2",
+  "rescued_completed": true,
+  "rollback_success": true,
+  "task": "provider_id_parser",
+  "task_id": "provider_alias_normalization_o01_v1",
+  "total_tokens": 4334,
+  "version": "1.0",
+  "visible_passed": true
+}

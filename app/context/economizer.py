@@ -36,7 +36,7 @@ class ContextEconomizer:
     def economize(self, ir: EdgeKIR) -> ContextEconomyResult:
         meta_rules = self.policies.get("meta_rules", {})
         enabled = meta_rules.get("context_economizer_enabled", True)
-        original_tokens = self._estimate_tokens(ir.messages)
+        original_tokens = self._estimate_tokens(ir.messages or [])
 
         if not enabled:
             return self._unchanged(ir, original_tokens, "disabled", ["Context economizer disabled"])

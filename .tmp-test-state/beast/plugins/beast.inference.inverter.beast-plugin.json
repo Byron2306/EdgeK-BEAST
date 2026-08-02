@@ -1,0 +1,43 @@
+{
+  "approval_policy": {
+    "external_write": false,
+    "filesystem_write": false,
+    "first_run": true,
+    "install": true,
+    "network": false
+  },
+  "beast_plugin_manifest_version": "1.0",
+  "budget": {
+    "calls_per_hour": 1000,
+    "max_cost_usd_per_call": 0,
+    "max_latency_ms": 5000,
+    "max_tokens_per_call": 0
+  },
+  "entrypoint": {
+    "kind": "python",
+    "module": "app.kernel.beast_builtin_plugins"
+  },
+  "id": "beast.inference.inverter",
+  "name": "Inference Inverter",
+  "permissions": {
+    "environment": [],
+    "filesystem_read": [],
+    "filesystem_write": [],
+    "network_domains": [],
+    "subprocess": false
+  },
+  "publisher": "BEAST Core",
+  "risk_class": "medium",
+  "tools": [
+    {
+      "description": "Governed local build inversion plan",
+      "inputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "name": "build_inversion_plan",
+      "tool_schema_hash": "sha256:f1c1c6002fb09e69756453802dc355feed8008cddad0380cf17c352eeb74066f"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -204,6 +204,22 @@ async def _governed_openai_sse_live(
             yield "event: edgek_error\n" + "data: " + response.body.decode("utf-8", errors="replace") + "\n\n"
             yield "data: [DONE]\n\n"
             return
+        # PREC can deliberately defer or reject a request while preserving a
+        # 200 transport response for compatibility callers.  An SSE client
+        # must not mistake that governed error envelope for a successful,
+        # empty model completion: surface it as an explicit retryable event so
+        # the Pair Programmer can retain its context/evidence and follow its
+        # normal recovery path.
+        try:
+            completed_payload = json.loads(response.body)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            completed_payload = {}
+        if isinstance(completed_payload, dict) and completed_payload.get("error"):
+            yield "event: edgek_error\n" + "data: " + json.dumps(
+                completed_payload, separators=(",", ":")
+            ) + "\n\n"
+            yield "data: [DONE]\n\n"
+            return
         if emitted_live_delta:
             payload = json.loads(response.body)
             response_id = str(payload.get("id") or "chatcmpl-governed-stream")

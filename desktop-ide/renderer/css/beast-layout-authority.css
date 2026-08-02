@@ -1,0 +1,940 @@
+/* Final structural authority.
+   This file intentionally sits last in the cascade and only fixes geometry,
+   text flow, and scroll behavior on routes that were still inheriting
+   conflicting legacy overrides. */
+
+.beast-sidebar .beast-nav,
+.beast-sidebar .beast-nav button,
+.beast-sidebar .beast-nav button > span,
+.beast-command-tabs,
+.beast-command-tabs button,
+.beast-page-actions,
+.beast-page-actions .beast-button,
+.beast-command .beast-send,
+.beast-command input,
+.beast-button,
+#beastPageOutlet .beast-page button,
+#beastPageOutlet .beast-page [class*="button"],
+#beastPageOutlet .beast-page [class*="row"],
+#beastPageOutlet .beast-page [class*="card"],
+#beastPageOutlet .beast-page [class*="panel"] {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+.beast-sidebar .beast-nav button {
+  grid-template-columns: 22px minmax(0, 1fr) 12px !important;
+  align-items: center !important;
+  min-height: 40px !important;
+}
+
+.beast-sidebar .beast-nav button .label {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  line-height: 1.12 !important;
+}
+
+.beast-command-tabs {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+.beast-command-tabs button,
+.beast-page-actions .beast-button,
+#beastPageOutlet .beast-page .beast-button,
+#beastPageOutlet .beast-page .cortex-editor-tools button,
+#beastPageOutlet .beast-page .cortex-explorer-tools button,
+#beastPageOutlet .beast-page .compat-runtime-actions .beast-button {
+  min-width: 0 !important;
+  min-height: 34px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  flex: 0 0 auto !important;
+}
+
+/* Never let a narrow rail turn a readable control into an icon-only sliver.
+   Text-bearing controls may wrap as a group, but their own label remains
+   intact and their contents are allowed to paint above the glow frame. */
+#beastPageOutlet button:has(> span:not(:empty)),
+#beastPageOutlet button:has(> b:not(:empty)),
+#beastPageOutlet button:has(> small:not(:empty)),
+#beastPageOutlet button:has(> img + span:not(:empty)) {
+  min-width: max-content !important;
+  max-width: 100% !important;
+}
+
+#beastPageOutlet .cortex-ai-modes {
+  min-width: 0 !important;
+  grid-template-columns: repeat(4, minmax(68px, 1fr)) !important;
+}
+
+#beastPageOutlet .cortex-ai-modes button {
+  min-width: 68px !important;
+  overflow: visible !important;
+}
+
+#beastPageOutlet .cortex-ai-modes button span,
+#beastPageOutlet .cortex-ai-modes button b,
+#beastPageOutlet .cortex-ai-modes button small {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.beast-rail,
+#beastContextRail,
+.beast-rail-stack,
+.beast-context-rail {
+  min-height: 0 !important;
+}
+
+.beast-rail {
+  overflow: hidden !important;
+}
+
+#beastContextRail,
+.beast-rail-stack,
+.beast-context-rail {
+  height: 100% !important;
+  overflow: auto !important;
+  padding-right: 4px !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-root,
+#beastPageOutlet .beast-workspace-page .cortex-layout,
+#beastPageOutlet .beast-workspace-page .cortex-explorer,
+#beastPageOutlet .beast-workspace-page .cortex-editor,
+#beastPageOutlet .beast-workspace-page .cortex-ai-panel,
+#beastPageOutlet .beast-workspace-page .cortex-editor-stage,
+#beastPageOutlet .beast-workspace-page .cortex-editor-text-surface,
+#beastPageOutlet .beast-workspace-page [data-editor-workbench],
+#beastPageOutlet .beast-workspace-page [data-editor-host],
+#beastPageOutlet .beast-workspace-page [data-editor-split-host] {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-text-surface {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-workbench] {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  display: grid !important;
+  min-height: 100% !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-workbench].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-host].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-fallback].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-split-host].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-empty].hidden,
+#beastPageOutlet .beast-workspace-page [data-editor-safety-workbench].hidden,
+#beastPageOutlet .beast-workspace-page [data-notebook-workbench].hidden,
+#beastPageOutlet .beast-workspace-page [data-compare-workbench].hidden,
+#beastPageOutlet .beast-workspace-page [data-git-diff-workbench].hidden {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-host],
+#beastPageOutlet .beast-workspace-page [data-editor-fallback],
+#beastPageOutlet .beast-workspace-page [data-editor-split-host],
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback] {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-host],
+#beastPageOutlet .beast-workspace-page [data-editor-split-host] {
+  z-index: 1 !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-fallback],
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback] {
+  z-index: 2 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  padding: 14px 16px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: #06110d !important;
+  background-image: linear-gradient(180deg, rgba(5, 17, 13, 0.98), rgba(2, 7, 5, 0.99)) !important;
+  color: #dce6df !important;
+  -webkit-text-fill-color: #dce6df !important;
+  -webkit-text-stroke: 0 transparent !important;
+  font: 13px/1.55 "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: pre !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  text-indent: 0 !important;
+  tab-size: 2 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  transform: none !important;
+  clip-path: none !important;
+  mask-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  overflow: auto !important;
+  caret-color: #a3ff5a !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  font-variant-ligatures: none !important;
+  content-visibility: visible !important;
+  contain: layout paint style !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  white-space: pre-wrap !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  tab-size: 2 !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-fallback],
+#beastPageOutlet .beast-workspace-page [data-editor-fallback] *,
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback],
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback] * {
+  color: #dce6df !important;
+  -webkit-text-fill-color: #dce6df !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  text-shadow: none !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-fallback]:empty::before,
+#beastPageOutlet .beast-workspace-page [data-editor-split-fallback]:empty::before {
+  content: attr(aria-label) !important;
+  color: #6f8e84 !important;
+  -webkit-text-fill-color: #6f8e84 !important;
+  opacity: 0.66 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-empty {
+  z-index: 4 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-stage {
+  isolation: isolate !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-text-surface {
+  z-index: 1 !important;
+}
+
+#beastPageOutlet .beast-workspace-page [data-editor-host],
+#beastPageOutlet .beast-workspace-page [data-editor-split-host],
+#beastPageOutlet .beast-workspace-page .monaco-editor,
+#beastPageOutlet .beast-workspace-page .monaco-editor .overflow-guard {
+  background: #06110d !important;
+}
+
+/* Final editor paint authority: Monaco text must never inherit decorative
+   transparent-gradient typography from higher-level hacker chrome rules. */
+#beastPageOutlet .beast-workspace-page .monaco-editor,
+#beastPageOutlet .beast-workspace-page .monaco-editor * ,
+#beastPageOutlet .beast-workspace-page .monaco-editor .view-lines,
+#beastPageOutlet .beast-workspace-page .monaco-editor .view-line,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk1,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk2,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk3,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk4,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk5,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk6,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk7,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk8,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk9,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk10,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk11,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk12,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk13,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk14,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk15,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk16,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk17,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk18,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk19,
+#beastPageOutlet .beast-workspace-page .monaco-editor .mtk20,
+#beastPageOutlet .beast-workspace-page .monaco-editor .current-line,
+#beastPageOutlet .beast-workspace-page .monaco-editor .view-overlays,
+#beastPageOutlet .beast-workspace-page .monaco-editor textarea.inputarea {
+  color: #dce6df !important;
+  -webkit-text-fill-color: #dce6df !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  text-shadow: none !important;
+  background-image: none !important;
+}
+
+#beastPageOutlet .beast-workspace-page .monaco-editor .line-numbers {
+  color: #5f776e !important;
+  -webkit-text-fill-color: #5f776e !important;
+  opacity: 1 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-layout:not(.ai-open) {
+  grid-template-columns: minmax(248px, var(--cortex-explorer-width, 280px)) minmax(0, 1fr) !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-layout.ai-open {
+  grid-template-columns:
+    minmax(232px, var(--cortex-explorer-width, 268px))
+    minmax(420px, 1fr)
+    minmax(340px, min(var(--cortex-ai-width, 420px), 32vw)) !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-layout.ai-open.ai-focus {
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(380px, min(var(--cortex-ai-width, 440px), 38vw)) !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-explorer {
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor {
+  display: grid !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
+  grid-auto-rows: min-content !important;
+  overflow: hidden !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-top {
+  grid-row: 1 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-breadcrumbs {
+  grid-row: 2 !important;
+  position: relative !important;
+  inset: auto !important;
+  z-index: 2 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-safety-banner {
+  grid-row: 3 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-stage {
+  grid-row: 4 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-statusbar {
+  grid-row: 5 !important;
+}
+
+#beastPageOutlet .beast-workspace-page .beast-file-list,
+#beastPageOutlet .beast-workspace-page [data-explorer-body],
+#beastPageOutlet .beast-workspace-page .cortex-ai-messages,
+#beastPageOutlet .beast-workspace-page .cortex-ai-conversation {
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+#beastPageOutlet .beast-workspace-page .beast-file-row,
+#beastPageOutlet .beast-workspace-page .cortex-tree-row,
+#beastPageOutlet .beast-workspace-page .cortex-tab,
+#beastPageOutlet .beast-workspace-page .cortex-breadcrumbs span,
+#beastPageOutlet .beast-workspace-page .cortex-explorer-foot > span,
+#beastPageOutlet .beast-workspace-page .cortex-workspace-folders > span {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-statusbar,
+#beastPageOutlet .beast-workspace-page .cortex-statusbar > *,
+#beastPageOutlet .beast-workspace-page .cortex-statusbar button,
+#beastPageOutlet .beast-workspace-page .cortex-statusbar span {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  text-overflow: ellipsis !important;
+}
+
+#beastPageOutlet .beast-workspace-page .beast-file-row :where(span,b,strong,small,em),
+#beastPageOutlet .beast-workspace-page .cortex-tab :where(span,b,strong,small,em) {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-tools,
+#beastPageOutlet .beast-workspace-page .cortex-ai-modes,
+#beastPageOutlet .beast-workspace-page .cortex-ai-context-actions,
+#beastPageOutlet .beast-workspace-page .cortex-empty-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+#beastPageOutlet .beast-workspace-page .cortex-editor-tools > button,
+#beastPageOutlet .beast-workspace-page .cortex-ai-modes > button,
+#beastPageOutlet .beast-workspace-page .cortex-empty-actions > button {
+  flex: 0 1 auto !important;
+}
+
+#beastPageOutlet .beast-compatibility-page .compat-runtime-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: start !important;
+}
+
+#beastPageOutlet .beast-compatibility-page .compat-runtime-span {
+  grid-column: 1 / -1 !important;
+}
+
+#beastPageOutlet .beast-compatibility-page :where(.compat-runtime-card,.compat-lane) {
+  min-width: 0 !important;
+  width: auto !important;
+  align-self: start !important;
+}
+
+#beastPageOutlet .beast-compatibility-page :where(.compat-runtime-card .beast-pill,
+  .compat-runtime-card .status,
+  .compat-runtime-card .state) {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+#beastPageOutlet .beast-compute-fabric-page .fabric-route-map {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  align-items: stretch !important;
+}
+
+#beastPageOutlet .beast-compute-fabric-page .fabric-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr) minmax(280px, .8fr) !important;
+  align-items: start !important;
+}
+
+#beastPageOutlet .beast-crystal-page .crystal-main-grid {
+  grid-template-columns: minmax(280px, .92fr) minmax(0, 1.32fr) minmax(300px, .96fr) !important;
+  align-items: stretch !important;
+}
+
+#beastPageOutlet .beast-crystal-page .crystal-lower-grid,
+#beastPageOutlet .beast-commons-page :where(.commons-node-grid,.commons-bucket-grid,.commons-discovery-grid,.commons-revision-grid,.commons-forge-grid,.commons-subgrid,.p8-economy-grid),
+#beastPageOutlet .beast-live-fabric-page :where(.live-core-grid,.live-lower-grid,.fabric-health-grid),
+#beastPageOutlet .beast-compute-control-page :where(.compute-control-grid,.compute-fabric-grid,.kv-grid,.xdp-grid),
+#beastPageOutlet .beast-models-page .p8-provider-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)) !important;
+  align-items: stretch !important;
+}
+
+#beastPageOutlet .beast-crystal-page :where(.crystal-candidate-row,.crystal-gate-row,.crystal-artifact-row),
+#beastPageOutlet .beast-commons-page :where(.commons-card-footer,.commons-live-status),
+#beastPageOutlet .beast-live-fabric-page :where(.kv-live-row,.prism-step,.xdp-node),
+#beastPageOutlet .beast-compute-control-page :where(.kv-live-row,.prism-step,.xdp-node) {
+  min-width: 0 !important;
+}
+
+#beastPageOutlet .beast-crystal-page :where(.crystal-candidate-row,.crystal-gate-row,.crystal-artifact-row) :where(span,b,strong,small,em),
+#beastPageOutlet .beast-commons-page :where(.commons-card-footer,.commons-live-status) :where(span,b,strong,small,em),
+#beastPageOutlet .beast-live-fabric-page :where(.kv-live-row,.prism-step,.xdp-node) :where(span,b,strong,small,em),
+#beastPageOutlet .beast-compute-control-page :where(.kv-live-row,.prism-step,.xdp-node) :where(span,b,strong,small,em) {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+@media (max-width: 1180px) {
+  #beastPageOutlet .beast-workspace-page .cortex-layout.ai-open {
+    grid-template-columns: minmax(0, 1fr) minmax(330px, min(var(--cortex-ai-width, 400px), 42vw)) !important;
+  }
+
+  #beastPageOutlet .beast-workspace-page .cortex-explorer {
+    display: none !important;
+  }
+
+  #beastPageOutlet .beast-compatibility-page .compat-runtime-grid,
+  #beastPageOutlet .beast-compute-fabric-page .fabric-grid,
+  #beastPageOutlet .beast-crystal-page .crystal-main-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Final route polish: wider readable utility cards and darker tri-tone felt. */
+:root {
+  --beast-felt-black: #030808;
+  --beast-felt-deep: #08161a;
+}
+
+@media (min-width: 901px) {
+  #beastPageOutlet :where(.beast-card, .beast-panel, .beast-context-card, .beast-page-head) {
+    background:
+      linear-gradient(90deg, rgba(10, 34, 38, 0.88) 0%, rgba(10, 28, 34, 0.70) 32%, rgba(3, 10, 12, 0.92) 72%, rgba(0, 0, 0, 0.98) 100%) !important;
+    box-shadow:
+      inset 0 1px rgba(149, 242, 228, 0.06),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.40),
+      0 14px 34px rgba(0, 0, 0, 0.24) !important;
+  }
+
+  #beastPageOutlet :where(.beast-card, .beast-panel):nth-of-type(3n + 1) {
+    border-color: rgba(92, 229, 241, 0.42) !important;
+    box-shadow:
+      inset 2px 0 0 rgba(92, 229, 241, 0.72),
+      inset 0 1px rgba(149, 242, 228, 0.06),
+      0 0 22px rgba(92, 229, 241, 0.08),
+      0 14px 34px rgba(0, 0, 0, 0.24) !important;
+  }
+
+  #beastPageOutlet :where(.beast-card, .beast-panel):nth-of-type(3n + 2) {
+    border-color: rgba(104, 245, 167, 0.40) !important;
+    box-shadow:
+      inset 2px 0 0 rgba(104, 245, 167, 0.66),
+      inset 0 1px rgba(149, 242, 228, 0.05),
+      0 0 22px rgba(104, 245, 167, 0.07),
+      0 14px 34px rgba(0, 0, 0, 0.24) !important;
+  }
+
+  #beastPageOutlet :where(.beast-card, .beast-panel):nth-of-type(3n) {
+    border-color: rgba(241, 189, 88, 0.32) !important;
+    box-shadow:
+      inset 2px 0 0 rgba(241, 189, 88, 0.50),
+      inset 0 1px rgba(149, 242, 228, 0.05),
+      0 0 18px rgba(241, 189, 88, 0.06),
+      0 14px 34px rgba(0, 0, 0, 0.24) !important;
+  }
+
+  #beastPageOutlet .beast-page-head h2,
+  #beastPageOutlet .beast-card h3,
+  #beastPageOutlet .beast-panel h3 {
+    color: #c8f9ff !important;
+    text-shadow: 0 0 14px rgba(92, 229, 241, 0.12), 0 0 28px rgba(104, 245, 167, 0.05) !important;
+  }
+
+  #beastPageOutlet :where(p, span, small, em, .sub) {
+    color: #98c1c8 !important;
+  }
+
+  #beastPageOutlet :where(b, strong, .metric-value, .metric-number) {
+    color: #ddfff0 !important;
+  }
+
+  #beastPageOutlet :where(.beast-pill, .beast-button) {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+    line-height: 1.1 !important;
+  }
+
+  #beastPageOutlet .beast-pill {
+    min-width: 96px !important;
+    max-width: 164px !important;
+    padding: 8px 12px !important;
+    justify-self: end !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #beastPageOutlet :where(.p8-metric-grid, .beast-metric-grid) {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+  }
+
+  #beastPageOutlet :where(.p8-metric, .beast-card.compact) {
+    min-height: 138px !important;
+    align-items: start !important;
+    align-content: start !important;
+  }
+
+  #beastPageOutlet .p8-facts > div,
+  #beastPageOutlet .beast-rail-facts > div {
+    grid-template-columns: minmax(118px, 0.78fr) minmax(0, 1.22fr) !important;
+    gap: 14px !important;
+    align-items: start !important;
+  }
+
+  #beastPageOutlet .p8-facts > div :where(span, b, strong, small, em),
+  #beastPageOutlet .beast-rail-facts > div :where(span, b, strong, small, em) {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  #beastPageOutlet .p8-system-lower,
+  #beastPageOutlet .p8-deploy-lower,
+  #beastPageOutlet .p8-economy-grid,
+  #beastPageOutlet .p8-studio-grid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  #beastPageOutlet .p8-economy-grid > .beast-card:last-child,
+  #beastPageOutlet .p8-studio-grid > .beast-card:first-child,
+  #beastPageOutlet .p8-deploy-lower > .beast-card:last-child {
+    grid-column: auto !important;
+  }
+
+  /* Zoom reduces the CSS viewport. Reflow compound surfaces before their
+     children become unreadable vertical strips. The same rule applies to
+     every route using these shared orchestration grids. */
+  @container beast-page (max-width: 1280px) {
+    #beastPageOutlet :where(.p8-system-grid, .p8-provider-grid, .p8-worktree-grid,
+      .p8-deploy-hero, .p8-chronicle-grid, .p8-studio-grid, .map-main-grid,
+      .crystal-main-grid, .fabric-grid, .compat-runtime-grid) {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    #beastPageOutlet :where(.p8-system-topology, .p8-reconstruction-list,
+      .p8-quick-launch, .p8-studio-core, .p8-next-action) {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    #beastPageOutlet :where(.p8-system-grid > *, .p8-provider-grid > *,
+      .p8-worktree-grid > *, .p8-deploy-hero > *, .p8-chronicle-grid > *,
+      .p8-studio-grid > *, .map-main-grid > *, .crystal-main-grid > *,
+      .fabric-grid > *) {
+      min-width: 0 !important;
+      width: auto !important;
+    }
+  }
+
+  #beastPageOutlet .beast-deploy-page :where(.p8-readiness, .p8-pipeline, .p8-pipeline-track, .p8-blocker, .p8-pipeline-track > div) {
+    background:
+      linear-gradient(90deg, rgba(11, 35, 40, 0.84) 0%, rgba(10, 26, 31, 0.62) 32%, rgba(3, 8, 10, 0.92) 72%, rgba(0, 0, 0, 0.98) 100%) !important;
+    background-size: auto !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track {
+    padding: 18px !important;
+    border-color: rgba(92, 229, 241, 0.22) !important;
+    box-shadow: inset 0 0 0 1px rgba(92, 229, 241, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div {
+    background:
+      linear-gradient(145deg, rgba(17, 49, 57, 0.78) 0%, rgba(11, 27, 33, 0.66) 52%, rgba(0, 0, 0, 0.94) 100%) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n + 1) {
+    border-color: rgba(92, 229, 241, 0.34) !important;
+    box-shadow: inset 2px 0 0 rgba(92, 229, 241, 0.62), 0 0 16px rgba(92, 229, 241, 0.08) !important;
+  }
+
+  /* Route-specific geometry guardrails. These are intentionally based on the
+     actual container width so browser zoom cannot turn readable cards into
+     narrow vertical strips or leave an unused phantom grid column. */
+  #beastPageOutlet .beast-deploy-page .p8-deploy-hero {
+    grid-template-columns: minmax(360px, .82fr) minmax(0, 1.18fr) !important;
+    align-items: stretch !important;
+  }
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track {
+    grid-template-columns: repeat(3, minmax(170px, 1fr)) !important;
+    overflow: visible !important;
+    align-items: stretch !important;
+  }
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div {
+    min-width: 0 !important;
+    min-height: 154px !important;
+    background: linear-gradient(145deg, rgba(14, 43, 52, .72), rgba(3, 12, 16, .94)) !important;
+  }
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n + 2) {
+    border-color: rgba(104, 245, 167, .45) !important;
+  }
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n) {
+    border-color: rgba(241, 189, 88, .45) !important;
+  }
+
+  #beastPageOutlet .beast-crystal-page .crystal-main-grid {
+    grid-template-columns: minmax(320px, .9fr) minmax(560px, 1.55fr) !important;
+    width: 100% !important;
+  }
+  #beastPageOutlet .beast-crystal-page .crystal-main-grid > * {
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node {
+    width: 92px !important;
+    min-height: 54px !important;
+    padding: 5px !important;
+    grid-template-columns: 24px minmax(0, 1fr) !important;
+    gap: 4px !important;
+  }
+  #beastPageOutlet .beast-map-page .map-node > img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  #beastPageOutlet .beast-map-page .map-node b {
+    max-width: 56px !important;
+    font-size: 7px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  #beastPageOutlet .beast-map-page .map-node small {
+    font-size: 6px !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n + 2) {
+    border-color: rgba(104, 245, 167, 0.34) !important;
+    box-shadow: inset 2px 0 0 rgba(104, 245, 167, 0.56), 0 0 16px rgba(104, 245, 167, 0.08) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n) {
+    border-color: rgba(241, 189, 88, 0.30) !important;
+    box-shadow: inset 2px 0 0 rgba(241, 189, 88, 0.46), 0 0 14px rgba(241, 189, 88, 0.06) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-readiness,
+  #beastPageOutlet .beast-deploy-page .p8-pipeline {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-readiness::before,
+  #beastPageOutlet .beast-deploy-page .p8-pipeline::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background:
+      linear-gradient(90deg, rgba(92, 229, 241, 0.07), transparent 26%, transparent 72%, rgba(104, 245, 167, 0.06)),
+      linear-gradient(180deg, transparent, rgba(241, 189, 88, 0.03), transparent) !important;
+    opacity: 0.9 !important;
+  }
+
+  /* Brighter neon edge treatment with dark felt interiors. */
+  #beastPageOutlet :where(
+    .route-map-node,
+    .routing-rule,
+    .model-registry-row,
+    .model-runtime-card,
+    .agent-session-row,
+    .p8-route-node,
+    .p8-facts > div,
+    .beast-rail-facts > div,
+    .terminal-problems button,
+    [data-test-file],
+    .map-node,
+    .schema-node,
+    .tooling-module-grid button,
+    .p8-provider-row,
+    .p8-worktree-row,
+    .p8-event-row,
+    .p8-pipeline-track > div,
+    .crystal-gate-row,
+    .crystal-candidate-row
+  ) {
+    background:
+      linear-gradient(135deg, rgba(9, 24, 29, 0.94) 0%, rgba(3, 10, 12, 0.96) 68%, rgba(0, 0, 0, 0.98) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(92, 229, 241, 0.08),
+      inset 0 1px rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(0, 0, 0, 0.30),
+      0 0 18px rgba(92, 229, 241, 0.08) !important;
+  }
+
+  #beastPageOutlet :where(
+    .route-map-node,
+    .routing-rule,
+    .model-registry-row,
+    .model-runtime-card,
+    .agent-session-row,
+    .p8-route-node,
+    .p8-facts > div,
+    .beast-rail-facts > div,
+    .terminal-problems button,
+    [data-test-file],
+    .map-node,
+    .schema-node,
+    .tooling-module-grid button,
+    .p8-provider-row,
+    .p8-worktree-row,
+    .p8-event-row,
+    .p8-pipeline-track > div,
+    .crystal-gate-row,
+    .crystal-candidate-row
+  ):hover {
+    box-shadow:
+      inset 0 0 0 1px rgba(92, 229, 241, 0.14),
+      inset 2px 0 0 rgba(104, 245, 167, 0.72),
+      0 0 24px rgba(92, 229, 241, 0.18),
+      0 0 34px rgba(104, 245, 167, 0.10) !important;
+  }
+
+  /* Provider registry rows: stop text colliding with frame/status columns. */
+  #beastPageOutlet .beast-models-page .p8-provider-row {
+    grid-template-columns: 44px minmax(0, 1fr) minmax(86px, auto) minmax(70px, auto) !important;
+    gap: 12px !important;
+    padding: 12px 14px !important;
+    align-items: center !important;
+  }
+
+  #beastPageOutlet .beast-models-page .p8-provider-row > span {
+    min-width: 0 !important;
+    padding-right: 8px !important;
+  }
+
+  #beastPageOutlet .beast-models-page .p8-provider-row b,
+  #beastPageOutlet .beast-models-page .p8-provider-row strong,
+  #beastPageOutlet .beast-models-page .p8-provider-row small,
+  #beastPageOutlet .beast-models-page .p8-provider-row em {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #beastPageOutlet .beast-models-page .p8-provider-row em,
+  #beastPageOutlet .beast-models-page .p8-provider-row strong {
+    justify-self: end !important;
+    text-align: right !important;
+  }
+
+  /* Semantic map: smaller nodes and denser fit so overlaps calm down. */
+  #beastPageOutlet .beast-map-page .map-stage {
+    overflow: hidden !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-world {
+    transform-origin: 50% 50% !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node {
+    width: 94px !important;
+    min-height: 46px !important;
+    padding: 5px 7px !important;
+    grid-template-columns: 24px minmax(0, 1fr) !important;
+    gap: 5px !important;
+    border-radius: 7px !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node b {
+    max-width: 56px !important;
+    font-size: 7px !important;
+    line-height: 1.1 !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node small {
+    font-size: 6px !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  #beastPageOutlet .beast-map-page .map-node i {
+    right: 4px !important;
+    top: 4px !important;
+  }
+
+  /* Crystallization: fill the row better at desktop width. */
+  #beastPageOutlet .beast-crystal-page .crystal-main-grid {
+    grid-template-columns: minmax(300px, 0.86fr) minmax(480px, 1.34fr) minmax(320px, 1fr) !important;
+    gap: 18px !important;
+  }
+
+  #beastPageOutlet .beast-crystal-page .crystal-gates-panel {
+    min-width: 0 !important;
+  }
+
+  #beastPageOutlet .beast-crystal-page .crystal-selected-detail {
+    min-height: 250px !important;
+  }
+
+  /* Deploy: break up the samey vibe and kill the blocky strip feel. */
+  #beastPageOutlet .beast-deploy-page .p8-deploy-hero {
+    grid-template-columns: minmax(380px, 0.92fr) minmax(0, 1.08fr) !important;
+    gap: 18px !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track {
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(92, 229, 241, 0.06), transparent 28%),
+      radial-gradient(circle at 82% 74%, rgba(104, 245, 167, 0.05), transparent 24%),
+      linear-gradient(90deg, rgba(7, 18, 23, 0.98), rgba(7, 20, 28, 0.88) 42%, rgba(0, 0, 0, 0.98) 100%) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div {
+    min-height: 210px !important;
+    border-radius: 10px !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n + 1) {
+    background:
+      linear-gradient(155deg, rgba(14, 43, 49, 0.86) 0%, rgba(7, 18, 23, 0.88) 58%, rgba(0, 0, 0, 0.98) 100%) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n + 2) {
+    background:
+      linear-gradient(155deg, rgba(15, 36, 32, 0.84) 0%, rgba(8, 18, 20, 0.90) 56%, rgba(0, 0, 0, 0.98) 100%) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:nth-child(3n) {
+    background:
+      linear-gradient(155deg, rgba(37, 30, 14, 0.62) 0%, rgba(11, 18, 22, 0.90) 48%, rgba(0, 0, 0, 0.98) 100%) !important;
+  }
+
+  #beastPageOutlet .beast-deploy-page .p8-pipeline-track > div:not(:last-child)::after {
+    color: #77ffd0 !important;
+    text-shadow: 0 0 10px rgba(119, 255, 208, 0.54) !important;
+  }
+}

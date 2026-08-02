@@ -32,6 +32,8 @@
       dirtyPaths: [],
       recentFiles: [],
       split: false,
+      activeGroupId: 'group_primary',
+      editorGroups: null,
       explorerMode: 'tree',
       explorerTab: 'files',
       collapsedFolders: [],
@@ -78,6 +80,8 @@
       compute: { selectedFiles:0, readableFiles:0, sourceChars:0, suppliedChars:0, truncatedFiles:0, policy:'', kvCache:'', crystal:'', historyOriginalTokens:0, historyFinalTokens:0, historyChanged:false },
       sourcePlanReady: false,
       sourcePlanId: '',
+      activeRunId: '',
+      activeRunSequence: 0,
       updatedAt: 0
     },
 
@@ -113,6 +117,8 @@
       sessions: [],
       orchestrator: { label: 'Swarm unavailable', status: 'Unverified', health: 0 },
       handoffs: [],
+      swarmProof: { runId:'', status:'not reported', metrics:[], events:[], updatedAt:0 },
+      goldenPath: { status:'not run', timeline:[], result:null, updatedAt:0 },
       permissions: [],
       tools: [],
       lastRefreshAt: 0
@@ -385,31 +391,55 @@
   let state = structuredClone(initialState);
   const listeners = new Set();
   let pending = false;
+  let pendingHandle = 0;
+
+  function cloneContainer(value) {
+    if (Array.isArray(value)) return value.slice();
+    if (value && typeof value === 'object') return { ...value };
+    return value;
+  }
+
+  // Most UI updates touch one small branch. Clone only that path so telemetry
+  // cannot repeatedly copy editor buffers, chat history, and model metadata.
+  function clonePath(parts) {
+    const next = { ...state };
+    let source = state;
+    let target = next;
+    for (let index = 0; index < parts.length - 1; index += 1) {
+      const key = parts[index];
+      const child = cloneContainer(source?.[key]);
+      target[key] = child;
+      source = source?.[key];
+      target = child;
+    }
+    return { next, target };
+  }
 
   function emit() {
     if (pending) return;
     pending = true;
-    queueMicrotask(() => {
+    const flush = () => {
+      pendingHandle = 0;
       pending = false;
       listeners.forEach(listener => {
         try { listener(state); } catch (error) { console.error('[BEAST Store]', error); }
       });
       document.dispatchEvent(new CustomEvent('beast:state', { detail: state }));
-    });
+    };
+    if (typeof requestAnimationFrame === 'function') pendingHandle = requestAnimationFrame(flush);
+    else pendingHandle = setTimeout(flush, 16);
   }
 
   function get() { return state; }
 
   function set(path, value) {
     const parts = Array.isArray(path) ? path : String(path).split('.');
-    const next = structuredClone(state);
-    let cursor = next;
-    for (let index = 0; index < parts.length - 1; index += 1) {
-      const key = parts[index];
-      cursor[key] = cursor[key] ?? {};
-      cursor = cursor[key];
-    }
-    cursor[parts.at(-1)] = typeof value === 'function' ? value(cursor[parts.at(-1)], next) : value;
+    const { next, target } = clonePath(parts);
+    const key = parts.at(-1);
+    const previous = target?.[key];
+    const resolved = typeof value === 'function' ? value(previous, next) : value;
+    if (Object.is(previous, resolved)) return state;
+    target[key] = resolved;
     state = next;
     emit();
     return state;
@@ -417,13 +447,12 @@
 
   function patch(path, partial) {
     const parts = Array.isArray(path) ? path : String(path).split('.');
-    const next = structuredClone(state);
-    let cursor = next;
-    for (const key of parts) {
-      cursor[key] = cursor[key] ?? {};
-      cursor = cursor[key];
-    }
-    Object.assign(cursor, partial);
+    const { next, target } = clonePath(parts);
+    const key = parts.at(-1);
+    const current = cloneContainer(target[key]) || {};
+    if (partial && typeof partial === 'object' && Object.keys(partial).every(name => Object.is(current[name], partial[name]))) return state;
+    target[key] = current;
+    Object.assign(current, partial);
     state = next;
     emit();
     return state;

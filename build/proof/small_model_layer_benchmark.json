@@ -1,0 +1,469 @@
+{
+  "aggregate": {
+    "baseline": {
+      "avg_elapsed_ms": 0.0,
+      "avg_prompt_chars": 2800.0,
+      "provider_calls": 15,
+      "samples": 15
+    },
+    "compact": {
+      "avg_elapsed_ms": 0.03,
+      "avg_prompt_chars": 473.67,
+      "prompt_reduction_pct_vs_baseline": 83.08,
+      "provider_calls": 15,
+      "samples": 15
+    },
+    "crystal": {
+      "avg_elapsed_ms": 0.01,
+      "avg_prompt_chars": 0.0,
+      "provider_calls": 0,
+      "samples": 15
+    }
+  },
+  "beast_object_type": "small_model_layer_benchmark",
+  "claim_boundary": "This proves prompt and call reduction; model quality uplift requires live verified completion metrics.",
+  "live_model": false,
+  "model": "qwen2.5-coder:1.5b",
+  "repeats": 5,
+  "tasks": [
+    {
+      "lanes": {
+        "baseline": [
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 2657,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 2657,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 2657,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 2657,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 2657,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "compact": [
+          {
+            "elapsed_ms": 0.07,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 425,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.04,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 425,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.03,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 425,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 425,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 425,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "crystal": [
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 0,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 1,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 2,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 3,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 4,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          }
+        ]
+      },
+      "task": "invoice_percentage_discount"
+    },
+    {
+      "lanes": {
+        "baseline": [
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 2978,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 2978,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 2978,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 2978,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 2978,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "compact": [
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 541,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 541,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 541,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 541,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 541,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "crystal": [
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 0,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 1,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 2,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 3,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 4,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          }
+        ]
+      },
+      "task": "provider_registry_default"
+    },
+    {
+      "lanes": {
+        "baseline": [
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 2765,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 2765,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 2765,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 2765,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.0,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 2765,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "compact": [
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 0,
+            "prompt_chars": 455,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 1,
+            "prompt_chars": 455,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 2,
+            "prompt_chars": 455,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 3,
+            "prompt_chars": 455,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          },
+          {
+            "elapsed_ms": 0.02,
+            "error": "",
+            "iteration": 4,
+            "prompt_chars": 455,
+            "provider_called": true,
+            "usage": {
+              "offline": true
+            }
+          }
+        ],
+        "crystal": [
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 0,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 1,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 2,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 3,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          },
+          {
+            "elapsed_ms": 0.01,
+            "iteration": 4,
+            "prompt_chars": 0,
+            "provider_called": false,
+            "usage": {}
+          }
+        ]
+      },
+      "task": "api_model_resolution"
+    }
+  ],
+  "version": "1.0"
+}

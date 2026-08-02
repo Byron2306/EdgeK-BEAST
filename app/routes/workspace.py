@@ -147,6 +147,14 @@ def build_workspace_router(
     async def edgek_workspace_graph_stats():
         return workspace_graph_service.status()
 
+    @router.get("/edgek/workspace/graph")
+    async def edgek_workspace_graph(node_limit: int = 80, edge_limit: int = 160):
+        return await asyncio.to_thread(
+            workspace_graph.graph_snapshot,
+            node_limit=max(1, min(int(node_limit), 500)),
+            edge_limit=max(1, min(int(edge_limit), 1000)),
+        )
+
     @router.post("/edgek/workspace/index")
     async def edgek_workspace_index(payload: Dict[str, Any] = None):
         payload = payload or {}

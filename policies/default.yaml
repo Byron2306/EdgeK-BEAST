@@ -72,7 +72,9 @@ providers:
   ollama:
     enabled: true
     backend: "ollama"
-    base_url: "http://127.0.0.1:11434/v1"
+    # Ollama's native API is rooted at /api/*, not /v1/*.  The Pair
+    # Programmer uses this native lane through BEAST governance.
+    base_url: "http://127.0.0.1:11434"
     default_model: "qwen2.5-coder:1.5b"
     runtime_max_concurrent: 1
     runtime_timeout_seconds: 180

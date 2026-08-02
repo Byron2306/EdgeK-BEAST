@@ -74,7 +74,7 @@ The UI surfaces the decision action, source, confidence, avoided-token estimate,
 
 ## Main implementation points
 
-- `desktop-ide/renderer/js/beast-ai-coding.js` owns the copilot session and streaming client.
+- `desktop-ide/renderer/js/beast-ai-coding.js` is the public composition root; the 14 focused modules under `renderer/js/ai/` own client, state, events, context, approvals, tools, plans, verification, SourcePlan handoff, conversation rendering, modes, and budgets.
 - `desktop-ide/renderer/js/pages/beast-workspace-page.js` owns the editor-integrated panel.
 - `app/routes/ide.py` owns persistent agent SSE, multi-turn history, Action IR compilation, and SourcePlan events.
 - `app/cli/api.py` owns context-safe reuse-first streaming and response recording.

@@ -1,0 +1,42 @@
+{
+  "phase": 2,
+  "name": "Editor Cortex + SourcePlan Forge",
+  "legacy_sources": {
+    "app.js": [
+      "Monaco initialization",
+      "workspace persistence",
+      "file model ownership",
+      "governed file operations",
+      "SourcePlan draft/verify/apply"
+    ],
+    "index.html": [
+      "legacy workspace controls",
+      "duplicate SourcePlan page panels"
+    ]
+  },
+  "new_owners": {
+    "editor_models": "js/beast-editor-cortex.js",
+    "workspace_page": "js/pages/beast-workspace-page.js",
+    "sourceplan_page": "js/pages/beast-sourceplan-page.js",
+    "runtime_bridge": "js/beast-desktop-bridge.js",
+    "routing_and_commands": "js/beast-phase2-app.js"
+  },
+  "removed_patterns": [
+    "global Monaco instances in mega-controller",
+    "duplicate data-page-panel=source DOM",
+    "broad page visibility toggles",
+    "direct editor writes",
+    "multiple diff editor owners"
+  ],
+  "retained_contracts": [
+    "beastDesktop.status",
+    "beastDesktop.chooseWorkspace",
+    "beastDesktop.listFiles",
+    "beastDesktop.readFile",
+    "beastDesktop.fileOperation",
+    "/edgek/ide/sourceplan/from-editor",
+    "/edgek/ide/sourceplan/lifecycle",
+    "/edgek/sourceplan/verify",
+    "/edgek/sourceplan/apply"
+  ]
+}

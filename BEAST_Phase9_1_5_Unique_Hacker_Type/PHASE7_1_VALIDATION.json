@@ -1,0 +1,321 @@
+{
+  "phase": "7.1 Icon Containment & Global Page QA",
+  "status": "PASS",
+  "root_cause": "Context-blind auto icon injection prepended 512x512 PNGs without CSS or intrinsic dimensions into compact and structured buttons.",
+  "fixes": [
+    "Auto-injected icons receive immediate width and height locks before entering the DOM.",
+    "Structured grid controls and command chips are excluded from automatic injection.",
+    "Global button icon ceilings prevent natural-size PNG expansion.",
+    "Broken-image fallback icons are constrained to 20x20 pixels.",
+    "All 15 pages were audited at 1920x1080 and 1366x768."
+  ],
+  "static_validation": {
+    "javascript_files_checked": 32,
+    "javascript_failures": [],
+    "css_files_checked": 12,
+    "css_balance_failures": [],
+    "html": {
+      "index.html": {
+        "id_count": 14,
+        "duplicate_ids": []
+      },
+      "index-v2.html": {
+        "id_count": 14,
+        "duplicate_ids": []
+      },
+      "preview.html": {
+        "id_count": 14,
+        "duplicate_ids": []
+      }
+    },
+    "missing_local_references": []
+  },
+  "runtime_audit": {
+    "1920x1080": {
+      "browser_errors": [],
+      "random_oversized_icons": 0,
+      "horizontal_overflow_pages": [],
+      "invalid_outlet_pages": [],
+      "pages": {
+        "workspace": {
+          "visible_images": 20,
+          "auto_icons": 3,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "source": {
+          "visible_images": 21,
+          "auto_icons": 5,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "mission": {
+          "visible_images": 39,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "models": {
+          "visible_images": 34,
+          "auto_icons": 3,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "agents": {
+          "visible_images": 32,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "review": {
+          "visible_images": 32,
+          "auto_icons": 7,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "trust": {
+          "visible_images": 40,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "memory": {
+          "visible_images": 40,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "evidence": {
+          "visible_images": 40,
+          "auto_icons": 6,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "crystallization": {
+          "visible_images": 45,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "map": {
+          "visible_images": 46,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "terminal": {
+          "visible_images": 34,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "tooling": {
+          "visible_images": 37,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "doctor": {
+          "visible_images": 50,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        },
+        "settings": {
+          "visible_images": 18,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1920,
+          "viewport_width": 1920,
+          "outlet_children": 1
+        }
+      }
+    },
+    "1366x768": {
+      "browser_errors": [],
+      "random_oversized_icons": 0,
+      "horizontal_overflow_pages": [],
+      "invalid_outlet_pages": [],
+      "pages": {
+        "workspace": {
+          "visible_images": 20,
+          "auto_icons": 3,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "source": {
+          "visible_images": 21,
+          "auto_icons": 5,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "mission": {
+          "visible_images": 39,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "models": {
+          "visible_images": 34,
+          "auto_icons": 3,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "agents": {
+          "visible_images": 32,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "review": {
+          "visible_images": 32,
+          "auto_icons": 7,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "trust": {
+          "visible_images": 40,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "memory": {
+          "visible_images": 40,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "evidence": {
+          "visible_images": 40,
+          "auto_icons": 6,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "crystallization": {
+          "visible_images": 45,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "map": {
+          "visible_images": 46,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "terminal": {
+          "visible_images": 34,
+          "auto_icons": 4,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "tooling": {
+          "visible_images": 37,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "doctor": {
+          "visible_images": 50,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 1,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        },
+        "settings": {
+          "visible_images": 18,
+          "auto_icons": 2,
+          "random_oversized_icons": 0,
+          "intentional_large_emblems": 0,
+          "document_width": 1366,
+          "viewport_width": 1366,
+          "outlet_children": 1
+        }
+      }
+    }
+  }
+}

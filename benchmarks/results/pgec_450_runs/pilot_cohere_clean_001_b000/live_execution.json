@@ -1,0 +1,793 @@
+{
+  "compute_governor_receipts": [],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ac25dbc05b405e9caee5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 8326.359,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 216,
+      "provider_prompt_tokens": 354,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 570,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_a0af60c2af0ac2ca09e0.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3250.353,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 216,
+      "provider_prompt_tokens": 354,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 570,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_286cb6568ca92077bdf5.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4988.925,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 341,
+      "provider_prompt_tokens": 3881,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 4222,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [],
+  "families": [
+    "schema_validation"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    else:\n+        raise ValueError('No JSON object found in the input text')\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 8326.359,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 8326.359,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 663,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 216,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 354,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 570
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\n\\ndef parse_provider_output(text):\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    else:\\n        raise ValueError('No JSON object found in the input text')\",\n      \"why\": \"Ensure JSON extraction from markdown/prose and handle failure cases\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_hidden_parse_provider_output_returns_empty_for_prose ___________\n\n    def test_hidden_parse_provider_output_returns_empty_for_prose():\n>       assert parse_provider_output(\"not json\") == {}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_output_guard_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntext = 'not json'\n\n    def parse_provider_output(text):\n        match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n        if match:\n            return json.loads(match.group(1))\n        else:\n>           raise ValueError('No JSON object found in the input text')\nE           ValueError: No JSON object found in the input text\n\napp/output_guard.py:10: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.04s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 216,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 570
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,10 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if match:\n+        return json.loads(match.group(1))\n+    else:\n+        raise ValueError('No JSON object found in the input text')\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 3250.353,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3250.353,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 663,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 216,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 354,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 570
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/output_guard.py\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\",\n      \"new\": \"import json\\nimport re\\n\\n\\ndef parse_provider_output(text):\\n    match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if match:\\n        return json.loads(match.group(1))\\n    else:\\n        raise ValueError('No JSON object found in the input text')\",\n      \"why\": \"Ensure JSON extraction from markdown/prose and handle failure cases\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n__________ test_hidden_parse_provider_output_returns_empty_for_prose ___________\n\n    def test_hidden_parse_provider_output_returns_empty_for_prose():\n>       assert parse_provider_output(\"not json\") == {}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_output_guard_hidden.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntext = 'not json'\n\n    def parse_provider_output(text):\n        match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n        if match:\n            return json.loads(match.group(1))\n        else:\n>           raise ValueError('No JSON object found in the input text')\nE           ValueError: No JSON object found in the input text\n\napp/output_guard.py:10: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\n1 failed, 1 passed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 216,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 570
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -2,4 +2,9 @@\n \n \n def parse_provider_output(text):\n+    import re\n+    json_match = re.search(r'```json\\n(.*?)\\n```', text, re.DOTALL)\n+    if json_match:\n+        return json.loads(json_match.group(1))\n+    return {}\n     return json.loads(text)\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4988.925,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4988.925,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 815,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 341,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 3881,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4222
+        }
+      },
+      "prompt_tokens": 3080,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Handle JSON extraction from markdown/prose\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A2\"\n      },\n      \"new\": \"def parse_provider_output(text):\\n    import re\\n    json_match = re.search(r'```json\\\\n(.*?)\\\\n```', text, re.DOTALL)\\n    if json_match:\\n        return json.loads(json_match.group(1))\\n    return {}\"\n    }\n  ],\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"handoff_hash\": \"sha256:4dfc7596ea94a397a79139f2e4f5161b3e83f856fd47d19d8969ba1a0bb5e4cd\",\n  \"provider_handoff_hash\": \"sha256:4dfc7596ea94a397a79139f2e4f5161b3e83f856fd47d19d8969ba1a0bb5e4cd\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 341,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 3881,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4222
+      }
+    }
+  ],
+  "mutation_recovery_cases": [],
+  "occurrences": [
+    1
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:13:30Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 8326.359,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 216,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 354,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_ac25dbc05b405e9caee5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 570,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T19:13:30Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 3250.353,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 216,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 354,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_a0af60c2af0ac2ca09e0",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 570,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T19:13:30Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 4988.925,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 341,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3881,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_286cb6568ca92077bdf5",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 4222,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "cohere": {
+      "live_failures_by_bucket": {
+        "capability_failure": 2,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "cohere": {
+          "avg_latency_ms": 4988.925,
+          "avg_provider_tokens_per_success": 4222.0,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 0.6481666666666667,
+            "hidden_test_pass_rate": 0.3333,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 0.958425625,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.3333
+          },
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.6782,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "cohere": {
+          "average_latency_ms": 5521.879,
+          "average_provider_prompt_tokens": 1529.667,
+          "canonicalized": 0,
+          "clean_completed": 1,
+          "clean_to_rescue_ratio": "inf",
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_cohere_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "output_governance_malformed_json"
+            },
+            {
+              "lane": "live_cohere_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "output_governance_malformed_json"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 1,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.3333,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 4988.925,
+          "local_verifier_repaired": 0,
+          "provider_tokens_per_verified_fix": 4222.0,
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "repair_attempted": 0,
+          "rescue_rate": 0.0,
+          "rescued_completed": 0,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 1,
+          "visible_clean_rate": 0.3333,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "cohere"
+  ],
+  "raw_live_result_count": 3,
+  "resume_source": null
+}

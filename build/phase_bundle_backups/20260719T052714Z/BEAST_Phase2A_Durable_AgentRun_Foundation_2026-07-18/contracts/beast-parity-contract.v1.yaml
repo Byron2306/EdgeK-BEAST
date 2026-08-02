@@ -1,0 +1,201 @@
+contract_id: beast.parity.v1
+schema_version: 1
+product: BEAST IDE
+published_at: '2026-07-18'
+definition: >-
+  A capability is complete only when its user surface, bounded contract,
+  automated acceptance, and required operational proof are all current for
+  the release commit.
+verification_classes:
+  structural:
+    description: Static wiring, schema, syntax, and ownership checks.
+  local_live:
+    description: Real execution against a disposable local runtime or repository.
+  external_live:
+    description: Real execution against configured SSH, container, provider, or network targets.
+  soak:
+    description: Long-duration, recovery, load, and interruption testing.
+release_rules:
+  required_tiers: [P1, P2, P3, P4, P5]
+  no_silent_target_fallback: true
+  no_unapproved_workspace_mutation: true
+  evidence_required_for_mutation: true
+  unsupported_surfaces_must_be_declared: true
+tiers:
+  P1:
+    name: Daily-driver parity
+    release_requirement: all_required
+  P2:
+    name: Protocol parity
+    release_requirement: published_matrix
+  P3:
+    name: Operational parity
+    release_requirement: required_environments
+  P4:
+    name: Extension compatibility
+    release_requirement: published_subset
+  P5:
+    name: BEAST superiority
+    release_requirement: mandatory
+capabilities:
+  - id: editor.workspace.open
+    tier: P1
+    owner: desktop.workspace
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: editor.file.edit-save
+    tier: P1
+    owner: desktop.workspace
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: editor.search-replace-preview
+    tier: P1
+    owner: desktop.workspace
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: git.working-tree-index
+    tier: P1
+    owner: desktop.git
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: git.hunk-stage
+    tier: P1
+    owner: desktop.git
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: git.merge-conflict
+    tier: P1
+    owner: desktop.git
+    targets: [local, ssh, devcontainer]
+    status: partial
+    verification: [structural, local_live]
+  - id: terminal.pty
+    tier: P1
+    owner: desktop.terminal
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: tasks.run-cancel
+    tier: P1
+    owner: desktop.tasks
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: tests.discover-run
+    tier: P1
+    owner: desktop.tests
+    targets: [local, ssh, devcontainer]
+    status: partial
+    verification: [structural, local_live]
+  - id: debug.launch
+    tier: P2
+    owner: desktop.dap
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: debug.attach
+    tier: P2
+    owner: desktop.dap
+    targets: [local, ssh, devcontainer]
+    status: partial
+    verification: [structural, local_live]
+  - id: lsp.core-navigation
+    tier: P2
+    owner: desktop.lsp
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: lsp.refactor-preview
+    tier: P2
+    owner: desktop.lsp
+    targets: [local, ssh, devcontainer]
+    status: partial
+    verification: [structural, local_live]
+  - id: notebooks.python-kernel
+    tier: P2
+    owner: desktop.notebook
+    targets: [local]
+    status: operational
+    verification: [structural, local_live]
+  - id: targets.ssh
+    tier: P3
+    owner: desktop.execution-target
+    targets: [ssh]
+    status: partial
+    verification: [structural, external_live, soak]
+  - id: targets.devcontainer
+    tier: P3
+    owner: desktop.execution-target
+    targets: [devcontainer]
+    status: partial
+    verification: [structural, external_live, soak]
+  - id: extensions.declarative
+    tier: P4
+    owner: desktop.extensions
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: extensions.executable-sandbox
+    tier: P4
+    owner: desktop.extensions
+    targets: [local, ssh, devcontainer]
+    status: partial
+    verification: [structural, local_live, soak]
+  - id: agent.ask
+    tier: P5
+    owner: backend.agent-runtime
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: agent.edit-sourceplan
+    tier: P5
+    owner: backend.agent-runtime
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: agent.durable-run
+    tier: P5
+    owner: backend.agent-runtime
+    targets: [local, ssh, devcontainer]
+    status: planned
+    verification: [structural, local_live, external_live, soak]
+  - id: agent.worktree-repair-loop
+    tier: P5
+    owner: backend.agent-runtime
+    targets: [local, ssh, devcontainer]
+    status: planned
+    verification: [structural, local_live, external_live]
+  - id: agent.durable-approval
+    tier: P5
+    owner: backend.capability-plane
+    targets: [local, ssh, devcontainer]
+    status: planned
+    verification: [structural, local_live, soak]
+  - id: agent.real-cancellation
+    tier: P5
+    owner: backend.agent-runtime
+    targets: [local, ssh, devcontainer]
+    status: planned
+    verification: [structural, local_live, external_live]
+  - id: evidence.mutation-chain
+    tier: P5
+    owner: backend.evidence
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+  - id: crystals.verified-reuse
+    tier: P5
+    owner: backend.crystal-runtime
+    targets: [local, ssh, devcontainer]
+    status: operational
+    verification: [structural, local_live]
+non_goals:
+  - Every undocumented VS Code internal behaviour.
+  - Compatibility with every Marketplace extension.
+  - Silent fallback from remote to local execution.
+  - Direct model authority to promote a SourcePlan or push a remote.

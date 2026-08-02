@@ -1,0 +1,79 @@
+{
+  "phase": 6,
+  "name": "Mission Map and Crystallization Chamber",
+  "status": "passed",
+  "static": {
+    "javascript_files_checked": 25,
+    "javascript_syntax_failures": [],
+    "duplicate_html_ids": [],
+    "missing_local_references": [],
+    "runtime_svg_references": [],
+    "page_outlets": 1,
+    "context_rails": 1,
+    "mascot_roots": 1,
+    "legacy_scripts_loaded": [],
+    "obsolete_phase5_app_present_on_disk": false,
+    "phase6_app_owners": 1,
+    "map_renderer_owners": 1,
+    "crystallization_renderer_owners": 1,
+    "map_crystal_bridge_owners": 1,
+    "pulsing_edge_keyframes": 7,
+    "reduced_motion_rule": true,
+    "agent_control_png_icons": {
+      "Refresh": true,
+      "Assign Agent": true,
+      "Sync": true,
+      "Pause": true,
+      "Resume": true,
+      "Cancel": true
+    }
+  },
+  "runtime_summary": {
+    "cases_tested": 6,
+    "routes_tested": [
+      "crystallization",
+      "map"
+    ],
+    "viewports_tested": [
+      [
+        1366,
+        768
+      ],
+      [
+        1600,
+        1000
+      ]
+    ],
+    "zoom_levels_tested": [
+      1.0,
+      1.25,
+      1.5
+    ],
+    "uncaught_page_errors": 0,
+    "horizontal_overflow_cases": 0,
+    "single_page_outlet_cases": 6,
+    "scroll_contract": "content exceeded the viewport where required while the document width remained bounded"
+  },
+  "asset_and_polish": {
+    "runtime_svg_references": 0,
+    "premium_png_agent_actions": [
+      "Refresh",
+      "Assign Agent",
+      "Sync",
+      "Pause",
+      "Resume",
+      "Cancel"
+    ],
+    "pulsing_hacker_edge_keyframes": 7,
+    "reduced_motion_supported": true,
+    "map_edge_renderer": "Canvas 2D",
+    "map_node_renderer": "HTML layer",
+    "crystal_reactor": "CSS geometry + PNG effect overlays"
+  },
+  "previews": {
+    "map": "PHASE6_MAP_PREVIEW.png",
+    "crystallization": "PHASE6_CRYSTAL_PREVIEW.png",
+    "overview": "PHASE6_VISUAL_OVERVIEW.png"
+  },
+  "production_boundary": "Electron preload and live BEAST gateway acceptance remains required."
+}

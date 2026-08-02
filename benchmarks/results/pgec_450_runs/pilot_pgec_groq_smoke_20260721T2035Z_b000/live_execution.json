@@ -1,0 +1,3819 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 471,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:34:32Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_eb0555617233b192c467",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_ad2959ad3ee2b091.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "groq",
+      "source_task_ids": [
+        "schema_validation_o01_v1",
+        "schema_validation_o02_v1"
+      ],
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 471,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:35:00Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_5612e7e8011207b02ace",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_810153eaf1902e18",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_810153eaf1902e18.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "groq",
+      "source_task_ids": [
+        "schema_validation_o01_v1",
+        "schema_validation_o02_v1"
+      ],
+      "task_id": "schema_validation_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_3e43e69fb6d899a838b0.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 5586.446,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_261d96eff031dc8c858a.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 446.099,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_6875a7cd2bf8567bb6d3.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 864.478,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_groq_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 3503,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e9a424fd083ac1e535b1.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 425.402,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b3ead2204e22ff90e42b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 416.082,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b4e6f47534c48f6e67df.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 847.434,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_groq_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 3503,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_39397c0d9af79d678c1b.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 409.604,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_557b9e3a72414dbb4e24.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 444.156,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_eb0555617233b192c467.json"
+      },
+      "avoided_tokens_estimate": 471,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "source_provider": "groq",
+      "status": "completed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c157587532745afb785c.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 448.528,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9a9b1c5b4afda5e1351a.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 426.612,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_5612e7e8011207b02ace.json"
+      },
+      "avoided_tokens_estimate": 471,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "groq",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_810153eaf1902e18",
+      "source_provider": "groq",
+      "status": "completed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e9073a8629fd28c8df4d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 457.273,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ca79760d54bc59dd38ea.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 425.666,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_groq_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 471,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_f8b8bddf23d9e4072ad5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 815.347,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_groq_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 3503,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:d57a1653d13a019b47f891c13a5b3e29df18c2aeefe453345914fcb1a179be00",
+      "applicability_fingerprint": "sha256:23c5860b14fa5f3484e1db715876d8848b912b34812ffd00c7594ef3c7066d72",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:6d8a5dce9eadbe1d2b4284b24e0f257087a87bb3cb19060fee45454ba578d37c",
+      "applicability_fingerprint": "sha256:f6bb360e1bf13049c2a229d92af4fb1107ef9dda61ef111537efe5bd916f74ea",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_261d96eff031dc8c858a.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:35705db842a57409926ec7135177002e55d29dd150aa1a279859f8b3f3048759",
+      "applicability_fingerprint": "sha256:49a997f09f66a98847a11d81f8f96eaaa7036b7a8e4a9f600a72a5d407d0f95e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_261d96eff031dc8c858a.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:867acc160a026d936669c07f5b2129d817876563b43be9d7ffa264b48195e8be",
+      "applicability_fingerprint": "sha256:23c5860b14fa5f3484e1db715876d8848b912b34812ffd00c7594ef3c7066d72",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:4c3c36baa059f432cc5bb67baa43e7bdf384f5fa7324b0ce4f5fe81b502ded81",
+      "applicability_fingerprint": "sha256:f6bb360e1bf13049c2a229d92af4fb1107ef9dda61ef111537efe5bd916f74ea",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b3ead2204e22ff90e42b.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:b539a122f48ad60033f37bb54df46a51d0d78c16424c3721d1511f3c1f810aa3",
+      "applicability_fingerprint": "sha256:49a997f09f66a98847a11d81f8f96eaaa7036b7a8e4a9f600a72a5d407d0f95e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_b3ead2204e22ff90e42b.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3"
+      ],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:46abd4acac59d9aafeeac8fd61195dce50e1ece34a1306c0c26992328767108e",
+      "applicability_fingerprint": "sha256:23c5860b14fa5f3484e1db715876d8848b912b34812ffd00c7594ef3c7066d72",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:e43b2e54604eda42758a79e6e933b5c677e9cdc3f6640807883071b32a7c505e",
+      "applicability_fingerprint": "sha256:f6bb360e1bf13049c2a229d92af4fb1107ef9dda61ef111537efe5bd916f74ea",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_557b9e3a72414dbb4e24.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:01dd0127df5564bb3a1f2db9d530445211e76a6b85aef4d7b21f7edc636b8f30",
+      "applicability_fingerprint": "sha256:49a997f09f66a98847a11d81f8f96eaaa7036b7a8e4a9f600a72a5d407d0f95e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_557b9e3a72414dbb4e24.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3"
+      ],
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:96a04a7df706913b24e35cb45a5a14e0a0205a37d442c119a9d75c6e153e9389",
+      "applicability_fingerprint": "sha256:23c5860b14fa5f3484e1db715876d8848b912b34812ffd00c7594ef3c7066d72",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:8ccf181f57dfee6e73d6d6b5864a024a5a0855e768c242fab44fd796e54c1581",
+      "applicability_fingerprint": "sha256:f6bb360e1bf13049c2a229d92af4fb1107ef9dda61ef111537efe5bd916f74ea",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9a9b1c5b4afda5e1351a.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:26ff86bcd6890f0e9f3412f3ac5571ef37299c45f253a71d5f1798a8aa2814ce",
+      "applicability_fingerprint": "sha256:49a997f09f66a98847a11d81f8f96eaaa7036b7a8e4a9f600a72a5d407d0f95e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9a9b1c5b4afda5e1351a.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3"
+      ],
+      "provider": "groq",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:23446b01da762e7b32496a1290a863f4b085751e3c6cdfbaa9c384322a502585",
+      "applicability_fingerprint": "sha256:23c5860b14fa5f3484e1db715876d8848b912b34812ffd00c7594ef3c7066d72",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:f64012db1b6ed89743c0b9a41d3b36d13f18601b6b9b8c2a3f923942944dcb3b",
+      "applicability_fingerprint": "sha256:f6bb360e1bf13049c2a229d92af4fb1107ef9dda61ef111537efe5bd916f74ea",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:d7351f4e396238bdbceed5bc04a4c1fe7f6077af59ad045fa81deb25ab1d2c67",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ca79760d54bc59dd38ea.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:454d2a281344476da2e43a332dc9a1b4fb572dde065a8ead09178fbbe1091bcc",
+      "applicability_fingerprint": "sha256:49a997f09f66a98847a11d81f8f96eaaa7036b7a8e4a9f600a72a5d407d0f95e",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ca79760d54bc59dd38ea.json"
+      },
+      "family": "schema_validation",
+      "family_fingerprint": "sha256:5cba415f0e5888ba9e7da04bd48ff5008e6ae4300df7eba5fe38c26e78e2d4c6",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:07e59c97b2fc06b280d2d145ea334127fc2980061b9efebcfe73f9d35eb567b3"
+      ],
+      "provider": "groq",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:34198dc2636825d4ae50df51b1e9b1d9998e06e7b13a15904df179dbc4a12059",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "groq",
+      "tool_schema_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:34:32Z",
+      "cross_provider_reuse": false,
+      "family": "schema_validation",
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "occurrence": 3,
+      "provider": "groq",
+      "receipt_id": "mega_cg_eb0555617233b192c467",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "groq",
+      "state": "validated_first_recurrence",
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:35:00Z",
+      "cross_provider_reuse": false,
+      "family": "schema_validation",
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "occurrence": 5,
+      "provider": "groq",
+      "receipt_id": "mega_cg_5612e7e8011207b02ace",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "groq",
+      "state": "active_recurrence",
+      "task_id": "schema_validation_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "schema_validation"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 5586.446,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 5586.446,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.134214127,
+          "completion_tokens": 128,
+          "prompt_time": 0.01887218,
+          "prompt_tokens": 343,
+          "queue_time": 0.017375445,
+          "total_time": 0.153086307,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fa27c3fb0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.09s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.134214127,
+        "completion_tokens": 128,
+        "prompt_time": 0.01887218,
+        "prompt_tokens": 343,
+        "queue_time": 0.017375445,
+        "total_time": 0.153086307,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 446.099,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 446.099,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.141203399,
+          "completion_tokens": 128,
+          "prompt_time": 0.020313087,
+          "prompt_tokens": 343,
+          "queue_time": 0.048367109,
+          "total_time": 0.161516486,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f9e058c30e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.141203399,
+        "completion_tokens": 128,
+        "prompt_time": 0.020313087,
+        "prompt_tokens": 343,
+        "queue_time": 0.048367109,
+        "total_time": 0.161516486,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": 864.478,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "action a1 makes no material source change",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "action a1 makes no material source change",
+        "json_parse_ok": true,
+        "latency_ms": 864.478,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: action a1 makes no material source change",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "action a1 makes no material source change"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 1077,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.369051652,
+          "completion_tokens": 348,
+          "prompt_time": 0.208212052,
+          "prompt_tokens": 3155,
+          "queue_time": 0.026574982,
+          "total_time": 0.577263704,
+          "total_tokens": 3503
+        }
+      },
+      "prompt_tokens": 3079,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"import json\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"def parse_provider_output(text):\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"    return json.loads(text)\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"ask_for_context if refs cannot be resolved\",\n  \"handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"short objective\",\n  \"provider_handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.04s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.369051652,
+        "completion_tokens": 348,
+        "prompt_time": 0.208212052,
+        "prompt_tokens": 3155,
+        "queue_time": 0.026574982,
+        "total_time": 0.577263704,
+        "total_tokens": 3503
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 425.402,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 425.402,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.138701596,
+          "completion_tokens": 128,
+          "prompt_time": 0.022056543,
+          "prompt_tokens": 343,
+          "queue_time": 0.018653708,
+          "total_time": 0.160758139,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fb7f921b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.14s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.138701596,
+        "completion_tokens": 128,
+        "prompt_time": 0.022056543,
+        "prompt_tokens": 343,
+        "queue_time": 0.018653708,
+        "total_time": 0.160758139,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 416.082,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 416.082,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.13511102,
+          "completion_tokens": 128,
+          "prompt_time": 0.019054638,
+          "prompt_tokens": 343,
+          "queue_time": 0.018528736,
+          "total_time": 0.154165658,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fb06189b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.10s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.13511102,
+        "completion_tokens": 128,
+        "prompt_time": 0.019054638,
+        "prompt_tokens": 343,
+        "queue_time": 0.018528736,
+        "total_time": 0.154165658,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": 847.434,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "action a1 makes no material source change",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "action a1 makes no material source change",
+        "json_parse_ok": true,
+        "latency_ms": 847.434,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: action a1 makes no material source change",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "action a1 makes no material source change"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 1077,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.366251524,
+          "completion_tokens": 348,
+          "prompt_time": 0.211932383,
+          "prompt_tokens": 3155,
+          "queue_time": 0.021898335,
+          "total_time": 0.578183907,
+          "total_tokens": 3503
+        }
+      },
+      "prompt_tokens": 3079,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"import json\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"def parse_provider_output(text):\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"    return json.loads(text)\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"ask_for_context if refs cannot be resolved\",\n  \"handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"short objective\",\n  \"provider_handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.03s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.366251524,
+        "completion_tokens": 348,
+        "prompt_time": 0.211932383,
+        "prompt_tokens": 3155,
+        "queue_time": 0.021898335,
+        "total_time": 0.578183907,
+        "total_tokens": 3503
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 409.604,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 409.604,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.135419523,
+          "completion_tokens": 128,
+          "prompt_time": 0.019105415,
+          "prompt_tokens": 343,
+          "queue_time": 0.018709703,
+          "total_time": 0.154524938,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f65136bf0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.13s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.135419523,
+        "completion_tokens": 128,
+        "prompt_time": 0.019105415,
+        "prompt_tokens": 343,
+        "queue_time": 0.018709703,
+        "total_time": 0.154524938,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 444.156,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 444.156,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.140441718,
+          "completion_tokens": 128,
+          "prompt_time": 0.020747404,
+          "prompt_tokens": 343,
+          "queue_time": 0.018541829,
+          "total_time": 0.161189122,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fa300c870e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.11s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.140441718,
+        "completion_tokens": 128,
+        "prompt_time": 0.020747404,
+        "prompt_tokens": 343,
+        "queue_time": 0.018541829,
+        "total_time": 0.161189122,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 448.528,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 448.528,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.141438939,
+          "completion_tokens": 128,
+          "prompt_time": 0.049103185,
+          "prompt_tokens": 343,
+          "queue_time": 0.019248334,
+          "total_time": 0.190542124,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fec9e44f0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.08s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.141438939,
+        "completion_tokens": 128,
+        "prompt_time": 0.049103185,
+        "prompt_tokens": 343,
+        "queue_time": 0.019248334,
+        "total_time": 0.190542124,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 426.612,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 426.612,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.136338416,
+          "completion_tokens": 128,
+          "prompt_time": 0.022728141,
+          "prompt_tokens": 343,
+          "queue_time": 0.019654402,
+          "total_time": 0.159066557,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f17bd45b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.14s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.136338416,
+        "completion_tokens": 128,
+        "prompt_time": 0.022728141,
+        "prompt_tokens": 343,
+        "queue_time": 0.019654402,
+        "total_time": 0.159066557,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_raw",
+      "latency_ms": 457.273,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 457.273,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.141174173,
+          "completion_tokens": 128,
+          "prompt_time": 0.020185088,
+          "prompt_tokens": 343,
+          "queue_time": 0.04798432,
+          "total_time": 0.161359261,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fcd246570e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.13s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.141174173,
+        "completion_tokens": 128,
+        "prompt_time": 0.020185088,
+        "prompt_tokens": 343,
+        "queue_time": 0.04798432,
+        "total_time": 0.161359261,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_groq_schema_only",
+      "latency_ms": 425.666,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "operations[0].content was empty",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": true,
+        "latency_ms": 425.666,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "operations[0].content was empty"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 490,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.141271074,
+          "completion_tokens": 128,
+          "prompt_time": 0.028288892,
+          "prompt_tokens": 343,
+          "queue_time": 0.01942421,
+          "total_time": 0.169559966,
+          "total_tokens": 471
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"create_or_replace\",\n      \"path\": \"app/output_guard.py\",\n      \"new\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    try:\\n        return json.loads(text)\\n    except json.JSONDecodeError:\\n        return {}\\n\",\n      \"old\": \"import json\\n\\n\\ndef parse_provider_output(text):\\n    return json.loads(text)\\n\",\n      \"why\": \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n    }\n  ]\n}",
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f774882b0e0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.141271074,
+        "completion_tokens": 128,
+        "prompt_time": 0.028288892,
+        "prompt_tokens": 343,
+        "queue_time": 0.01942421,
+        "total_time": 0.169559966,
+        "total_tokens": 471
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_groq_full_beast",
+      "latency_ms": 815.347,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "action a1 makes no material source change",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "action a1 makes no material source change",
+        "json_parse_ok": true,
+        "latency_ms": 815.347,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: action a1 makes no material source change",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "action a1 makes no material source change"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "groq",
+        "raw_chars": 1077,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_time": 0.364607373,
+          "completion_tokens": 348,
+          "prompt_time": 0.184795658,
+          "prompt_tokens": 3155,
+          "queue_time": 0.020610359,
+          "total_time": 0.549403031,
+          "total_tokens": 3503
+        }
+      },
+      "prompt_tokens": 3079,
+      "provider": "groq",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"import json\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"def parse_provider_output(text):\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a3\",\n      \"intent\": \"short intended local change\",\n      \"new\": \"    return json.loads(text)\",\n      \"target\": {\n        \"anchor_ref\": \"A3\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"ask_for_context if refs cannot be resolved\",\n  \"handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"short objective\",\n  \"provider_handoff_hash\": \"sha256:ff4a7e4b5f13515626d4cc59ea57366499a11e39c902152a795c3dd60bc62110\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.04s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_time": 0.364607373,
+        "completion_tokens": 348,
+        "prompt_time": 0.184795658,
+        "prompt_tokens": 3155,
+        "queue_time": 0.020610359,
+        "total_time": 0.549403031,
+        "total_tokens": 3503
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "targets:app/output_guard.py:semantic_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:93180075cbda5db9ca9e998725e5007415147b88878c4ebb63bc30c3bebff785",
+            "semantic_hash": "sha256:3136140afd67e66e715da1a5ceaf1aba596ad67e49ac582a973173cac7088052",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+      "mutation_type": "target_semantic_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "provider": "groq",
+      "recovered_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "targets:app/output_guard.py:semantic_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:33:14Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 5586.446,
+      "live_lane": "live_groq_raw",
+      "mega_lane": "raw",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_3e43e69fb6d899a838b0",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:33:16Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 446.099,
+      "live_lane": "live_groq_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_261d96eff031dc8c858a",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:33:17Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 864.478,
+      "live_lane": "live_groq_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 1,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "receipt_id": "mega_provider_call_6875a7cd2bf8567bb6d3",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 3503,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:24Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 425.402,
+      "live_lane": "live_groq_raw",
+      "mega_lane": "raw",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_e9a424fd083ac1e535b1",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 416.082,
+      "live_lane": "live_groq_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_b3ead2204e22ff90e42b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:34:26Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 847.434,
+      "live_lane": "live_groq_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 2,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "receipt_id": "mega_provider_call_b4e6f47534c48f6e67df",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 3503,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:30Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 409.604,
+      "live_lane": "live_groq_raw",
+      "mega_lane": "raw",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_39397c0d9af79d678c1b",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:31Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 444.156,
+      "live_lane": "live_groq_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 3,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_557b9e3a72414dbb4e24",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:57Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 448.528,
+      "live_lane": "live_groq_raw",
+      "mega_lane": "raw",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 5,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_c157587532745afb785c",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:34:59Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 426.612,
+      "live_lane": "live_groq_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 5,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_9a9b1c5b4afda5e1351a",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:35:57Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 457.273,
+      "live_lane": "live_groq_raw",
+      "mega_lane": "raw",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_e9073a8629fd28c8df4d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:35:58Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 425.666,
+      "live_lane": "live_groq_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 128,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 343,
+      "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+      "receipt_id": "mega_provider_call_ca79760d54bc59dd38ea",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 471,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.groq.com/openai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:35:59Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 815.347,
+      "live_lane": "live_groq_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "llama-3.1-8b-instant",
+      "occurrence": 10,
+      "provider": "groq",
+      "provider_completion_tokens": 348,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 3155,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: action a1 makes no material source change",
+      "receipt_id": "mega_provider_call_f8b8bddf23d9e4072ad5",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 3503,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "groq": {
+      "live_failures_by_bucket": {
+        "capability_failure": 13,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "groq": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 0.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 0.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.25,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "groq": {
+          "average_latency_ms": 566.095,
+          "average_provider_prompt_tokens": 1280.333,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_groq_raw",
+              "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+              "task": "output_governance_malformed_json"
+            },
+            {
+              "lane": "live_groq_schema_only",
+              "reason": "live provider failed or produced invalid scoped edit: operations[0].content was empty",
+              "task": "output_governance_malformed_json"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 815.347,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 3503.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 1,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "groq"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": null
+}

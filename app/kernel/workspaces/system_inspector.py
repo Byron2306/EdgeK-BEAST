@@ -955,12 +955,66 @@ def catalog_report(root: Optional[Path] = None) -> Dict[str, Any]:
 # Aggregate snapshot
 # --------------------------------------------------------------------------------------
 
+def _resource_telemetry() -> Dict[str, Any]:
+    """Return cheap host metrics without making psutil a hard dependency."""
+    resources: Dict[str, Any] = {}
+
+    try:
+        if psutil is not None:
+            resources["cpu"] = {"percent": round(float(psutil.cpu_percent(interval=0.05)), 1), "available": True, "source": "psutil"}
+        else:
+            load = float(os.getloadavg()[0]) if hasattr(os, "getloadavg") else 0.0
+            count = max(1, int(os.cpu_count() or 1))
+            resources["cpu"] = {"percent": round(min(100.0, load / count * 100.0), 1), "available": True, "source": "/proc/loadavg"}
+    except Exception:
+        resources["cpu"] = {"percent": 0.0, "available": False, "source": "unavailable"}
+
+    try:
+        values: Dict[str, int] = {}
+        meminfo = Path("/proc/meminfo")
+        if meminfo.exists():
+            for line in meminfo.read_text(encoding="utf-8", errors="replace").splitlines():
+                key, _, value = line.partition(":")
+                if key in {"MemTotal", "MemAvailable"}:
+                    values[key] = int(value.strip().split()[0])
+        total = values.get("MemTotal", 0)
+        available = values.get("MemAvailable", 0)
+        used = max(0, total - available)
+        resources["memory"] = {"percent": round(used / total * 100.0, 1) if total else 0.0, "available": bool(total), "source": "/proc/meminfo"}
+    except Exception:
+        resources["memory"] = {"percent": 0.0, "available": False, "source": "unavailable"}
+
+    try:
+        stat = os.statvfs("/")
+        total = int(stat.f_blocks * stat.f_frsize)
+        free = int(stat.f_bavail * stat.f_frsize)
+        resources["disk"] = {"percent": round((total - free) / total * 100.0, 1) if total else 0.0, "available": bool(total), "source": "statvfs"}
+    except Exception:
+        resources["disk"] = {"percent": 0.0, "available": False, "source": "unavailable"}
+
+    # Network throughput is not a health percentage; expose interface presence
+    # as a non-misleading availability signal rather than inventing traffic.
+    try:
+        interfaces = [name for name in os.listdir("/sys/class/net") if name != "lo"]
+        resources["network"] = {
+            "percent": None,
+            "health_percent": None,
+            "available": bool(interfaces),
+            "measurement": "interface_presence_only",
+            "source": "/sys/class/net",
+            "interfaces": interfaces[:20],
+        }
+    except Exception:
+        resources["network"] = {"percent": None, "health_percent": None, "available": False, "measurement": "unavailable", "source": "unavailable", "interfaces": []}
+    return resources
+
 def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30, process_query: str = "") -> Dict[str, Any]:
     ports = list_listening_ports(limit=port_limit)
     processes = list_processes(query=process_query, limit=process_limit)
     environment = environment_report(root)
     packages = package_report(root)
     extensions = extensions_report(root)
+    resources = _resource_telemetry()
     return {
         "ok": True,
         "beast_object_type": "beast_ide_system_snapshot",
@@ -984,6 +1038,7 @@ def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30
             "python_dependencies": packages.get("python", {}).get("declared_count", 0),
             "node_manifests": len(packages.get("node", {}).get("manifests", []) or []),
             "vscode_commands": extensions.get("vscode_extension", {}).get("command_count", 0),
+            "resources": resources,
         },
         "ports": ports,
         "processes": processes,

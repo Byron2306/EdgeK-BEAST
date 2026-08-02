@@ -10,10 +10,15 @@
       result=await renderer({page,signal:controller.signal,revision:myRevision,options});
       if(myRevision!==revision||controller.signal.aborted){result?.dispose?.();return false}
       disposeActive?.();disposeActive=null;
-      if(typeof result==='string')outlet.innerHTML=result;
-      else if(result instanceof Node)outlet.replaceChildren(result);
-      else if(result?.node instanceof Node){outlet.replaceChildren(result.node);disposeActive=typeof result.dispose==='function'?result.dispose:null}
-      else outlet.replaceChildren();
+      // Force a real compositor handoff. A replaceChildren() alone can leave
+      // a transparent old route surface in the GPU layer until the next paint.
+      outlet.replaceChildren();
+      void outlet.offsetHeight;
+      let nextNode=null;
+      if(typeof result==='string'){outlet.innerHTML=result;}
+      else if(result instanceof Node){nextNode=result;}
+      else if(result?.node instanceof Node){nextNode=result.node;disposeActive=typeof result.dispose==='function'?result.dispose:null}
+      if(nextNode)outlet.append(nextNode);
       outlet.dataset.renderRevision=String(myRevision);outlet.dataset.renderPage=page;
       document.dispatchEvent(new CustomEvent('beast:render-committed',{detail:{page,revision:myRevision}}));return true;
     }catch(error){

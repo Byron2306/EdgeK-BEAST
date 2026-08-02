@@ -1,0 +1,4045 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 708,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:21:26Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "cohere",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_faf69abf35bb2a9e5985",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_7bee1e4d807ba833.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "cohere",
+      "source_task_ids": [
+        "provider_alias_normalization_o01_v1",
+        "provider_alias_normalization_o02_v1"
+      ],
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 708,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:21:40Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "cohere",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_8800674b4149a115594c",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_66472efea4a9d21b",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_66472efea4a9d21b.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "cohere",
+      "source_task_ids": [
+        "provider_alias_normalization_o01_v1",
+        "provider_alias_normalization_o02_v1"
+      ],
+      "task_id": "provider_alias_normalization_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ebe93b53326807feccfe.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 7284.764,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ecb3be2b25ff84c88fac.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2412.769,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_2e543b4f154dc0649640.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4336.737,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 319,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 4400,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_62c616025bd81c8c9482.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 2482.229,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 176,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 704,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c281051be38d87e01e89.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 3261.394,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 173,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 701,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_df8e2c4e389351eb1d59.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4867.096,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 316,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 4397,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_705ce0ac5f1fa5fae061.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 2634.131,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 172,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 700,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8b4cd87e809d6e816267.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2749.009,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_faf69abf35bb2a9e5985.json"
+      },
+      "avoided_tokens_estimate": 708,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_7bee1e4d807ba833",
+      "source_provider": "cohere",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_400518d4a44ea26c11a7.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 5521.275,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 183,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 711,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_a6ecabaa14a374b110e5.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 4569.92,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_8800674b4149a115594c.json"
+      },
+      "avoided_tokens_estimate": 708,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_66472efea4a9d21b",
+      "source_provider": "cohere",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_47155083e1fe9d1c4858.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 2808.821,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9971056fb37440e3584a.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2158.503,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_clean",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 708,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_a9cd3554c1da169b45b7.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 4183.136,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 300,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_cohere_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 4381,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:efdc4ec3ce7da0c1f310bc2751e0321b5614219febeef2af856f53d59188824f",
+      "applicability_fingerprint": "sha256:6f64980e00faa57360737e019869307ad6aaaf7d0b52c1c37fe32aa1e572c2eb",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:1de7a05c1babf9f1486d4f283a04bbe3ad3c158b14554cf4873ea674708ad365",
+      "applicability_fingerprint": "sha256:9c2e1db2d73399b95ca0c31acf4b43efb3929b4fa58feea09bbc5eeeed3baa09",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ecb3be2b25ff84c88fac.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:7fd5684e98d9ba30faa6520c410bd05b0b6b2fcb317f0d987881272b1b6a968d",
+      "applicability_fingerprint": "sha256:3411c7050a38fe42af26909c4515235dbe8a6a0aec6243a930818b3b8f734341",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ecb3be2b25ff84c88fac.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:6831fef813f5ea1496898cc4c04ea8de99ce2a2889a825d76638a70a1b3a49fc",
+      "applicability_fingerprint": "sha256:6f64980e00faa57360737e019869307ad6aaaf7d0b52c1c37fe32aa1e572c2eb",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 1,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:66eb1ba09161deeb605de03a83f56e4e1c7d8284dc46e8b70ff2a4ab5ac057bc",
+      "applicability_fingerprint": "sha256:9c2e1db2d73399b95ca0c31acf4b43efb3929b4fa58feea09bbc5eeeed3baa09",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c281051be38d87e01e89.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 1,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:89709200d2a2e36421e9d387f9c67109f1de8409237357cb7ea08e04051f7a53",
+      "applicability_fingerprint": "sha256:3411c7050a38fe42af26909c4515235dbe8a6a0aec6243a930818b3b8f734341",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c281051be38d87e01e89.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:c9ee6a4a003041c0e98ca6643b844370e167e64796472d0921c38a9671412d68",
+      "applicability_fingerprint": "sha256:6f64980e00faa57360737e019869307ad6aaaf7d0b52c1c37fe32aa1e572c2eb",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 2,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:c712d3f8d53258d1a1488aae0617668b369b2a9f7eda81252bbc426ca12096f6",
+      "applicability_fingerprint": "sha256:9c2e1db2d73399b95ca0c31acf4b43efb3929b4fa58feea09bbc5eeeed3baa09",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8b4cd87e809d6e816267.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 2,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:cc9ec3f6dbd8b02f83c0b1f7b3c43f47862a3b9d3bb7e9709fcd058c13c5a26e",
+      "applicability_fingerprint": "sha256:3411c7050a38fe42af26909c4515235dbe8a6a0aec6243a930818b3b8f734341",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8b4cd87e809d6e816267.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:83f85a8ff7aceaced4d9ee20c17ec49901c29b6bf3b59cba2534600bceb53f9d",
+      "applicability_fingerprint": "sha256:6f64980e00faa57360737e019869307ad6aaaf7d0b52c1c37fe32aa1e572c2eb",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 3,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:60fb72a17766cc82072a1ed3f9c83c74a0404bf3f89d9ddff44473b9ab5ce188",
+      "applicability_fingerprint": "sha256:9c2e1db2d73399b95ca0c31acf4b43efb3929b4fa58feea09bbc5eeeed3baa09",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_a6ecabaa14a374b110e5.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 3,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:5e9790dc054eeac533b950aa8a55e04481db0e374bf0b8967ac5d7237749fcb6",
+      "applicability_fingerprint": "sha256:3411c7050a38fe42af26909c4515235dbe8a6a0aec6243a930818b3b8f734341",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_a6ecabaa14a374b110e5.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:a535c465c8e23500b46b50c621eec74674205c20899adab7b4e8b89256e88c74",
+      "applicability_fingerprint": "sha256:6f64980e00faa57360737e019869307ad6aaaf7d0b52c1c37fe32aa1e572c2eb",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {},
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 4,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:16795fdf56b852be72969c2f1c508620a4ce31090a6ea707b8125d3480e6d8ac",
+      "applicability_fingerprint": "sha256:9c2e1db2d73399b95ca0c31acf4b43efb3929b4fa58feea09bbc5eeeed3baa09",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9971056fb37440e3584a.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 4,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_clean",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:a37a55d22254d099ccb315b32e9c6357f23768bb3bc7f72091a9dc6c82502c15",
+      "applicability_fingerprint": "sha256:3411c7050a38fe42af26909c4515235dbe8a6a0aec6243a930818b3b8f734341",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_9971056fb37440e3584a.json"
+      },
+      "family": "provider_alias_normalization",
+      "family_fingerprint": "sha256:8fbac2470b216e42562630a63b2fa21df68179fe9dff384cbfed79a16b621c2e",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:2140888b4ea09d9afa3a3c93f1fe4e5f26ace62f622d3bdeb9d972823d21564f"
+      ],
+      "provider": "cohere",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:d8742282c4b55dd989001c293c53ea7b367ca029ce5a23fb6df65d5e0dd99d39",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "cohere",
+      "tool_schema_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:21:26Z",
+      "cross_provider_reuse": false,
+      "family": "provider_alias_normalization",
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "occurrence": 3,
+      "provider": "cohere",
+      "receipt_id": "mega_cg_faf69abf35bb2a9e5985",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "cohere",
+      "state": "validated_first_recurrence",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:21:40Z",
+      "cross_provider_reuse": false,
+      "family": "provider_alias_normalization",
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "occurrence": 5,
+      "provider": "cohere",
+      "receipt_id": "mega_cg_8800674b4149a115594c",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "cohere",
+      "state": "active_recurrence",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "provider_alias_normalization"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 7284.764,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 7284.764,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2412.769,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2412.769,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,10 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with hyphen and space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace(\" \", \"_\").replace(\"-\", \"_\")\n+    return value.lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4336.737,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4336.737,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 943,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 319,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4081,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4400
+        }
+      },
+      "prompt_tokens": 3190,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Update docstring to reflect improved normalization.\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A1\"\n      },\n      \"new\": \"\\\"\\\"\\\"Provider id parser with hyphen and space normalization.\\\"\\\"\\\"\"\n    },\n    {\n      \"id\": \"a2\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Enhance normalization to handle hyphens and spaces.\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A3\"\n      },\n      \"new\": \"    value = str(value or \\\"\\\").strip()\\n    value = value.replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\")\\n    return value.lower()\"\n    }\n  ],\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"provider_handoff_hash\": \"sha256:99d6337424a27ecb7e275fb442df77be9caae27017c5d38b919029719a299192\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.05s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 319,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4081,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4400
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace(\"-\", \"_\").replace(\" \", \"_\")\n+    return value.lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 2482.229,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2482.229,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 552,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 176,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 704
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace(\\\"-\\\", \\\"_\\\").replace(\\\" \\\", \\\"_\\\")\\n    return value.lower()\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces correctly\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 176,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 704
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,8 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    return value.replace('-', '_').replace(' ', '_').lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 3261.394,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3261.394,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 579,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 173,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 701
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    return value.replace('-', '_').replace(' ', '_').lower()\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 173,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 701
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,10 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with hyphen and space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace(\" \", \"_\").replace(\"-\", \"_\").lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4867.096,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4867.096,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": false,
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 938,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 316,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4081,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4397
+        }
+      },
+      "prompt_tokens": 3190,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Update docstring to reflect improved normalization\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A1\"\n      },\n      \"new\": \"\\\"\\\"\\\"Provider id parser with hyphen and space normalization.\\\"\\\"\\\"\"\n    },\n    {\n      \"id\": \"a2\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Implement robust normalization for provider IDs\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A3\"\n      },\n      \"new\": \"    value = str(value or \\\"\\\").strip()\\n    value = value.replace(\\\" \\\", \\\"_\\\").replace(\\\"-\\\", \\\"_\\\").lower()\\n    return value\"\n    }\n  ],\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"provider_handoff_hash\": \"sha256:99d6337424a27ecb7e275fb442df77be9caae27017c5d38b919029719a299192\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 316,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4081,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4397
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,8 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    return value.replace('-', '_').replace(' ', '_').lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 2634.131,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2634.131,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 576,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 172,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 700
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    return value.replace('-', '_').replace(' ', '_').lower()\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and stripping whitespace.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 172,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 700
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2749.009,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2749.009,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace(\"-\", \"_\").replace(\" \", \"_\")\n+    return value.lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 5521.275,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 5521.275,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 603,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 183,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 711
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace(\\\"-\\\", \\\"_\\\").replace(\\\" \\\", \\\"_\\\")\\n    return value.lower()\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and stripping whitespace.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 183,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 711
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 4569.92,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4569.92,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.04s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_raw",
+      "latency_ms": 2808.821,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2808.821,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,9 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    value = str(value or \"\").strip()\n+    value = value.replace('-', '_').replace(' ', '_').lower()\n+    return value\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_schema_only",
+      "latency_ms": 2158.503,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2158.503,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 598,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 180,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 528,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 708
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    value = str(value or \\\"\\\").strip()\\n    value = value.replace('-', '_').replace(' ', '_').lower()\\n    return value\",\n      \"why\": \"Enhance normalization to handle hyphens and spaces by replacing them with underscores and converting to lowercase.\"\n    }\n  ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 180,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 528,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 708
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_cohere_full_beast",
+      "latency_ms": 4183.136,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 4183.136,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "cohere",
+        "raw_chars": 917,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 300,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens": 4081,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "total_tokens": 4381
+        }
+      },
+      "prompt_tokens": 3190,
+      "provider": "cohere",
+      "provider_text_excerpt": "{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Update docstring to reflect improved normalization.\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A1\"\n      },\n      \"new\": \"\\\"\\\"\\\"Provider id parser with hyphen and space normalization.\\\"\\\"\\\"\"\n    },\n    {\n      \"id\": \"a2\",\n      \"type\": \"replace_anchor\",\n      \"intent\": \"Normalize provider IDs by replacing spaces with underscores and stripping whitespace.\",\n      \"target\": {\n        \"file_ref\": \"F1\",\n        \"anchor_ref\": \"A3\"\n      },\n      \"new\": \"    return str(value or \\\"\\\").strip().replace(\\\" \\\", \\\"_\\\").lower()\"\n    }\n  ],\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ],\n  \"provider_handoff_hash\": \"sha256:99d6337424a27ecb7e275fb442df77be9caae27017c5d38b919029719a299192\"\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 300,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "prompt_tokens": 4081,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 4381
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "tests:tests/test_provider_parser.py:semantic_change",
+        "tests:tests/test_provider_parser.py:symbol_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:af92a49e7cefceeee851385c0344bed167881cc3a341b226a9f8e524bb1f58b2",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2df4e91472447bcb3c5484631f674b712e41ee06604a6bfc0b21590f69f513d2",
+            "semantic_hash": "sha256:7a06fde99523105684f26b6257cb2b73fe8e2a1db6c403a7bffead3f84cb42b2",
+            "symbol_hashes": {
+              "test_mutation_contract_sentinel": "sha256:ce3375caaa586cb65b64122d4728e4c04d655e0a29382a05d9f4da10b03184ba",
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:af92a49e7cefceeee851385c0344bed167881cc3a341b226a9f8e524bb1f58b2",
+      "mutation_type": "test_contract_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "provider": "cohere",
+      "recovered_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "tests:tests/test_provider_parser.py:semantic_change",
+          "tests:tests/test_provider_parser.py:symbol_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:20:58Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 7284.764,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_ebe93b53326807feccfe",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:20:59Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2412.769,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_ecb3be2b25ff84c88fac",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:00Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4336.737,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 1,
+      "provider": "cohere",
+      "provider_completion_tokens": 319,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_2e543b4f154dc0649640",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 4400,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:14Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2482.229,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 176,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_62c616025bd81c8c9482",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 704,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:15Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 3261.394,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 173,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_c281051be38d87e01e89",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 701,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:16Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4867.096,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 2,
+      "provider": "cohere",
+      "provider_completion_tokens": 316,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_df8e2c4e389351eb1d59",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o02_v1",
+      "total_tokens": 4397,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:24Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2634.131,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 172,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_705ce0ac5f1fa5fae061",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 700,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2749.009,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 3,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8b4cd87e809d6e816267",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o03_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:38Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 5521.275,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 183,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_400518d4a44ea26c11a7",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 711,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:39Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4569.92,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 5,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_a6ecabaa14a374b110e5",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o05_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:53Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2808.821,
+      "live_lane": "live_cohere_raw",
+      "mega_lane": "raw",
+      "model": "command-a-03-2025",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_47155083e1fe9d1c4858",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:54Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 2158.503,
+      "live_lane": "live_cohere_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 180,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 528,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_9971056fb37440e3584a",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 708,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.cohere.ai/compatibility/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:21:55Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 4183.136,
+      "live_lane": "live_cohere_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "command-a-03-2025",
+      "occurrence": 10,
+      "provider": "cohere",
+      "provider_completion_tokens": 300,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4081,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_a9cd3554c1da169b45b7",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o10_v1",
+      "total_tokens": 4381,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "cohere": {
+      "live_failures_by_bucket": {
+        "capability_failure": 1,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "cohere": {
+          "avg_latency_ms": 2483.662,
+          "avg_provider_tokens_per_success": 708.0,
+          "beast_completed": 3,
+          "beast_completion_rate": 1.0,
+          "clean_completed": 2,
+          "clean_to_rescue_ratio": 2.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 2,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.6667,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 0.9410000000000001,
+            "hidden_test_pass_rate": 0.6667,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 0.9793028166666666,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.6667
+          },
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "rescue_rate": 0.3333,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.845,
+          "visible_clean_completed": 2,
+          "visible_clean_rate": 0.6667,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "cohere": {
+          "average_latency_ms": 3050.153,
+          "average_provider_prompt_tokens": 1712.333,
+          "canonicalized": 0,
+          "clean_completed": 2,
+          "clean_to_rescue_ratio": 2.0,
+          "completed": 3,
+          "completion_rate": 1.0,
+          "failures": [],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 2,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.6667,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 3050.153,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 1932.333,
+          "recommended_role": "clean_candidate_cost_incomplete",
+          "repair_attempted": 0,
+          "rescue_rate": 0.3333,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 2,
+          "visible_clean_rate": 0.6667,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "cohere"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_cohere_schema_validation_20260721T2015Z_b000/live_execution.json"
+}

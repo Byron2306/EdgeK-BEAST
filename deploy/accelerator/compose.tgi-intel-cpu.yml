@@ -1,0 +1,21 @@
+# Optional Intel CPU TGI profile. It intentionally needs no GPU device or
+# privileged container access; it is the safe CPU-only starting point.
+# docker compose -f deploy/accelerator/compose.tgi-intel-cpu.yml --profile intel-cpu up
+services:
+  tgi:
+    # Fall back to the official 3.3.5 image because the older Intel-specific tag
+    # is no longer available in the registry and latest-intel-cpu has been unstable.
+    image: ${BEAST_TGI_INTEL_IMAGE:-ghcr.io/huggingface/text-generation-inference:3.3.5}
+    profiles: ["intel-cpu"]
+    ipc: host
+    shm_size: 1g
+    ports:
+      - "127.0.0.1:${BEAST_TGI_PORT:-8080}:80"
+    command:
+      - --model-id
+      - ${BEAST_TGI_MODEL:?set BEAST_TGI_MODEL in .env}
+      - --cuda-graphs
+      - "0"
+      - --disable-custom-kernels
+    volumes:
+      - ${BEAST_HF_CACHE:-./data/huggingface}:/data

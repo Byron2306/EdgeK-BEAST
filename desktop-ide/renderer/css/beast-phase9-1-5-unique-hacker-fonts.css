@@ -1,0 +1,111 @@
+/* ========================================================================== 
+   BEAST Phase 9.1.5 — Unique Hacker Type
+   Real sci-fi/hacker typography, loaded from Google Fonts with local fallbacks.
+   Active stack:
+     Display: Orbitron / Oxanium
+     Interface: Rajdhani / Chakra Petch
+     Terminal: Share Tech Mono
+   ========================================================================== */
+:root {
+  --beast-display: "Orbitron", "Oxanium", "Chakra Petch", system-ui, sans-serif;
+  --beast-display-alt: "Oxanium", "Chakra Petch", "Aldrich", system-ui, sans-serif;
+  --beast-display-wide: "Michroma", "Orbitron", "Aldrich", system-ui, sans-serif;
+  --beast-display-condensed: "Teko", "Rajdhani", "Chakra Petch", system-ui, sans-serif;
+  --beast-ui: "Rajdhani", "Chakra Petch", "Oxanium", system-ui, sans-serif;
+  --beast-tech: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", "Azeret Mono", "Space Mono", ui-monospace, monospace;
+  --beast-mono: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", "Azeret Mono", "Space Mono", ui-monospace, monospace;
+}
+
+html, body {
+  font-family:var(--beast-ui) !important;
+  font-weight:500;
+  letter-spacing:.012em;
+}
+
+/* Engraved cyber display language */
+:where(h1,h2,.beast-title,.beast-page-head h2,.beast-header .beast-title,
+  .beast-brand-copy small,.phase-title,.studio-title,.terminal-nexus-title) {
+  font-family:var(--beast-display) !important;
+  font-weight:800 !important;
+  font-style:normal;
+  letter-spacing:.075em !important;
+  text-transform:uppercase;
+  font-variant-ligatures:none;
+}
+
+/* Technical panel hierarchy */
+:where(h3,h4,h5,h6,.beast-card > h3,.beast-rail-card > h3,
+  .panel-head h2,.panel-head h3,.p8-panel-head h2,.p8-panel-head h3,
+  [class*="panel-title"],[class*="section-title"],[class*="card-title"],
+  [class*="eyebrow"],[class*="kicker"]) {
+  font-family:var(--beast-display-alt) !important;
+  font-weight:700 !important;
+  letter-spacing:.065em !important;
+  text-transform:uppercase;
+  font-variant-ligatures:none;
+}
+
+/* Navigation and actionable control plane */
+:where(.beast-nav,.beast-nav button,.beast-nav .label,.beast-button,
+  .beast-page-actions button,.beast-command-tabs button,.beast-chip,.beast-pill,
+  .phase-pill,[class*="-actions"] button,[class*="-toolbar"] button,
+  [class*="-tabs"] button,[class*="-filter"] button,button,select,option) {
+  font-family:var(--beast-ui) !important;
+  font-weight:700 !important;
+  letter-spacing:.075em !important;
+  font-variant-ligatures:none;
+}
+
+/* Authentic terminal/data channel */
+:where(.mono,code,pre,kbd,samp,.terminal-screen,.terminal-output,.terminal-line,
+  .beast-ascii,.beast-meta,.beast-kicker,.metric-value,.metric-number,
+  .beast-metric-value,[class*="telemetry"],[class*="metric"],[class*="log"],
+  [class*="receipt"],[class*="trace"],table,th,td,input,textarea,
+  #beastPageOutlet small,#beastContextRail small) {
+  font-family:var(--beast-tech) !important;
+  font-variant-numeric:tabular-nums slashed-zero;
+  font-variant-ligatures:none;
+}
+
+/* Numeric KPI values retain the cyber display silhouette, not office typography. */
+:where(.metric-value,.metric-number,.beast-metric-value,.ring-value,
+  [class*="score-value"],[class*="health-value"],[class*="percent-value"]) {
+  font-family:var(--beast-display-alt) !important;
+  font-weight:700 !important;
+  letter-spacing:.035em !important;
+}
+
+.beast-page-head h2,
+.beast-header .beast-title {
+  font-size:clamp(25px,1.65vw,38px) !important;
+  line-height:1.02 !important;
+}
+
+.beast-card > h3,.beast-rail-card > h3,.panel-head h3,.p8-panel-head h3 {
+  font-size:clamp(14px,.88vw,18px) !important;
+}
+
+.beast-nav button .label {
+  font-size:clamp(13px,.77vw,15px) !important;
+  letter-spacing:.055em !important;
+}
+
+button,.beast-button,.beast-page-actions button {
+  font-size:clamp(12px,.72vw,14px) !important;
+}
+
+/* Preserve Monaco's controlled font rendering while requesting a proper coding face. */
+.monaco-editor,
+.monaco-editor .view-lines,
+.monaco-editor textarea {
+  font-family:"JetBrains Mono", "IBM Plex Mono", "Share Tech Mono", ui-monospace, monospace !important;
+}
+
+html[data-beast-fonts="ready"] body {
+  text-rendering:optimizeLegibility;
+}
+
+@media (max-width:1280px) {
+  .beast-page-head h2,.beast-header .beast-title { letter-spacing:.055em !important; }
+  .beast-nav button .label { font-size:13px !important; }
+}

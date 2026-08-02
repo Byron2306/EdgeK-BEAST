@@ -1,0 +1,157 @@
+{
+  "capabilities": {
+    "by_status": {
+      "operational": 15,
+      "partial": 10,
+      "planned": 1
+    },
+    "total": 26
+  },
+  "checks": {
+    "build_identity": {
+      "payload": {
+        "failures": [],
+        "ok": true
+      },
+      "returncode": 0,
+      "status": "passed",
+      "stderr": ""
+    },
+    "canonical_imports": {
+      "payload": {
+        "ok": true,
+        "parse_failures": [],
+        "violations": []
+      },
+      "returncode": 0,
+      "status": "passed",
+      "stderr": ""
+    },
+    "enterprise_runtime_contract": {
+      "payload": {
+        "checks": {
+          "agent_creation_requires_live_route": true,
+          "atlas_uses_live_platform_snapshot": true,
+          "canvas_resize_is_deferred_out_of_observer_delivery": true,
+          "crystal_actions_require_receipts": true,
+          "crystal_verification_does_not_promote_pending_gates": true,
+          "demo_fixtures_require_explicit_build_opt_in": true,
+          "demo_query_cannot_force_runtime_offline": true,
+          "dependency_complete_python_probe": true,
+          "desktop_child_forces_direct_gateway_mode": true,
+          "enterprise_routes_attested": true,
+          "gateway_restart_waits_for_managed_exit": true,
+          "gateway_startup_recovery_is_bounded": true,
+          "guardian_listener_fallback_is_bounded": true,
+          "guardian_processes_are_protected_from_system_controls": true,
+          "honest_boot_state": true,
+          "ipc_gateway_transport": true,
+          "legacy_scan_removed": true,
+          "legacy_studio_topology_routes_are_canonicalized": true,
+          "managed_gateway_not_reset_to_guardian": true,
+          "mutations_do_not_swallow_gateway_failures": true,
+          "named_navigation_labels_wrap_in_sidebar": true,
+          "named_systems_are_visible_in_primary_ui": true,
+          "no_live_agent_demo_fallback": true,
+          "no_unverified_default_model_route": true,
+          "normalizers_tolerate_incomplete_live_telemetry": true,
+          "operation_failure_is_visible": true,
+          "platform_snapshot_not_boot_fanout": true,
+          "provider_plane_uses_litellm_models_readiness": true,
+          "registry_gateway_8101": true,
+          "remote_commons_control_plane": true,
+          "remote_commons_no_direct_egress": true,
+          "responsive_header_wrap": true,
+          "runtime_canvas_resize_is_deferred_out_of_observer_delivery": true,
+          "snapshot_boot_is_bounded": true,
+          "sourceplan_has_no_silent_local_success": true,
+          "swarm_uses_live_routes": true,
+          "system_mutations_use_preview_and_explicit_approval": true,
+          "systems_atlas_registered": true,
+          "workspace_identity_header": true
+        },
+        "failed": [],
+        "status": "PASS"
+      },
+      "returncode": 0,
+      "status": "passed",
+      "stderr": ""
+    },
+    "execution_target_contract": {
+      "artifact": "build/EXECUTION_TARGET_PARITY.json",
+      "payload": {
+        "checks": 15,
+        "failed": [],
+        "ok": true,
+        "passed": 12,
+        "skipped": 3
+      },
+      "returncode": 0,
+      "status": "passed"
+    },
+    "full_local_parity": {
+      "reason": "Run `cd desktop-ide && BEAST_VERIFY_LSP=1 BEAST_VERIFY_DAP=1 BEAST_VERIFY_KERNEL=1 npm run smoke:parity` on a provisioned runtime.",
+      "status": "not_run"
+    },
+    "local_parity_foundation": {
+      "artifact": "build/PARITY_FOUNDATION.json",
+      "payload": {
+        "checks": 89,
+        "discovery": {
+          "extensionHost": "desktop-runtime-ready",
+          "summary": {
+            "available": 19,
+            "coverage": 100,
+            "total": 19
+          }
+        },
+        "failed": [],
+        "handshakes": {
+          "bash": false,
+          "clangd": false,
+          "dapLaunch": false,
+          "debugpy": false,
+          "delve": false,
+          "go": false,
+          "lldb": false,
+          "notebookKernel": false,
+          "pylsp": false,
+          "python": false,
+          "rust": false,
+          "typescript": false
+        },
+        "mode": {
+          "dap": "skipped",
+          "kernel": "skipped",
+          "lsp": "skipped"
+        },
+        "ok": true,
+        "passed": 89,
+        "workbenches": {
+          "aiProposal": {
+            "error": "",
+            "ok": true
+          },
+          "extensionSandbox": {
+            "error": "",
+            "ok": true
+          },
+          "git": {
+            "error": "",
+            "ok": true
+          }
+        }
+      },
+      "returncode": 0,
+      "status": "passed"
+    }
+  },
+  "contract_id": "beast.parity.v1",
+  "contract_schema_version": 1,
+  "failed_checks": [],
+  "generated_at": "2026-07-19T12:25:01Z",
+  "identity_digest": "sha256:998399b3ca6e826aabca736e364eb08c66cbb48bac1c54916894dde1f2226efa",
+  "release_id": "BEAST-IDE-3.1.0-RC4",
+  "schema": "beast.phase0-status.v1",
+  "status": "PASS"
+}

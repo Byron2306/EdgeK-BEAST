@@ -1,0 +1,357 @@
+{
+  "beast_object_type": "ollama_lifecycle_matrix_receipt",
+  "cases": [
+    {
+      "after": {
+        "health": {
+          "latency_ms": 1.02,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=2.04 avg60=1.99 avg300=2.74 total=889401029\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=1.75 avg60=2.16 avg300=2.98 total=874344761\nfull avg10=1.36 avg60=1.83 avg300=2.40 total=707776474",
+            "memory": "some avg10=0.70 avg60=0.38 avg300=0.86 total=327108336\nfull avg10=0.55 avg60=0.31 avg300=0.70 total=271867214"
+          },
+          "runners": [
+            {
+              "cmd": "480602 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 42779",
+              "pid": 480602,
+              "rss_bytes": 2102046720
+            }
+          ]
+        }
+      },
+      "before": {
+        "health": {
+          "latency_ms": 26.02,
+          "models": [],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=2.40 avg60=1.99 avg300=2.76 total=889226823\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=1.24 avg60=2.15 avg300=3.00 total=874084084\nfull avg10=0.78 avg60=1.81 avg300=2.41 total=707541811",
+            "memory": "some avg10=0.02 avg60=0.25 avg300=0.85 total=326992266\nfull avg10=0.02 avg60=0.21 avg300=0.69 total=271756025"
+          },
+          "runners": []
+        }
+      },
+      "classification": "healthy_response",
+      "context": 512,
+      "name": "cold_ctx512",
+      "restart": true,
+      "stop": {
+        "returncode": 0,
+        "stderr": "\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?25l\u001b[?2026h\u001b[?25l\u001b[1G\u001b[K\u001b[?25h\u001b[?2026l\u001b[2K\u001b[1G\u001b[?25h",
+        "stdout": ""
+      },
+      "wall_ms": 7630.58,
+      "worker": {
+        "body": {
+          "eval_count": 7,
+          "eval_duration_ns": 788490476,
+          "load_duration_ns": 3033795711,
+          "prompt_eval_count": 43,
+          "prompt_eval_duration_ns": 3332527878,
+          "response_present": true,
+          "total_duration_ns": 7334650788
+        },
+        "process_cpu_seconds": 0.009175,
+        "status": "response",
+        "wall_ms": 7496.15
+      }
+    },
+    {
+      "after": {
+        "health": {
+          "latency_ms": 0.82,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.85 avg60=1.95 avg300=2.73 total=889431926\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=1.79 avg60=2.15 avg300=2.97 total=874353799\nfull avg10=1.48 avg60=1.84 avg300=2.40 total=707784528",
+            "memory": "some avg10=0.57 avg60=0.36 avg300=0.85 total=327111021\nfull avg10=0.45 avg60=0.30 avg300=0.69 total=271869648"
+          },
+          "runners": [
+            {
+              "cmd": "480602 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 42779",
+              "pid": 480602,
+              "rss_bytes": 2112118784
+            }
+          ]
+        }
+      },
+      "before": {
+        "health": {
+          "latency_ms": 0.87,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=2.04 avg60=1.99 avg300=2.74 total=889401713\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=1.75 avg60=2.16 avg300=2.98 total=874344795\nfull avg10=1.36 avg60=1.83 avg300=2.40 total=707776505",
+            "memory": "some avg10=0.70 avg60=0.38 avg300=0.86 total=327108376\nfull avg10=0.55 avg60=0.31 avg300=0.70 total=271867251"
+          },
+          "runners": [
+            {
+              "cmd": "480602 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 42779",
+              "pid": 480602,
+              "rss_bytes": 2102046720
+            }
+          ]
+        }
+      },
+      "classification": "healthy_response",
+      "context": 512,
+      "name": "warm_ctx512",
+      "restart": false,
+      "stop": null,
+      "wall_ms": 1522.74,
+      "worker": {
+        "body": {
+          "eval_count": 7,
+          "eval_duration_ns": 918432836,
+          "load_duration_ns": 143458500,
+          "prompt_eval_count": 43,
+          "prompt_eval_duration_ns": 143123021,
+          "response_present": true,
+          "total_duration_ns": 1383874653
+        },
+        "process_cpu_seconds": 0.00884,
+        "status": "response",
+        "wall_ms": 1396.09
+      }
+    },
+    {
+      "after": {
+        "health": {
+          "latency_ms": 1.17,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.75 avg60=1.93 avg300=2.70 total=889610520\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=2.12 avg60=2.19 avg300=2.96 total=874632745\nfull avg10=1.84 avg60=1.88 avg300=2.40 total=708035583",
+            "memory": "some avg10=1.22 avg60=0.54 avg300=0.88 total=327319940\nfull avg10=1.16 avg60=0.48 avg300=0.72 total=272053335"
+          },
+          "runners": [
+            {
+              "cmd": "480817 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 38905",
+              "pid": 480817,
+              "rss_bytes": 2119540736
+            }
+          ]
+        }
+      },
+      "before": {
+        "health": {
+          "latency_ms": 0.77,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.85 avg60=1.95 avg300=2.73 total=889432420\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=1.79 avg60=2.15 avg300=2.97 total=874353850\nfull avg10=1.48 avg60=1.84 avg300=2.40 total=707784570",
+            "memory": "some avg10=0.57 avg60=0.36 avg300=0.85 total=327111084\nfull avg10=0.45 avg60=0.30 avg300=0.69 total=271869701"
+          },
+          "runners": [
+            {
+              "cmd": "480602 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 42779",
+              "pid": 480602,
+              "rss_bytes": 2112118784
+            }
+          ]
+        }
+      },
+      "classification": "healthy_response",
+      "context": 768,
+      "name": "warm_ctx768",
+      "restart": false,
+      "stop": null,
+      "wall_ms": 8204.08,
+      "worker": {
+        "body": {
+          "eval_count": 7,
+          "eval_duration_ns": 819988721,
+          "load_duration_ns": 3668497802,
+          "prompt_eval_count": 43,
+          "prompt_eval_duration_ns": 3296935322,
+          "response_present": true,
+          "total_duration_ns": 7994291490
+        },
+        "process_cpu_seconds": 0.008745,
+        "status": "response",
+        "wall_ms": 8094.51
+      }
+    },
+    {
+      "after": {
+        "health": {
+          "latency_ms": 35.27,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.55 avg60=1.87 avg300=2.67 total=889746666\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=3.11 avg60=2.41 avg300=2.99 total=874975898\nfull avg10=2.60 avg60=2.05 avg300=2.42 total=708315057",
+            "memory": "some avg10=1.33 avg60=0.63 avg300=0.89 total=327455231\nfull avg10=1.00 avg60=0.51 avg300=0.72 total=272176218"
+          },
+          "runners": [
+            {
+              "cmd": "480956 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 46261",
+              "pid": 480956,
+              "rss_bytes": 2165772288
+            }
+          ]
+        }
+      },
+      "before": {
+        "health": {
+          "latency_ms": 0.87,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.75 avg60=1.93 avg300=2.70 total=889610775\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=2.12 avg60=2.19 avg300=2.96 total=874632976\nfull avg10=1.84 avg60=1.88 avg300=2.40 total=708035806",
+            "memory": "some avg10=1.22 avg60=0.54 avg300=0.88 total=327320190\nfull avg10=1.16 avg60=0.48 avg300=0.72 total=272053572"
+          },
+          "runners": [
+            {
+              "cmd": "480817 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 38905",
+              "pid": 480817,
+              "rss_bytes": 2119540736
+            }
+          ]
+        }
+      },
+      "classification": "healthy_response",
+      "context": 1024,
+      "name": "warm_ctx1024",
+      "restart": false,
+      "stop": null,
+      "wall_ms": 7041.14,
+      "worker": {
+        "body": {
+          "eval_count": 7,
+          "eval_duration_ns": 928611141,
+          "load_duration_ns": 2548240241,
+          "prompt_eval_count": 43,
+          "prompt_eval_duration_ns": 3071801264,
+          "response_present": true,
+          "total_duration_ns": 6870129786
+        },
+        "process_cpu_seconds": 0.008927,
+        "status": "response",
+        "wall_ms": 6882.43
+      }
+    },
+    {
+      "after": {
+        "health": {
+          "latency_ms": 1.2,
+          "models": [
+            "qwen2.5:3b"
+          ],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.57 avg60=1.85 avg300=2.64 total=889893891\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=3.23 avg60=2.50 avg300=2.99 total=875236006\nfull avg10=2.95 avg60=2.18 avg300=2.44 total=708541635",
+            "memory": "some avg10=0.73 avg60=0.57 avg300=0.87 total=327501968\nfull avg10=0.55 avg60=0.46 avg300=0.70 total=272218338"
+          },
+          "runners": [
+            {
+              "cmd": "481079 /usr/local/bin/ollama runner --model /usr/share/ollama/.ollama/models/blobs/sha256-5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6 --port 37967",
+              "pid": 481079,
+              "rss_bytes": 2128396288
+            }
+          ]
+        }
+      },
+      "before": {
+        "health": {
+          "latency_ms": 2.93,
+          "models": [],
+          "ok": true
+        },
+        "runner": {
+          "model": "qwen2.5:3b",
+          "pressure": {
+            "cpu": "some avg10=1.55 avg60=1.87 avg300=2.67 total=889778612\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+            "io": "some avg10=3.11 avg60=2.41 avg300=2.99 total=874987228\nfull avg10=2.60 avg60=2.05 avg300=2.42 total=708325017",
+            "memory": "some avg10=1.33 avg60=0.63 avg300=0.89 total=327457364\nfull avg10=1.00 avg60=0.51 avg300=0.72 total=272178105"
+          },
+          "runners": []
+        }
+      },
+      "classification": "healthy_response",
+      "context": 1024,
+      "name": "restart_ctx1024",
+      "restart": true,
+      "stop": {
+        "returncode": 0,
+        "stderr": "\u001b[?2026h\u001b[?25l\u001b[1G\u2819 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?25l\u001b[?2026h\u001b[?25l\u001b[1G\u001b[K\u001b[?25h\u001b[?2026l\u001b[2K\u001b[1G\u001b[?25h",
+        "stdout": ""
+      },
+      "wall_ms": 6680.46,
+      "worker": {
+        "body": {
+          "eval_count": 7,
+          "eval_duration_ns": 787166328,
+          "load_duration_ns": 2439848553,
+          "prompt_eval_count": 43,
+          "prompt_eval_duration_ns": 3071533182,
+          "response_present": true,
+          "total_duration_ns": 6557248498
+        },
+        "process_cpu_seconds": 0.008247,
+        "status": "response",
+        "wall_ms": 6569.49
+      }
+    }
+  ],
+  "model": "qwen2.5:3b",
+  "receipt_hash": "sha256:7e862957103958d9738c76c46dc907d06a3dc5014557807ca2af49de70d52ceb",
+  "summary": {
+    "healthy": 5,
+    "runtime_crashes": 0,
+    "timeouts": 0,
+    "transport_failures": 0,
+    "wall_seconds": 33.583
+  },
+  "version": "1.0"
+}

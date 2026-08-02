@@ -1,0 +1,58 @@
+# Optional GPU profile. It is inert until explicitly started with:
+# docker compose -f deploy/accelerator/compose.vllm-lmcache.yml --profile gpu up
+# Pin image tags in an operator-owned .env before production use.
+services:
+  lmcache:
+    image: ${BEAST_LMCACHE_IMAGE:-lmcache/vllm-openai:latest}
+    profiles: ["gpu"]
+    command:
+      - lmcache
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5555"
+      - --http-host
+      - 0.0.0.0
+      - --http-port
+      - "8080"
+      - --l1-size-gb
+      - ${BEAST_LMCACHE_L1_GB:-20}
+      - --eviction-policy
+      - LRU
+    ports:
+      - "127.0.0.1:${BEAST_LMCACHE_HTTP_PORT:-8081}:8080"
+    volumes:
+      - ${BEAST_LMCACHE_DIR:-./data/lmcache}:/data
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthcheck')\""]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  vllm:
+    image: ${BEAST_VLLM_IMAGE:-lmcache/vllm-openai:latest}
+    profiles: ["gpu"]
+    depends_on:
+      lmcache:
+        condition: service_healthy
+    command:
+      - vllm
+      - serve
+      - ${BEAST_VLLM_MODEL:?set BEAST_VLLM_MODEL in .env}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --enable-prefix-caching
+      - --prefix-caching-hash-algo
+      - sha256
+      - --kv-transfer-config
+      - '{"kv_connector":"LMCacheMPConnector","kv_role":"kv_both","kv_connector_extra_config":{"lmcache.mp.host":"tcp://lmcache","lmcache.mp.port":5555}}'
+    ports:
+      - "127.0.0.1:${BEAST_VLLM_PORT:-8000}:8000"
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - ${BEAST_HF_CACHE:-./data/huggingface}:/root/.cache/huggingface
+    gpus: all

@@ -64,6 +64,15 @@ class EGraph:
         self._parent: list[int] = []
         self._nodes: dict[ENode, int] = {}
         self._terms: dict[int, Any] = {}
+        self._policy_rules: list[RewriteRule] = []
+
+    def add_policy_rule(self, rule: RewriteRule) -> None:
+        """Register a rewrite rule for policy optimization."""
+        self._policy_rules.append(rule)
+
+    def optimize_policy(self, *, max_iterations: int = 16) -> dict[str, int | bool]:
+        """Saturate the e-graph using registered policy rewrite rules."""
+        return self.saturate(self._policy_rules, max_iterations=max_iterations)
 
     def _new_class(self, term: Any) -> int:
         index = len(self._parent)

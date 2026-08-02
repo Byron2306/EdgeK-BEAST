@@ -72,8 +72,8 @@
       selectable: providerIsConfigured(record)
     }));
     const fallback = BeastDesktopBridge.demoMode ? demoModels : [{
-      id:'qwen2.5-coder:1.5b', model_id:'qwen2.5-coder:1.5b', provider:'ollama', role:'Local coding · recommended',
-      confidence:86, latency:'CPU/GPU local', speed:'1.5B coder', size:'986 MB', context:'32K',
+      id:'qwen2.5:3b', model_id:'qwen2.5:3b', provider:'ollama', role:'Local coding · recommended',
+      confidence:86, latency:'CPU/GPU local', speed:'3B Qwen', size:'1.9 GB', context:'32K',
       quantization:'Qwen Coder · Ollama', status:'Local Ollama · probe on use', credential_ready:true,
       selectable:true, runtime:'Ollama'
     }, {
@@ -103,7 +103,8 @@
         status: String(model.status || model.health || (credentialReady === false ? 'Credential missing' : model.ready === false ? 'Unavailable' : 'Ready')),
         credentialReady,
         selectable: model.selectable !== false && model.enabled !== false,
-        runtime: String(model.runtime || model.engine || model.backend || 'Local runtime')
+        runtime: String(model.runtime || model.engine || model.backend || 'Local runtime'),
+        baseUrl: String(model.base_url || model.endpoint || model.ollama_base_url || route.base_url || providerState.base_url || '')
       };
     }) : fallback;
     const usableRows = rows.filter(row => row.selectable !== false && row.credentialReady !== false && !/disabled|unavailable|missing/i.test(String(row.status || '')));
@@ -224,8 +225,63 @@
       selectedId: BeastStore.get().agents.selectedId || rows[0]?.id || '',
       tools: allTools.length ? [...new Set(allTools)].slice(0, 12) : [],
       handoffs,
+      swarmProof: normalizeSwarmProof(swarmRuns),
       orchestrator:{ label:'Swarm / Mission Orchestrator', status:rows.some(row => /active|working|running/i.test(row.status)) ? 'Coordinating' : swarm.enabled ? 'Ready' : 'Not reported', health: rows.length ? Math.round(rows.reduce((sum,row)=>sum+row.confidence,0)/rows.length) : 0 },
       loading:false, error:'', lastRefreshAt:Date.now()
+    };
+  }
+
+  function normalizeSwarmProof(detail={}) {
+    const events = firstArray(detail.events, detail.role_events);
+    const byRole = new Map(events.map(item => [String(item.role || ''), item]));
+    const route = byRole.get('hermes')?.details?.route_decision || {};
+    const compressor = byRole.get('compressor')?.details || {};
+    const crystal = byRole.get('crystalist')?.details || {};
+    const archivist = byRole.get('archivist')?.details || {};
+    const metrics = [
+      ['Route', route.route || 'not reported', route.reason || 'Hermes has not emitted a route decision.'],
+      ['Context', compressor.final_tokens ? `${compressor.final_tokens} tokens` : 'not reported', compressor.reduction_ratio != null ? `${Math.round(Number(compressor.reduction_ratio) * 100)}% reduced` : 'No compression receipt'],
+      ['Interception', crystal.assistance_mode || 'not reported', crystal.mutation_authorized === false ? 'execution authority withheld' : 'No interception receipt'],
+      ['Isolation', byRole.has('forge_executor') ? 'reported' : 'not run', 'Worktree execution is opt-in'],
+      ['Verification', byRole.get('verifier')?.decision || 'not run', 'Fresh proof required'],
+      ['Archive', archivist.packet_hash ? 'sealed' : 'not reported', archivist.packet_hash || 'No unified packet hash']
+    ].map(([label,value,detail]) => ({label,value:String(value),detail:String(detail)}));
+    return {
+      runId:String(detail.run_id || detail.id || ''),
+      status:String(detail.status || detail.state || (events.length ? 'reported' : 'not reported')),
+      metrics,
+      events:events.slice(-24).map(item => ({role:String(item.role || 'unknown'),decision:String(item.decision || 'reported'),state:String(item.state || ''),time:String(item.created_at || 'live'),details:item.details || {}})),
+      updatedAt:Date.now()
+    };
+  }
+
+  function normalizeGoldenProof(result={}) {
+    const proof = result.swarm_proof || {};
+    const route = proof.route || {};
+    const context = proof.context || {};
+    const interception = proof.interception || {};
+    const verification = proof.verification || {};
+    const archive = proof.archive || {};
+    const sourcePlan = proof.source_plan || {};
+    const crystal = proof.crystal_strengthening || {};
+    const authority = proof.isolation || {};
+    const model = result.residual || {};
+    return {
+      runId:String(result.mission_run_id || 'golden-path'),
+      status:String(result.status || 'reported'),
+      metrics:[
+        {label:'Route',value:String(route.route || 'not reported'),detail:String(route.reason || 'Hermes route receipt missing.')},
+        {label:'Context',value:context.final_tokens ? `${context.final_tokens} tokens` : 'not reported',detail:context.reduction_ratio != null ? `${Math.round(Number(context.reduction_ratio) * 100)}% reduced` : 'Compression receipt pending'},
+        {label:'Interception',value:String(interception.assistance_mode || 'not reported'),detail:interception.model_packet_digest || 'No interception receipt'},
+        {label:'Isolation',value:authority.worktree_task_id ? 'isolated' : 'not run',detail:authority.path || 'Worktree receipt missing'},
+        {label:'Verification',value:verification.status || 'not run',detail:verification.reason || 'Fresh proof required'},
+        {label:'Archive',value:archive.packet_hash ? 'sealed' : 'not reported',detail:archive.packet_hash || 'No unified packet hash'},
+        {label:'SourcePlan',value:sourcePlan.status || 'not reported',detail:sourcePlan.operator_decision || 'Operator review pending'},
+        {label:'Crystal',value:crystal.assistance_mode || 'not reported',detail:crystal.promotion_authorized === false ? 'promotion withheld' : 'Strengthening receipt missing'},
+        {label:'Model Evidence',value:model.model_mode || 'not reported',detail:model.model ? `${model.model} · ${model.provider_called === false ? 'crystal bypass' : `${model.usage?.prompt_tokens ?? '?'} prompt tokens`} · uplift not measured` : 'Live model result unavailable'}
+      ],
+      events:(result.golden_timeline || []).map(item => ({role:'golden-path',decision:String(item.label || item.state || 'stage'),state:String(item.status || 'pending'),time:'live',details:item.evidence || {}})),
+      updatedAt:Date.now()
     };
   }
 
@@ -251,7 +307,13 @@
         BeastDesktopBridge.fetchJson('/edgek/swarm/runs?limit=20', options)
       ]);
       if (!results.some(row => row.status === 'fulfilled')) throw new Error('No agent or swarm telemetry was returned by the gateway.');
-      const normalized = normalizeAgents(settledValue(results[0]) || {}, settledValue(results[1]) || {}, settledValue(results[2]) || {}, settledValue(results[3]) || {});
+      const runsPayload = settledValue(results[3]) || {};
+      const latestRun = firstArray(runsPayload.runs, runsPayload.items)[0];
+      let detailPayload = {};
+      if (latestRun?.run_id) {
+        try { detailPayload = await BeastDesktopBridge.fetchJson(`/edgek/swarm/runs/${encodeURIComponent(latestRun.run_id)}`, options); } catch (_) { detailPayload = {}; }
+      }
+      const normalized = normalizeAgents(settledValue(results[0]) || {}, settledValue(results[1]) || {}, settledValue(results[2]) || {}, detailPayload || runsPayload);
       BeastStore.patch('agents', normalized);
       BeastStore.patch('mission', { metrics:{ ...BeastStore.get().mission.metrics, agents:normalized.sessions.length } });
       BeastStore.addLedger(`Agent Constellation refreshed: ${normalized.sessions.length} sessions`);
@@ -306,6 +368,16 @@
     return result;
   }
 
+  async function runGoldenPath(options={}) {
+    if (BeastDesktopBridge.demoMode) throw new Error('Golden path is unavailable in demo mode.');
+    if (BeastStore.get().connection.status !== 'online') throw new Error('Gateway offline: golden path was not started.');
+    BeastStore.patch('agents', { goldenPath:{ ...BeastStore.get().agents.goldenPath, status:'running', timeline:[] } });
+    const result = await BeastDesktopBridge.fetchJson('/edgek/swarm/golden-path', { ...options, method:'POST', body:{} });
+    BeastStore.patch('agents', { goldenPath:{ status:String(result?.status || 'reported'), timeline:Array.isArray(result?.golden_timeline) ? result.golden_timeline : [], result, updatedAt:Date.now() }, swarmProof:normalizeGoldenProof(result) });
+    BeastStore.addLedger(`Golden path completed: ${result?.status || 'reported'}`);
+    return result;
+  }
+
   function selectAgent(id) {
     BeastStore.patch('agents', { selectedId:id });
     BeastStore.addLedger(`Agent selected: ${id}`);
@@ -328,5 +400,5 @@
     return result;
   }
 
-  window.BeastModelAgentBridge = { refreshModels, selectModel, refreshAgents, createAgent, runSwarm, selectAgent, controlAgent };
+  window.BeastModelAgentBridge = { refreshModels, selectModel, refreshAgents, createAgent, runSwarm, runGoldenPath, selectAgent, controlAgent };
 })();

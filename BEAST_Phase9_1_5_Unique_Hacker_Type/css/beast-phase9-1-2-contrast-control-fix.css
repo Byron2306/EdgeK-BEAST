@@ -1,0 +1,267 @@
+/* ========================================================================== 
+   BEAST Phase 9.1.2 — Silver Contrast + Control Plane Fix
+   Keeps the hi-def chrome identity, but prevents decorative signal layers from
+   tinting headings and controls. The scanner now lives behind page content.
+   ========================================================================== */
+:root {
+  --beast-header-h: 174px;
+  --beast-silver-hi: #f7fbf8;
+  --beast-silver: #d8e0db;
+  --beast-silver-mid: #aeb9b2;
+  --beast-control-bg: rgba(1, 5, 3, .94);
+  --beast-control-edge: rgba(195, 212, 201, .30);
+}
+body { --beast-visual-build: "9.1.2"; }
+
+/* Header geometry: keep the wordmark and mission copy inside the actual
+   content box, rather than underneath the ornamental border. */
+.beast-header.beast-header-premium {
+  min-height: var(--beast-header-h) !important;
+  border-width: 24px !important;
+  border-image-width: 24px !important;
+}
+.beast-header-brandmark {
+  top: 3px !important;
+  height: 54px !important;
+  max-height: 54px !important;
+}
+.beast-header-wordmark {
+  height: 47px !important;
+  max-height: 47px !important;
+  filter:
+    drop-shadow(0 2px 0 #020302)
+    drop-shadow(0 0 7px rgba(235, 243, 238, .28))
+    drop-shadow(0 0 10px rgba(119, 255, 61, .10)) !important;
+}
+.beast-header-brandmark span { font-size: 8px !important; }
+.beast-title-row {
+  top: 61px !important;
+  min-height: 48px !important;
+  max-height: 51px !important;
+  padding: 6px 14px 5px !important;
+  background: linear-gradient(90deg, rgba(0,0,0,.97), rgba(3,10,6,.90) 72%, rgba(3,10,6,.28)) !important;
+}
+.beast-header-emblem { top: 10px !important; width: 84px !important; height: 84px !important; }
+.beast-header-emblem img { width: 84px !important; height: 84px !important; }
+
+/* Solid silver fill wins over inherited background-clip, blend modes, scan
+   bands and muted text rules. This remains editable HTML, not baked artwork. */
+.beast-header .beast-title,
+.beast-page-head h2 {
+  background: none !important;
+  color: var(--beast-silver-hi) !important;
+  -webkit-text-fill-color: var(--beast-silver-hi) !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+  filter: none !important;
+  paint-order: stroke fill;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+.beast-header .beast-title {
+  -webkit-text-stroke: .65px #303934 !important;
+  text-shadow:
+    0 1px 0 #fff,
+    0 2px 0 #68736d,
+    0 3px 0 #101512,
+    0 0 9px rgba(236, 245, 239, .20),
+    0 0 12px rgba(119, 255, 61, .05) !important;
+}
+.beast-page-head h2 {
+  -webkit-text-stroke: .95px #252d29 !important;
+  text-shadow:
+    0 1px 0 #fff,
+    0 2px 0 #737f78,
+    0 3px 0 #101512,
+    1px 0 0 #343d38,
+    -1px 0 0 #343d38,
+    0 0 10px rgba(238, 246, 241, .18),
+    0 0 13px rgba(119, 255, 61, .045) !important;
+}
+.beast-page-head .sub {
+  color: #c0cbc4 !important;
+  -webkit-text-fill-color: #c0cbc4 !important;
+  opacity: .96 !important;
+  text-shadow: 0 1px 0 #000 !important;
+}
+
+/* The broad page scanner is atmosphere, not a green pane laid over text.
+   Keep it behind the actual page tree while retaining its travel through gaps. */
+.beast-viewport { isolation: isolate !important; }
+#beastPageScan {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  overflow: hidden !important;
+  opacity: .72 !important;
+}
+#beastPageOutlet {
+  position: relative !important;
+  z-index: 2 !important;
+  isolation: isolate;
+}
+#beastPageScan::before {
+  top: -104px !important;
+  height: 104px !important;
+  opacity: .45 !important;
+  background: linear-gradient(to bottom,
+    transparent,
+    rgba(119,255,61,.018) 34%,
+    rgba(138,255,90,.12) 47%,
+    rgba(226,255,214,.30) 50%,
+    rgba(119,255,61,.055) 54%,
+    transparent) !important;
+  animation: beast-912-page-scan 8.2s cubic-bezier(.44,0,.56,1) infinite !important;
+}
+#beastPageScan::after {
+  top: -3px !important;
+  opacity: .50 !important;
+  background: linear-gradient(90deg, transparent, rgba(214,255,195,.74), transparent) !important;
+  box-shadow: 0 0 9px rgba(119,255,61,.42) !important;
+  animation: beast-912-page-scan 8.2s cubic-bezier(.44,0,.56,1) infinite !important;
+}
+
+/* Dark control socket masks the bright diagonal ornament baked into the page
+   plate. Decorative green stays around the control, never through its label. */
+.beast-page-actions {
+  position: relative !important;
+  isolation: isolate !important;
+  padding: 6px !important;
+  border: 1px solid var(--beast-control-edge);
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, rgba(18,25,21,.96), rgba(1,5,3,.98)) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.06),
+    inset 0 0 18px rgba(0,0,0,.68),
+    0 5px 14px rgba(0,0,0,.40) !important;
+  overflow: hidden;
+}
+.beast-page-actions::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 12%; right: 12%; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(119,255,61,.72), transparent);
+  box-shadow: 0 0 7px rgba(119,255,61,.28);
+  pointer-events: none;
+}
+
+/* High-contrast controls. Green becomes an edge/status cue rather than a fill
+   that swallows text. */
+.beast-button,
+.beast-page-actions button,
+.p8-action-stack .beast-button,
+.p8-action-grid .beast-button,
+.terminal-quick-row button,
+.beast-command-tabs button,
+.beast-chip {
+  position: relative !important;
+  z-index: 2 !important;
+  isolation: isolate;
+  overflow: hidden;
+  color: #edf4ef !important;
+  -webkit-text-fill-color: #edf4ef !important;
+  background:
+    linear-gradient(180deg, rgba(31,39,34,.96), rgba(4,9,6,.98)) !important;
+  border-color: rgba(190,210,197,.34) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.07),
+    inset 0 -1px rgba(119,255,61,.08),
+    0 2px 5px rgba(0,0,0,.38) !important;
+  text-shadow: 0 1px 0 #000 !important;
+  filter: none !important;
+  opacity: 1;
+}
+.beast-button > *,
+.beast-page-actions button > *,
+.beast-command-tabs button > * { position: relative; z-index: 2; }
+.beast-button::before,
+.beast-page-actions button::before,
+.beast-command-tabs button::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 10%; right: 10%; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(119,255,61,.76), transparent);
+  opacity: .70;
+  pointer-events: none;
+}
+.beast-button::after,
+.beast-page-actions button::after,
+.beast-command-tabs button::after {
+  content: none !important;
+}
+.beast-button:hover,
+.beast-page-actions button:hover,
+.beast-command-tabs button:hover {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: rgba(119,255,61,.68) !important;
+  background: linear-gradient(180deg, rgba(35,48,39,.98), rgba(4,11,7,.99)) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.10),
+    inset 0 -2px rgba(119,255,61,.15),
+    0 0 12px rgba(119,255,61,.12) !important;
+}
+.beast-button.hot,
+.beast-page-actions .beast-button.hot {
+  color: #baff92 !important;
+  -webkit-text-fill-color: #baff92 !important;
+  background: linear-gradient(180deg, rgba(27,43,31,.98), rgba(3,11,6,.99)) !important;
+  border-color: rgba(119,255,61,.72) !important;
+}
+.beast-button.secondary {
+  color: #e2e9e4 !important;
+  -webkit-text-fill-color: #e2e9e4 !important;
+  background: linear-gradient(180deg, rgba(32,38,35,.96), rgba(5,8,6,.98)) !important;
+}
+.beast-button.amber {
+  color: #ffd36c !important;
+  -webkit-text-fill-color: #ffd36c !important;
+  border-color: rgba(255,189,50,.56) !important;
+  background: linear-gradient(180deg, rgba(50,37,10,.72), rgba(13,9,2,.98)) !important;
+}
+.beast-button:disabled,
+.beast-page-actions button:disabled {
+  color: #6f7b74 !important;
+  -webkit-text-fill-color: #6f7b74 !important;
+  background: rgba(4,7,5,.88) !important;
+  border-color: rgba(130,145,136,.16) !important;
+  opacity: .62 !important;
+}
+
+/* The animated chrome border must never sit over interactive descendants. */
+.beast-card { isolation: isolate; }
+.beast-card::before { z-index: 0 !important; }
+.beast-card::after { z-index: 0 !important; }
+.beast-card > * { position: relative; z-index: 2; }
+.beast-surface::after { z-index: 0 !important; }
+.beast-surface > * { position: relative; z-index: 1; }
+
+@keyframes beast-912-page-scan {
+  0%, 8% { top: -110px; opacity: 0; }
+  14% { opacity: .52; }
+  74% { opacity: .34; }
+  92%, 100% { top: calc(100% + 20px); opacity: 0; }
+}
+
+@media (max-width:1540px) {
+  :root { --beast-header-h: 164px; }
+  .beast-title-row { top: 56px !important; }
+}
+@media (max-width:1280px) {
+  :root { --beast-header-h: 152px; }
+  .beast-title-row { top: 51px !important; }
+  .beast-page-actions { padding: 5px !important; }
+}
+@media (max-width:900px) {
+  :root { --beast-header-h: 118px; }
+  .beast-title-row { top: auto !important; }
+  .beast-page-actions { background: rgba(2,7,4,.96) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #beastPageScan::before, #beastPageScan::after { animation: none !important; display: none !important; }
+}

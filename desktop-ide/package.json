@@ -1,7 +1,7 @@
 {
   "name": "beast-desktop-ide",
   "displayName": "BEAST Desktop IDE",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Installable BEAST IDE shell with governed SourcePlan, Code Cortex, Evidence Bus, agent sessions, and worktree missions.",
   "homepage": "https://github.com/EdgeK/BEAST",
   "author": {
@@ -11,18 +11,25 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "start": "electron .",
-    "smoke": "bash renderer/VERIFY_BEAST_IDE_RC4.sh renderer && node scripts/verify-enterprise-runtime-contract.js",
+    "start": "node scripts/start-desktop-ide.js",
+    "smoke": "node scripts/smoke-desktop-ide.js && bash renderer/VERIFY_BEAST_IDE_RC4.sh renderer && node scripts/verify-enterprise-runtime-contract.js",
     "smoke:launch": "node scripts/launch-smoke-desktop-ide.js",
+    "check:visual-contract": "node scripts/check-hacker-coherence.js",
     "smoke:parity": "node scripts/verify-ide-parity-foundation.js",
+    "smoke:parity:foundation": "node scripts/verify-parity-foundation-static.js",
     "smoke:targets": "node scripts/verify-execution-target-parity.js",
     "smoke:remote-dap": "node scripts/verify-remote-dap.js",
-    "visual:audit": "electron scripts/visual-audit-beast-studio.js",
+    "phase0:identity": "python3 ../scripts/phase0/generate_build_identity.py",
+    "phase0:verify": "python3 ../scripts/phase0/verify_phase0.py",
+    "phase0:report": "python3 ../scripts/phase0/generate_release_contract.py",
+    "visual:audit": "node scripts/start-desktop-ide.js scripts/visual-audit-beast-studio.js",
     "lint": "ruff check ../app/ --select E,F,W,I --ignore E501 --statistics",
     "lint:fix": "ruff check ../app/ --select E,F,W,I --ignore E501 --fix",
     "lint:format": "ruff format ../app/ --check",
     "package:linux": "electron-builder --linux AppImage deb",
-    "package:dir": "electron-builder --dir"
+    "package:dir": "electron-builder --dir",
+    "phase1:verify": "python3 ../scripts/phase1/verify_backend_decomposition.py && node scripts/verify-phase1-module-boundaries.js && node scripts/verify-phase1-renderer-boundaries.js && npm run smoke:parity:foundation && npm run smoke:targets",
+    "phase2:verify": "python3 ../scripts/phase2/verify_agent_run_foundation.py && python3 ../scripts/phase2/verify_agent_run_execution.py"
   },
   "devDependencies": {
     "electron": "^43.1.0",
@@ -38,6 +45,8 @@
     },
     "files": [
       "main.js",
+      "main/**/*",
+      "BUILD_IDENTITY.json",
       "ide-compatibility-host.js",
       "preload.js",
       "scripts/**",
@@ -57,17 +66,24 @@
       {
         "from": ".beast-python-tools",
         "to": "python-tools",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "scripts",
         "to": "scripts",
-        "filter": ["**/*.py", "beast-extension-host.js"]
+        "filter": [
+          "**/*.py",
+          "beast-extension-host.js"
+        ]
       },
       {
         "from": "extensions",
         "to": "extensions",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "asarUnpack": [

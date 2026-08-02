@@ -1,0 +1,170 @@
+/* ==========================================================================
+   BEAST Phase 9.1 — Hi-Def Signal Upgrade
+   Visible matrix rain, visible square/perspective grid, metallic display type,
+   and approved high-definition header plates while preserving live HTML.
+   ========================================================================== */
+:root {
+  --beast-header-h: 154px;
+  --beast-metal-white:#f8fbfa;
+  --beast-metal-mid:#aeb8b3;
+  --beast-metal-dark:#4d5651;
+}
+body[data-beast-phase="9"] { --beast-visual-build:"9.1"; }
+
+/* The atmosphere must be visible, not trapped beneath opaque shell surfaces. */
+#beastMatrix {
+  z-index:0!important; opacity:.34!important; display:block!important;
+  filter:brightness(1.35) contrast(1.24) saturate(1.08);
+}
+#beastMatrixFront {
+  position:fixed; inset:0; width:100%; height:100%; z-index:4;
+  display:block; opacity:.16; pointer-events:none; mix-blend-mode:screen;
+  filter:brightness(1.2) contrast(1.18);
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),rgba(0,0,0,.46) 52%,rgba(0,0,0,.72));
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),rgba(0,0,0,.46) 52%,rgba(0,0,0,.72));
+}
+body[data-beast-atmosphere="quiet"] #beastMatrixFront,
+body[data-beast-atmosphere="grid"] #beastMatrixFront { display:none!important; }
+#beastGridLayer {
+  z-index:3!important; opacity:.34!important; display:block!important;
+  mix-blend-mode:screen; filter:drop-shadow(0 0 10px rgba(119,255,61,.28));
+  background-size:48px 48px!important;
+  animation:beast-grid-advance 8.5s linear infinite!important;
+}
+body[data-beast-atmosphere="quiet"] #beastGridLayer,
+body[data-beast-atmosphere="matrix"] #beastGridLayer { display:none!important; }
+body::before {
+  z-index:3!important; opacity:.13!important; mix-blend-mode:screen;
+  background-image:
+    linear-gradient(rgba(119,255,61,.16) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(119,255,61,.16) 1px,transparent 1px)!important;
+  background-size:56px 56px!important;
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.23) 56%,rgba(0,0,0,.38));
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.23) 56%,rgba(0,0,0,.38));
+}
+.beast-shell { z-index:1; }
+.beast-surface {
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.026),transparent 18%),
+    linear-gradient(180deg,rgba(5,12,8,.915),rgba(1,4,2,.955))!important;
+}
+
+/* High-definition top identity. The brand is PNG; mission/state remain editable HTML. */
+.beast-header.beast-header-premium {
+  min-height:var(--beast-header-h);
+  padding:92px 32px 16px 190px!important;
+  border-width:30px!important; border-image-width:30px!important;
+  background:
+    radial-gradient(ellipse at 45% 0,rgba(119,255,61,.055),transparent 48%),
+    linear-gradient(90deg,rgba(1,5,3,.985),rgba(4,12,7,.945) 54%,rgba(1,4,2,.99))!important;
+}
+.beast-header-brandmark {
+  position:absolute; left:176px; top:11px; width:min(690px,44vw); height:80px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:2; pointer-events:none;
+}
+.beast-header-wordmark {
+  display:block; width:100%; max-height:64px; object-fit:contain;
+  filter:drop-shadow(0 2px 0 #050705) drop-shadow(0 0 8px rgba(213,224,218,.22)) drop-shadow(0 0 12px rgba(119,255,61,.12));
+}
+.beast-header-brandmark span {
+  margin-top:-2px; color:#9dff61; font:900 10px/1 var(--beast-mono);
+  letter-spacing:.38em; text-shadow:0 0 9px rgba(119,255,61,.48);
+}
+.beast-header-emblem { left:auto!important; right:362px; top:17px!important; width:100px!important; height:94px!important; z-index:3; }
+.beast-header-emblem::before,.beast-header-emblem::after { opacity:.7; }
+.beast-header-emblem img { width:98px!important; height:98px!important; image-rendering:auto; }
+.beast-header-terminal { left:40px!important; top:29px; bottom:auto!important; font-size:8px!important; opacity:.9!important; color:#8dff55!important; }
+.beast-title-row {
+  position:absolute; left:190px; right:430px; bottom:13px; z-index:3; min-width:0;
+  padding:7px 14px 6px; border-left:2px solid rgba(119,255,61,.7);
+  background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(4,13,7,.54),transparent);
+}
+.beast-header .beast-kicker { font-size:10px!important; }
+.beast-header .beast-title {
+  margin:2px 0 0!important; font:900 clamp(15px,1vw,20px)/1.05 var(--beast-display)!important;
+  letter-spacing:.045em!important; text-transform:uppercase;
+  background:linear-gradient(180deg,#ffffff 0%,#c9d1cd 38%,#747e79 54%,#edf2ef 76%,#87928c 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent!important;
+  -webkit-text-stroke:.45px rgba(4,7,5,.95);
+  text-shadow:0 2px 0 #000,0 0 8px rgba(210,224,216,.16);
+}
+.beast-header .beast-meta { color:#9cab9f!important; font-size:10px!important; }
+.beast-header-state { position:absolute!important; right:35px; top:24px; z-index:5; max-width:330px!important; }
+#beastHeaderPulse { width:150px!important; height:40px!important; }
+
+/* Approved hi-def page strip and strong metallic page headings. */
+.beast-page-head {
+  min-height:78px!important; border:0!important; border-image:none!important; border-radius:0!important;
+  padding:17px 138px 16px 116px!important;
+  background:url("../assets/headers/header-page-hd.png") center/100% 100% no-repeat!important;
+  filter:drop-shadow(0 10px 22px rgba(0,0,0,.38));
+  box-shadow:none!important; overflow:visible!important;
+}
+.beast-page-head::before { left:52px!important; top:50%!important; transform:translateY(-50%); width:38px!important; height:38px!important; z-index:3; }
+.beast-page-head::after { top:9px!important; height:2px!important; opacity:.86; }
+.beast-page-head h2 {
+  margin:0!important; font:900 clamp(23px,1.55vw,34px)/1 var(--beast-display)!important;
+  letter-spacing:.055em!important; text-transform:uppercase;
+  background:linear-gradient(180deg,#ffffff 0%,#d6ddda 32%,#727c77 51%,#f7faf8 72%,#8d9792 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent!important;
+  -webkit-text-stroke:.7px rgba(2,4,3,.98);
+  text-shadow:0 2px 0 #020302,0 0 8px rgba(220,231,225,.18),0 0 12px rgba(119,255,61,.08);
+}
+.beast-page-head .sub { color:#b2bdb6!important; font-size:12px!important; letter-spacing:.075em; }
+.beast-page-actions { z-index:4; }
+
+/* Stronger but readable card header hierarchy. */
+.beast-card > h3,.beast-rail-card > h3,.p8-panel-head h3,.panel-head h3 {
+  color:#e9efeb!important; font-family:var(--beast-ui)!important;
+  font-weight:900!important; font-size:14px!important; letter-spacing:.095em!important;
+  text-shadow:0 1px 0 #000,0 0 6px rgba(209,222,214,.12);
+}
+.beast-card > h3 { padding-bottom:8px; border-bottom:1px solid rgba(119,255,61,.14); }
+.beast-card > h3::first-letter { color:var(--beast-green); }
+
+/* The page scan is a fixed viewport overlay, so it cannot disappear in scroll geometry. */
+#beastPageScan {
+  position:fixed!important; z-index:8!important; pointer-events:none!important; overflow:hidden!important; height:auto!important;
+  left:calc(var(--beast-sidebar-w) + (var(--beast-gap) * 2));
+  top:calc(var(--beast-header-h) + (var(--beast-gap) * 2));
+  right:calc(var(--beast-rail-w) + (var(--beast-gap) * 2));
+  bottom:calc(var(--beast-command-h) + (var(--beast-gap) * 2));
+}
+#beastPageScan::before {
+  top:-110px!important; height:118px!important; opacity:.76!important;
+  background:linear-gradient(to bottom,transparent,rgba(119,255,61,.035) 32%,rgba(137,255,83,.24) 49%,rgba(244,255,239,.6) 50%,rgba(119,255,61,.10) 53%,transparent)!important;
+  animation:phase9-1-page-scan 7.2s cubic-bezier(.44,0,.56,1) infinite!important;
+}
+#beastPageScan::after { top:-4px!important; animation:phase9-1-page-scan 7.2s cubic-bezier(.44,0,.56,1) infinite!important; }
+
+/* Living high-definition telemetry accents. */
+.beast-viz-heartbeat { height:68px!important; opacity:.98; }
+.beast-viz-world::before { opacity:.82!important; filter:drop-shadow(0 0 7px rgba(119,255,61,.46))!important; }
+.beast-ring,.p8-ring,.review-test-ring,.audit-pack-ring { filter:drop-shadow(0 0 8px rgba(119,255,61,.18)); }
+.beast-ring::after,.p8-ring::before { border-color:rgba(171,255,128,.48)!important; box-shadow:0 0 12px rgba(119,255,61,.12); }
+
+@keyframes phase9-1-page-scan {
+  0%,7% { transform:translateY(-130px); opacity:0; }
+  13% { opacity:.82; }
+  78% { opacity:.56; }
+  92%,100% { transform:translateY(calc(100vh - var(--beast-header-h) - var(--beast-command-h) - 30px)); opacity:0; }
+}
+@media(max-width:1450px){
+  :root{--beast-header-h:138px}
+  .beast-header-brandmark{left:138px;width:min(520px,40vw);height:70px}.beast-header-emblem{display:none!important}
+  .beast-header-premium{padding-left:150px!important}.beast-title-row{left:150px;right:350px}.beast-header-state{right:26px}
+  .beast-page-head{padding-left:104px!important;padding-right:112px!important}.beast-page-head h2{font-size:25px!important}
+}
+@media(max-width:1120px){
+  :root{--beast-header-h:116px}
+  .beast-header-brandmark{left:92px;top:10px;width:390px;height:54px}.beast-header-brandmark span{font-size:7px}
+  .beast-header-terminal{display:none!important}.beast-header-premium{padding:69px 18px 10px 92px!important}
+  .beast-title-row{left:92px;right:255px;bottom:10px;padding:5px 9px}.beast-header-state{right:16px;top:18px;max-width:230px!important}
+  .beast-page-head{min-height:68px!important;padding:13px 90px 12px 85px!important}.beast-page-head h2{font-size:22px!important}
+  #beastPageScan{right:var(--beast-gap)}
+}
+@media(max-width:900px){
+  #beastPageScan{display:none}.beast-header-brandmark{display:none}.beast-header-premium{padding:15px 18px!important}.beast-title-row{position:relative;left:auto;right:auto;bottom:auto;padding:0 8px}.beast-header-state{position:relative!important;right:auto;top:auto}
+  .beast-page-head{background:linear-gradient(180deg,#071009,#020503)!important;padding:14px 18px 14px 70px!important}.beast-page-head::before{left:20px!important}
+}
+@media(prefers-reduced-motion:reduce){#beastMatrixFront{display:none!important}}

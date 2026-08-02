@@ -1,0 +1,139 @@
+{
+  "schema": "beast.phase1d-status.v1",
+  "date": "2026-07-18",
+  "status": "PASS",
+  "scope": "pair-programmer-renderer-decomposition",
+  "entrypoint": {
+    "path": "desktop-ide/renderer/js/beast-ai-coding.js",
+    "before_lines": 1282,
+    "after_lines": 32,
+    "public_methods": 24
+  },
+  "modules": {
+    "agent-client.js": {
+      "lines": 455,
+      "sha256": "52e7ee0ae8d84a1176e40f3e33b70769bfe3774a38952d83dea6cc102c1ee159"
+    },
+    "agent-store.js": {
+      "lines": 84,
+      "sha256": "066d6959e760d2464a215db69dad3e0338e846973c8af8096ba690dd3998a367"
+    },
+    "agent-events.js": {
+      "lines": 73,
+      "sha256": "c9b9c8df52c6638a3aaa5d6c22f3befa000b45a42aeb027ff80a09d42b8d346d"
+    },
+    "agent-view.js": {
+      "lines": 27,
+      "sha256": "aeba1f8f81b6df7a4cb70576cb2480b7ad19fc94d3a5f1ec0706319682a61c65"
+    },
+    "context-picker.js": {
+      "lines": 169,
+      "sha256": "4dcef9213e78b1872df853757e4009339ff06a610157ced500c19f7b9cd8c18c"
+    },
+    "context-manifest.js": {
+      "lines": 94,
+      "sha256": "58e4e92264850b2fe387a6ca673f3a05fe226f5842f5861d59ba1047de91dde1"
+    },
+    "approval-cards.js": {
+      "lines": 48,
+      "sha256": "2612ba981809e2d06071e09e0785c06f297a61e9d47a853ea0306427561a85de"
+    },
+    "tool-cards.js": {
+      "lines": 79,
+      "sha256": "4429a65e608ca9431ee6253437d68631dd1aade385fad5a22333ef8a8ea00ba2"
+    },
+    "plan-view.js": {
+      "lines": 121,
+      "sha256": "86d2f9f63461b7c39908a61aa5dde960876224b97861ffb34196aadc7f5f0a4c"
+    },
+    "verification-view.js": {
+      "lines": 109,
+      "sha256": "9075e08daeda451c4e9b5dffb043d3e3e9a7d921f4ee1d88f1c3dae42b1dd991"
+    },
+    "sourceplan-handoff.js": {
+      "lines": 79,
+      "sha256": "b8b27691ddd43a7275ad72314549773bb9ccd6ed622d129cc090932cbeaeced6"
+    },
+    "conversation-renderer.js": {
+      "lines": 110,
+      "sha256": "29db8eb82cd92c426ca2d28603382381ba9201a5971bedc6b345257770bb5fb6"
+    },
+    "mode-controller.js": {
+      "lines": 104,
+      "sha256": "5e03bfe605d310b9d273a7505417c371d9ea5c79de1ed5abcb7a5d430ecb3424"
+    },
+    "budget-view.js": {
+      "lines": 55,
+      "sha256": "77484925f772e668f4901ab7a2f6e1b65b2543b0a3f92bfcec51b2a8373b5bab"
+    }
+  },
+  "verification": {
+    "renderer_boundaries": {
+      "status": "PASS",
+      "module_count": 14
+    },
+    "phase1_boundaries": {
+      "status": "PASS",
+      "desktop_direct_modules": 18,
+      "desktop_transitive_modules": 2,
+      "renderer_ai_modules_total": 16
+    },
+    "parity_foundation": {
+      "status": "PASS",
+      "checks": 89,
+      "passed": 89,
+      "failed": 0,
+      "lsp_dap_kernel": "environment-gated"
+    },
+    "enterprise_contract": {
+      "status": "PASS"
+    },
+    "execution_targets": {
+      "status": "PASS",
+      "checks": 15,
+      "passed": 12,
+      "skipped": 3,
+      "failed": 0
+    },
+    "desktop_static_smoke": {
+      "status": "PASS",
+      "checks": 24
+    },
+    "desktop_launch_smoke": {
+      "status": "PASS",
+      "checks": 9
+    },
+    "visual_acceptance": {
+      "status": "PASS",
+      "scenarios": 110,
+      "failures": 0
+    },
+    "python_manifest_test": {
+      "status": "PASS",
+      "passed": 1
+    },
+    "javascript_syntax": {
+      "status": "PASS"
+    },
+    "clean_install_rehearsal": {
+      "status": "PASS",
+      "payload_match": true,
+      "module_boundaries": "PASS",
+      "parity_foundation": "89/89",
+      "enterprise_contract": "PASS",
+      "execution_targets": "12 passed, 3 skipped, 0 failed",
+      "desktop_static_smoke": "24/24",
+      "desktop_launch_smoke": "9/9",
+      "visual_acceptance": "110/110",
+      "focused_pytest": "1 passed"
+    }
+  },
+  "preserved_contracts": [
+    "window.BeastAICoding public method set",
+    "renderer DOM and event contracts",
+    "agent SSE event names",
+    "SourcePlan promotion authority",
+    "explicit context policy",
+    "operator capability approval semantics"
+  ]
+}

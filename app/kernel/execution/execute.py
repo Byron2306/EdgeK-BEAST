@@ -24,6 +24,15 @@ from app.kernel.compute.adaptive_dispatcher import AdaptiveDispatcher
 from app.kernel.compute.crystal_runtime_boundary import CrystalRuntimeBoundary
 from app.kernel.compute.integration_harness import BeastHarnessRequest
 from app.kernel.registry.provider_registry import ProviderRegistry
+from app.kernel.local.ollama_kv_manager import OllamaKVManager
+from app.kernel.compute.residual_candidate import ResidualCandidate
+from app.kernel.compute.residual_compute_governor import ResidualComputeGovernor, ResidualComputeRequest
+from app.kernel.compute.residual_contracts import (
+    ApplicabilityState,
+    ResidualAuthority,
+    ResidualRoute,
+    VerificationState,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +50,13 @@ class Executor:
         self.dispatcher = AdaptiveDispatcher()
         self.crystal_runtime_boundary = CrystalRuntimeBoundary()
         self.integration_harness = None
+        # Kept process-local on purpose.  Ollama context arrays are
+        # engine-native continuation state, never portable BEAST raw KV.
+        self._ollama_context_manager: Optional[OllamaKVManager] = None
+        self._ollama_context_base_url = ""
+        self.sensorium = None
 
-    def bind_runtime_services(self, *, crystal_gateway=None, integration_harness=None) -> None:
+    def bind_runtime_services(self, *, crystal_gateway=None, integration_harness=None, sensorium=None) -> None:
         """Bind the process-wide governed services used by live gateway routes.
 
         The executor is imported before the application composition root.  This
@@ -54,6 +68,8 @@ class Executor:
             self.crystal_runtime_boundary.gateway = crystal_gateway
         if integration_harness is not None:
             self.integration_harness = integration_harness
+        if sensorium is not None:
+            self.sensorium = sensorium
     
     def _get_provider(self, provider_type: ProviderType):
         """Get or create a provider instance"""
@@ -617,8 +633,200 @@ class Executor:
             finally:
                 await provider.close()
             return
+        if provider_type == ProviderType.OLLAMA:
+            native_base = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
+            if native_base.endswith("/v1"):
+                native_base = native_base[:-3]
+            model = self._provider_model_name(ir.model, "ollama")
+            prompt = self._messages_to_prompt(ir.messages)
+            payload: Dict[str, Any] = {
+                "model": model,
+                "prompt": prompt,
+                "stream": True,
+                "keep_alive": "10m",
+            }
+            if ir.max_tokens:
+                payload["options"] = {"num_predict": ir.max_tokens}
+            # Pair Programmer source attachments are stable across several
+            # turns.  Ask Ollama to prefill that system/source prefix once,
+            # retain only its native continuation tokens in a sealed memfd,
+            # then reuse them for subsequent requests.  This is deliberately
+            # opt-in to this IDE surface: BEAST never claims generic KV blocks
+            # can be restored into Ollama or another engine.
+            context_plan = self._ollama_pair_context_plan(ir, model)
+            if context_plan is not None:
+                manager = self._ollama_context_manager_for(native_base)
+                try:
+                    block = await asyncio.to_thread(
+                        manager.get_or_create_context,
+                        model,
+                        context_plan["prefix"],
+                        context_plan["system"],
+                        options={"num_ctx": context_plan["num_ctx"]},
+                        keep_alive="10m",
+                    )
+                    prism = self._ollama_pair_prism_decision(ir, model, block.native_context_available)
+                except Exception as exc:
+                    # Context acceleration is optional: it must never turn a
+                    # healthy local chat into a failed one.
+                    self._observe_pair_acceleration(ir, "pair_programmer.context_unavailable", {
+                        "model": model, "error_type": type(exc).__name__,
+                    })
+                else:
+                    if block.native_context_available and prism["selected_route"] == ResidualRoute.NATIVE_CONTEXT.value:
+                        payload["context"] = list(block.ollama_context)
+                        payload["prompt"] = context_plan["continuation"]
+                        payload.setdefault("options", {})["num_ctx"] = context_plan["num_ctx"]
+                    ir.metadata["ollama_native_context"] = {
+                        "context_id": block.context_id,
+                        "reuse_mode": block.metadata.get("reuse_mode"),
+                        "native_context_available": block.native_context_available,
+                        "sealed_memfd": block.memfd is not None,
+                        "prism": prism,
+                    }
+                    self._observe_pair_acceleration(ir, "pair_programmer.context_selected", {
+                        "model": model,
+                        "native_context_available": block.native_context_available,
+                        "sealed_memfd": block.memfd is not None,
+                        "reuse_mode": block.metadata.get("reuse_mode"),
+                        "prism_route": prism["selected_route"],
+                        "prism_decision_digest": prism["decision_digest"],
+                    })
+            async with self.http_client.stream(
+                "POST",
+                f"{native_base}/api/generate",
+                headers={"Content-Type": "application/json"},
+                json=payload,
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line:
+                        continue
+                    data = json.loads(line)
+                    text = str(data.get("response") or "")
+                    if text:
+                        yield {"choices": [{"delta": {"content": text}}]}
+                    if data.get("done"):
+                        yield {
+                            "choices": [{
+                                "delta": {},
+                                "finish_reason": str(data.get("done_reason") or "stop"),
+                            }]
+                        }
+                        return
+            return
         async for item in self._simulate_openai_stream(ir):
             yield item
+
+    def _ollama_context_manager_for(self, native_base: str) -> OllamaKVManager:
+        if self._ollama_context_manager is None or self._ollama_context_base_url != native_base:
+            if self._ollama_context_manager is not None:
+                self._ollama_context_manager.close()
+            self._ollama_context_manager = OllamaKVManager(ollama_url=native_base)
+            self._ollama_context_base_url = native_base
+        return self._ollama_context_manager
+
+    def _ollama_pair_context_plan(self, ir: EdgeKIR, model: str) -> Optional[Dict[str, Any]]:
+        metadata = ir.metadata or {}
+        if str(metadata.get("edgek_surface") or "") != "beast_tui_live_session_stream":
+            return None
+        if os.environ.get("BEAST_OLLAMA_NATIVE_CONTEXT_REUSE", "1").strip().lower() in {"0", "false", "no", "off"}:
+            return None
+        system_parts = [str(item.get("content") or "") for item in ir.messages if item.get("role") == "system"]
+        continuation_messages = [item for item in ir.messages if item.get("role") != "system"]
+        if not system_parts or not continuation_messages:
+            return None
+        prefix = "\n\n".join(system_parts).strip()
+        if not prefix:
+            return None
+        return {
+            "system": "BEAST Pair Programmer governed source context.",
+            "prefix": prefix,
+            "continuation": self._messages_to_prompt(continuation_messages),
+            "num_ctx": max(2048, min(8192, int(metadata.get("ollama_num_ctx") or 4096))),
+            "model": model,
+        }
+
+    def _ollama_pair_prism_decision(self, ir: EdgeKIR, model: str, native_context_available: bool) -> Dict[str, str]:
+        """Select the local continuation route without performing inference.
+
+        This is the narrow PRISM use that belongs in an interactive stream: it
+        arbitrates already-available local residues (native Ollama context vs a
+        warm/fresh request).  It never replaces the response generator, and it
+        does not manufacture a crystal or call another provider.
+        """
+        metadata = ir.metadata or {}
+        workspace_id = str(metadata.get("workspace_id") or "workspace:local")
+        privacy_domain = str(metadata.get("privacy_domain") or "local")
+        request_digest = "sha256:" + hashlib.sha256(
+            json.dumps({"model": model, "messages": ir.messages}, sort_keys=True, default=str).encode()
+        ).hexdigest()
+        request = ResidualComputeRequest(
+            request_id="pair-programmer:" + request_digest[7:23],
+            request_digest=request_digest,
+            workspace_id=workspace_id,
+            privacy_domain=privacy_domain,
+            task_class="pair_programmer_chat",
+        )
+        candidates = [
+            ResidualCandidate(
+                candidate_id="pair-fresh-ollama",
+                route=ResidualRoute.FRESH_OLLAMA,
+                applicability=ApplicabilityState.APPLICABLE,
+                verification=VerificationState.VERIFIED,
+                authority=ResidualAuthority.INFERENCE_ONLY,
+                predicted_latency_ms=250.0,
+                predicted_cpu_ms=20.0,
+                predicted_memory_bytes=0,
+                predicted_monetary_cost=0.0,
+                confidence=1.0,
+                expected_quality=1.0,
+                failure_probability=0.02,
+                workspace_id=workspace_id,
+                privacy_domain=privacy_domain,
+                evidence_digest=request_digest,
+            )
+        ]
+        if native_context_available:
+            candidates.append(ResidualCandidate(
+                candidate_id="pair-native-ollama-context",
+                route=ResidualRoute.NATIVE_CONTEXT,
+                applicability=ApplicabilityState.APPLICABLE,
+                verification=VerificationState.VERIFIED,
+                authority=ResidualAuthority.CONTEXT_ONLY,
+                predicted_latency_ms=5.0,
+                predicted_cpu_ms=1.0,
+                predicted_memory_bytes=0,
+                predicted_monetary_cost=0.0,
+                confidence=1.0,
+                expected_quality=1.0,
+                failure_probability=0.01,
+                workspace_id=workspace_id,
+                privacy_domain=privacy_domain,
+                evidence_digest=request_digest,
+            ))
+        decision = ResidualComputeGovernor({"local_ollama": lambda _request: candidates}).decide(request)
+        return {
+            "selected_route": decision.selected_route.value if decision.selected_route else ResidualRoute.FRESH_OLLAMA.value,
+            "decision_digest": decision.decision_digest,
+        }
+
+    def _observe_pair_acceleration(self, ir: EdgeKIR, event_type: str, payload: Dict[str, Any]) -> None:
+        if self.sensorium is None:
+            return
+        try:
+            metadata = ir.metadata or {}
+            self.sensorium.observe_owned(
+                event_type=event_type,
+                source="ollama_pair_programmer",
+                payload_schema="beast.sensor.pair_programmer_context.v1",
+                mission_id=str(metadata.get("session_id") or ""),
+                workspace_id=str(metadata.get("workspace_id") or "workspace:local"),
+                payload=payload,
+            )
+        except Exception:
+            # Sensorium is observational and must never interrupt chat.
+            return
 
     async def _route_to_provider_with_live_relay(self, provider_type: ProviderType, ir: EdgeKIR) -> Dict[str, Any]:
         """Relay provider deltas to an in-process observer while preserving PREC.
@@ -738,15 +946,65 @@ class Executor:
                 missing_key_response=lambda request_ir: self._simulate_openai_compatible_response(request_ir, provider_label),
             )
         if provider_type == ProviderType.OLLAMA:
-            return await self._execute_openai_compatible(
+            return await self._execute_ollama(
                 ir,
                 provider_label="ollama",
-                api_key_env="OLLAMA_API_KEY",
-                base_url=os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1"),
-                allow_missing_key=True,
-                missing_key_response=lambda request_ir: self._simulate_openai_compatible_response(request_ir, "ollama"),
+                base_url=os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434"),
             )
         return await self._execute_openai(ir)
+
+    async def _execute_ollama(
+        self,
+        ir: EdgeKIR,
+        *,
+        provider_label: str,
+        base_url: str,
+    ) -> Dict[str, Any]:
+        """Execute against Ollama's native /api/generate endpoint."""
+        # The governed Ollama lane uses the native API.  Older desktop
+        # profiles exported the OpenAI-compatible ``/v1`` suffix; tolerate
+        # that legacy setting rather than issuing the invalid
+        # ``/v1/api/generate`` request.
+        native_base = base_url.rstrip("/")
+        if native_base.endswith("/v1"):
+            native_base = native_base[:-3]
+        url = f"{native_base}/api/generate"
+        model = self._provider_model_name(ir.model, provider_label)
+        
+        prompt = self._messages_to_prompt(ir.messages)
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "stream": False,
+        }
+        if ir.max_tokens:
+            payload["options"] = {"num_predict": ir.max_tokens}
+
+        headers = {"Content-Type": "application/json"}
+        try:
+            response = await self.http_client.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            
+            # Map Ollama's response format to OpenAI format
+            text = data.get("response", "")
+            mapped_response = self._openai_text_response(ir, text, provider=provider_label, extra={"raw_ollama": data})
+            return mapped_response
+        except httpx.HTTPStatusError as e:
+            detail = self._provider_error_detail(e.response.text)
+            logger.error("%s API error: %s - %s", provider_label, e.response.status_code, detail[:500])
+            return self._create_error_response(
+                "PROVIDER_ERROR",
+                f"{provider_label} API error: {e.response.status_code}: {detail}",
+                status_code=e.response.status_code,
+            )
+        except Exception as e:
+            logger.error("%s request failed: %s", provider_label, e)
+            return self._create_error_response(
+                "PROVIDER_ERROR",
+                str(e),
+                status_code=500,
+            )
 
     @staticmethod
     def _openai_compatible_config(ir: EdgeKIR) -> Dict[str, Any]:
@@ -776,6 +1034,14 @@ class Executor:
     
     def _determine_provider_type(self, ir: EdgeKIR) -> ProviderType:
         """Determine which provider to route to based on the IR"""
+        # The proxy stamps the selected backend before governance runs.  Some
+        # governance transformations intentionally minimize route metadata,
+        # but this marker remains the unambiguous execution contract.  Honor
+        # it before model-name inference so an Ollama IDE turn cannot degrade
+        # into the legacy OpenAI simulation fallback.
+        backend_from_metadata = str((ir.metadata or {}).get("edgek_provider_backend") or "").strip()
+        if backend_from_metadata == "ollama":
+            return ProviderType.OLLAMA
         provider_from_metadata = ir.metadata.get("route_provider") or ir.metadata.get("provider")
         if provider_from_metadata:
             try:
@@ -898,7 +1164,7 @@ class Executor:
 
     async def _execute_tgi(self, ir: EdgeKIR) -> Dict[str, Any]:
         """Execute against local/remote Text Generation Inference, including llama.cpp backend."""
-        base_url = os.environ.get("TGI_BASE_URL", "http://127.0.0.1:3000")
+        base_url = self._normalize_tgi_base_url(os.environ.get("TGI_BASE_URL", "http://127.0.0.1:3000"))
         model = self._provider_model_name(ir.model, "tgi")
         api_key = os.environ.get("HF_TOKEN", "")
         headers = {"Content-Type": "application/json"}
@@ -918,12 +1184,13 @@ class Executor:
                 data.setdefault("edgek_tgi_backend", os.environ.get("TGI_BACKEND", "llamacpp"))
             return data
         except httpx.HTTPStatusError as e:
-            logger.error("TGI API error: %s - %s", e.response.status_code, e.response.text[:500])
+            detail = self._provider_error_detail(e.response.text)
+            logger.error("TGI API error: %s - %s", e.response.status_code, detail[:500])
             return self._create_error_response(
                 "PROVIDER_ERROR",
-                f"TGI API error: {e.response.status_code}",
+                f"TGI API error: {e.response.status_code}: {detail}",
                 status_code=e.response.status_code,
-                extra={"provider": "tgi"},
+                extra={"provider": "tgi", "upstream_error": detail[:1200], "model": model},
             )
         except Exception as e:
             logger.error("TGI request failed: %s", e)
@@ -959,6 +1226,11 @@ class Executor:
             return self._simulate_gemini_response(ir)
         base_url = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com").rstrip("/")
         model = self._provider_model_name(ir.model, "gemini")
+        # Google retired the older 2.5 Flash route for new API users. Keep
+        # persisted Pair Programmer selections compatible without requiring
+        # an operator to repair every saved model choice by hand.
+        if model == "gemini-2.5-flash":
+            model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
         url = f"{base_url}/v1beta/models/{model}:generateContent"
         payload = self._gemini_payload(ir)
         try:
@@ -1051,6 +1323,10 @@ class Executor:
 
     def _messages_to_prompt(self, messages: list) -> str:
         return "\n".join(f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in messages)
+
+    def _normalize_tgi_base_url(self, base_url: str) -> str:
+        base = str(base_url or "").rstrip("/")
+        return base[:-3] if base.endswith("/v1") else base
 
     def _provider_error_detail(self, text: str) -> str:
         text = (text or "").strip()

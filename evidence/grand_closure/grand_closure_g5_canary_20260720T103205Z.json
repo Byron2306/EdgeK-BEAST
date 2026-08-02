@@ -1,0 +1,43 @@
+{
+  "authority_used": "one_use_execute",
+  "canary_id": "g5-bounded-write-rollback",
+  "created_at": "2026-07-20T10:32:05.808870+00:00",
+  "evidence_digest": "sha256:42065c9fc34fc619a0a40802445a379d5e5339fd2c578bb15e9fcab49720bdc6",
+  "forced_rollback": {
+    "authority_consumed": true,
+    "capsule_digest": "sha256:b5ece5ad9a9f30efb46db86e361349580b3a82b607a6fdab035268bb5febb4cf",
+    "execution_digest": "sha256:b772f7fc34ca51af23e2c82ff308457d7d29256bec4666c4a1e9625e38d85f0f",
+    "filesystem_writes": 1,
+    "network_calls": 0,
+    "phase": "forced_rollback",
+    "postconditions_verified": false,
+    "rollback_performed": true,
+    "status": "rolled_back_after_verification_failure",
+    "target_digest_after": "sha256:2ef8e6ed2b6f2f7623cd497176e274845692bbc8b9004b29f0944fc3e2259da5",
+    "target_digest_before": "sha256:2ef8e6ed2b6f2f7623cd497176e274845692bbc8b9004b29f0944fc3e2259da5",
+    "workspace_digest_after": "sha256:35040cab138f22f0c728359b8a4d2b79fe43d0fe66d13b31c63fcf8e1b6d7815",
+    "workspace_digest_before": "sha256:35040cab138f22f0c728359b8a4d2b79fe43d0fe66d13b31c63fcf8e1b6d7815"
+  },
+  "local_inference_calls": 0,
+  "network_calls": 0,
+  "provider_calls": 0,
+  "raw_payload_retained": false,
+  "request_digest": "sha256:483822b75849dd64ef2612f9ff105b4ed34daef2379269c9a1a469dbd67c8dbf",
+  "rollback_restored_exact_state": true,
+  "successful_content_verified": true,
+  "successful_write": {
+    "authority_consumed": true,
+    "capsule_digest": "sha256:f4c05d3061a42c633169232cec7c8f9bfd5eaa7559b56d4a459fb1f4eaf02411",
+    "execution_digest": "sha256:1e9d7a72d170dc4a669e8aa2977722e99ae646cdb974da1a85ef3b8ab792696c",
+    "filesystem_writes": 1,
+    "network_calls": 0,
+    "phase": "successful_write",
+    "postconditions_verified": true,
+    "rollback_performed": false,
+    "status": "verified_success",
+    "target_digest_after": "sha256:2ef8e6ed2b6f2f7623cd497176e274845692bbc8b9004b29f0944fc3e2259da5",
+    "target_digest_before": "sha256:222667f43f9523fc629245ed567d43490d97c8c68ac48af5bae6433827d01900",
+    "workspace_digest_after": "sha256:35040cab138f22f0c728359b8a4d2b79fe43d0fe66d13b31c63fcf8e1b6d7815",
+    "workspace_digest_before": "sha256:7462e051c0765261272b18918570f75ddba0068125936840b6e949210d7f2b80"
+  }
+}

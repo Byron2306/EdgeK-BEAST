@@ -1,0 +1,43 @@
+{
+  "approval_policy": {
+    "external_write": false,
+    "filesystem_write": false,
+    "first_run": true,
+    "install": true,
+    "network": false
+  },
+  "beast_plugin_manifest_version": "1.0",
+  "budget": {
+    "calls_per_hour": 1000,
+    "max_cost_usd_per_call": 0,
+    "max_latency_ms": 5000,
+    "max_tokens_per_call": 0
+  },
+  "entrypoint": {
+    "kind": "python",
+    "module": "app.kernel.beast_builtin_plugins"
+  },
+  "id": "beast.forge.qualifier",
+  "name": "Forge Qualifier",
+  "permissions": {
+    "environment": [],
+    "filesystem_read": [],
+    "filesystem_write": [],
+    "network_domains": [],
+    "subprocess": false
+  },
+  "publisher": "BEAST Core",
+  "risk_class": "medium",
+  "tools": [
+    {
+      "description": "Governed local qualify forge candidates",
+      "inputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "name": "qualify_forge_candidates",
+      "tool_schema_hash": "sha256:2c25e21c30a5bbf8b8681457c7dbbb4f6a702be90d900ca2346a0748b2e318a2"
+    }
+  ],
+  "version": "1.0.0"
+}

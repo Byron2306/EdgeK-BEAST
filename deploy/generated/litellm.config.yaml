@@ -77,7 +77,8 @@ model_list:
 - model_name: llama_cpp
   litellm_params:
     model: openai/llama_cpp
-    api_key: os.environ/LLAMA_CPP_BASE_URL
+    api_key: os.environ/LLAMA_CPP_API_KEY
+    api_base: os.environ/LLAMA_CPP_BASE_URL
 - model_name: local-nim-model
   litellm_params:
     model: openai/local-nim-model

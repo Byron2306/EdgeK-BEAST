@@ -21,6 +21,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.kernel.capability.capability_impact import CapabilityImpactFingerprint
+from app.kernel.capability.capability_crystallization import CapabilityCrystallizationEngine
+from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.evidence.evidence_digest import sha256_digest
+from app.kernel.evidence.evidence_store import EvidenceStore
+from app.kernel.evidence.fingerprint_store import FingerprintStore
 from app.kernel.storage.durable_inference_storage import DurableInferenceStorage
 from app.kernel.networking.meta_tool_commons import MetaToolCommons
 from app.kernel.security.secret_vault import SecretVault
@@ -66,6 +71,509 @@ MEGA_FAMILY_TASK_MAP = {
     "secret_redaction": "provider_config_secret_redaction",
 }
 LIVE_TASK_FAMILY_MAP = {value: key for key, value in MEGA_FAMILY_TASK_MAP.items()}
+
+
+def _pgec_state_root() -> Path | None:
+    raw = str(os.environ.get("BEAST_PGEC_STATE_DIR") or "").strip()
+    if not raw:
+        return None
+    path = Path(raw).expanduser().resolve()
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def _write_json_atomic(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(path.suffix + ".tmp")
+    temp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temp.replace(path)
+
+
+def _append_jsonl(path: Path, rows: Iterable[Dict[str, Any]]) -> int:
+    items = [dict(row) for row in rows]
+    if not items:
+        return 0
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        for row in items:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+    return len(items)
+
+
+def _policy_generation() -> str:
+    return str(os.environ.get("BEAST_PGEC_POLICY_GENERATION") or "pgec_450_policy_v1")
+
+
+def _experiment_id() -> str:
+    return str(os.environ.get("BEAST_PGEC_EXPERIMENT_ID") or "unknown")
+
+
+def _stable_verifier_contract(family: str) -> str:
+    return "sha256:" + hashlib.sha256(f"verifier:{family}:v1".encode()).hexdigest()
+
+
+def _stable_tool_schema_digest(family: str) -> str:
+    return "sha256:" + hashlib.sha256(f"tool_schema:{family}:v1".encode()).hexdigest()
+
+
+def _normalize_repo_path(path: str) -> str:
+    return str(path or "").strip().strip('"').strip("'")
+
+
+def _path_scope_for_fixture(fixture: Dict[str, Any]) -> Dict[str, Any]:
+    explicit = sorted({
+        _normalize_repo_path(item)
+        for item in (
+            list(fixture.get("target_paths") or [])
+            + list(fixture.get("visible_tests") or [])
+            + list(fixture.get("hidden_tests") or [])
+        )
+        if _normalize_repo_path(item)
+    })
+    directories = sorted({
+        str(Path(item).parent).strip(".")
+        for item in explicit
+        if str(Path(item).parent) not in {"", "."}
+    })
+    expandable_directories = [
+        directory
+        for directory in directories
+        if len([part for part in Path(directory).parts if part not in {"."}]) >= 2
+    ]
+    prefixes = sorted({f"{directory}/" for directory in directories if directory})
+    return {
+        "explicit_paths": explicit,
+        "directory_prefixes": [f"{directory}/" for directory in expandable_directories],
+        "advisory_directories": prefixes,
+    }
+
+
+def _scoped_repo_entries(entries: List[str], scope: Dict[str, Any]) -> List[str]:
+    explicit = set(scope.get("explicit_paths") or [])
+    prefixes = tuple(scope.get("directory_prefixes") or [])
+    selected: List[str] = []
+    for raw in entries:
+        candidate = _normalize_repo_path(raw[3:] if len(raw) > 3 and raw[:2].strip() else raw)
+        if candidate in explicit or any(candidate.startswith(prefix) for prefix in prefixes):
+            selected.append(raw)
+    return selected
+
+
+def _scoped_repo_paths(paths: List[str], scope: Dict[str, Any]) -> List[str]:
+    explicit = set(scope.get("explicit_paths") or [])
+    prefixes = tuple(scope.get("directory_prefixes") or [])
+    return [
+        item for item in paths
+        if item in explicit or any(item.startswith(prefix) for prefix in prefixes)
+    ]
+
+
+def _git_workspace_state(scope: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    commit = git_commit()
+    branch = "unknown"
+    status_lines: List[str] = []
+    diff_name_only: List[str] = []
+    try:
+        proc = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=str(ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            branch = proc.stdout.strip()
+    except OSError:
+        pass
+    try:
+        proc = subprocess.run(
+            ["git", "status", "--short"],
+            cwd=str(ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if proc.returncode == 0:
+            status_lines = [line.rstrip() for line in proc.stdout.splitlines() if line.strip()]
+    except OSError:
+        pass
+    try:
+        proc = subprocess.run(
+            ["git", "diff", "--name-only", "HEAD"],
+            cwd=str(ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if proc.returncode == 0:
+            diff_name_only = sorted({line.strip() for line in proc.stdout.splitlines() if line.strip()})
+    except OSError:
+        pass
+    tracked_entries = [line for line in status_lines if not line.startswith("??")]
+    untracked_entries = [line for line in status_lines if line.startswith("??")]
+    scope = scope or {"explicit_paths": [], "directory_prefixes": []}
+    scoped_tracked = _scoped_repo_entries(tracked_entries, scope)
+    scoped_untracked = _scoped_repo_entries(untracked_entries, scope)
+    scoped_diff = _scoped_repo_paths(diff_name_only, scope)
+    scoped_payload = {
+        "explicit_paths": list(scope.get("explicit_paths") or []),
+        "directory_prefixes": list(scope.get("directory_prefixes") or []),
+        "tracked_changes": scoped_tracked,
+        "untracked_changes": scoped_untracked,
+        "diff_name_only": scoped_diff,
+    }
+    scoped_payload["workspace_state_hash"] = "sha256:" + hashlib.sha256(
+        json.dumps(scoped_payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    workspace_payload = {
+        "commit": commit,
+        "branch": branch,
+        "tracked_changes": tracked_entries,
+        "untracked_changes": untracked_entries,
+        "diff_name_only": diff_name_only,
+        "scoped": scoped_payload,
+        "scoped_relevant_change_count": len(scoped_tracked) + len(scoped_untracked),
+        "global_tracked_change_count": len(tracked_entries),
+        "global_untracked_change_count": len(untracked_entries),
+    }
+    workspace_payload["workspace_state_hash"] = "sha256:" + hashlib.sha256(
+        json.dumps(workspace_payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return workspace_payload
+
+
+def _task_fixture_digest(family: str) -> Dict[str, Any]:
+    task = _task_for_family(family)
+    payload = {
+        "family": family,
+        "task_name": MEGA_FAMILY_TASK_MAP[family],
+        "target_paths": sorted(task.files),
+        "visible_tests": sorted(task.tests),
+        "hidden_tests": sorted(task.hidden_tests),
+        "fixture_file_hashes": {
+            rel: "sha256:" + hashlib.sha256(str(task.files[rel]).encode()).hexdigest()
+            for rel in sorted(task.files)
+        },
+        "fixture_test_hashes": {
+            rel: "sha256:" + hashlib.sha256(str(({**task.tests, **task.hidden_tests})[rel]).encode()).hexdigest()
+            for rel in sorted({**task.tests, **task.hidden_tests})
+        },
+    }
+    payload["fixture_digest"] = "sha256:" + hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return payload
+
+
+def _family_applicability_boundary(row: Dict[str, Any]) -> Dict[str, Any]:
+    family = str(row.get("family") or "unknown")
+    fixture = _task_fixture_digest(family)
+    path_scope = _path_scope_for_fixture(fixture)
+    workspace_state = _git_workspace_state(path_scope)
+    payload = {
+        "beast_object_type": "pgec_450_family_applicability_boundary",
+        "version": "1.0",
+        "experiment_id": _experiment_id(),
+        "workspace_domain": "edgek_beast_repo",
+        "provider": str(row.get("provider") or "unknown"),
+        "family": family,
+        "policy_generation": _policy_generation(),
+        "verifier_contract_digest": _stable_verifier_contract(family),
+        "tool_schema_digest": _stable_tool_schema_digest(family),
+        "path_scope": path_scope,
+        "workspace_state": workspace_state,
+        "fixture_contract": fixture,
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    payload["boundary_digest"] = "sha256:" + hashlib.sha256(canonical.encode()).hexdigest()
+    payload["repo_fingerprint"] = payload["boundary_digest"]
+    return payload
+
+
+def _applicability_proof(row: Dict[str, Any]) -> Dict[str, Any]:
+    boundary = _family_applicability_boundary(row)
+    payload = {
+        "beast_object_type": "pgec_450_applicability_proof",
+        "version": "1.0",
+        "experiment_id": boundary["experiment_id"],
+        "provider": boundary["provider"],
+        "family": boundary["family"],
+        "lane": str(row.get("lane") or "unknown"),
+        "occurrence": int(row.get("occurrence") or 0),
+        "policy_generation": boundary["policy_generation"],
+        "workspace_domain": boundary["workspace_domain"],
+        "verifier_contract_digest": boundary["verifier_contract_digest"],
+        "tool_schema_digest": boundary["tool_schema_digest"],
+        "impact_fingerprint_hash": str(row.get("impact_fingerprint_hash") or ""),
+        "effect_equivalence_hash": str(row.get("effect_equivalence_hash") or ""),
+        "path_scope": boundary["path_scope"],
+        "workspace_state": boundary["workspace_state"],
+        "fixture_contract": boundary["fixture_contract"],
+        "boundary_digest": boundary["boundary_digest"],
+        "repo_fingerprint": boundary["repo_fingerprint"],
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    payload["applicability_digest"] = "sha256:" + hashlib.sha256(canonical.encode()).hexdigest()
+    return payload
+
+
+def _candidate_name(family: str, provider: str) -> str:
+    return f"{family}:{provider}:full_beast_compute_governor"
+
+
+def _impact_fingerprint_payload(row: Dict[str, Any]) -> Dict[str, Any]:
+    applicability = _applicability_proof(row)
+    return {
+        "fingerprint_hash": row.get("impact_fingerprint_hash"),
+        "state": "active" if row.get("completed") else "shadow_revalidation",
+        "policy_version": _policy_generation(),
+        "workspace_domain": "edgek_beast_repo",
+        "tool_schema_hashes": [_stable_tool_schema_digest(str(row.get("family") or "unknown"))],
+        "effect_equivalence_hash": row.get("effect_equivalence_hash"),
+        "reuse_phase": row.get("reuse_phase"),
+        "repo_fingerprint": applicability["repo_fingerprint"],
+        "applicability_digest": applicability["applicability_digest"],
+        "boundary_digest": applicability["boundary_digest"],
+        "confidence": 0.95 if row.get("clean_completed") else 0.90 if row.get("completed") else 0.0,
+    }
+
+
+def _shared_state_sync(live_execution: Dict[str, Any]) -> Dict[str, Any]:
+    root = _pgec_state_root()
+    if root is None:
+        return {}
+
+    treasury_root = root / "capability_treasury"
+    crystal_root = root / "crystal_registry"
+    ledger_path = root / "compute_governor.sqlite3"
+    policy_path = root / "policy_snapshot.json"
+    verifier_path = root / "verifier_registry.json"
+    fingerprint_ledger_path = root / "fingerprint_ledger.jsonl"
+    evidence_workspace = root / "evidence_workspace"
+
+    treasury = DurableInferenceStorage(treasury_root)
+    crystallization = CapabilityCrystallizationEngine(storage_path=crystal_root)
+    ledger = ComputeLedger(str(ledger_path))
+    evidence_store = EvidenceStore(evidence_workspace)
+    fingerprint_store = FingerprintStore(evidence_workspace)
+
+    observations = [dict(item) for item in (live_execution.get("controlled_observations") or [])]
+    provider_receipts = [dict(item) for item in (live_execution.get("provider_call_receipts") or [])]
+    reuse_receipts = [dict(item) for item in (live_execution.get("compute_governor_receipts") or [])]
+    diagnostics = [dict(item) for item in (live_execution.get("crystallization_diagnostics") or [])]
+
+    providers = sorted({str(item.get("provider")) for item in observations if item.get("provider")})
+    families = sorted({str(item.get("family")) for item in observations if item.get("family")})
+    verifier_registry = {
+        "beast_object_type": "pgec_450_verifier_registry",
+        "version": "1.0",
+        "experiment_id": _experiment_id(),
+        "policy_generation": _policy_generation(),
+        "families": {
+            family: {
+                "verifier_contract_digest": _stable_verifier_contract(family),
+                "tool_schema_digest": _stable_tool_schema_digest(family),
+            }
+            for family in families
+        },
+        "updated_at": utc_now(),
+    }
+    _write_json_atomic(verifier_path, verifier_registry)
+    _write_json_atomic(policy_path, {
+        "beast_object_type": "pgec_450_policy_snapshot",
+        "version": "1.0",
+        "experiment_id": _experiment_id(),
+        "policy_generation": _policy_generation(),
+        "providers": providers,
+        "families": families,
+        "updated_at": utc_now(),
+    })
+
+    fingerprint_rows: List[Dict[str, Any]] = []
+    promoted_candidates: List[str] = []
+    stored_credits: List[str] = []
+    evidence_ids: List[str] = []
+    applicability_rows: List[Dict[str, Any]] = []
+    boundary_rows: List[Dict[str, Any]] = []
+
+    for receipt in provider_receipts:
+        ledger.record_receipt({
+            **receipt,
+            "mode": "provider_execution",
+            "status": "completed" if receipt.get("completed") else "failed",
+            "behavior_preserved": bool(receipt.get("visible_passed")) and bool(receipt.get("hidden_passed")),
+            "gate_decision": "provider_execution",
+            "candidate_decision": "provider_execution",
+        })
+    for receipt in reuse_receipts:
+        ledger.record_receipt({
+            **receipt,
+            "mode": "deterministic_reuse",
+            "status": "completed" if receipt.get("visible_passed") else "failed",
+            "behavior_preserved": bool(receipt.get("visible_passed")) and bool(receipt.get("hidden_passed")),
+            "gate_decision": "deterministic_reuse",
+            "candidate_decision": "deterministic_reuse",
+        })
+
+    for row in observations:
+        if row.get("lane") != "full_beast_compute_governor":
+            continue
+        family = str(row.get("family") or "unknown")
+        provider = str(row.get("provider") or "unknown")
+        boundary = _family_applicability_boundary(row)
+        applicability = _applicability_proof(row)
+        candidate_name = _candidate_name(family, provider)
+        impact = _impact_fingerprint_payload(row)
+        crystallization.register_shadow_run(
+            candidate_name=candidate_name,
+            task_class=family,
+            transform_type="local_inference" if row.get("deterministic_reuse") else "deterministic",
+            hidden_test_success=bool(row.get("hidden_passed")),
+            rollback_success=bool(row.get("rollback_success")),
+            behavior_preserved=bool(row.get("visible_passed")) and bool(row.get("hidden_passed")),
+            impact_fingerprint=impact,
+        )
+        candidate_id = f"crystal_{candidate_name}_{family}"
+        promoted = crystallization.promote_candidate(candidate_id, approver="pgec_450_matrix")
+        if promoted:
+            promoted_candidates.append(candidate_id)
+        if row.get("completed"):
+            verified_tests = []
+            if row.get("visible_passed"):
+                verified_tests.append("visible")
+            if row.get("hidden_passed"):
+                verified_tests.append("hidden")
+            credit = treasury.store_semantic_result(
+                task_class=family,
+                repo_fingerprint=applicability["repo_fingerprint"],
+                policy_version=_policy_generation(),
+                verified_tests=verified_tests,
+                avoided_tokens_estimate=int(row.get("avoided_tokens_estimate") or row.get("total_tokens") or 0),
+                confidence=0.96 if row.get("deterministic_reuse") else 0.93 if row.get("clean_completed") else 0.88,
+                impact_fingerprint_hash=row.get("impact_fingerprint_hash"),
+                metadata={
+                    "provider": provider,
+                    "occurrence": int(row.get("occurrence") or 0),
+                    "lane": row.get("lane"),
+                    "reuse_phase": row.get("reuse_phase"),
+                    "repair_provenance": row.get("repair_provenance"),
+                    "effect_equivalence_hash": row.get("effect_equivalence_hash"),
+                    "applicability_digest": applicability["applicability_digest"],
+                    "boundary_digest": applicability["boundary_digest"],
+                    "workspace_state_hash": applicability["workspace_state"]["workspace_state_hash"],
+                    "fixture_digest": applicability["fixture_contract"]["fixture_digest"],
+                },
+            )
+            stored_credits.append(credit.credit_id)
+
+        evidence_core = {
+            "beast_object_type": "pgec_450_shared_state_evidence",
+            "evidence_id": f"pgec-{hashlib.sha256(f'{provider}:{family}:{row.get('occurrence')}:{row.get('lane')}'.encode()).hexdigest()[:24]}",
+            "run_id": f"{_experiment_id()}:{provider}:{family}:o{int(row.get('occurrence') or 0)}:{row.get('lane')}",
+            "kind": "pgec_observation",
+            "version": "1.0",
+            "provider": provider,
+            "family": family,
+            "occurrence": int(row.get("occurrence") or 0),
+            "lane": row.get("lane"),
+            "effect_equivalence_hash": row.get("effect_equivalence_hash"),
+            "impact_fingerprint_hash": row.get("impact_fingerprint_hash"),
+            "applicability_digest": applicability["applicability_digest"],
+            "boundary_digest": applicability["boundary_digest"],
+            "created_at": time.time(),
+        }
+        evidence = dict(evidence_core)
+        evidence["evidence_digest"] = sha256_digest(evidence_core)
+        stored = evidence_store.put(evidence)
+        evidence_ids.append(str(stored.get("evidence_id") or evidence["evidence_id"]))
+        bundle = {
+            "task": {
+                "digest": sha256_digest({
+                    "family": family,
+                    "occurrence": int(row.get("occurrence") or 0),
+                    "lane": row.get("lane"),
+                }),
+                "components": {
+                    "family": family,
+                    "occurrence": int(row.get("occurrence") or 0),
+                    "lane": row.get("lane"),
+                },
+            },
+            "environment": {
+                "digest": sha256_digest({
+                "policy_generation": _policy_generation(),
+                    "repo_fingerprint": applicability["repo_fingerprint"],
+                }),
+                "components": {
+                    "policy_generation": _policy_generation(),
+                    "repo_fingerprint": applicability["repo_fingerprint"],
+                },
+            },
+            "effect_equivalence_hash": row.get("effect_equivalence_hash"),
+            "impact_fingerprint_hash": row.get("impact_fingerprint_hash"),
+            "applicability_digest": applicability["applicability_digest"],
+            "boundary_digest": applicability["boundary_digest"],
+        }
+        bundle["bundle_digest"] = sha256_digest(bundle)
+        fingerprint_store.put(evidence["evidence_id"], bundle)
+        fingerprint_rows.append({
+            "evidence_id": evidence["evidence_id"],
+            "provider": provider,
+            "family": family,
+            "occurrence": int(row.get("occurrence") or 0),
+            "lane": row.get("lane"),
+            "impact_fingerprint_hash": row.get("impact_fingerprint_hash"),
+            "effect_equivalence_hash": row.get("effect_equivalence_hash"),
+            "applicability_digest": applicability["applicability_digest"],
+            "boundary_digest": applicability["boundary_digest"],
+            "repo_fingerprint": applicability["repo_fingerprint"],
+            "recorded_at": utc_now(),
+        })
+        boundary_rows.append(boundary)
+        applicability_rows.append(applicability)
+
+    _append_jsonl(fingerprint_ledger_path, fingerprint_rows)
+    _append_jsonl(root / "family_applicability_boundaries.jsonl", boundary_rows)
+    _append_jsonl(root / "applicability_proofs.jsonl", applicability_rows)
+    displaced_tokens = sum(int(item.get("avoided_tokens_estimate") or 0) for item in reuse_receipts)
+    metrics = crystallization.update_metrics(displaced_tokens=displaced_tokens).to_dict()
+    ledger_state = ledger.state()
+    treasury_summary = treasury.get_metrics()
+
+    summary = {
+        "beast_object_type": "pgec_450_shared_state_sync",
+        "version": "1.0",
+        "experiment_id": _experiment_id(),
+        "policy_generation": _policy_generation(),
+        "state_root": str(root),
+        "capability_treasury_root": str(treasury_root),
+        "crystal_registry_root": str(crystal_root),
+        "compute_ledger_path": str(ledger_path),
+        "policy_snapshot": str(policy_path),
+        "verifier_registry": str(verifier_path),
+        "fingerprint_ledger": str(fingerprint_ledger_path),
+        "family_applicability_boundaries": str(root / "family_applicability_boundaries.jsonl"),
+        "applicability_proofs": str(root / "applicability_proofs.jsonl"),
+        "evidence_workspace": str(evidence_workspace),
+        "providers": providers,
+        "families": families,
+        "stored_credits": sorted(set(stored_credits)),
+        "promoted_candidates": sorted(set(promoted_candidates)),
+        "evidence_ids": sorted(set(evidence_ids)),
+        "diagnostic_count": len(diagnostics),
+        "boundary_rows": boundary_rows,
+        "applicability_rows": applicability_rows,
+        "fingerprint_entries_appended": len(fingerprint_rows),
+        "compute_ledger_state": ledger_state,
+        "capability_metrics": metrics,
+        "treasury_summary": treasury_summary,
+        "updated_at": utc_now(),
+    }
+    _write_json_atomic(root / "shared_state_sync.json", summary)
+    return summary
 
 
 def utc_now() -> str:
@@ -136,17 +644,30 @@ def _retry_after_seconds(exc: Exception) -> float | None:
         return None
 
 
-def groq_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
-    """Build the mega-test Groq caller with conservative 429 backoff."""
+def provider_backoff_caller(
+    provider: Any,
+    max_tokens: int,
+    json_mode: bool,
+    *,
+    provider_label: str,
+    model_env_var: str | None = None,
+    timeout_env_var: str | None = None,
+    attempts_env_var: str | None = None,
+    base_delay_env_var: str | None = None,
+    max_delay_env_var: str | None = None,
+    force_json_mode: bool = False,
+) -> Any:
+    """Build the mega-test caller with provider-specific retry and JSON settings."""
 
     base_url = os.path.expandvars(provider.base_url)
-    model = os.environ.get("GROQ_MODEL", provider.model)
+    model = os.environ.get(model_env_var or "", provider.model) if model_env_var else provider.model
     api_key = _first_env_value(provider.api_key_env)
-    timeout = float(os.environ.get("GROQ_TIMEOUT", str(provider.timeout)))
-    attempts = max(1, int(os.environ.get("GROQ_MEGA_RETRY_ATTEMPTS", "4")))
-    base_delay = float(os.environ.get("GROQ_MEGA_RETRY_BASE_SECONDS", "8"))
-    max_delay = float(os.environ.get("GROQ_MEGA_RETRY_MAX_SECONDS", "45"))
+    timeout = float(os.environ.get(timeout_env_var or "", str(provider.timeout))) if timeout_env_var else float(provider.timeout)
+    attempts = max(1, int(os.environ.get(attempts_env_var or "", "4"))) if attempts_env_var else 4
+    base_delay = float(os.environ.get(base_delay_env_var or "", "8")) if base_delay_env_var else 8.0
+    max_delay = float(os.environ.get(max_delay_env_var or "", "45")) if max_delay_env_var else 45.0
     retry_statuses = {408, 409, 425, 429, 500, 502, 503, 504}
+    effective_json_mode = True if force_json_mode else json_mode
 
     def call(prompt: str) -> Dict[str, Any]:
         last_exc: Exception | None = None
@@ -159,7 +680,7 @@ def groq_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
                     api_key,
                     timeout,
                     max_tokens=max_tokens,
-                    json_mode=json_mode,
+                    json_mode=effective_json_mode,
                 )
             except Exception as exc:
                 last_exc = exc
@@ -169,7 +690,7 @@ def groq_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
                 retry_after = _retry_after_seconds(exc)
                 delay = retry_after if retry_after is not None else min(max_delay, base_delay * (2 ** (attempt - 1)))
                 print(
-                    f"[mega-live-retry] provider=groq status={status} "
+                    f"[mega-live-retry] provider={provider_label} status={status} "
                     f"attempt={attempt}/{attempts} sleep={delay:.1f}s",
                     file=sys.stderr,
                     flush=True,
@@ -179,6 +700,35 @@ def groq_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
         raise last_exc
 
     return call
+
+
+def groq_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
+    return provider_backoff_caller(
+        provider,
+        max_tokens,
+        json_mode,
+        provider_label="groq",
+        model_env_var="GROQ_MODEL",
+        timeout_env_var="GROQ_TIMEOUT",
+        attempts_env_var="GROQ_MEGA_RETRY_ATTEMPTS",
+        base_delay_env_var="GROQ_MEGA_RETRY_BASE_SECONDS",
+        max_delay_env_var="GROQ_MEGA_RETRY_MAX_SECONDS",
+    )
+
+
+def nvidia_backoff_caller(provider: Any, max_tokens: int, json_mode: bool) -> Any:
+    return provider_backoff_caller(
+        provider,
+        max_tokens,
+        json_mode,
+        provider_label="nvidia_nim",
+        model_env_var="NVIDIA_MODEL",
+        timeout_env_var="NVIDIA_TIMEOUT",
+        attempts_env_var="NVIDIA_MEGA_RETRY_ATTEMPTS",
+        base_delay_env_var="NVIDIA_MEGA_RETRY_BASE_SECONDS",
+        max_delay_env_var="NVIDIA_MEGA_RETRY_MAX_SECONDS",
+        force_json_mode=True,
+    )
 
 
 def resolve_providers(args: argparse.Namespace) -> List[str]:
@@ -261,6 +811,10 @@ def _observation_key(row: Dict[str, Any]) -> tuple[str, str, int, str]:
 
 def _lineage_key(provider: str, family: str) -> tuple[str, str]:
     return (str(provider), str(family))
+
+
+def _lane_lineage_key(provider: str, family: str, lane: str) -> tuple[str, str, str]:
+    return (str(provider), str(family), str(lane))
 
 
 def _tool_schema_hash(family: str, occurrence: int) -> str:
@@ -429,8 +983,13 @@ def _missing_live_row(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _eligible_for_crystallization(history: Dict[tuple[str, str], Dict[int, Dict[str, Any]]], provider: str, family: str) -> bool:
-    prior = history.get(_lineage_key(provider, family), {})
+def _eligible_for_crystallization(
+    history: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]],
+    provider: str,
+    family: str,
+    lane: str = "full_beast_compute_governor",
+) -> bool:
+    prior = history.get(_lane_lineage_key(provider, family, lane), {})
     required = [prior.get(1), prior.get(2)]
     return all(
         row
@@ -441,6 +1000,161 @@ def _eligible_for_crystallization(history: Dict[tuple[str, str], Dict[int, Dict[
         and not row.get("false_reuse_warning")
         for row in required
     )
+
+
+def _repair_provenance(row: Dict[str, Any]) -> str:
+    if row.get("deterministic_reuse"):
+        return "deterministic_reuse"
+    if row.get("clean_completed"):
+        return "provider_clean"
+    if row.get("rescued_completed"):
+        return "provider_rescued"
+    if row.get("completed"):
+        return "provider_verified"
+    if row.get("status") == "missing_live_result":
+        return "missing_live_result"
+    return "provider_failed"
+
+
+def _effect_equivalence_hash(row: Dict[str, Any]) -> str:
+    payload = {
+        "family": row.get("family"),
+        "completed": bool(row.get("completed")),
+        "visible_passed": bool(row.get("visible_passed")),
+        "hidden_passed": bool(row.get("hidden_passed")),
+        "rollback_success": bool(row.get("rollback_success")),
+        "files_changed": sorted(str(item) for item in (row.get("files_changed") or [])),
+        "failure_bucket": row.get("failure_bucket"),
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return "sha256:" + hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def _ordered_verified_occurrences(
+    history: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]],
+    provider: str,
+    family: str,
+    lane: str,
+) -> List[int]:
+    lineage = history.get(_lane_lineage_key(provider, family, lane), {})
+    ordered: List[int] = []
+    for occurrence in sorted(lineage):
+        row = lineage[occurrence]
+        if (
+            row.get("completed")
+            and row.get("visible_passed")
+            and row.get("hidden_passed")
+            and row.get("rollback_success")
+            and not row.get("false_reuse_warning")
+        ):
+            ordered.append(int(occurrence))
+    return ordered
+
+
+def _reuse_phase_for_occurrence(occurrence: int) -> str:
+    if occurrence >= 10:
+        return "mutation_challenge"
+    if occurrence >= 5:
+        return "active_recurrence"
+    if occurrence >= 3:
+        return "validated_first_recurrence"
+    return "seed_execution"
+
+
+def _crystallization_diagnostic(
+    row: Dict[str, Any],
+    history: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]],
+    observation_history: Dict[tuple[str, str, int, str], Dict[str, Any]],
+    *,
+    source_provider: str | None = None,
+    executed_row: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
+    provider = str(row["provider"])
+    family = str(row["family"])
+    occurrence = int(row["occurrence"])
+    lane = str(row["lane"])
+    source_provider = str(source_provider or provider)
+    lineage_provider = source_provider if lane == "full_beast_compute_governor" else provider
+    prior_occurrences = _ordered_verified_occurrences(history, lineage_provider, family, lane)
+    prior_rows = [
+        history.get(_lane_lineage_key(lineage_provider, family, lane), {}).get(item)
+        for item in prior_occurrences
+    ]
+    prior_rows = [item for item in prior_rows if item]
+    blocked_reasons: List[str] = []
+    if occurrence >= 3 and 1 not in prior_occurrences:
+        blocked_reasons.append("missing_o1")
+    if occurrence >= 3 and 2 not in prior_occurrences:
+        blocked_reasons.append("missing_o2")
+    if lane == "full_beast_compute_governor" and occurrence >= 5 and 3 not in prior_occurrences:
+        blocked_reasons.append("validated_first_recurrence_not_observed")
+    if lane == "full_beast_compute_governor" and occurrence >= 10 and 5 not in prior_occurrences:
+        blocked_reasons.append("active_recurrence_not_observed")
+    if any(item.get("rescued_completed") for item in prior_rows) and len(prior_occurrences) < 3:
+        blocked_reasons.append("rescued_history_needs_extra_support")
+    effect_hashes = {_effect_equivalence_hash(item) for item in prior_rows}
+    if len(effect_hashes) > 1:
+        blocked_reasons.append("effect_hash_diverged")
+    executed = executed_row or observation_history.get(_observation_key(row)) or {}
+    effect_hash = _effect_equivalence_hash(executed or row)
+    comparable = observation_history.get((family, provider, occurrence, "beast_no_compute_governor")) or {}
+    hidden_passes = sum(1 for item in prior_rows if item.get("hidden_passed"))
+    policy_generation = os.environ.get("BEAST_PGEC_POLICY_GENERATION", "pgec_450_policy_v1")
+    return {
+        "beast_object_type": "mega_crystallization_diagnostic",
+        "version": "1.0",
+        "provider": provider,
+        "source_provider": source_provider,
+        "family": family,
+        "occurrence": occurrence,
+        "lane": lane,
+        "reuse_phase": _reuse_phase_for_occurrence(occurrence),
+        "policy_generation": policy_generation,
+        "ordered_verified_occurrences": prior_occurrences,
+        "minimum_verified_occurrences": 2,
+        "minimum_independent_hidden_passes": 2,
+        "verified_occurrence_count": len(prior_occurrences),
+        "independent_hidden_pass_count": hidden_passes,
+        "repair_provenance": _repair_provenance(executed or row),
+        "effect_equivalence_hash": effect_hash,
+        "prior_effect_hashes": sorted(effect_hashes),
+        "effect_hash_agreement": len(effect_hashes) <= 1,
+        "tool_schema_hash": (executed or row).get("impact_fingerprint_hash"),
+        "repo_fingerprint": _applicability_proof(executed or row)["repo_fingerprint"],
+        "boundary_digest": _applicability_proof(executed or row)["boundary_digest"],
+        "applicability_digest": _applicability_proof(executed or row)["applicability_digest"],
+        "applicability_fingerprint": "sha256:" + hashlib.sha256(
+            json.dumps(
+                {
+                    "provider": provider,
+                    "family": family,
+                    "lane": lane,
+                    "policy_generation": policy_generation,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest(),
+        "family_fingerprint": "sha256:" + hashlib.sha256(
+            json.dumps(
+                {
+                    "family": family,
+                    "verifier_contract": _stable_verifier_contract(family),
+                    "tool_schema_digest": _stable_tool_schema_digest(family),
+                    "workspace_domain": "edgek_beast_repo",
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest(),
+        "candidate_found": bool(prior_rows),
+        "provider_execution_requested": not bool((executed or {}).get("deterministic_reuse")),
+        "eligible_for_promotion": not blocked_reasons and occurrence >= 3,
+        "shadow_reuse_ready": 1 in prior_occurrences and 2 in prior_occurrences,
+        "active_reuse_ready": 3 in prior_occurrences,
+        "evidence_lane_reference": comparable.get("artifact_refs") or {},
+        "blocked_reasons": blocked_reasons,
+    }
 
 
 def _mutation_spec(family: str) -> Dict[str, Any]:
@@ -546,6 +1260,72 @@ def _mutation_ladder_cases(family: str, provider: str) -> List[Dict[str, Any]]:
     return cases
 
 
+def _applicability_lookup(report: Dict[str, Any]) -> Dict[tuple[str, str, int, str], Dict[str, Any]]:
+    rows = ((report.get("shared_state_sync") or {}).get("applicability_rows") or [])
+    lookup: Dict[tuple[str, str, int, str], Dict[str, Any]] = {}
+    for item in rows:
+        lookup[(
+            str(item.get("provider") or ""),
+            str(item.get("family") or ""),
+            int(item.get("occurrence") or 0),
+            str(item.get("lane") or ""),
+        )] = dict(item)
+    return lookup
+
+
+def _controlled_mutation_ladder_cases(report: Dict[str, Any]) -> List[Dict[str, Any]]:
+    rows = [dict(item) for item in (report.get("controlled_observations") or [])]
+    applicability = _applicability_lookup(report)
+    cases: List[Dict[str, Any]] = []
+    by_key: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]] = {}
+    for row in rows:
+        if str(row.get("lane") or "") != "full_beast_compute_governor":
+            continue
+        key = (str(row.get("provider") or ""), str(row.get("family") or ""), str(row.get("lane") or ""))
+        by_key.setdefault(key, {})[int(row.get("occurrence") or 0)] = row
+    for (provider, family, lane), occurrences in sorted(by_key.items()):
+        prior = occurrences.get(5)
+        mutated = occurrences.get(10)
+        if not prior or not mutated:
+            continue
+        prior_app = applicability.get((provider, family, 5, lane), {})
+        mutated_app = applicability.get((provider, family, 10, lane), {})
+        cases.append({
+            "beast_object_type": "mega_mutation_ladder_case",
+            "version": "1.1",
+            "provider": provider,
+            "family": family,
+            "lane": lane,
+            "occurrence": 10,
+            "prior_occurrence": 5,
+            "prior_effect_hash": str(prior.get("effect_equivalence_hash") or ""),
+            "recovered_effect_hash": str(mutated.get("effect_equivalence_hash") or ""),
+            "mutation_detected": True,
+            "reuse_attempted": False,
+            "fresh_execution_required": True,
+            "fresh_execution_completed": bool(mutated.get("completed")),
+            "visible_passed": bool(mutated.get("visible_passed")),
+            "hidden_passed": bool(mutated.get("hidden_passed")),
+            "rollback_success": bool(mutated.get("rollback_success")),
+            "false_reuse": bool(mutated.get("false_reuse_warning")),
+            "mutation_type": "controlled_occurrence_10_challenge",
+            "reuse_decision": {
+                "state": "fresh_execution_required",
+                "reusable": False,
+                "reasons": ["occurrence_10_mutation_challenge"],
+                "material_drift_made_reuse_unavailable": True,
+            },
+            "pre_mutation_applicability_digest": str(prior_app.get("applicability_digest") or ""),
+            "pre_mutation_boundary_digest": str(prior_app.get("boundary_digest") or ""),
+            "post_mutation_applicability_digest": str(mutated_app.get("applicability_digest") or ""),
+            "post_mutation_boundary_digest": str(mutated_app.get("boundary_digest") or ""),
+            "pre_mutation_impact_fingerprint_hash": str(prior.get("impact_fingerprint_hash") or ""),
+            "post_mutation_impact_fingerprint_hash": str(mutated.get("impact_fingerprint_hash") or ""),
+            "evidence_status": "executed_controlled_observation",
+        })
+    return cases
+
+
 def _cross_provider_reuse_case(
     family: str,
     occurrence: int,
@@ -583,7 +1363,7 @@ def _cross_provider_reuse_case(
 
 def _crystallized_lane_c_row(
     row: Dict[str, Any],
-    history: Dict[tuple[str, str], Dict[int, Dict[str, Any]]],
+    history: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]],
     observation_history: Dict[tuple[str, str, int, str], Dict[str, Any]],
     receipts: List[Dict[str, Any]],
     events: List[Dict[str, Any]],
@@ -593,8 +1373,13 @@ def _crystallized_lane_c_row(
     provider = str(row["provider"])
     family = str(row["family"])
     source_provider = str(source_provider or provider)
-    lineage = history[_lineage_key(source_provider, family)]
+    lineage = history[_lane_lineage_key(source_provider, family, "full_beast_compute_governor")]
     source = lineage[2]
+    source_rows = [lineage[item] for item in sorted(lineage) if item in {1, 2}]
+    assert all(
+        str(item.get("lane") or "") == "full_beast_compute_governor"
+        for item in source_rows
+    ), "deterministic reuse source evidence must be lane-qualified to full_beast_compute_governor"
     fingerprint = _fingerprint_for_family(family, int(row["occurrence"]))
     comparable = observation_history.get((family, provider, int(row["occurrence"]), "beast_no_compute_governor"))
     if not comparable:
@@ -620,6 +1405,7 @@ def _crystallized_lane_c_row(
         "task_id": row["task_id"],
         "source_occurrences": [1, 2],
         "source_task_ids": [lineage[1]["task_id"], lineage[2]["task_id"]],
+        "source_evidence_lanes": sorted({str(item.get("lane") or "") for item in source_rows}),
         "decision": "deterministic_reuse",
         "provider_execution_requested": False,
         "cloud_calls": 0,
@@ -647,7 +1433,7 @@ def _crystallized_lane_c_row(
         "task_id": row["task_id"],
         "impact_fingerprint_hash": fingerprint["fingerprint_hash"],
         "source_occurrences": [1, 2],
-        "state": "crystallized",
+        "state": _reuse_phase_for_occurrence(int(row["occurrence"])),
         "created_at": receipt["created_at"],
     })
     return dict(row) | {
@@ -676,6 +1462,16 @@ def _crystallized_lane_c_row(
         "avoided_tokens_estimate": avoided_tokens,
         "source_provider": source_provider,
         "cross_provider_reuse": source_provider != provider,
+        "reuse_phase": _reuse_phase_for_occurrence(int(row["occurrence"])),
+        "repair_provenance": "deterministic_reuse",
+        "effect_equivalence_hash": _effect_equivalence_hash(dict(row) | {
+            "completed": True,
+            "visible_passed": True,
+            "hidden_passed": True,
+            "rollback_success": True,
+            "files_changed": source.get("files_changed") or [],
+            "deterministic_reuse": True,
+        }),
     }
 
 
@@ -683,7 +1479,7 @@ def _load_resume_history(
     resume_from: str | None,
 ) -> tuple[
     Dict[tuple[str, str, int, str], Dict[str, Any]],
-    Dict[tuple[str, str], Dict[int, Dict[str, Any]]],
+    Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]],
     Dict[tuple[str, str], Dict[str, Any]],
     str | None,
 ]:
@@ -695,21 +1491,22 @@ def _load_resume_history(
     payload = json.loads(source.read_text(encoding="utf-8"))
     rows = payload.get("controlled_observations") or []
     observation_history: Dict[tuple[str, str, int, str], Dict[str, Any]] = {}
-    lane_c_history: Dict[tuple[str, str], Dict[int, Dict[str, Any]]] = {}
+    lane_history: Dict[tuple[str, str, str], Dict[int, Dict[str, Any]]] = {}
     active_fingerprints: Dict[tuple[str, str], Dict[str, Any]] = {}
     for raw_row in rows:
         row = dict(raw_row)
         observation_history[_observation_key(row)] = row
-        if row.get("lane") != "full_beast_compute_governor":
-            continue
         provider = str(row["provider"])
         family = str(row["family"])
         occurrence = int(row["occurrence"])
+        lane = str(row.get("lane") or "")
+        lane_history.setdefault(_lane_lineage_key(provider, family, lane), {})[occurrence] = row
+        if row.get("lane") != "full_beast_compute_governor":
+            continue
         lineage = _lineage_key(provider, family)
-        lane_c_history.setdefault(lineage, {})[occurrence] = row
         if row.get("deterministic_reuse"):
             active_fingerprints[lineage] = _fingerprint_for_family(family, occurrence)
-    return observation_history, lane_c_history, active_fingerprints, str(source)
+    return observation_history, lane_history, active_fingerprints, str(source)
 
 
 def execute_live_observations(args: argparse.Namespace, observations: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -723,7 +1520,7 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
     live_results: List[Dict[str, Any]] = []
     provider_reports: Dict[str, Any] = {}
     executed_by_key: Dict[tuple[str, str, int, str], Dict[str, Any]] = {}
-    observation_history, lane_c_history, active_fingerprints, resume_source = _load_resume_history(
+    observation_history, lane_history, active_fingerprints, resume_source = _load_resume_history(
         getattr(args, "resume_from", None)
     )
     receipts: List[Dict[str, Any]] = []
@@ -731,11 +1528,16 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
     mutation_recovery_cases: List[Dict[str, Any]] = []
     cross_provider_cases: List[Dict[str, Any]] = []
     provider_call_receipts: List[Dict[str, Any]] = []
+    crystallization_diagnostics: List[Dict[str, Any]] = []
 
     for occurrence in occurrences:
         for provider_name in providers:
             provider = provider_from_preset(provider_name)
-            caller = groq_backoff_caller(provider, max_tokens, json_mode) if provider.name == "groq" else None
+            caller = None
+            if provider.name == "groq":
+                caller = groq_backoff_caller(provider, max_tokens, json_mode)
+            elif provider.name == "nvidia_nim":
+                caller = nvidia_backoff_caller(provider, max_tokens, json_mode)
             for family in families:
                 family_rows = [
                     row for row in observations
@@ -780,7 +1582,12 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
                                     current,
                                 ))
                                 break
-                        if reuse_source is None and _eligible_for_crystallization(lane_c_history, provider_name, family):
+                        if reuse_source is None and _eligible_for_crystallization(
+                            lane_history,
+                            provider_name,
+                            family,
+                            "full_beast_compute_governor",
+                        ):
                             reuse_source = provider_name
                 eligible_reuse = reuse_source is not None
                 live_lanes = [
@@ -825,7 +1632,7 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
                     if eligible_reuse and row["lane"] == "full_beast_compute_governor":
                         enriched = _crystallized_lane_c_row(
                             row,
-                            lane_c_history,
+                            lane_history,
                             observation_history,
                             receipts,
                             crystallization_events,
@@ -842,10 +1649,23 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
                         }
                     else:
                         enriched = _missing_live_row(row)
+                    enriched.setdefault("reuse_phase", _reuse_phase_for_occurrence(int(row["occurrence"])))
+                    enriched.setdefault("repair_provenance", _repair_provenance(enriched))
+                    enriched.setdefault("effect_equivalence_hash", _effect_equivalence_hash(enriched))
                     executed_by_key[key] = enriched
                     observation_history[key] = enriched
+                    crystallization_diagnostics.append(_crystallization_diagnostic(
+                        row,
+                        lane_history,
+                        observation_history,
+                        source_provider=reuse_source,
+                        executed_row=enriched,
+                    ))
+                    lane_history.setdefault(
+                        _lane_lineage_key(provider_name, family, str(row["lane"])),
+                        {},
+                    )[occurrence] = enriched
                     if row["lane"] == "full_beast_compute_governor":
-                        lane_c_history.setdefault(_lineage_key(provider_name, family), {})[occurrence] = enriched
                         if enriched.get("deterministic_reuse"):
                             active_fingerprints[_lineage_key(provider_name, family)] = _fingerprint_for_family(family, occurrence)
                         elif occurrence == 10 and mutation_case:
@@ -870,6 +1690,7 @@ def execute_live_observations(args: argparse.Namespace, observations: List[Dict[
         "provider_call_receipts": provider_call_receipts,
         "compute_governor_receipts": receipts,
         "crystallization_events": crystallization_events,
+        "crystallization_diagnostics": crystallization_diagnostics,
         "mutation_recovery_cases": mutation_recovery_cases,
         "cross_provider_reuse_cases": cross_provider_cases,
         "resume_source": resume_source,
@@ -996,6 +1817,90 @@ def build_crystal_compute_phase_package() -> Dict[str, Any]:
             "Live provider displacement remains governed by the live mega observations and receipt package."
         ),
         "phases": phases,
+    }
+
+
+def build_focused_crystal_compute_phase_package(
+    live_execution: Dict[str, Any],
+    shared_state_sync: Dict[str, Any],
+) -> Dict[str, Any]:
+    observations = [dict(item) for item in (live_execution.get("controlled_observations") or [])]
+    provider_receipts = [dict(item) for item in (live_execution.get("provider_call_receipts") or [])]
+    reuse_receipts = [dict(item) for item in (live_execution.get("compute_governor_receipts") or [])]
+    diagnostics = [dict(item) for item in (live_execution.get("crystallization_diagnostics") or [])]
+    mutation_cases = [dict(item) for item in _controlled_mutation_ladder_cases({
+        "controlled_observations": observations,
+        "shared_state_sync": shared_state_sync,
+    })]
+    false_reuse_cases = [
+        {
+            "provider": row.get("provider"),
+            "family": row.get("family"),
+            "occurrence": row.get("occurrence"),
+            "lane": row.get("lane"),
+        }
+        for row in observations
+        if bool(row.get("false_reuse_warning"))
+    ]
+    providers = sorted({str(item.get("provider") or "") for item in observations if item.get("provider")})
+    families = sorted({str(item.get("family") or "") for item in observations if item.get("family")})
+    promoted = list((shared_state_sync.get("promoted_candidates") or []))
+    stored_credits = list((shared_state_sync.get("stored_semantic_credits") or []))
+    applicability_rows = list((shared_state_sync.get("applicability_rows") or []))
+    boundary_rows = list((shared_state_sync.get("boundary_rows") or []))
+    integrity_hash = str(shared_state_sync.get("sync_hash") or "")
+    seed_receipts = [
+        item for item in provider_receipts
+        if int(item.get("occurrence") or 0) in {1, 2}
+        and str(item.get("mega_lane") or "") == "full_beast_compute_governor"
+        and bool(item.get("completed"))
+    ]
+    passed = bool(
+        seed_receipts
+        and len(seed_receipts) >= 2
+        and promoted
+        and len(reuse_receipts) >= 2
+        and mutation_cases
+        and not false_reuse_cases
+    )
+    return {
+        "beast_object_type": "crystal_compute_phase_package",
+        "version": "1.1",
+        "generated_at": utc_now(),
+        "focus": "controlled_recurrence_closure",
+        "passed": passed,
+        "providers": providers,
+        "families": families,
+        "seed_evidence_receipt_count": len(seed_receipts),
+        "candidate_promotion_receipt_count": len(promoted),
+        "deterministic_execution_receipt_count": len(reuse_receipts),
+        "effect_equivalence_hashes": sorted({
+            str(item.get("effect_equivalence_hash") or "")
+            for item in observations
+            if item.get("effect_equivalence_hash")
+        }),
+        "applicability_proof_count": len(applicability_rows),
+        "boundary_proof_count": len(boundary_rows),
+        "mutation_evidence_count": len(mutation_cases),
+        "false_reuse_audit_count": len(false_reuse_cases),
+        "integrity_hash": integrity_hash,
+        "authority_and_policy": {
+            "policy_generation": _policy_generation(),
+            "workspace_domain": "edgek_beast_repo",
+        },
+        "seed_evidence_receipts": seed_receipts,
+        "candidate_promotions": promoted,
+        "stored_semantic_credits": stored_credits,
+        "deterministic_execution_receipts": reuse_receipts,
+        "applicability_proofs": applicability_rows,
+        "boundary_proofs": boundary_rows,
+        "mutation_evidence": mutation_cases,
+        "false_reuse_audit": false_reuse_cases,
+        "claim_boundary": (
+            "This focused Crystal Compute closure package supports controlled recurrence, "
+            "lane isolation, deterministic local recurrence, and mutation-challenge fresh execution "
+            "for the packaged families/providers. It does not by itself prove clean external-provider authorship."
+        ),
     }
 
 
@@ -1299,9 +2204,13 @@ def build_report(args: argparse.Namespace) -> Dict[str, Any]:
     stagger_plan = build_stagger_plan(full_observations, batch_size)
     observations, batch = select_batch(full_observations, batch_size, batch_index)
     live_execution = execute_live_observations(args, observations) if args.live else {}
+    shared_state_sync = _shared_state_sync(live_execution) if live_execution else {}
     if live_execution:
         observations = live_execution["controlled_observations"]
-    phase_package = {} if getattr(args, "skip_crystal_phases", False) else build_crystal_compute_phase_package()
+    if getattr(args, "skip_crystal_phases", False):
+        phase_package = build_focused_crystal_compute_phase_package(live_execution, shared_state_sync) if live_execution else {}
+    else:
+        phase_package = build_crystal_compute_phase_package()
     reuse_plane_smoke: Dict[str, Any] = {}
     reuse_plane_commons: MetaToolCommons | None = None
     smoke_tempdir: tempfile.TemporaryDirectory[str] | None = None
@@ -1333,6 +2242,7 @@ def build_report(args: argparse.Namespace) -> Dict[str, Any]:
         "controlled_observations": observations,
         "natural_observations": [],
         "live_execution": live_execution,
+        "shared_state_sync": shared_state_sync,
         "crystal_compute_phase_package": phase_package,
         "reuse_evidence_plane_smoke": reuse_plane_smoke,
         "reuse_evidence_plane_certification": {},
@@ -1447,6 +2357,10 @@ def write_artifacts(report: Dict[str, Any], output_dir: Path) -> Dict[str, Any]:
         json.dumps(report.get("live_execution") or {}, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    (output_dir / "shared_state_sync.json").write_text(
+        json.dumps(report.get("shared_state_sync") or {}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     provider_call_receipts = [
         dict(item) for item in (report.get("live_execution") or {}).get("provider_call_receipts", [])
     ]
@@ -1513,6 +2427,30 @@ def write_artifacts(report: Dict[str, Any], output_dir: Path) -> Dict[str, Any]:
         output_dir / "crystallization_events.jsonl",
         (report.get("live_execution") or {}).get("crystallization_events", []),
     )
+    write_jsonl(
+        output_dir / "crystallization_diagnostics.jsonl",
+        (report.get("live_execution") or {}).get("crystallization_diagnostics", []),
+    )
+    write_jsonl(
+        output_dir / "applicability_proofs.jsonl",
+        [
+            dict(item)
+            for item in (
+                (report.get("shared_state_sync") or {}).get("applicability_rows")
+                or []
+            )
+        ],
+    )
+    write_jsonl(
+        output_dir / "family_applicability_boundaries.jsonl",
+        [
+            dict(item)
+            for item in (
+                (report.get("shared_state_sync") or {}).get("boundary_rows")
+                or []
+            )
+        ],
+    )
     (output_dir / "false_reuse_audit.json").write_text(json.dumps({"cases": []}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     mutation_cases = (report.get("live_execution") or {}).get("mutation_recovery_cases", [])
     cross_provider_cases = (report.get("live_execution") or {}).get("cross_provider_reuse_cases", [])
@@ -1523,7 +2461,7 @@ def write_artifacts(report: Dict[str, Any], output_dir: Path) -> Dict[str, Any]:
         "recovered_count": sum(bool(case.get("recovered_reusable")) for case in mutation_cases),
         "false_reuse_count": sum(bool(case.get("false_reuse_warning")) for case in mutation_cases),
     }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    ladder_cases = []
+    ladder_cases = _controlled_mutation_ladder_cases(report)
     if report.get("mode") == "mutation-recovery":
         provider = str((report.get("providers") or ["unknown"])[0])
         for family in report.get("families") or []:

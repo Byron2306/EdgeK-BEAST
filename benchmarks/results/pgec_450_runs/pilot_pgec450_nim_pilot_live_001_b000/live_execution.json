@@ -1,0 +1,3687 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 1547,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T14:10:28Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_e08d1f1af889ffccbddf",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_ad2959ad3ee2b091.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "schema_validation_o01_v1",
+        "schema_validation_o02_v1"
+      ],
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 1547,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T14:11:28Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "nvidia_nim",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_697e8090eb729a47eb41",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_810153eaf1902e18",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_810153eaf1902e18.json",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "source_task_ids": [
+        "schema_validation_o01_v1",
+        "schema_validation_o02_v1"
+      ],
+      "task_id": "schema_validation_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_14a5ba3edd4a939286be.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 24010.018,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c19941eff91160d19f20.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 30311.518,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_53f1c9909b99a4e12764.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 13623.173,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_nvidia_nim_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 5258,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_53a45e3e05b46e48eca5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 15357.727,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_3db3f6f022b0a4eb4ea5.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 31444.922,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_61f7e91b178f1ddee0dc.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 13977.92,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_nvidia_nim_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 5258,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_499fd27cb9ff47ee0ac1.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 12711.006,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_84acce701525e46ff832.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 25937.707,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_e08d1f1af889ffccbddf.json"
+      },
+      "avoided_tokens_estimate": 1547,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_ad2959ad3ee2b091",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c6f408a81cca6aa525f1.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 18816.005,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_50bf395f2b921af16abb.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 12857.408,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_697e8090eb729a47eb41.json"
+      },
+      "avoided_tokens_estimate": 1547,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "rescued": false,
+      "rescued_completed": false,
+      "rollback_success": true,
+      "semantic_credit_id": "scc_810153eaf1902e18",
+      "source_provider": "nvidia_nim",
+      "status": "completed",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_6d1d9d1b57bae1a93a17.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "raw",
+      "latency_ms": 23333.753,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_ae834ffaaa887be1a3e4.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 26201.818,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "failed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 1547,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_224d9686b89079dcf171.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "fixture_anchor": "output_governance_malformed_json,mcp_tool_schema_pinning",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 18526.765,
+      "mode": "controlled",
+      "objective": "Validate structured output and fail closed on malformed action plans.",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_nvidia_nim_full_beast",
+      "source_live_task": "output_governance_malformed_json",
+      "status": "completed",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 5258,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_7c61ef73aa845daec0d4.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "raw",
+      "latency_ms": 30188.339,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 511,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "rollback_success": false,
+      "source_live_lane": "live_nvidia_nim_raw",
+      "source_live_task": "provider_id_parser",
+      "status": "failed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 1711,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_e045b96f89882c0a16a1.json"
+      },
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 15183.048,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1095,
+      "provider_prompt_tokens": 511,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_nvidia_nim_schema_only",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 1606,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_3ebdf8892bbd83494ed0.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "fixture_anchor": "deployment_route_resolution,provider_id_parser",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 13332.728,
+      "mode": "controlled",
+      "objective": "Resolve provider/model aliases without mutating explicit overrides.",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_prompt_tokens": 4790,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "rollback_success": true,
+      "source_live_lane": "live_nvidia_nim_full_beast",
+      "source_live_task": "provider_id_parser",
+      "status": "completed",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 5990,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T14:10:28Z",
+      "cross_provider_reuse": false,
+      "family": "schema_validation",
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "receipt_id": "mega_cg_e08d1f1af889ffccbddf",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "schema_validation_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T14:11:28Z",
+      "cross_provider_reuse": false,
+      "family": "schema_validation",
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "receipt_id": "mega_cg_697e8090eb729a47eb41",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "nvidia_nim",
+      "state": "crystallized",
+      "task_id": "schema_validation_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "schema_validation",
+    "provider_alias_normalization"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 24010.018,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 24010.018,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4781,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind is either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also top-level kind, objective, actions, verify, handoff_hash? Wait: The instruction says: \"For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" But the output_schema given only includes kind, operations, tests. There's a mismatch. The user says: \"If the user prompt includes an output.schema, your response must match it exactly.\" The prompt includes output_schema. So we must output exactly that schema: kind, operations, tests. No extra fields like objective, actions, verify, handoff_hash. The earlier instruction about BEAST Action IR may be generic but the user explicitly gave output_schema, so we must follow that.\n\nThus we need to produce JSON with:\n\n{\n  \"kind\": \"beast.source_patch.v1\" (or beast.patch_intent.v1),\n  \"operations\": [ { ... } ],\n  \"tests\": [\"python -m pytest tests -q\"]\n}\n\nWe need to fill operations with appropriate patch to fix output governance JSON extraction for markdown/prose failure cases. The file to edit: app/ou",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f09121634d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 30311.518,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 30311.518,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4933,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind is either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also top-level tests and verification? The schema includes tests array (list of strings) and verification string. The user gave output_schema with those fields. So we must output exactly that JSON.\n\nWe need to fix output governance JSON extraction for markdown/prose failure cases. The file to edit is app/output_guard.py. Currently it just does json.loads(text). We need to modify to extract JSON from markdown code fences or prose.\n\nWe need to produce a patch. Likely we need to replace the function parse_provider_output with a new implementation that strips markdown fences and maybe finds first JSON object.\n\nWe need to decide which kind: Since we are providing a source patch (complete replacement content) we can use beast.source_patch.v1 with op \"create_or_replace\" for the file.\n\nThus operations: one op with op \"create_or_replace\", path \"app/output_guard.py\", content: the full new file content. old and new? For source_patch, maybe content is the full replacement content, a",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f134b2ab4d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.09s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 13623.173,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 13623.173,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "refs-only provider must return BEAST Action IR"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4152,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 4058,
+          "total_tokens": 5258
+        }
+      },
+      "prompt_tokens": 3164,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. We must return exactly one JSON object with the specified structure.\n The skeleton is:\n {\n   \"actions\": [ ... ],\n   \"fallback\": \"\",\n   \"handoff_hash\": \"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\",\n   \"kind\": \"beast.action_intent.v1\",\n   \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n   \"provider_handoff_hash\": \"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\",\n   \"verify\": [\"python -m pytest tests -q\"]\n }\n\n We are to fill the \"actions\" array. The skeleton provided in the user message for the actions is:\n   \"actions\":[{\"id\":\"a1\",\"intent\":\"state the local change BEAST should make\",\"new\":\"replacement snippet only; omit old when anchor_ref is used\",\"target\":{\"anchor_ref\":\"A1\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}]\n\n However, note that the user message also says: \"Copy the JSON skeleton below and fill only its values.\"\n\n We are also given a reference packet that includes:\n   Legal file refs and anchor refs: [{\"anchor_refs\":[\"A1\",\"A2\",\"A3\"],\"file_ref\":\"F1\",\"path\":\"app/output_guard.py\"}]\n\n And we are told to use the smallest possible new snippet for repla",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 4058,
+        "total_tokens": 5258
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 30188.339,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 30188.339,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 5032,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 511,
+          "total_tokens": 1711
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to output a JSON object matching the schema: kind either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also tests array (list of strings) and verification string.\n\nWe need to fix provider-id normalization for hyphen and space variants. The current normalize_provider_id just lowercases and strips? Actually it does str(value or \"\").lower(). It does not replace hyphens/spaces with underscores. The test expects that \" NVIDIA-NIM \" becomes \"nvidia_nim\". So we need to replace hyphens and spaces with underscores, and also strip whitespace? The test: normalize_provider_id(\" NVIDIA-NIM \") == \"nvidia_nim\". Input has leading/trailing spaces, hyphen between NVIDIA and NIM. Expected output: lowercased, hyphen replaced with underscore, and spaces stripped? Actually they expect \"nvidia_nim\": no spaces, hyphen turned to underscore. So we need to strip, replace any hyphen or space with underscore, and lower.\n\nAlso test for \"local nim\" -> \"local_nim\". So space replaced with underscore.\n\nThus modify normalize_provider_id to: return re.sub(r'[-\\s]+', '_', str(value or \"\").strip().lower()) maybe.",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "\n\nprovider_id = 'nvidia-nim'\n\n    def route_for(provider_id):\n        normalized = normalize_provider_id(provider_id)\n        routes = {\n            \"openrouter\": \"/proxy/openrouter\",\n            \"nvidia_nim\": \"/proxy/nvidia\",\n            \"local_nim\": \"/proxy/local-nim\",\n        }\n>       return routes[normalized]\n               ^^^^^^^^^^^^^^^^^^\nE       KeyError: 'nvidia-nim'\n\napp/provider_parser.py:15: KeyError\n________________ test_hidden_tabs_and_mixed_separator_variants _________________\n\n    def test_hidden_tabs_and_mixed_separator_variants():\n>       assert normalize_provider_id(\"\\tOpenRouter \") == \"openrouter\"\nE       AssertionError: assert '\\topenrouter ' == 'openrouter'\nE         \nE         - openrouter\nE         + \topenrouter \nE         ? +          +\n\ntests/test_provider_parser_hidden.py:5: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_provider_parser.py::test_normalize_provider_id_accepts_hyphen_and_space_variants\nFAILED tests/test_provider_parser.py::test_route_for_uses_normalized_provider_id\nFAILED tests/test_provider_parser_hidden.py::test_hidden_tabs_and_mixed_separator_variants\n3 failed in 0.06s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 511,
+        "total_tokens": 1711
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -2,7 +2,11 @@\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    if value is None:\n+        return \"\"\n+    s = str(value).strip()\n+    s = s.replace(\"-\", \"_\").replace(\" \", \"_\")\n+    return s.lower()\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 15183.048,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 15183.048,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 629,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 1095,
+          "prompt_tokens": 511,
+          "total_tokens": 1606
+        }
+      },
+      "prompt_tokens": 409,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/provider_parser.py\",\n      \"old\": \"def normalize_provider_id(value):\\n    return str(value or \\\"\\\").lower()\",\n      \"new\": \"def normalize_provider_id(value):\\n    if value is None:\\n        return \\\"\\\"\\n    s = str(value).strip()\\n    s = s.replace(\\\"-\\\", \\\"_\\\").replace(\\\" \\\", \\\"_\\\")\\n    return s.lower()\",\n      \"why\": \"Normalize provider id by stripping whitespace, converting hyphens and spaces to underscores, and lowercasing.\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.03s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 1095,
+        "prompt_tokens": 511,
+        "total_tokens": 1606
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/provider_parser.py\n+++ b/app/provider_parser.py\n@@ -1,8 +1,8 @@\n-\"\"\"Provider id parser with incomplete normalization.\"\"\"\n+\"\"\"Provider id parser with complete hyphen/space normalization.\"\"\"\n \n \n def normalize_provider_id(value):\n-    return str(value or \"\").lower()\n+    return str(value or \"\").strip().lower().replace(\"-\", \"_\").replace(\" \", \"_\")\n \n \n def route_for(provider_id):\n",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 13332.728,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 13332.728,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/provider_parser.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "refs-only provider must return BEAST Action IR"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4328,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 4790,
+          "total_tokens": 5990
+        }
+      },
+      "prompt_tokens": 3452,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. We must return exactly one JSON object with the specified structure.\n The skeleton is:\n {\n   \"actions\": [ ... ],\n   \"fallback\": \"\",\n   \"handoff_hash\": \"sha256:ba830fd1f66c32d32b3ce1fdd26d62fb0e7f4bd9b412b330565526c4d351f152\",\n   \"kind\": \"beast.action_intent.v1\",\n   \"objective\": \"Fix provider-id normalization for hyphen and space variants.\",\n   \"provider_handoff_hash\": \"sha256:ba830fd1f66c32d32b3ce1fdd26d62fb0e7f4bd9b412b330565526c4d351f152\",\n   \"verify\": [\"python -m pytest tests -q\"]\n }\n\n We are to fill the \"actions\" array. The reference packet provides:\n   - file_ref: \"F1\" (which is \"app/provider_parser.py\")\n   - anchor_refs: [\"A1\",\"A10\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"A7\"]\n\n We are allowed at most 4 operations.\n\n The objective: Fix provider-id normalization for hyphen and space variants.\n\n Looking at the provided anchors in the file:\n\n   A1: \"\\\"\\\"\\\"Provider id parser with incomplete normalization.\\\"\\\"\\\"\"\n   A2: \"def normalize_provider_id(value):\"\n   A3: \"return str(value or \\\"\\\").lower()\"\n   A4: \"def route_for(provider_id):\"\n   A5: \"normalized = normalize_provider_id(provider_id)\"\n   A6: \"routes = {\"\n   A7: \"\\\"openrouter\\\": \\\"/proxy/openrouter\\\",\"\n",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "...                                                                      [100%]\n3 passed in 0.02s\n",
+      "task": "provider_id_parser",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 4790,
+        "total_tokens": 5990
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 15357.727,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 15357.727,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4969,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, objective, actions, verify, handoff_hash? Wait the schema given is different: output_schema: kind, operations list, tests. The instruction: \"If the user prompt includes an output.schema, your response must match it exactly. For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" There's a conflict: The user prompt includes an output.schema (the JSON under \"output_schema\"). So we must match that exactly. The schema: \n{\n \"kind\":\"beast.source_patch.v1 or beast.patch_intent.v1\",\n \"operations\":[{\n   \"content\":\"complete replacement content only for create_or_replace\",\n   \"new\":\"replacement snippet for intent ops\",\n   \"old\":\"exact snippet for intent ops\",\n   \"op\":\"create_or_replace | replace_exact | insert_after | delete_exact\",\n   \"op_id\":\"op_001\",\n   \"path\":\"one allowed path\",\n   \"why\":\"short reason\"\n }],\n \"tests\":[\"python -m pytest tests -q\"]\n}\n\nWe need to fill with actual values. The objective: \"Fix output governance JSON extraction for markdown/prose failure cases.\" The allowed edit path: app/output_guard.py. The current file content: \nimport json\n\ndef parse_provider_output(text):\n    retu",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fd3c707b4d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.10s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 31444.922,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 31444.922,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4788,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The operations array with objects containing fields: content, new, old, op, op_id, path, why. Also top-level kind, objective, actions, verify, handoff_hash? Wait: The instruction says: \"For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" But the output_schema given is different: it's for source_patch or patch_intent. The user says: \"If the user prompt includes an output.schema, your response must match it exactly.\" So we must follow the output_schema provided, not the generic instruction. The output_schema includes kind, operations, tests. No objective, actions, verify, handoff_hash. So we must output JSON matching that schema.\n\nWe need to fix output governance JSON extraction for markdown/prose failure cases. The file to edit: app/output_guard.py. Currently it just does json.loads(text). We need to modify to extract JSON from markdown code fences or prose.\n\nWe need to produce an operation: likely replace_exact or create_or_replace. Since we are modifying existing function, we can do replace_exact of the function body.\n\nWe nee",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f92ac5d74d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.08s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 13977.92,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 13977.92,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 3948,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 4058,
+          "total_tokens": 5258
+        }
+      },
+      "prompt_tokens": 3164,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. The skeleton is:\n\n{\"actions\":[{\"id\":\"a1\",\"intent\":\"state the local change BEAST should make\",\"new\":\"replacement snippet only; omit old when anchor_ref is used\",\"target\":{\"anchor_ref\":\"A1\",\"file_ref\":\"F1\"},\"type\":\"replace_anchor\"}],\"fallback\":\"\",\"handoff_hash\":\"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\",\"kind\":\"beast.action_intent.v1\",\"objective\":\"Fix output governance JSON extraction for markdown/prose failure cases.\",\"provider_handoff_hash\":\"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\",\"verify\":[\"python -m pytest tests -q\"]}\n\nWe must fill the values for the keys in this skeleton.\n\nFrom the context, we have:\n- The objective is given: \"Fix output governance JSON extraction for markdown/prose failure cases.\"\n- The handoff_hash and provider_handoff_hash are provided in the skeleton and also in the trace: \"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\"\n- The verify array is given: [\"python -m pytest tests -q\"]\n\nNow, we need to fill the actions array. The skeleton has one action with id \"a1\". We must set:\n  - intent: a short string describing the local change.\n  - ne",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 4058,
+        "total_tokens": 5258
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 12711.006,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 12711.006,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4875,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, objective, actions, verify, handoff_hash? Wait the schema given is different: output_schema includes kind, operations, tests. The instruction: \"If the user prompt includes an output.schema, your response must match it exactly. For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" There's a conflict: The user prompt includes an output.schema (the JSON under \"output_schema\"). So we must match that exactly. The schema: \n{\n \"kind\":\"beast.source_patch.v1 or beast.patch_intent.v1\",\n \"operations\":[{\n   \"content\":\"complete replacement content only for create_or_replace\",\n   \"new\":\"replacement snippet for intent ops\",\n   \"old\":\"exact snippet for intent ops\",\n   \"op\":\"create_or_replace | replace_exact | insert_after | delete_exact\",\n   \"op_id\":\"op_001\",\n   \"path\":\"one allowed path\",\n   \"why\":\"short reason\"\n }],\n \"tests\":[\"python -m pytest tests -q\"]\n}\n\nWe need to fill in actual values. The objective: \"Fix output governance JSON extraction for markdown/prose failure cases.\" The allowed edit path: app/output_guard.py. The current file content: \nimport json\n\ndef parse_provider_output(text):\n    ret",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f02536c74d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 25937.707,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 25937.707,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4739,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, operations list, tests list. The schema says: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Probably we need to pick one. Since we are editing a file, likely source_patch. Provide operations: we need to fix parse_provider_output to extract JSON from markdown/prose. Current function just does json.loads(text). We need to modify to strip markdown code fences and maybe extract JSON. So we need to replace the function content.\n\nAllowed edit path: app/output_guard.py.\n\nWe need to provide an operation: op could be replace_exact or create_or_replace. Since we are replacing the function body, we could do replace_exact for the function definition? Simpler: replace_exact the whole file content? But we need to provide old snippet exactly matching current file, and new snippet with our fix.\n\nCurrent file content:\n\nimport json\n\n\n\ndef parse_provider_output(text):\n    return json.loads(text)\n\nWe need to replace that with new content that extracts JSON from markdown.\n\nWe'll write new function:\n\nimport json\nimport re\n\ndef parse_provider_output(text):\n    # Try to find JSON block inside markdown code fences\n    match = re.search(r",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fa3173b34d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.06s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 18816.005,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 18816.005,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 4951,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, objective, actions, verify, handoff_hash? Wait: The user says: \"For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" But the output_schema they gave is different: it's a schema for a patch intent. The user says: \"If the user prompt includes an output.schema, your response must match it exactly.\" The user prompt includes output_schema. So we must output exactly that schema, not the BEAST Action IR. The output_schema is:\n\n{\n  \"kind\":\"beast.source_patch.v1 or beast.patch_intent.v1\",\n  \"operations\":[{\n    \"content\":\"complete replacement content only for create_or_replace\",\n    \"new\":\"replacement snippet for intent ops\",\n    \"old\":\"exact snippet for intent ops\",\n    \"op\":\"create_or_replace | replace_exact | insert_after | delete_exact\",\n    \"op_id\":\"op_001\",\n    \"path\":\"one allowed path\",\n    \"why\":\"short reason\"\n  }],\n  \"tests\":[\"python -m pytest tests -q\"]\n}\n\nWe must output exactly one JSON object matching that schema. The values need to be appropriate for the task: fix output governance JSON extraction for markdown/prose failure cases. The allowed edit path is [\"app/output_guard.py\"].\n\n",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f326fa0b4d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.07s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 12857.408,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 12857.408,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 5131,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind either \"beast.source_patch.v1\" or \"beast.patch_intent.v1\". The objective: fix output governance JSON extraction for markdown/prose failure cases. The allowed edit path: app/output_guard.py. The file currently has a simple parse_provider_output that just does json.loads(text). We need to modify it to extract JSON from markdown or prose, i.e., find JSON block within triple backticks or maybe first {...}. The test expects that parse_provider_output(\"```json\\n{\\\"ok\\\": true}\\n```\") returns {\"ok\": True}. So we need to implement extraction: if text contains triple backticks with optional language hint, extract the content inside. Also maybe handle cases where JSON is not fenced but appears in prose: we could find first '{' and last '}' and parse that.\n\nWe need to output a JSON with operations array containing one operation (op_id \"op_001\") etc. The operation should be either create_or_replace or replace_exact etc. Since we are modifying existing file, we likely use replace_exact or create_or_replace? The file exists, we want to replace its content. The schema expects for create_or_replace we need content field (complete replacemen",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fabaea574d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.10s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_raw",
+      "latency_ms": 23333.753,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 23333.753,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 5075,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the output_schema. The schema: kind: \"beast.source_patch.v1 or beast.patch_intent.v1\". Likely we need to pick one. The objective: fix output governance JSON extraction for markdown/prose failure cases. The file to edit: app/output_guard.py. We need to replace the parse_provider_output function to extract JSON from markdown/prose. The current function just does json.loads(text). We need to improve it to handle cases where text may contain markdown code fences or extra prose.\n\nWe need to output a JSON with fields: kind, objective, actions, verify, handoff_hash? Wait: The instruction says: \"For BEAST Action IR, include top-level kind, objective, actions, verify, and handoff_hash.\" But the output_schema given is different: it has kind, operations, tests. There's a conflict. The system says: \"If the user prompt includes an output.schema, your response must match it exactly.\" The user prompt includes output_schema. So we must follow that schema exactly, not the generic instruction about kind, objective, actions, verify, handoff_hash. So we must output JSON matching output_schema.\n\nThus we need to produce:\n\n{\n  \"kind\": \"beast.source_patch.v1\" (or ",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f2bbb45b4d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.11s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "",
+      "files_changed": [],
+      "lane": "live_nvidia_nim_schema_only",
+      "latency_ms": 26201.818,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": false,
+        "error": "provider output did not include operations list",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "",
+        "json_parse_ok": false,
+        "latency_ms": 26201.818,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "provider output did not include operations list"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.source_patch.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 5150,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 347,
+          "total_tokens": 1547
+        }
+      },
+      "prompt_tokens": 267,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We need to produce a JSON object matching the schema: kind, operations list, tests list. The schema: \n{\n \"kind\": \"beast.source_patch.v1 or beast.patch_intent.v1\",\n \"operations\": [\n   {\n     \"content\": \"complete replacement content only for create_or_replace\",\n     \"new\": \"replacement snippet for intent ops\",\n     \"old\": \"exact snippet for intent ops\",\n     \"op\": \"create_or_replace | replace_exact | insert_after | delete_exact\",\n     \"op_id\": \"op_001\",\n     \"path\": \"one allowed path\",\n     \"why\": \"short reason\"\n   }\n ],\n \"tests\": [\"python -m pytest tests -q\"]\n}\n\nWe need to fill with actual values. The objective: \"Fix output governance JSON extraction for markdown/prose failure cases.\" The allowed edit path: app/output_guard.py. The current file content:\". The file to edit: app/output_guard.py. We need to modify parse_provider_output to extract JSON from markdown or prose. Currently it just does json.loads(text). We need to improve to handle cases where text may contain markdown code fences or extra prose.\n\nWe need to produce a patch. Since we only have one allowed path, we can either replace the whole file (create_or_replace) or replace_exact a snippet. Probably easiest: replace the",
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7f394edaf4d0>\ns = '```json\\n{\"ok\": true}\\n```', idx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/usr/lib/python3.13/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/test_output_guard_hidden.py::test_hidden_parse_provider_output_returns_empty_for_prose\nFAILED tests/test_output_guard_public.py::test_parse_provider_output_extracts_json_from_markdown\n2 failed in 0.13s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 347,
+        "total_tokens": 1547
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/output_guard.py\n+++ b/app/output_guard.py\n@@ -1,5 +1,15 @@\n import json\n+import re\n \n \n def parse_provider_output(text):\n-    return json.loads(text)\n+    text = str(text or \"\").strip()\n+    for candidate in [text, text[text.find(\"{\"): text.rfind(\"}\") + 1] if \"{\" in text and \"}\" in text else \"\"]:\n+        if not candidate:\n+            continue\n+        try:\n+            value = json.loads(candidate)\n+            return value if isinstance(value, dict) else {}\n+        except Exception:\n+            continue\n+    return {}\n",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "lane": "live_nvidia_nim_full_beast",
+      "latency_ms": 18526.765,
+      "output_evidence": {
+        "anchor_match_rate": 0.0,
+        "canonicalized": false,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": false,
+        "error": "refs-only provider must return BEAST Action IR",
+        "final_status": "output_validation_failed",
+        "initial_validation_error": "refs-only provider must return BEAST Action IR",
+        "json_parse_ok": false,
+        "latency_ms": 18526.765,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/output_guard.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "output gate/provider failure: refs-only provider must return BEAST Action IR",
+        "operation_valid": false,
+        "path_valid": false,
+        "policy_gate": {
+          "approval_required": true,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "block",
+          "mutation_allowed": false,
+          "reasons": [
+            "refs-only provider must return BEAST Action IR"
+          ],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 0,
+              "contract": "beast.action_intent.v1",
+              "final_status": "output_validation_failed",
+              "operation_valid": false,
+              "path_valid": false,
+              "schema_valid": false
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "nvidia_nim",
+        "raw_chars": 3991,
+        "recommended_future_role": "refs_only_action_ir_generator",
+        "repair_attempted": true,
+        "repair_attempts": 0,
+        "role": "refs_only_action_ir_generator",
+        "schema_valid": false,
+        "usage": {
+          "completion_tokens": 1200,
+          "prompt_tokens": 4058,
+          "total_tokens": 5258
+        }
+      },
+      "prompt_tokens": 3164,
+      "provider": "nvidia_nim",
+      "provider_text_excerpt": "We are given a JSON skeleton to fill. The skeleton is:\n\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"state the local change BEAST should make\",\n      \"new\": \"replacement snippet only; omit old when anchor_ref is used\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:b389e73c175533288ce848bea0bea0d331aeecbac23dc290c65379ef6d331aeecbac23dc290c65379ef64ec25a845ee\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix output governance JSON extraction for markdown/prose failure cases.\",\n  \"provider_handoff_hash\": \"sha256:b389e73c175533288ce848bea0d331aeecbac23dc290c65379ef64ec25a845ee\",\n  \"verify\": [\"python -m pytest tests -q\"]\n}\n\nWe must fill only the values, and we are to return exactly one strict JSON object.\n\nFrom the context, we have a reference packet that includes:\n- file_ref: F1 (which is the file \"app/output_guard.py\")\n- anchor_refs: A1, A2, A3\n\nWe are to use the smallest possible new snippet for the replace_anchor action.\n\nLooking at the reference packet, we have:\n- A1: label \"import json\", chars=11, sha256: ff3e4d4dcf7250cae8d622d77c9a6d69aefc",
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "output_governance_malformed_json",
+      "usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 4058,
+        "total_tokens": 5258
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "targets:app/output_guard.py:semantic_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:93180075cbda5db9ca9e998725e5007415147b88878c4ebb63bc30c3bebff785",
+            "semantic_hash": "sha256:3136140afd67e66e715da1a5ceaf1aba596ad67e49ac582a973173cac7088052",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+      "mutation_type": "target_semantic_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "provider": "nvidia_nim",
+      "recovered_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "targets:app/output_guard.py:semantic_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:05:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 24010.018,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_14a5ba3edd4a939286be",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:05:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 30311.518,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_c19941eff91160d19f20",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T14:05:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 13623.173,
+      "live_lane": "live_nvidia_nim_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "receipt_id": "mega_provider_call_53f1c9909b99a4e12764",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o01_v1",
+      "total_tokens": 5258,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:07:42Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "provider_alias_normalization",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 30188.339,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 511,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_7c61ef73aa845daec0d4",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 1711,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": true,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T14:07:42Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 15183.048,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1095,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 511,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_e045b96f89882c0a16a1",
+      "rescued_completed": false,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 1606,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T14:07:42Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "provider_alias_normalization",
+      "files_changed": [
+        "app/provider_parser.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+        "fixture_family": "provider_alias_normalization",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:2b7ef9deeab538a70f9b7c1596be4df59f5d676d684d9d0501fe1acd2d5d15ed",
+            "semantic_hash": "sha256:be512396f476a48e03d7e29597ea23872ea870195fb6aed517f5346e60b40e67",
+            "symbol_hashes": {
+              "normalize_provider_id": "sha256:487f2b0184f9829cbcb5826ecaf0a214893795d1cc0f980d6aa186c2a01474cf",
+              "route_for": "sha256:9fb37b7468b66242fbc427eb2d504d731641bc664ce17db8a98a982c5a45ca0b"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_provider_parser.py": {
+            "exists": true,
+            "file_hash": "sha256:35d9e157cc879d98d1d96eee308a3aad6a324b9a0983e1fca6ad84f5dc017dcb",
+            "semantic_hash": "sha256:3981142e7e11b6d1379779c5780f09d2c804ba0e40788ee342325792bba871f8",
+            "symbol_hashes": {
+              "test_normalize_provider_id_accepts_hyphen_and_space_variants": "sha256:b5ee121716e2372ebf0ef1c29ee0aaaad3c18a322d5cffbc487167cfa9d7812e",
+              "test_route_for_uses_normalized_provider_id": "sha256:434506674a692c139f45fdb4c9c57c3d7d4f0fc1e184320eb775821a50971634"
+            }
+          },
+          "tests/test_provider_parser_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:e0a4c88e664930a3c6b4ebc3a75dae72ca5c47efb7b400f9743cc85e3e6647c4",
+            "semantic_hash": "sha256:044ec9748c7d2ae1fd90b5191b4f44b93a63a08c81f5880d5172356075d1c065",
+            "symbol_hashes": {
+              "test_hidden_tabs_and_mixed_separator_variants": "sha256:4bf399e4d40ff6fd577f45227a204015ca09cb833fc0ce8d76872df44641bf53"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:58aeb4a9edf5c2be73c8208606c6e37c262e90874f05a7f908de91e873cf2337"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:9cc03c2a99e04223a72e6635aca9989eee2aaef06860f19517d10d2fdb339c70",
+      "latency_ms": 13332.728,
+      "live_lane": "live_nvidia_nim_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 1,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4790,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "receipt_id": "mega_provider_call_3ebdf8892bbd83494ed0",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "provider_id_parser",
+      "task_id": "provider_alias_normalization_o01_v1",
+      "total_tokens": 5990,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:09:31Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 15357.727,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_53a45e3e05b46e48eca5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:09:31Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 31444.922,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_3db3f6f022b0a4eb4ea5",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T14:09:31Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 13977.92,
+      "live_lane": "live_nvidia_nim_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 2,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_61f7e91b178f1ddee0dc",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o02_v1",
+      "total_tokens": 5258,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:10:28Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 12711.006,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_499fd27cb9ff47ee0ac1",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:10:28Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 25937.707,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 3,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_84acce701525e46ff832",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o03_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:11:28Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 18816.005,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_c6f408a81cca6aa525f1",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:11:28Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 12857.408,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 5,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_50bf395f2b921af16abb",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o05_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:13:46Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 23333.753,
+      "live_lane": "live_nvidia_nim_raw",
+      "mega_lane": "raw",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_6d1d9d1b57bae1a93a17",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T14:13:46Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "schema_validation",
+      "files_changed": [],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 26201.818,
+      "live_lane": "live_nvidia_nim_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 347,
+      "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+      "receipt_id": "mega_provider_call_ae834ffaaa887be1a3e4",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 1547,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T14:13:46Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "schema_validation",
+      "files_changed": [
+        "app/output_guard.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "latency_ms": 18526.765,
+      "live_lane": "live_nvidia_nim_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "occurrence": 10,
+      "provider": "nvidia_nim",
+      "provider_completion_tokens": 1200,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4058,
+      "reason": "live provider failed or produced invalid scoped edit; local verifier repair passed: refs-only provider must return BEAST Action IR",
+      "receipt_id": "mega_provider_call_224d9686b89079dcf171",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "output_governance_malformed_json",
+      "task_id": "schema_validation_o10_v1",
+      "total_tokens": 5258,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "nvidia_nim": {
+      "live_failures_by_bucket": {
+        "capability_failure": 0,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 3,
+        "nim_tests_failed": 12,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "nvidia_nim": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": false,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": false,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 0.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 0.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 0.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "refs_only_transform_selector",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.25,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "nvidia_nim": {
+          "average_latency_ms": 22687.445,
+          "average_provider_prompt_tokens": 1584.0,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_nvidia_nim_raw",
+              "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+              "task": "output_governance_malformed_json"
+            },
+            {
+              "lane": "live_nvidia_nim_schema_only",
+              "reason": "live provider failed or produced invalid scoped edit: provider output did not include operations list",
+              "task": "output_governance_malformed_json"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 18526.765,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 5258.0,
+          "recommended_role": "refs_only_transform_selector",
+          "repair_attempted": 1,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "nvidia_nim"
+  ],
+  "raw_live_result_count": 16,
+  "resume_source": null
+}

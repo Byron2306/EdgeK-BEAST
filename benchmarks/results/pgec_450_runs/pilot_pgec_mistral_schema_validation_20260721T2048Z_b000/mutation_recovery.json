@@ -1,0 +1,162 @@
+{
+  "case_count": 1,
+  "cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "targets:app/output_guard.py:semantic_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "schema_validation",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:93180075cbda5db9ca9e998725e5007415147b88878c4ebb63bc30c3bebff785",
+            "semantic_hash": "sha256:3136140afd67e66e715da1a5ceaf1aba596ad67e49ac582a973173cac7088052",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+        "fixture_family": "schema_validation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/output_guard.py": {
+            "exists": true,
+            "file_hash": "sha256:c826aeb4693cbd7b67f9ed5fff329a9bdec10d29955914bd4e6771d8e2007709",
+            "semantic_hash": "sha256:418b350003b78ee6c67a80f8ba0f62015dc05b1a6fa2b4b78f90dc4338713c4b",
+            "symbol_hashes": {
+              "parse_provider_output": "sha256:f450fe724c6fe8d573d231d3ea6f05786eff062a40f4a88c24670f9480a72eed"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_output_guard_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:67bb23cae43178d0e7f107024e3d5e26dcf9801836b58c713874bc5c79a8bd9c",
+            "semantic_hash": "sha256:f0c7fcff8f88d96874789388119468e16ac83db05a193496ec8877c0e3c8f47c",
+            "symbol_hashes": {
+              "test_hidden_parse_provider_output_returns_empty_for_prose": "sha256:b7867da88eb5f9dc64563c4c7e66a1978a1e660537fc259c84430f30007a1c81"
+            }
+          },
+          "tests/test_output_guard_public.py": {
+            "exists": true,
+            "file_hash": "sha256:fc74da74ba4c1002ef20f930447d68e3624b0c0557ebf03033bbb2258b736393",
+            "semantic_hash": "sha256:6a3f838b86d5e513268cf400137a66fbc1ddeec20bcc31b5df7be94d9d160db1",
+            "symbol_hashes": {
+              "test_parse_provider_output_extracts_json_from_markdown": "sha256:66be821b81ced94f16e945a38080d6b8fe19dde24d15a2ab5d247bff4445be4f"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:25f15aec1cd387fa565359b58986d4998da794ec0d066cd4a56b368ef8e4b1d2"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:097a1bcc3c0bf4bf005f4a147798978afee9f69d9d6564113bcd82a5e3e0108c",
+      "mutation_type": "target_semantic_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "provider": "mistral",
+      "recovered_fingerprint_hash": "sha256:62368d95b77a3a9a1abe5b37fb404233d22295c6b276b1a147ad2a3392bca073",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "targets:app/output_guard.py:semantic_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "false_reuse_count": 0,
+  "recovered_count": 1,
+  "reuse_blocked_count": 1
+}

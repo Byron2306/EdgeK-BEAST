@@ -1,0 +1,16 @@
+matrix_id: beast.tests.v1
+schema_version: 1
+adapter_contract: [discover, hierarchy, run, debug, cancel, output, failure-location, diff, coverage, history]
+adapters:
+  - id: pytest
+    status: partial
+  - id: unittest
+    status: partial
+  - id: jest-vitest
+    status: planned
+  - id: node-test
+    status: planned
+  - id: go-test
+    status: planned
+  - id: cargo-test
+    status: planned

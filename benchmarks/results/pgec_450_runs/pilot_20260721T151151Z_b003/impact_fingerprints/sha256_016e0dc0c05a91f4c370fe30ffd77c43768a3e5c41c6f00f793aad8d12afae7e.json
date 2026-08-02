@@ -1,0 +1,44 @@
+{
+  "beast_object_type": "capability_impact_fingerprint",
+  "confidence": 0.95,
+  "dependencies": {},
+  "fingerprint_hash": "sha256:016e0dc0c05a91f4c370fe30ffd77c43768a3e5c41c6f00f793aad8d12afae7e",
+  "fixture_family": "route_diagnostics",
+  "fixture_occurrence": 5,
+  "policy_version": "mega_controlled_v1",
+  "reusable": true,
+  "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+  "state": "active",
+  "targets": {
+    "app/nim_contract.py": {
+      "exists": true,
+      "file_hash": "sha256:64bb1779ff3b98e76589471842de874e392daae2c54b61e89523aa05ce541f8c",
+      "semantic_hash": "sha256:11bd4dbe2620305a4f9dbf01a8ef74ec958be8939fe6f476ef9af3761da49d9f",
+      "symbol_hashes": {
+        "validate_nim_action": "sha256:c0e58825ae0bca678ce2489eebabb217f50c0f82874ef40b6442f745a329bcfc"
+      }
+    }
+  },
+  "tests": {
+    "tests/test_nim_contract_hidden.py": {
+      "exists": true,
+      "file_hash": "sha256:154d5d8a67db48cbb7510a29faf784ac7e5636acf87254a7b35e769dd7e940c4",
+      "semantic_hash": "sha256:534ac410eae3a4ad06a6ab70936ba4277e7826859ade767537158bc41b9917d9",
+      "symbol_hashes": {
+        "test_hidden_nim_refs_only_rejects_copied_old": "sha256:57b9a6c962c1a247a006462d779309c01d4e7a1897dbd0fb9b67c588d35e48f0"
+      }
+    },
+    "tests/test_nim_contract_public.py": {
+      "exists": true,
+      "file_hash": "sha256:0097fb0facf8819eefc3c68e2704757d53c0cfdf2c26e717ee23357d7b8af685",
+      "semantic_hash": "sha256:2c1b74cfb89bf8b0a15cd78b290d138e50820a4f8be5ae118eeb1792ef5d0a2d",
+      "symbol_hashes": {
+        "test_nim_refs_only_requires_file_and_anchor_refs": "sha256:d8a335bd0b5df12093cfe2497fbd96eb38c609445ea17f933ee702f20434ae76"
+      }
+    }
+  },
+  "tool_schema_hashes": [
+    "sha256:75f96376aa879dc43e2f7e9eb2a28690c7ddf155cffd5075067a9595ae284781"
+  ],
+  "version": "1.0"
+}

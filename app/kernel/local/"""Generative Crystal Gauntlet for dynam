@@ -1,0 +1,60 @@
+"""Generative Crystal Gauntlet for dynamic validation."""
+from __future__ import annotations
+from pathlib import Path
+from app.kernel.app_watcher import AppWatcher
+
+class GenerativeCrystalGauntlet:
+    """
+    Watches for file changes and triggers a validation process
+    in a shadow container to promote generative crystals.
+    """
+
+    def __init__(self, watch_path: Path):
+        self.watch_path = watch_path
+        self.watcher = AppWatcher(watch_path)
+        self.watcher.register_callback(self.handle_file_event)
+
+    def start(self):
+        """Start the gauntlet."""
+        self.watcher.start()
+        print(f"Generative Crystal Gauntlet started, watching {self.watch_path}")
+
+    def stop(self):
+        """Stop the gauntlet."""
+        self.watcher.stop()
+        print("Generative Crystal Gauntlet stopped.")
+
+    def handle_file_event(self, pid: int, path: str, mask: int):
+        """
+        Callback for AppWatcher events.
+        Decides whether to trigger the validation process.
+        """
+        # Right now, just print the event.
+        # The logic to decide when to trigger the shadow container will be added here.
+        # For example, we could check if the file is a source code file,
+        # if the change was made by a specific process, etc.
+        print(f"File event: pid={pid}, path={path}, mask={mask}")
+
+        # Placeholder for shadow container logic
+        self.trigger_shadow_container(path)
+
+    def trigger_shadow_container(self, file_path: str):
+        """
+        Triggers the validation process in a shadow container.
+        """
+        print(f"Triggering shadow container for file: {file_path}")
+        # This is where the logic to spawn a container will go.
+        # It will use the container management utilities I found earlier.
+        # It will also include the placeholder for the EGraph AST replay.
+        pass
+
+if __name__ == '__main__':
+    # Example of how to run the gauntlet
+    watch_dir = Path(".") # Watch the current directory
+    gauntlet = GenerativeCrystalGauntlet(watch_dir)
+    gauntlet.start()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        gauntlet.stop()

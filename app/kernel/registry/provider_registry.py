@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
 
+from app.kernel.local.ollama_config import ollama_model
+
 
 @dataclass
 class ProviderRecord:
@@ -74,6 +76,7 @@ class ProviderRegistry:
         },
         "google": {
             "backend": "native_gemini",
+            "default_model": "gemini-3.5-flash",
             "env": ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
             "proxy_path": "/proxy/gemini",
             "litellm_model_prefix": "gemini/",
@@ -230,11 +233,9 @@ class ProviderRegistry:
             "backend": "ollama",
             "env": ["OLLAMA_BASE_URL"],
             "proxy_path": "/proxy/ollama",
-            "base_url": "http://127.0.0.1:11434/v1",
-            # Prefer the purpose-built 1.5B coder model.  It is small enough
-            # for CPU-only workstations while producing materially better
-            # edits than the general 0.5B chat fallback. Operators can still
-            # override this via OLLAMA_MODEL/provider configuration.
+            # Native Ollama endpoints live under /api/*; /v1 is only its
+            # optional OpenAI-compatibility facade.
+            "base_url": "http://127.0.0.1:11434",
             "default_model": "qwen2.5-coder:1.5b",
             "risk_level": "local",
             "requires_approval": False,
@@ -280,6 +281,9 @@ class ProviderRegistry:
         backend = config.get("backend") or "litellm"
         if backend not in self.BACKENDS:
             backend = self._normalize_backend(str(backend))
+        default_model = config.get("default_model") or config.get("model") or self.DEFAULTS.get(name, {}).get("default_model") or name
+        if name == "ollama" and not (config.get("default_model") or config.get("model")):
+            default_model = ollama_model(default_model)
         return ProviderRecord(
             provider_id=name,
             enabled=bool(config.get("enabled", True)),
@@ -288,7 +292,7 @@ class ProviderRegistry:
             proxy_path=str(config.get("proxy_path") or self.DEFAULTS.get(name, {}).get("proxy_path") or f"/proxy/{name}"),
             litellm_model_prefix=str(config.get("litellm_model_prefix") or self.DEFAULTS.get(name, {}).get("litellm_model_prefix") or ""),
             base_url=config.get("base_url") or self.DEFAULTS.get(name, {}).get("base_url"),
-            default_model=config.get("default_model") or config.get("model") or self.DEFAULTS.get(name, {}).get("default_model") or name,
+            default_model=default_model,
             risk_level=str(config.get("risk_level") or self.DEFAULTS.get(name, {}).get("risk_level") or "medium"),
             requires_approval=bool(config.get("requires_approval", self.DEFAULTS.get(name, {}).get("requires_approval", False))),
             managed_by=str(config.get("managed_by") or self.DEFAULTS.get(name, {}).get("managed_by") or "beast"),

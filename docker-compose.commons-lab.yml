@@ -14,7 +14,7 @@ services:
       - "8111:8000"
     volumes:
       - commons_node_a:/var/lib/beast
-      - ./.beast/remote-commons-lab/commons-node-a:/run/beast:ro
+      - ./.beast/remote-commons-lab/commons-node-a:/run/beast:rw
 
   commons-node-b:
     build:
@@ -31,7 +31,7 @@ services:
       - "8112:8000"
     volumes:
       - commons_node_b:/var/lib/beast
-      - ./.beast/remote-commons-lab/commons-node-b:/run/beast:ro
+      - ./.beast/remote-commons-lab/commons-node-b:/run/beast:rw
 
   commons-node-c:
     build:
@@ -48,7 +48,7 @@ services:
       - "8113:8000"
     volumes:
       - commons_node_c:/var/lib/beast
-      - ./.beast/remote-commons-lab/commons-node-c:/run/beast:ro
+      - ./.beast/remote-commons-lab/commons-node-c:/run/beast:rw
 
 volumes:
   commons_node_a:

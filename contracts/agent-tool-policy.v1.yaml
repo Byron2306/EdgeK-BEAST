@@ -1,0 +1,34 @@
+policy_id: beast.agent-tools.v1
+schema_version: 1
+defaults:
+  network: deny
+  workspace_write: deny
+  worktree_write: approval_required
+  promotion: human_only
+classes:
+  A:
+    name: read-only automatic
+    approval: automatic
+    examples: [workspace.list, workspace.read-range, search.text, lsp.diagnostics, git.status]
+  B:
+    name: read-only sensitive
+    approval: scoped
+    examples: [workspace.read-secret-adjacent, github.query, database.query, url.fetch]
+  C:
+    name: isolated mutation
+    approval: capability
+    worktree_required: true
+    examples: [worktree.patch, worktree.create-file, formatter.run]
+  D:
+    name: consequential execution
+    approval: risk_profile
+    examples: [tests.run, build.run, task.run, container.exec, network.tool]
+  E:
+    name: never model-authorized
+    approval: human_only
+    examples: [sourceplan.promote, git.push, package.publish, policy.disable, evidence.erase]
+invariants:
+  - Capabilities are request-bound, scope-bound, time-bound, and revocable.
+  - A model cannot widen its own authority.
+  - A model cannot write directly to the operator workspace.
+  - A model cannot approve or promote its own SourcePlan.

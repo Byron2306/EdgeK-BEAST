@@ -1,0 +1,610 @@
+/* Legacy Phase 9.1.5 visual language, adapted for the current page registry.
+   This is intentionally the last stylesheet: it corrects geometry without
+   rewriting page-specific components or their live data contracts. */
+@font-face { font-family: "Orbitron"; src: url("../assets/fonts/orbitron-400.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Orbitron"; src: url("../assets/fonts/orbitron-500.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Orbitron"; src: url("../assets/fonts/orbitron-600.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Orbitron"; src: url("../assets/fonts/orbitron-700.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Orbitron"; src: url("../assets/fonts/orbitron-800.ttf") format("truetype"); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "Oxanium"; src: url("../assets/fonts/oxanium-400.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Oxanium"; src: url("../assets/fonts/oxanium-500.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Oxanium"; src: url("../assets/fonts/oxanium-600.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Oxanium"; src: url("../assets/fonts/oxanium-700.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("../assets/fonts/rajdhani-400.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("../assets/fonts/rajdhani-500.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("../assets/fonts/rajdhani-600.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("../assets/fonts/rajdhani-700.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Chakra Petch"; src: url("../assets/fonts/chakra-petch-400.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Chakra Petch"; src: url("../assets/fonts/chakra-petch-500.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Chakra Petch"; src: url("../assets/fonts/chakra-petch-600.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Chakra Petch"; src: url("../assets/fonts/chakra-petch-700.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Share Tech Mono"; src: url("../assets/fonts/share-tech-mono-400.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+:root {
+  --beast-header-h: 120px;
+  --beast-command-h: 86px;
+  --beast-gap: 8px;
+  --beast-frame: 8px;
+  --beast-frame-compact: 6px;
+  --beast-sidebar-w: clamp(222px, 14vw, 268px);
+  --beast-rail-w: clamp(268px, 17vw, 326px);
+}
+body.beast-work-mode { --beast-header-h: 120px !important; }
+.beast-shell {
+  grid-template-rows: 120px minmax(0,1fr) var(--beast-command-h) !important;
+  grid-template-areas: "sidebar header header" "sidebar viewport rail" "sidebar command rail" !important;
+}
+
+/* The old UI used a local-feeling technical face. Avoid a network font
+   waterfall and keep metrics stable between boot and settled rendering. */
+html, body {
+  font-family: "Share Tech Mono", "Liberation Mono", ui-monospace, monospace !important;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+:where(h1,h2,h3,h4,h5,h6,.beast-title,.beast-page-head h2,.beast-card h3,
+  .beast-panel-head h3,.beast-rail-card h3,.beast-brand-copy small) {
+  font-family: "Trebuchet MS", "DejaVu Sans", sans-serif !important;
+  letter-spacing: .035em !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 0 #000, 0 0 8px rgba(120,255,62,.12) !important;
+}
+.beast-title { font-size: clamp(14px, 1vw, 19px) !important; line-height: 1.08 !important; }
+.beast-page-head h2 { font-size: clamp(19px, 1.35vw, 28px) !important; line-height: 1.08 !important; }
+.beast-card h3,.beast-panel-head h3,.beast-rail-card h3 { font-size: clamp(12px, .78vw, 15px) !important; }
+.beast-card p { font-size: 13px !important; line-height: 1.42 !important; }
+.beast-nav .label { font-size: 13px !important; letter-spacing: .035em !important; }
+
+/* The shell gets one asset-backed frame. The prior banner-neutral stretch was
+   visually read as a second logo/header by Chromium at short heights. */
+.beast-header {
+  grid-template-rows: 66px 34px !important;
+  border: 8px solid transparent !important;
+  border-image: url("../assets/headers/header-main.png") 80 / 8px stretch !important;
+  background-image: linear-gradient(180deg, rgba(2,9,5,.72), rgba(0,5,2,.58)) !important;
+}
+.beast-header::before { display: none !important; }
+.beast-header-brandmark { min-height: 0 !important; }
+.beast-header-wordmark { height: 58px !important; }
+.beast-header-brandmark span { display: none !important; }
+.beast-title-row { padding-block: 0 !important; }
+.beast-title { white-space: nowrap !important; }
+
+/* No trust ribbon is allowed to reserve shell space. Trust remains available
+   in the Trust page and context rail, where it does not displace the canvas. */
+.beast-workspace-trust-bar { max-height: 34px; }
+.beast-workspace-trust-bar:empty { display: none !important; }
+
+/* One clean page title bar. The large page artwork was the source of the
+   duplicated/ghost header effect on newer routes. */
+.beast-page-head {
+  min-height: 62px !important;
+  padding: 10px 16px !important;
+  border-width: 1px !important;
+  background: linear-gradient(90deg, rgba(5,13,8,.88), rgba(2,8,5,.66)) !important;
+  box-shadow: inset 0 0 0 1px rgba(120,255,62,.04), 0 6px 18px rgba(0,0,0,.28) !important;
+}
+.beast-page-head::before { display: none !important; }
+.beast-page-head::after { left: 14px; right: 14px; bottom: 5px; }
+.beast-page-head>div:first-child { padding-left: 0 !important; }
+
+/* Keep every route on one readable heading and panel rhythm. Page-specific
+   artwork may vary, but its geometry must not change the canvas contract. */
+.beast-page :is(.beast-page-head, .beast-card > .beast-panel-head, .beast-panel-head) {
+  min-height: 0 !important;
+  height: auto !important;
+}
+.beast-page .beast-page-head {
+  min-height: 62px !important;
+  padding: 10px 16px !important;
+}
+.beast-page .beast-panel-head {
+  min-height: 30px !important;
+  margin: 0 0 10px !important;
+  padding: 0 0 7px !important;
+  align-items: center !important;
+}
+.beast-page .beast-panel-head h3,
+.beast-page .beast-panel-head h2 {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.15 !important;
+}
+.beast-page .beast-panel-head > span,
+.beast-page .beast-panel-head > small {
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+/* The source-plan route had an older sticky, logo-bearing header exception. */
+.beast-sourceplan-page .beast-page-head {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+  min-height: 62px !important;
+  padding: 10px 16px !important;
+  background: linear-gradient(90deg, rgba(5,13,8,.88), rgba(2,8,5,.66)) !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,auto) !important;
+}
+
+/* Testing: selected files use a restrained green state, never the native
+   grey button highlight that made identified tests look disabled. */
+.beast-testing-page .terminal-problems > div > button,
+.beast-testing-page [data-test-file] {
+  background: transparent !important;
+  color: #becbc2 !important;
+  box-shadow: none !important;
+}
+.beast-testing-page .terminal-problems > div > button:hover,
+.beast-testing-page [data-test-file]:hover,
+.beast-testing-page [data-test-file].active,
+.beast-testing-page [data-test-file][aria-selected="true"] {
+  background: rgba(120,255,62,.065) !important;
+  color: #f0faef !important;
+}
+.beast-testing-page [data-test-file].active {
+  border-left: 2px solid var(--beast-green-hot) !important;
+}
+
+/* Restore the old two-column test workbench and make commons cards settle into
+   a predictable grid instead of stretching individual panels. */
+.beast-testing-page .terminal-lower-grid {
+  grid-template-columns: minmax(0,1fr) minmax(0,1.2fr) !important;
+  gap: 10px !important;
+  align-items: start !important;
+}
+.beast-testing-page > .beast-card,
+.beast-commons-page > .beast-card,
+.beast-commons-page .commons-surface-card,
+.beast-commons-page .commons-node-card,
+.beast-commons-page .commons-bucket-card,
+.beast-commons-page .commons-revision-card,
+.beast-commons-page .commons-discovery-card {
+  min-height: 0 !important;
+}
+.beast-commons-page .p8-setting-stack { gap: 8px !important; }
+.beast-commons-page .p8-setting input:not([type="checkbox"]),
+.beast-commons-page .p8-setting select {
+  min-height: 32px !important;
+  border-color: rgba(120,255,62,.24) !important;
+  background: #030804 !important;
+  color: #d9e9dc !important;
+  font: 500 11px/1.2 var(--beast-mono) !important;
+}
+.beast-commons-page :is(.commons-forge-grid, .commons-node-grid,
+  .commons-bucket-grid, .commons-revision-grid, .commons-discovery-grid) {
+  grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  gap: 10px !important;
+  align-items: start !important;
+}
+.beast-commons-page :is(.commons-surface-card, .commons-node-card,
+  .commons-bucket-card, .commons-revision-card, .commons-discovery-card) {
+  padding: 12px !important;
+  border: 23px solid transparent !important;
+  border-image: url("../assets/frames/panel-hd-neutral.png") 120 fill / 23px / 0 stretch !important;
+  background: linear-gradient(180deg, rgba(5,10,7,.94), rgba(2,5,3,.985)) !important;
+  filter: drop-shadow(0 12px 22px rgba(0,0,0,.34)) !important;
+}
+.beast-commons-page .commons-surface-reading {
+  min-height: 58px !important;
+  padding: 9px !important;
+}
+
+/* Keep the current shell's extra pages, but give them the older generous
+   horizontal canvas and centered content instead of stretched cards. */
+#beastPageOutlet { padding: 10px !important; }
+.beast-page { gap: 9px !important; }
+.beast-card {
+  padding: 14px !important;
+  border: 10px solid transparent !important;
+  border-image: url("../assets/frames/panel-card-neutral.png") 112 fill / 10px stretch !important;
+  backdrop-filter: none !important;
+}
+.beast-card.wide { border-image-source: url("../assets/frames/panel-wide-neutral.png") !important; }
+.beast-card.compact {
+  border: 8px solid transparent !important;
+  border-image: url("../assets/frames/panel-card-compact-neutral.png") 112 fill / 8px stretch !important;
+}
+.beast-card.tall { border-image-source: url("../assets/frames/panel-tall-neutral.png") !important; }
+.beast-card.warning { border-image-source: url("../assets/frames/panel-amber.png") !important; }
+.beast-card.danger { border-image-source: url("../assets/frames/panel-warning.png") !important; }
+.beast-card.silver { border-image-source: url("../assets/frames/panel-silver.png") !important; }
+.beast-rail-card {
+  border: 10px solid transparent !important;
+  border-image: url("../assets/frames/panel-tall-neutral.png") 112 fill / 10px stretch !important;
+}
+.beast-panel-head { min-height: 30px; align-items: center !important; margin-bottom: 10px !important; padding-bottom: 7px !important; }
+.beast-panel-head h3 { line-height: 1.15 !important; }
+.beast-page :where(p,li,label,button,input,select,textarea) { line-height: 1.35; }
+.beast-surface { backdrop-filter: none !important; }
+.beast-page-actions { align-items: center !important; justify-content: flex-end !important; }
+.beast-page-actions button { min-height: 31px !important; padding: 5px 9px !important; }
+.beast-ring { margin-inline: auto; }
+
+/* Keep the mascot and the BUILD / VERIFY / REMEMBER feeling present without
+   adding another always-running DOM layer. */
+.beast-mascot { width: 70px !important; height: 70px !important; }
+.beast-brand { grid-template-columns: 70px minmax(0,1fr) !important; padding-bottom: 9px !important; }
+.beast-header-wordmark { height: 68px !important; }
+.beast-header-emblem,.beast-header-emblem img { width: 64px !important; height: 64px !important; }
+
+/* The older rain was visible but not a full-screen GPU tax. */
+#beastMatrix { opacity: .56 !important; }
+#beastMatrixFront { opacity: .14 !important; }
+#beastGridLayer { opacity: .42 !important; animation-duration: 28s !important; }
+.fx-scan::after,.fx-glint::before,.fx-radar::after { animation-duration: 14s !important; opacity: .055 !important; }
+
+@media (max-height: 820px) {
+  :root { --beast-header-h: 120px; --beast-command-h: 78px; }
+  .beast-header { padding-block: 6px !important; }
+  .beast-header-wordmark { height: 52px !important; }
+  .beast-page-head { min-height: 54px !important; }
+}
+@media (max-width: 1100px) {
+  :root { --beast-header-h: 112px; --beast-rail-w: 0px; }
+  .beast-shell {
+    grid-template-rows: 112px minmax(0,1fr) var(--beast-command-h) !important;
+    grid-template-areas: "sidebar header" "sidebar viewport" "sidebar command" !important;
+  }
+}
+@media (prefers-reduced-motion: reduce), body[data-performance-tier="low"] {
+  #beastGridLayer,.fx-scan::after,.fx-glint::before,.fx-radar::after { animation: none !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Phase 9.1.5 final visual contract.
+   These are the original high-definition frame masters and geometry. The
+   current renderer may add routes, but it must not invent a second chrome
+   language for them.
+   ------------------------------------------------------------------------- */
+:root {
+  --beast-display: "Orbitron", "Oxanium", "Chakra Petch", system-ui, sans-serif;
+  --beast-display-alt: "Oxanium", "Chakra Petch", "Aldrich", system-ui, sans-serif;
+  --beast-ui: "Rajdhani", "Chakra Petch", "Oxanium", system-ui, sans-serif;
+  --beast-tech: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", "Azeret Mono", ui-monospace, monospace;
+  --beast-mono: "Share Tech Mono", "JetBrains Mono", "IBM Plex Mono", "Azeret Mono", ui-monospace, monospace;
+  --beast-header-h: 128px;
+  --beast-phase9-signal: #78ff38;
+}
+html, body { font-family: var(--beast-ui) !important; }
+:where(h1,h2,.beast-title,.beast-page-head h2,.beast-header .beast-title,
+  .beast-brand-copy small) {
+  font-family: var(--beast-display) !important;
+  font-weight: 800 !important;
+  letter-spacing: .075em !important;
+  text-transform: uppercase;
+}
+:where(h3,h4,h5,h6,.beast-card > h3,.beast-rail-card > h3,
+  .beast-panel-head h3,.panel-head h2,.panel-head h3,[class*="section-title"],[class*="card-title"]) {
+  font-family: var(--beast-display-alt) !important;
+  font-weight: 700 !important;
+  letter-spacing: .065em !important;
+  text-transform: uppercase;
+}
+
+.beast-header.beast-header-premium {
+  min-height: 0 !important;
+  padding: 14px 30px 14px 184px !important;
+  overflow: visible !important;
+  border: 34px solid transparent !important;
+  border-image: url("../assets/headers/header-main.png") 68 fill / 34px / 0 stretch !important;
+  background: linear-gradient(90deg, rgba(2,7,4,.985), rgba(6,14,9,.96) 54%, rgba(2,6,4,.99)) !important;
+  box-shadow: 0 15px 45px rgba(0,0,0,.52), 0 0 20px rgba(119,255,61,.07) !important;
+}
+.beast-header-premium::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 5% !important;
+  right: 5% !important;
+  top: 16px !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, var(--beast-phase9-signal), transparent) !important;
+  filter: drop-shadow(0 0 7px var(--beast-phase9-signal)) !important;
+}
+.beast-header-brandmark { display: block !important; }
+.beast-header-brandmark span { display: block !important; }
+.beast-header-emblem { display: grid !important; position: absolute !important; left: 42px !important; top: 20px !important; width: 116px !important; height: 88px !important; place-items: center !important; }
+.beast-header-emblem img { width: 88px !important; height: 88px !important; }
+.beast-header-terminal { display: block !important; position: absolute !important; left: 32px !important; bottom: 9px !important; }
+.beast-header .beast-title { font-size: clamp(19px, 1.24vw, 26px) !important; }
+.beast-header .beast-kicker { font-size: 12px !important; }
+.beast-header .beast-meta { font-size: 11px !important; }
+
+.beast-page-head {
+  min-height: 92px !important;
+  padding: 22px 32px 18px 88px !important;
+  border: 28px solid transparent !important;
+  border-image: url("../assets/headers/header-page.png") 52 fill / 28px / 0 stretch !important;
+  background: linear-gradient(90deg, rgba(3,9,5,.98), rgba(5,13,8,.94), rgba(2,6,4,.985)) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.32) !important;
+}
+.beast-page-head::before {
+  display: block !important;
+  content: "" !important;
+  left: 30px !important;
+  top: 25px !important;
+  width: 38px !important;
+  height: 38px !important;
+  background: var(--phase9-page-icon) center/contain no-repeat !important;
+  filter: drop-shadow(0 0 8px rgba(119,255,61,.35)) !important;
+}
+.beast-page-head::after {
+  left: -22% !important;
+  right: auto !important;
+  top: 8px !important;
+  bottom: auto !important;
+  width: 24% !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, var(--beast-phase9-signal), transparent) !important;
+}
+.beast-page-head h2 { font-size: clamp(21px, 1.34vw, 29px) !important; color: #f5f8f6 !important; }
+.beast-page-head .sub { font-size: 12px !important; color: #a9b6ae !important; }
+
+/* The 9.1.5 HD panel master is intentionally heavier than the RC4 neutral
+   card. This is the canonical frame for every current and future route. */
+.beast-card {
+  min-height: 150px !important;
+  padding: 18px !important;
+  border: 23px solid transparent !important;
+  border-image: url("../assets/frames/panel-hd-neutral.png") 120 fill / 23px / 0 stretch !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.018), transparent 22%), linear-gradient(180deg, rgba(5,10,7,.94), rgba(2,5,3,.985)) !important;
+  filter: drop-shadow(0 12px 22px rgba(0,0,0,.34)) !important;
+}
+.beast-card.compact { min-height: 112px !important; padding: 13px !important; border-width: 18px !important; border-image-width: 18px !important; }
+.beast-card.wide { border-image-source: url("../assets/frames/panel-wide.png") !important; }
+.beast-card.warning { border-image-source: url("../assets/frames/panel-hd-amber.png") !important; }
+.beast-card.danger { border-image-source: url("../assets/frames/panel-hd-danger.png") !important; }
+.beast-card.silver { border-image-source: url("../assets/frames/panel-silver.png") !important; }
+.beast-card::before {
+  content: "" !important;
+  z-index: 2 !important;
+  left: 17% !important;
+  right: 17% !important;
+  top: 9px !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(119,255,61,.8), transparent) !important;
+  opacity: .35 !important;
+  filter: drop-shadow(0 0 5px rgba(119,255,61,.7)) !important;
+  pointer-events: none !important;
+}
+
+body[data-beast-page="workspace"] { --phase9-page-icon: url("../assets/icons/workspace.png"); }
+body[data-beast-page="source"] { --phase9-page-icon: url("../assets/icons/source.png"); }
+body[data-beast-page="mission"] { --phase9-page-icon: url("../assets/icons/mission.png"); }
+body[data-beast-page="models"] { --phase9-page-icon: url("../assets/icons/models.png"); }
+body[data-beast-page="agents"] { --phase9-page-icon: url("../assets/icons/agents.png"); }
+body[data-beast-page="review"] { --phase9-page-icon: url("../assets/icons/review.png"); }
+body[data-beast-page="trust"] { --phase9-page-icon: url("../assets/icons/trust.png"); }
+body[data-beast-page="memory"] { --phase9-page-icon: url("../assets/icons/memory.png"); }
+body[data-beast-page="evidence"] { --phase9-page-icon: url("../assets/icons/evidence.png"); }
+body[data-beast-page="crystallization"] { --phase9-page-icon: url("../assets/icons/crystallization.png"); }
+body[data-beast-page="map"] { --phase9-page-icon: url("../assets/icons/map.png"); }
+body[data-beast-page="terminal"] { --phase9-page-icon: url("../assets/icons/terminal.png"); }
+body[data-beast-page="testing"] { --phase9-page-icon: url("../assets/icons/review.png"); }
+body[data-beast-page="tooling"] { --phase9-page-icon: url("../assets/icons/tooling.png"); }
+body[data-beast-page="doctor"] { --phase9-page-icon: url("../assets/icons/doctor.png"); }
+body[data-beast-page="providers"] { --phase9-page-icon: url("../assets/icons/providers.png"); }
+body[data-beast-page="system"] { --phase9-page-icon: url("../assets/icons/system.png"); }
+body[data-beast-page="atlas"] { --phase9-page-icon: url("../assets/icons/map.png"); }
+body[data-beast-page="worktrees"] { --phase9-page-icon: url("../assets/icons/worktrees.png"); }
+body[data-beast-page="deploy"] { --phase9-page-icon: url("../assets/icons/deploy.png"); }
+body[data-beast-page="chronicle"] { --phase9-page-icon: url("../assets/icons/chronicle.png"); }
+body[data-beast-page="economy"] { --phase9-page-icon: url("../assets/icons/economy.png"); }
+body[data-beast-page="commons"] { --phase9-page-icon: url("../assets/icons/economy.png"); }
+body[data-beast-page="settings"] { --phase9-page-icon: url("../assets/icons/settings.png"); }
+body[data-beast-page="studio"] { --phase9-page-icon: url("../assets/icons/studio.png"); }
+
+@media (max-width: 1450px) {
+  :root { --beast-header-h: 116px; }
+  .beast-header-premium { padding-left: 138px !important; }
+  .beast-header-emblem { left: 28px !important; width: 90px !important; }
+  .beast-header-emblem img { width: 72px !important; height: 72px !important; }
+  .beast-header-terminal { display: none !important; }
+  .beast-page-head { padding-left: 80px !important; }
+  .beast-page-head h2 { font-size: 22px !important; }
+}
+@media (max-width: 1120px) {
+  :root { --beast-header-h: 106px; }
+  .beast-header-premium { padding: 12px 22px 12px 96px !important; }
+  .beast-header-emblem { left: 22px !important; width: 62px !important; height: 62px !important; top: 20px !important; }
+  .beast-header-emblem img { width: 58px !important; height: 58px !important; }
+  .beast-header .beast-title { font-size: 17px !important; }
+  .beast-page-head { min-height: 82px !important; border-width: 21px !important; border-image-width: 21px !important; padding: 17px 20px 15px 68px !important; }
+  .beast-page-head::before { left: 24px !important; top: 22px !important; width: 32px !important; height: 32px !important; }
+}
+@media (max-width: 720px) {
+  .beast-header-emblem { display: none !important; }
+  .beast-header-premium { padding-left: 18px !important; }
+  .beast-page-head { padding-left: 22px !important; }
+  .beast-page-head::before { display: none !important; }
+}
+
+/* Low is the default interactive profile: preserve the authored chrome and
+   matrix atmosphere while pausing only decorative compositor-heavy loops. */
+body[data-performance-tier="low"] :is(.beast-card::before, .beast-card::after,
+  .beast-header-premium::after, .beast-page-head::after, .fx-scan::after,
+  .fx-glint::before, .fx-radar::after, .beast-mascot::before) {
+  animation-play-state: paused !important;
+}
+body[data-performance-tier="low"] :is(.beast-card:hover::before,
+  .beast-card:focus-within::before, .beast-card.is-active::before) {
+  animation-play-state: paused !important;
+}
+body[data-performance-tier="low"] :is(.beast-sidebar, .beast-viewport, .beast-rail,
+  .beast-command, .beast-card, .beast-rail-card, .beast-page-head) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body[data-performance-tier="low"] :is(.beast-card, .beast-rail-card) {
+  filter: none !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 8px 18px rgba(0,0,0,.28) !important;
+}
+body[data-performance-tier="low"] #beastGridLayer {
+  opacity: .26 !important;
+}
+
+/* Final 9.1.5 cascade: the page strip is the HD master, not the older
+   stretched border plate. This is the rule used by the actual legacy app. */
+.beast-page-head {
+  min-height: 78px !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 0 !important;
+  padding: 17px 138px 16px 116px !important;
+  background: url("../assets/headers/header-page-hd.png") center / 100% 100% no-repeat !important;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,.38)) !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+.beast-page-head::before {
+  left: 52px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 38px !important;
+  height: 38px !important;
+  background-size: contain !important;
+}
+.beast-page-head h2 {
+  font-size: clamp(23px, 1.55vw, 34px) !important;
+  line-height: 1 !important;
+}
+.beast-page-head .sub {
+  font-size: 12px !important;
+  letter-spacing: .075em !important;
+}
+
+/* Phase 8 pages use a different class name for the same semantic heading.
+   Normalize it so newer routes cannot drift into a second panel language. */
+.beast-page :is(.phase8-panel-head, .p8-panel-head) {
+  min-height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin: 0 0 10px !important;
+  padding: 0 0 7px !important;
+  border-bottom: 1px solid rgba(119,255,61,.18) !important;
+}
+.beast-page :is(.phase8-panel-head, .p8-panel-head) h3 {
+  margin: 0 !important;
+  color: #e9efeb !important;
+  font: 900 14px/1.15 var(--beast-ui) !important;
+  letter-spacing: .095em !important;
+  text-shadow: 0 1px 0 #000, 0 0 6px rgba(209,222,214,.12) !important;
+}
+.beast-page :is(.phase8-panel-head, .p8-panel-head) span {
+  color: #9eafa5 !important;
+  font: 500 10px/1.35 var(--beast-tech) !important;
+}
+
+/* Every page-level Phase 8 surface receives the same HD frame. Inner data
+   rows stay lightweight; only semantic panels get the expensive frame art. */
+.beast-page :is(.p8-provider-grid, .p8-system-grid, .p8-deploy-hero,
+  .p8-deploy-lower, .p8-chronicle-grid, .p8-economy-grid, .p8-studio-grid,
+  .p8-control-plane-grid, .p8-system-lower, .atlas-layout) > section:not(.beast-card) {
+  min-width: 0 !important;
+  min-height: 150px !important;
+  padding: 18px !important;
+  border: 23px solid transparent !important;
+  border-image: url("../assets/frames/panel-hd-neutral.png") 120 fill / 23px / 0 stretch !important;
+  background: linear-gradient(180deg, rgba(5,10,7,.94), rgba(2,5,3,.985)) !important;
+  filter: drop-shadow(0 12px 22px rgba(0,0,0,.34)) !important;
+}
+.beast-page .p8-metric-grid { align-items: stretch !important; }
+.beast-page .p8-metric-grid > .beast-card { min-height: 112px !important; }
+.beast-commons-page .commons-subpanel { min-height: 220px !important; }
+
+@media (max-width: 1120px) {
+  .beast-page-head {
+    min-height: 78px !important;
+    padding: 17px 20px 15px 68px !important;
+  }
+}
+
+/* Newer fabric/closure routes are data additions, not a new visual system.
+   Their outer surfaces must use the same authored 9.1.5 masters. */
+.beast-page :is(.fabric-route-map, .live-proof-strip, .closure-hero,
+  .closure-timeline) {
+  min-width: 0 !important;
+  padding: 18px !important;
+  border: 23px solid transparent !important;
+  border-image: url("../assets/frames/panel-hd-neutral.png") 120 fill / 23px / 0 stretch !important;
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, rgba(5,10,7,.94), rgba(2,5,3,.985)) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+.beast-page .fabric-route-map {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 7px !important;
+  overflow-x: auto !important;
+}
+.beast-page .fabric-route {
+  min-width: 126px !important;
+  border: 1px solid rgba(119,255,61,.18) !important;
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, rgba(8,18,10,.96), rgba(2,6,3,.98)) !important;
+  color: #dfe9e2 !important;
+  font-family: var(--beast-tech) !important;
+}
+.beast-page .fabric-route b,
+.beast-page .fabric-route small,
+.beast-page .fabric-route em,
+.beast-page .fabric-route > span,
+.beast-page .closure-hero,
+.beast-page .closure-timeline,
+.beast-page .closure-gate,
+.beast-page .reality-row,
+.beast-page .reality-cell,
+.beast-page .live-proof,
+.beast-page .live-metric,
+.beast-page .live-event,
+.beast-page .xdp-node,
+.beast-page .kv-live-row,
+.beast-page .prism-step,
+.beast-page .closure-proof-grid > div {
+  font-family: var(--beast-tech) !important;
+  border-radius: 0 !important;
+}
+.beast-page :is(.fabric-route.active, .fabric-route:hover,
+  .closure-gate.active, .reality-cell.yes, .live-proof.good,
+  .xdp-node.good) {
+  border-color: rgba(119,255,61,.58) !important;
+  box-shadow: 0 0 14px rgba(119,255,61,.12) !important;
+}
+.beast-page :is(.fabric-route.ineligible, .closure-gate,
+  .reality-row header, .reality-cell, .live-proof, .live-metric,
+  .xdp-node, .kv-live-row) {
+  background: rgba(2,8,4,.78) !important;
+  border-color: rgba(181,204,188,.13) !important;
+}
+.beast-page .closure-hero {
+  grid-template-columns: minmax(0,1fr) 150px !important;
+  margin-bottom: 10px !important;
+}
+.beast-page .closure-hero strong,
+.beast-page .closure-seal,
+.beast-page .fabric-big-number,
+.beast-page .live-proof b,
+.beast-page .live-metric b,
+.beast-page .reality-cell b {
+  font-family: var(--beast-display-alt) !important;
+}
+.beast-page .closure-timeline {
+  display: grid !important;
+  gap: 7px !important;
+  margin-top: 10px !important;
+}
+.beast-page .closure-gate {
+  background: rgba(2,8,4,.78) !important;
+  color: #dfe9e2 !important;
+}
+.beast-page .reality-row header,
+.beast-page .reality-cell {
+  background: rgba(2,8,4,.78) !important;
+}
+.beast-page .live-proof-strip {
+  margin-bottom: 10px !important;
+}
+.beast-page :is(.live-proof-strip, .fabric-route-map, .closure-hero,
+  .closure-timeline) + * { min-width: 0; }

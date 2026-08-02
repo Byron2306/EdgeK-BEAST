@@ -1,0 +1,101 @@
+/* BEAST Phase 7.1 — global icon containment and page-wide layout safety. */
+
+/* Auto-injected action icons are always bounded at insertion time and again here.
+   This prevents 512×512 source PNGs from ever using their natural dimensions. */
+img.beast-auto-icon {
+  --beast-auto-icon-size: 16px;
+  display: inline-block !important;
+  inline-size: var(--beast-auto-icon-size) !important;
+  block-size: var(--beast-auto-icon-size) !important;
+  min-inline-size: var(--beast-auto-icon-size) !important;
+  min-block-size: var(--beast-auto-icon-size) !important;
+  max-inline-size: var(--beast-auto-icon-size) !important;
+  max-block-size: var(--beast-auto-icon-size) !important;
+  object-fit: contain !important;
+  flex: 0 0 var(--beast-auto-icon-size) !important;
+  vertical-align: middle;
+  margin: 0 7px 0 0;
+  filter: drop-shadow(0 0 5px rgba(119,255,61,.28));
+}
+
+img.beast-auto-icon--18 { --beast-auto-icon-size: 18px; }
+img.beast-auto-icon--20 { --beast-auto-icon-size: 20px; }
+img.beast-auto-icon--28 { --beast-auto-icon-size: 28px; }
+
+/* Compact text controls stay text-first. This also hides any stale icon injected
+   by a previously cached Phase 7 script before the new controller takes over. */
+.beast-chip > img.beast-auto-icon,
+.beast-command-tabs button > img.beast-auto-icon,
+.cortex-tabbar button > img.beast-auto-icon,
+.cortex-editor-tools button > img.beast-auto-icon,
+.cortex-explorer-tools button > img.beast-auto-icon {
+  display: none !important;
+}
+
+/* Universal action-button guard. Explicit component rules may choose a smaller
+   size, but no button icon may expand a layout beyond this ceiling. */
+.beast-page button > img,
+.beast-rail button > img,
+.beast-command button > img {
+  max-inline-size: 44px;
+  max-block-size: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Structured controls own their columns. Auto icons are forbidden here because
+   prepending one changes the intended grid template. */
+.review-gate > img.beast-auto-icon,
+.memory-recall-row > img.beast-auto-icon,
+.memory-layer-row > img.beast-auto-icon,
+.map-node > img.beast-auto-icon,
+.route-map-node > img.beast-auto-icon,
+.agent-orbit-node > img.beast-auto-icon,
+.model-registry-row > img.beast-auto-icon,
+.agent-session-row > img.beast-auto-icon,
+.crystal-candidate-row > img.beast-auto-icon,
+.evidence-file-row > img.beast-auto-icon,
+.beast-file-row > img.beast-auto-icon {
+  display: none !important;
+}
+
+/* Explicit image slots retain predictable geometry even while assets decode. */
+.model-registry-row > img,
+.agent-session-row > img,
+.memory-recall-row > img,
+.memory-layer-row > img,
+.review-gate > img,
+.map-node > img,
+.route-map-node > img,
+.agent-orbit-node > img,
+.crystal-candidate-row > img,
+.evidence-file-row > img,
+.beast-file-row > img {
+  aspect-ratio: 1;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Broken images fall back to a small diagnostic glyph, never the source PNG's
+   natural 512px dimensions. */
+img.beast-icon-fallback {
+  inline-size: 20px !important;
+  block-size: 20px !important;
+  min-inline-size: 20px !important;
+  min-block-size: 20px !important;
+  max-inline-size: 20px !important;
+  max-block-size: 20px !important;
+  object-fit: contain !important;
+}
+
+/* Named hero emblems remain intentionally larger; every other runtime icon is
+   governed by its component slot or the auto-icon ceiling above. */
+.beast-page .trust-proof-emblem img { width: 148px; height: 148px; }
+.beast-page .memory-core-emblem img { width: 172px; height: 172px; }
+.beast-page .doctor-orbit img { width: 105px; height: 105px; }
+
+@media (max-width: 900px) {
+  img.beast-auto-icon { --beast-auto-icon-size: 15px; margin-right: 5px; }
+  img.beast-auto-icon--20 { --beast-auto-icon-size: 18px; }
+  img.beast-auto-icon--28 { --beast-auto-icon-size: 24px; }
+}

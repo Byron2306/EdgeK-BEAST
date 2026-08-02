@@ -178,6 +178,7 @@ class ComputePlane:
                  provider_fallback: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
                  production_routing_mode: str = "explicit_enforce",
                  isolated_disk_cleanup_delegate: Callable[..., Mapping[str, Any]] | None = None):
+        configured_root = root is not None or bool(os.environ.get("BEAST_COMPUTE_PLANE_ROOT", "").strip())
         if root is None:
             configured = os.environ.get("BEAST_COMPUTE_PLANE_ROOT", "").strip()
             state_root = os.environ.get("BEAST_STATE_ROOT", "").strip()
@@ -187,7 +188,23 @@ class ComputePlane:
                 else xdg_state / "beast" / "compute_plane"
             )
         self.root = Path(root)
-        self.root.mkdir(parents=True, exist_ok=True)
+        try:
+            self.root.mkdir(parents=True, exist_ok=True)
+            # Directory existence is not sufficient in managed sandboxes;
+            # verify that the scheduler can create its lock/state files.
+            probe = self.root / ".beast-write-probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+        except OSError:
+            if configured_root:
+                raise
+            # Some managed IDE/test sandboxes expose the user's XDG state path
+            # as read-only. Keep durable compute state in the repository-owned
+            # BEAST area rather than failing during import or leaving a phantom
+            # scheduler-lock diagnosis behind.
+            fallback = Path(__file__).resolve().parents[3] / ".beast" / "state" / "compute_plane"
+            fallback.mkdir(parents=True, exist_ok=True)
+            self.root = fallback
         self.governor = governor or ComputeGovernor()
         if production_routing_mode not in {"explicit_enforce", "disabled"}:
             raise ValueError("production routing mode must be explicit_enforce or disabled")

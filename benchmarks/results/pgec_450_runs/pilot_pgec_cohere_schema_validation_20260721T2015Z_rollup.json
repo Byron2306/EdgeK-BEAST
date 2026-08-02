@@ -1,0 +1,108 @@
+{
+  "date": "2026-07-21",
+  "families": [
+    {
+      "batch": 0,
+      "continuity_passed": true,
+      "family": "schema_validation",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 0,
+      "governed_failed": 5,
+      "raw_completed": 0,
+      "raw_failed": 5,
+      "reuse_at": [
+        3,
+        5
+      ]
+    },
+    {
+      "batch": 1,
+      "continuity_passed": true,
+      "family": "provider_alias_normalization",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 5,
+      "governed_failed": 0,
+      "raw_completed": 5,
+      "raw_failed": 0,
+      "reuse_at": [
+        3,
+        5
+      ]
+    },
+    {
+      "batch": 2,
+      "continuity_passed": true,
+      "family": "patch_compilation",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 3,
+      "governed_failed": 2,
+      "raw_completed": 3,
+      "raw_failed": 2,
+      "reuse_at": [
+        3,
+        5
+      ]
+    },
+    {
+      "batch": 3,
+      "continuity_passed": true,
+      "family": "syntax_check",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 0,
+      "governed_failed": 5,
+      "raw_completed": 0,
+      "raw_failed": 5,
+      "reuse_at": [
+        3,
+        5
+      ]
+    },
+    {
+      "batch": 4,
+      "continuity_passed": true,
+      "family": "route_diagnostics",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 0,
+      "governed_failed": 5,
+      "raw_completed": 0,
+      "raw_failed": 5,
+      "reuse_at": [
+        3,
+        5
+      ]
+    },
+    {
+      "batch": 5,
+      "continuity_passed": true,
+      "family": "secret_redaction",
+      "full_pgec_completed": 5,
+      "full_pgec_failed": 0,
+      "governed_completed": 1,
+      "governed_failed": 4,
+      "raw_completed": 3,
+      "raw_failed": 2,
+      "reuse_at": [
+        3,
+        5
+      ]
+    }
+  ],
+  "provider": "cohere",
+  "run_id": "pgec_cohere_schema_validation_20260721T2015Z",
+  "totals": {
+    "continuity_passed_families": 6,
+    "family_count": 6,
+    "full_pgec_completed": 30,
+    "full_pgec_failed": 0,
+    "governed_completed": 9,
+    "governed_failed": 21,
+    "observations": 90,
+    "raw_completed": 11,
+    "raw_failed": 19
+  }
+}

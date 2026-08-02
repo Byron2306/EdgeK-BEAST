@@ -1,0 +1,24 @@
+
+.fx-scan::after {
+  content:""; position:absolute; inset:-30% 0 auto; height:18%;
+  background:url("../assets/effects/scan-line-sweep.png") center/100% 100% no-repeat;
+  opacity:.09; mix-blend-mode:screen; animation:fx-scan 6s linear infinite; pointer-events:none;
+}
+.fx-stream::before {
+  content:""; position:absolute; inset:0;
+  background:url("../assets/effects/matrix-stream.png") center/cover no-repeat;
+  opacity:.05; mix-blend-mode:screen; pointer-events:none;
+}
+.fx-radar::after {
+  content:""; position:absolute; width:180px; aspect-ratio:1; right:-45px; bottom:-55px;
+  background:url("../assets/effects/radar-sweep.png") center/contain no-repeat;
+  opacity:.13; animation:fx-rotate 12s linear infinite; pointer-events:none;
+}
+.fx-glint::before {
+  content:""; position:absolute; left:-30%; top:0; width:28%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transform:skewX(-18deg); animation:fx-glint 8s ease-in-out infinite; pointer-events:none;
+}
+@keyframes fx-scan { from{transform:translateY(-20%)} to{transform:translateY(720%)} }
+@keyframes fx-rotate { to{transform:rotate(360deg)} }
+@keyframes fx-glint { 0%,72%{left:-30%;opacity:0}78%{opacity:1}88%,100%{left:120%;opacity:0} }

@@ -1,0 +1,193 @@
+{
+  "assertions": {
+    "absent_channels_are_explicit": true,
+    "active_channel_count": 3,
+    "channels_classified": true,
+    "plane_exported": true,
+    "plane_hash_present": true,
+    "privacy_scan_passed": true
+  },
+  "beast_object_type": "mega_reuse_evidence_plane_certification",
+  "certification_hash": "sha256:16115132e3bca93faf23b42951cd1e450081248f30585efea46dcf02394e40c0",
+  "channels": [
+    {
+      "channel": "swarm",
+      "evidence_count": 970,
+      "label": "Swarm role evidence",
+      "reason": "evidence observed in local Commons plane",
+      "safe_rate": 1.0,
+      "status": "present",
+      "useful_rate": 1.0,
+      "verified_rate": 1.0
+    },
+    {
+      "channel": "cli",
+      "evidence_count": 1,
+      "label": "OpenClaw/CLI execution evidence",
+      "reason": "evidence observed in local Commons plane",
+      "safe_rate": 1.0,
+      "status": "present",
+      "useful_rate": 1.0,
+      "verified_rate": 1.0
+    },
+    {
+      "channel": "ollama",
+      "evidence_count": 0,
+      "label": "Ollama scout calibration evidence",
+      "reason": "channel was not invoked by this mega-test run; absence is recorded explicitly",
+      "safe_rate": 0.0,
+      "status": "absent_expected",
+      "useful_rate": 0.0,
+      "verified_rate": 0.0
+    },
+    {
+      "channel": "kv_cache",
+      "evidence_count": 8,
+      "label": "KV/cache transport evidence",
+      "reason": "evidence observed in local Commons plane",
+      "safe_rate": 1.0,
+      "status": "present",
+      "useful_rate": 1.0,
+      "verified_rate": 1.0
+    }
+  ],
+  "claim_boundary": "This certifies the presence, absence classification, integrity hash, and privacy shape of the local reuse evidence plane. It does not fabricate evidence for channels not invoked by the run.",
+  "generated_at": "2026-07-21T19:15:46Z",
+  "live": true,
+  "mode": "controlled",
+  "passed": true,
+  "plane": {
+    "adoption_summary": {},
+    "authority": "advisory_local_policy_decides",
+    "beast_object_type": "meta_tool_commons_evidence_plane",
+    "candidate_summary": {
+      "local_swarm_commons": {
+        "proposed": 830
+      }
+    },
+    "evidence_count": 979,
+    "latest_at": "2026-07-19T11:53:34.217748+00:00",
+    "plane_count": 3,
+    "plane_hash": "sha256:e2993a0be6463a8588e55f70f8921cceab6e39f44951f63ee404b68f17b06975",
+    "planes": [
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 970,
+        "hidden_clean_count": 970,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-07-19T11:53:34.217748+00:00",
+        "local_scope_count": 970,
+        "plane": "swarm",
+        "rescued_count": 970,
+        "rescued_rate": 1.0,
+        "safe_count": 970,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 194,
+            "name": "cartographer"
+          },
+          {
+            "count": 194,
+            "name": "compressor"
+          },
+          {
+            "count": 194,
+            "name": "hermes"
+          },
+          {
+            "count": 194,
+            "name": "scribe"
+          },
+          {
+            "count": 194,
+            "name": "supervisor"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 950,
+            "name": "general_software_task"
+          },
+          {
+            "count": 10,
+            "name": "general"
+          },
+          {
+            "count": 10,
+            "name": "small_patch"
+          }
+        ],
+        "useful_count": 970,
+        "useful_rate": 1.0,
+        "verified_count": 970,
+        "verified_rate": 1.0
+      },
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 1,
+        "hidden_clean_count": 1,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-07-15T10:49:20.716518+00:00",
+        "local_scope_count": 1,
+        "plane": "cli",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 1,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 1,
+            "name": "cartographer"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 1,
+            "name": "agentic_cli"
+          }
+        ],
+        "useful_count": 1,
+        "useful_rate": 1.0,
+        "verified_count": 1,
+        "verified_rate": 1.0
+      },
+      {
+        "cost_usd": 0.0,
+        "evidence_count": 8,
+        "hidden_clean_count": 8,
+        "hidden_clean_rate": 1.0,
+        "latest_at": "2026-06-29T14:34:25.102144+00:00",
+        "local_scope_count": 8,
+        "plane": "kv_cache",
+        "rescued_count": 0,
+        "rescued_rate": 0.0,
+        "safe_count": 8,
+        "safe_rate": 1.0,
+        "tokens": 0,
+        "top_roles": [
+          {
+            "count": 8,
+            "name": "kv_cache_transport"
+          }
+        ],
+        "top_task_classes": [
+          {
+            "count": 8,
+            "name": "kv_cache_reuse"
+          }
+        ],
+        "useful_count": 8,
+        "useful_rate": 1.0,
+        "verified_count": 8,
+        "verified_rate": 1.0
+      }
+    ],
+    "privacy_policy": "aggregate_counts_and_hashes_only_redacted_inputs",
+    "version": "1.0"
+  },
+  "plane_hash": "sha256:e2993a0be6463a8588e55f70f8921cceab6e39f44951f63ee404b68f17b06975",
+  "version": "1.0"
+}

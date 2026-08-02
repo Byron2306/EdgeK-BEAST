@@ -51,6 +51,7 @@ class SocketGuardianServer:
         require_authority: bool = True, require_process_lease: bool = True,
         authorize: Callable[[Mapping[str, Any]], bool] | None = None,
         service_registry=None, health_probe: Callable[[PortLease], bool] | None = None,
+        max_active_leases: int = 128,
     ):
         self.socket_path = Path(socket_path)
         self.ledger_path = Path(ledger_path)
@@ -62,6 +63,7 @@ class SocketGuardianServer:
         self.authorize = authorize
         self.service_registry = service_registry
         self.health_probe = health_probe
+        self.max_active_leases = max(1, int(max_active_leases))
         if self.require_authority and (self.authorize is None or self.signer is None):
             raise RuntimeError("protected guardian requires an authorizer and receipt signer")
         self._server: socket.socket | None = None
@@ -184,7 +186,15 @@ class SocketGuardianServer:
                 "service_id": service_id,
                 "registry_digest": registry_digest,
             }
-            current_registry_digest = self._validate_registry(request, host=host, port=port)
+            # The authoritative service registry describes the backend
+            # upstream. A systemd-retained socket is the frontend listener and
+            # may intentionally use a different port.
+            current_registry_digest = self._validate_registry(
+                request,
+                host=host,
+                port=port,
+                enforce_endpoint=False,
+            )
             generation_key = json.dumps(
                 [family, protocol, host, port, network_namespace, vrf], separators=(",", ":")
             )
@@ -268,6 +278,36 @@ class SocketGuardianServer:
             held.close()
             raise
 
+    def adopt_pidfd_socket(
+        self,
+        service_id: str,
+        target_pid: int,
+        target_fd: int,
+        **kwargs,
+    ) -> PortLease:
+        """Adopt a socket from another process by stealing its file descriptor using pidfd."""
+        from app.kernel.system_monitor import ExecutionPrimitives
+        import socket
+        import os
+        
+        pidfd = ExecutionPrimitives.pidfd_open(target_pid, 0)
+        if pidfd < 0:
+            raise OSError(f"Failed to open pidfd for process {target_pid}")
+            
+        try:
+            stolen_fd = ExecutionPrimitives.pidfd_getfd(pidfd, target_fd, 0)
+            if stolen_fd < 0:
+                raise OSError(f"Failed to steal fd {target_fd} from process {target_pid}")
+                
+            held = socket.socket(fileno=stolen_fd)
+            try:
+                return self.adopt_inherited_socket(service_id, held, **kwargs)
+            finally:
+                held.detach()
+                os.close(stolen_fd)
+        finally:
+            os.close(pidfd)
+
     def adopt_systemd_environment(
         self,
         bindings: Mapping[str, Mapping[str, Any]],
@@ -334,7 +374,11 @@ class SocketGuardianServer:
         if self._server is None:
             self.start()
         assert self._server is not None
+        next_reap = time.monotonic()
         while not self._stop.is_set():
+            if time.monotonic() >= next_reap:
+                self._expire_due()
+                next_reap = time.monotonic() + 5.0
             try:
                 connection, _ = self._server.accept()
             except socket.timeout:
@@ -403,7 +447,14 @@ class SocketGuardianServer:
         if self.authorize is not None and request.get("op") not in {"snapshot", "events"} and not self.authorize(request):
             raise PermissionError("guardian authorization callback vetoed request")
 
-    def _validate_registry(self, request: Mapping[str, Any], *, host: str, port: int) -> str:
+    def _validate_registry(
+        self,
+        request: Mapping[str, Any],
+        *,
+        host: str,
+        port: int,
+        enforce_endpoint: bool = True,
+    ) -> str:
         if self.service_registry is None:
             return str(request.get("registry_digest") or "")
         supplied = str(request.get("registry_digest") or "")
@@ -414,8 +465,13 @@ class SocketGuardianServer:
         service = self.service_registry.services.get(service_id)
         if service is None:
             raise PermissionError("service is absent from authoritative registry")
-        if service.port != port or service.upstream.rsplit(":", 1)[0] != host:
-            raise PermissionError("requested listener disagrees with authoritative registry")
+        if enforce_endpoint and (
+            service.port != port
+            or service.upstream.rsplit(":", 1)[0] != host
+        ):
+            raise PermissionError(
+                "requested listener disagrees with authoritative registry"
+            )
         return current
 
     def _dispatch(self, request: Mapping[str, Any], *, peer_pid: int, peer_uid: int) -> tuple[Mapping[str, Any], int | None]:
@@ -452,6 +508,9 @@ class SocketGuardianServer:
         socket_type = socket.SOCK_DGRAM if protocol == "UDP" else socket.SOCK_STREAM
         held = socket.socket(socket_family, socket_type)
         try:
+            with self._lock:
+                if len(self._sockets) >= self.max_active_leases:
+                    raise RuntimeError("guardian lease capacity exhausted")
             held.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             held.bind((host, port))
             actual_port = int(held.getsockname()[1])

@@ -1,0 +1,497 @@
+{
+  "beast_object_type": "crystal_ir_reuse_gauntlet_receipt",
+  "gold_target": {
+    "completion_provider_calls": 0,
+    "false_reuse": 0,
+    "families": 6,
+    "heldout_verified_local_repairs": 6,
+    "hostile_near_match_refusals": 6,
+    "restart_persistent_reproductions": 6
+  },
+  "metrics": {
+    "completion_provider_calls": 0,
+    "cpu_seconds": 0.073755,
+    "false_reuse": 0,
+    "families": 6,
+    "heldout_verified_local_repairs": 6,
+    "hostile_near_match_refusals": 6,
+    "restart_persistent_reproductions": 6,
+    "wall_seconds": 2.376
+  },
+  "receipt_hash": "sha256:5064de7efaadffa2846a1c18f5a4a0a405f023d663a2a0553bd266daa89fda05",
+  "recipes": {
+    "arithmetic_repair": {
+      "family": "arithmetic_repair",
+      "generalized_digest": "sha256:6d96f2d1683601bfee384f7de8cbecc81ae1ca3925fb2c30cab312df9fb5823a",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair arithmetic_repair"
+        },
+        "observed_failure": {
+          "class": "arithmetic_repair",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return left - right"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "calculate_total"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    },
+    "configuration_validation": {
+      "family": "configuration_validation",
+      "generalized_digest": "sha256:e2703a562c6523a032c3cf8742af2f6070429094bde590cc7f57e3c10b0e3e87",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair configuration_validation"
+        },
+        "observed_failure": {
+          "class": "configuration_validation",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return config"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "validate_config"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    },
+    "missing_import": {
+      "family": "missing_import",
+      "generalized_digest": "sha256:9feb9941c4ec9046ac6cfdd5f70bfce44b55a8e817be770c7a40e15e28cb2c03",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair missing_import"
+        },
+        "observed_failure": {
+          "class": "missing_import",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return value"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "parse_amount"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    },
+    "provider_normalization": {
+      "family": "provider_normalization",
+      "generalized_digest": "sha256:c9d02aa18cb5d64deda2874f337365828e4eceea00fb20398a57d1095fac3d0e",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair provider_normalization"
+        },
+        "observed_failure": {
+          "class": "provider_normalization",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return value"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "normalize_provider_id"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    },
+    "rollback": {
+      "family": "rollback",
+      "generalized_digest": "sha256:a5a379938758e13530c3dd80cf4171f623793546fff3978f6383cd22b6946b64",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair rollback"
+        },
+        "observed_failure": {
+          "class": "rollback",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return value"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "apply_change"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    },
+    "secret_redaction": {
+      "family": "secret_redaction",
+      "generalized_digest": "sha256:0233a07295d5d5944d5a2c607ca2ff519a0a0713a223cc3b5950e43060cd7c33",
+      "ir": {
+        "authority": {
+          "maximum_effects": 1,
+          "network_allowed": false,
+          "tests_mutable": false,
+          "writable_files": [
+            "target.py"
+          ]
+        },
+        "mission": {
+          "objective": "repair secret_redaction"
+        },
+        "observed_failure": {
+          "class": "secret_redaction",
+          "examples": [
+            {
+              "expected": "verified",
+              "input": "held-out"
+            }
+          ]
+        },
+        "postconditions": [
+          "syntax_valid",
+          "target_tests_pass",
+          "no_unrelated_diff"
+        ],
+        "required_transform": {
+          "pipeline": [
+            "replace_function"
+          ]
+        },
+        "residual": {
+          "new": "",
+          "old": "return value"
+        },
+        "rollback": {
+          "required": true
+        },
+        "target": {
+          "file": "target.py",
+          "symbol": "redact_secret"
+        },
+        "unresolved_fields": [],
+        "version": "crystal.ir.v1"
+      },
+      "teacher_episodes": [
+        {
+          "episode": 1,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 2,
+          "provider_calls": 0,
+          "verified": true
+        },
+        {
+          "episode": 3,
+          "provider_calls": 0,
+          "verified": true
+        }
+      ],
+      "version": "crystal.recipe.v1"
+    }
+  },
+  "restart_results": {
+    "arithmetic_repair": true,
+    "configuration_validation": true,
+    "missing_import": true,
+    "provider_normalization": true,
+    "rollback": true,
+    "secret_redaction": true
+  },
+  "rows": [
+    {
+      "completion_provider_calls": 0,
+      "family": "missing_import",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    },
+    {
+      "completion_provider_calls": 0,
+      "family": "provider_normalization",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    },
+    {
+      "completion_provider_calls": 0,
+      "family": "configuration_validation",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    },
+    {
+      "completion_provider_calls": 0,
+      "family": "secret_redaction",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    },
+    {
+      "completion_provider_calls": 0,
+      "family": "rollback",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    },
+    {
+      "completion_provider_calls": 0,
+      "family": "arithmetic_repair",
+      "heldout_verified": true,
+      "hostile_near_match_refused": true,
+      "physical_effect": true,
+      "promoted": true,
+      "stale_blocked": true,
+      "teacher_episodes": 3
+    }
+  ],
+  "version": "1.0"
+}

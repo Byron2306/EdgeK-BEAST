@@ -96,7 +96,7 @@ class OpenAIProvider(BaseProvider):
         async with self.client.stream(
             "POST",
             url,
-            headers=self._build_headers(),
+        headers=self._build_headers(),
             json=payload
         ) as response:
             response.raise_for_status()

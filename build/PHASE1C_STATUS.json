@@ -1,0 +1,71 @@
+{
+  "schema": "beast.phase1c-status.v1",
+  "phase": "1C",
+  "date": "2026-07-18",
+  "status": "PASS",
+  "scope": "Electron composition root and desktop orchestration extraction",
+  "metrics": {
+    "main_js_lines_before_phase1": 2030,
+    "main_js_lines_before_phase1c": 1350,
+    "main_js_lines_after_phase1c": 155,
+    "lines_removed_from_entrypoint_phase1c": 1195,
+    "lines_removed_from_entrypoint_total_phase1": 1875,
+    "new_focused_modules": 6,
+    "direct_desktop_modules": 18,
+    "transitive_desktop_modules": 2,
+    "ipc_channels_registered_minimum": 60
+  },
+  "new_modules": [
+    "desktop-ide/main/workspace-state-host.js",
+    "desktop-ide/main/desktop-diagnostics-host.js",
+    "desktop-ide/main/gateway-host.js",
+    "desktop-ide/main/window-host.js",
+    "desktop-ide/main/ipc-registry.js",
+    "desktop-ide/main/application-lifecycle.js"
+  ],
+  "verification": {
+    "javascript_syntax": "PASS",
+    "phase1_boundaries": {
+      "status": "PASS",
+      "main_lines": 157,
+      "direct_modules": 18,
+      "transitive_modules": 2
+    },
+    "enterprise_runtime_contract": "PASS",
+    "parity_foundation": {
+      "status": "PASS",
+      "passed": 89,
+      "failed": 0,
+      "lsp": "environment-skipped",
+      "dap": "environment-skipped",
+      "kernel": "environment-skipped"
+    },
+    "execution_targets": {
+      "status": "PASS",
+      "passed": 12,
+      "skipped": 3,
+      "failed": 0
+    },
+    "desktop_launch_smoke": {
+      "status": "PASS",
+      "passed": 9,
+      "failed": 0
+    },
+    "desktop_static_smoke": {
+      "status": "PASS",
+      "passed": 24,
+      "failed": 0
+    },
+    "visual_acceptance": {
+      "status": "PASS",
+      "scenarios": 110,
+      "failures": 0
+    }
+  },
+  "public_contract_changes": [],
+  "notes": [
+    "Static verifiers now inspect the composed module graph.",
+    "The legacy Python desktop manifest suite still contains unrelated historical assertions for retired renderer/app.js and pre-decomposition source locations; it was not altered by this patch.",
+    "Live LSP, DAP, notebook kernel, SSH, and container checks remain environment-gated."
+  ]
+}

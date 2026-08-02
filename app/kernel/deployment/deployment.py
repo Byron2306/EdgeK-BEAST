@@ -27,6 +27,7 @@ import httpx
 import yaml
 
 from app.kernel.registry.provider_registry import ProviderRegistry
+from app.kernel.security.secret_vault import SecretVault
 
 
 LITELLM_UNSUPPORTED_PROVIDERS = {"fal"}
@@ -122,6 +123,12 @@ class DeploymentManager:
                     "api_key": f"os.environ/{env_name}",
                 },
             }
+            if name == "llama_cpp":
+                # llama.cpp exposes an OpenAI-compatible HTTP server.  Its
+                # endpoint is not a credential; putting it in api_key makes
+                # LiteLLM construct an invalid request.
+                entry["litellm_params"]["api_base"] = provider.base_url or "os.environ/LLAMA_CPP_BASE_URL"
+                entry["litellm_params"]["api_key"] = "os.environ/LLAMA_CPP_API_KEY"
             if provider.base_url and provider.backend in {"openai_compatible", "litellm", "native_huggingface"}:
                 entry["litellm_params"]["api_base"] = provider.base_url
             if provider.backend == "ollama":
@@ -314,6 +321,62 @@ server {{
                 "TGI_BACKEND": "llamacpp",
                 "HF_TOKEN": "set in environment, never commit",
             },
+        }
+
+    def generate_kv_serving_stack_config(
+        self,
+        *,
+        model_id: str = "Qwen/Qwen3-8B",
+        vllm_port: int = 8000,
+        lmcache_http_port: int = 8081,
+        lmcache_zmq_port: int = 5555,
+        lmcache_l1_size_gb: int = 20,
+        cache_dir: str = "./data/lmcache",
+    ) -> Dict[str, Any]:
+        """Generate reviewed commands/env for an LMCache MP + vLLM deployment.
+
+        Execution is deliberately separate: it needs a supported accelerator,
+        NVIDIA container runtime, a model license decision, and operator opt-in.
+        """
+        transfer = {
+            "kv_connector": "LMCacheMPConnector", "kv_role": "kv_both",
+            "kv_connector_extra_config": {"lmcache.mp.host": "tcp://lmcache", "lmcache.mp.port": int(lmcache_zmq_port)},
+        }
+        return {
+            "beast_object_type": "beast_kv_serving_stack_config",
+            "version": "1.0",
+            "services": {
+                "lmcache": {"http_url": f"http://127.0.0.1:{lmcache_http_port}", "zmq_url": f"tcp://127.0.0.1:{lmcache_zmq_port}", "command": f"lmcache server --host 0.0.0.0 --port {lmcache_zmq_port} --http-host 0.0.0.0 --http-port 8080 --l1-size-gb {int(lmcache_l1_size_gb)} --eviction-policy LRU --l2-adapter '{{\"type\":\"fs\",\"base_path\":\"/data/l2\"}}'"},
+                "vllm": {"base_url": f"http://127.0.0.1:{vllm_port}", "model": model_id, "prefix_caching": True, "prefix_caching_hash": "sha256", "kv_transfer_config": transfer},
+            },
+            "beast_env": {"VLLM_BASE_URL": f"http://127.0.0.1:{vllm_port}", "LMCACHE_HTTP_URL": f"http://127.0.0.1:{lmcache_http_port}", "LMCACHE_ZMQ_URL": f"tcp://127.0.0.1:{lmcache_zmq_port}", "LMCACHE_MODE": "mp", "BEAST_ACCELERATOR_ENABLED": "set true only after live probe and operator approval"},
+            "compose_file": "deploy/accelerator/compose.vllm-lmcache.yml",
+            "cache_dir": cache_dir,
+            "claim_boundary": "Engine-owned KV cache only. No BEAST raw-KV import/export or cross-engine restore claim.",
+        }
+
+    def generate_tgi_intel_cpu_config(
+        self,
+        *,
+        model_id: str = "HuggingFaceTB/SmolLM2-360M-Instruct",
+        listen_port: int = 8080,
+        models_dir: str = "./data/huggingface",
+    ) -> Dict[str, Any]:
+        """Return an opt-in Intel CPU TGI deployment contract.
+
+        The image and device options should be reviewed on the target host;
+        this merely makes the supported TGI HTTP adapter deployable locally.
+        """
+        return {
+            "beast_object_type": "beast_tgi_intel_cpu_config",
+            "version": "1.0",
+            "backend": "tgi_intel_cpu",
+            "model_id": model_id,
+            "base_url": f"http://127.0.0.1:{listen_port}",
+            "compose_file": "deploy/accelerator/compose.tgi-intel-cpu.yml",
+            "beast_env": {"TGI_BASE_URL": f"http://127.0.0.1:{listen_port}"},
+            "models_dir": models_dir,
+            "claim_boundary": "TGI execution adapter only; no prefix-cache or KV portability claim.",
         }
 
     def register_keepalive(
@@ -630,9 +693,32 @@ server {{
         return "litellm"
 
     def _litellm_environment(self) -> Dict[str, str]:
+        """Build the environment inherited by the LiteLLM sidecar.
+
+        LiteLLM configuration references provider credentials through
+        ``os.environ/<ENV_NAME>``. Load the local BEAST secret vault before
+        copying the environment so sidecars started by BEAST inherit the same
+        provider credentials as the gateway process.
+        """
+        SecretVault().load(override=False)
+
         env = dict(os.environ)
         debug = env.get("DEBUG")
-        if debug is not None and debug.strip().lower() not in {"", "0", "1", "true", "false", "t", "f", "yes", "no", "y", "n", "on", "off"}:
+        if debug is not None and debug.strip().lower() not in {
+            "",
+            "0",
+            "1",
+            "true",
+            "false",
+            "t",
+            "f",
+            "yes",
+            "no",
+            "y",
+            "n",
+            "on",
+            "off",
+        }:
             env.pop("DEBUG", None)
         return env
 

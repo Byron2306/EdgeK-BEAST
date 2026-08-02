@@ -1,0 +1,78 @@
+{
+  "base_url": "https://api.mistral.ai/v1",
+  "beast_object_type": "mega_provider_call_receipt",
+  "clean_completed": false,
+  "cloud_calls": 1,
+  "completed": false,
+  "created_at": "2026-07-21T20:50:04Z",
+  "decision": "provider_execution",
+  "failure_bucket": "capability_failure",
+  "family": "secret_redaction",
+  "files_changed": [
+    "app/provider_config.py"
+  ],
+  "hidden_passed": false,
+  "impact_fingerprint": {
+    "beast_object_type": "capability_impact_fingerprint",
+    "confidence": 0.95,
+    "dependencies": {},
+    "fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+    "fixture_family": "secret_redaction",
+    "fixture_occurrence": 10,
+    "policy_version": "mega_controlled_v1",
+    "reusable": true,
+    "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+    "state": "active",
+    "targets": {
+      "app/provider_config.py": {
+        "exists": true,
+        "file_hash": "sha256:5a24b47d82a25c26b464069725485779992e2c265b9e24284ead664bad3c7709",
+        "semantic_hash": "sha256:ea65a81d8cd0f9867de295f6cc093609aa491173c4fb23a68a6290d8dae25c43",
+        "symbol_hashes": {
+          "provider_env": "sha256:c1fe468a3ef5dd7ba2d4680b2191e5f6180c7ad5d02007b0ece561c9b4f6f251"
+        }
+      }
+    },
+    "tests": {
+      "tests/test_provider_config.py": {
+        "exists": true,
+        "file_hash": "sha256:00729e896788f2e77dd589d8b3a57178b457fa746e1acb21a686b0e81f060490",
+        "semantic_hash": "sha256:8a786187bef250221a2e1dd78c30ce0695c24a136853e5569e15ce756422e879",
+        "symbol_hashes": {
+          "test_provider_config_normalizes_and_redacts_secret": "sha256:89600613695224adea516ad91bdd6510bc8efe5a09bcad792696fb8371e57b85"
+        }
+      },
+      "tests/test_provider_config_hidden.py": {
+        "exists": true,
+        "file_hash": "sha256:97682085cf15a96cef1f20a9777179c420097c315e2a4403e6e723b533201600",
+        "semantic_hash": "sha256:08d57188060aa6fbae5937135989da61d0378f54684173802f8a136a93b67d40",
+        "symbol_hashes": {
+          "test_hidden_missing_key_is_false_and_secret_never_leaks": "sha256:050b445425a2d2a8e6eb15b69f7954915c09fdfc47d135fe0a866293845f011f"
+        }
+      }
+    },
+    "tool_schema_hashes": [
+      "sha256:bb6b7eaf28181b2bced36ad5b7e047c06c484e84f4d256ea6edf3d86c2733e29"
+    ],
+    "version": "1.0"
+  },
+  "impact_fingerprint_hash": "sha256:666e6c703f384a24a9ecb24877c6f66edfdf54d0279ee1ccadf2318dc8155426",
+  "latency_ms": 2240.278,
+  "live_lane": "live_mistral_raw",
+  "mega_lane": "raw",
+  "model": "codestral-latest",
+  "occurrence": 10,
+  "provider": "mistral",
+  "provider_completion_tokens": 257,
+  "provider_execution_requested": true,
+  "provider_prompt_tokens": 382,
+  "reason": "live provider returned scoped operations; pytest judged completion",
+  "receipt_id": "mega_provider_call_1ed04a8a942c98889364",
+  "rescued_completed": false,
+  "rollback_success": false,
+  "task": "provider_config_secret_redaction",
+  "task_id": "secret_redaction_o10_v1",
+  "total_tokens": 639,
+  "version": "1.0",
+  "visible_passed": false
+}

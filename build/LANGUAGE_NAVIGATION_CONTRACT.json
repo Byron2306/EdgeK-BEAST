@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "date": "2026-07-31",
+  "checks": 16,
+  "artifacts": {
+    "foundation": "build/PARITY_FOUNDATION.json",
+    "services": "build/IDE_SERVICES_PARITY.json"
+  },
+  "handshakes": {
+    "typescript": "passed",
+    "python": "passed",
+    "pylsp": "passed",
+    "bash": "passed",
+    "go": "passed",
+    "rust": "passed",
+    "clangd": "passed"
+  },
+  "semantic": {
+    "lspLanguages": 10,
+    "navigation": true,
+    "diagnostics": true,
+    "refactor": true,
+    "symbolQuery": true,
+    "definitionQuery": true,
+    "referenceQuery": true,
+    "dependentsQuery": true,
+    "renamePreview": true
+  }
+}

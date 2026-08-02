@@ -69,7 +69,8 @@ def _reject_placeholder_replacement(action: ActionIntent, old: str, new: str) ->
     prose_placeholder = re.compile(
         r"(?i)(?:rest\s+of\s+(?:the\s+)?(?:function|file|method|code)\s+(?:remains?|is)\s+(?:the\s+)?same|implementation\s+(?:omitted|unchanged)|\[\s*unchanged\s*\])"
     )
-    if placeholder.search(new) or prose_placeholder.search(new):
+    broad_placeholder = re.compile(r"(?i)(?:complete replacement source|replacement code here|insert code|your code|example implementation|\bTODO\b)")
+    if placeholder.search(new) or prose_placeholder.search(new) or broad_placeholder.search(new):
         raise ValueError(
             f"action {action.id} contains a placeholder instead of a complete source replacement; "
             "emit the full changed block with no ellipses or 'rest remains the same' text"
@@ -437,6 +438,12 @@ def resolve_action_ir(
         current = target.read_text(encoding="utf-8")
         if current.count(old) != 1:
             raise ValueError(f"action {action.id} anchor was not unique in {path}")
+        candidate = current.replace(old, new, 1)
+        if path.lower().endswith(".py"):
+            try:
+                ast.parse(candidate, filename=path)
+            except SyntaxError as exc:
+                raise ValueError(f"action {action.id} failed Python syntax preflight: {exc.msg}") from exc
         resolved.append(ResolvedAction(action=action, path=path, old=old, new=new, expected_sha256=_sha256_text(current)))
     return resolved, requests
 

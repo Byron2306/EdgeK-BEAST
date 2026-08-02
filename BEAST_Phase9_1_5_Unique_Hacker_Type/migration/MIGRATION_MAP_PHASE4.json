@@ -1,0 +1,40 @@
+{
+  "phase": 4,
+  "name": "Review Center and Evidence Forge",
+  "entrypoint": "js/beast-phase4-app.js",
+  "routes": {
+    "review": "js/pages/beast-review-page.js",
+    "evidence": "js/pages/beast-evidence-page.js"
+  },
+  "state_bridge": "js/beast-review-evidence-bridge.js",
+  "styles": [
+    "css/beast-review-evidence.css"
+  ],
+  "gateway_routes": [
+    "/edgek/ide/snapshot",
+    "/edgek/mcp/approvals?limit=20",
+    "/edgek/ide/tooling-snapshot",
+    "/edgek/evidence-bus/query?limit=25",
+    "/edgek/workspace/files"
+  ],
+  "legacy_replacements": {
+    "review OPCB page panel": "BeastReviewPage",
+    "evidence OPCB page panel": "BeastEvidencePage",
+    "review and evidence normalization": "BeastReviewEvidenceBridge",
+    "global OPCB page application": "BeastRouter plus BeastRenderScheduler"
+  },
+  "ownership": {
+    "page_outlets": 1,
+    "context_rails": 1,
+    "mascot_controllers": 1,
+    "review_renderers": 1,
+    "evidence_renderers": 1
+  },
+  "must_not_load": [
+    "app.js",
+    "opcb-renderers.js",
+    "opcb-state.js",
+    "beast-studio-integrations.js",
+    "js/beast-phase3-app.js"
+  ]
+}

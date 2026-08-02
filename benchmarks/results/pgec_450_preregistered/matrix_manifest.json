@@ -1,0 +1,39 @@
+{
+  "beast_object_type": "pgec_450_matrix_manifest",
+  "confirmatory": true,
+  "dimensions": {
+    "expected_observations": 450,
+    "lanes": [
+      "raw",
+      "beast_no_compute_governor",
+      "full_beast_compute_governor"
+    ],
+    "occurrence_points": [
+      1,
+      2,
+      3,
+      5,
+      10
+    ],
+    "routes": [
+      "ollama",
+      "nvidia_nim",
+      "mistral",
+      "cohere",
+      "groq"
+    ],
+    "task_families": [
+      "schema_validation",
+      "provider_alias_normalization",
+      "patch_compilation",
+      "syntax_check",
+      "route_diagnostics",
+      "secret_redaction"
+    ]
+  },
+  "generated_at": "2026-07-21T13:44:10Z",
+  "matrix_sha256": "231a21282e200b7f6589980533771cd4379e8329f19f0e2ae87a2981bedf08e5",
+  "observations": 450,
+  "protocol_sha256": "60d3a6743df00f710822fd83f6637910903a033bc1476e7ed4a5e17a15d2298e",
+  "version": "1.0"
+}

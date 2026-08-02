@@ -1,0 +1,3999 @@
+{
+  "compute_governor_receipts": [
+    {
+      "avoided_tokens_estimate": 738,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:45:34Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 3,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_398e059c4412d598d1a9",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_b4d896ec35a78d28",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_b4d896ec35a78d28.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "patch_compilation_o01_v1",
+        "patch_compilation_o02_v1"
+      ],
+      "task_id": "patch_compilation_o03_v1",
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "avoided_tokens_estimate": 739,
+      "beast_object_type": "mega_compute_governor_receipt",
+      "cloud_calls": 0,
+      "created_at": "2026-07-21T20:45:42Z",
+      "cross_provider_reuse": false,
+      "decision": "deterministic_reuse",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "occurrence": 5,
+      "policy_version": "mega_controlled_v1",
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "receipt_id": "mega_cg_88d1ea3190e497916496",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_93ae0dc0321c96bc",
+      "semantic_credit_ref": "compute_governor_receipts/semantic_credits/scc_93ae0dc0321c96bc.json",
+      "source_evidence_lanes": [
+        "full_beast_compute_governor"
+      ],
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "source_task_ids": [
+        "patch_compilation_o01_v1",
+        "patch_compilation_o02_v1"
+      ],
+      "task_id": "patch_compilation_o05_v1",
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "controlled_observations": [
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_7cab53d0c13428b4eb97.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 7474.856,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 738,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1bcecd38a498d540dc36.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2581.158,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 341,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 736,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_74ac92550d192e6f4c0e.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 2796.603,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 394,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "completed",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 4513,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c377ca7baca1278ebecd.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 3010.834,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 738,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_829c4d376b80c423337d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2811.519,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 344,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "seed_execution",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 739,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_2af06eb78e796ddc3046.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 3445.808,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 408,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "seed_execution",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "completed",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 4527,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8e1c3fb5cd22d46f94be.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 3239.568,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 349,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 744,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c9136a143b1aa56e5cc7.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2545.668,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 738,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_398e059c4412d598d1a9.json"
+      },
+      "avoided_tokens_estimate": 738,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "validated_first_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_b4d896ec35a78d28",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_8f88732a438b23f5ad5d.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 2543.716,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 738,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_467632a5e6d0629999f4.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2396.975,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 344,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 739,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "receipt": "compute_governor_receipts/mega_cg_88d1ea3190e497916496.json"
+      },
+      "avoided_tokens_estimate": 739,
+      "clean_completed": false,
+      "cloud_calls": 0,
+      "completed": true,
+      "cross_provider_reuse": false,
+      "crystallized": true,
+      "deterministic_reuse": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 0.0,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 0,
+      "provider_prompt_tokens": 0,
+      "reason": "Lane C deterministic reuse from stored local inference fingerprint.",
+      "repair_provenance": "deterministic_reuse",
+      "rescued": false,
+      "rescued_completed": false,
+      "reuse_phase": "active_recurrence",
+      "rollback_success": true,
+      "semantic_credit_id": "scc_93ae0dc0321c96bc",
+      "source_provider": "mistral",
+      "status": "completed",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 0,
+      "visible_passed": true
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_532f0ac76cf3889c01ce.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "raw",
+      "latency_ms": 2183.083,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 322,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_raw",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 717,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_463ce7d1f9c8a4f04631.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "failure_bucket": "capability_failure",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": false,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "beast_no_compute_governor",
+      "latency_ms": 2991.625,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_failed",
+      "rescued": false,
+      "rescued_completed": false,
+      "returncode": 1,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": false,
+      "source_live_lane": "live_mistral_schema_only",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "failed",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 738,
+      "visible_passed": false
+    },
+    {
+      "artifact_refs": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_f73813014359322caab8.json"
+      },
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "crystallized": false,
+      "deterministic_reuse": false,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "failure_bucket": null,
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "fixture_anchor": "multi_file_hidden_decimal_fix,quality_cascade_language_matrix",
+      "hidden_passed": true,
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "lane": "full_beast_compute_governor",
+      "latency_ms": 3180.138,
+      "mode": "controlled",
+      "objective": "Produce source patches that compile and pass visible tests.",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 294,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "repair_provenance": "provider_rescued",
+      "rescued": true,
+      "rescued_completed": true,
+      "returncode": 0,
+      "reuse_phase": "mutation_challenge",
+      "rollback_success": true,
+      "source_live_lane": "live_mistral_full_beast",
+      "source_live_task": "multi_file_hidden_decimal_fix",
+      "status": "completed",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 4413,
+      "visible_passed": true
+    }
+  ],
+  "cross_provider_reuse_cases": [],
+  "crystallization_diagnostics": [
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:78805b5d5218a791493d5d4aa0f8044e108a436ff6a64f91aa02e092b9a3b99f",
+      "applicability_fingerprint": "sha256:f3e4ec488e51f9e3c0d920b3531a9db8a2796a752b7e4e635e56df2e743ce674",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:85c66a57fe5a40d3eee2157991a37925d1da8ffec618f79347a7279221d7a1f2",
+      "applicability_fingerprint": "sha256:148d4c0b0fdbfd4edf3c6e3ed7ca71d73f0e6dc3096b657b4f11c5bcef2b599a",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1bcecd38a498d540dc36.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:3f6c3b1982c9d08f82584abff4811042e11827e42143319455b951dee836e5b1",
+      "applicability_fingerprint": "sha256:da1777e9109567b60d69735f0e0b546130ec536c241519a6cc899f592dbb7c7f",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_1bcecd38a498d540dc36.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 1,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:42c2bec8bda3168e899552f467b6944ff4c079adad7fd68c090ea390da9921a4",
+      "applicability_fingerprint": "sha256:f3e4ec488e51f9e3c0d920b3531a9db8a2796a752b7e4e635e56df2e743ce674",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:8251f45ac5125883b5f3be04ba2207b4360b831c01f8be900baa0174178003e2",
+      "applicability_fingerprint": "sha256:148d4c0b0fdbfd4edf3c6e3ed7ca71d73f0e6dc3096b657b4f11c5bcef2b599a",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_829c4d376b80c423337d.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:e92426f6f01d7eb6f41a056343babd2d0babcbe235285039cced747c160d36d8",
+      "applicability_fingerprint": "sha256:da1777e9109567b60d69735f0e0b546130ec536c241519a6cc899f592dbb7c7f",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_829c4d376b80c423337d.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 1,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 2,
+      "ordered_verified_occurrences": [
+        1
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "seed_execution",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 1,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:b716cd565d3c9f79b352209c2ebd04afebb7812b1f11321a406b57a70a1c4e58",
+      "applicability_fingerprint": "sha256:f3e4ec488e51f9e3c0d920b3531a9db8a2796a752b7e4e635e56df2e743ce674",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:364a891bf81d973dacc4585b60b7d30052afd32c9b2ba9bf7c3b3718fc98cea7",
+      "applicability_fingerprint": "sha256:148d4c0b0fdbfd4edf3c6e3ed7ca71d73f0e6dc3096b657b4f11c5bcef2b599a",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c9136a143b1aa56e5cc7.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:0bf63f151d02d46cf27098ce04d284fb6a27e7f815f428d9005bd5b1b639de49",
+      "applicability_fingerprint": "sha256:da1777e9109567b60d69735f0e0b546130ec536c241519a6cc899f592dbb7c7f",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "rescued_history_needs_extra_support"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_c9136a143b1aa56e5cc7.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 2,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 3,
+      "ordered_verified_occurrences": [
+        1,
+        2
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "validated_first_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 2,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:86d6b313a79565a67ca92cdd7bb3de1febc594c53da002a739130401dd619e7c",
+      "applicability_fingerprint": "sha256:f3e4ec488e51f9e3c0d920b3531a9db8a2796a752b7e4e635e56df2e743ce674",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:d689d5338dc6927328f6225998822aff5b575a0f749f106f8ac2ee00cf1f3fee",
+      "applicability_fingerprint": "sha256:148d4c0b0fdbfd4edf3c6e3ed7ca71d73f0e6dc3096b657b4f11c5bcef2b599a",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_467632a5e6d0629999f4.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:ff62992bddd41ded45f24ee72e423103811c73799be38cee198dae6827f512e3",
+      "applicability_fingerprint": "sha256:da1777e9109567b60d69735f0e0b546130ec536c241519a6cc899f592dbb7c7f",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_467632a5e6d0629999f4.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 3,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 5,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": false,
+      "repair_provenance": "deterministic_reuse",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "active_recurrence",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 3,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:7faa59ddacd2dc2549bf3fd9cdb2c323dcee0030d97368ae4e0b4aa89da0785b",
+      "applicability_fingerprint": "sha256:f3e4ec488e51f9e3c0d920b3531a9db8a2796a752b7e4e635e56df2e743ce674",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {},
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "raw",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": false,
+      "applicability_digest": "sha256:19bacca5666723012fc73bad1e03f317ccd21e77b2910a353d39b595510d220f",
+      "applicability_fingerprint": "sha256:148d4c0b0fdbfd4edf3c6e3ed7ca71d73f0e6dc3096b657b4f11c5bcef2b599a",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [
+        "missing_o1",
+        "missing_o2"
+      ],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": false,
+      "effect_equivalence_hash": "sha256:aca75d7d107b18155b9b6d1a97e368a2e2bef71b078476c67bb294078c9083bc",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": false,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_463ce7d1f9c8a4f04631.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 0,
+      "lane": "beast_no_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_failed",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": false,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 0,
+      "version": "1.0"
+    },
+    {
+      "active_reuse_ready": true,
+      "applicability_digest": "sha256:d6fe5f00b23ea0ffd10d21a4a8b52b4ade8464ede1b3d0d9864e2f2ef9d5fef2",
+      "applicability_fingerprint": "sha256:da1777e9109567b60d69735f0e0b546130ec536c241519a6cc899f592dbb7c7f",
+      "beast_object_type": "mega_crystallization_diagnostic",
+      "blocked_reasons": [],
+      "boundary_digest": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "candidate_found": true,
+      "effect_equivalence_hash": "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7",
+      "effect_hash_agreement": true,
+      "eligible_for_promotion": true,
+      "evidence_lane_reference": {
+        "impact_fingerprint": "impact_fingerprints/sha256_6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa.json",
+        "provider_call_receipt": "provider_call_receipts/mega_provider_call_463ce7d1f9c8a4f04631.json"
+      },
+      "family": "patch_compilation",
+      "family_fingerprint": "sha256:ea6d403059f6c8e9ddf9bbc5e3dd971e8adab8244dea5030de80d767ece1c3e1",
+      "independent_hidden_pass_count": 4,
+      "lane": "full_beast_compute_governor",
+      "minimum_independent_hidden_passes": 2,
+      "minimum_verified_occurrences": 2,
+      "occurrence": 10,
+      "ordered_verified_occurrences": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "policy_generation": "pgec_450_policy_v1",
+      "prior_effect_hashes": [
+        "sha256:951a012d7029c5c660ac4c16b53f26df9c06f1b13bc87546c68f89daa9ec4dc7"
+      ],
+      "provider": "mistral",
+      "provider_execution_requested": true,
+      "repair_provenance": "provider_rescued",
+      "repo_fingerprint": "sha256:97230e115288043899604c14da621cdb9e05d824582ad5e71b83402df675d5eb",
+      "reuse_phase": "mutation_challenge",
+      "shadow_reuse_ready": true,
+      "source_provider": "mistral",
+      "tool_schema_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "verified_occurrence_count": 4,
+      "version": "1.0"
+    }
+  ],
+  "crystallization_events": [
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:45:34Z",
+      "cross_provider_reuse": false,
+      "family": "patch_compilation",
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "occurrence": 3,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_398e059c4412d598d1a9",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "validated_first_recurrence",
+      "task_id": "patch_compilation_o03_v1",
+      "version": "1.0"
+    },
+    {
+      "beast_object_type": "mega_crystallization_event",
+      "created_at": "2026-07-21T20:45:42Z",
+      "cross_provider_reuse": false,
+      "family": "patch_compilation",
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "occurrence": 5,
+      "provider": "mistral",
+      "receipt_id": "mega_cg_88d1ea3190e497916496",
+      "source_occurrences": [
+        1,
+        2
+      ],
+      "source_provider": "mistral",
+      "state": "active_recurrence",
+      "task_id": "patch_compilation_o05_v1",
+      "version": "1.0"
+    }
+  ],
+  "families": [
+    "patch_compilation"
+  ],
+  "lanes": [
+    "raw",
+    "beast_no_compute_governor",
+    "full_beast_compute_governor"
+  ],
+  "live_lanes": [
+    "raw",
+    "schema_only",
+    "full_beast"
+  ],
+  "live_results": [
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 7474.856,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 7474.856,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1304,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 738
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.03s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 343,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 738
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,5 @@\n from app.math_ops import normalize_amount\n-\n+from decimal import Decimal\n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2581.158,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2581.158,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1303,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 341,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 736
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to a Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from app.math_ops import normalize_amount\\nfrom decimal import Decimal\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from app.math_ops import normalize_amount\\nfrom decimal import Decimal\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal to han",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.03s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 341,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 736
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 2796.603,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2796.603,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py",
+          "app/service.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1096,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 394,
+          "prompt_tokens": 4119,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4513
+        }
+      },
+      "prompt_tokens": 3227,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Fix invoice_total to handle string amounts and produce Decimal total\",\n      \"new\": \"def invoice_total(items):\\n    return sum(Decimal(normalize_amount(item[\\\"amount\\\"])) for item in items)\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Fix normalize_amount to handle string values and produce Decimal\",\n      \"new\": \"def normalize_amount(value):\\n    return Decimal(value)\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F2\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 394,
+        "prompt_tokens": 4119,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4513
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 3010.834,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3010.834,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1304,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 738
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 343,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 738
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2811.519,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2811.519,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1310,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 344,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 739
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 344,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 739
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 3445.808,
+      "output_evidence": {
+        "action_count": 2,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3445.808,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py",
+          "app/service.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 1",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1158,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 408,
+          "prompt_tokens": 4119,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4527
+        }
+      },
+      "prompt_tokens": 3227,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Fix invoice_total to handle string amounts and ensure proper rounding\",\n      \"new\": \"def invoice_total(items):\\n    from decimal import Decimal\\n    return sum(Decimal(str(item['amount'])) for item in items)\",\n      \"target\": {\n        \"anchor_ref\": \"A2\",\n        \"file_ref\": \"F1\"\n      },\n      \"type\": \"replace_anchor\"\n    },\n    {\n      \"id\": \"a2\",\n      \"intent\": \"Update normalize_amount to handle Decimal values\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value).quantize(Decimal('0.01'))\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F2\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 408,
+        "prompt_tokens": 4119,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4527
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,3 +1,4 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 3239.568,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3239.568,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1301,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 349,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 744
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\\n\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\\n\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the amount to Decimal for proper rounding and precision\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal for ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.03s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 349,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 744
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2545.668,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2545.668,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1304,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 738
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 343,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 738
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2543.716,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2543.716,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1304,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 738
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 343,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 738
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2396.975,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2396.975,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1302,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 344,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 739
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the amount to a Decimal for proper rounding and precision\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal and ensure",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 344,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 739
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,2 @@\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(value)\n--- a/app/service.py\n+++ b/app/service.py\n@@ -1,3 +1,4 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_raw",
+      "latency_ms": 2183.083,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2183.083,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": true,
+          "include_scout": false,
+          "name": "raw"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1200,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 322,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 717
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Change normalize_amount to return Decimal for proper rounding\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Add Decimal import to service.py\"\n    }\n  ],\n  \"tests\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "_string_amounts ___________________\n\n    def test_invoice_total_accepts_string_amounts():\n>       assert invoice_total([{\"amount\": \"1.20\"}, {\"amount\": \"2.30\"}]) == Decimal(\"3.50\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_invoice_public.py:7: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \napp/service.py:6: in invoice_total\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp/service.py:6: in <genexpr>\n    return sum(normalize_amount(item[\"amount\"]) for item in items)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = '1.20'\n\n    def normalize_amount(value):\n>       return Decimal(value)\n               ^^^^^^^\nE       NameError: name 'Decimal' is not defined\n\napp/math_ops.py:2: NameError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\nFAILED tests/test_invoice_public.py::test_invoice_total_accepts_string_amounts\n2 failed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 322,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 717
+      }
+    },
+    {
+      "completed": false,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,3 @@\n def normalize_amount(value):\n-    return int(value)\n+    from decimal import Decimal\n+    return Decimal(value)--- a/app/service.py\n+++ b/app/service.py\n@@ -1,5 +1,6 @@\n+from decimal import Decimal\n from app.math_ops import normalize_amount\n \n \n def invoice_total(items):\n-    return sum(normalize_amount(item[\"amount\"]) for item in items)\n+    return sum(normalize_amount(item[\"amount\"]) for item in items)",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "lane": "live_mistral_schema_only",
+      "latency_ms": 2991.625,
+      "output_evidence": {
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 2,
+        "contract": "beast.source_patch.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 2991.625,
+        "live_lane_mode": {
+          "action_ir": false,
+          "allow_canonicalization": false,
+          "allow_repair": false,
+          "beast_handoff": false,
+          "include_legacy_prompt": false,
+          "include_scout": false,
+          "name": "schema_only"
+        },
+        "local_verifier_repair": false,
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 2,
+              "contract": "beast.source_patch.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 1307,
+        "recommended_future_role": "live_non_beast_source_patch_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_non_beast_source_patch_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 343,
+          "prompt_tokens": 395,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "total_tokens": 738
+        }
+      },
+      "prompt_tokens": 311,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"kind\": \"beast.source_patch.v1\",\n  \"operations\": [\n    {\n      \"content\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"new\": \"def normalize_amount(value):\\n    from decimal import Decimal\\n    return Decimal(value)\",\n      \"old\": \"def normalize_amount(value):\\n    return int(value)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_001\",\n      \"path\": \"app/math_ops.py\",\n      \"why\": \"Convert the value to a Decimal to handle floating point numbers correctly\"\n    },\n    {\n      \"content\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"new\": \"from decimal import Decimal\\nfrom app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\",\n      \"old\": \"from app.math_ops import normalize_amount\\n\\n\\ndef invoice_total(items):\\n    return sum(normalize_amount(item[\\\"amount\\\"]) for item in items)\\n\",\n      \"op\": \"replace_exact\",\n      \"op_id\": \"op_002\",\n      \"path\": \"app/service.py\",\n      \"why\": \"Import Decimal to",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n___________________ test_invoice_total_rounds_half_up_hidden ___________________\n\n    def test_invoice_total_rounds_half_up_hidden():\n>       assert invoice_total([{\"amount\": \"1.005\"}, {\"amount\": \"2\"}]) == Decimal(\"3.01\")\nE       AssertionError: assert Decimal('3.005') == Decimal('3.01')\nE        +  where Decimal('3.005') = invoice_total([{'amount': '1.005'}, {'amount': '2'}])\nE        +  and   Decimal('3.01') = Decimal('3.01')\n\ntests/test_invoice_hidden.py:7: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_invoice_hidden.py::test_invoice_total_rounds_half_up_hidden\n1 failed, 1 passed in 0.02s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 343,
+        "prompt_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "total_tokens": 738
+      }
+    },
+    {
+      "completed": true,
+      "diff_excerpt": "--- a/app/math_ops.py\n+++ b/app/math_ops.py\n@@ -1,2 +1,5 @@\n+from decimal import Decimal, ROUND_HALF_UP\n+\n+\n def normalize_amount(value):\n-    return int(value)\n+    return Decimal(str(value)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "lane": "live_mistral_full_beast",
+      "latency_ms": 3180.138,
+      "output_evidence": {
+        "action_count": 1,
+        "anchor_match_rate": 1.0,
+        "canonicalized": false,
+        "compiled_operation_count": 1,
+        "contract": "beast.action_intent.v1",
+        "diff_compiled": true,
+        "final_status": "compiled",
+        "json_parse_ok": true,
+        "latency_ms": 3180.138,
+        "live_lane_mode": {
+          "action_ir": true,
+          "allow_canonicalization": true,
+          "allow_repair": true,
+          "beast_handoff": true,
+          "include_legacy_prompt": false,
+          "include_scout": true,
+          "name": "full_beast"
+        },
+        "local_verifier_repair": true,
+        "local_verifier_repair_files": [
+          "app/math_ops.py"
+        ],
+        "local_verifier_repair_ok": true,
+        "local_verifier_repair_reason": "pytest failed after provider patch: 2",
+        "non_mutating_request_count": 0,
+        "non_mutating_requests": [],
+        "operation_valid": true,
+        "path_valid": true,
+        "policy_gate": {
+          "approval_required": false,
+          "beast_object_type": "beast_policy_gate_result",
+          "decision": "allow",
+          "mutation_allowed": true,
+          "reasons": [],
+          "receipts": {
+            "output_governor": {
+              "compiled_operation_count": 1,
+              "contract": "beast.action_intent.v1",
+              "final_status": "compiled",
+              "operation_valid": true,
+              "path_valid": true,
+              "schema_valid": true
+            }
+          },
+          "rollback_required": true,
+          "verification_required": true,
+          "version": "1.0",
+          "worktree_required": false
+        },
+        "provider": "mistral",
+        "raw_chars": 722,
+        "recommended_future_role": "live_action_ir_generator",
+        "repair_attempted": false,
+        "repair_attempts": 0,
+        "role": "live_action_ir_generator",
+        "schema_valid": true,
+        "usage": {
+          "completion_tokens": 294,
+          "prompt_tokens": 4119,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "total_tokens": 4413
+        }
+      },
+      "prompt_tokens": 3227,
+      "provider": "mistral",
+      "provider_text_excerpt": "```json\n{\n  \"actions\": [\n    {\n      \"id\": \"a1\",\n      \"intent\": \"Change the normalize_amount function to round to the nearest integer\",\n      \"new\": \"    return int(round(value))\",\n      \"target\": {\n        \"anchor_ref\": \"A1\",\n        \"file_ref\": \"F2\"\n      },\n      \"type\": \"replace_anchor\"\n    }\n  ],\n  \"fallback\": \"\",\n  \"handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"kind\": \"beast.action_intent.v1\",\n  \"objective\": \"Fix invoice totals across service and math helper files while satisfying hidden rounding tests.\",\n  \"provider_handoff_hash\": \"sha256:10bbc44f2d2b617815725d9fcf8234880e58108c87c03ae0210759be9256c77d\",\n  \"verify\": [\n    \"python -m pytest tests -q\"\n  ]\n}\n```",
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.01s\n",
+      "task": "multi_file_hidden_decimal_fix",
+      "usage": {
+        "completion_tokens": 294,
+        "prompt_tokens": 4119,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "total_tokens": 4413
+      }
+    }
+  ],
+  "mutation_recovery_cases": [
+    {
+      "beast_object_type": "mega_mutation_recovery_case",
+      "demotion_reasons": [
+        "policy_version_change"
+      ],
+      "demotion_state": "shadow_revalidation",
+      "false_reuse_warning": false,
+      "family": "patch_compilation",
+      "fingerprint_after": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:fc7e50c9c9362156431da63f9fbdb9f34f07b996389166646e77e9b3ff4b6995",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v2",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_before": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "fingerprint_recovered": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "mutated_fingerprint_hash": "sha256:fc7e50c9c9362156431da63f9fbdb9f34f07b996389166646e77e9b3ff4b6995",
+      "mutation_type": "policy_version_change",
+      "occurrence": 10,
+      "previous_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "provider": "mistral",
+      "recovered_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "recovered_reusable": true,
+      "recovery_live_verified": true,
+      "recovery_state": "active",
+      "reuse_blocked": true,
+      "reuse_decision": {
+        "demotion_reasons": [
+          "policy_version_change"
+        ],
+        "material_drift_made_reuse_unavailable": true,
+        "reusable": false,
+        "state": "shadow_revalidation"
+      },
+      "version": "1.1"
+    }
+  ],
+  "occurrences": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "provider_call_receipts": [
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:13Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 7474.856,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_7cab53d0c13428b4eb97",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 738,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:13Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2581.158,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 341,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_1bcecd38a498d540dc36",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 736,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:45:14Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 1,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2796.603,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 1,
+      "provider": "mistral",
+      "provider_completion_tokens": 394,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_74ac92550d192e6f4c0e",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o01_v1",
+      "total_tokens": 4513,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:25Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 3010.834,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_c377ca7baca1278ebecd",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 738,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:26Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2811.519,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 344,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_829c4d376b80c423337d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 739,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:45:26Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 2,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 3445.808,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 2,
+      "provider": "mistral",
+      "provider_completion_tokens": 408,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_2af06eb78e796ddc3046",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o02_v1",
+      "total_tokens": 4527,
+      "version": "1.0",
+      "visible_passed": true
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:33Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 3239.568,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 349,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8e1c3fb5cd22d46f94be",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 744,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:34Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 3,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2545.668,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 3,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_c9136a143b1aa56e5cc7",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o03_v1",
+      "total_tokens": 738,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2543.716,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_8f88732a438b23f5ad5d",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 738,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:41Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 5,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2396.975,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 5,
+      "provider": "mistral",
+      "provider_completion_tokens": 344,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_467632a5e6d0629999f4",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o05_v1",
+      "total_tokens": 739,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:53Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2183.083,
+      "live_lane": "live_mistral_raw",
+      "mega_lane": "raw",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 322,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_532f0ac76cf3889c01ce",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 717,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": false,
+      "created_at": "2026-07-21T20:45:53Z",
+      "decision": "provider_execution",
+      "failure_bucket": "capability_failure",
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py",
+        "app/service.py"
+      ],
+      "hidden_passed": false,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 2991.625,
+      "live_lane": "live_mistral_schema_only",
+      "mega_lane": "beast_no_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 343,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 395,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_463ce7d1f9c8a4f04631",
+      "rescued_completed": false,
+      "rollback_success": false,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 738,
+      "version": "1.0",
+      "visible_passed": false
+    },
+    {
+      "base_url": "https://api.mistral.ai/v1",
+      "beast_object_type": "mega_provider_call_receipt",
+      "clean_completed": false,
+      "cloud_calls": 1,
+      "completed": true,
+      "created_at": "2026-07-21T20:45:54Z",
+      "decision": "provider_execution",
+      "failure_bucket": null,
+      "family": "patch_compilation",
+      "files_changed": [
+        "app/math_ops.py"
+      ],
+      "hidden_passed": true,
+      "impact_fingerprint": {
+        "beast_object_type": "capability_impact_fingerprint",
+        "confidence": 0.95,
+        "dependencies": {},
+        "fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+        "fixture_family": "patch_compilation",
+        "fixture_occurrence": 10,
+        "policy_version": "mega_controlled_v1",
+        "reusable": true,
+        "safety_policy": "any_material_ast_or_contract_change_requires_shadow_revalidation",
+        "state": "active",
+        "targets": {
+          "app/math_ops.py": {
+            "exists": true,
+            "file_hash": "sha256:0d6b376eb57bac3e2b39a04e5781f0dcb19ba84b3892adaa0e863324c3bf2ee4",
+            "semantic_hash": "sha256:2c951d06b258a2542e3ec65da2a67b5f997666bef812562599005c03865adc68",
+            "symbol_hashes": {
+              "normalize_amount": "sha256:2576f37967b827c315c4d1ab1e7e271b96134a51048f31c61df3ebc66a76c531"
+            }
+          },
+          "app/service.py": {
+            "exists": true,
+            "file_hash": "sha256:d8ef44a165f02e17f32baaa540ba0113e3b6412cfd2599bdd9f349e73bfe2082",
+            "semantic_hash": "sha256:72c3c8f6e8a63484ce4ca27d302da24995af9553e3eb555d02cd4bce90ee9182",
+            "symbol_hashes": {
+              "invoice_total": "sha256:14ed88826ac29dbd747bc08596f31fa7b2ac74b8752490429a710de61b91545f"
+            }
+          }
+        },
+        "tests": {
+          "tests/test_invoice_hidden.py": {
+            "exists": true,
+            "file_hash": "sha256:1f361ee909147998156f650643549f8ddefd67215e40d093e3f5e7120a8285b8",
+            "semantic_hash": "sha256:1e0f0bde7023fcd1574bd793f83d580087ab6bdcd47d6b4ff0899133590ad059",
+            "symbol_hashes": {
+              "test_invoice_total_rounds_half_up_hidden": "sha256:cd75940318f9e5ff35e3197393d0cd26d9b5ae519d11b79968947f773bfd806c"
+            }
+          },
+          "tests/test_invoice_public.py": {
+            "exists": true,
+            "file_hash": "sha256:7a6c3bf667e2680ac370a6ef17568c6db539c5698fc6a7b0172abcd6c23cebf0",
+            "semantic_hash": "sha256:0f4e6337a4dc2d9aeb0745ba939f205c2e296108310e270562c86c548f89b58f",
+            "symbol_hashes": {
+              "test_invoice_total_accepts_string_amounts": "sha256:0c7e196b94d186c7d41a2371e825ff8d4b3ea000e70ae381e735779b1cfbe234"
+            }
+          }
+        },
+        "tool_schema_hashes": [
+          "sha256:99e17fc8d8fad8894ee116dcfa4fd371a34c8b40ce41536b882a257f6372dc49"
+        ],
+        "version": "1.0"
+      },
+      "impact_fingerprint_hash": "sha256:6204dfec203464f3e4397fd36e07fba00b04dc3abed797a8bcc4238f6d4a17fa",
+      "latency_ms": 3180.138,
+      "live_lane": "live_mistral_full_beast",
+      "mega_lane": "full_beast_compute_governor",
+      "model": "codestral-latest",
+      "occurrence": 10,
+      "provider": "mistral",
+      "provider_completion_tokens": 294,
+      "provider_execution_requested": true,
+      "provider_prompt_tokens": 4119,
+      "reason": "live provider returned scoped operations; pytest judged completion",
+      "receipt_id": "mega_provider_call_f73813014359322caab8",
+      "rescued_completed": true,
+      "rollback_success": true,
+      "task": "multi_file_hidden_decimal_fix",
+      "task_id": "patch_compilation_o10_v1",
+      "total_tokens": 4413,
+      "version": "1.0",
+      "visible_passed": true
+    }
+  ],
+  "provider_reports": {
+    "mistral": {
+      "live_failures_by_bucket": {
+        "capability_failure": 13,
+        "excluded_infra_failure": 0,
+        "infra_failure": 0,
+        "nim_indentation_error": 0,
+        "nim_infra_auth_failure": 0,
+        "nim_litellm_mapping_error": 0,
+        "nim_model_not_found": 0,
+        "nim_no_files_changed": 0,
+        "nim_non_json_output": 0,
+        "nim_patch_out_of_scope": 0,
+        "nim_schema_invalid": 0,
+        "nim_streaming_unsupported": 0,
+        "nim_success": 0,
+        "nim_tests_failed": 0,
+        "nim_timeout": 0
+      },
+      "live_provider_fitness": {
+        "mistral": {
+          "avg_latency_ms": null,
+          "avg_provider_tokens_per_success": null,
+          "beast_completed": 1,
+          "beast_completion_rate": 0.3333,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "eligible_for_source_patching": true,
+          "first_party_cost_coverage_rate": 0.0,
+          "hard_gates": {
+            "json_validity_ge_90": true,
+            "out_of_scope_edit_rate_le_2": true,
+            "rollback_success_100": true,
+            "syntax_error_rate_le_5": true,
+            "timeout_rate_le_10": true
+          },
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "metrics": {
+            "cost_per_success_score": 1.0,
+            "hidden_test_pass_rate": 0.0,
+            "json_validity_rate": 1.0,
+            "latency_per_success_score": 1.0,
+            "out_of_scope_edit_rate": 0.0,
+            "out_of_scope_safety_score": 1.0,
+            "patch_apply_rate": 1.0,
+            "rollback_cleanliness_score": 1.0,
+            "rollback_success_rate": 1.0,
+            "schema_valid_rate": 1.0,
+            "syntax_error_rate": 0.0,
+            "timeout_rate": 0.0,
+            "verified_success_rate": 0.0
+          },
+          "recommended_role": "scout_or_infra_probe",
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "sample_size": 3,
+          "score": 0.55,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      },
+      "live_summary": {
+        "mistral": {
+          "average_latency_ms": 2784.949,
+          "average_provider_prompt_tokens": 1636.333,
+          "canonicalized": 0,
+          "clean_completed": 0,
+          "clean_to_rescue_ratio": 0.0,
+          "completed": 1,
+          "completion_rate": 0.3333,
+          "failures": [
+            {
+              "lane": "live_mistral_raw",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "multi_file_hidden_decimal_fix"
+            },
+            {
+              "lane": "live_mistral_schema_only",
+              "reason": "live provider returned scoped operations; pytest judged completion",
+              "task": "multi_file_hidden_decimal_fix"
+            }
+          ],
+          "first_party_clean_usd_per_fix": null,
+          "first_party_cost_coverage_rate": 0.0,
+          "first_party_cost_observations": 0,
+          "first_party_cost_usd_total": null,
+          "first_party_rescued_usd_per_fix": null,
+          "first_party_usd_per_verified_fix": null,
+          "hidden_clean_completed": 0,
+          "hidden_clean_per_usd": null,
+          "hidden_clean_rate": 0.0,
+          "hidden_clean_usd_per_fix": null,
+          "hidden_task_count": 3,
+          "latency_ms_per_verified_fix": 3180.138,
+          "local_verifier_repaired": 1,
+          "provider_tokens_per_verified_fix": 4413.0,
+          "recommended_role": "scout_or_infra_probe",
+          "repair_attempted": 0,
+          "rescue_rate": 1.0,
+          "rescued_completed": 1,
+          "route_confidence": "low",
+          "tasks": 3,
+          "visible_clean_completed": 0,
+          "visible_clean_rate": 0.0,
+          "visible_task_count": 3
+        }
+      }
+    }
+  },
+  "providers": [
+    "mistral"
+  ],
+  "raw_live_result_count": 13,
+  "resume_source": "/home/byron/EdgeK-BEAST/benchmarks/results/pgec_450_runs/pilot_pgec_mistral_schema_validation_20260721T2048Z_b001/live_execution.json"
+}

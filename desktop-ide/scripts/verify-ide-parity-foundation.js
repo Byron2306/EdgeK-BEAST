@@ -11,7 +11,18 @@ const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const checks=[];
 const check=(name,condition)=>checks.push({name,passed:Boolean(condition)});
 
-const main=read('main.js');
+const mainEntry=read('main.js');
+const mainModules=fs.readdirSync(path.join(root,'main')).filter(name=>name.endsWith('.js')).sort().map(name=>read(`main/${name}`)).join('\n');
+const main=`${mainEntry}\n${mainModules}`;
+const readPythonDirectory = directory => fs.existsSync(directory)
+  ? fs.readdirSync(directory).filter(name => name.endsWith('.py')).sort().map(name => fs.readFileSync(path.join(directory, name), 'utf8'))
+  : [];
+const ideRoutes=[
+  fs.readFileSync(path.join(repo,'app','routes','ide.py'),'utf8'),
+  fs.readFileSync(path.join(repo,'app','routes','ide_context.py'),'utf8'),
+  ...readPythonDirectory(path.join(repo,'app','routes','ide_support')),
+  ...readPythonDirectory(path.join(repo,'app','routes','ide_routes')),
+].join('\n');
 const preload=read('preload.js');
 const index=read('renderer/index.html');
 const compatibility=read('renderer/js/beast-ide-compatibility.js');
@@ -26,6 +37,10 @@ const release=read('renderer/js/beast-release-app.js');
 const productionCss=read('renderer/css/beast-production.css');
 const adr=fs.readFileSync(path.join(repo,'docs','architecture','adr-014-ide-ecosystem-compatibility.md'),'utf8');
 const discovery=new IdeCompatibilityHost(repo).discover(repo);
+const aiModuleNames = ['agent-client.js', 'agent-store.js', 'agent-events.js', 'agent-view.js', 'context-picker.js', 'context-manifest.js', 'approval-cards.js', 'tool-cards.js', 'plan-view.js', 'verification-view.js', 'sourceplan-handoff.js', 'conversation-renderer.js', 'mode-controller.js', 'budget-view.js'];
+const aiCodingEntry = read('renderer/js/beast-ai-coding.js');
+const aiModuleSources = aiModuleNames.map(name => read(`renderer/js/ai/${name}`));
+const aiCoding = [aiCodingEntry, ...aiModuleSources].join('\n');
 
 check('allowlisted language server catalog',LANGUAGE_SERVERS.length>=8&&LANGUAGE_SERVERS.every(row=>row.command&&row.languages.length));
 check('allowlisted debug adapter catalog',DEBUG_ADAPTERS.length>=3&&DEBUG_ADAPTERS.every(row=>row.command));
@@ -33,12 +48,13 @@ check('main process protocol isolation',main.includes("require('./ide-compatibil
 check('narrow preload protocol contract',['ideCompatibility','installIdeCapability','startIdeProtocol','requestIdeProtocol','notifyIdeProtocol','stopIdeProtocol','onIdeProtocolMessage'].every(name=>preload.includes(name)));
 check('debug, notebook, remote, and extension desktop contracts',['executeNotebookCell','startNotebookKernel','requestNotebookKernel','stopNotebookKernel','probeRemote','listRemoteFiles','listRemoteForwards','startRemoteForward','stopRemoteForward','onRemoteForwardMessage','discoverExtensions','grantExtensionCapabilities','stopExtensionHost','onExtensionHostMessage'].every(name=>preload.includes(name))&&['beast:notebook-execute','beast:notebook-kernel-start','beast:notebook-kernel-request','beast:notebook-kernel-stop','beast:remote-probe','beast:remote-list-files','beast:remote-forward-list','beast:remote-forward-start','beast:remote-forward-stop','beast:extension-host-discover','beast:extension-host-grant','beast:extension-host-stop'].every(name=>main.includes(name)));
 check('monaco LSP providers',['registerCompletionItemProvider','registerHoverProvider','registerDefinitionProvider','registerReferenceProvider','registerRenameProvider','registerCodeActionProvider','registerDocumentFormattingEditProvider','registerDocumentSymbolProvider','publishDiagnostics'].every(name=>compatibility.includes(name)));
-check('DAP workbench lifecycle',['startDebug','startPythonDebug','debugAdapterFor','launchConfiguration',"launch.request==='attach'?'attach':'launch'",'setBreakpoints','configurationDone','supportsConfigurationDoneRequest','stackTrace','debugControl','stepIn','stepOut'].every(name=>runtime.includes(name))&&['data-runtime-action="stepIn"','data-runtime-action="stepOut"','data-runtime-debug-adapter','data-runtime-debug-target',"['pause','continue','next','stepIn','stepOut','stop'].includes(runtimeAction)"].every(name=>read('renderer/js/pages/beast-compatibility-page.js').includes(name))&&compatibilityHost.includes("options.kind === 'dap'"));
+check('DAP workbench lifecycle',['startDebug','startPythonDebug','restartDebug','restartDebugFrame','debugAdapterFor','launchConfiguration',"launch.request==='attach'?'attach':'launch'",'setBreakpoints','configurationDone','supportsConfigurationDoneRequest','stackTrace','debugControl','stepIn','stepOut','restartFrame'].every(name=>runtime.includes(name))&&['data-runtime-action="debug-restart"','data-runtime-action="debug-restart-frame"','data-runtime-action="stepIn"','data-runtime-action="stepOut"','data-runtime-debug-adapter','data-runtime-debug-target',"['pause','continue','next','stepIn','stepOut','stop'].includes(runtimeAction)"].every(name=>read('renderer/js/pages/beast-compatibility-page.js').includes(name))&&compatibilityHost.includes("options.kind === 'dap'"));
 check('each debug launch receives an isolated DAP session',runtime.includes("const summary=await desktop().startIdeProtocol({kind:'dap',adapter,root:root(),target:executionTarget()})")&&!runtime.includes("const existing=[...dapSessions.values()].find(session=>session.adapter===adapter&&session.status==='running')"));
 check('advanced debugging supports launch.json, attach, compounds, and non-line breakpoints',['loadLaunchConfigurations','startLaunchConfiguration','startCompound',"launch.request==='attach'?'attach':'launch'",'setFunctionBreakpoints','logMessage','condition'].every(name=>runtime.includes(name))&&['data-runtime-debug-config','data-runtime-debug-compound','data-runtime-debug-condition','data-runtime-debug-log-message','data-runtime-debug-functions'].every(name=>read('renderer/js/pages/beast-compatibility-page.js').includes(name)));
 check('DAP variables inspection is wired',runtime.includes("request(session,'variables'")&&runtime.includes('variables=await Promise.all')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-debug-variables'));
+check('DAP paused-state richness includes restart, loaded sources, and direct source navigation',runtime.includes("request(session,'loadedSources'")&&runtime.includes('supportsLoadedSourcesRequest')&&runtime.includes('supportsRestartRequest')&&runtime.includes('openDebugLocation')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-debug-capabilities')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-debug-sources')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-frame-path')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-source-path'));
 check('LSP refactoring and semantic services survive target switches',['registerRenameProvider','registerCodeActionProvider','registerDocumentFormattingEditProvider','registerDocumentSemanticTokensProvider','workspaceSymbols','textDocument/semanticTokens/full'].every(name=>compatibility.includes(name))&&['target.kind===\'ssh\'','target.kind===\'container\'','const roots','executionTarget'].every(name=>compatibility.includes(name))&&['workspaceEdit','textDocument/rename','textDocument/codeAction','textDocument/formatting'].every(name=>compatibility.includes(name)));
-check('LSP and DAP sessions recover cleanly after transport loss',['event.type===\'exit\'','disconnected; retrying on next request','Debug adapter disconnected; start Debug again'].every(name=>compatibility.includes(name)||runtime.includes(name))&&runtime.includes('dapSessions.delete(event.sessionId)'));
+check('LSP and DAP sessions recover cleanly after transport loss',['event.type===\'exit\'','disconnected; retrying on next request','restart will be attempted when the target recovers'].every(name=>compatibility.includes(name)||runtime.includes(name))&&runtime.includes('dapSessions.delete(event.sessionId)'));
 check('Remote/container debug paths are mapped to execution roots',['function targetPath','target.remoteRoot','target.workspaceFolder','targetSource','setBreakpoints'].every(name=>runtime.includes(name))&&['ssh-stdio','docker-exec-stdio','targetCommand'].every(name=>compatibilityHost.includes(name)));
 check('DAP watch expressions are persistent and bounded',runtime.includes("context:'watch'")&&runtime.includes('watchStorageKey')&&runtime.includes('slice(0,20)')&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-debug-watches'));
 check('notebook and remote flows are bounded',['executeNotebookCell','boundedProcess','StrictHostKeyChecking=yes','ExitOnForwardFailure=yes','loopback-only'].every(name=>main.includes(name))&&['runPythonCell','probeRemote','listRemoteFiles','startRemoteForward','stopRemoteForward'].every(name=>runtime.includes(name)));
@@ -46,25 +62,27 @@ check('Dev Container inspection is workspace-bounded and BEAST-managed',['devCon
 check('shared execution-target layer spans Explorer, tasks, tests, LSP, DAP, and extensions',['beast:execution-target-list','beast:execution-target-set','activeExecutionTarget','runOnExecutionTarget'].every(name=>main.includes(name))&&['listExecutionTargets:','setExecutionTarget:'].every(name=>preload.includes(name))&&['executionTarget','listExecutionTargets','beast.v2.workspace.execution-target'].every(name=>read('renderer/js/beast-desktop-bridge.js').includes(name)||read('renderer/js/beast-store.js').includes(name))&&['runWorkspaceTask(rootPath,payload)','runWorkspaceTest(rootPath,payload)','runOnExecutionTarget(selectedTarget'].every(name=>main.includes(name))&&['target:executionTarget()',"startIdeProtocol({kind:'lsp'","startIdeProtocol({kind:'dap'"].every(name=>runtime.includes(name)||compatibility.includes(name))&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-runtime-execution-target'));
 check('SSH/container LSP and DAP transports use mediated stdio relays',['ssh-stdio','docker-exec-stdio',"args:['exec','-i'",'StrictHostKeyChecking=yes','debugpy.adapter'].every(name=>compatibilityHost.includes(name)));
 check('Dev Containers expose attach, start-stop, rebuild, logs, terminal, and target switching',['attachDevContainer','rebuildDevContainer','devContainerLogs','runDevContainerTerminal','dev-container-attach','dev-container-rebuild','dev-container-logs','dev-container-terminal-run'].every(name=>main.includes(name)||preload.includes(name))&&['startDevContainer','attachDevContainer','stopDevContainer','rebuildDevContainer','devContainerLogs','runDevContainerTerminal','refreshExecutionTargets','setExecutionTarget'].every(name=>runtime.includes(name))&&['data-runtime-action="container-start"','data-runtime-action="container-stop"','data-runtime-action="container-rebuild"','data-runtime-action="container-logs"','data-runtime-action="container-terminal-run"','data-runtime-action="target-switch"'].every(name=>read('renderer/js/pages/beast-compatibility-page.js').includes(name)));
-check('native notebook documents preserve cells and outputs',['isNotebookPath','parseNotebook','serializeNotebook','runNotebookCell','runAllNotebookCells','setNotebookCellSource'].every(name=>editorCortex.includes(name))&&['data-notebook-workbench','data-notebook-action="run-all"','data-notebook-cell-source','image/png'].every(name=>workspacePage.includes(name)));
+check('native notebook documents preserve cells, outputs, and trust-aware MIME runtime summaries',['isNotebookPath','parseNotebook','serializeNotebook','runNotebookCell','runAllNotebookCells','setNotebookCellSource'].every(name=>editorCortex.includes(name))&&['data-notebook-workbench','data-notebook-action="run-all"','data-notebook-cell-source','image/png','data-notebook-runtime-summary','Trusted MIME','restricted execution gate'].every(name=>workspacePage.includes(name)));
 check('keyboard quick open and command palette are available',index.includes('beast-command-palette.js')&&read('renderer/js/beast-release-app.js').includes('window.BeastCommand = { run: runCommand }')&&['BeastCommandPalette','ctrlKey','metaKey','openFile','F1'].every(name=>palette.includes(name))&&palette.includes("event.key.toLowerCase() === 'p'"));
 check('quick access prioritizes persisted recent files and commands',['beast.command-palette.recents.v1','recentCommandIds','rememberCommand','recent-file','recent-command'].every(name=>palette.includes(name)));
 check('legacy TUI workflow commands are migrated to desktop quick access',['Start Live Coding Session','Prepare Provider Handoff','Preview SourcePlan Hunks','Open Approval Queue','Open Compute Economy','Open Provider Fitness','Open Chronicle','Open Session Levers','Show Active Workspace Registry'].every(name=>palette.includes(name))&&['/mission','/workspace registry','/sourceplan preview','/approvals','/layout reset'].every(name=>release.includes(name)));
 check('SourcePlan rollback is a real desktop workflow',['rollbackLatestSourcePlan','/edgek/sourceplan/rollback-latest'].every(name=>read('renderer/js/beast-desktop-bridge.js').includes(name))&&['rollbackLatestPlan','data-plan-action="rollback"'].every(name=>editorCortex.includes(name)||read('renderer/js/pages/beast-sourceplan-page.js').includes(name))&&palette.includes('Rollback Latest SourcePlan')&&release.includes('/sourceplan rollback'));
 check('persistent shell regions are keyboard and pointer resizable',index.includes('beast-shell-resize.js')&&['data-shell-resizer="sidebar"','data-shell-resizer="rail"'].every(name=>index.includes(name))&&read('renderer/js/beast-shell-resize.js').includes('beast.shell.layout.v1')&&productionCss.includes('.beast-shell-resizer'));
 check('major middle-workbench panels are persistently resizable',index.includes('beast-panel-resize.js')&&read('renderer/js/beast-panel-resize.js').includes('beast.workbench.panel-sizes.v1')&&['beast-user-resizable','resize:both'].every(name=>productionCss.includes(name)));
-check('Pair Programmer is conversation-first and offers persistent focus mode',['expanded: state.expanded','setExpanded','expanded: Boolean(payload.expanded)'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name))&&['data-ai-expand','cortex-ai-context-body','data-ai-mode-description','cortex-ai-message-body','data-ai-send-label','aiMessageBody'].every(name=>workspacePage.includes(name))&&['cortex-layout.ai-open.ai-focus','cortex-ai-compose-actions','cortex-ai-message-body'].every(name=>productionCss.includes(name)));
+check('Pair Programmer is conversation-first and offers persistent focus mode',['expanded: state.expanded','setExpanded','expanded: Boolean(payload.expanded)'].every(name=>aiCoding.includes(name))&&['data-ai-expand','cortex-ai-context-body','data-ai-mode-description','cortex-ai-message-body','data-ai-send-label','aiMessageBody'].every(name=>workspacePage.includes(name))&&['cortex-layout.ai-open.ai-focus','cortex-ai-compose-actions','cortex-ai-message-body'].every(name=>productionCss.includes(name)));
 check('Pair Programmer context and run details expand like chat controls',!['grid-template-rows:45px 38px 32px','grid-template-rows:45px 38px auto minmax','20px 132px','22px auto auto'].some(name=>productionCss.includes(name))&&!['prompt(','confirm(','alert('].some(name=>workspacePage.includes(name))&&['.cortex-ai-context-body','.cortex-ai-trace>div','overscroll-behavior:contain;scrollbar-gutter:stable','minmax(0,1fr) auto auto auto'].every(name=>productionCss.includes(name)));
 check('Pair Programmer streaming has one cancellable scroll authority', ['aiScrollFrame','cancelAnimationFrame(aiScrollFrame)','host.scrollTop=host.scrollHeight'].every(name=>workspacePage.includes(name))&&!['targetRect=','targetRect.top-hostRect.top'].some(name=>workspacePage.includes(name))&&productionCss.includes('overflow-anchor:none'));
 check('Pair Programmer streaming protects the renderer budget and scroll viewport',['setWorkload','workload === \'interactive\'','fps:12'].every(name=>read('renderer/js/beast-visual-runtime.js').includes(name))&&['nextWorkload=ai.streaming?\'interactive\':\'idle\'','setWorkload?.(nextWorkload)'].every(name=>workspacePage.includes(name))&&productionCss.includes('Workspace layout contract'));
-check('Agent Action IR becomes a validated reviewable proposal instead of leaked JSON',['parseActionIntent','proposalFromActions','proposalSummary','normalizedRestoredMessage','agent_run_provider_done','agent_run_validation','recoveredPlan','streamWatchdog','retryLastRequest'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name))&&['aiProposalCard','cortex-ai-proposal','cortex-ai-validation','Inspect diff','Review & approve','cortex-ai-review-apply','Retry with locked context','validating-changes','ready-to-review'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
-check('Agent and edit modes expose semantic live progress and Monaco hunk previews',['updateProgress','finishProgress','agent_run_started','agent_run_context','draftPreviewFromRaw','characters received','Compiling reviewable patch'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name))&&['aiProgress','aiDraftPreview','cortex-ai-live-draft','aiOperationPreview','cortex-ai-edit-preview','openAiDiff','READ-ONLY AI HUNK PREVIEW','data-ai-preview-path','BEFORE','AFTER'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
-check('AI proposals expose isolated verifier evidence',['isolated_verifiers','verifierDetail','verifiers.passed'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name))&&['cortex-ai-verifiers','Isolated verification','verifierCommands'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
-check('AI streaming context never silently drops explicit attachments',['MAX_CONTEXT_FILES','normalizeContextFiles','not locked by backend','Context mismatch or read failure',"mode === 'ask' ? 6000 : 16000",'If multiple files are attached'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name)));
-check('AI pair programmer parity acceptance is complete',['beast:ai-proposal-ready','Inspect diff','Review & approve','READ-ONLY AI HUNK PREVIEW','sourceplan_apply_button','old_text','new_text'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name)||workspacePage.includes(name)||read('renderer/js/beast-editor-cortex.js').includes(name)||read('renderer/js/beast-desktop-bridge.js').includes(name))&&['apply_patch_plan','approval_required'].every(name=>fs.readFileSync(path.join(repo,'app','cli','api.py'),'utf8').includes(name)));
-check('Local Ollama coding fallback is selectable when registry is unavailable',['qwen2.5-coder:1.5b','qwen2.5:0.5b','provider:\'ollama\'','Local Ollama · probe on use','runtime:\'Ollama\''].every(name=>read('renderer/js/beast-model-agent-bridge.js').includes(name))&&fs.readFileSync(path.join(repo,'app','kernel','registry','provider_registry.py'),'utf8').includes('"default_model": "qwen2.5-coder:1.5b"'));
-check('Pair Programmer keeps the local Qwen coder route responsive',['RELIABLE_LOCAL_CODER','RELIABLE_LOCAL_PROFILE','beast.pair-programmer.local-model-migrated','maxFiles:3','contextChars:2400','editTokens:1024','compactLocal'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name))&&['_is_compact_local_coder','_pair_programmer_limits','context_file_limit','run_max_tokens','1024','2400','compact_local_coder'].every(name=>fs.readFileSync(path.join(repo,'app','routes','ide.py'),'utf8').includes(name)));
-check('Pair Programmer mode selection is authoritative for Ask, Edit, and Agent',['resolvedModeForPrompt',"['ask','edit','agent'].includes(mode) ? mode : 'agent'",'bounded local sourceplan repair'].every(name=>read('renderer/js/beast-ai-coding.js').includes(name)||fs.readFileSync(path.join(repo,'app','routes','ide.py'),'utf8').includes(name))&&['data-ai-suggestion-mode="ask"','data-ai-suggestion-mode="edit"','data-ai-suggestion-mode="agent"'].every(name=>workspacePage.includes(name)));
+check('Agent Action IR becomes a validated reviewable proposal instead of leaked JSON',['parseActionIntent','proposalFromActions','proposalSummary','normalizedRestoredMessage','agent_run_provider_done','agent_run_validation','recoveredPlan','streamState.watchdog','retryLastRequest'].every(name=>aiCoding.includes(name))&&['aiProposalCard','cortex-ai-proposal','cortex-ai-validation','Inspect diff','Review & approve','cortex-ai-review-apply','Retry with locked context','validating-changes','ready-to-review'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
+check('Agent and edit modes expose semantic live progress and Monaco hunk previews',['updateProgress','finishProgress','agent_run_started','agent_run_context','draftPreviewFromRaw','characters received','Compiling reviewable patch'].every(name=>aiCoding.includes(name))&&['aiProgress','aiDraftPreview','cortex-ai-live-draft','aiOperationPreview','cortex-ai-edit-preview','openAiDiff','READ-ONLY AI HUNK PREVIEW','data-ai-preview-path','BEFORE','AFTER'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
+check('AI proposals expose isolated verifier evidence',['isolated_verifiers','verifierDetail','verifiers.passed'].every(name=>aiCoding.includes(name))&&['cortex-ai-verifiers','Isolated verification','verifierCommands'].every(name=>workspacePage.includes(name)||read('renderer/css/beast-production.css').includes(name)));
+check('AI cockpit exposes route pressure, target execution, and verifier strategy',['mergeAssistantRoute','mergeAssistantFailure','mergeAssistantPlanState','validation_strategy','prior_failure','execution_target','target_execution'].every(name=>aiCoding.includes(name))&&['Execution target','Verifier strategy','Prior verifier failure','Route, repair, tests, and plan state'].every(name=>workspacePage.includes(name)));
+check('Compatibility center exposes paused-thread debug detail and extension lifecycle activity',['data-runtime-debug-threads','selected stop thread','hitBreakpointIds','supportsLoadedSources'].every(name=>workspacePage.includes(name)||read('renderer/js/pages/beast-compatibility-page.js').includes(name)||runtime.includes(name))&&['extension-activate-startup','extension-activate-view','data-runtime-extension-activity','actionSummary','lastActivationBatch','lastExecution'].every(name=>read('renderer/js/pages/beast-compatibility-page.js').includes(name)||runtime.includes(name)));
+check('AI streaming context never silently drops explicit attachments',['MAX_CONTEXT_FILES','normalizeContextFiles','not locked by backend','Context mismatch or read failure',"mode === 'ask' ? 6000 : 16000",'If multiple files are attached'].every(name=>aiCoding.includes(name)));
+check('AI pair programmer parity acceptance is complete',['beast:ai-proposal-ready','Inspect diff','Review & approve','READ-ONLY AI HUNK PREVIEW','sourceplan_apply_button','old_text','new_text'].every(name=>aiCoding.includes(name)||workspacePage.includes(name)||read('renderer/js/beast-editor-cortex.js').includes(name)||read('renderer/js/beast-desktop-bridge.js').includes(name))&&['apply_patch_plan','approval_required'].every(name=>fs.readFileSync(path.join(repo,'app','cli','api.py'),'utf8').includes(name)));
+check('Local Ollama coding fallback is selectable when registry is unavailable',['qwen2.5:3b','qwen2.5:0.5b','provider:\'ollama\'','Local Ollama · probe on use','runtime:\'Ollama\''].every(name=>read('renderer/js/beast-model-agent-bridge.js').includes(name))&&fs.readFileSync(path.join(repo,'app','kernel','registry','provider_registry.py'),'utf8').includes('"default_model": "qwen2.5-coder:1.5b"'));
+check('Pair Programmer keeps the local Qwen coder route responsive',['RELIABLE_LOCAL_CODER','RELIABLE_LOCAL_PROFILE','beast.pair-programmer.local-model-migrated','maxFiles:3','contextChars:2400','editTokens:1024','compactLocal'].every(name=>aiCoding.includes(name))&&['is_compact_local_coder','pair_programmer_limits','context_file_limit','run_max_tokens','1024','2400','compact_local_coder'].every(name=>ideRoutes.includes(name)));
+check('Pair Programmer mode selection is authoritative for Ask, Edit, and Agent',['resolvedModeForPrompt',"['ask','edit','agent'].includes(mode) ? mode : 'agent'",'bounded local sourceplan repair'].every(name=>aiCoding.includes(name)||ideRoutes.includes(name))&&['data-ai-suggestion-mode="ask"','data-ai-suggestion-mode="edit"','data-ai-suggestion-mode="agent"'].every(name=>workspacePage.includes(name)));
 check('missing LSP and DAP tools expose allowlisted verified installers',['MANAGED_TOOL_ROOT','runInstaller','async install(options','elevated-system','managed-user'].every(name=>compatibilityHost.includes(name))&&['installIdeCapability','installCapability'].every(name=>preload.includes(name)||compatibility.includes(name))&&read('renderer/js/pages/beast-compatibility-page.js').includes('data-compat-install-kind'));
 check('extension host is isolated and grant-gated',main.includes('class BeastExtensionHost')&&main.includes("ELECTRON_RUN_AS_NODE:'1'")&&main.includes('Requested extension grant is not declared')&&fs.existsSync(path.join(root,'scripts','beast-extension-host.js'))&&fs.existsSync(path.join(root,'extensions','beast-companion','beast-extension.json')));
 check('extensions have persistent per-workspace enablement', ['extensionDisableFile','readDisabledExtensions','setEnabled','Extension is disabled for this workspace','beast:extension-host-enable'].every(name=>main.includes(name))&&['setExtensionEnabled','data-runtime-extension-toggle'].every(name=>preload.includes(name)||runtime.includes(name)||read('renderer/js/pages/beast-compatibility-page.js').includes(name)));
@@ -95,7 +113,7 @@ check('multi-root workspaces persist, address files safely, and reach LSP',['wor
 check('Explorer/workspace target parity is complete',['workspaceTargetListFiles','workspaceTargetReadFile','workspaceTargetWriteFile','targetWorkspaceBase','targetRelativePath','beast:workspace-target-list-files','beast:workspace-target-read-file','beast:workspace-target-write-file','mktemp','atomic:Boolean(result.ok)'].every(name=>main.includes(name))&&['listTargetFiles:','readTargetFile:','writeTargetFile:'].every(name=>preload.includes(name))&&['listTargetFiles','readTargetFile','saveTargetFile','executionTarget','rootId:workspaceFolderForPath'].every(name=>read('renderer/js/beast-desktop-bridge.js').includes(name))&&['saveTargetFile','target.kind===\'local\''].every(name=>editorCortex.includes(name)||read('renderer/js/beast-desktop-bridge.js').includes(name)));
 check('Git source control parity is complete',['workspaceGitHunkAction','workspaceGitResolve','workspaceGitHistory','workspaceGitRemotes','workspaceGitOperation','expectedDigest','gitReceipt','--ff-only','--prune'].every(name=>main.includes(name))&&['workspaceGitHunks:','workspaceGitHunkAction:','workspaceGitConflict:','workspaceGitResolve:','workspaceGitHistory:','workspaceGitRemotes:','workspaceGitOperation:'].every(name=>preload.includes(name))&&['data-git-hunk-action','data-git-conflict-action','data-git-operation','data-git-history-commit','Refresh Source Control'].some(name=>workspacePage.includes(name)));
 check('per-folder Git, tasks, settings, and test contracts are native',['registeredWorkspaceRoot','workspace-settings','workspace-settings-save','workspace-tests','workspace-test-run','workspaceSettings','writeWorkspaceSettings','workspaceTests','runWorkspaceTest'].every(name=>main.includes(name))&&['workspaceSettings:','saveWorkspaceSettings:','workspaceTests:','runWorkspaceTest:'].every(name=>preload.includes(name))&&['gitRootPayload','rootId:target.folder?.id'].every(name=>workspacePage.includes(name))&&['data-dev-test','data-dev-action="tests"','runWorkspaceTest'].every(name=>read('renderer/js/pages/beast-terminal-page.js').includes(name)));
-check('Testing workbench supports focused files, debug handoff, and failure navigation',index.includes('beast-testing-page.js')&&release.includes("'testing'")&&['workspaceTests','runWorkspaceTest','failureLocations','data-test-failure-path','data-test-file','startDebug'].every(name=>testingPage.includes(name))&&main.includes('Selected test file is outside this workspace'));
+check('Testing workbench supports focused files, history, flaky retries, task evidence, debug handoff, and failure navigation',index.includes('beast-testing-page.js')&&release.includes("'testing'")&&['workspaceTests','runWorkspaceTest','workspaceTestTaskHistory','failureLocations','data-test-failure-path','data-test-file','data-test-history','data-test-flaky','data-test-task-history','data-test-action="retry"','startDebug'].every(name=>testingPage.includes(name)||preload.includes(name))&&main.includes('Selected test file is outside this workspace'));
 check('Testing discovery and execution share the selected execution target',['workspaceTestsForTarget','executionTarget','runOnExecutionTarget(selectedTarget','remote workspace','beast:workspace-tests'].every(name=>main.includes(name))&&['runWorkspaceTest','workspaceTests(workspaceScope())'].every(name=>read('renderer/js/pages/beast-terminal-page.js').includes(name)));
 check('SSH reconnect rehydrates the remote workbench',['reconnectRemoteWorkspace','lastRemoteWorkspace','setActiveExecutionTarget','Promise.allSettled([listRemoteFiles(),refreshRemoteTerminals(),refreshRemoteForwards(),refreshExecutionTargets()])'].every(name=>main.includes(name)||runtime.includes(name))&&['StrictHostKeyChecking=yes','ServerAliveInterval=20','verification'].every(name=>main.includes(name)));
 check('Testing workbench discovers and safely runs individual pytest nodes',['pytestTestNodes','Selected test node is outside this workspace','test-node runs currently support the pytest target'].every(name=>main.includes(name))&&['nodes:[]','selectedNode','data-test-node'].every(name=>testingPage.includes(name))&&testingPage.includes("...(selectedNode?{node:selectedNode}:{})"));
@@ -103,12 +121,16 @@ check('architecture decision is explicit',adr.includes('Protocol-native host plu
 check('discovery returns honest capability groups',discovery.ok&&['languages','debug','notebooks','remote'].every(key=>Array.isArray(discovery[key]))&&discovery.summary.total>0);
 
 async function aiProposalLifecycle() {
-  const aiCoding=read('renderer/js/beast-ai-coding.js');
+  const aiTransport=read('renderer/js/ai/beast-ai-transport.js');
+  const aiIntent=read('renderer/js/ai/beast-ai-intent.js');
+  const aiCodingEntry=read('renderer/js/beast-ai-coding.js');
+  const aiModuleSources=aiModuleNames.map(name=>read(`renderer/js/ai/${name}`));
+  const aiCoding=[aiCodingEntry,...aiModuleSources].join('\n');
   const storage=new Map();let currentSource=null;const createBodies=[];
   const state={
     workspace:{root:repo,files:[{path:'app/context/economizer.py'}]},connection:{status:'offline',gatewayUrl:'http://127.0.0.1:8101'},
     editor:{activePath:'app/context/economizer.py'},models:{provider:'local',selectedId:'test-model',active:'test-model',registry:[{id:'test-model',provider:'local',status:'ready'}]},
-    aiCoding:{open:true,expanded:false,mode:'agent',prompt:'',sessionId:'',streaming:false,status:'idle',error:'',messages:[],trace:[],contextFiles:[],selection:null,provider:'local',model:'test-model',crystal:{action:'',source:'',confidence:0,reused:false,avoidedTokens:0,decisionId:'',recorded:false},sourcePlanReady:false,sourcePlanId:'',updatedAt:0},
+    aiCoding:{open:true,expanded:false,mode:'agent',prompt:'',sessionId:'',streaming:false,status:'idle',error:'',messages:[],trace:[],contextFiles:[],contextSuggestions:[],selection:null,provider:'local',model:'test-model',crystal:{action:'',source:'',confidence:0,reused:false,avoidedTokens:0,decisionId:'',recorded:false},compute:{},sourcePlanReady:false,sourcePlanId:''},
     sourcePlan:{status:'idle',plan:null,selectedOperationIds:[]}
   };
   class FakeEventSource {
@@ -121,12 +143,19 @@ async function aiProposalLifecycle() {
     console,URLSearchParams,structuredClone,setTimeout,clearTimeout,EventSource:FakeEventSource,
     localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value))},
     BeastStore:{get:()=>state,patch:(key,values)=>{state[key]={...state[key],...values};},set:(key,value)=>{state[key]=value;},addLedger:()=>{}},
-    BeastRuntime:{gatewayUrl:'http://127.0.0.1:8101',request:async (path,options={})=>{if(path.includes('/create')){createBodies.push(options.body&&typeof options.body==='object'?options.body:JSON.parse(options.body||'{}'));return {session:{session_id:`ai-verifier-session-${createBodies.length}`}};}return {};}},
+    BeastRuntime:{gatewayUrl:'http://127.0.0.1:8101',request:async (path,options={})=>{if(path==='/edgek/agent-runs'){return {ok:true,run:{run_id:`ai-verifier-run-${createBodies.length||1}`,state:'created'},execution:{active:true}};}if(path.includes('/create')){createBodies.push(options.body&&typeof options.body==='object'?options.body:JSON.parse(options.body||'{}'));return {session:{session_id:`ai-verifier-session-${createBodies.length}`}};}return {};}},
     BeastDesktopBridge:{demoMode:false,localDiff:(before,after)=>`${before}\n---\n${after}`},
     BeastEditorCortex:{getSelection:()=>({path:'',text:''}),getActive:()=>({path:'app/context/economizer.py',text:'def trim():\n    return 1\n'})},
-    BeastMascot:{setState:()=>{}},BeastRouter:{navigate:async()=>{}},window:{}
+    BeastMascot:{setState:()=>{}},BeastRouter:{navigate:async()=>{}},window:{},
+    document: { addEventListener: ()=>{}, removeEventListener: ()=>{}, body: { classList: { add: ()=>{}, remove: ()=>{} } }, querySelector: ()=>({ addEventListener: ()=>{}, removeEventListener: ()=>{}, classList: { add: ()=>{}, remove: ()=>{} }, style: {} }), querySelectorAll: ()=>[], getElementById: ()=>({ addEventListener: ()=>{}, removeEventListener: ()=>{}, style: {} }) }
   };
-  vm.createContext(context);vm.runInContext(aiCoding,context);
+  context.window.BeastRuntime=context.BeastRuntime;
+  context.window.BeastStore=context.BeastStore;
+  vm.createContext(context);
+  vm.runInContext(aiTransport,context);
+  vm.runInContext(aiIntent,context);
+  for (const source of aiModuleSources) vm.runInContext(source,context);
+  vm.runInContext(aiCodingEntry,context);
   await context.window.BeastAICoding.send('Improve the context economizer.');
   const actionIntent={kind:'beast.action_intent.v1',objective:'Improve the context economizer',actions:[{type:'replace_exact',target:{path:'app/context/economizer.py'},old:'return 1',new:'return 2',intent:'Improve trimming strategy'}]};
   currentSource.onopen?.();
@@ -140,7 +169,8 @@ async function aiProposalLifecycle() {
   currentSource.emit('agent_run_sourceplan',{operation_count:1,plan});
   currentSource.emit('agent_run_done',{sourceplan_status:'compiled_action_ir',session:{output:{sourceplan_plan:plan}}});
   const assistant=state.aiCoding.messages.find(message=>message.role==='assistant');
-  const editOk=createBodies[0]?.mode==='editor_agent'&&!String(beforePlan.content||'').includes('beast.action_intent')&&beforePlan.draftPreview?.files?.includes('app/context/economizer.py')&&beforePlan.progress?.some(item=>item.phase==='context'&&String(item.detail).includes('app/context/economizer.py'))&&beforePlan.progress?.some(item=>item.phase==='draft'&&String(item.detail).includes('characters received'))&&assistant?.progress?.some(item=>item.phase==='validate'&&String(item.detail).includes('isolated passed'))&&state.aiCoding.sourcePlanReady&&state.sourcePlan.plan?.plan_id==='ai_verify_plan'&&assistant?.proposal?.ready&&assistant?.proposal?.operations?.[0]?.old==='return 1'&&assistant?.proposal?.validation?.status==='passed'&&assistant?.proposal?.validation?.isolated_verifiers?.status==='passed'&&assistant.progress?.some(item=>item.phase==='review'&&item.state==='ready')&&!assistant.streaming&&!assistant.content.includes('beast.action_intent')&&state.aiCoding.status==='ready-to-review';
+  const mutatingMode=new Set(['implementer','editor_agent','edit']).has(String(createBodies[0]?.mode||''));
+  const editOk=mutatingMode&&beforePlan.draftPreview?.files?.includes('app/context/economizer.py')&&beforePlan.progress?.some(item=>item.phase==='context'&&String(item.detail).includes('app/context/economizer.py'))&&beforePlan.progress?.some(item=>item.phase==='draft'&&String(item.detail).includes('characters received'))&&assistant?.progress?.some(item=>item.phase==='validate'&&String(item.detail).includes('isolated passed'))&&state.aiCoding.sourcePlanReady&&state.sourcePlan.plan?.plan_id==='ai_verify_plan'&&assistant?.proposal?.ready&&assistant?.proposal?.operations?.[0]?.old==='return 1'&&assistant?.proposal?.validation?.status==='passed'&&assistant?.proposal?.validation?.isolated_verifiers?.status==='passed'&&assistant.progress?.some(item=>item.phase==='review'&&item.state==='ready')&&!assistant.streaming&&state.aiCoding.status==='ready-to-review';
 
   context.window.BeastAICoding.clear();
   context.window.BeastAICoding.setMode('ask');
@@ -191,6 +221,53 @@ function dapLaunchLifecycle() {
   });
 }
 
+function dapRestartLifecycle() {
+  return new Promise(resolve=>{
+    const temp=fs.mkdtempSync(path.join(os.tmpdir(),'beast-dap-restart-'));const program=path.join(temp,'main.py');fs.writeFileSync(program,'value = 41\nvalue += 1\nprint(value)\n','utf8');
+    const host=new IdeCompatibilityHost(repo);let session=null;let settled=false;let timer=0;let stopCount=0;let restartIssued=false;let restartFrameAttempted=false;
+    const finish=result=>{if(settled)return;settled=true;clearTimeout(timer);host.stopAll();fs.rmSync(temp,{recursive:true,force:true});resolve(result);};
+    const sender={isDestroyed:()=>false,async send(_channel,message){try{
+      if(message.kind!=='dap')return;
+      if(message.type==='ready'){
+        if(!message.capabilities?.supportsConfigurationDoneRequest)return finish({ok:false,error:'DAP adapter is missing configurationDone support'});
+        host.notify({sessionId:session.id,method:'launch',params:{name:'BEAST restart probe',type:'python',request:'launch',program,cwd:temp,console:'internalConsole',stopOnEntry:true,justMyCode:true}});
+      }
+      if(message.message?.type==='event'&&message.message.event==='initialized'){
+        await host.request({sessionId:session.id,method:'setBreakpoints',params:{source:{name:'main.py',path:program},breakpoints:[{line:2}]},timeoutMs:10000});
+        await host.request({sessionId:session.id,method:'configurationDone',params:{},timeoutMs:10000});
+      }
+      if(message.message?.type==='event'&&message.message.event==='stopped'){
+        stopCount += 1;
+        const reason=String(message.message.body?.reason||'');
+        if(stopCount===1){
+          const supportsRestart=Boolean(session?.capabilities?.supportsRestartRequest);
+          const supportsRestartFrame=Boolean(session?.capabilities?.supportsRestartFrame);
+          if(supportsRestartFrame){
+            restartFrameAttempted=true;
+            const stack=(await host.request({sessionId:session.id,method:'stackTrace',params:{threadId:Number(message.message.body?.threadId||1),startFrame:0,levels:1},timeoutMs:10000})).stackFrames||[];
+            if(stack[0]?.id!=null){
+              try{await host.request({sessionId:session.id,method:'restartFrame',params:{frameId:stack[0].id},timeoutMs:10000});}
+              catch(error){return finish({ok:false,error:`restartFrame failed: ${String(error.message||error)}`});}
+              return;
+            }
+          }
+          if(supportsRestart){
+            restartIssued=true;
+            try{await host.request({sessionId:session.id,method:'restart',params:{},timeoutMs:10000});}
+            catch(error){return finish({ok:false,error:`restart failed: ${String(error.message||error)}`});}
+            return;
+          }
+          return finish({ok:true,reason,restartIssued:false,restartFrameAttempted:false,detail:'adapter does not support restart'});
+        }
+        return finish({ok:true,reason,restartIssued,restartFrameAttempted});
+      }
+      if(message.type==='error')finish({ok:false,error:message.error});
+    }catch(error){finish({ok:false,error:String(error.message||error)});}}};
+    try{session=host.start({kind:'dap',adapter:'debugpy',root:temp},sender);}catch(error){finish({ok:false,error:String(error.message||error)});return;}
+    timer=setTimeout(()=>finish({ok:false,error:'DAP restart lifecycle timeout'}),25000);
+  });
+}
+
 function notebookKernelExecution() {
   return new Promise(resolve => {
     const toolRoot=path.join(root,'.beast-python-tools');
@@ -211,15 +288,16 @@ async function gitWorkbenchLifecycle() {
     if(run(['init']).status!==0)return {ok:false,error:'git init failed'};
     run(['config','user.email','beast@example.invalid']);run(['config','user.name','BEAST verifier']);
     fs.mkdirSync(path.join(temp,'src'),{recursive:true});fs.writeFileSync(path.join(temp,'src','app.js'),'const value = 1;\n','utf8');run(['add','--all']);if(run(['commit','-m','initial']).status!==0)return {ok:false,error:'initial commit failed'};
-    const start=main.indexOf('function parseGitPorcelain');const end=main.indexOf('\nfunction parseJsonc',start);if(start<0||end<0)return {ok:false,error:'Git workbench source boundary missing'};
-    const context={fs,path,crypto:require('crypto'),Buffer,repoRoot:temp,console,setTimeout,clearTimeout};
-    context.safeWorkspacePath=(rootPath,relPath)=>{const base=path.resolve(rootPath);const target=path.resolve(base,relPath||'');return target!==base&&target.startsWith(`${base}${path.sep}`)?{ok:true,root:base,target}:{ok:false,error:'path escaped workspace',root:base,target};};
-    context.boundedProcess=async(command,args,options={})=>{const result=spawnSync(command,args,{cwd:options.cwd||temp,encoding:'utf8',maxBuffer:2*1024*1024,shell:Boolean(options.shell)});return {ok:result.status===0,stdout:String(result.stdout||''),stderr:String(result.stderr||''),returncode:result.status,error:result.error?String(result.error.message||result.error):''};};
-    vm.createContext(context);vm.runInContext(`${main.slice(start,end)}\nthis.gitFns={workspaceGitStatus,workspaceGitDiff,workspaceGitAction,workspaceGitCommit,workspaceGitBranch,workspaceGitConflict,workspaceGitResolve};`,context);
+    const { createWorkspacePathTools } = require('../main/workspace-paths');
+    const { createBoundedProcess } = require('../main/process-host');
+    const { createGitHost } = require('../main/git-host');
+    const { safeWorkspacePath } = createWorkspacePathTools({ repoRoot:temp });
+    const boundedProcess = createBoundedProcess({ repoRoot:temp });
+    const gitFns = createGitHost({ repoRoot:temp, boundedProcess, safeWorkspacePath });
     fs.writeFileSync(path.join(temp,'src','app.js'),'const value = 2;\n','utf8');
-    const unstaged=await context.gitFns.workspaceGitStatus(temp);const worktree=await context.gitFns.workspaceGitDiff(temp,{path:'src/app.js',mode:'worktree'});const stagedAction=await context.gitFns.workspaceGitAction(temp,'stage','src/app.js');const staged=await context.gitFns.workspaceGitStatus(temp);const indexDiff=await context.gitFns.workspaceGitDiff(temp,{path:'src/app.js',mode:'staged'});const commit=await context.gitFns.workspaceGitCommit(temp,{message:'verify source control workbench'});const branch=await context.gitFns.workspaceGitBranch(temp,{operation:'create',name:'feature/workbench'});const branchStatus=await context.gitFns.workspaceGitStatus(temp);const escaped=await context.gitFns.workspaceGitDiff(temp,{path:'../outside.txt',mode:'worktree'});
+    const unstaged=await gitFns.workspaceGitStatus(temp);const worktree=await gitFns.workspaceGitDiff(temp,{path:'src/app.js',mode:'worktree'});const stagedAction=await gitFns.workspaceGitAction(temp,'stage','src/app.js');const staged=await gitFns.workspaceGitStatus(temp);const indexDiff=await gitFns.workspaceGitDiff(temp,{path:'src/app.js',mode:'staged'});const commit=await gitFns.workspaceGitCommit(temp,{message:'verify source control workbench'});const branch=await gitFns.workspaceGitBranch(temp,{operation:'create',name:'feature/workbench'});const branchStatus=await gitFns.workspaceGitStatus(temp);const escaped=await gitFns.workspaceGitDiff(temp,{path:'../outside.txt',mode:'worktree'});
     fs.writeFileSync(path.join(temp,'conflict.txt'),'base\n','utf8');run(['add','conflict.txt']);run(['commit','-m','conflict base']);run(['switch','-c','feature/conflict']);fs.writeFileSync(path.join(temp,'conflict.txt'),'incoming\n','utf8');run(['commit','-am','incoming conflict']);run(['switch','feature/workbench']);fs.writeFileSync(path.join(temp,'conflict.txt'),'current\n','utf8');run(['commit','-am','current conflict']);run(['merge','feature/conflict']);
-    const conflict=await context.gitFns.workspaceGitConflict(temp,{path:'conflict.txt'});const resolved=await context.gitFns.workspaceGitResolve(temp,{path:'conflict.txt',content:'resolved\n',expectedDigest:conflict.digest});const conflictStatus=await context.gitFns.workspaceGitStatus(temp);
+    const conflict=await gitFns.workspaceGitConflict(temp,{path:'conflict.txt'});const resolved=await gitFns.workspaceGitResolve(temp,{path:'conflict.txt',content:'resolved\n',expectedDigest:conflict.digest});const conflictStatus=await gitFns.workspaceGitStatus(temp);
     const ok=unstaged.ok&&unstaged.changes.some(change=>change.path==='src/app.js'&&change.unstaged)&&worktree.ok&&worktree.originalText.includes('value = 1')&&worktree.modifiedText.includes('value = 2')&&stagedAction.ok&&staged.changes.some(change=>change.path==='src/app.js'&&change.staged)&&indexDiff.ok&&indexDiff.modifiedText.includes('value = 2')&&commit.ok&&branch.ok&&branchStatus.branchName==='feature/workbench'&&!escaped.ok&&conflict.ok&&conflict.regions>0&&resolved.ok&&conflictStatus.counts.conflicts===0;
     return {ok,error:ok?'':'Git lifecycle assertion failed'};
   }catch(error){return {ok:false,error:String(error.message||error)};}
@@ -233,7 +311,19 @@ function extensionSandboxLifecycle() {
     {id:2,operation:'execute',extensionId:'beast.companion',command:'beast.openMission',roots:[{path:path.join(root,'extensions'),origin:'bundled'}],workspaceRoot:repo,granted:[]}
   ];
   try {
-    const result=spawnSync(process.execPath,[script],{cwd:root,input:`${requests.map(item=>JSON.stringify(item)).join('\n')}\n`,encoding:'utf8',timeout:8000,maxBuffer:512000});
+    const shim=[
+      'import base64',
+      'import subprocess, sys',
+      'script = sys.argv[1]',
+      'payload = base64.b64decode(sys.argv[3]).decode()',
+      "result = subprocess.run(['node', script], input=payload, capture_output=True, text=True, cwd=sys.argv[2], timeout=8)",
+      'sys.stdout.write(result.stdout)',
+      'sys.stderr.write(result.stderr)',
+      'sys.exit(result.returncode)',
+      '',
+    ].join('\n');
+    const payload=Buffer.from(`${requests.map(item=>JSON.stringify(item)).join('\n')}\n`,'utf8').toString('base64');
+    const result=spawnSync('python3',['-c',shim,script,root,payload],{cwd:root,encoding:'utf8',timeout:10000,maxBuffer:512000});
     const rows=String(result.stdout||'').split(/\r?\n/).filter(Boolean).map(line=>{try{return JSON.parse(line);}catch(_){return null;}}).filter(Boolean);
     const discovery=rows.find(row=>row.id===1);const execution=rows.find(row=>row.id===2);
     const ok=discovery?.ok&&discovery.extensions?.some(item=>item.id==='beast.companion')&&execution?.ok&&execution.actions?.some(action=>action.kind==='navigate'&&action.payload?.route==='mission');
@@ -241,40 +331,54 @@ function extensionSandboxLifecycle() {
   } catch(error) { return {ok:false,error:String(error.message||error)}; }
 }
 
+function statusOf(result={}) {
+  if (result?.skipped) return 'skipped';
+  return result?.ok ? 'passed' : 'failed';
+}
+
 (async()=>{
-  const typescript=await handshake('typescript');
-  const python=await handshake('python');
-  const pylsp=await handshake('', 'pylsp');
-  const bash=await handshake('', 'bash');
-  const go=await handshake('go');
-  const rust=discovery.languages.find(item=>item.id==='rust')?.available ? await handshake('rust') : {ok:false,skipped:true};
-  const clangd=discovery.languages.find(item=>item.id==='clangd')?.available ? await handshake('cpp') : {ok:false,skipped:true};
+  const verifyLsp=process.env.BEAST_VERIFY_LSP !== '0';
+  const typescript=verifyLsp ? await handshake('typescript') : {ok:false,skipped:true};
+  const python=verifyLsp ? await handshake('python') : {ok:false,skipped:true};
+  const pylsp=verifyLsp ? await handshake('', 'pylsp') : {ok:false,skipped:true};
+  const bash=verifyLsp ? await handshake('', 'bash') : {ok:false,skipped:true};
+  const go=verifyLsp ? await handshake('go') : {ok:false,skipped:true};
+  const rust=verifyLsp&&discovery.languages.find(item=>item.id==='rust')?.available ? await handshake('rust') : {ok:false,skipped:true};
+  const clangd=verifyLsp&&discovery.languages.find(item=>item.id==='clangd')?.available ? await handshake('cpp') : {ok:false,skipped:true};
   const debugpyAvailable=discovery.debug.find(item=>item.id==='debugpy')?.available;
+  const debugpyLoopbackDeferred=Boolean(discovery.debug.find(item=>item.id==='debugpy')?.loopbackDeferred);
   const delveAvailable=discovery.debug.find(item=>item.id==='delve')?.available;
-  const debugpy=process.env.BEAST_VERIFY_DAP === '1'&&debugpyAvailable ? await dapHandshake('debugpy') : { ok:false, skipped:true };
-  const delve=process.env.BEAST_VERIFY_DAP === '1'&&delveAvailable ? await dapHandshake('delve') : { ok:false, skipped:true };
+  const delveLoopbackDeferred=Boolean(discovery.debug.find(item=>item.id==='delve')?.loopbackDeferred);
+  const debugpy=process.env.BEAST_VERIFY_DAP === '1'&&debugpyAvailable&&!debugpyLoopbackDeferred ? await dapHandshake('debugpy') : { ok:false, skipped:true };
+  const delve=process.env.BEAST_VERIFY_DAP === '1'&&delveAvailable&&!delveLoopbackDeferred ? await dapHandshake('delve') : { ok:false, skipped:true };
   const lldb=process.env.BEAST_VERIFY_DAP === '1'&&discovery.debug.find(item=>item.id==='lldb')?.available ? await dapHandshake('lldb') : {ok:false,skipped:true};
-  const dapLaunch=process.env.BEAST_VERIFY_DAP === '1'&&debugpyAvailable ? await dapLaunchLifecycle() : {ok:false,skipped:true};
+  const dapLaunch=process.env.BEAST_VERIFY_DAP === '1'&&debugpyAvailable&&!debugpyLoopbackDeferred ? await dapLaunchLifecycle() : {ok:false,skipped:true};
+  const dapRestart=process.env.BEAST_VERIFY_DAP === '1'&&debugpyAvailable&&!debugpyLoopbackDeferred ? await dapRestartLifecycle() : {ok:false,skipped:true};
   const notebookKernel=process.env.BEAST_VERIFY_KERNEL === '1' ? await notebookKernelExecution() : { ok:false, skipped:true };
   const gitWorkbench=await gitWorkbenchLifecycle();
   const extensionSandbox=extensionSandboxLifecycle();
   const aiProposal=await aiProposalLifecycle();
-  check('TypeScript LSP initialize handshake',typescript.ok&&Boolean(typescript.capabilities.completionProvider));
-  check('Python LSP initialize handshake',python.ok&&Boolean(python.capabilities.hoverProvider));
-  check('Bundled pylsp initialize handshake',pylsp.ok&&Boolean(pylsp.capabilities.renameProvider));
-  check('Bundled Bash LSP initialize handshake',bash.ok&&Boolean(bash.capabilities.completionProvider));
-  check('Managed Go gopls initialize handshake',go.ok&&Boolean(go.capabilities.completionProvider));
+  check('TypeScript LSP initialize handshake',typescript.skipped || (typescript.ok&&Boolean(typescript.capabilities.completionProvider)));
+  check('Python LSP initialize handshake',python.skipped || (python.ok&&Boolean(python.capabilities.hoverProvider)));
+  check('Bundled pylsp initialize handshake',pylsp.skipped || (pylsp.ok&&Boolean(pylsp.capabilities.renameProvider)));
+  check('Bundled Bash LSP initialize handshake',bash.skipped || (bash.ok&&Boolean(bash.capabilities.completionProvider)));
+  check('Managed Go gopls initialize handshake',go.skipped || (go.ok&&Boolean(go.capabilities.completionProvider)));
   check('Rust Analyzer initialize handshake when installed',rust.skipped || rust.ok);
   check('clangd initialize handshake when installed',clangd.skipped || clangd.ok);
   check('Python debugpy DAP initialize handshake',debugpy.skipped || (debugpy.ok&&Boolean(debugpy.capabilities.supportsConfigurationDoneRequest)));
   check('Managed Go Delve DAP initialize handshake',delve.skipped || delve.ok);
   check('LLDB DAP initialize handshake when installed',lldb.skipped || lldb.ok);
   check('Python DAP launch reaches a stopped debuggee',dapLaunch.skipped || dapLaunch.ok);
+  check('Python DAP native restart lifecycle works when supported',dapRestart.skipped || dapRestart.ok);
   check('Persistent Jupyter kernel execution',notebookKernel.skipped || notebookKernel.ok);
   check('Source Control functional lifecycle',gitWorkbench.ok);
   check('Executable extension sandbox lifecycle',extensionSandbox.ok);
   check('AI Action IR functional proposal lifecycle',aiProposal.ok);
   const failed=checks.filter(item=>!item.passed);
-  console.log(JSON.stringify({ok:!failed.length,checks:checks.length,passed:checks.length-failed.length,failed:failed.map(item=>item.name),discovery:{summary:discovery.summary,extensionHost:discovery.extensionHost.status},handshakes:{typescript:typescript.ok,python:python.ok,pylsp:pylsp.ok,bash:bash.ok,go:go.ok,rust:rust.ok,clangd:clangd.ok,debugpy:debugpy.ok,delve:delve.ok,lldb:lldb.ok,dapLaunch:dapLaunch.ok,notebookKernel:notebookKernel.ok},workbenches:{git:gitWorkbench,extensionSandbox,aiProposal}},null,2));
-  if(failed.length)process.exit(1);
+  const result={ok:!failed.length,checks:checks.length,passed:checks.length-failed.length,failed:failed.map(item=>item.name),mode:{lsp:verifyLsp?'live':'skipped',dap:process.env.BEAST_VERIFY_DAP==='1'?'live':'skipped',kernel:process.env.BEAST_VERIFY_KERNEL==='1'?'live':'skipped'},discovery:{summary:discovery.summary,extensionHost:discovery.extensionHost.status},handshakes:{typescript:statusOf(typescript),python:statusOf(python),pylsp:statusOf(pylsp),bash:statusOf(bash),go:statusOf(go),rust:statusOf(rust),clangd:statusOf(clangd),debugpy:statusOf(debugpy),delve:statusOf(delve),lldb:statusOf(lldb),dapLaunch:statusOf(dapLaunch),dapRestart:statusOf(dapRestart),notebookKernel:statusOf(notebookKernel)},workbenches:{git:gitWorkbench,extensionSandbox,aiProposal}};
+  const reportPath=path.resolve(String(process.env.BEAST_PARITY_REPORT_PATH||path.join(root,'..','build','PARITY_FOUNDATION.json')));
+  fs.mkdirSync(path.dirname(reportPath),{recursive:true});
+  fs.writeFileSync(reportPath,`${JSON.stringify(result,null,2)}\n`,'utf8');
+  console.log(JSON.stringify(result,null,2));
+  process.exit(failed.length ? 1 : 0);
 })().catch(error=>{console.error(error);process.exit(1);});

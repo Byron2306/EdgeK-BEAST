@@ -13,7 +13,7 @@
     root.innerHTML = `
       <header class="beast-page-head">
         <div><h2>Swarm Orchestration</h2><div class="sub">GOVERNED ROLE LANES // RUN HISTORY // HANDOFF BUS // PERSISTENT SESSION STATE</div></div>
-        <div class="beast-page-actions"><button class="beast-button secondary" data-agent-action="refresh"><img src="${BeastAssets.icon('network')}" alt="">Refresh</button><button class="beast-button amber" data-agent-action="swarm"><img src="${BeastAssets.icon('orchestrator')}" alt="">Run Swarm</button><button class="beast-button hot" data-agent-action="create"><img src="${BeastAssets.icon('agents')}" alt="">Assign Agent</button></div>
+        <div class="beast-page-actions"><button class="beast-button secondary" data-agent-action="refresh"><img src="${BeastAssets.icon('network')}" alt="">Refresh</button><button class="beast-button amber" data-agent-action="golden-path"><img src="${BeastAssets.icon('orchestrator')}" alt="">Run Golden Path</button><button class="beast-button amber" data-agent-action="swarm"><img src="${BeastAssets.icon('orchestrator')}" alt="">Run Swarm</button><button class="beast-button hot" data-agent-action="create"><img src="${BeastAssets.icon('agents')}" alt="">Assign Agent</button></div>
       </header>
       <section class="agent-summary-grid">
         <article class="beast-card agent-summary-card"><img src="${BeastAssets.icon('agents')}" alt=""><div><h3>Swarm Lanes + Runs</h3><strong data-agent-count>0</strong><span data-agent-running>0 running</span></div></article>
@@ -51,7 +51,20 @@
           <h3 class="agent-boundary-title">Trust Boundary</h3>
           <div class="agent-permission-grid" data-agent-permissions></div>
         </section>
-      </div>`;
+      </div>
+      <section class="beast-card wide swarm-proof-panel">
+        <header class="beast-panel-head"><div><h3>Swarm Proof</h3><span data-swarm-proof-status>No live swarm run selected.</span></div><span class="beast-pill" data-swarm-proof-pill>NOT REPORTED</span></header>
+        <div class="agent-summary-grid swarm-proof-grid" data-swarm-proof-grid></div>
+        <div class="phase5-timeline-list" data-swarm-proof-events><div class="cortex-empty-list">Run Swarm to expose role receipts.</div></div>
+      </section>
+      <section class="beast-card wide golden-path-panel">
+        <header class="beast-panel-head"><div><h3>Visible Golden Path</h3><span data-golden-path-status>Operator-triggered invoice closure</span></div><span class="beast-pill" data-golden-path-pill>NOT RUN</span></header>
+        <div class="golden-path-timeline" data-golden-path-timeline><div class="cortex-empty-list">Run Golden Path to expose the real execution spine.</div></div>
+      </section>
+      <section class="beast-card wide phase5-durable-timeline" data-phase5-timeline>
+        <header class="beast-panel-head"><div><h3>Durable AgentRun Timeline</h3><span data-phase5-timeline-status>Select a durable run</span></div><button class="beast-button secondary" data-agent-action="timeline-refresh">Refresh timeline</button></header>
+        <div class="phase5-timeline-list" data-phase5-timeline-list><div class="cortex-empty-list">No durable AgentRun selected.</div></div>
+      </section>`;
     return root;
   }
 
@@ -61,6 +74,10 @@
     let nodesKey = '';
     let listKey = '';
     let lowerKey = '';
+    let timelineKey = '';
+    let proofKey = '';
+    let goldenPathKey = '';
+    let timelineTimer = null;
     const disposeCanvas = BeastVisualCanvas.auto(root);
 
     function renderNodes(state) {
@@ -87,6 +104,54 @@
       root.querySelector('[data-agent-permissions]').innerHTML = state.agents.permissions.map(permission => `<span><b>✓</b>${esc(permission)}</span>`).join('');
     }
 
+    async function refreshTimeline(force = false) {
+      const runId = window.BeastOperationsConsole?.activeRunId?.() || '';
+      if (!runId || disposed) return;
+      const key = `${BeastStore.get().workspace.root || ''}:${runId}`;
+      if (!force && key === timelineKey) return;
+      timelineKey = key;
+      const status = root.querySelector('[data-phase5-timeline-status]');
+      const host = root.querySelector('[data-phase5-timeline-list]');
+      status.textContent = 'Synchronizing durable projection…';
+      try {
+        const payload = await BeastOperationsConsole.loadSurface('timeline', runId, { view:'expanded', limit:100 });
+        const events = payload.events || payload.items || payload.timeline || [];
+        status.textContent = `${events.length} visible · ${payload.run_state || 'durable'}${payload.paused ? ' · paused' : ''}${payload.recoverable ? ' · recoverable' : ''}`;
+        host.innerHTML = events.length ? events.map(item => `<article class="phase5-timeline-card ${esc(item.severity || 'info')}"><time>${esc(item.occurred_at || item.time || '')}</time><span class="beast-pill">${esc(item.category || 'run')}</span><div><b>${esc(item.summary || item.event_type || 'AgentRun event')}</b><small>${esc(item.step_id || 'run-level')} · ${esc(item.status || item.severity || 'info')}</small>${item.evidence_digest ? `<code>${esc(item.evidence_digest)}</code>` : ''}</div></article>`).join('') : '<div class="cortex-empty-list">No durable events projected for this run.</div>';
+      } catch (error) {
+        status.textContent = 'Timeline unavailable';
+        host.innerHTML = `<div class="cortex-empty-list">${esc(error.message || error)}</div>`;
+      }
+    }
+
+    function renderSwarmProof(state) {
+      const proof = state.agents.swarmProof || {};
+      const key = JSON.stringify([proof.runId, proof.status, proof.metrics, proof.events]);
+      if (key === proofKey) return; proofKey = key;
+      const status = root.querySelector('[data-swarm-proof-status]');
+      const pill = root.querySelector('[data-swarm-proof-pill]');
+      const grid = root.querySelector('[data-swarm-proof-grid]');
+      const events = root.querySelector('[data-swarm-proof-events]');
+      status.textContent = proof.runId ? `${proof.runId} · ${proof.status}` : 'No live swarm run selected.';
+      pill.textContent = String(proof.status || 'not reported').toUpperCase();
+      pill.classList.toggle('live', Boolean(proof.runId));
+      grid.innerHTML = (proof.metrics || []).map(item => `<article class="beast-card compact swarm-proof-card"><h3>${esc(item.label)}</h3><strong class="swarm-proof-value">${esc(item.value)}</strong><span class="swarm-proof-detail">${esc(item.detail)}</span></article>`).join('');
+      events.innerHTML = (proof.events || []).map(item => `<article class="phase5-timeline-card info"><time>${esc(item.time)}</time><span class="beast-pill">${esc(item.role)}</span><div><b>${esc(item.decision)}</b><small>${esc(item.state)}</small></div></article>`).join('') || '<div class="cortex-empty-list">Run Swarm to expose role receipts.</div>';
+    }
+
+    function renderGoldenPath(state) {
+      const golden = state.agents.goldenPath || {};
+      const key = JSON.stringify([golden.status, golden.timeline, golden.updatedAt]);
+      if (key === goldenPathKey) return; goldenPathKey = key;
+      const status = root.querySelector('[data-golden-path-status]');
+      const pill = root.querySelector('[data-golden-path-pill]');
+      const host = root.querySelector('[data-golden-path-timeline]');
+      status.textContent = golden.updatedAt ? `${golden.status} · ${golden.timeline.length} stages` : 'Operator-triggered invoice closure';
+      pill.textContent = String(golden.status || 'not run').toUpperCase();
+      pill.classList.toggle('live', golden.status === 'passed' || golden.status === 'running');
+      host.innerHTML = (golden.timeline || []).map((item, index) => `<article class="golden-path-step ${esc(item.status || 'pending')}"><span>${String(index + 1).padStart(2,'0')}</span><div><b>${esc(item.label || item.state)}</b><small>${esc(item.state)} · allowed: ${esc((item.allowed_next_tools || []).join(', ') || 'none')}</small></div><em>${esc(item.status || 'pending')}</em>${item.evidence && Object.keys(item.evidence).length ? `<code>${esc(JSON.stringify(item.evidence))}</code>` : ''}</article>`).join('') || '<div class="cortex-empty-list">Run Golden Path to expose the real execution spine.</div>';
+    }
+
     function patch(state) {
       if (disposed) return;
       const agents = state.agents;
@@ -103,7 +168,7 @@
       root.querySelector('[data-session-count]').textContent = `${agents.sessions.length} reported`;
       const isSwarmLane = String(selected?.id || '').startsWith('swarm-role:');
       root.querySelector('[data-agent-detail]').innerHTML = selected ? `<header class="beast-panel-head"><div><h3>${isSwarmLane ? 'Swarm Role Lane' : 'Selected Agent'}</h3><span>${esc(selected.role)}</span></div><span class="beast-pill ${/active|working|running/i.test(selected.status) ? 'live' : ''}">${esc(selected.status)}</span></header><div class="agent-detail-hero"><img src="${BeastAssets.icon('agents')}" alt=""><div><strong>${esc(selected.label)}</strong><span>${esc(selected.provider)} · ${esc(selected.model)}</span></div></div><p class="agent-task-copy">${esc(selected.task)}</p><div class="beast-rail-facts"><div><span>Confidence</span><b>${safe(selected.confidence)}%</b></div><div><span>Context files</span><b>${esc(selected.files)}</b></div><div><span>Budget</span><b>${esc(selected.budget)}</b></div><div><span>Updated</span><b>${esc(selected.updatedAt || 'live')}</b></div></div><div class="agent-detail-tools">${selected.tools.map(tool => `<span>${esc(tool)}</span>`).join('')}</div>${isSwarmLane ? '<p class="agent-task-copy">Role lanes are declarative. Use Run Swarm to create a governed run.</p>' : '<div class="agent-control-row"><button class="beast-button secondary" data-agent-action="pause"><img src="'+BeastAssets.icon('policies')+'" alt="">Pause</button><button class="beast-button" data-agent-action="resume"><img src="'+BeastAssets.icon('agents')+'" alt="">Resume</button><button class="beast-button danger-button" data-agent-action="cancel"><img src="'+BeastAssets.icon('alerts')+'" alt="">Cancel</button></div>'}` : `<h3>Selected Agent</h3><p>No session selected. Assign an agent to begin.</p><button class="beast-button amber" data-agent-action="swarm"><img src="${BeastAssets.icon('orchestrator')}" alt="">Run Swarm</button>`;
-      renderNodes(state); renderList(state); renderLower(state);
+      renderNodes(state); renderList(state); renderLower(state); renderSwarmProof(state); renderGoldenPath(state); refreshTimeline();
     }
 
     const unsubscribe = BeastStore.subscribe(patch);
@@ -113,14 +178,17 @@
       const action = event.target.closest('[data-agent-action]')?.dataset.agentAction;
       if (!action) return;
       try {
+        if (action === 'timeline-refresh') { await refreshTimeline(true); BeastFX.trigger('ring',event.target,{size:180}); }
         if (action === 'refresh') { await BeastModelAgentBridge.refreshAgents({signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Swarm synchronized · ${BeastStore.get().agents.sessions.length} session(s) reported`,tone:'ok'}})); BeastFX.trigger('burst',event.target,{size:210}); }
         if (action === 'swarm') { const objective = window.prompt('Swarm objective', BeastStore.get().mission.title || 'BEAST mission support'); if (!objective) return; const result=await BeastModelAgentBridge.runSwarm(objective,{signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Swarm run started · ${result?.run_id||objective}`,tone:'ok'}})); BeastFX.trigger('success',event.target,{size:280}); }
+        if (action === 'golden-path') { const result=await BeastModelAgentBridge.runGoldenPath({signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Golden path ${result?.status || 'reported'} · invoice closure`,tone:result?.status === 'passed' ? 'ok' : 'error'}})); BeastFX.trigger(result?.status === 'passed' ? 'success' : 'warning',event.target,{size:280}); }
         if (action === 'create') { const suggested = BeastStore.get().editor.activePath ? `Work on ${BeastStore.get().editor.activePath}` : 'BEAST mission support'; const objective = window.prompt('Agent objective', suggested) || suggested; const result=await BeastModelAgentBridge.createAgent(objective,{signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Agent assigned · ${result?.session_id||result?.id||objective}`,tone:'ok'}})); BeastFX.trigger('success',event.target,{size:280}); BeastMascot.setState('working'); setTimeout(()=>BeastMascot.setState('idle'),1200); }
         if (['pause','resume','cancel'].includes(action)) { await BeastModelAgentBridge.controlAgent(BeastStore.get().agents.selectedId,action,{signal}); BeastFX.trigger(action === 'cancel' ? 'warning' : 'success',event.target,{size:220}); }
       } catch (error) { const message=String(error.message||error); BeastStore.patch('agents',{loading:false,error:message}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Swarm action failed · ${message}`,tone:'error'}})); BeastFX.trigger('warning',event.target,{size:240}); }
     });
     if (!BeastStore.get().agents.lastRefreshAt) queueMicrotask(() => BeastModelAgentBridge.refreshAgents({signal}).catch(() => {}));
-    return { node:root, dispose(){ disposed = true; unsubscribe(); disposeCanvas(); } };
+    timelineTimer = setInterval(() => refreshTimeline(true), 2500);
+    return { node:root, dispose(){ disposed = true; if (timelineTimer) clearInterval(timelineTimer); unsubscribe(); disposeCanvas(); } };
   }
 
   window.BeastAgentsPage = { renderer };

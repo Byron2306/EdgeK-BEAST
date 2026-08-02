@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "date": "2026-07-31",
+  "checks": 24,
+  "artifacts": {
+    "services": "build/IDE_SERVICES_PARITY.json",
+    "ecosystem": "build/ECOSYSTEM_TEST_ADAPTERS.json"
+  },
+  "ecosystem": {
+    "ok": true,
+    "tests": 9,
+    "nodes": 7,
+    "frameworks": [
+      "cargo",
+      "cypress",
+      "dotnet",
+      "go",
+      "gradle",
+      "maven",
+      "playwright",
+      "pytest"
+    ]
+  },
+  "tests": {
+    "testCount": 2,
+    "fileCount": 2,
+    "nodeCount": 3,
+    "frameworks": [
+      "node:test",
+      "pytest"
+    ],
+    "historyCount": 2
+  }
+}
