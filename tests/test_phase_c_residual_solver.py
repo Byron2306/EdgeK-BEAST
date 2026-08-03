@@ -16,6 +16,30 @@ class FakeProvider:
         return {"status": "solved", "fields": {"new": "return amount - (percent / 100)"}}
 
 
+class ExtraFieldProvider(FakeProvider):
+    async def solve_residual(self, payload, *, run):
+        self.payload = payload
+        return {"status": "solved", "fields": {"body": "safe", "new_fact": "unsafe"}}
+
+
+class MissingFieldProvider(FakeProvider):
+    async def solve_residual(self, payload, *, run):
+        self.payload = payload
+        return {"status": "solved", "fields": {}}
+
+
+class OverlongFieldProvider(FakeProvider):
+    async def solve_residual(self, payload, *, run):
+        self.payload = payload
+        return {"status": "solved", "fields": {"body": "one two three four five"}}
+
+
+class LexicalizationProvider(FakeProvider):
+    async def solve_residual(self, payload, *, run):
+        self.payload = payload
+        return {"status": "solved", "fields": {"body": "BEAST is registered and healthy."}}
+
+
 class FakeInterceptor:
     def begin(self, request, provider):
         return SimpleNamespace(gate=SimpleNamespace(reason="provider permitted"))
@@ -67,6 +91,65 @@ def test_residual_solver_can_select_c2_only():
     assert "crystal_tongue_v2" in provider.payload
     assert "crystal_codebook_prefix" in provider.payload
     assert "crystal_tongue" not in provider.payload
+
+
+def test_residual_solver_rejects_undeclared_provider_fields():
+    provider = ExtraFieldProvider()
+    result = asyncio.run(ResidualSolverBoundary(provider=provider, interceptor=FakeInterceptor()).solve({
+        "unresolved_fields": "body",
+        "allowed_output": {"body": "string"},
+    }, run_id="run-extra"))
+
+    assert result["status"] == "refused"
+    assert result["verification_status"] == "rejected"
+    assert result["unresolved_fields"] == ["body"]
+    assert "new_fact" in result["reason"]
+
+
+def test_residual_solver_builds_answer_frame_lexicalization_packet_without_code_fields():
+    provider = LexicalizationProvider()
+    result = asyncio.run(ResidualSolverBoundary(provider=provider, interceptor=FakeInterceptor()).solve({
+        "task_family": "beast.operator_language",
+        "operation": "lexicalize_answer_frame",
+        "template_id": "service.answer.v1",
+        "answer_frame_digest": "sha256:" + "a" * 64,
+        "resolved_field_digests": {"title": "sha256:" + "b" * 64},
+        "verified_claim_refs": ["sha256:" + "c" * 64],
+        "constraints": ["do not introduce new facts"],
+        "unresolved_fields": ["body"],
+        "allowed_output": {"body": {"type": "string", "max_words": 12}},
+    }, task_class="beast.operator_language", run_id="run-lex"))
+
+    assert result["provider_called"] is True
+    assert provider.payload["task"] == "lexicalize_answer_frame"
+    assert provider.payload["template_id"] == "service.answer.v1"
+    assert provider.payload["unresolved_fields"] == ["body"]
+    assert provider.payload["allowed_response"] == {"body": {"type": "string", "max_words": 12}}
+    assert "file" not in provider.payload
+    assert "symbol" not in provider.payload
+    assert "current_body" not in provider.payload
+    assert result["status"] == "solved"
+    assert result["fields"]["body"] == "BEAST is registered and healthy."
+
+
+def test_residual_solver_rejects_missing_and_overlong_lexicalized_fields():
+    missing = asyncio.run(ResidualSolverBoundary(provider=MissingFieldProvider(), interceptor=FakeInterceptor()).solve({
+        "task_family": "beast.operator_language",
+        "operation": "lexicalize_answer_frame",
+        "unresolved_fields": ["body"],
+        "allowed_output": {"body": {"type": "string", "max_words": 4}},
+    }, task_class="beast.operator_language", run_id="run-missing"))
+    overlong = asyncio.run(ResidualSolverBoundary(provider=OverlongFieldProvider(), interceptor=FakeInterceptor()).solve({
+        "task_family": "beast.operator_language",
+        "operation": "lexicalize_answer_frame",
+        "unresolved_fields": ["body"],
+        "allowed_output": {"body": {"type": "string", "max_words": 4}},
+    }, task_class="beast.operator_language", run_id="run-overlong"))
+
+    assert missing["status"] == "refused"
+    assert "omitted required fields: body" in missing["reason"]
+    assert overlong["status"] == "refused"
+    assert "max_words 4" in overlong["reason"]
 
 
 def test_residual_solver_reuses_verified_crystal_without_provider_call():

@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from app.kernel.compute.crystal_bus import CrystalMessage
 from app.kernel.compute.sealed_capsule import CrystalCapsule
+from app.kernel.crystals.capsule_codec import CapsuleCodec
 
 
 def test_crystal_bus_messages_are_framed_and_typed():
@@ -17,6 +18,16 @@ def test_crystal_capsule_is_digest_bound_and_sealed():
     try:
         assert capsule.sealed is True
         assert CrystalCapsule().verify(capsule)
+    finally:
+        os.close(capsule.fd)
+
+def test_legacy_crystal_capsule_uses_typed_capsule_envelope():
+    capsule = CrystalCapsule().create(b"canonical crystal ir")
+    try:
+        envelope = CapsuleCodec.decode(os.pread(capsule.fd, capsule.size, 0))
+        assert envelope["manifest"]["task_class"] == "crystal_capsule"
+        assert envelope["manifest"]["authority"] == "artifact_only"
+        assert envelope["canonical_ir"]["payload_digest"] == capsule.payload_digest
     finally:
         os.close(capsule.fd)
 

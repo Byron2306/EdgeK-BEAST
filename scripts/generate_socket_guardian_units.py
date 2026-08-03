@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
+import yaml
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
@@ -15,6 +16,13 @@ from app.kernel.networking.service_registry import ServiceRegistry
 
 def generate(registry_file: Path, config_file: Path, output_dir: Path, repository: Path) -> list[Path]:
     registry = ServiceRegistry.from_file(registry_file)
+    raw_services = (yaml.safe_load(registry_file.read_text(encoding="utf-8")) or {}).get("services") or {}
+    guardian_services = {
+        name for name, item in raw_services.items()
+        if name in registry.services and isinstance(item, dict) and item.get("socket_guardian") is True
+    }
+    if not guardian_services:
+        raise ValueError("at least one service must explicitly opt into socket_guardian ownership")
     output_dir.mkdir(parents=True, exist_ok=True)
     # Guardian authorization binds the consumer's executable identity.  The
     # deployment appraisal is produced with the project interpreter, so the
@@ -23,7 +31,11 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
     interpreter = repository / "venv" / "bin" / "python"
     if not interpreter.is_file():
         interpreter = Path(sys.executable).resolve()
-    socket_names = [f"beast-socket-guardian-{name}.socket" for name, service in registry.services.items() if service.enabled]
+    socket_names = [
+        f"beast-socket-guardian-{name}.socket"
+        for name, service in registry.services.items()
+        if service.enabled and name in guardian_services
+    ]
     service = output_dir / "beast-socket-guardian.service"
     service.write_text(
         "[Unit]\n"
@@ -54,7 +66,7 @@ def generate(registry_file: Path, config_file: Path, output_dir: Path, repositor
     )
     outputs = [service]
     for name, item in registry.services.items():
-        if not item.enabled:
+        if not item.enabled or name not in guardian_services:
             continue
         path = output_dir / f"beast-socket-guardian-{name}.socket"
         path.write_text(

@@ -168,8 +168,8 @@ general_settings:
   master_key: os.environ/EDGEK_LITELLM_MASTER_KEY
   database_url: os.environ/EDGEK_LITELLM_DATABASE_URL
 edgek_beast:
-  gateway_base_url: http://127.0.0.1:8000
+  gateway_base_url: http://127.0.0.1:8101
   governance: BEAST remains the policy, compression, tool-laziness, and forensic layer.
-  provider_registry: http://127.0.0.1:8000/edgek/providers/registry
-  tool_call_interception: http://127.0.0.1:8000/edgek/tools/intercept
-  required_integrations: http://127.0.0.1:8000/edgek/tools/integrations
+  provider_registry: http://127.0.0.1:8101/edgek/providers/registry
+  tool_call_interception: http://127.0.0.1:8101/edgek/tools/intercept
+  required_integrations: http://127.0.0.1:8101/edgek/tools/integrations

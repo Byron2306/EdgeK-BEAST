@@ -5028,12 +5028,12 @@ async def edgek_tool_laziness_schema_benchmark(payload: Dict[str, Any] = None):
     )
 
 @app.get("/edgek/deploy/litellm-config")
-async def edgek_deploy_litellm_config(beast_base_url: str = "http://127.0.0.1:8000"):
+async def edgek_deploy_litellm_config(beast_base_url: str | None = None):
     """Return a LiteLLM config generated from BEAST provider policy."""
     return deployment_manager.generate_litellm_config(beast_base_url=beast_base_url)
 
 @app.get("/edgek/deploy/litellm-config.yaml")
-async def edgek_deploy_litellm_config_yaml(beast_base_url: str = "http://127.0.0.1:8000"):
+async def edgek_deploy_litellm_config_yaml(beast_base_url: str | None = None):
     """Return generated LiteLLM YAML."""
     from fastapi.responses import PlainTextResponse
     return PlainTextResponse(
@@ -5045,7 +5045,7 @@ async def edgek_deploy_litellm_config_yaml(beast_base_url: str = "http://127.0.0
 async def edgek_deploy_nginx_config(
     server_name: str = "localhost",
     listen_port: int = 8080,
-    beast_upstream: str = "127.0.0.1:8000",
+    beast_upstream: str | None = None,
     litellm_upstream: str = "127.0.0.1:4000",
 ):
     """Return generated Nginx reverse-proxy config."""
@@ -5775,6 +5775,165 @@ async def edgek_runtime_integrity():
 async def edgek_compute_reachability():
     """Read-only proof of which compute enforcement is actually online."""
     return compute_plane.reachability_report()
+
+
+@app.get("/edgek/compute/provider-reduction")
+async def edgek_compute_provider_reduction():
+    """Return the conservative provider-use/provider-avoidance scorecard."""
+    return compute_plane.provider_reduction_scorecard()
+
+
+@app.post("/edgek/compute/reduction-evidence")
+async def edgek_compute_reduction_evidence(payload: Dict[str, Any] = None):
+    """Ingest normalized reduction evidence without copying raw prompt/workspace payloads."""
+    payload = payload or {}
+    source_system = str(payload.get("source_system") or "").strip()
+    receipt = payload.get("receipt") if isinstance(payload.get("receipt"), dict) else payload
+    if not source_system:
+        source_system = str(receipt.get("source_system") or "")
+    if not source_system:
+        raise HTTPException(status_code=400, detail="source_system is required")
+    try:
+        return compute_plane.ingest_reduction_evidence(
+            source_system,
+            receipt,
+            interface="api",
+            claim_class=str(payload.get("claim_class") or "") or None,
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/reduction-evidence/discover")
+async def edgek_compute_reduction_evidence_discover(payload: Dict[str, Any] = None):
+    """Discover repo-local reduction evidence JSON and ingest recognized receipts."""
+    payload = payload or {}
+    raw_paths = payload.get("paths")
+    paths = None
+    if isinstance(raw_paths, str):
+        paths = (raw_paths,)
+    elif isinstance(raw_paths, list):
+        paths = tuple(str(item) for item in raw_paths)
+    try:
+        return compute_plane.discover_reduction_evidence(
+            paths=paths,
+            max_files=int(payload.get("max_files") or 200),
+            max_bytes=int(payload.get("max_bytes") or 2 * 1024 * 1024),
+            interface="api",
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/edgek/compute/visual-assets")
+async def edgek_compute_visual_assets():
+    """Return promoted visual-region assets and their provenance receipts."""
+    return compute_plane.visual_asset_registry_report()
+
+
+@app.post("/edgek/compute/operator-language")
+async def edgek_compute_operator_language(payload: Dict[str, Any] = None):
+    """Resolve bounded operator language against the local BEAST service registry."""
+    payload = payload or {}
+    utterance = str(payload.get("utterance") or payload.get("prompt") or "").strip()
+    if not utterance:
+        raise HTTPException(status_code=400, detail="utterance is required")
+    try:
+        return compute_plane.answer_operator_prompt(payload, interface="api").to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/scene-capsule")
+async def edgek_compute_scene_capsule(payload: Dict[str, Any] = None):
+    """Compose a deterministic render-only Scene Capsule with sealed custody."""
+    payload = payload or {}
+    scene = payload.get("scene") if isinstance(payload.get("scene"), dict) else payload
+    if not isinstance(scene, dict):
+        raise HTTPException(status_code=400, detail="scene payload is required")
+    try:
+        result = compute_plane.compose_scene_capsule(
+            scene,
+            capsule_id=str(payload.get("capsule_id") or "") or None,
+            interface="api",
+        )
+        return result.to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/visual-residual")
+async def edgek_compute_visual_residual(payload: Dict[str, Any] = None):
+    """Fill one unresolved visual region bound to a render-only Scene Capsule."""
+    payload = payload or {}
+    scene = payload.get("scene") if isinstance(payload.get("scene"), dict) else None
+    mask = payload.get("mask") if isinstance(payload.get("mask"), dict) else None
+    prompt = str(payload.get("prompt") or payload.get("region_prompt") or "").strip()
+    if scene is None:
+        raise HTTPException(status_code=400, detail="scene payload is required")
+    if mask is None:
+        raise HTTPException(status_code=400, detail="mask payload is required")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="prompt is required")
+    try:
+        result = compute_plane.run_visual_residual(
+            scene,
+            mask=mask,
+            prompt=prompt,
+            seed=int(payload.get("seed") or 0),
+            budget=payload.get("budget") if isinstance(payload.get("budget"), dict) else None,
+            capsule_id=str(payload.get("capsule_id") or "") or None,
+            interface="api",
+        )
+        return result.to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/visual-residual/provider-fallback")
+async def edgek_compute_visual_residual_provider_fallback(payload: Dict[str, Any] = None):
+    """Explicit, policy-gated provider fallback for one visual region."""
+    payload = payload or {}
+    scene = payload.get("scene") if isinstance(payload.get("scene"), dict) else None
+    mask = payload.get("mask") if isinstance(payload.get("mask"), dict) else None
+    prompt = str(payload.get("prompt") or payload.get("region_prompt") or "").strip()
+    if scene is None:
+        raise HTTPException(status_code=400, detail="scene payload is required")
+    if mask is None:
+        raise HTTPException(status_code=400, detail="mask payload is required")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="prompt is required")
+    try:
+        result = compute_plane.run_visual_provider_fallback(
+            scene,
+            mask=mask,
+            prompt=prompt,
+            allow_provider_fallback=payload.get("allow_provider_fallback") is True,
+            operator_approval=str(payload.get("operator_approval") or payload.get("approval_receipt") or ""),
+            provider=str(payload.get("provider") or "configured-image-provider"),
+            seed=int(payload.get("seed") or 0),
+            budget=payload.get("budget") if isinstance(payload.get("budget"), dict) else None,
+            capsule_id=str(payload.get("capsule_id") or "") or None,
+            interface="api",
+        )
+        return result.to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except PermissionError as exc:
+        code = 503 if "not configured" in str(exc) else 403
+        raise HTTPException(status_code=code, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @app.post("/edgek/runtime/sweep")

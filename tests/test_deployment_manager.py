@@ -89,6 +89,38 @@ def test_litellm_config_normalizes_ollama_openai_compatible_base_url(tmp_path):
     assert models["llama3.2:3b"]["api_base"] == "http://127.0.0.1:11434"
 
 
+def test_generated_control_plane_defaults_use_registry_owned_gateway_port(tmp_path):
+    manager = DeploymentManager(_policies(), db_path=str(tmp_path / "deploy.db"))
+
+    litellm = manager.generate_litellm_config()
+    nginx = manager.generate_nginx_config()
+
+    assert litellm["edgek_beast"]["gateway_base_url"] == "http://127.0.0.1:8101"
+    assert litellm["edgek_beast"]["provider_registry"].startswith("http://127.0.0.1:8101/")
+    assert "server 127.0.0.1:8101;" in nginx
+
+
+def test_generated_control_plane_endpoints_are_derived_from_service_registry(tmp_path):
+    registry = tmp_path / "services.yaml"
+    registry.write_text(
+        "services:\n"
+        "  reverse_proxy: {port: 80}\n"
+        "  beast: {hostname: beast.test, upstream: 127.0.0.1:9123, port: 9123}\n",
+        encoding="utf-8",
+    )
+    manager = DeploymentManager(
+        _policies(),
+        db_path=str(tmp_path / "deploy.db"),
+        service_registry_path=registry,
+    )
+
+    litellm = manager.generate_litellm_config()
+    nginx = manager.generate_nginx_config()
+
+    assert litellm["edgek_beast"]["gateway_base_url"] == "http://127.0.0.1:9123"
+    assert "server 127.0.0.1:9123;" in nginx
+
+
 def test_nginx_apply_and_litellm_sidecar_are_dry_run_by_default(tmp_path):
     manager = DeploymentManager(_policies(), db_path=str(tmp_path / "deploy.db"))
 
