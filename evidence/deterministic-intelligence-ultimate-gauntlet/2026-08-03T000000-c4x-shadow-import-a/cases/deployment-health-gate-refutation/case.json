@@ -1,0 +1,416 @@
+{
+  "joined_receipt": {
+    "beast_object_type": "deterministic_cross_modal_joined_receipt",
+    "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+    "current_claim_valid": true,
+    "failure_classes": [],
+    "family": "deployment_safety",
+    "joined_verification": true,
+    "phase_trace": [
+      "proof_graph_compiled",
+      "text_frame_realized",
+      "scene_plan_compiled",
+      "text_artifact_rendered",
+      "visual_artifact_rendered",
+      "joined_verified"
+    ],
+    "proof_first": true,
+    "proof_graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+    "proof_graph_valid": true,
+    "provider_calls_used": 0,
+    "provider_policy": "residual_only",
+    "receipt_digest": "sha256:fb42077ab95fd3501cb3d3a3815df0f78dbf08c99d52148cfe3eca6d8a2c4d7d",
+    "rendered_artifact_bytes": 3047,
+    "rendered_artifact_digest": "sha256:6158552e2f4501886d9d1634efde994943e2281f95fff499b5b2c83f7bb973cc",
+    "rendered_artifact_media_type": "image/svg+xml",
+    "request_digest": "sha256:442321ccba06e994404910fe86c7022faeb68b18dc41d2e4c8bbf2babb7d0038",
+    "residual_packet_digests": [],
+    "residual_provenance_valid": true,
+    "scenario_id": "deployment-health-gate-refutation",
+    "scene_plan_digest": "sha256:14fa7c21d6abe8077f6f3408ecd3be19dcfa140ee76945b0811d885bc26a7d55",
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "status": "composed",
+    "text_artifact_bytes": 750,
+    "text_artifact_digest": "sha256:4af2e827b7c32e618b3a2c4069839f6adce624f612ba76502dfea196e6afeaea",
+    "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+    "text_frame_digest": "sha256:17a2b288b5e465ebeed14506cf0291572cb85d25dc26a4a007698571fb863b9b",
+    "text_semantically_valid": true,
+    "version": "1.0",
+    "visual_failure_class": "",
+    "visual_intent_fulfilled": true,
+    "visual_render_status": "rendered"
+  },
+  "proof_graph": {
+    "claims": [
+      {
+        "claim_id": "claim:deployment-health-gate-refutation:deployment-stage",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2"
+        ],
+        "metadata": {
+          "fact_type": "deployment_stage"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "stage",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:7a43f9f08195e6abdf10572e23347298ae801fc64fbc27ebba95630bc031a069",
+        "status": "supported",
+        "subject": "BEAST-canary"
+      },
+      {
+        "claim_id": "claim:deployment-health-gate-refutation:health-gate",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:e07f1e5da68f883410de8d4173acf6cbc7afbde3972855af92e4d7371926137e"
+        ],
+        "metadata": {
+          "fact_type": "health_gate"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "health_gate",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:d957ec3f1ff08c8f91199a4dc2ec83d2ca4b342f9701307829402056a8d25708",
+        "status": "supported",
+        "subject": "BEAST-canary"
+      },
+      {
+        "claim_id": "claim:deployment-health-gate-refutation:rollback",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9"
+        ],
+        "metadata": {
+          "fact_type": "rollback_state"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "rollback",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:2b35bf9851fb0b069c79e0ddb4e378e94f329026b13a70c202e06a1f669b1673",
+        "status": "supported",
+        "subject": "BEAST-canary"
+      },
+      {
+        "claim_id": "claim:deployment-health-gate-refutation:target-health",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4"
+        ],
+        "metadata": {
+          "fact_type": "service_health"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "health",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+        "status": "supported",
+        "subject": "Commons"
+      },
+      {
+        "claim_id": "claim:deployment-health-gate-refutation:deployment-safety",
+        "claim_type": "staged_policy_gate",
+        "confidence_class": "gate_refuted",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:6f9956c9194f91f8a26bcd626179212b00387e4d05773be135e2d01b3b0f784f",
+          "sha256:8dcba213df5b3291fb83b5bdba6a74035df981786cb78ae8a44a69ab8942fe14",
+          "sha256:12abfb726cb3954ecd225bacb89b8b3330e0ab9a0449420f3c1df643e60f9f4c",
+          "sha256:050e02a1c435d22b66ca6ca059bc5e47b04136278c456a3eee47e005c05291b0"
+        ],
+        "metadata": {
+          "deployment_class": "halt_or_rollback",
+          "family": "deployment_safety"
+        },
+        "object": "Commons",
+        "policy_ref": "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d",
+        "predicate": "deployment_safety",
+        "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+        "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+        "status": "supported",
+        "subject": "BEAST-canary"
+      }
+    ],
+    "compile_sequence": 1,
+    "compiler_id": "beast.proof-first-compiler.v1",
+    "fact_digests": [
+      "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2",
+      "sha256:e07f1e5da68f883410de8d4173acf6cbc7afbde3972855af92e4d7371926137e",
+      "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9",
+      "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4",
+      "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+    ],
+    "family": "deployment_safety",
+    "graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+    "graph_id": "proof:deployment_safety:442321ccba06e9944049",
+    "policy_digests": [
+      "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d"
+    ],
+    "request_digest": "sha256:442321ccba06e994404910fe86c7022faeb68b18dc41d2e4c8bbf2babb7d0038",
+    "rule_digests": [
+      "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+    ],
+    "world_snapshot_digest": "sha256:b8196a5a8544206f89570c67101185f790245efc0c7198b13c7b399f45fba275"
+  },
+  "residual_packets": [],
+  "scenario": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "facts": [
+      {
+        "evidence_digest": "sha256:7a43f9f08195e6abdf10572e23347298ae801fc64fbc27ebba95630bc031a069",
+        "fact_id": "fact:deployment_stage:BEAST-canary:stage:",
+        "fact_type": "deployment_stage",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "stage",
+        "subject": "BEAST-canary",
+        "value": {
+          "stage": "canary_25"
+        }
+      },
+      {
+        "evidence_digest": "sha256:d957ec3f1ff08c8f91199a4dc2ec83d2ca4b342f9701307829402056a8d25708",
+        "fact_id": "fact:health_gate:BEAST-canary:health_gate:",
+        "fact_type": "health_gate",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "health_gate",
+        "subject": "BEAST-canary",
+        "value": {
+          "error_rate_percent": 3.4,
+          "passed": false
+        }
+      },
+      {
+        "evidence_digest": "sha256:2b35bf9851fb0b069c79e0ddb4e378e94f329026b13a70c202e06a1f669b1673",
+        "fact_id": "fact:rollback_state:BEAST-canary:rollback:",
+        "fact_type": "rollback_state",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "rollback",
+        "subject": "BEAST-canary",
+        "value": {
+          "ready": true
+        }
+      },
+      {
+        "evidence_digest": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+        "fact_id": "fact:service_health:Commons:health:",
+        "fact_type": "service_health",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "health",
+        "subject": "Commons",
+        "value": {
+          "state": "healthy"
+        }
+      },
+      {
+        "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+        "fact_id": "fact:current_evidence:runtime:current_evidence:",
+        "fact_type": "current_evidence",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "current_evidence",
+        "subject": "runtime",
+        "value": {
+          "state": "fresh"
+        }
+      }
+    ],
+    "family": "deployment_safety",
+    "force_layout_overflow": false,
+    "metadata": {},
+    "policies": [
+      {
+        "family": "deployment_safety",
+        "parameters": {
+          "max_error_rate_percent": 1.0
+        },
+        "policy_id": "policy:deployment_safety:v1"
+      }
+    ],
+    "provider_policy": "residual_only",
+    "question": "Should rollout continue after the canary health gate fails at 3.4 percent errors?",
+    "rules": [
+      {
+        "authority": "verified_rule",
+        "family": "deployment_safety",
+        "parameters": {},
+        "predicate": "deployment_rollout_safety",
+        "rule_id": "rule:deployment_safety:deployment_rollout_safety:v1"
+      }
+    ],
+    "scenario_id": "deployment-health-gate-refutation",
+    "source": "BEAST-canary",
+    "target": "Commons",
+    "visual_assets": {
+      "deployment_safety:status_badge": "sha256:36831f2a49222b6a63299f591c52195d4ddebdec690d87d1b66a243a36d410e5",
+      "restart_risk:status_badge": "sha256:d87f9c783acaa9728da9e8fc298e619648d3ed30cacd485d36e8fc5b6b7e12ca",
+      "traffic_shift:status_badge": "sha256:6442eae4f72fe8088e164f9955f3688a5e0aeb5e84bfaea51e0cab9dd1fbe8a2"
+    }
+  },
+  "scene_plan": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "claim_refs": [
+      "claim:deployment-health-gate-refutation:deployment-safety",
+      "claim:deployment-health-gate-refutation:deployment-stage",
+      "claim:deployment-health-gate-refutation:health-gate",
+      "claim:deployment-health-gate-refutation:rollback",
+      "claim:deployment-health-gate-refutation:target-health"
+    ],
+    "compile_sequence": 3,
+    "compiler_id": "beast.deterministic-scene-plan.v1",
+    "family": "deployment_safety",
+    "graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+    "plan_digest": "sha256:14fa7c21d6abe8077f6f3408ecd3be19dcfa140ee76945b0811d885bc26a7d55",
+    "plan_id": "scene-plan:proof:deployment_safety:442321ccba06e9944049",
+    "primitives": [
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:deployment-stage",
+        "evidence_state": "supported",
+        "height": 100,
+        "label": "BEAST-canary",
+        "metadata": {},
+        "primitive_id": "stage",
+        "primitive_type": "deployment_stage",
+        "width": 190,
+        "x": 70,
+        "y": 170
+      },
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:health-gate",
+        "evidence_state": "supported",
+        "height": 70,
+        "label": "health gate",
+        "metadata": {},
+        "primitive_id": "health-gate",
+        "primitive_type": "health_gate",
+        "width": 300,
+        "x": 330,
+        "y": 70
+      },
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:deployment-safety",
+        "evidence_state": "supported",
+        "height": 40,
+        "label": "rollout path",
+        "metadata": {},
+        "primitive_id": "rollout-arrow",
+        "primitive_type": "rollout_arrow",
+        "width": 380,
+        "x": 280,
+        "y": 205
+      },
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:target-health",
+        "evidence_state": "supported",
+        "height": 100,
+        "label": "Commons",
+        "metadata": {},
+        "primitive_id": "target",
+        "primitive_type": "service_node",
+        "width": 190,
+        "x": 690,
+        "y": 170
+      },
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:rollback",
+        "evidence_state": "supported",
+        "height": 40,
+        "label": "rollback path",
+        "metadata": {},
+        "primitive_id": "rollback",
+        "primitive_type": "rollback_edge",
+        "width": 380,
+        "x": 280,
+        "y": 310
+      },
+      {
+        "claim_ref": "claim:deployment-health-gate-refutation:deployment-safety",
+        "evidence_state": "supported",
+        "height": 70,
+        "label": "halt_or_rollback",
+        "metadata": {},
+        "primitive_id": "deployment-badge",
+        "primitive_type": "risk_badge",
+        "width": 260,
+        "x": 350,
+        "y": 390
+      }
+    ],
+    "residual_refs": [],
+    "unresolved_visual_gaps": [],
+    "visual_intent_fulfilled": true
+  },
+  "text_artifact": {
+    "bytes": 750,
+    "digest": "sha256:4af2e827b7c32e618b3a2c4069839f6adce624f612ba76502dfea196e6afeaea",
+    "media_type": "application/vnd.beast.structured-answer+json",
+    "status": "rendered"
+  },
+  "text_frame": {
+    "claim_refs": [
+      "claim:deployment-health-gate-refutation:deployment-stage",
+      "claim:deployment-health-gate-refutation:health-gate",
+      "claim:deployment-health-gate-refutation:rollback",
+      "claim:deployment-health-gate-refutation:target-health",
+      "claim:deployment-health-gate-refutation:deployment-safety"
+    ],
+    "conclusion_claim_ref": "claim:deployment-health-gate-refutation:deployment-safety",
+    "current_conclusion_allowed": true,
+    "epistemic_status": "supported",
+    "family": "deployment_safety",
+    "frame_digest": "sha256:17a2b288b5e465ebeed14506cf0291572cb85d25dc26a4a007698571fb863b9b",
+    "frame_id": "text-frame:proof:deployment_safety:442321ccba06e9944049",
+    "graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+    "headline": "Deployment-safety assessment",
+    "realize_sequence": 2,
+    "renderer_id": "beast.structured-text-frame.v1",
+    "residual_refs": [],
+    "summary_fields": {
+      "deployment_class": "halt_or_rollback",
+      "source": "BEAST-canary",
+      "target": "Commons"
+    }
+  },
+  "verification": {
+    "failure_classes": [],
+    "joined_verification": true,
+    "layout_valid": true,
+    "proof_first": true,
+    "residual_provenance_valid": true,
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "stale_language_valid": true,
+    "text_bytes_valid": true,
+    "verification_digest": "sha256:2562d2c4c119a35aa14e3a222b5796940d2a5d900b151331ddb9bc03fae57e1b",
+    "visual_bytes_valid": true
+  },
+  "visual_artifact": {
+    "bytes": 3047,
+    "digest": "sha256:6158552e2f4501886d9d1634efde994943e2281f95fff499b5b2c83f7bb973cc",
+    "failure_class": "",
+    "media_type": "image/svg+xml",
+    "status": "rendered"
+  }
+}

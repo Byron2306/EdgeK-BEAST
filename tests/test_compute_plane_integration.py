@@ -116,6 +116,40 @@ def test_operator_language_replays_promoted_semantic_crystal_for_paraphrase(tmp_
     assert response.receipt.action_taken is False
 
 
+def test_capability_learning_ledger_records_text_visual_reuse_and_demotion(tmp_path: Path):
+    plane = ComputePlane(root=tmp_path)
+    semantic = plane.promote_operator_language_semantic_crystal(
+        ("what is beast status?", "is beast healthy?"),
+        crystal_id="meaning-crystal:operator-language:beast-health",
+    )
+    plane.answer_operator_prompt("how is beast doing?", interface="test")
+    manifest = default_beast_asset_manifest()
+    scene = _runtime_scene(manifest)
+    mask = {"mask_id": "mask:learning-status-light", "x": 240, "y": 44, "width": 16, "height": 16}
+    plane.run_visual_residual(scene, manifest=manifest, mask=mask, prompt="green healthy status light", seed=21, interface="test")
+    second = plane.run_visual_residual(scene, manifest=manifest, mask=mask, prompt="green healthy status light", seed=21, interface="test")
+    third = plane.run_visual_residual(scene, manifest=manifest, mask=mask, prompt="green healthy status light", seed=21, interface="test")
+    before_demote = plane.capability_learning_report()
+    visual_asset_id = third.receipt.details["asset_id"]
+    demoted = plane.demote_visual_asset(visual_asset_id, reason="gauntlet drift")
+    revoked = plane.revoke_operator_language_semantic_crystal(semantic.crystal.crystal_id, reason="world drift")
+    after_demote = plane.capability_learning_report()
+
+    assert second.receipt.details["worker"] == "supervised_cpu_visual_residual"
+    assert third.receipt.details["worker"] == "promoted_visual_asset_reuse"
+    assert before_demote["beast_object_type"] == "capability_learning_report"
+    assert before_demote["by_capability_type"]["semantic_crystal"] >= 2
+    assert before_demote["by_capability_type"]["visual_asset"] >= 2
+    assert before_demote["reuse_hits"] >= 2
+    assert before_demote["provider_calls_avoided"] >= 2
+    assert demoted.asset.asset_id == visual_asset_id
+    assert revoked.lifecycle_state.value == "revoked"
+    assert after_demote["by_event_type"]["demoted"] == 1
+    assert after_demote["by_event_type"]["revoked"] == 1
+    assert all(item["asset"]["asset_id"] != visual_asset_id for item in plane.visual_asset_registry_report()["assets"])
+    assert after_demote["ledger_digest"].startswith("sha256:")
+
+
 def test_scene_capsule_composes_through_compute_plane_with_render_only_witnesses(tmp_path: Path):
     plane = ComputePlane(root=tmp_path)
     manifest = default_beast_asset_manifest()
@@ -499,6 +533,88 @@ def test_visual_provider_regions_that_lack_perceptual_structure_are_refused_for_
     assert all("status_light_not_center_focused" in item.receipt["perceptual_receipt"]["refusal_reasons"] for item in refusals)
 
 
+def test_visual_provider_equivalent_regions_promote_without_exact_byte_match(tmp_path: Path):
+    outputs = []
+    for delta in (0, 1):
+        region = bytearray()
+        for y in range(8):
+            for x in range(8):
+                distance = (((x - 3.5) ** 2 + (y - 3.5) ** 2) ** 0.5) / 4
+                gain = 0.38 + max(0.0, 1.0 - distance) * 0.72
+                region.extend([
+                    int((38 + delta) * gain) + (x + y + delta) % 3,
+                    int((220 - delta) * gain) + ((x + delta) % 2),
+                    int((72 + delta) * gain),
+                    255,
+                ])
+        outputs.append(bytes(region))
+    provider_calls = []
+
+    def provider(payload):
+        output = outputs[len(provider_calls)]
+        provider_calls.append(payload)
+        return {
+            "verified": True,
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "output_digest": "sha256:" + hashlib.sha256(output).hexdigest(),
+        }
+
+    manifest = default_beast_asset_manifest()
+    plane = ComputePlane(root=tmp_path, provider_fallback=provider)
+    scene = _runtime_scene(manifest)
+    mask = {"mask_id": "mask:equivalent-status-light", "x": 240, "y": 44, "width": 8, "height": 8}
+
+    first = plane.run_visual_provider_fallback(
+        scene,
+        manifest=manifest,
+        mask=mask,
+        prompt="green healthy status light",
+        seed=7,
+        capsule_id="scene-capsule:visual-equivalence-promotion-test",
+        allow_provider_fallback=True,
+        operator_approval="approval:eq-visual-1",
+        interface="test",
+    )
+    second = plane.run_visual_provider_fallback(
+        scene,
+        manifest=manifest,
+        mask=mask,
+        prompt="green healthy status light",
+        seed=7,
+        capsule_id="scene-capsule:visual-equivalence-promotion-test",
+        allow_provider_fallback=True,
+        operator_approval="approval:eq-visual-2",
+        interface="test",
+    )
+    reuse = plane.run_visual_residual(
+        scene,
+        manifest=manifest,
+        mask=mask,
+        prompt="green healthy status light",
+        seed=7,
+        capsule_id="scene-capsule:visual-equivalence-promotion-test",
+        interface="test",
+    )
+    scorecard = plane.provider_reduction_scorecard()
+    registry = plane.visual_asset_registry_report()
+    equivalence_nodes = plane.evidence_graph.query("visual_asset_candidate_equivalent")
+    refusals = plane.evidence_graph.query("visual_asset_candidate_refused")
+
+    assert first.output != second.output
+    assert registry["count"] == 1
+    assert registry["assets"][0]["feature_embedding_digest"].startswith("sha256:")
+    assert registry["assets"][0]["equivalence_receipt_digest"].startswith("sha256:")
+    assert equivalence_nodes
+    assert equivalence_nodes[0].receipt["equivalence_receipt"]["equivalent"] is True
+    assert not refusals
+    assert reuse.receipt.details["worker"] == "promoted_visual_asset_reuse"
+    assert reuse.receipt.details["visual_intent"]["equivalence_receipt_digest"].startswith("sha256:")
+    assert scorecard["visual_provider_fallbacks"] == 2
+    assert scorecard["visual_asset_promotions"] == 1
+    assert scorecard["visual_asset_reuses"] == 1
+    assert len(provider_calls) == 2
+
+
 def test_reduction_evidence_ingests_forge_kv_only_with_native_restore_proof(tmp_path: Path):
     plane = ComputePlane(root=tmp_path)
     context_digest = sha256_digest({"context": "kv-block"})
@@ -544,6 +660,139 @@ def test_reduction_evidence_ingests_forge_kv_only_with_native_restore_proof(tmp_
     assert channels["forge_kv_prompt_cache"]["tokens_avoided_observed"] == 68
     assert channels["forge_kv_prompt_cache"]["events"] == 2
     assert "forge_kv_prompt_cache" not in unsupported
+
+
+def test_reduction_evidence_ingests_engine_local_forge_kv_nodes_and_restart_boundary(tmp_path: Path):
+    plane = ComputePlane(root=tmp_path)
+    prompt_cache = {
+        "authority": "engine_local_prompt_cache_only",
+        "beast_object_type": "forge_kv_llamacpp_prompt_cache_proof",
+        "created_at": 1784548285.0,
+        "engine": "llama.cpp",
+        "portable_raw_kv": False,
+        "prefix_digest": "sha256:" + "a" * 64,
+        "trials": [
+            {"baseline": {"prompt_n": 100, "prompt_ms": 1000.0}, "cached": {"prompt_n": 8, "prompt_ms": 50.0}},
+            {"baseline": {"prompt_n": 100, "prompt_ms": 900.0}, "cached": {"prompt_n": 8, "prompt_ms": 40.0}},
+        ],
+        "validated": True,
+    }
+    restart_boundary = {
+        "authority": "engine_local_prompt_cache_only",
+        "beast_object_type": "forge_kv_llamacpp_restart_boundary_proof",
+        "before_restart": {
+            "baseline": {"prompt_n": 100, "prompt_ms": 1000.0},
+            "warm_cache": {"prompt_n": 7, "prompt_ms": 60.0},
+        },
+        "after_restart": {"cache_n": 0, "prompt_n": 100, "prompt_ms": 990.0},
+        "portable_raw_kv": False,
+        "prefix_digest": "sha256:" + "b" * 64,
+        "validated": True,
+    }
+
+    observed = plane.ingest_reduction_evidence("forge_kv_prompt_cache", prompt_cache, interface="test")
+    boundary = plane.ingest_reduction_evidence("forge_kv_prompt_cache", restart_boundary, interface="test")
+    scorecard = plane.provider_reduction_scorecard()
+    learning = plane.capability_learning_report()
+    channels = {item["channel"]: item for item in scorecard["observed_channels"]}
+
+    assert observed["claim_class"] == "observed"
+    assert observed["tokens_avoided_observed"] == 184
+    assert observed["portable_raw_kv"] is False
+    assert boundary["claim_class"] == "route_selection_only"
+    assert boundary["restart_cache_reset"] is True
+    assert scorecard["tokens_avoided_observed"] == 184
+    assert channels["forge_kv_prompt_cache"]["events"] == 2
+    assert learning["by_capability_type"]["forge_kv_node"] == 2
+    states = {item["lifecycle_state"] for item in learning["capabilities"]}
+    assert "observed_engine_local" in states
+    assert "restart_boundary_observed" in states
+
+
+def test_reduction_evidence_ingests_ml_kem_bound_forge_kv_transport_without_counting_savings(tmp_path: Path):
+    from app.kernel.commons.ml_kem import ML_KEM_ALGORITHM
+    from app.kernel.compute.forge_kv_ml_kem_transport import build_ml_kem_bound_transport_receipt
+
+    plane = ComputePlane(root=tmp_path)
+    checksum = "sha256:" + "a" * 64
+    transport_receipt = build_ml_kem_bound_transport_receipt(
+        kv_manifest={
+            "beast_object_type": "kv_cache_network_manifest",
+            "version": "1.0",
+            "status": "transferred",
+            "block_id": "kv_mlkem_compute",
+            "transfer_id": "transfer_mlkem_compute",
+            "model": "llama",
+            "tokenizer": "tok",
+            "prompt_prefix_hash": "sha256:" + "b" * 64,
+            "system_prompt_hash": "sha256:" + "c" * 64,
+            "engine": "sglang",
+            "target_engine": "sglang",
+            "precision": "bf16",
+            "num_layers": 2,
+            "num_heads": 2,
+            "head_dim": 8,
+            "seq_len": 16,
+            "size_bytes": 19,
+            "source_node": "commons-a",
+            "target_endpoint": "https://commons-b.example/edgek/kv-cache/receive",
+            "checksum_sha256": checksum,
+            "tensor_payload_sha256": checksum,
+            "tensor_payload_format": "safetensors",
+            "engine_native_tensor_payload": True,
+            "acknowledgement": {
+                "accepted": True,
+                "block_id": "kv_mlkem_compute",
+                "transfer_id": "transfer_mlkem_compute",
+                "tensor_payload_sha256": checksum,
+                "stored_location": "storage",
+            },
+        },
+        ml_kem_receipt={
+            "beast_object_type": "commons_ml_kem_gauntlet_receipt",
+            "version": "1.0",
+            "status": "passed",
+            "algorithm": ML_KEM_ALGORITHM,
+            "nodes": [
+                {
+                    "node_id": "commons-a",
+                    "confirmed": True,
+                    "secret_exported": False,
+                    "public_key_digest": "sha256:" + "d" * 64,
+                    "ciphertext_digest": "sha256:" + "e" * 64,
+                    "transcript_digest": "sha256:" + "f" * 64,
+                },
+                {
+                    "node_id": "commons-b",
+                    "confirmed": True,
+                    "secret_exported": False,
+                    "public_key_digest": "sha256:" + "1" * 64,
+                    "ciphertext_digest": "sha256:" + "2" * 64,
+                    "transcript_digest": "sha256:" + "3" * 64,
+                },
+            ],
+            "pairwise_transcript_matrix": [
+                {"source": "commons-a", "target": "commons-b", "transcript_digest": "sha256:" + "4" * 64}
+            ],
+            "secret_storage_policy": "shared_secret_bytes_never_serialized",
+            "receipt_digest": "sha256:" + "5" * 64,
+        },
+    )
+
+    result = plane.ingest_reduction_evidence("forge_kv_prompt_cache", transport_receipt, interface="test")
+    scorecard = plane.provider_reduction_scorecard()
+    learning = plane.capability_learning_report()
+
+    assert result["claim_class"] == "route_selection_only"
+    assert result["verified"] is True
+    assert result["transport_verified"] is True
+    assert result["bytes_transferred_verified"] == 19
+    assert result["provider_calls_avoided"] == 0
+    assert result["tokens_avoided_observed"] == 0
+    assert scorecard["tokens_avoided_observed"] == 0
+    assert scorecard["provider_calls_avoided"] == 0
+    assert learning["by_capability_type"]["forge_kv_node"] == 1
+    assert learning["capabilities"][0]["lifecycle_state"] == "transport_verified"
 
 
 def test_reduction_evidence_reports_g9_health_without_counting_savings(tmp_path: Path):
@@ -619,6 +868,44 @@ def test_commons_space_reduction_counts_only_after_local_reproduction(tmp_path: 
     assert "commons_spaces" not in unsupported
 
 
+def test_reduction_evidence_ingests_sensorium_disk_pressure_as_resource_governance(tmp_path: Path):
+    plane = ComputePlane(root=tmp_path)
+    receipt = {
+        "schema": "beast.sensorium.disk-cleanup-evidence.v1",
+        "claim": "learned_bounded_disk_cleanup_candidate",
+        "crystal": {
+            "identity": "crystal:sensorium-disk-cleanup:v1",
+            "artifact_digest": "sha256:" + "c" * 64,
+        },
+        "replay": {
+            "promotion_eligible": True,
+            "verified_variants": 2,
+            "variant_receipts": [{"verified": True}, {"verified": True}],
+        },
+        "safety": {
+            "manifest_identity_fields": ["device", "inode", "size", "mtime_ns", "sha256"],
+        },
+        "production_promotion_allowed": False,
+    }
+
+    result = plane.ingest_reduction_evidence("sensorium_disk_pressure", receipt, interface="test")
+    scorecard = plane.provider_reduction_scorecard()
+    unsupported = {item["channel"]: item for item in scorecard["unsupported_or_estimated_channels"]}
+    learning = plane.capability_learning_report()
+    capabilities = {item["capability_id"]: item for item in learning["capabilities"]}
+
+    assert result["source_system"] == "sensorium"
+    assert result["claim_class"] == "route_selection_only"
+    assert result["verified"] is True
+    assert result["sensorium_capability"] == "disk_pressure_governed_cleanup"
+    assert result["production_promotion_allowed"] is False
+    assert result["provider_calls_avoided"] == 0
+    assert scorecard["normalized_evidence_events"] == 1
+    assert unsupported["sensorium"]["claim_class"] == "route_selection_only"
+    assert learning["by_capability_type"]["sensorium_physical_crystal"] == 1
+    assert capabilities["crystal:sensorium-disk-cleanup:v1"]["lifecycle_state"] == "promotion_blocked_destructive"
+
+
 def test_reduction_evidence_discovery_imports_repo_local_receipts_idempotently(tmp_path: Path):
     plane = ComputePlane(root=tmp_path)
     incoming = tmp_path / "evidence" / "incoming"
@@ -659,6 +946,28 @@ def test_reduction_evidence_discovery_imports_repo_local_receipts_idempotently(t
         }, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    (incoming / "sensorium-disk-cleanup.json").write_text(
+        json.dumps({
+            "schema": "beast.sensorium.disk-cleanup-evidence.v1",
+            "claim": "learned_bounded_disk_cleanup_candidate",
+            "crystal": {"identity": "crystal:sensorium-disk-cleanup:v1", "artifact_digest": "sha256:" + "d" * 64},
+            "replay": {"promotion_eligible": True, "verified_variants": 1, "variant_receipts": [{"verified": True}]},
+            "safety": {"manifest_identity_fields": ["device", "inode", "size", "mtime_ns", "sha256"]},
+            "production_promotion_allowed": False,
+        }, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (incoming / "llamacpp-prompt-cache.json").write_text(
+        json.dumps({
+            "beast_object_type": "forge_kv_llamacpp_prompt_cache_proof",
+            "engine": "llama.cpp",
+            "portable_raw_kv": False,
+            "prefix_digest": "sha256:" + "e" * 64,
+            "trials": [{"baseline": {"prompt_n": 40, "prompt_ms": 500.0}, "cached": {"prompt_n": 4, "prompt_ms": 50.0}}],
+            "validated": True,
+        }, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     (incoming / "raw-prompt-forbidden.json").write_text(
         json.dumps({"beast_object_type": "forge_kv_episode_economics", "raw_prompt": "nope"}, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -669,15 +978,15 @@ def test_reduction_evidence_discovery_imports_repo_local_receipts_idempotently(t
     again = plane.discover_reduction_evidence(paths=(incoming,), interface="test")
     scorecard = plane.provider_reduction_scorecard()
 
-    assert report["files_considered"] == 4
-    assert report["ingested_count"] == 2
-    assert report["source_counts"] == {"forge_kv_prompt_cache": 1, "grand_closure": 1}
+    assert report["files_considered"] == 6
+    assert report["ingested_count"] == 4
+    assert report["source_counts"] == {"forge_kv_prompt_cache": 2, "grand_closure": 1, "sensorium": 1}
     assert any(item["reason"] == "PermissionError" for item in report["skipped"])
     assert any(item["reason"] == "unrecognized_reduction_evidence" for item in report["skipped"])
     assert again["ingested_count"] == 0
-    assert again["duplicate_count"] == 2
-    assert scorecard["normalized_evidence_events"] == 2
-    assert scorecard["tokens_avoided_observed"] == 45
+    assert again["duplicate_count"] == 4
+    assert scorecard["normalized_evidence_events"] == 4
+    assert scorecard["tokens_avoided_observed"] == 81
     assert scorecard["g9_bundle_health"][0]["missing_gates"] == ("G3",)
 
 

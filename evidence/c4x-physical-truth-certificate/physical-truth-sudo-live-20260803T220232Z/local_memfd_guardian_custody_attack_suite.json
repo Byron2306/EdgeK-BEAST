@@ -1,0 +1,35 @@
+{
+  "beast_object_type": "c4x_local_memfd_guardian_custody_attack_suite",
+  "claim_boundary": "User-space local custody proof. Turns memfd proof hard; Guardian still withholds final credit until producer-death-after-handoff is proven.",
+  "created_at": "2026-08-03T22:02:38.778695+00:00",
+  "guardian_receipt": {
+    "capsule_handoff_receipt_digest": "",
+    "expired_lease_rejected": false,
+    "joined_custody_receipt_signed": false,
+    "one_use_render_capability_consumed": false,
+    "process_lease_verified": false,
+    "producer_death_after_handoff_verified": false,
+    "receipt_digest": "sha256:dbd1f36e87da32377dbc117f4c6efa081aa2d11cdd4cab1b86797f0785c3926d",
+    "replay_render_capability_rejected": false,
+    "runtime_error": "TypeError: app.kernel.execution.socket_guardian.SocketGuardianClient.verify_capsule() got multiple values for keyword argument 'authority_ref'",
+    "scm_rights_handoff_verified": false,
+    "separate_process": false,
+    "status": "local_guardian_attack_suite_completed_producer_death_case_pending",
+    "wrong_uid_rejected": false
+  },
+  "memfd_receipt": {
+    "capsule_digest": "sha256:761fe91a8a605f2a6d84e6075b3c82615448b992df3e3a67e7d5d40e24429bb2",
+    "digest_verified_after_seal": true,
+    "mutation_attempt_rejected": true,
+    "receipt_digest": "sha256:233c3c980cfd2744bfe38d659e9516e92eed749a362eba1010de7e3b4becf3ea",
+    "seal_grow": true,
+    "seal_seal": true,
+    "seal_shrink": true,
+    "seal_write": true,
+    "sealed_memfd": true,
+    "status": "local_memfd_attack_suite_completed",
+    "wrong_fd_type_rejected": true
+  },
+  "receipt_digest": "sha256:8802ea695bce873925d368b51cdf148271e37d7bb77aad39738a478372ba5b99",
+  "version": "1.0"
+}

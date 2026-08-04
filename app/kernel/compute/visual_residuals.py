@@ -264,6 +264,67 @@ class VisualRegionPerceptualReceipt:
 
 
 @dataclass(frozen=True, slots=True)
+class VisualRegionFeatureEmbedding:
+    source_output_digest: str
+    intent_digest: str
+    color_name: str
+    object_hint: str
+    model_id: str
+    vector: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        validate_digest(self.source_output_digest, field_name="source_output_digest")
+        validate_digest(self.intent_digest, field_name="intent_digest")
+        if not self.model_id.strip():
+            raise ValueError("visual feature embedding model_id is required")
+        canonical_json(self.vector)
+
+    @property
+    def embedding_digest(self) -> str:
+        return sha256_digest({
+            "color_name": self.color_name,
+            "object_hint": self.object_hint,
+            "intent_digest": self.intent_digest,
+            "model_id": self.model_id,
+            "vector": self.vector,
+        })
+
+    @property
+    def observation_digest(self) -> str:
+        return sha256_digest(self)
+
+
+@dataclass(frozen=True, slots=True)
+class VisualRegionEquivalenceReceipt:
+    left_output_digest: str
+    right_output_digest: str
+    left_embedding_digest: str
+    right_embedding_digest: str
+    intent_digest: str
+    model_id: str
+    distance: int
+    max_distance: int
+    equivalent: bool
+    refusal_reasons: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        for name in (
+            "left_output_digest", "right_output_digest", "left_embedding_digest",
+            "right_embedding_digest", "intent_digest",
+        ):
+            validate_digest(getattr(self, name), field_name=name)
+        if min(self.distance, self.max_distance) < 0:
+            raise ValueError("visual equivalence distances must be non-negative")
+        if not self.model_id.strip():
+            raise ValueError("visual equivalence model_id is required")
+        canonical_json(self.refusal_reasons)
+
+    @property
+    def receipt_digest(self) -> str:
+        return sha256_digest(self)
+
+
+@dataclass(frozen=True, slots=True)
 class CPURegionDiffusionBackend:
     diffusion_steps: int = 4
 
@@ -676,6 +737,66 @@ def evaluate_visual_region_perceptual(
     )
 
 
+def build_visual_region_feature_embedding(
+    mask: RegionMask,
+    output: bytes,
+    intent: VisualPromptIntent,
+    *,
+    model_id: str = "beast.visual-region-feature-embedding.v1",
+) -> VisualRegionFeatureEmbedding:
+    intent_receipt = evaluate_visual_region_intent(mask, output, intent)
+    perceptual = evaluate_visual_region_perceptual(mask, output, intent)
+    avg_r, avg_g, avg_b = intent_receipt.average_rgb
+    vector = (
+        _bucket(avg_r, 16),
+        _bucket(avg_g, 16),
+        _bucket(avg_b, 16),
+        _bucket(perceptual.luma_stddev, 4),
+        _bucket(perceptual.edge_density * 100, 5),
+        _bucket(perceptual.center_luma_lift, 8),
+        _bucket(perceptual.centroid_offset_ratio * 100, 8),
+        _bucket(perceptual.symmetry_delta, 8),
+    )
+    return VisualRegionFeatureEmbedding(
+        source_output_digest="sha256:" + hashlib.sha256(output).hexdigest(),
+        intent_digest=intent.intent_digest,
+        color_name=intent.color_name,
+        object_hint=intent.object_hint,
+        model_id=model_id,
+        vector=vector,
+    )
+
+
+def evaluate_visual_region_equivalence(
+    left: VisualRegionFeatureEmbedding,
+    right: VisualRegionFeatureEmbedding,
+    *,
+    max_distance: int = 10,
+) -> VisualRegionEquivalenceReceipt:
+    reasons: list[str] = []
+    if left.intent_digest != right.intent_digest:
+        reasons.append("intent_digest_mismatch")
+    if left.model_id != right.model_id:
+        reasons.append("embedding_model_mismatch")
+    if len(left.vector) != len(right.vector):
+        reasons.append("embedding_dimension_mismatch")
+    distance = sum(abs(a - b) for a, b in zip(left.vector, right.vector))
+    if distance > max_distance:
+        reasons.append("visual_embedding_distance_exceeded")
+    return VisualRegionEquivalenceReceipt(
+        left_output_digest=left.source_output_digest,
+        right_output_digest=right.source_output_digest,
+        left_embedding_digest=left.embedding_digest,
+        right_embedding_digest=right.embedding_digest,
+        intent_digest=left.intent_digest,
+        model_id=left.model_id,
+        distance=int(distance),
+        max_distance=int(max_distance),
+        equivalent=not reasons,
+        refusal_reasons=tuple(sorted(reasons)),
+    )
+
+
 def _intent_target_rgb(color_name: str) -> tuple[int, int, int] | None:
     return {
         "red": (225, 42, 38),
@@ -702,3 +823,9 @@ def _average_matches_color(avg: tuple[int, int, int], color_name: str) -> bool:
     if color_name == "black":
         return max(r, g, b) <= 64
     return True
+
+
+def _bucket(value: float | int, step: int) -> int:
+    if step <= 0:
+        raise ValueError("bucket step must be positive")
+    return int(round(float(value) / step))

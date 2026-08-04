@@ -1,0 +1,356 @@
+{
+  "beast_object_type": "c4x_physical_truth_certificate",
+  "certificate_gates": {
+    "bpf_witness": false,
+    "c4x_truth": true,
+    "commons_replication": false,
+    "guardian_custody": false,
+    "memfd_custody": true,
+    "pq_transport": false,
+    "protocol_integrity": false,
+    "psi_governance": false,
+    "reuse": false,
+    "route_resilience": false,
+    "sensorium_observation": false,
+    "xdp_scope": false
+  },
+  "claim_boundary": "Final BEAST physical-truth claim. C4-X semantic proof, Sensorium/BPF observation, Crystal Bus protocol integrity, memfd/Guardian custody, reuse, post-quantum transport, Commons replication, route resilience, PSI governance, and scoped XDP must all pass independently. Missing or partial evidence lowers authority instead of being averaged away.",
+  "created_at": "2026-08-03T22:13:43.257652+00:00",
+  "critical_failures": [
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "layer_verdicts": [
+    {
+      "authority": "semantic_truth_only",
+      "checked": [
+        "proof_first",
+        "joined_verification",
+        "text_artifact_digest_valid",
+        "visual_artifact_digest_valid",
+        "unsupported_gaps_refused",
+        "provider_calls_used"
+      ],
+      "evidence_digest": "sha256:96bfccf15ec02028b2bf5f46cf1494e89b2f83496bd596f4655f789fddccea23",
+      "failure_reasons": [],
+      "layer": "c4x_truth",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:0f93d1e6a5ba637ce4701506010beb7f54d5f2b2ebc69045387aa055da897314"
+    },
+    {
+      "authority": "observation_only",
+      "checked": [
+        "ordered_episode",
+        "journal_integrity_valid",
+        "explicit_loss_accounting",
+        "raw_sensitive_payloads_absent",
+        "observer_lifecycle_recorded",
+        "missing_observations_lower_authority"
+      ],
+      "evidence_digest": "sha256:662ebc1fd007a1b5eb13cf63d3c93fd9f44a2e7ab8cffd226dd0f6379b40d977",
+      "failure_reasons": [
+        "ordered_episode_expected_True_got_False",
+        "journal_integrity_valid_expected_True_got_False",
+        "explicit_loss_accounting_expected_True_got_False",
+        "observer_lifecycle_recorded_expected_True_got_False"
+      ],
+      "layer": "sensorium_observation",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:2c713952a057dabb5afe82818bbe993a13b99755456c4f2b35bef5d82d694fa0"
+    },
+    {
+      "authority": "kernel_observation_only",
+      "checked": [
+        "read_only_program",
+        "cgroup_bound",
+        "outbound_connect_attempts",
+        "dns_activity",
+        "provider_sockets_opened",
+        "unexpected_child_processes",
+        "live_provider_comparator_observed_network",
+        "ring_loss_explicit",
+        "raw_packet_payload_retained"
+      ],
+      "evidence_digest": "sha256:df6ad24c0a719142a9f105e9ab09c51189ff7c958fc5da8e8bb0fa5b9d945d4a",
+      "failure_reasons": [
+        "outbound_connect_attempts_expected_0_got_-1",
+        "dns_activity_expected_0_got_-1",
+        "provider_sockets_opened_expected_0_got_-1",
+        "unexpected_child_processes_expected_0_got_-1",
+        "live_provider_comparator_observed_network_expected_True_got_False"
+      ],
+      "layer": "bpf_witness",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:5665ed7bc297bd4e140b5b2a2789d03b2759db8abe1f92794c0fb231ba8a1bcb"
+    },
+    {
+      "authority": "host_local_protocol_integrity",
+      "checked": [
+        "af_unix_seqpacket",
+        "so_peercred_bound",
+        "session_id_bound",
+        "message_mac_or_signature_verified",
+        "sequence_replay_rejected",
+        "durable_high_water_checked",
+        "capability_lease_required",
+        "arda_appraisal_required",
+        "fd_count_type_seals_digest_verified",
+        "sender_death_after_handoff_verified",
+        "revocation_replay_rejected"
+      ],
+      "evidence_digest": "sha256:3063e5a3f7e2e1d0d280118e1b7d34970831082eeba61f07ef9f9f87d39f0127",
+      "failure_reasons": [
+        "fd_count_type_seals_digest_verified_expected_True_got_False",
+        "sender_death_after_handoff_verified_expected_True_got_False",
+        "revocation_replay_rejected_expected_True_got_False"
+      ],
+      "layer": "protocol_integrity",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:343afdbe2ab6325648c61dba02b39b4f4beaaea1fc8982eee44896e239afe708"
+    },
+    {
+      "authority": "kernel_immutable_artifact_custody",
+      "checked": [
+        "sealed_memfd",
+        "seal_write",
+        "seal_grow",
+        "seal_shrink",
+        "seal_seal",
+        "digest_verified_after_seal",
+        "mutation_attempt_rejected",
+        "wrong_fd_type_rejected"
+      ],
+      "evidence_digest": "sha256:de807fed6eff0c185ca4c97df4789683134c1506e52653bcff55003209e0470c",
+      "failure_reasons": [],
+      "layer": "memfd_custody",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:ecfed1ea7ccc07f82a800cbeca3a387ebf5a299934183c6eab5c2cb2fa1f8146"
+    },
+    {
+      "authority": "independent_custody_gatekeeper",
+      "checked": [
+        "separate_process",
+        "scm_rights_handoff_verified",
+        "process_lease_verified",
+        "one_use_render_capability_consumed",
+        "replay_render_capability_rejected",
+        "wrong_uid_rejected",
+        "expired_lease_rejected",
+        "producer_death_after_handoff_verified",
+        "joined_custody_receipt_signed"
+      ],
+      "evidence_digest": "sha256:1a19e67ee9b29f5a2d66dc95d82f969ec4953a6240a9b24d5979a8bd29235d94",
+      "failure_reasons": [
+        "producer_death_after_handoff_verified_expected_True_got_False"
+      ],
+      "layer": "guardian_custody",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:a93cbe4fca4bf9c079fcad4d81b9bc213ce31c9d33cee2b98b65f25870cece23"
+    },
+    {
+      "authority": "reuse_certificate_only",
+      "checked": [
+        "exact_prefix_hit_verified",
+        "identity_mismatch_refused",
+        "corrupt_payload_rejected",
+        "restart_persistence_credit_only_if_demonstrated",
+        "cross_engine_import_refused_without_physical_success",
+        "crystal_composition_reuse_verified",
+        "semantic_truth_points_not_awarded_for_kv_speed"
+      ],
+      "evidence_digest": "sha256:c341aad5dd5a86a18db8a308172475cf117e41d2ec2ef2503a7b23011d75c06d",
+      "failure_reasons": [
+        "identity_mismatch_refused_expected_True_got_False",
+        "corrupt_payload_rejected_expected_True_got_False"
+      ],
+      "layer": "reuse",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:9e76297da9ef1f9a388d27087e77459868daf66f77759b2b506bafb79fac1d73"
+    },
+    {
+      "authority": "transport_confidentiality_and_authenticity",
+      "checked": [
+        "ml_kem_active",
+        "ml_dsa_signature_verified",
+        "fallback",
+        "recipient_decapsulation_verified",
+        "ciphertext_tamper_rejected",
+        "signature_tamper_rejected",
+        "replay_nonce_unused",
+        "artifact_digest_verified",
+        "policy_scope_accepted"
+      ],
+      "evidence_digest": "sha256:e4b1da2a4eb198a1fe0466520a5f73de01d58f9918e96d394e20b76744e9d5ef",
+      "failure_reasons": [
+        "ml_dsa_signature_verified_expected_True_got_False",
+        "ciphertext_tamper_rejected_expected_True_got_False",
+        "signature_tamper_rejected_expected_True_got_False",
+        "replay_nonce_unused_expected_True_got_False",
+        "artifact_digest_verified_expected_True_got_False",
+        "policy_scope_accepted_expected_True_got_False"
+      ],
+      "layer": "pq_transport",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:c9c6245ab855c2bf7297c09026f5fc558aab7219593ceaa2dc55ad4af3a96614"
+    },
+    {
+      "authority": "replication_certificate",
+      "checked": [
+        "imported_as_quarantined_hypothesis",
+        "clean_source_rebuild",
+        "independent_seed",
+        "independent_oracle",
+        "reproduction_successful",
+        "promotion_after_local_success_only",
+        "node_count_minimum_met"
+      ],
+      "evidence_digest": "sha256:1cdc0e60cf8d5e125d52d4b548565b96f059e3698ecc0fe62420ff6afa25183b",
+      "failure_reasons": [
+        "imported_as_quarantined_hypothesis_expected_True_got_False",
+        "clean_source_rebuild_expected_True_got_False",
+        "independent_seed_expected_True_got_False",
+        "independent_oracle_expected_True_got_False",
+        "reproduction_successful_expected_True_got_False"
+      ],
+      "layer": "commons_replication",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:f1e8269858e93739bfd0391eb6d1a2dc21adafe52b571f29c3d2963c46906857"
+    },
+    {
+      "authority": "route_resilience_certificate",
+      "checked": [
+        "deterministic_failure_schedule_hidden_from_router",
+        "attestation_failure_immediate_suppression",
+        "timeout_accumulates_penalty",
+        "429_suppression",
+        "recovery_after_decay",
+        "oscillation_bounded",
+        "decision_receipts_explain_route_change",
+        "beats_no_damping_retry_and_circuit_breaker"
+      ],
+      "evidence_digest": "sha256:c097d15d66508003851475674c22dcb44578474e75a1dcdacc76d90e743e08dc",
+      "failure_reasons": [
+        "deterministic_failure_schedule_hidden_from_router_expected_True_got_False",
+        "attestation_failure_immediate_suppression_expected_True_got_False",
+        "timeout_accumulates_penalty_expected_True_got_False",
+        "429_suppression_expected_True_got_False",
+        "recovery_after_decay_expected_True_got_False",
+        "oscillation_bounded_expected_True_got_False",
+        "decision_receipts_explain_route_change_expected_True_got_False",
+        "beats_no_damping_retry_and_circuit_breaker_expected_True_got_False"
+      ],
+      "layer": "route_resilience",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:29d9d8b8ade5ef48b8eb48a7c262af4236395a0b7086c3d709a488b6906cb8a3"
+    },
+    {
+      "authority": "scarcity_governance_certificate",
+      "checked": [
+        "cpu_pressure_case",
+        "memory_pressure_case",
+        "io_pressure_case",
+        "near_oom_case",
+        "disk_full_or_inode_case",
+        "evidence_not_corrupted",
+        "sensorium_loss_not_silent",
+        "low_priority_work_shed_first",
+        "proof_and_custody_preserved",
+        "refused_before_corrupting_evidence"
+      ],
+      "evidence_digest": "sha256:345dae5706739136375053598b7ea985fc6727b91f2a5029cfa2374a157bb1b1",
+      "failure_reasons": [
+        "cpu_pressure_case_expected_True_got_False",
+        "memory_pressure_case_expected_True_got_False",
+        "io_pressure_case_expected_True_got_False",
+        "near_oom_case_expected_True_got_False",
+        "disk_full_or_inode_case_expected_True_got_False",
+        "evidence_not_corrupted_expected_True_got_False",
+        "sensorium_loss_not_silent_expected_True_got_False",
+        "low_priority_work_shed_first_expected_True_got_False",
+        "proof_and_custody_preserved_expected_True_got_False",
+        "refused_before_corrupting_evidence_expected_True_got_False"
+      ],
+      "layer": "psi_governance",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:a6b7bd5be3f392b9ee77fd9da83b81ab1901152373c47dd39709e48196ef1b38"
+    },
+    {
+      "authority": "scoped_packet_actuation_certificate",
+      "checked": [
+        "isolated_veth_or_namespace",
+        "redirect_pass_drop_observed",
+        "unauthorized_cgroup_rejected",
+        "worker_death_observed",
+        "rx_ring_loss_reported",
+        "xdp_detach_detected",
+        "no_unrelated_traffic_redirected",
+        "policy_fail_open_or_closed_verified",
+        "guardian_policy_not_bypassed"
+      ],
+      "evidence_digest": "sha256:2259e52755e3b6f79fd59220a27598cf700bcf9171c233fdaa48d950978959f9",
+      "failure_reasons": [
+        "unauthorized_cgroup_rejected_expected_True_got_False",
+        "worker_death_observed_expected_True_got_False",
+        "xdp_detach_detected_expected_True_got_False",
+        "no_unrelated_traffic_redirected_expected_True_got_False",
+        "policy_fail_open_or_closed_verified_expected_True_got_False",
+        "guardian_policy_not_bypassed_expected_True_got_False"
+      ],
+      "layer": "xdp_scope",
+      "missing": [],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:11af5a765bd543c8e44f269e53442092599cf89fb8d622358510f31dfca62fa6"
+    }
+  ],
+  "no_averaging_rule": true,
+  "public_credit_allowed": false,
+  "receipt_digest": "sha256:2f794c117539e4d5219beb1a1c19fca9f1446b7e53cc06936e459ba61bc1b595",
+  "required_layers": [
+    "c4x_truth",
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "memfd_custody",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "run_id": "physical-truth-sudo-live-20260803T221341Z",
+  "truth_claim_allowed": false,
+  "version": "1.0"
+}

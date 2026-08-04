@@ -11,6 +11,8 @@ from app.kernel.compute.visual_residuals import (
     VisualResidualBudget,
     VisualPromptIntent,
     VisualResidualRequest,
+    build_visual_region_feature_embedding,
+    evaluate_visual_region_equivalence,
     evaluate_visual_region_intent,
     evaluate_visual_region_perceptual,
     evaluate_visual_region_quality,
@@ -173,3 +175,25 @@ def test_visual_perceptual_gate_refuses_flat_status_light_regions():
     assert structured.passed is True
     assert structured.center_luma_lift > 0
     assert structured.receipt_digest.startswith("sha256:")
+
+
+def test_visual_feature_embeddings_allow_near_equivalent_region_outputs():
+    request = _request(width=8, height=8, max_output_bytes=8 * 8 * 4)
+    intent = extract_visual_prompt_intent("green healthy status light")
+    base = bytearray()
+    variant = bytearray()
+    for y in range(8):
+        for x in range(8):
+            distance = (((x - 3.5) ** 2 + (y - 3.5) ** 2) ** 0.5) / 4
+            gain = 0.38 + max(0.0, 1.0 - distance) * 0.72
+            base.extend([int(38 * gain) + (x + y) % 3, int(220 * gain) + (x % 2), int(72 * gain), 255])
+            variant.extend([int(39 * gain) + (x + y + 1) % 3, int(219 * gain) + ((x + 1) % 2), int(73 * gain), 255])
+
+    left = build_visual_region_feature_embedding(request.mask, bytes(base), intent)
+    right = build_visual_region_feature_embedding(request.mask, bytes(variant), intent)
+    equivalence = evaluate_visual_region_equivalence(left, right)
+
+    assert left.source_output_digest != right.source_output_digest
+    assert equivalence.equivalent is True
+    assert equivalence.distance <= equivalence.max_distance
+    assert equivalence.receipt_digest.startswith("sha256:")

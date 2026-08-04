@@ -1,0 +1,35 @@
+{
+  "beast_object_type": "c4x_local_memfd_guardian_custody_attack_suite",
+  "claim_boundary": "User-space local custody proof. Turns memfd proof hard; Guardian still withholds final credit until producer-death-after-handoff is proven.",
+  "created_at": "2026-08-03T22:15:50.201624+00:00",
+  "guardian_receipt": {
+    "capsule_handoff_receipt_digest": "sha256:da9d16c9a4ddc54405ff2675dbaf3de37581a32aa06fe80d5068c383770fd120",
+    "expired_lease_rejected": true,
+    "joined_custody_receipt_signed": true,
+    "one_use_render_capability_consumed": true,
+    "process_lease_verified": true,
+    "producer_death_after_handoff_verified": true,
+    "receipt_digest": "sha256:71d600a79f48a6f1a56d885e59cb7d5bea71b7a147bb4852f7b97f58725349f6",
+    "replay_render_capability_rejected": true,
+    "runtime_error": "",
+    "scm_rights_handoff_verified": true,
+    "separate_process": true,
+    "status": "local_guardian_attack_suite_completed_producer_death_case_pending",
+    "wrong_uid_rejected": true
+  },
+  "memfd_receipt": {
+    "capsule_digest": "sha256:85e84674ce606eddddc78d3c01e622a03c954116604fe734216ca41e11bce53a",
+    "digest_verified_after_seal": true,
+    "mutation_attempt_rejected": true,
+    "receipt_digest": "sha256:bdf39d6df989fe8d37e36c64369fd4500dd0721a244297cf3428cc94e12c3724",
+    "seal_grow": true,
+    "seal_seal": true,
+    "seal_shrink": true,
+    "seal_write": true,
+    "sealed_memfd": true,
+    "status": "local_memfd_attack_suite_completed",
+    "wrong_fd_type_rejected": true
+  },
+  "receipt_digest": "sha256:dd741272a8b4912730963233e940daa7e7a675f5c92d2b889e4f838e695b0e90",
+  "version": "1.0"
+}

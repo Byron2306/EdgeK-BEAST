@@ -5835,6 +5835,111 @@ async def edgek_compute_visual_assets():
     return compute_plane.visual_asset_registry_report()
 
 
+@app.get("/edgek/compute/capability-learning")
+async def edgek_compute_capability_learning(limit: int = 50):
+    """Return the local ledger of learned, reused, refused, and demoted capabilities."""
+    return compute_plane.capability_learning_report(limit=max(1, min(int(limit), 500)))
+
+
+@app.post("/edgek/compute/capability-composition/restart-risk")
+async def edgek_compute_capability_composition_restart_risk(payload: Dict[str, Any] = None):
+    """Compose learned facts into a bounded restart destabilization answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_restart_destabilization_risk(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/capability-composition/traffic-shift")
+async def edgek_compute_capability_composition_traffic_shift(payload: Dict[str, Any] = None):
+    """Compose learned facts into a bounded traffic-shift safety answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_traffic_shift_safety(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/capability-composition/deployment-safety")
+async def edgek_compute_capability_composition_deployment_safety(payload: Dict[str, Any] = None):
+    """Compose learned facts into a bounded deployment-safety answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_deployment_safety(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/visual-composition/status-card")
+async def edgek_compute_visual_composition_status_card(payload: Dict[str, Any] = None):
+    """Compose visual facts into a bounded render-only status-card answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_visual_status_card(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/visual-composition/promoted-region-reuse")
+async def edgek_compute_visual_composition_promoted_region_reuse(payload: Dict[str, Any] = None):
+    """Compose visual facts into a bounded promoted-region reuse answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_visual_promoted_region_reuse(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/visual-composition/layout-safety")
+async def edgek_compute_visual_composition_layout_safety(payload: Dict[str, Any] = None):
+    """Compose visual facts into a bounded render-only layout-safety answer."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_visual_layout_safety(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/edgek/compute/cross-modal/restart-risk-visual")
+async def edgek_compute_cross_modal_restart_risk_visual(payload: Dict[str, Any] = None):
+    """Compose a restart-risk answer and render-only visual explanation under one receipt."""
+    payload = payload or {}
+    try:
+        return compute_plane.compose_cross_modal_restart_risk_visual(payload, interface="api")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/edgek/compute/provider-adapters")
+async def edgek_compute_generation_provider_adapters(approval_receipt: str = ""):
+    """Return governed text/image generation provider adapter readiness."""
+    return compute_plane.generation_provider_adapter_report(approval_receipt=approval_receipt)
+
+
+@app.post("/edgek/compute/provider-adapters/execute")
+async def edgek_compute_generation_provider_adapter_execute(payload: Dict[str, Any] = None):
+    """Execute a governed text/image generation provider with sealed receipt output."""
+    payload = payload or {}
+    try:
+        return compute_plane.execute_generation_provider(
+            provider_id=str(payload.get("provider_id") or payload.get("provider") or "google"),
+            modality=str(payload.get("modality") or "text"),
+            mode=str(payload.get("mode") or "stub"),
+            prompt=str(payload.get("prompt") or payload.get("input") or ""),
+            model=str(payload.get("model") or ""),
+            approval_receipt=str(payload.get("approval_receipt") or payload.get("approval") or ""),
+            metadata=payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {},
+            request_id=str(payload.get("request_id") or ""),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"provider not found: {exc}") from exc
+
+
 @app.post("/edgek/compute/operator-language")
 async def edgek_compute_operator_language(payload: Dict[str, Any] = None):
     """Resolve bounded operator language against the local BEAST service registry."""

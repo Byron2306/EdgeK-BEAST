@@ -1,0 +1,117 @@
+{
+  "admission": {
+    "artifact_digest": "sha256:9e0427024f1606e6d35de0d9ad9cb0724e7355f2c72169de8c6869425ae885c4",
+    "authority": "remote_hypothesis",
+    "chunk_count": 1,
+    "manifest_digest": "sha256:bf169b00a25b6febe9a3c4c50a560a31de63c66efcb1d40bf7496623fc2517f0",
+    "maximum_authority": "verify_only"
+  },
+  "aggregate": {
+    "advertised_claims_counted": 0,
+    "aggregate_digest": "sha256:e103fda7efc8d7003954708d6a25ec728e81fee79587336a278d7048ab07d097",
+    "beast_object_type": "federated_verified_displacement_aggregate",
+    "independent_node_count": 3,
+    "provider_calls_avoided": 6,
+    "receipt_digests": [
+      "sha256:0e1146e35f7fb47fe9e90e72d2de9d20dbcfa7f4b29fe824bb9eb9c888707e0b",
+      "sha256:128e71bf0e552fef9a54d07b79fd2721811d916ffcf53a98e6c38143d5a5dac8",
+      "sha256:3a79693355d51f1ffde6d1ddfdfc600c107d1dc40b40d5f8402bf205e4df3fbf"
+    ]
+  },
+  "beast_object_type": "c4x_commons_replication_gauntlet",
+  "claim_boundary": "Three independent logical node identities reproduced a signed, quarantined Commons hypothesis locally. Live ML-KEM context may be attached, but remote advertisement itself grants no execution authority.",
+  "commons_receipt": {
+    "admission_manifest_digest": "sha256:bf169b00a25b6febe9a3c4c50a560a31de63c66efcb1d40bf7496623fc2517f0",
+    "aggregate_digest": "sha256:e103fda7efc8d7003954708d6a25ec728e81fee79587336a278d7048ab07d097",
+    "authority": "replication_certificate",
+    "clean_source_rebuild": true,
+    "imported_as_quarantined_hypothesis": true,
+    "independent_oracle": true,
+    "independent_seed": true,
+    "live_commons_ml_kem_context": true,
+    "live_commons_nodes_confirmed": 3,
+    "node_count_minimum_met": true,
+    "promotion_after_local_success_only": true,
+    "receipt_digest": "sha256:767424fc8b95b4da209d2825f07b6c62ea0aeb3404083a0060cc5c31b721530e",
+    "reproduction_receipt_digests": [
+      "sha256:128e71bf0e552fef9a54d07b79fd2721811d916ffcf53a98e6c38143d5a5dac8",
+      "sha256:3a79693355d51f1ffde6d1ddfdfc600c107d1dc40b40d5f8402bf205e4df3fbf",
+      "sha256:0e1146e35f7fb47fe9e90e72d2de9d20dbcfa7f4b29fe824bb9eb9c888707e0b"
+    ],
+    "reproduction_successful": true,
+    "source_ml_kem_receipt_digest": "sha256:49611eea9e3ec292b293af17d780b925da0f56b17808d592c432c95ae4237b44",
+    "status": "passed"
+  },
+  "created_at": "2026-08-03T23:37:26.305922+00:00",
+  "node_reproductions": [
+    {
+      "artifact_digest": "sha256:9e0427024f1606e6d35de0d9ad9cb0724e7355f2c72169de8c6869425ae885c4",
+      "authority": {
+        "applicability": "node_local",
+        "execution": "node_local",
+        "promotion": "node_local"
+      },
+      "beast_object_type": "commons_node_local_reproduction_receipt",
+      "contributor_id": "contributor:c4x-local",
+      "displacement_receipt_digest": "sha256:c4f1b396092ab5eb3e2dfc02bfdab48e6b657cf224657776a407feb65dc76652",
+      "evidence_node_id": "sha256:922b697ea1c758606144db0accdee54e94cd16acb7f6b5a7cb3daccc5cc40375",
+      "heldout_count": 1,
+      "local_policy_generation": "policy:c4x-commons-replication-v1",
+      "local_verifier_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "manifest_digest": "sha256:bf169b00a25b6febe9a3c4c50a560a31de63c66efcb1d40bf7496623fc2517f0",
+      "node_attestation_digest": "sha256:6e066215c95037d7784adb05b26e875c84f1ee9ada42701c68b27ae5de35041c",
+      "node_id": "commons-replica-1",
+      "provider_calls_avoided": 2,
+      "receipt_digest": "sha256:128e71bf0e552fef9a54d07b79fd2721811d916ffcf53a98e6c38143d5a5dac8",
+      "revoked": false,
+      "status": "locally_reproduced"
+    },
+    {
+      "artifact_digest": "sha256:9e0427024f1606e6d35de0d9ad9cb0724e7355f2c72169de8c6869425ae885c4",
+      "authority": {
+        "applicability": "node_local",
+        "execution": "node_local",
+        "promotion": "node_local"
+      },
+      "beast_object_type": "commons_node_local_reproduction_receipt",
+      "contributor_id": "contributor:c4x-local",
+      "displacement_receipt_digest": "sha256:5d9ba0d79ef115048e6ecb88b7f90cbc398f9b8c27fc1dc1eae4e85c4e18fc84",
+      "evidence_node_id": "sha256:dc0623b7e55df6251d72a61f5212d1150b28b9759bf6fcb2250e3aed534cea42",
+      "heldout_count": 1,
+      "local_policy_generation": "policy:c4x-commons-replication-v1",
+      "local_verifier_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "manifest_digest": "sha256:bf169b00a25b6febe9a3c4c50a560a31de63c66efcb1d40bf7496623fc2517f0",
+      "node_attestation_digest": "sha256:b18463e9db58d6d33a467b2036f4805d0f305beba059d6833cdb3a5199e0be42",
+      "node_id": "commons-replica-2",
+      "provider_calls_avoided": 2,
+      "receipt_digest": "sha256:3a79693355d51f1ffde6d1ddfdfc600c107d1dc40b40d5f8402bf205e4df3fbf",
+      "revoked": false,
+      "status": "locally_reproduced"
+    },
+    {
+      "artifact_digest": "sha256:9e0427024f1606e6d35de0d9ad9cb0724e7355f2c72169de8c6869425ae885c4",
+      "authority": {
+        "applicability": "node_local",
+        "execution": "node_local",
+        "promotion": "node_local"
+      },
+      "beast_object_type": "commons_node_local_reproduction_receipt",
+      "contributor_id": "contributor:c4x-local",
+      "displacement_receipt_digest": "sha256:4d7aa90fd7cefc84a33695d39ddcf233dc2f6b39606f0e99ae01de3f94ae4402",
+      "evidence_node_id": "sha256:90a9f649250e0d98307b52a68eea7a00dbbecb15cd1111b944095b656003df98",
+      "heldout_count": 1,
+      "local_policy_generation": "policy:c4x-commons-replication-v1",
+      "local_verifier_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "manifest_digest": "sha256:bf169b00a25b6febe9a3c4c50a560a31de63c66efcb1d40bf7496623fc2517f0",
+      "node_attestation_digest": "sha256:4dc6a6c2c8c146a816648baaab6d0cce28807227f89e549ecd512eb1ac97e6e5",
+      "node_id": "commons-replica-3",
+      "provider_calls_avoided": 2,
+      "receipt_digest": "sha256:0e1146e35f7fb47fe9e90e72d2de9d20dbcfa7f4b29fe824bb9eb9c888707e0b",
+      "revoked": false,
+      "status": "locally_reproduced"
+    }
+  ],
+  "receipt_digest": "sha256:bec3b8700b134a8d3d5c4ba9c3ef40e86637e3e558b30f6ab9666428dd249dbf",
+  "run_id": "physical-truth-digest-bound-one-shot-002-commons-replication",
+  "version": "1.0"
+}

@@ -157,6 +157,28 @@ def test_semantic_crystal_registry_persists_lifecycle_index_and_revocation(tmp_p
     assert revoked.record_digest in body
 
 
+def test_semantic_crystal_registry_reloads_full_records_for_replay(tmp_path):
+    first = _episode("episode:1")
+    second = _episode("episode:2")
+    record = SemanticGeneralizer().promote_record(
+        [first, second],
+        crystal_id="meaning-crystal:beast-status",
+        verifier_id="semantic-generalizer-test",
+    )
+    registry = SemanticCrystalRegistry(tmp_path / "semantic.jsonl")
+    registry.promote(record)
+
+    loaded = SemanticCrystalRegistry(tmp_path / "semantic.jsonl")
+    loaded.load()
+    restored = loaded.get(record.crystal.crystal_id)
+
+    assert restored is not None
+    assert restored.record_digest == record.record_digest
+    outcome = SemanticGeneralizer().replay_record(restored, first.reuse_key, provider_enabled=False)
+    assert outcome.reused is True
+    assert outcome.provider_called is False
+
+
 def test_semantic_generalizer_rejects_stale_world_reuse():
     episode = _episode()
     crystal, receipt = SemanticGeneralizer().promote(

@@ -755,6 +755,7 @@ class CrossEngineKVCacheTransport:
                     "checksum_sha256": checksum,
                     "tensor_payload_sha256": checksum,
                     "tensor_payload_format": block.metadata.get("tensor_payload_format", "raw"),
+                    "engine_native_tensor_payload": bool(block.metadata.get("engine_native_tensor_payload")),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "status": "transfer_pending",
                 }

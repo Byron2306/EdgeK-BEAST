@@ -1,0 +1,123 @@
+{
+  "claims": [
+    {
+      "claim_id": "claim:deployment-layout-overflow:deployment-stage",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2"
+      ],
+      "metadata": {
+        "fact_type": "deployment_stage"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "stage",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:7a43f9f08195e6abdf10572e23347298ae801fc64fbc27ebba95630bc031a069",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-layout-overflow:health-gate",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:290e76fec7d8b5c4a740101e16804f3f6056a1c481b7273e7ce6dc65d53b15b8"
+      ],
+      "metadata": {
+        "fact_type": "health_gate"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health_gate",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:aefa93b68f65a1c892b82090c892352421ad16bda0d4c6043551f5f7ec5ca3bf",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-layout-overflow:rollback",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9"
+      ],
+      "metadata": {
+        "fact_type": "rollback_state"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "rollback",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:2b35bf9851fb0b069c79e0ddb4e378e94f329026b13a70c202e06a1f669b1673",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-layout-overflow:target-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+      "status": "supported",
+      "subject": "Commons"
+    },
+    {
+      "claim_id": "claim:deployment-layout-overflow:deployment-safety",
+      "claim_type": "staged_policy_gate",
+      "confidence_class": "gate_proven",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:e53c578bf11aecd48b583fd181e226f0e28a55def15ffc6b267fa8aeaff58d18",
+        "sha256:7ce7457546bf90abb06645c2e5704e5112401bf2a827090ada9fafc59b0a8531",
+        "sha256:5d9350b8e94c0e04ad6f9b0ebe17b6187f954dee66276eef0fd3ef7120d580f7",
+        "sha256:3470ce61ef1704a93208a846cef2a28e423d4f4732dc80945d27b6b0fb7686cd"
+      ],
+      "metadata": {
+        "deployment_class": "safe_to_continue",
+        "family": "deployment_safety"
+      },
+      "object": "Commons",
+      "policy_ref": "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d",
+      "predicate": "deployment_safety",
+      "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+      "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    }
+  ],
+  "compile_sequence": 1,
+  "compiler_id": "beast.proof-first-compiler.v1",
+  "fact_digests": [
+    "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2",
+    "sha256:290e76fec7d8b5c4a740101e16804f3f6056a1c481b7273e7ce6dc65d53b15b8",
+    "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9",
+    "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4",
+    "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+  ],
+  "family": "deployment_safety",
+  "graph_digest": "sha256:0fa2499aefcadae83395406b477afe99914e1b7b3c7fdd221fdf2ab5442af984",
+  "graph_id": "proof:deployment_safety:6a36b7f26f15fbff86b8",
+  "policy_digests": [
+    "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d"
+  ],
+  "request_digest": "sha256:6a36b7f26f15fbff86b84ca067856df79772786fd67b127b413af33e64d74bed",
+  "rule_digests": [
+    "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+  ],
+  "world_snapshot_digest": "sha256:2dd4d86d073398c9cbb49afcae2c810afbb5f6d21ce06fb1aa5a37d1fdd00134"
+}

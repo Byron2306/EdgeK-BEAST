@@ -18,6 +18,7 @@ maximum authority until BEAST reproduces it locally.
 | Discovery | Source-neutral signed envelope; HTTP well-known, static seeds, DNS-SD, peer exchange, registries and offline bootstrap are adapters, not trust |
 | Native trust root | Crystal-compute lattice attestation over the exact node/workload/key/protocol/capability/authority subject |
 | Endpoint possession | Fresh nonce challenge signed by the discovered node key before automatic registration |
+| ML-KEM key agreement | Signed ML-KEM-768 public key document plus ciphertext challenge; the node proves decapsulation with an HMAC over a bounded transcript and never serializes the shared secret |
 | Hardware identity | Optional additive ARDA/TPM appraisal over the same exact subject |
 | Stored bytes | Immutable `sha256:` blobs and manifest custody verification on read |
 | Portable result | Node-signed revision receipt with `verify_only` authority |
@@ -66,6 +67,27 @@ Start the nodes:
 docker compose -f docker-compose.commons-lab.yml up --build -d
 curl -sS http://127.0.0.1:8111/health
 ```
+
+The local lab image prebuilds a minimal Open Quantum Safe `liboqs` at
+`/opt/oqs` with `OQS_MINIMAL_BUILD="KEM_ml_kem_768"`. This avoids compiling
+the entire post-quantum algorithm set at node startup. The node app also keeps
+health independent from ML-KEM initialization; key agreement is loaded on the
+first `/v1/ml-kem/*` request.
+
+Verify the live three-node ML-KEM handshake proof:
+
+```bash
+python3 scripts/run_commons_ml_kem_gauntlet.py \
+  --run-id 2026-08-03T000000-commons-ml-kem-live-a
+```
+
+The current live receipt is
+`evidence/commons-ml-kem/2026-08-03T000000-commons-ml-kem-live-a.json` with
+receipt digest
+`sha256:c653b6c12fc77a19a57c8d3d46755e3435cd203eff6c0f5dc765de6a13b51507`.
+All three lab nodes confirmed ML-KEM-768 decapsulation; ciphertexts were 1088
+bytes, shared secrets were 32 bytes, and receipts mark
+`secret_exported=false`.
 
 Discover all three static seed origins, verify their lattice evidence and live
 nonce proofs, seed `edgek/verified-crystals`, verify its signed `bootstrap-v1`
@@ -124,6 +146,13 @@ All mutating management routes are restricted to the local BEAST operator
 boundary. The small desktop blob bridge accepts base64 payloads up to 3 MiB;
 larger artifacts should use a signed streaming client against the node's raw
 `PUT /v1/blobs/{sha256:digest}` endpoint.
+
+Node-local ML-KEM proof endpoints are:
+
+- `GET /v1/ml-kem/key` — returns a node-signed ML-KEM-768 public key document.
+- `POST /v1/ml-kem/challenge` — accepts a public-key digest, base64 ciphertext,
+  challenge nonce, and transcript digest; returns a node-signed confirmation
+  HMAC proving decapsulation without returning the shared secret.
 
 ## Production deployment requirements
 

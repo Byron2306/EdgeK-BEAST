@@ -1,0 +1,82 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:heldout-renamed-restart-risk:dependency",
+    "claim:heldout-renamed-restart-risk:restart-policy",
+    "claim:heldout-renamed-restart-risk:restart-risk",
+    "claim:heldout-renamed-restart-risk:source-health",
+    "claim:heldout-renamed-restart-risk:target-health"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "restart_risk",
+  "graph_digest": "sha256:629eab619e5bda66896b55c2b7c81e24f41eff0d4db8efe0c20b74b6ce5e7b92",
+  "plan_digest": "sha256:ef8da6d62b61267915f24255120bf9f49a5b588c643f16ba11651f81d6d9efa2",
+  "plan_id": "scene-plan:proof:restart_risk:97b5db112cf9da7a02d9",
+  "primitives": [
+    {
+      "claim_ref": "claim:heldout-renamed-restart-risk:source-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "Kestrel",
+      "metadata": {},
+      "primitive_id": "source-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 80,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:heldout-renamed-restart-risk:target-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "Vale",
+      "metadata": {},
+      "primitive_id": "target-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 680,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:heldout-renamed-restart-risk:dependency",
+      "evidence_state": "supported",
+      "height": 30,
+      "label": "depends on",
+      "metadata": {},
+      "primitive_id": "dependency-edge",
+      "primitive_type": "dependency_edge",
+      "width": 370,
+      "x": 290,
+      "y": 205
+    },
+    {
+      "claim_ref": "claim:heldout-renamed-restart-risk:restart-policy",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "restart policy",
+      "metadata": {},
+      "primitive_id": "restart-policy",
+      "primitive_type": "policy_gate",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:heldout-renamed-restart-risk:restart-risk",
+      "evidence_state": "supported",
+      "height": 80,
+      "label": "low",
+      "metadata": {},
+      "primitive_id": "risk-badge",
+      "primitive_type": "risk_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

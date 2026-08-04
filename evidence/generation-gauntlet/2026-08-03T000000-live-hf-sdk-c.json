@@ -1,0 +1,585 @@
+{
+  "beast_object_type": "generation_gauntlet_receipt",
+  "capability_learning": {
+    "beast_object_type": "capability_learning_report",
+    "by_capability_type": {
+      "generation_gauntlet": 1,
+      "visual_asset_candidate": 4
+    },
+    "by_event_type": {
+      "gauntlet_completed": 1,
+      "refused": 4
+    },
+    "by_lifecycle_state": {
+      "failed": 1,
+      "refused": 4
+    },
+    "capabilities": [
+      {
+        "authority": "measurement_only",
+        "capability_digest": "sha256:291271af412128236253420a4f9112b87c1d59e3858039b552aaf35364502297",
+        "capability_id": "generation-gauntlet:2026-08-03T000000-live-hf-sdk-c",
+        "capability_type": "generation_gauntlet",
+        "event_count": 1,
+        "first_observed_at": "2026-08-03T10:49:03.314965+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T10:49:03.314965+00:00",
+        "last_receipt_digest": "sha256:ee7d125ae8e5cd082b756dbeeba4a761ec5d376e153c9adcbb5f904a9974a4ae",
+        "lifecycle_state": "failed",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 4,
+        "refusal_count": 0,
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_digest": "sha256:ba712e085449f37493e194ced1ee1403c7bf2136da91d91be41b296589235cfd",
+        "capability_id": "sha256:fd507fc487f781b6e08a85cd798932af9bedcc000b2c8d7f0bf213b8511fa0b1",
+        "capability_type": "visual_asset_candidate",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:48:59.811200+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:49:03.249984+00:00",
+        "last_receipt_digest": "sha256:3ec05c5ce2a8f7b2620f93c4b7b3e9b9ee9df267602a9390d72c23533cc92aa7",
+        "lifecycle_state": "refused",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 2,
+        "refusal_count": 2,
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_digest": "sha256:b3dcf9077dac0dd3cb7651b5ba0ef004cdf77f2e9bfd20c3024e26b92bdcdc45",
+        "capability_id": "sha256:2f18a95a229382c3b289625b0da69c5faa2316723e95df9e8940b8e29fb183af",
+        "capability_type": "visual_asset_candidate",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:48:52.552307+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:48:56.609319+00:00",
+        "last_receipt_digest": "sha256:41f1dafa3ab158516dbdee07ebffec06f09d1b2f1f18419ae037bd8925c9a8f1",
+        "lifecycle_state": "refused",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 2,
+        "refusal_count": 2,
+        "reuse_hits": 0
+      }
+    ],
+    "capability_count": 3,
+    "event_count": 5,
+    "fresh_work_units": 4,
+    "ledger_digest": "sha256:cbf78c8cabc7d6b7d34abd854a5f6243978b9d5cc6d9173c0e09dad7235172e8",
+    "ledger_path": ".beast/state/generation_gauntlets_live_hf_sdk_c/capability_learning.jsonl",
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 8,
+    "recent_events": [
+      {
+        "authority": "measurement_only",
+        "capability_id": "generation-gauntlet:2026-08-03T000000-live-hf-sdk-c",
+        "capability_type": "generation_gauntlet",
+        "event_digest": "sha256:fd0495bb7c6e13f5d5fbec94eaff9e4d14552c3c2ff78e8d88c426875591ee36",
+        "event_type": "gauntlet_completed",
+        "evidence_digest": "sha256:ee7d125ae8e5cd082b756dbeeba4a761ec5d376e153c9adcbb5f904a9974a4ae",
+        "fresh_work_units": 0,
+        "lifecycle_state": "failed",
+        "metadata": {
+          "chat_provider_id": "",
+          "image_status": "failed",
+          "provider_id": "hf",
+          "provider_mode": "live",
+          "semantic_crystal_count": 0,
+          "text_status": "skipped",
+          "visual_asset_count": 0
+        },
+        "observed_at": "2026-08-03T10:49:03.314965+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 4,
+        "receipt_digest": "sha256:ee7d125ae8e5cd082b756dbeeba4a761ec5d376e153c9adcbb5f904a9974a4ae",
+        "refusal_reason": "",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "sha256:fd507fc487f781b6e08a85cd798932af9bedcc000b2c8d7f0bf213b8511fa0b1",
+        "capability_type": "visual_asset_candidate",
+        "event_digest": "sha256:84dfe00af735f5048e2e99eaf5b7a8d5061eb2abfc83f9ae05b834a46958b0d4",
+        "event_type": "refused",
+        "evidence_digest": "sha256:e95a2ef527fc13b5671d66d60d1324e593741bdd2554467e46f44cebf25b2900",
+        "fresh_work_units": 1,
+        "lifecycle_state": "refused",
+        "metadata": {
+          "output_digest": "sha256:18a16960889fc255e6074a8cac8ef08d9746dcd3f59a8e8cb7dee933aa6453d9",
+          "source_lane": "provider_fallback"
+        },
+        "observed_at": "2026-08-03T10:49:03.249984+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 1,
+        "receipt_digest": "sha256:3ec05c5ce2a8f7b2620f93c4b7b3e9b9ee9df267602a9390d72c23533cc92aa7",
+        "refusal_reason": "quality_gate_failed",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "sha256:fd507fc487f781b6e08a85cd798932af9bedcc000b2c8d7f0bf213b8511fa0b1",
+        "capability_type": "visual_asset_candidate",
+        "event_digest": "sha256:30b34e6bb2da814940024ca37687bd6ff4633e609d4e599dd8102d6211f3b999",
+        "event_type": "refused",
+        "evidence_digest": "sha256:b530198ad775504f1fbae0aad8a35281e88f295ca72434f881ffa65f877aefb3",
+        "fresh_work_units": 1,
+        "lifecycle_state": "refused",
+        "metadata": {
+          "output_digest": "sha256:18a16960889fc255e6074a8cac8ef08d9746dcd3f59a8e8cb7dee933aa6453d9",
+          "source_lane": "provider_fallback"
+        },
+        "observed_at": "2026-08-03T10:48:59.811200+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 1,
+        "receipt_digest": "sha256:3ec05c5ce2a8f7b2620f93c4b7b3e9b9ee9df267602a9390d72c23533cc92aa7",
+        "refusal_reason": "quality_gate_failed",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "sha256:2f18a95a229382c3b289625b0da69c5faa2316723e95df9e8940b8e29fb183af",
+        "capability_type": "visual_asset_candidate",
+        "event_digest": "sha256:9b584e0efe6ab86a52bb10491460169a2f13e4b275d6c58675271e1dd6a4f842",
+        "event_type": "refused",
+        "evidence_digest": "sha256:d1b4c34778f009e2bca0532868644a85e27c720becc0491fe75e6e2f1b2368d8",
+        "fresh_work_units": 1,
+        "lifecycle_state": "refused",
+        "metadata": {
+          "output_digest": "sha256:b809cc818310040321b7b53d9bad27bb34357e93e7e2d0c5aa1b66efa948a0b9",
+          "source_lane": "provider_fallback"
+        },
+        "observed_at": "2026-08-03T10:48:56.609319+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 1,
+        "receipt_digest": "sha256:41f1dafa3ab158516dbdee07ebffec06f09d1b2f1f18419ae037bd8925c9a8f1",
+        "refusal_reason": "perceptual_gate_failed",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "sha256:2f18a95a229382c3b289625b0da69c5faa2316723e95df9e8940b8e29fb183af",
+        "capability_type": "visual_asset_candidate",
+        "event_digest": "sha256:105743ba3ebd2282d0cb651e62c5e866070f6c00e553720d9cbd07a253420d4f",
+        "event_type": "refused",
+        "evidence_digest": "sha256:3fd780312cfaeb88745878b6c3254171386119a972c50f7e6e1e08aea8ed8186",
+        "fresh_work_units": 1,
+        "lifecycle_state": "refused",
+        "metadata": {
+          "output_digest": "sha256:b809cc818310040321b7b53d9bad27bb34357e93e7e2d0c5aa1b66efa948a0b9",
+          "source_lane": "provider_fallback"
+        },
+        "observed_at": "2026-08-03T10:48:52.552307+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 1,
+        "receipt_digest": "sha256:41f1dafa3ab158516dbdee07ebffec06f09d1b2f1f18419ae037bd8925c9a8f1",
+        "refusal_reason": "perceptual_gate_failed",
+        "reuse_hits": 0
+      }
+    ],
+    "reuse_hits": 0,
+    "version": "1.0"
+  },
+  "claim_boundary": "Live-provider boundary requested. Execution remains governed by adapter readiness, approval, and downstream gates.",
+  "image": {
+    "case_count": 2,
+    "cases": [
+      {
+        "case_id": "image:status-light:green",
+        "failure": "",
+        "promoted_asset_reused": false,
+        "prompt_digest": "sha256:75ce96b867bba7dd85035c07c8bc8ba0c763464cf8d6542511ea543cd547bf3d",
+        "provider_calls_used": 2,
+        "provider_teach_attempted": true,
+        "provider_teach_skipped_existing_asset": false,
+        "reuse_receipt_digest": "sha256:815324ac13c2eaeb7d2d6e4e068566daa586c23b9036e19d21079d9cc0fc97d8"
+      },
+      {
+        "case_id": "image:status-light:blue",
+        "failure": "",
+        "promoted_asset_reused": false,
+        "prompt_digest": "sha256:c4bbc4a52f91921f9a649ad93117065e3f7ef00fe2d0f6e6eb02c5a9fa7279ac",
+        "provider_calls_used": 2,
+        "provider_teach_attempted": true,
+        "provider_teach_skipped_existing_asset": false,
+        "reuse_receipt_digest": "sha256:75be96f7dd807f57828e2caa4f274856c15229c0c8f6677b50ffc42d286a52da"
+      }
+    ],
+    "failed_count": 2,
+    "gauntlet_digest": "sha256:4b3885d0ceff19fd94a4c8750bb9717d3c802558d462e090ba0807b15edb7c4c",
+    "promoted_asset_reuse_hits": 0,
+    "provider_calls_used": 4,
+    "status": "failed",
+    "stored_asset_reuse_hits": 0
+  },
+  "learning_model": {
+    "semantic_crystals": "promote repeated verified operator-language episodes, then replay from stored registry",
+    "visual_assets": "promote repeated/equivalent verified region outputs into render-only assets, then reuse before provider fallback"
+  },
+  "observed_at": "2026-08-03T10:49:03.298565+00:00",
+  "provider_boundary": {
+    "adapter_inventory_digest": "sha256:54348cfdc1ef53a5a1986b390cde20bc12a2c5ccb0c7d79bce26924f6e49cc84",
+    "approval_present": true,
+    "chat_provider_id": "",
+    "provider_id": "hf",
+    "provider_mode": "live",
+    "provider_receipt_digests": [
+      "sha256:57d5f3294cb90bdfa0ed64cea0a86cd17ce121e0eb45da5b82f128b910b7ba97",
+      "sha256:1eaddc36c3294edceb688abc3c7502586eb3ae336ca81b74597c4a27f5c05cc5",
+      "sha256:a77880d2c4b1905a1ddc04dd2571c940f041d75cc188dadaaec50af308ab5ec5",
+      "sha256:0e4baae440c6afac02b8af104612198d9076ecd0bb78991e2c7766559c891536"
+    ]
+  },
+  "provider_call_log_digest": "sha256:4d6b70f09b002ea85c59a8b9d97fe7df42605037eefe88858dd6977687460bbe",
+  "receipt_digest": "sha256:aa5e6d3268d4194f0a67d6c6568c6585859eb5e717e56987eaa3ce2a1bcc8aaa",
+  "run_id": "2026-08-03T000000-live-hf-sdk-c",
+  "scorecard_after": {
+    "beast_object_type": "provider_reduction_scorecard",
+    "g9_bundle_health": [],
+    "normalized_evidence_events": 0,
+    "observed_channels": [
+      {
+        "channel": "semantic_crystals",
+        "channel_digest": "sha256:8a2f7e02a07a64e425afb25b2432265d6ffaf903e82f5539b776bb4ba3adc3dd",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "one avoided fresh operator-language interpretation counted as one provider-risk displacement witness"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "physical_crystals",
+        "channel_digest": "sha256:d749319329f75e58d611d488f0da6e74db6db5a7ae54c2df75c9fe06cbe472b7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts production_displacement_observation receipts only"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "verified_displacement_economics",
+        "channel_digest": "sha256:eb561d4a609bbf1d23a0135bcdc93225d4bc97854ceb90c5c908526b156e09de",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "paired net-positive economics receipts"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "scene_capsules",
+        "channel_digest": "sha256:b23640f02f14b895f261d2bc3ca134f367187702eb0642715e5efee11289a1a9",
+        "claim_class": "observed",
+        "events": 6,
+        "notes": [
+          "deterministic visual composition is local, but does not count as provider-call avoidance until paired against provider image fallback"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_residuals",
+        "channel_digest": "sha256:48c99855938619fa3a0402ab42dc95a576d12eb8c045e2d15a43e4c9bd6e8205",
+        "claim_class": "observed",
+        "events": 2,
+        "notes": [
+          "local region-only image fills are wired; promoted asset reuse avoids repeated local residual execution but does not claim provider avoidance without paired provider fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 4,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "promoted_visual_assets",
+        "channel_digest": "sha256:d7e1fb136526b0b684130fc21840ce98271a1b3e1af3cb279afeece8f597ace7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "repeated verified region outputs can promote into render-only visual assets; provider avoidance remains conservative until paired with provider-fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_asset_refusals",
+        "channel_digest": "sha256:de4eb1a912794e215810fcdd871f92b91a12b1809e7994f122e976848002cd74",
+        "claim_class": "observed",
+        "events": 4,
+        "notes": [
+          "counts refused visual promotion candidates such as low-quality, unstable, stale, or false reuse candidates"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "physical_crystal_replays": 0,
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 4,
+    "provider_fallbacks": 0,
+    "provider_reduction_ratio": 0.0,
+    "scene_capsules_composed": 6,
+    "scorecard_digest": "sha256:28f339f35a089cd99c6d9a5d1b7eab19ce60bc24d87125f5adad8b5e9ef822c6",
+    "semantic_replays": 0,
+    "tokens_avoided_observed": 0,
+    "trend_buckets": [
+      {
+        "bucket_digest": "sha256:43c7477e73264aa4e3522b412868a8c2f8433d90aa5353f44da18c5ba93df6d9",
+        "events": 16,
+        "local_compute_events": 8,
+        "normalized_evidence_events": 0,
+        "notes": [
+          "perceptual_gate_failed",
+          "quality_gate_failed"
+        ],
+        "period": "2026-08-03",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 4,
+        "provider_fallback_events": 4,
+        "semantic_replays": 0,
+        "tokens_avoided_observed": 0,
+        "visual_asset_refusals": 4,
+        "visual_promoted_asset_reuses": 0
+      }
+    ],
+    "unsupported_or_estimated_channels": [
+      {
+        "channel": "visual_image_generation",
+        "channel_digest": "sha256:325dd6737a5d6f251fb5650fff3238adb1b5471fa5518f34df91b4a224b4c60a",
+        "claim_class": "route_selection_only",
+        "events": 10,
+        "notes": [
+          "local fills, explicit provider fallback, and promoted visual asset reuse are wired; net provider-avoidance claims still need paired fallback comparisons"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 4,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "forge_kv_prompt_cache",
+        "channel_digest": "sha256:2dfb3fa375359cb60a289c0b8aaf35f87c2d12421990ab0501ae5c2e76e0b18a",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no normalized Forge KV native-restore evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "grand_closure",
+        "channel_digest": "sha256:ee66d6ab90ab9e70b8cd13e75fc8ec177a81e3e3bd22e5347065221b91bb5f64",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "no normalized Grand Closure/G9 bundle-health evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "commons_spaces",
+        "channel_digest": "sha256:7d227c75b0d37465eb3c16ac1db40cb4b55cbae5dcae8bb0ec4dbdc08893dcca",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no locally reproduced/promoted Commons Space reduction receipt has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "version": "1.0",
+    "visual_asset_promotions": 0,
+    "visual_asset_refusals": 4,
+    "visual_asset_reuses": 0,
+    "visual_provider_fallbacks": 4,
+    "visual_regions_local": 2
+  },
+  "scorecard_before": {
+    "beast_object_type": "provider_reduction_scorecard",
+    "g9_bundle_health": [],
+    "normalized_evidence_events": 0,
+    "observed_channels": [
+      {
+        "channel": "semantic_crystals",
+        "channel_digest": "sha256:8a2f7e02a07a64e425afb25b2432265d6ffaf903e82f5539b776bb4ba3adc3dd",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "one avoided fresh operator-language interpretation counted as one provider-risk displacement witness"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "physical_crystals",
+        "channel_digest": "sha256:d749319329f75e58d611d488f0da6e74db6db5a7ae54c2df75c9fe06cbe472b7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts production_displacement_observation receipts only"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "verified_displacement_economics",
+        "channel_digest": "sha256:eb561d4a609bbf1d23a0135bcdc93225d4bc97854ceb90c5c908526b156e09de",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "paired net-positive economics receipts"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "scene_capsules",
+        "channel_digest": "sha256:c7e4a69afb7269e11849cb62d2871a27957b958c850c05a98b91a345c219e01b",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "deterministic visual composition is local, but does not count as provider-call avoidance until paired against provider image fallback"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_residuals",
+        "channel_digest": "sha256:bc99b50be1dd8ad71a935aee65c473d55d8cf2cc2b2c0fba3be822986d1c6ed8",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "local region-only image fills are wired; promoted asset reuse avoids repeated local residual execution but does not claim provider avoidance without paired provider fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "promoted_visual_assets",
+        "channel_digest": "sha256:d7e1fb136526b0b684130fc21840ce98271a1b3e1af3cb279afeece8f597ace7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "repeated verified region outputs can promote into render-only visual assets; provider avoidance remains conservative until paired with provider-fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_asset_refusals",
+        "channel_digest": "sha256:bd19e1cbc503231cefcf382f61389ec6b4dff7b359f474be99bdc47ea31ff901",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts refused visual promotion candidates such as low-quality, unstable, stale, or false reuse candidates"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "physical_crystal_replays": 0,
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 0,
+    "provider_fallbacks": 0,
+    "provider_reduction_ratio": 0.0,
+    "scene_capsules_composed": 0,
+    "scorecard_digest": "sha256:dd8e0c1f7f167b177e766eb030adfbd23836403c6b0cc1578f4fd4371d519585",
+    "semantic_replays": 0,
+    "tokens_avoided_observed": 0,
+    "trend_buckets": [],
+    "unsupported_or_estimated_channels": [
+      {
+        "channel": "visual_image_generation",
+        "channel_digest": "sha256:30e8f73cebeff0d939f3efcd3f37d6f5608e10a5eb1dfd708a4a8df93f508d02",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "local fills, explicit provider fallback, and promoted visual asset reuse are wired; net provider-avoidance claims still need paired fallback comparisons"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "forge_kv_prompt_cache",
+        "channel_digest": "sha256:2dfb3fa375359cb60a289c0b8aaf35f87c2d12421990ab0501ae5c2e76e0b18a",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no normalized Forge KV native-restore evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "grand_closure",
+        "channel_digest": "sha256:ee66d6ab90ab9e70b8cd13e75fc8ec177a81e3e3bd22e5347065221b91bb5f64",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "no normalized Grand Closure/G9 bundle-health evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "commons_spaces",
+        "channel_digest": "sha256:7d227c75b0d37465eb3c16ac1db40cb4b55cbae5dcae8bb0ec4dbdc08893dcca",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no locally reproduced/promoted Commons Space reduction receipt has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "version": "1.0",
+    "visual_asset_promotions": 0,
+    "visual_asset_refusals": 0,
+    "visual_asset_reuses": 0,
+    "visual_provider_fallbacks": 0,
+    "visual_regions_local": 0
+  },
+  "state_root": ".beast/state/generation_gauntlets_live_hf_sdk_c",
+  "stored_capabilities": {
+    "semantic_crystal_count": 0,
+    "semantic_crystal_ids": [],
+    "semantic_registry_path": ".beast/state/generation_gauntlets_live_hf_sdk_c/semantic_crystals.jsonl",
+    "visual_asset_count": 0,
+    "visual_asset_ids": [],
+    "visual_registry_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "text": {
+    "case_count": 0,
+    "reason": "text gauntlet disabled",
+    "status": "skipped"
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,33 @@
+{
+  "algorithm": "ML-KEM-768",
+  "beast_object_type": "commons_ml_kem_gauntlet_receipt",
+  "failure_count": 3,
+  "failures": [
+    {
+      "base_url": "http://127.0.0.1:8111",
+      "failure": "RuntimeError: liboqs-python is required for Commons ML-KEM support"
+    },
+    {
+      "base_url": "http://127.0.0.1:8112",
+      "failure": "RuntimeError: liboqs-python is required for Commons ML-KEM support"
+    },
+    {
+      "base_url": "http://127.0.0.1:8113",
+      "failure": "RuntimeError: liboqs-python is required for Commons ML-KEM support"
+    }
+  ],
+  "node_count": 0,
+  "nodes": [],
+  "nodes_requested": [
+    "http://127.0.0.1:8111",
+    "http://127.0.0.1:8112",
+    "http://127.0.0.1:8113"
+  ],
+  "observed_at": "2026-08-03T21:24:52.655999+00:00",
+  "pairwise_transcript_matrix": [],
+  "receipt_digest": "sha256:8d5a9ebab83355d5d9db0273fc2b19fdad4e74b7a21315176871cbb79dae05af",
+  "run_id": "physical-truth-commons-mlkem-live-002",
+  "secret_storage_policy": "shared_secret_bytes_never_serialized",
+  "status": "failed",
+  "version": "1.0"
+}

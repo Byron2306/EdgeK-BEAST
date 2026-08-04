@@ -1,0 +1,47 @@
+{
+  "beast_object_type": "c4x_pq_transport_gauntlet",
+  "claim_boundary": "Full C4-X PQ transport gate: ML-KEM key agreement plus ML-DSA authenticity and hostile tamper/replay/policy checks. Shared secrets and private signing keys are never serialized.",
+  "created_at": "2026-08-03T23:35:27.392615+00:00",
+  "pq_transport_receipt": {
+    "artifact_digest": "sha256:76c4d3c9cbaf316b9124300eb360e19dfe235ac7b5a3354ed2fa98b0eebf23fd",
+    "artifact_digest_verified": true,
+    "ciphertext_tamper_rejected": true,
+    "fallback": false,
+    "ml_dsa_receipt": {
+      "algorithm": "ML-DSA-65",
+      "available": true,
+      "ml_dsa_signature_verified": true,
+      "private_key_never_serialized": true,
+      "private_key_serialized": false,
+      "public_key_digest": "sha256:85416e9279196a2351e2da19bdee909fe8d5b39e29c8e5d9855116739333f0c2",
+      "signature_digest": "sha256:ec6f3e636234bc34feb6fa9649601d725845af8b80de1a4df85b1bbe7ddc1230",
+      "signature_tamper_rejected": true
+    },
+    "ml_dsa_signature_verified": true,
+    "ml_kem_active": true,
+    "ml_kem_receipt": {
+      "algorithm": "ML-KEM-768",
+      "ciphertext_digest": "sha256:b39bd79189100c7dd4d6504c37221569ef5782f73d797c07e2fd1b0e32829584",
+      "ciphertext_tamper_rejected": true,
+      "ml_kem_active": true,
+      "node": "http://127.0.0.1:8111",
+      "recipient_decapsulation_verified": true,
+      "secret_exported": false
+    },
+    "policy_scope_accepted": true,
+    "receipt_digest": "sha256:474c799dd1bd49c6f7ba84566384c0744d3739b4f46a355eb2b120f6fe16ba85",
+    "recipient_decapsulation_verified": true,
+    "replay_nonce_unused": true,
+    "replay_receipt": {
+      "first_use_accepted": true,
+      "nonce_digest": "sha256:9f56f61b5fe0c63819d225c6b412a7e08e4fc9ae1b98406e831ed2860969bf59",
+      "replay_nonce_unused": true,
+      "replay_refused": true
+    },
+    "signature_tamper_rejected": true,
+    "status": "passed"
+  },
+  "receipt_digest": "sha256:44c9e6b3aa242574b9e9ebbcd432546ba2fc372d1aad37c9dfff81fd76cc9157",
+  "run_id": "physical-truth-digest-bound-one-shot-001-pq-transport",
+  "version": "1.0"
+}

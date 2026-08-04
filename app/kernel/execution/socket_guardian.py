@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import array
 import base64
+import fcntl
 import hashlib
 import json
 import os
@@ -21,6 +22,8 @@ import uuid
 from typing import Any, Callable, Mapping
 
 from app.kernel.compute.crystal_bus import peer_credentials
+from app.kernel.crystals.capsule_codec import CapsuleCodec
+from app.kernel.crystals.capsule_contracts import sha256_digest as capsule_sha256_digest
 from app.kernel.execution.port_lease_broker import PortLease, SocketHandoffReceipt
 from app.kernel.execution.guardian_authorization import capability_mapping
 from app.kernel.sensorium.contracts import ProcessLease
@@ -412,8 +415,17 @@ class SocketGuardianServer:
         if uid != self.expected_uid:
             self._send(connection, {"ok": False, "error": "peer_uid_not_authorized"})
             return
-        data, _ancillary, flags, _address = connection.recvmsg(MAX_FRAME)
+        fd_item_size = array.array("i").itemsize
+        data, ancillary, flags, _address = connection.recvmsg(MAX_FRAME, socket.CMSG_SPACE(16 * fd_item_size))
+        received_fds: list[int] = []
+        for level, kind, raw in ancillary:
+            if level == socket.SOL_SOCKET and kind == socket.SCM_RIGHTS:
+                values = array.array("i")
+                values.frombytes(raw[: len(raw) - (len(raw) % values.itemsize)])
+                received_fds.extend(values.tolist())
         if flags & getattr(socket, "MSG_TRUNC", 0):
+            for fd in received_fds:
+                os.close(fd)
             self._send(connection, {"ok": False, "error": "frame_truncated"})
             return
         try:
@@ -421,13 +433,19 @@ class SocketGuardianServer:
             if not isinstance(request, dict):
                 raise ValueError("request must be an object")
             self._validate_request_identity(request, pid=pid)
-            result, fd = self._dispatch(request, peer_pid=pid, peer_uid=uid)
+            result, fd = self._dispatch(request, peer_pid=pid, peer_uid=uid, received_fds=tuple(received_fds))
             self._send(connection, {"ok": True, "request_id": request.get("request_id"), "result": result}, fd=fd)
         except Exception as exc:
             self._send(connection, {
                 "ok": False, "request_id": request.get("request_id") if isinstance(locals().get("request"), dict) else "",
                 "error": type(exc).__name__, "message": str(exc),
             })
+        finally:
+            for fd in received_fds:
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
 
     def _validate_request_identity(self, request: Mapping[str, Any], *, pid: int) -> None:
         if not request.get("request_id") or not request.get("op"):
@@ -474,7 +492,14 @@ class SocketGuardianServer:
             )
         return current
 
-    def _dispatch(self, request: Mapping[str, Any], *, peer_pid: int, peer_uid: int) -> tuple[Mapping[str, Any], int | None]:
+    def _dispatch(
+        self,
+        request: Mapping[str, Any],
+        *,
+        peer_pid: int,
+        peer_uid: int,
+        received_fds: tuple[int, ...] = (),
+    ) -> tuple[Mapping[str, Any], int | None]:
         op = str(request["op"])
         if op == "reserve":
             return self._reserve(request, peer_pid, peer_uid), None
@@ -493,7 +518,80 @@ class SocketGuardianServer:
             return self._reconcile_registry(request, peer_pid, peer_uid), None
         if op == "probe_health":
             return self._probe_health(request, peer_pid, peer_uid), None
+        if op == "verify_capsule":
+            return self._verify_capsule_handoff(request, peer_pid, peer_uid, received_fds), None
         raise GuardianProtocolError(f"unsupported guardian operation: {op}")
+
+    def _verify_capsule_handoff(
+        self,
+        request: Mapping[str, Any],
+        peer_pid: int,
+        peer_uid: int,
+        received_fds: tuple[int, ...],
+    ) -> Mapping[str, Any]:
+        if len(received_fds) != 1:
+            raise GuardianProtocolError("verify_capsule requires exactly one SCM_RIGHTS descriptor")
+        fd = received_fds[0]
+        stat = os.fstat(fd)
+        if stat.st_size <= 0 or stat.st_size > MAX_FRAME:
+            raise ValueError("capsule descriptor size is outside guardian verification bounds")
+        payload = os.pread(fd, stat.st_size, 0)
+        capsule_digest = capsule_sha256_digest(payload)
+        expected_capsule_digest = str(request.get("expected_capsule_digest") or "")
+        if expected_capsule_digest and expected_capsule_digest != capsule_digest:
+            raise PermissionError("capsule digest does not match request binding")
+        required = fcntl.F_SEAL_WRITE | fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_SEAL
+        seals = fcntl.fcntl(fd, fcntl.F_GET_SEALS)
+        sealed = bool(seals & required == required)
+        if not sealed:
+            raise PermissionError("capsule descriptor is not sealed")
+        envelope = CapsuleCodec.decode(payload)
+        manifest = dict(envelope.get("manifest") or {})
+        canonical_ir = dict(envelope.get("canonical_ir") or {})
+        unsigned = CapsuleCodec.reconstruct_unsigned(envelope)
+        signature_block = dict(envelope.get("signature_block") or {})
+        if signature_block.get("signed_digest") != capsule_sha256_digest(unsigned):
+            raise PermissionError("capsule signature block is not bound to unsigned envelope")
+        if manifest.get("artifact_digest") != capsule_sha256_digest(
+            json.dumps(canonical_ir, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ):
+            raise PermissionError("capsule artifact digest mismatch")
+        raw_payload_digest = str(canonical_ir.get("payload_digest") or "")
+        for field, manifest_field in (
+            ("authority_ref", "signer_id"),
+            ("audience", "audience_class"),
+            ("capability_ref", "required_capability"),
+            ("appraisal_ref", "promotion_digest"),
+        ):
+            expected = str(request.get(field) or "")
+            if expected and expected != str(manifest.get(manifest_field) or ""):
+                raise PermissionError(f"capsule {field} binding mismatch")
+        transferred = time.monotonic_ns()
+        receipt_body = {
+            "beast_object_type": "socket_guardian_capsule_handoff_receipt",
+            "version": "1.0",
+            "guardian_id": self.guardian_id,
+            "peer_pid": peer_pid,
+            "peer_uid": peer_uid,
+            "transferred_at_monotonic_ns": transferred,
+            "capsule_digest": capsule_digest,
+            "capsule_size": stat.st_size,
+            "raw_payload_digest": raw_payload_digest,
+            "artifact_digest": str(manifest.get("artifact_digest") or ""),
+            "generation_crystal_digest": str(manifest.get("promotion_digest") or ""),
+            "authority_ref": str(manifest.get("signer_id") or ""),
+            "audience": str(manifest.get("audience_class") or ""),
+            "capability_ref": str(manifest.get("required_capability") or ""),
+            "sealed": sealed,
+            "fd_transport": "SCM_RIGHTS",
+            "verified": True,
+        }
+        signature = base64.b64encode(self.signer.sign(_canonical(receipt_body))).decode("ascii") if self.signer else ""
+        return {
+            **receipt_body,
+            "receipt_digest": _digest(receipt_body),
+            "signature": signature,
+        }
 
     def _reserve(self, request: Mapping[str, Any], peer_pid: int, peer_uid: int) -> Mapping[str, Any]:
         family = str(request.get("family") or "AF_INET")
@@ -783,7 +881,14 @@ class SocketGuardianClient:
         if self.require_signed_receipts and self.receipt_verifier is None:
             raise RuntimeError("protected guardian client requires a receipt verifier")
 
-    def _request(self, op: str, payload: Mapping[str, Any], *, expect_fd: bool = False):
+    def _request(
+        self,
+        op: str,
+        payload: Mapping[str, Any],
+        *,
+        expect_fd: bool = False,
+        fds: tuple[int, ...] = (),
+    ):
         request = {"request_id": str(uuid.uuid4()), "op": op, **dict(payload)}
         if self.process_lease_provider is not None:
             request["process_lease"] = self.process_lease_provider().to_dict()
@@ -796,7 +901,10 @@ class SocketGuardianClient:
         try:
             if peer_credentials(connection)[1] != self.expected_uid:
                 raise PermissionError("socket guardian uid is not trusted")
-            connection.send(_canonical(request))
+            ancillary = []
+            if fds:
+                ancillary.append((socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", fds)))
+            connection.sendmsg([_canonical(request)], ancillary)
             data, ancillary, flags, _address = connection.recvmsg(MAX_FRAME, socket.CMSG_SPACE(array.array("i").itemsize))
             if flags & getattr(socket, "MSG_TRUNC", 0):
                 raise GuardianProtocolError("guardian response was truncated")
@@ -859,6 +967,43 @@ class SocketGuardianClient:
     def mark_health(self, lease_id: str, *, healthy: bool, **binding) -> PortLease:
         result, _ = self._request("mark_health", {"lease_id": lease_id, "healthy": healthy, **binding})
         return PortLease(**result)
+
+    def verify_capsule(
+        self,
+        capsule_fd: int,
+        *,
+        expected_capsule_digest: str,
+        authority_ref: str = "",
+        audience: str = "",
+        capability_ref: str = "",
+        appraisal_ref: str = "",
+        **binding,
+    ) -> Mapping[str, Any]:
+        result, _ = self._request(
+            "verify_capsule",
+            {
+                "expected_capsule_digest": expected_capsule_digest,
+                "authority_ref": authority_ref,
+                "audience": audience,
+                "capability_ref": capability_ref,
+                "appraisal_ref": appraisal_ref,
+                **binding,
+            },
+            fds=(capsule_fd,),
+        )
+        if result.get("guardian_id") != self.expected_guardian_id:
+            raise PermissionError("capsule handoff receipt guardian binding is invalid")
+        body = {key: value for key, value in dict(result).items() if key not in {"receipt_digest", "signature"}}
+        if result.get("receipt_digest") != _digest(body):
+            raise PermissionError("capsule handoff receipt digest is invalid")
+        if self.require_signed_receipts and not result.get("signature"):
+            raise PermissionError("capsule handoff receipt is unsigned")
+        if self.receipt_verifier is not None and result.get("signature"):
+            try:
+                self.receipt_verifier.verify(base64.b64decode(str(result["signature"]), validate=True), _canonical(body))
+            except Exception as exc:
+                raise PermissionError("capsule handoff signature is invalid") from exc
+        return result
 
     def snapshot(self) -> tuple[PortLease, ...]:
         result, _ = self._request("snapshot", {})

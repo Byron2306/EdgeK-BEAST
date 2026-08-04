@@ -21,8 +21,27 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 
 from app.kernel.compute.compute_ledger import ComputeLedger
+from app.kernel.compute.capability_learning import CapabilityLearningLedger
+from app.kernel.compute.capability_composition import CapabilityCompositionPlane
+from app.kernel.compute.cross_modal_composition import CrossModalCompositionPlane
+from app.kernel.compute.proof_first_cross_modal import compile_restart_risk_proof_first
+from app.kernel.compute.visual_capability_composition import VisualCapabilityCompositionPlane
+from app.kernel.compute.proof_graph import (
+    CanonicalProofGraph,
+    ProofClaimStatus,
+    ProofGraphClaim,
+    TextProofView,
+    VisualProofPrimitive,
+    VisualProofView,
+)
 from app.kernel.compute.displacement_economics import DisplacementEconomics, PairedOccurrence
 from app.kernel.compute.displacement_observatory import DisplacementObservatory
+from app.kernel.compute.generation_provider_adapters import (
+    GenerationModality,
+    GenerationProviderAdapterRegistry,
+    GenerationProviderRequest,
+    ProviderMode,
+)
 from app.kernel.compute.distributed_forge_scheduler import DistributedForgeScheduler
 from app.kernel.compute.disk_pressure_cleanup import build_cleanup_manifest
 from app.kernel.compute.forge_supervisor import ForgeSupervisor
@@ -46,6 +65,7 @@ from app.kernel.compute.residual_contracts import (
     VerificationState,
     sha256_digest,
     utc_now_iso,
+    validate_digest,
 )
 from app.kernel.compute.scene_synthesis import (
     AssetKind,
@@ -72,16 +92,23 @@ from app.kernel.compute.semantic_generalizer import (
 from app.kernel.compute.visual_residuals import (
     RegionMask,
     SupervisedCPUVisualResidualWorker,
+    VisualRegionFeatureEmbedding,
     VisualResidualBudget,
     VisualPromptIntent,
     VisualResidualReceipt,
     VisualResidualRequest,
+    build_visual_region_feature_embedding,
+    evaluate_visual_region_equivalence,
     evaluate_visual_region_perceptual,
     evaluate_visual_region_intent,
     evaluate_visual_region_quality,
     extract_visual_prompt_intent,
     verify_visual_residual_output,
     verify_visual_residual_receipt,
+)
+from app.kernel.compute.forge_kv_ml_kem_transport import (
+    FORGE_KV_ML_KEM_TRANSPORT_AUTHORITY,
+    validate_ml_kem_bound_transport_receipt,
 )
 from app.kernel.networking.commons_spaces import validate_reduction_receipt
 from app.kernel.compute.physical_crystal_lifecycle import (
@@ -310,6 +337,8 @@ class VisualPromotedAssetRecord:
     quality_receipt_digest: str = ""
     intent_receipt_digest: str = ""
     perceptual_receipt_digest: str = ""
+    feature_embedding_digest: str = ""
+    equivalence_receipt_digest: str = ""
 
     @property
     def record_digest(self) -> str:
@@ -335,6 +364,8 @@ class VisualPromotedAssetRecord:
             "quality_receipt_digest": self.quality_receipt_digest,
             "intent_receipt_digest": self.intent_receipt_digest,
             "perceptual_receipt_digest": self.perceptual_receipt_digest,
+            "feature_embedding_digest": self.feature_embedding_digest,
+            "equivalence_receipt_digest": self.equivalence_receipt_digest,
             "evidence_node_id": self.evidence_node_id,
             "created_at": self.created_at,
             "record_digest": self.record_digest,
@@ -366,6 +397,20 @@ class ScientificPromotionGate:
         return bound
 
 
+def _visual_treatment_for_claim_status(status: ProofClaimStatus) -> str:
+    if status is ProofClaimStatus.SUPPORTED:
+        return "solid_edge_with_rule_badge"
+    if status is ProofClaimStatus.RESIDUAL_SUPPORTED:
+        return "dashed_residual_advisory_edge"
+    if status is ProofClaimStatus.UNSUPPORTED:
+        return "dashed_interruption_with_explicit_unsupported_label"
+    if status is ProofClaimStatus.REFUTED:
+        return "blocked_or_crossed_relation"
+    if status is ProofClaimStatus.STALE:
+        return "clock_badge_and_faded_status"
+    return "unknown_proof_state"
+
+
 class ComputePlane:
     """One observable owner for authorization, execution and proof."""
 
@@ -386,6 +431,11 @@ class ComputePlane:
         "operator_language_plane",
         "semantic_generalizer", "semantic_crystal_registry",
         "scene_compositor", "visual_residual_worker", "promoted_visual_assets",
+        "capability_learning_ledger",
+        "capability_composition_plane",
+        "cross_modal_composition_plane",
+        "visual_capability_composition_plane",
+        "generation_provider_adapters",
     )
     OFFLINE_ONLY_MODULES = tuple(sorted(SUPERVISED_EVIDENCE | OFFLINE_LIBRARY))
 
@@ -473,6 +523,11 @@ class ComputePlane:
         self.displacement_observatory = DisplacementObservatory()
         self.semantic_generalizer = SemanticGeneralizer()
         self.semantic_crystal_registry = SemanticCrystalRegistry(self.root / "semantic_crystals.jsonl")
+        self.capability_learning_ledger = CapabilityLearningLedger(self.root / "capability_learning.jsonl")
+        self.capability_composition_plane = CapabilityCompositionPlane()
+        self.cross_modal_composition_plane = CrossModalCompositionPlane()
+        self.visual_capability_composition_plane = VisualCapabilityCompositionPlane()
+        self.generation_provider_adapters = GenerationProviderAdapterRegistry()
         self.operator_language_plane = OperatorLanguagePlane(
             registry_path=Path(__file__).resolve().parents[3] / ".byron" / "services.yaml"
         )
@@ -492,12 +547,48 @@ class ComputePlane:
         self.promoted_visual_assets: dict[str, VisualPromotedAssetRecord] = {}
         self._visual_asset_observations: Counter[str] = Counter()
         self._visual_asset_observation_digests: dict[str, str] = {}
+        self._visual_asset_observation_embeddings: dict[str, VisualRegionFeatureEmbedding] = {}
         self._visual_asset_observation_receipts: dict[str, list[str]] = {}
+        self._visual_asset_observation_equivalence_receipts: dict[str, list[str]] = {}
         self._visual_asset_observation_lanes: dict[str, set[str]] = {}
         self._appraisals: dict[str, dict[str, Any]] = {}
+        self.semantic_crystal_registry.load()
         self._load_promoted_artifacts()
         self._load_promoted_visual_assets()
         self.assert_production_composition()
+
+    def _record_capability_learning(
+        self,
+        *,
+        event_type: str,
+        capability_type: str,
+        capability_id: str,
+        lifecycle_state: str,
+        authority: str,
+        evidence_digest: str,
+        receipt_digest: str,
+        provider_calls_used: int = 0,
+        provider_calls_avoided: int = 0,
+        fresh_work_units: int = 0,
+        reuse_hits: int = 0,
+        refusal_reason: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> None:
+        self.capability_learning_ledger.record(
+            event_type=event_type,
+            capability_type=capability_type,
+            capability_id=capability_id,
+            lifecycle_state=lifecycle_state,
+            authority=authority,
+            evidence_digest=evidence_digest,
+            receipt_digest=receipt_digest,
+            provider_calls_used=int(provider_calls_used),
+            provider_calls_avoided=int(provider_calls_avoided),
+            fresh_work_units=int(fresh_work_units),
+            reuse_hits=int(reuse_hits),
+            refusal_reason=refusal_reason,
+            metadata=dict(metadata or {}),
+        )
 
     def _load_or_create_runtime_authority(self) -> tuple[Ed25519PrivateKey, Ed25519PublicKey]:
         key_path = self.root / "authority" / "arda-runtime-ed25519.pem"
@@ -722,6 +813,21 @@ class ComputePlane:
         self.semantic_crystal_registry.promote(record)
         self._counters["operator_language.semantic_promoted"] += 1
         self._last_receipts["semantic_promotion"] = record.promotion_receipt_digest
+        self._record_capability_learning(
+            event_type="promoted",
+            capability_type="semantic_crystal",
+            capability_id=record.crystal.crystal_id,
+            lifecycle_state=record.lifecycle_state.value,
+            authority="read_verified",
+            evidence_digest=record.promotion_receipt.verification_evidence_digest,
+            receipt_digest=record.promotion_receipt_digest,
+            fresh_work_units=len(episodes),
+            metadata={
+                "semantic_key_digest": record.semantic_key_digest,
+                "intent": record.crystal.meaning.intent,
+                "domain": record.crystal.meaning.domain.value,
+            },
+        )
         return record
 
     def _semantic_episode_from_operator_response(
@@ -806,6 +912,23 @@ class ComputePlane:
                 "domain": receipt.domain.value,
             })
             self._last_receipts["semantic_replay"] = node.node_id
+            self._record_capability_learning(
+                event_type="reused",
+                capability_type="semantic_crystal",
+                capability_id=record.crystal.crystal_id,
+                lifecycle_state=record.lifecycle_state.value,
+                authority="read_verified",
+                evidence_digest=node.node_id,
+                receipt_digest=outcome.receipt_digest,
+                provider_calls_avoided=1,
+                reuse_hits=1,
+                metadata={
+                    "semantic_key_digest": record.semantic_key_digest,
+                    "operator_language_receipt_digest": receipt.receipt_digest,
+                    "intent": receipt.intent,
+                    "domain": receipt.domain.value,
+                },
+            )
             return (
                 OperatorLanguageResponse(
                     output=output,
@@ -1158,6 +1281,7 @@ class ComputePlane:
                 "width": region.width,
                 "height": region.height,
             },
+            "prompt": str(prompt),
             "prompt_digest": prompt_digest,
             "visual_intent_digest": visual_intent.intent_digest,
             "request_digest": request.request_digest,
@@ -1373,6 +1497,8 @@ class ComputePlane:
                     "intent_digest": visual_intent.intent_digest,
                     "intent_receipt_digest": record.intent_receipt_digest,
                     "perceptual_receipt_digest": record.perceptual_receipt_digest,
+                    "feature_embedding_digest": record.feature_embedding_digest,
+                    "equivalence_receipt_digest": record.equivalence_receipt_digest,
                 },
                 "base_scene_capsule_digest": base_scene_capsule.capsule.capsule_digest,
                 "promoted_scene_capsule_digest": promoted_capsule.capsule.capsule_digest,
@@ -1403,6 +1529,23 @@ class ComputePlane:
         })
         self._last_receipts["visual_promoted_asset_reuse"] = node.node_id
         self._counters["visual_residual.promoted_asset_reuse"] += 1
+        self._record_capability_learning(
+            event_type="reused",
+            capability_type="visual_asset",
+            capability_id=record.asset.asset_id,
+            lifecycle_state=record.asset.state,
+            authority="render_only",
+            evidence_digest=node.node_id,
+            receipt_digest=receipt.receipt_digest,
+            provider_calls_avoided=1,
+            reuse_hits=1,
+            metadata={
+                "promotion_key": promotion_key,
+                "asset_digest": record.asset.digest,
+                "local_residual_calls_avoided": 1,
+                "equivalence_receipt_digest": record.equivalence_receipt_digest,
+            },
+        )
         return VisualResidualRuntimeResult(output, request, receipt, promoted_capsule.capsule, node.node_id)
 
     def _record_visual_asset_observation(
@@ -1424,8 +1567,9 @@ class ComputePlane:
         quality = evaluate_visual_region_quality(region, output)
         intent_receipt = evaluate_visual_region_intent(region, output, visual_intent)
         perceptual = evaluate_visual_region_perceptual(region, output, visual_intent)
+        feature_embedding = build_visual_region_feature_embedding(region, output, visual_intent)
         if not quality.passed:
-            self.evidence_graph.add("visual_asset_candidate_refused", {
+            node = self.evidence_graph.add("visual_asset_candidate_refused", {
                 "observed_at": utc_now_iso(),
                 "promotion_key": promotion_key,
                 "scene_capsule_digest": scene_capsule.capsule_digest,
@@ -1442,12 +1586,26 @@ class ComputePlane:
                 "intent_receipt_digest": intent_receipt.receipt_digest,
                 "perceptual_receipt": asdict(perceptual),
                 "perceptual_receipt_digest": perceptual.receipt_digest,
+                "feature_embedding_digest": feature_embedding.embedding_digest,
             })
             self._last_receipts["visual_asset_refusal"] = quality.receipt_digest
             self._counters["visual_asset.refused"] += 1
+            self._record_capability_learning(
+                event_type="refused",
+                capability_type="visual_asset_candidate",
+                capability_id=promotion_key,
+                lifecycle_state="refused",
+                authority="render_only",
+                evidence_digest=node.node_id,
+                receipt_digest=quality.receipt_digest,
+                provider_calls_used=1 if source_lane == "provider_fallback" else 0,
+                fresh_work_units=1,
+                refusal_reason="quality_gate_failed",
+                metadata={"source_lane": source_lane, "output_digest": output_digest},
+            )
             return
         if not intent_receipt.passed:
-            self.evidence_graph.add("visual_asset_candidate_refused", {
+            node = self.evidence_graph.add("visual_asset_candidate_refused", {
                 "observed_at": utc_now_iso(),
                 "promotion_key": promotion_key,
                 "scene_capsule_digest": scene_capsule.capsule_digest,
@@ -1464,12 +1622,26 @@ class ComputePlane:
                 "intent_receipt_digest": intent_receipt.receipt_digest,
                 "perceptual_receipt": asdict(perceptual),
                 "perceptual_receipt_digest": perceptual.receipt_digest,
+                "feature_embedding_digest": feature_embedding.embedding_digest,
             })
             self._last_receipts["visual_asset_refusal"] = intent_receipt.receipt_digest
             self._counters["visual_asset.refused"] += 1
+            self._record_capability_learning(
+                event_type="refused",
+                capability_type="visual_asset_candidate",
+                capability_id=promotion_key,
+                lifecycle_state="refused",
+                authority="render_only",
+                evidence_digest=node.node_id,
+                receipt_digest=intent_receipt.receipt_digest,
+                provider_calls_used=1 if source_lane == "provider_fallback" else 0,
+                fresh_work_units=1,
+                refusal_reason="intent_gate_failed",
+                metadata={"source_lane": source_lane, "output_digest": output_digest},
+            )
             return
         if not perceptual.passed:
-            self.evidence_graph.add("visual_asset_candidate_refused", {
+            node = self.evidence_graph.add("visual_asset_candidate_refused", {
                 "observed_at": utc_now_iso(),
                 "promotion_key": promotion_key,
                 "scene_capsule_digest": scene_capsule.capsule_digest,
@@ -1485,13 +1657,78 @@ class ComputePlane:
                 "intent_receipt_digest": intent_receipt.receipt_digest,
                 "perceptual_receipt": asdict(perceptual),
                 "perceptual_receipt_digest": perceptual.receipt_digest,
+                "feature_embedding_digest": feature_embedding.embedding_digest,
             })
             self._last_receipts["visual_asset_refusal"] = perceptual.receipt_digest
             self._counters["visual_asset.refused"] += 1
+            self._record_capability_learning(
+                event_type="refused",
+                capability_type="visual_asset_candidate",
+                capability_id=promotion_key,
+                lifecycle_state="refused",
+                authority="render_only",
+                evidence_digest=node.node_id,
+                receipt_digest=perceptual.receipt_digest,
+                provider_calls_used=1 if source_lane == "provider_fallback" else 0,
+                fresh_work_units=1,
+                refusal_reason="perceptual_gate_failed",
+                metadata={"source_lane": source_lane, "output_digest": output_digest},
+            )
             return
         previous_digest = self._visual_asset_observation_digests.get(promotion_key)
+        equivalence_receipt_digest = ""
         if previous_digest and previous_digest != output_digest:
-            self.evidence_graph.add("visual_asset_candidate_refused", {
+            previous_embedding = self._visual_asset_observation_embeddings.get(promotion_key)
+            equivalence = (
+                evaluate_visual_region_equivalence(previous_embedding, feature_embedding)
+                if previous_embedding is not None
+                else None
+            )
+            if equivalence is None or not equivalence.equivalent:
+                node = self.evidence_graph.add("visual_asset_candidate_refused", {
+                    "observed_at": utc_now_iso(),
+                    "promotion_key": promotion_key,
+                    "scene_capsule_digest": scene_capsule.capsule_digest,
+                    "mask_digest": region.mask_digest,
+                    "prompt_digest": prompt_digest,
+                    "seed": int(seed),
+                    "previous_output_digest": previous_digest,
+                    "new_output_digest": output_digest,
+                    "reason": "unstable_region_output",
+                    "quality_receipt_digest": quality.receipt_digest,
+                    "intent_receipt_digest": intent_receipt.receipt_digest,
+                    "perceptual_receipt_digest": perceptual.receipt_digest,
+                    "feature_embedding_digest": feature_embedding.embedding_digest,
+                    "equivalence_receipt": asdict(equivalence) if equivalence is not None else None,
+                    "equivalence_receipt_digest": equivalence.receipt_digest if equivalence is not None else "",
+                })
+                self._last_receipts["visual_asset_refusal"] = (
+                    equivalence.receipt_digest if equivalence is not None else perceptual.receipt_digest
+                )
+                self._counters["visual_asset.refused"] += 1
+                self._record_capability_learning(
+                    event_type="refused",
+                    capability_type="visual_asset_candidate",
+                    capability_id=promotion_key,
+                    lifecycle_state="refused",
+                    authority="render_only",
+                    evidence_digest=node.node_id,
+                    receipt_digest=equivalence.receipt_digest if equivalence is not None else perceptual.receipt_digest,
+                    provider_calls_used=1 if source_lane == "provider_fallback" else 0,
+                    fresh_work_units=1,
+                    refusal_reason="unstable_region_output",
+                    metadata={"source_lane": source_lane, "output_digest": output_digest},
+                )
+                self._visual_asset_observations[promotion_key] = 1
+                self._visual_asset_observation_receipts[promotion_key] = [receipt_digest]
+                self._visual_asset_observation_equivalence_receipts[promotion_key] = []
+                self._visual_asset_observation_lanes[promotion_key] = {source_lane}
+                self._visual_asset_observation_digests[promotion_key] = output_digest
+                self._visual_asset_observation_embeddings[promotion_key] = feature_embedding
+                return
+            equivalence_receipt_digest = equivalence.receipt_digest
+            self._visual_asset_observation_equivalence_receipts.setdefault(promotion_key, []).append(equivalence.receipt_digest)
+            self.evidence_graph.add("visual_asset_candidate_equivalent", {
                 "observed_at": utc_now_iso(),
                 "promotion_key": promotion_key,
                 "scene_capsule_digest": scene_capsule.capsule_digest,
@@ -1500,19 +1737,12 @@ class ComputePlane:
                 "seed": int(seed),
                 "previous_output_digest": previous_digest,
                 "new_output_digest": output_digest,
-                "reason": "unstable_region_output",
-                "quality_receipt_digest": quality.receipt_digest,
-                "intent_receipt_digest": intent_receipt.receipt_digest,
-                "perceptual_receipt_digest": perceptual.receipt_digest,
+                "equivalence_receipt": asdict(equivalence),
+                "equivalence_receipt_digest": equivalence.receipt_digest,
+                "feature_embedding_digest": feature_embedding.embedding_digest,
             })
-            self._last_receipts["visual_asset_refusal"] = perceptual.receipt_digest
-            self._counters["visual_asset.refused"] += 1
-            self._visual_asset_observations[promotion_key] = 1
-            self._visual_asset_observation_receipts[promotion_key] = [receipt_digest]
-            self._visual_asset_observation_lanes[promotion_key] = {source_lane}
-            self._visual_asset_observation_digests[promotion_key] = output_digest
-            return
         self._visual_asset_observation_digests[promotion_key] = output_digest
+        self._visual_asset_observation_embeddings[promotion_key] = feature_embedding
         self._visual_asset_observations[promotion_key] += 1
         self._visual_asset_observation_receipts.setdefault(promotion_key, []).append(receipt_digest)
         self._visual_asset_observation_lanes.setdefault(promotion_key, set()).add(source_lane)
@@ -1535,6 +1765,7 @@ class ComputePlane:
             state="promoted",
         )
         receipts = tuple(sorted(set(self._visual_asset_observation_receipts.get(promotion_key, []))))
+        equivalence_receipts = tuple(sorted(set(self._visual_asset_observation_equivalence_receipts.get(promotion_key, []))))
         lanes = tuple(sorted(self._visual_asset_observation_lanes.get(promotion_key, {source_lane})))
         node = self.evidence_graph.add("visual_asset_promoted", {
             "observed_at": utc_now_iso(),
@@ -1559,6 +1790,11 @@ class ComputePlane:
             "intent_receipt_digest": intent_receipt.receipt_digest,
             "perceptual_receipt": asdict(perceptual),
             "perceptual_receipt_digest": perceptual.receipt_digest,
+            "feature_embedding": asdict(feature_embedding),
+            "feature_embedding_digest": feature_embedding.embedding_digest,
+            "equivalence_receipt_digest": equivalence_receipt_digest,
+            "equivalence_receipts": equivalence_receipts,
+            "promotion_equivalence": "exact_digest" if not equivalence_receipts else "visual_feature_embedding",
             "promotion_threshold": 2,
             "maximum_authority": "render_only",
             "network_scope": "none",
@@ -1582,10 +1818,29 @@ class ComputePlane:
             quality_receipt_digest=quality.receipt_digest,
             intent_receipt_digest=intent_receipt.receipt_digest,
             perceptual_receipt_digest=perceptual.receipt_digest,
+            feature_embedding_digest=feature_embedding.embedding_digest,
+            equivalence_receipt_digest=equivalence_receipt_digest,
         )
         self.promoted_visual_assets[promotion_key] = record
         self._last_receipts["visual_asset_promotion"] = node.node_id
         self._counters["visual_asset.promoted"] += 1
+        self._record_capability_learning(
+            event_type="promoted",
+            capability_type="visual_asset",
+            capability_id=asset.asset_id,
+            lifecycle_state=asset.state,
+            authority="render_only",
+            evidence_digest=node.node_id,
+            receipt_digest=node.node_id,
+            provider_calls_used=sum(1 for lane in self._visual_asset_observation_lanes.get(promotion_key, ()) if lane == "provider_fallback"),
+            fresh_work_units=int(self._visual_asset_observations[promotion_key]),
+            metadata={
+                "promotion_key": promotion_key,
+                "asset_digest": asset.digest,
+                "promotion_equivalence": "exact_digest" if not equivalence_receipts else "visual_feature_embedding",
+                "equivalence_receipts": equivalence_receipts,
+            },
+        )
         self._persist_promoted_visual_assets()
 
     def _read_promoted_visual_asset_bytes(self, record: VisualPromotedAssetRecord) -> bytes:
@@ -1667,6 +1922,8 @@ class ComputePlane:
                 quality_receipt_digest=str(item.get("quality_receipt_digest") or ""),
                 intent_receipt_digest=str(item.get("intent_receipt_digest") or ""),
                 perceptual_receipt_digest=str(item.get("perceptual_receipt_digest") or ""),
+                feature_embedding_digest=str(item.get("feature_embedding_digest") or ""),
+                equivalence_receipt_digest=str(item.get("equivalence_receipt_digest") or ""),
             )
             validate_digest(record.promotion_key, field_name="promotion_key")
             validate_digest(record.output_digest, field_name="output_digest")
@@ -1674,6 +1931,9 @@ class ComputePlane:
             self._visual_asset_observations[record.promotion_key] = max(2, record.observation_count)
             self._visual_asset_observation_digests[record.promotion_key] = record.output_digest
             self._visual_asset_observation_receipts[record.promotion_key] = list(record.provenance_receipts)
+            self._visual_asset_observation_equivalence_receipts[record.promotion_key] = [
+                record.equivalence_receipt_digest
+            ] if record.equivalence_receipt_digest else []
             self._visual_asset_observation_lanes[record.promotion_key] = set(record.source_lanes)
 
     @staticmethod
@@ -2139,6 +2399,496 @@ class ComputePlane:
             "registry_digest": sha256_digest(tuple(item["record_digest"] for item in assets)),
         }
 
+    def capability_learning_report(self, *, limit: int = 50) -> dict[str, Any]:
+        self.assert_production_composition()
+        return self.capability_learning_ledger.report(limit=limit)
+
+    def _record_capability_composition_result(self, receipt: Mapping[str, Any], *, interface: str, family: str) -> dict[str, Any]:
+        node = self.evidence_graph.add("capability_composition_executed", {
+            "observed_at": utc_now_iso(),
+            "interface": interface,
+            "family": family,
+            "question_digest": receipt["question"]["question_digest"],
+            "receipt_digest": receipt["receipt_digest"],
+            "status": receipt["status"],
+            "component_fact_digests": receipt["component_fact_digests"],
+            "unsupported_causal_gaps": receipt["unsupported_causal_gaps"],
+            "residual_used": receipt["residual_used"],
+        })
+        event_type = "composed" if receipt["composed"] else "refused"
+        self._record_capability_learning(
+            event_type=event_type,
+            capability_type="capability_composition",
+            capability_id=f"{family}:" + receipt["question"]["question_digest"].removeprefix("sha256:")[:24],
+            lifecycle_state=str(receipt["status"]),
+            authority="read_verified_composition",
+            evidence_digest=node.node_id,
+            receipt_digest=str(receipt["receipt_digest"]),
+            provider_calls_used=0,
+            provider_calls_avoided=0,
+            fresh_work_units=0,
+            reuse_hits=len(receipt["component_fact_digests"]),
+            refusal_reason=";".join(receipt["unsupported_causal_gaps"]) if not receipt["composed"] else "",
+            metadata={
+                "family": family,
+                "question_type": str(receipt["question"].get("question_type") or ""),
+                "component_count": len(receipt["component_fact_digests"]),
+                "residual_used": bool(receipt["residual_used"]),
+                "unsupported_causal_gaps": tuple(receipt["unsupported_causal_gaps"]),
+            },
+        )
+        self._last_receipts["capability_composition"] = node.node_id
+        self._counters["capability_composition.executed"] += 1
+        self._counters[f"capability_composition.{family}"] += 1
+        return {**dict(receipt), "evidence_node_id": node.node_id}
+
+    def compose_restart_destabilization_risk(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.capability_composition_plane.compose_restart_destabilization(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+            residual_worker=residual_worker,
+        )
+        return self._record_capability_composition_result(receipt, interface=interface, family="restart-destabilization")
+
+    def compose_traffic_shift_safety(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.capability_composition_plane.compose_traffic_shift_safety(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+            residual_worker=residual_worker,
+        )
+        return self._record_capability_composition_result(receipt, interface=interface, family="traffic-shift")
+
+    def compose_deployment_safety(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.capability_composition_plane.compose_deployment_safety(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+            residual_worker=residual_worker,
+        )
+        return self._record_capability_composition_result(receipt, interface=interface, family="deployment-safety")
+
+    def _record_visual_capability_composition_result(self, receipt: Mapping[str, Any], *, interface: str, family: str) -> dict[str, Any]:
+        node = self.evidence_graph.add("visual_capability_composition_executed", {
+            "observed_at": utc_now_iso(),
+            "interface": interface,
+            "family": family,
+            "question_digest": receipt["question"]["question_digest"],
+            "receipt_digest": receipt["receipt_digest"],
+            "status": receipt["status"],
+            "component_fact_digests": receipt["component_fact_digests"],
+            "unsupported_visual_gaps": receipt["unsupported_visual_gaps"],
+            "residual_used": receipt["residual_used"],
+            "render_authority": receipt["render_authority"],
+        })
+        event_type = "composed" if receipt["composed"] else "refused"
+        self._record_capability_learning(
+            event_type=event_type,
+            capability_type="visual_composition",
+            capability_id=f"{family}:" + receipt["question"]["question_digest"].removeprefix("sha256:")[:24],
+            lifecycle_state=str(receipt["status"]),
+            authority="render_only_composition",
+            evidence_digest=node.node_id,
+            receipt_digest=str(receipt["receipt_digest"]),
+            provider_calls_used=0,
+            provider_calls_avoided=0,
+            fresh_work_units=0,
+            reuse_hits=len(receipt["component_fact_digests"]),
+            refusal_reason=";".join(receipt["unsupported_visual_gaps"]) if not receipt["composed"] else "",
+            metadata={
+                "family": family,
+                "question_type": str(receipt["question"].get("question_type") or ""),
+                "component_count": len(receipt["component_fact_digests"]),
+                "residual_used": bool(receipt["residual_used"]),
+                "unsupported_visual_gaps": tuple(receipt["unsupported_visual_gaps"]),
+                "render_authority": receipt["render_authority"],
+            },
+        )
+        self._last_receipts["visual_capability_composition"] = node.node_id
+        self._counters["visual_capability_composition.executed"] += 1
+        self._counters[f"visual_capability_composition.{family}"] += 1
+        return {**dict(receipt), "evidence_node_id": node.node_id}
+
+    def compose_visual_status_card(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.visual_capability_composition_plane.compose_status_card(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+            residual_worker=residual_worker,
+        )
+        return self._record_visual_capability_composition_result(receipt, interface=interface, family="status-card")
+
+    def compose_visual_promoted_region_reuse(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.visual_capability_composition_plane.compose_promoted_region_reuse(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+            residual_worker=residual_worker,
+        )
+        return self._record_visual_capability_composition_result(receipt, interface=interface, family="promoted-region-reuse")
+
+    def compose_visual_layout_safety(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        receipt = self.visual_capability_composition_plane.compose_layout_safety(
+            payload.get("question") if isinstance(payload.get("question"), Mapping) else {},
+            tuple(item for item in (payload.get("facts") or ()) if isinstance(item, Mapping)),
+        )
+        return self._record_visual_capability_composition_result(receipt, interface=interface, family="layout-safety")
+
+    def compose_cross_modal_restart_risk_visual(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        visual_residual_worker: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+        interface: str = "api",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        proof_first = compile_restart_risk_proof_first(payload)
+        text_payload = payload.get("text") if isinstance(payload.get("text"), Mapping) else {}
+        visual_payload = payload.get("visual") if isinstance(payload.get("visual"), Mapping) else {}
+        status_payload = visual_payload.get("status_card") if isinstance(visual_payload.get("status_card"), Mapping) else {}
+        reuse_payload = visual_payload.get("promoted_region_reuse") if isinstance(visual_payload.get("promoted_region_reuse"), Mapping) else {}
+        layout_payload = visual_payload.get("layout_safety") if isinstance(visual_payload.get("layout_safety"), Mapping) else {}
+        text_receipt = self.compose_restart_destabilization_risk(
+            text_payload,
+            residual_worker=residual_worker,
+            interface=interface + ".text",
+        )
+        status_receipt = self.compose_visual_status_card(
+            status_payload,
+            residual_worker=visual_residual_worker,
+            interface=interface + ".visual.status-card",
+        )
+        reuse_receipt = self.compose_visual_promoted_region_reuse(
+            reuse_payload,
+            residual_worker=visual_residual_worker,
+            interface=interface + ".visual.reuse",
+        )
+        layout_receipt = self.compose_visual_layout_safety(
+            layout_payload,
+            interface=interface + ".visual.layout",
+        )
+        cross_question = payload.get("question") if isinstance(payload.get("question"), Mapping) else {
+            "question_id": "cross-modal:restart-risk-visual",
+            "text_question_digest": text_receipt["question"]["question_digest"],
+            "visual_question_digest": status_receipt["question"]["question_digest"],
+            "operator_goal": "answer restart-risk and render a visual explanation",
+            "family": "restart_risk_visual_explanation",
+        }
+        receipt = self.cross_modal_composition_plane.compose_restart_risk_visual(
+            cross_question,
+            text_receipt=text_receipt,
+            visual_receipts={
+                "status_card": status_receipt,
+                "promoted_region_reuse": reuse_receipt,
+                "layout_safety": layout_receipt,
+            },
+            proof_graph=proof_first["proof_graph"],
+            text_view=proof_first["text_view"],
+            visual_view=proof_first["visual_view"],
+            proof_first_realization=proof_first,
+            expected_text_output_digest=str(proof_first["text_artifact_digest"]),
+            expected_rendered_visual_digest=str(proof_first["rendered_artifact_digest"]),
+        )
+        node = self.evidence_graph.add("cross_modal_composition_executed", {
+            "observed_at": utc_now_iso(),
+            "interface": interface,
+            "question_digest": receipt["question"]["question_digest"],
+            "receipt_digest": receipt["receipt_digest"],
+            "status": receipt["status"],
+            "text_receipt_digest": receipt["text_receipt_digest"],
+            "visual_receipt_digests": receipt["visual_receipt_digests"],
+            "unsupported_causal_gaps": receipt["unsupported_causal_gaps"],
+            "unsupported_visual_gaps": receipt["unsupported_visual_gaps"],
+            "residual_scopes": receipt["residual_scopes"],
+            "provider_calls_used": receipt["provider_calls_used"],
+            "proof_graph_digest": receipt["proof_graph_digest"],
+            "joined_verification": receipt["joined_verification"],
+            "current_claim_valid": receipt["current_claim_valid"],
+            "temporal_valid": receipt["temporal_valid"],
+            "proof_graph_compiled_before_outputs": receipt["proof_first"].get("proof_graph_compiled_before_outputs") is True,
+            "text_semantic_entailment_valid": receipt["text_semantic_entailment_valid"],
+            "scene_plan_digest": receipt["scene_plan_digest"],
+            "rendered_artifact_digest": receipt["rendered_artifact_digest"],
+            "scene_render_valid": receipt["scene_render_valid"],
+            "failure_class": receipt["failure_class"],
+        })
+        self._record_capability_learning(
+            event_type="composed" if receipt["composed"] else "refused",
+            capability_type="cross_modal_composition",
+            capability_id="restart-risk-visual:" + receipt["question"]["question_digest"].removeprefix("sha256:")[:24],
+            lifecycle_state=str(receipt["status"]),
+            authority="read_verified_render_only_join",
+            evidence_digest=node.node_id,
+            receipt_digest=str(receipt["receipt_digest"]),
+            provider_calls_used=int(receipt["provider_calls_used"]),
+            provider_calls_avoided=0,
+            fresh_work_units=0,
+            reuse_hits=1 + len(receipt["visual_receipt_digests"]),
+            refusal_reason=";".join(tuple(receipt["unsupported_causal_gaps"]) + tuple(receipt["unsupported_visual_gaps"])) if not receipt["composed"] else "",
+            metadata={
+                "family": str(receipt["question"].get("family") or ""),
+                "text_status": receipt["text_status"],
+                "visual_statuses": dict(receipt["visual_statuses"]),
+                "residual_scopes": tuple(receipt["residual_scopes"]),
+                "render_authority": receipt["render_authority"],
+                "proof_graph_digest": receipt["proof_graph_digest"],
+                "joined_verification": bool(receipt["joined_verification"]),
+                "current_claim_valid": bool(receipt["current_claim_valid"]),
+                "temporal_valid": bool(receipt["temporal_valid"]),
+                "failure_class": receipt["failure_class"],
+            },
+        )
+        self._last_receipts["cross_modal_composition"] = node.node_id
+        self._counters["cross_modal_composition.executed"] += 1
+        return {**receipt, "evidence_node_id": node.node_id}
+
+    def _cross_modal_proof_artifacts(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        text_receipt: Mapping[str, Any],
+        visual_receipts: Mapping[str, Mapping[str, Any]],
+    ) -> dict[str, Any]:
+        provided = payload.get("proof") if isinstance(payload.get("proof"), Mapping) else {}
+        if provided:
+            return {
+                "proof_graph": provided.get("proof_graph"),
+                "text_view": provided.get("text_view"),
+                "visual_view": provided.get("visual_view"),
+            }
+        claim_status = ProofClaimStatus.SUPPORTED
+        if text_receipt.get("unsupported_causal_gaps"):
+            claim_status = ProofClaimStatus.UNSUPPORTED
+        elif text_receipt.get("status") == "refuted":
+            claim_status = ProofClaimStatus.REFUTED
+        if str((payload.get("temporal_evidence") if isinstance(payload.get("temporal_evidence"), Mapping) else {}).get("state") or "") == "stale":
+            claim_status = ProofClaimStatus.STALE
+        claim_id = "claim:restart-risk:" + text_receipt["question"]["question_digest"].removeprefix("sha256:")[:16]
+        component_fact_digests = tuple(
+            sorted(
+                str(digest)
+                for digest in dict(text_receipt.get("component_fact_digests") or {}).values()
+            )
+        )
+        visual_receipt_digests = {
+            name: str(receipt.get("receipt_digest") or sha256_digest(receipt))
+            for name, receipt in visual_receipts.items()
+        }
+        visual_digest = sha256_digest({"visual_receipt_digests": visual_receipt_digests})
+        graph = CanonicalProofGraph(
+            graph_id="proof-graph:restart-risk-visual:" + text_receipt["question"]["question_digest"].removeprefix("sha256:")[:16],
+            claims=(
+                ProofGraphClaim(
+                    claim_id=claim_id,
+                    claim_type="conditional_causal",
+                    subject=str(text_receipt["question"].get("source_service") or "source_service"),
+                    predicate="restart_destabilization_risk",
+                    object=str(text_receipt["question"].get("target_service") or "target_service"),
+                    status=claim_status,
+                    confidence_class="rule_proven" if claim_status is ProofClaimStatus.SUPPORTED else claim_status.value,
+                    fact_refs=component_fact_digests or (text_receipt["receipt_digest"],),
+                    rule_ref=str(dict(text_receipt.get("component_fact_digests") or {}).get("causal_rule") or ""),
+                    policy_ref=str(dict(text_receipt.get("component_fact_digests") or {}).get("restart_policy") or ""),
+                    snapshot_ref=str(sha256_digest(tuple(text_receipt.get("component_evidence_digests") or ()))),
+                    metadata={
+                        "text_receipt_digest": text_receipt["receipt_digest"],
+                        "visual_receipt_digests": visual_receipt_digests,
+                        "residual_scopes": tuple(
+                            str(payload.get("residual_scope") or "")
+                            for payload in [
+                                text_receipt.get("residual_payload") or {},
+                                *(receipt.get("residual_payload") or {} for receipt in visual_receipts.values()),
+                            ]
+                            if payload
+                        ),
+                    },
+                ),
+            ),
+            world_snapshot_digest=sha256_digest({
+                "text_evidence": tuple(text_receipt.get("component_evidence_digests") or ()),
+                "visual_receipts": visual_receipt_digests,
+                "temporal_evidence": dict(payload.get("temporal_evidence") or {}) if isinstance(payload.get("temporal_evidence"), Mapping) else {},
+            }),
+            policy_digest=sha256_digest({
+                "cross_modal_policy": "sibling_views_from_proof_graph_v1",
+                "render_authority": "render_only",
+                "provider_policy": "residual_only",
+            }),
+            capability_fact_digests=component_fact_digests,
+            causal_rule_digests=tuple(
+                digest for name, digest in dict(text_receipt.get("component_fact_digests") or {}).items()
+                if "rule" in str(name)
+            ),
+        )
+        text_view = TextProofView(
+            view_id="text-view:restart-risk:" + text_receipt["receipt_digest"].removeprefix("sha256:")[:16],
+            text_output_digest=sha256_digest(text_receipt.get("answer") or {}),
+            claim_refs=(claim_id,),
+        )
+        visual_view = VisualProofView(
+            view_id="visual-view:restart-risk:" + visual_digest.removeprefix("sha256:")[:16],
+            scene_capsule_digest=str(dict(visual_receipts.get("status_card", {}).get("component_fact_digests") or {}).get("scene_capsule") or visual_digest),
+            rendered_visual_digest=visual_digest,
+            asset_manifest_digest=str(dict(visual_receipts.get("status_card", {}).get("component_fact_digests") or {}).get("asset_manifest") or visual_digest),
+            layout_engine_digest=sha256_digest({"engine": "beast.visual-layout-proof-view.v1"}),
+            primitives=(
+                VisualProofPrimitive(
+                    primitive_id="primitive:risk-edge:" + claim_id.rsplit(":", 1)[-1],
+                    primitive="risk_edge",
+                    claim_ref=claim_id,
+                    evidence_state=claim_status,
+                    metadata={"visual_treatment": _visual_treatment_for_claim_status(claim_status)},
+                ),
+            ),
+        )
+        return {"proof_graph": graph, "text_view": text_view, "visual_view": visual_view}
+
+    def generation_provider_adapter_report(self, *, approval_receipt: str = "") -> dict[str, Any]:
+        self.assert_production_composition()
+        return self.generation_provider_adapters.inventory(approval_receipt=approval_receipt)
+
+    def execute_generation_provider(
+        self,
+        *,
+        provider_id: str,
+        modality: str,
+        mode: str,
+        prompt: str,
+        model: str = "",
+        approval_receipt: str = "",
+        metadata: Mapping[str, Any] | None = None,
+        request_id: str = "",
+    ) -> dict[str, Any]:
+        self.assert_production_composition()
+        if not str(prompt or "").strip():
+            raise ValueError("generation provider execution requires prompt")
+        active_modality = GenerationModality(modality)
+        active_mode = ProviderMode(mode)
+        prompt_digest = sha256_digest({"prompt": str(prompt)})
+        request = GenerationProviderRequest(
+            request_id=request_id or "generation-provider:" + prompt_digest.removeprefix("sha256:")[:24],
+            modality=active_modality,
+            provider_id=str(provider_id or "").strip(),
+            mode=active_mode,
+            prompt_digest=prompt_digest,
+            model=str(model or ""),
+            approval_receipt=str(approval_receipt or ""),
+            metadata={**dict(metadata or {}), "prompt": str(prompt)},
+        )
+        result = self.generation_provider_adapters.execute(request).to_dict()
+        if active_modality is GenerationModality.TEXT:
+            result["output_text"] = base64.b64decode(result["output_base64"]).decode("utf-8", errors="replace")
+        return result
+
+    def revoke_operator_language_semantic_crystal(self, crystal_id: str, *, reason: str) -> SemanticCrystalRecord:
+        self.assert_production_composition()
+        record = self.semantic_crystal_registry.revoke(crystal_id, reason=reason)
+        receipt_digest = sha256_digest({
+            "event": "semantic_crystal_revoked",
+            "crystal_id": record.crystal.crystal_id,
+            "reason": reason,
+            "record_digest": record.record_digest,
+        })
+        self._record_capability_learning(
+            event_type="revoked",
+            capability_type="semantic_crystal",
+            capability_id=record.crystal.crystal_id,
+            lifecycle_state=record.lifecycle_state.value,
+            authority="read_verified",
+            evidence_digest=record.record_digest,
+            receipt_digest=receipt_digest,
+            refusal_reason=reason,
+            metadata={"semantic_key_digest": record.semantic_key_digest},
+        )
+        return record
+
+    def demote_visual_asset(self, asset_id: str, *, reason: str) -> VisualPromotedAssetRecord:
+        self.assert_production_composition()
+        if not str(asset_id or "").strip() or not str(reason or "").strip():
+            raise ValueError("visual asset demotion requires asset_id and reason")
+        selected_key = ""
+        selected: VisualPromotedAssetRecord | None = None
+        for promotion_key, record in self.promoted_visual_assets.items():
+            if record.asset.asset_id == asset_id:
+                selected_key = promotion_key
+                selected = record
+                break
+        if selected is None:
+            raise KeyError(f"unknown visual asset: {asset_id}")
+        del self.promoted_visual_assets[selected_key]
+        self._visual_asset_observations.pop(selected_key, None)
+        self._visual_asset_observation_digests.pop(selected_key, None)
+        self._visual_asset_observation_embeddings.pop(selected_key, None)
+        self._visual_asset_observation_receipts.pop(selected_key, None)
+        self._visual_asset_observation_equivalence_receipts.pop(selected_key, None)
+        self._visual_asset_observation_lanes.pop(selected_key, None)
+        self._persist_promoted_visual_assets()
+        receipt_digest = sha256_digest({
+            "event": "visual_asset_demoted",
+            "asset_id": selected.asset.asset_id,
+            "promotion_key": selected.promotion_key,
+            "reason": reason,
+            "record_digest": selected.record_digest,
+        })
+        node = self.evidence_graph.add("visual_asset_demoted", {
+            "observed_at": utc_now_iso(),
+            "asset_id": selected.asset.asset_id,
+            "promotion_key": selected.promotion_key,
+            "record_digest": selected.record_digest,
+            "reason": reason,
+            "receipt_digest": receipt_digest,
+        })
+        self._record_capability_learning(
+            event_type="demoted",
+            capability_type="visual_asset",
+            capability_id=selected.asset.asset_id,
+            lifecycle_state="demoted",
+            authority="render_only",
+            evidence_digest=node.node_id,
+            receipt_digest=receipt_digest,
+            refusal_reason=reason,
+            metadata={"promotion_key": selected.promotion_key, "asset_digest": selected.asset.digest},
+        )
+        return selected
+
     def ingest_reduction_evidence(
         self,
         source_system: str,
@@ -2169,6 +2919,7 @@ class ComputePlane:
             **projection,
         })
         result = {**projection, "evidence_node_id": node.node_id, "duplicate": False}
+        self._record_normalized_reduction_capability_learning(result, raw)
         self._last_receipts["normalized_reduction_evidence"] = node.node_id
         self._counters[f"reduction_evidence.{source}.ingested"] += 1
         return result
@@ -2249,9 +3000,13 @@ class ComputePlane:
             if isinstance(item, Mapping):
                 for key, child in item.items():
                     lowered = str(key).lower()
-                    if lowered in {"raw_prompt", "raw_prompts", "prompt_text", "secret", "private_key", "capability_secret"}:
+                    if lowered in {
+                        "raw_prompt", "raw_prompts", "prompt_text",
+                        "secret", "shared_secret", "secret_key", "private_key", "capability_secret",
+                        "payload_base64", "raw_payload", "tensor_payload",
+                    }:
                         forbidden.append(f"{path}.{key}")
-                    if "private_key" in lowered or "capability_secret" in lowered:
+                    if "private_key" in lowered or "capability_secret" in lowered or "shared_secret" in lowered:
                         forbidden.append(f"{path}.{key}")
                     walk(child, f"{path}.{key}")
             elif isinstance(item, (list, tuple)):
@@ -2311,11 +3066,18 @@ class ComputePlane:
             return "commons_spaces"
         if (
             object_type == "forge_kv_episode_economics"
+            or object_type.startswith("forge_kv_")
             or ("prefill_displaced" in data and "source_context_digest" in data and "observed_context_digest" in data)
             or "forge_kv" in path_text and "prompt_tokens_avoided" in data
+            or "forge_kv" in path_text and data.get("validated") is True
         ):
             return "forge_kv_prompt_cache"
-        if "sensorium" in object_type and ("episode_hash" in data or "mission_id" in data):
+        if (
+            "sensorium" in object_type and ("episode_hash" in data or "mission_id" in data)
+            or str(data.get("schema") or "").startswith("beast.sensorium.")
+            or str(data.get("claim") or "").startswith("learned_bounded_disk_cleanup")
+            or isinstance(data.get("crystal"), Mapping) and str(data.get("claim") or "").startswith("learned_bounded_")
+        ):
             return "sensorium"
         return None
 
@@ -2380,10 +3142,109 @@ class ComputePlane:
             "grand_closure": "grand_closure",
             "sensorium": "sensorium",
             "sensorium_physical_crystal": "sensorium",
+            "sensorium_disk_pressure": "sensorium",
+            "sensorium_disk_cleanup": "sensorium",
         }
         return aliases.get(normalized, normalized)
 
     def _normalize_forge_kv_reduction(self, receipt: Mapping[str, Any], requested: str) -> dict[str, Any]:
+        object_type = str(receipt.get("beast_object_type") or "")
+        if object_type == "forge_kv_ml_kem_transport_receipt":
+            validation = validate_ml_kem_bound_transport_receipt(receipt)
+            verified = bool(validation.get("valid"))
+            selected = requested or ("route_selection_only" if verified else "hypothesis")
+            if selected == "observed":
+                selected = "route_selection_only"
+            kv_transfer = receipt.get("kv_transfer") if isinstance(receipt.get("kv_transfer"), Mapping) else {}
+            ml_kem = receipt.get("ml_kem") if isinstance(receipt.get("ml_kem"), Mapping) else {}
+            return self._reduction_projection(
+                source_system="forge_kv_prompt_cache",
+                original_receipt_digest=sha256_digest(receipt),
+                claim_class=selected,
+                verified=verified,
+                provider_calls_avoided=0,
+                tokens_avoided_observed=0,
+                engine_specific_proof=False,
+                portable_raw_kv=False,
+                forge_kv_boundary="ml_kem_bound_network_transport",
+                authority=FORGE_KV_ML_KEM_TRANSPORT_AUTHORITY,
+                transport_verified=verified,
+                bytes_transferred_verified=int(receipt.get("bytes_transferred_verified") or 0) if verified else 0,
+                payload_kind=str(receipt.get("payload_kind") or ""),
+                block_id=str(kv_transfer.get("block_id") or ""),
+                transfer_id=str(kv_transfer.get("transfer_id") or ""),
+                engine=str(kv_transfer.get("engine") or ""),
+                target_engine=str(kv_transfer.get("target_engine") or ""),
+                tensor_payload_sha256=str(kv_transfer.get("tensor_payload_sha256") or ""),
+                tensor_payload_format=str(kv_transfer.get("tensor_payload_format") or ""),
+                ml_kem_algorithm=str(ml_kem.get("algorithm") or ""),
+                ml_kem_node_count=int(ml_kem.get("node_count") or 0),
+                ml_kem_confirmed_count=int(ml_kem.get("confirmed_count") or 0),
+                ml_kem_pairwise_transcript_edges=int(ml_kem.get("pairwise_transcript_edges") or 0),
+                validation_errors=tuple(validation.get("errors") or ()),
+                notes=(
+                    "ML-KEM-confirmed peer session plus checksum-bound engine-native KV transfer verified; no token savings, portable KV reuse, or provider-call avoidance is counted",
+                ),
+            )
+        if object_type == "forge_kv_llamacpp_prompt_cache_proof":
+            trials = tuple(item for item in (receipt.get("trials") or ()) if isinstance(item, Mapping))
+            token_savings: list[int] = []
+            latency_savings_ms: list[float] = []
+            for trial in trials:
+                baseline = trial.get("baseline") if isinstance(trial.get("baseline"), Mapping) else {}
+                cached = trial.get("cached") if isinstance(trial.get("cached"), Mapping) else {}
+                token_savings.append(max(0, int(baseline.get("prompt_n") or 0) - int(cached.get("prompt_n") or 0)))
+                latency_savings_ms.append(max(0.0, float(baseline.get("prompt_ms") or 0.0) - float(cached.get("prompt_ms") or 0.0)))
+            verified = bool(receipt.get("validated") is True and trials and all(value > 0 for value in token_savings))
+            selected = requested or ("observed" if verified else "hypothesis")
+            tokens = sum(token_savings) if selected == "observed" and verified else 0
+            return self._reduction_projection(
+                source_system="forge_kv_prompt_cache",
+                original_receipt_digest=sha256_digest(receipt),
+                claim_class=selected if verified or selected != "observed" else "hypothesis",
+                verified=verified,
+                provider_calls_avoided=0,
+                tokens_avoided_observed=tokens,
+                engine_specific_proof=verified,
+                portable_raw_kv=bool(receipt.get("portable_raw_kv")),
+                forge_kv_boundary="engine_local_prompt_cache",
+                engine=str(receipt.get("engine") or "llama.cpp"),
+                prefix_digest=str(receipt.get("prefix_digest") or ""),
+                trial_count=len(trials),
+                prompt_eval_ms_avoided_observed=sum(latency_savings_ms) if selected == "observed" and verified else 0.0,
+                notes=(
+                    "Local llama.cpp prompt-cache proof counted as engine-local prefill work avoided; no raw KV export, portable KV transport, or provider-call avoidance is claimed",
+                ),
+            )
+        if object_type == "forge_kv_llamacpp_restart_boundary_proof":
+            before = receipt.get("before_restart") if isinstance(receipt.get("before_restart"), Mapping) else {}
+            baseline = before.get("baseline") if isinstance(before.get("baseline"), Mapping) else {}
+            warm = before.get("warm_cache") if isinstance(before.get("warm_cache"), Mapping) else {}
+            after = receipt.get("after_restart") if isinstance(receipt.get("after_restart"), Mapping) else {}
+            warm_tokens_saved = max(0, int(baseline.get("prompt_n") or 0) - int(warm.get("prompt_n") or 0))
+            restart_reset = "cache_n" in after and int(after.get("cache_n") or 0) == 0
+            verified = bool(receipt.get("validated") is True and warm_tokens_saved > 0 and restart_reset)
+            selected = requested or "route_selection_only"
+            if selected == "observed":
+                selected = "route_selection_only"
+            return self._reduction_projection(
+                source_system="forge_kv_prompt_cache",
+                original_receipt_digest=sha256_digest(receipt),
+                claim_class=selected,
+                verified=verified,
+                provider_calls_avoided=0,
+                tokens_avoided_observed=0,
+                engine_specific_proof=verified,
+                portable_raw_kv=bool(receipt.get("portable_raw_kv")),
+                forge_kv_boundary="engine_local_restart_resets_prompt_cache",
+                engine=str(receipt.get("engine") or "llama.cpp"),
+                prefix_digest=str(receipt.get("prefix_digest") or ""),
+                warm_tokens_saved_before_restart=warm_tokens_saved,
+                restart_cache_reset=restart_reset,
+                notes=(
+                    "Restart-boundary proof teaches cache invalidation/staleness; savings are not counted as durable or cross-node without native restore proof",
+                ),
+            )
         tokens = int(receipt.get("prompt_tokens_avoided") or 0)
         ns_avoided = int(receipt.get("prompt_eval_ns_avoided") or 0)
         verified_restore = (
@@ -2487,6 +3348,46 @@ class ComputePlane:
         )
 
     def _normalize_sensorium_reduction(self, receipt: Mapping[str, Any], requested: str) -> dict[str, Any]:
+        schema = str(receipt.get("schema") or "")
+        claim = str(receipt.get("claim") or "")
+        crystal = receipt.get("crystal") if isinstance(receipt.get("crystal"), Mapping) else {}
+        generalization = receipt.get("generalization") if isinstance(receipt.get("generalization"), Mapping) else {}
+        replay = receipt.get("replay") if isinstance(receipt.get("replay"), Mapping) else {}
+        safety = receipt.get("safety") if isinstance(receipt.get("safety"), Mapping) else {}
+        is_disk_pressure = (
+            schema == "beast.sensorium.disk-cleanup-evidence.v1"
+            or claim == "learned_bounded_disk_cleanup_candidate"
+            or crystal.get("identity") == "crystal:sensorium-disk-cleanup:v1"
+        )
+        if is_disk_pressure:
+            replay_verified = bool(
+                replay.get("promotion_eligible") is True
+                and int(replay.get("verified_variants") or 0) == len(replay.get("variant_receipts") or ())
+                and all(bool(item.get("verified")) for item in (replay.get("variant_receipts") or ()) if isinstance(item, Mapping))
+            )
+            production_allowed = bool(receipt.get("production_promotion_allowed") is True)
+            verified = replay_verified and bool(crystal.get("artifact_digest"))
+            selected = requested or "route_selection_only"
+            if selected == "observed":
+                selected = "route_selection_only"
+            return self._reduction_projection(
+                source_system="sensorium",
+                original_receipt_digest=sha256_digest(receipt),
+                claim_class=selected,
+                verified=verified,
+                provider_calls_avoided=0,
+                tokens_avoided_observed=0,
+                sensorium_capability="disk_pressure_governed_cleanup",
+                crystal_id=str(crystal.get("identity") or generalization.get("candidate_id") or "crystal:sensorium-disk-cleanup:v1"),
+                typed_artifact_digest=str(crystal.get("artifact_digest") or ""),
+                replay_verified_variants=int(replay.get("verified_variants") or 0),
+                replay_promotion_eligible=bool(replay.get("promotion_eligible")),
+                production_promotion_allowed=production_allowed,
+                manifest_identity_fields=tuple(str(item) for item in (safety.get("manifest_identity_fields") or ())),
+                notes=(
+                    "Sensorium disk-pressure proof is resource-governance learning; replay eligibility is counted, but destructive cleanup remains non-production until explicit isolation/approval gates allow it",
+                ),
+            )
         verified = bool(receipt.get("verified") is True and receipt.get("episode_hash"))
         selected = requested or ("route_selection_only" if verified else "hypothesis")
         if selected == "observed":
@@ -2500,6 +3401,108 @@ class ComputePlane:
             tokens_avoided_observed=0,
             notes=("Sensorium evidence describes recurrence/provenance; production mission displacement receipts count execution savings separately",),
         )
+
+    def _record_normalized_reduction_capability_learning(
+        self,
+        projection: Mapping[str, Any],
+        raw_receipt: Mapping[str, Any],
+    ) -> None:
+        source = str(projection.get("source_system") or "")
+        evidence_digest = str(projection.get("evidence_node_id") or "")
+        receipt_digest = str(projection.get("projection_digest") or "")
+        if not evidence_digest.startswith("sha256:") or not receipt_digest.startswith("sha256:"):
+            return
+        if source == "sensorium":
+            capability = str(projection.get("sensorium_capability") or "")
+            if capability == "disk_pressure_governed_cleanup":
+                state = (
+                    "promotion_blocked_destructive"
+                    if projection.get("production_promotion_allowed") is False
+                    else "replay_eligible"
+                    if projection.get("replay_promotion_eligible") is True
+                    else "observed"
+                )
+                self._record_capability_learning(
+                    event_type="blocked" if state == "promotion_blocked_destructive" else "observed",
+                    capability_type="sensorium_physical_crystal",
+                    capability_id=str(projection.get("crystal_id") or "crystal:sensorium-disk-cleanup:v1"),
+                    lifecycle_state=state,
+                    authority="resource_governance_only",
+                    evidence_digest=evidence_digest,
+                    receipt_digest=receipt_digest,
+                    fresh_work_units=int(projection.get("replay_verified_variants") or 0),
+                    refusal_reason="destructive_cleanup_requires_explicit_production_gate" if state == "promotion_blocked_destructive" else "",
+                    metadata={
+                        "sensorium_capability": capability,
+                        "typed_artifact_digest": str(projection.get("typed_artifact_digest") or ""),
+                        "claim_class": str(projection.get("claim_class") or ""),
+                        "manifest_identity_fields": tuple(projection.get("manifest_identity_fields") or ()),
+                    },
+                )
+            return
+        if source == "forge_kv_prompt_cache":
+            object_type = str(raw_receipt.get("beast_object_type") or "")
+            prefix = str(projection.get("prefix_digest") or raw_receipt.get("prefix_digest") or "")
+            boundary = str(projection.get("forge_kv_boundary") or "native_context_restore")
+            if boundary == "ml_kem_bound_network_transport":
+                transfer_id = str(projection.get("transfer_id") or "")
+                block_id = str(projection.get("block_id") or "")
+                capability_id = "forge-kv-mlkem:" + (
+                    transfer_id[:24]
+                    if transfer_id
+                    else block_id[:24]
+                    if block_id
+                    else sha256_digest(raw_receipt).removeprefix("sha256:")[:24]
+                )
+                state = "transport_verified" if projection.get("verified") is True else "transport_hypothesis"
+                event_type = "observed"
+                refusal = "" if projection.get("verified") is True else "ml_kem_transport_validation_failed"
+                authority = FORGE_KV_ML_KEM_TRANSPORT_AUTHORITY
+            else:
+                capability_id = "forge-kv:" + (prefix.removeprefix("sha256:")[:24] if prefix.startswith("sha256:") else sha256_digest(raw_receipt).removeprefix("sha256:")[:24])
+                authority = "engine_local_prompt_cache_only"
+            if boundary == "engine_local_restart_resets_prompt_cache":
+                state = "restart_boundary_observed"
+                event_type = "blocked"
+                refusal = "prompt_cache_not_durable_across_restart_without_native_restore"
+            elif boundary == "ml_kem_bound_network_transport":
+                pass
+            elif projection.get("claim_class") == "observed":
+                state = "observed_engine_local"
+                event_type = "observed"
+                refusal = ""
+            else:
+                state = "hypothesis"
+                event_type = "observed"
+                refusal = ""
+            self._record_capability_learning(
+                event_type=event_type,
+                capability_type="forge_kv_node",
+                capability_id=capability_id,
+                lifecycle_state=state,
+                authority=authority,
+                evidence_digest=evidence_digest,
+                receipt_digest=receipt_digest,
+                provider_calls_used=0,
+                provider_calls_avoided=0,
+                fresh_work_units=int(projection.get("trial_count") or 1),
+                reuse_hits=int(projection.get("trial_count") or 0) if projection.get("claim_class") == "observed" else 0,
+                refusal_reason=refusal,
+                metadata={
+                    "object_type": object_type,
+                    "engine": str(projection.get("engine") or raw_receipt.get("engine") or ""),
+                    "prefix_digest": prefix,
+                    "boundary": boundary,
+                    "tokens_avoided_observed": int(projection.get("tokens_avoided_observed") or 0),
+                    "portable_raw_kv": bool(projection.get("portable_raw_kv")),
+                    "claim_class": str(projection.get("claim_class") or ""),
+                    "bytes_transferred_verified": int(projection.get("bytes_transferred_verified") or 0),
+                    "transport_verified": bool(projection.get("transport_verified")),
+                    "ml_kem_algorithm": str(projection.get("ml_kem_algorithm") or ""),
+                    "ml_kem_node_count": int(projection.get("ml_kem_node_count") or 0),
+                    "ml_kem_confirmed_count": int(projection.get("ml_kem_confirmed_count") or 0),
+                },
+            )
 
     @staticmethod
     def _reduction_projection(

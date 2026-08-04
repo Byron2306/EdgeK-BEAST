@@ -8,7 +8,7 @@ import json
 import os
 from typing import Any, Iterable, Mapping
 
-from .operator_language import AnswerFrame, CandidateMeaning, MeaningCrystal, MeaningResolutionState
+from .operator_language import AnswerFrame, CandidateMeaning, EvidenceBinding, MeaningCrystal, MeaningResolutionState
 from .residual_contracts import canonical_json, sha256_digest, utc_now_iso, validate_digest
 
 
@@ -561,6 +561,14 @@ class SemanticCrystalRegistry:
                 continue
             if not str(row.get("record_digest") or "").startswith("sha256:"):
                 continue
+            payload = row.get("record_payload")
+            if isinstance(payload, Mapping):
+                try:
+                    record = self._record_from_payload(payload)
+                except (TypeError, ValueError, KeyError):
+                    continue
+                if record.record_digest == row.get("record_digest"):
+                    self._records[record.crystal.crystal_id] = record
 
     def _persist(self) -> None:
         rows = [
@@ -574,9 +582,98 @@ class SemanticCrystalRegistry:
                 "expires_at": record.expires_at,
                 "verifier_version": record.verifier_version,
                 "revoked_reason": record.revoked_reason,
+                "record_payload": json.loads(canonical_json(record)),
             }
             for record in sorted(self._records.values(), key=lambda item: item.crystal.crystal_id)
         ]
         temporary = self.path.with_suffix(self.path.suffix + ".tmp")
         temporary.write_text("\n".join(canonical_json(row) for row in rows) + ("\n" if rows else ""), encoding="utf-8")
         os.replace(temporary, self.path)
+
+    @staticmethod
+    def _record_from_payload(payload: Mapping[str, Any]) -> SemanticCrystalRecord:
+        crystal_payload = dict(payload["crystal"])
+        meaning_payload = dict(crystal_payload["meaning"])
+        answer_payload = dict(crystal_payload["answer_frame"])
+        key_payload = dict(payload["semantic_reuse_key"])
+        receipt_payload = dict(payload["promotion_receipt"])
+        meaning = CandidateMeaning(
+            meaning_id=str(meaning_payload["meaning_id"]),
+            domain=meaning_payload["domain"],
+            intent=str(meaning_payload["intent"]),
+            slots=dict(meaning_payload.get("slots") or {}),
+            evidence=tuple(
+                EvidenceBinding(
+                    evidence_digest=str(item["evidence_digest"]),
+                    source=str(item["source"]),
+                    world_digest=str(item["world_digest"]),
+                    policy_digest=str(item["policy_digest"]),
+                    temporal_scope_digest=str(item["temporal_scope_digest"]),
+                )
+                for item in meaning_payload.get("evidence", ())
+            ),
+            resolution_state=meaning_payload["resolution_state"],
+            confidence=float(meaning_payload["confidence"]),
+            negative_conditions=tuple(str(item) for item in meaning_payload.get("negative_conditions", ())),
+            created_at=str(meaning_payload.get("created_at") or ""),
+        )
+        answer_frame = AnswerFrame(
+            frame_id=str(answer_payload["frame_id"]),
+            meaning_digest=str(answer_payload["meaning_digest"]),
+            template_id=str(answer_payload["template_id"]),
+            slots=dict(answer_payload.get("slots") or {}),
+            evidence_digests=tuple(str(item) for item in answer_payload.get("evidence_digests", ())),
+            resolution_state=answer_payload["resolution_state"],
+            unresolved_fields=tuple(str(item) for item in answer_payload.get("unresolved_fields", ())),
+            created_at=str(answer_payload.get("created_at") or ""),
+        )
+        crystal = MeaningCrystal(
+            crystal_id=str(crystal_payload["crystal_id"]),
+            meaning=meaning,
+            answer_frame=answer_frame,
+            schema_digest=str(crystal_payload["schema_digest"]),
+            discourse_digest=str(crystal_payload["discourse_digest"]),
+            world_digest=str(crystal_payload["world_digest"]),
+            capability_digest=str(crystal_payload["capability_digest"]),
+            policy_digest=str(crystal_payload["policy_digest"]),
+            temporal_scope_digest=str(crystal_payload["temporal_scope_digest"]),
+            verifier_id=str(crystal_payload["verifier_id"]),
+            verification_evidence_digest=str(crystal_payload["verification_evidence_digest"]),
+            expires_at=crystal_payload.get("expires_at"),
+            created_at=str(crystal_payload.get("created_at") or ""),
+        )
+        reuse_key = SemanticReuseKey(
+            semantic_fingerprint_digest=str(key_payload["semantic_fingerprint_digest"]),
+            normalized_utterance_digest=str(key_payload["normalized_utterance_digest"]),
+            schema_digest=str(key_payload["schema_digest"]),
+            discourse_digest=str(key_payload["discourse_digest"]),
+            world_digest=str(key_payload["world_digest"]),
+            capability_digest=str(key_payload["capability_digest"]),
+            evidence_digest=str(key_payload["evidence_digest"]),
+            policy_digest=str(key_payload["policy_digest"]),
+            temporal_scope_digest=str(key_payload["temporal_scope_digest"]),
+        )
+        promotion_receipt = SemanticPromotionReceipt(
+            crystal_id=str(receipt_payload["crystal_id"]),
+            semantic_key_digest=str(receipt_payload["semantic_key_digest"]),
+            episode_digests=tuple(str(item) for item in receipt_payload.get("episode_digests", ())),
+            meaning_digest=str(receipt_payload["meaning_digest"]),
+            answer_frame_digest=str(receipt_payload["answer_frame_digest"]),
+            verification_evidence_digest=str(receipt_payload["verification_evidence_digest"]),
+            provider_calls_observed=int(receipt_payload["provider_calls_observed"]),
+            promoted=bool(receipt_payload["promoted"]),
+            created_at=str(receipt_payload.get("created_at") or ""),
+        )
+        return SemanticCrystalRecord(
+            crystal=crystal,
+            semantic_reuse_key=reuse_key,
+            semantic_key_digest=str(payload["semantic_key_digest"]),
+            promotion_receipt_digest=str(payload["promotion_receipt_digest"]),
+            promotion_receipt=promotion_receipt,
+            lifecycle_state=payload.get("lifecycle_state", SemanticCrystalLifecycleState.ACTIVE.value),
+            appraisal_digest=str(payload.get("appraisal_digest") or ""),
+            expires_at=payload.get("expires_at"),
+            verifier_version=str(payload.get("verifier_version") or "semantic-generalizer.v1"),
+            revoked_reason=str(payload.get("revoked_reason") or ""),
+            created_at=str(payload.get("created_at") or ""),
+        )

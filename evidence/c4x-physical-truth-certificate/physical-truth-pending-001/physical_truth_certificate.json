@@ -1,0 +1,433 @@
+{
+  "beast_object_type": "c4x_physical_truth_certificate",
+  "certificate_gates": {
+    "bpf_witness": false,
+    "c4x_truth": false,
+    "commons_replication": false,
+    "guardian_custody": false,
+    "memfd_custody": false,
+    "pq_transport": false,
+    "protocol_integrity": false,
+    "psi_governance": false,
+    "reuse": false,
+    "route_resilience": false,
+    "sensorium_observation": false,
+    "xdp_scope": false
+  },
+  "claim_boundary": "Final BEAST physical-truth claim. C4-X semantic proof, Sensorium/BPF observation, Crystal Bus protocol integrity, memfd/Guardian custody, reuse, post-quantum transport, Commons replication, route resilience, PSI governance, and scoped XDP must all pass independently. Missing or partial evidence lowers authority instead of being averaged away.",
+  "created_at": "2026-08-03T21:21:48.435466+00:00",
+  "critical_failures": [
+    "c4x_truth",
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "memfd_custody",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "layer_verdicts": [
+    {
+      "authority": "semantic_truth_only",
+      "checked": [
+        "proof_first",
+        "joined_verification",
+        "text_artifact_digest_valid",
+        "visual_artifact_digest_valid",
+        "unsupported_gaps_refused",
+        "provider_calls_used"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "c4x_truth",
+      "missing": [
+        "proof_first",
+        "joined_verification",
+        "text_artifact_digest_valid",
+        "visual_artifact_digest_valid",
+        "unsupported_gaps_refused",
+        "provider_calls_used"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:12fd6c7e2df00cd61f134a7523201995f3d2edcc1256b7d84fdc9f62c79b61ae"
+    },
+    {
+      "authority": "observation_only",
+      "checked": [
+        "ordered_episode",
+        "journal_integrity_valid",
+        "explicit_loss_accounting",
+        "raw_sensitive_payloads_absent",
+        "observer_lifecycle_recorded",
+        "missing_observations_lower_authority"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "sensorium_observation",
+      "missing": [
+        "ordered_episode",
+        "journal_integrity_valid",
+        "explicit_loss_accounting",
+        "raw_sensitive_payloads_absent",
+        "observer_lifecycle_recorded",
+        "missing_observations_lower_authority"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:edd9d6da1634f5799bd097a053dd3608a9bc9d91842c85143ca4b0e60be7c75e"
+    },
+    {
+      "authority": "kernel_observation_only",
+      "checked": [
+        "read_only_program",
+        "cgroup_bound",
+        "outbound_connect_attempts",
+        "dns_activity",
+        "provider_sockets_opened",
+        "unexpected_child_processes",
+        "live_provider_comparator_observed_network",
+        "ring_loss_explicit",
+        "raw_packet_payload_retained"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "bpf_witness",
+      "missing": [
+        "read_only_program",
+        "cgroup_bound",
+        "outbound_connect_attempts",
+        "dns_activity",
+        "provider_sockets_opened",
+        "unexpected_child_processes",
+        "live_provider_comparator_observed_network",
+        "ring_loss_explicit",
+        "raw_packet_payload_retained"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:0d6756b73995706265a700cad5c71be643d710ff738e28ab23604277d185516a"
+    },
+    {
+      "authority": "host_local_protocol_integrity",
+      "checked": [
+        "af_unix_seqpacket",
+        "so_peercred_bound",
+        "session_id_bound",
+        "message_mac_or_signature_verified",
+        "sequence_replay_rejected",
+        "durable_high_water_checked",
+        "capability_lease_required",
+        "arda_appraisal_required",
+        "fd_count_type_seals_digest_verified",
+        "sender_death_after_handoff_verified",
+        "revocation_replay_rejected"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "protocol_integrity",
+      "missing": [
+        "af_unix_seqpacket",
+        "so_peercred_bound",
+        "session_id_bound",
+        "message_mac_or_signature_verified",
+        "sequence_replay_rejected",
+        "durable_high_water_checked",
+        "capability_lease_required",
+        "arda_appraisal_required",
+        "fd_count_type_seals_digest_verified",
+        "sender_death_after_handoff_verified",
+        "revocation_replay_rejected"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:3df870df57f2c666a5bf7933ab2694d0980d4888f6cb7301788618d156980357"
+    },
+    {
+      "authority": "kernel_immutable_artifact_custody",
+      "checked": [
+        "sealed_memfd",
+        "seal_write",
+        "seal_grow",
+        "seal_shrink",
+        "seal_seal",
+        "digest_verified_after_seal",
+        "mutation_attempt_rejected",
+        "wrong_fd_type_rejected"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "memfd_custody",
+      "missing": [
+        "sealed_memfd",
+        "seal_write",
+        "seal_grow",
+        "seal_shrink",
+        "seal_seal",
+        "digest_verified_after_seal",
+        "mutation_attempt_rejected",
+        "wrong_fd_type_rejected"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:39cc37e97077afa497498b147c2f2b81dab8ea815fce45d21c405ea3367107a3"
+    },
+    {
+      "authority": "independent_custody_gatekeeper",
+      "checked": [
+        "separate_process",
+        "scm_rights_handoff_verified",
+        "process_lease_verified",
+        "one_use_render_capability_consumed",
+        "replay_render_capability_rejected",
+        "wrong_uid_rejected",
+        "expired_lease_rejected",
+        "producer_death_after_handoff_verified",
+        "joined_custody_receipt_signed"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "guardian_custody",
+      "missing": [
+        "separate_process",
+        "scm_rights_handoff_verified",
+        "process_lease_verified",
+        "one_use_render_capability_consumed",
+        "replay_render_capability_rejected",
+        "wrong_uid_rejected",
+        "expired_lease_rejected",
+        "producer_death_after_handoff_verified",
+        "joined_custody_receipt_signed"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:b3cd26b7e9f28bf1fd68dca3f4a9e984a195d0086337dc18a69608b9eeb130f6"
+    },
+    {
+      "authority": "reuse_certificate_only",
+      "checked": [
+        "exact_prefix_hit_verified",
+        "identity_mismatch_refused",
+        "corrupt_payload_rejected",
+        "restart_persistence_credit_only_if_demonstrated",
+        "cross_engine_import_refused_without_physical_success",
+        "crystal_composition_reuse_verified",
+        "semantic_truth_points_not_awarded_for_kv_speed"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "reuse",
+      "missing": [
+        "exact_prefix_hit_verified",
+        "identity_mismatch_refused",
+        "corrupt_payload_rejected",
+        "restart_persistence_credit_only_if_demonstrated",
+        "cross_engine_import_refused_without_physical_success",
+        "crystal_composition_reuse_verified",
+        "semantic_truth_points_not_awarded_for_kv_speed"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:42d20aed342a4edd97a6df974afce4f5f81958dddd3d31a3685d27eed5743efd"
+    },
+    {
+      "authority": "transport_confidentiality_and_authenticity",
+      "checked": [
+        "ml_kem_active",
+        "ml_dsa_signature_verified",
+        "fallback",
+        "recipient_decapsulation_verified",
+        "ciphertext_tamper_rejected",
+        "signature_tamper_rejected",
+        "replay_nonce_unused",
+        "artifact_digest_verified",
+        "policy_scope_accepted"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "pq_transport",
+      "missing": [
+        "ml_kem_active",
+        "ml_dsa_signature_verified",
+        "fallback",
+        "recipient_decapsulation_verified",
+        "ciphertext_tamper_rejected",
+        "signature_tamper_rejected",
+        "replay_nonce_unused",
+        "artifact_digest_verified",
+        "policy_scope_accepted"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:4415315da65cbd7dc104ba2463261fa05808494f1bdc8fec42cbad4ad549d784"
+    },
+    {
+      "authority": "replication_certificate",
+      "checked": [
+        "imported_as_quarantined_hypothesis",
+        "clean_source_rebuild",
+        "independent_seed",
+        "independent_oracle",
+        "reproduction_successful",
+        "promotion_after_local_success_only",
+        "node_count_minimum_met"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "commons_replication",
+      "missing": [
+        "imported_as_quarantined_hypothesis",
+        "clean_source_rebuild",
+        "independent_seed",
+        "independent_oracle",
+        "reproduction_successful",
+        "promotion_after_local_success_only",
+        "node_count_minimum_met"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:72c430524ad108c6c8fd35eb3c4cead059850d20273a7fe81bbaf9a73c87127d"
+    },
+    {
+      "authority": "route_resilience_certificate",
+      "checked": [
+        "deterministic_failure_schedule_hidden_from_router",
+        "attestation_failure_immediate_suppression",
+        "timeout_accumulates_penalty",
+        "429_suppression",
+        "recovery_after_decay",
+        "oscillation_bounded",
+        "decision_receipts_explain_route_change",
+        "beats_no_damping_retry_and_circuit_breaker"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "route_resilience",
+      "missing": [
+        "deterministic_failure_schedule_hidden_from_router",
+        "attestation_failure_immediate_suppression",
+        "timeout_accumulates_penalty",
+        "429_suppression",
+        "recovery_after_decay",
+        "oscillation_bounded",
+        "decision_receipts_explain_route_change",
+        "beats_no_damping_retry_and_circuit_breaker"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:793806b6264ba30435251f73dbdfe14cf5a1a3bac1655b99a7cb7b0ff5f7b67a"
+    },
+    {
+      "authority": "scarcity_governance_certificate",
+      "checked": [
+        "cpu_pressure_case",
+        "memory_pressure_case",
+        "io_pressure_case",
+        "near_oom_case",
+        "disk_full_or_inode_case",
+        "evidence_not_corrupted",
+        "sensorium_loss_not_silent",
+        "low_priority_work_shed_first",
+        "proof_and_custody_preserved",
+        "refused_before_corrupting_evidence"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "psi_governance",
+      "missing": [
+        "cpu_pressure_case",
+        "memory_pressure_case",
+        "io_pressure_case",
+        "near_oom_case",
+        "disk_full_or_inode_case",
+        "evidence_not_corrupted",
+        "sensorium_loss_not_silent",
+        "low_priority_work_shed_first",
+        "proof_and_custody_preserved",
+        "refused_before_corrupting_evidence"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:5c37c5ff2246b9616902a8e2e8f1123ec032ad5fce18fd7122050e79a46574ec"
+    },
+    {
+      "authority": "scoped_packet_actuation_certificate",
+      "checked": [
+        "isolated_veth_or_namespace",
+        "redirect_pass_drop_observed",
+        "unauthorized_cgroup_rejected",
+        "worker_death_observed",
+        "rx_ring_loss_reported",
+        "xdp_detach_detected",
+        "no_unrelated_traffic_redirected",
+        "policy_fail_open_or_closed_verified",
+        "guardian_policy_not_bypassed"
+      ],
+      "evidence_digest": "",
+      "failure_reasons": [
+        "receipt_missing"
+      ],
+      "layer": "xdp_scope",
+      "missing": [
+        "isolated_veth_or_namespace",
+        "redirect_pass_drop_observed",
+        "unauthorized_cgroup_rejected",
+        "worker_death_observed",
+        "rx_ring_loss_reported",
+        "xdp_detach_detected",
+        "no_unrelated_traffic_redirected",
+        "policy_fail_open_or_closed_verified",
+        "guardian_policy_not_bypassed"
+      ],
+      "passed": false,
+      "public_credit_allowed": false,
+      "verdict_digest": "sha256:85f5a77d619a344635543eebd03ddc1e84e63932ba225819b00f56de7e6df475"
+    }
+  ],
+  "no_averaging_rule": true,
+  "public_credit_allowed": false,
+  "receipt_digest": "sha256:d5947a913cc53d77d448557fed836aa981486154440d59fd35aacad0d6ca4869",
+  "required_layers": [
+    "c4x_truth",
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "memfd_custody",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "run_id": "physical-truth-pending-001",
+  "truth_claim_allowed": false,
+  "version": "1.0"
+}

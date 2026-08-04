@@ -1,0 +1,75 @@
+{
+  "beast_object_type": "c4x_physical_truth_sidecar_hardening_receipt",
+  "changes": {
+    "bpf_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "c4x_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "commons_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "crystal_bus_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "guardian_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "memfd_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "pq_transport_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "psi_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "reuse_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "route_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "sensorium_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ],
+    "xdp_receipt": [
+      "source_artifacts_verified",
+      "attestation_and_receipt_digest_recomputed"
+    ]
+  },
+  "claim_boundary": "Sidecar hardening receipt. This binds existing receipts to the stricter certificate contract; it does not alter required truth fields or grant physical facts that the underlying receipt did not already claim.",
+  "created_at": "2026-08-03T23:46:41.119326+00:00",
+  "postflight_certificate_digest": "sha256:2386d55d81695712bdc07b84382756196e1b2f76e5006e6bbec4fcc4400e2a2e",
+  "postflight_green_gates": [
+    "c4x_truth",
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "memfd_custody",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "postflight_public_credit_allowed": true,
+  "postflight_red_gates": [],
+  "receipt_digest": "sha256:f335da845b8af8c26495fed389d8b9befd200d63b3367b9bc7eba8848105bb77",
+  "sidecar": "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+  "version": "1.0"
+}

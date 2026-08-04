@@ -1,0 +1,123 @@
+{
+  "claims": [
+    {
+      "claim_id": "claim:heldout-renamed-restart-risk:source-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:318982b8b1ec0883c43b71e1d5e151b7d39ff19480af0846faa1743e6a39a248"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:433687abbebbf0eb5fde8557ad580c0a0b62f38a88bb8b21ff0bfafacb737a7e",
+      "status": "supported",
+      "subject": "Kestrel"
+    },
+    {
+      "claim_id": "claim:heldout-renamed-restart-risk:target-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:f8517c16c3f0a607f04f43e507d8944b29544dd0e13ce8e43903961f8560d285"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:0de70a0705a0f08fa9ab6e0c821c70b5dc400dedd1669424c4aff2dc3248fa87",
+      "status": "supported",
+      "subject": "Vale"
+    },
+    {
+      "claim_id": "claim:heldout-renamed-restart-risk:dependency",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:b976b5c2526ff9b2961d5e698f0c4abb1231b837fb2112b43a74ff23e8733984"
+      ],
+      "metadata": {
+        "fact_type": "dependency_topology"
+      },
+      "object": "Kestrel",
+      "policy_ref": "",
+      "predicate": "depends_on",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:f7dba1e1555c8cb56f32b3348c9b8f5d28e4e8f2b2ae7a338fd1ec348b0c1453",
+      "status": "supported",
+      "subject": "Vale"
+    },
+    {
+      "claim_id": "claim:heldout-renamed-restart-risk:restart-policy",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:e10500a19d9d65fc68ff56928f8f66e019b40a5dd954872836f529214046c417"
+      ],
+      "metadata": {
+        "fact_type": "restart_policy"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "restart_policy",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:eefd995ec67847a3104f4b5b915b19733af1bc5344fcf0f9aeaeba206acb8b0d",
+      "status": "supported",
+      "subject": "Kestrel"
+    },
+    {
+      "claim_id": "claim:heldout-renamed-restart-risk:restart-risk",
+      "claim_type": "conditional_causal",
+      "confidence_class": "rule_proven",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:851b2252efda39831d66d0eb9383e24d993372372a2a565fab0192ada2c825e1",
+        "sha256:4f0e3216c7a51643752f1e07baf9b1649967383f71dde26fe3bfbf93fc2c8e90",
+        "sha256:84b9360aae8f3f8523ca1a778e79a9871aa9c18a65fcfddb066876ad7e7cb64f",
+        "sha256:031596d0936c118bff58b153a05879d77d553ed7891685312f06f894a3539d48"
+      ],
+      "metadata": {
+        "family": "restart_risk",
+        "risk_class": "low"
+      },
+      "object": "Vale",
+      "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+      "predicate": "restart_destabilization_risk",
+      "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+      "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+      "status": "supported",
+      "subject": "Kestrel"
+    }
+  ],
+  "compile_sequence": 1,
+  "compiler_id": "beast.proof-first-compiler.v1",
+  "fact_digests": [
+    "sha256:318982b8b1ec0883c43b71e1d5e151b7d39ff19480af0846faa1743e6a39a248",
+    "sha256:f8517c16c3f0a607f04f43e507d8944b29544dd0e13ce8e43903961f8560d285",
+    "sha256:b976b5c2526ff9b2961d5e698f0c4abb1231b837fb2112b43a74ff23e8733984",
+    "sha256:e10500a19d9d65fc68ff56928f8f66e019b40a5dd954872836f529214046c417",
+    "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+  ],
+  "family": "restart_risk",
+  "graph_digest": "sha256:629eab619e5bda66896b55c2b7c81e24f41eff0d4db8efe0c20b74b6ce5e7b92",
+  "graph_id": "proof:restart_risk:97b5db112cf9da7a02d9",
+  "policy_digests": [
+    "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+  ],
+  "request_digest": "sha256:97b5db112cf9da7a02d9e95b7ccea3946c0fc8fcafd19821482e9e22cebf9acd",
+  "rule_digests": [
+    "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+  ],
+  "world_snapshot_digest": "sha256:6e4e9ec86e39b0ba9cbe20f1cd79ba104acc822639553baf5c7a8bd0b5ae2d8b"
+}

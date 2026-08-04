@@ -327,6 +327,7 @@ def test_import_tensor_payload_updates_existing_block_and_network_manifest(tmp_p
     assert transport.move(block.block_id, CacheLocation.NETWORK) is True
     manifest = (tmp_path / f"{block.block_id}.json").read_text()
     assert "tensor_payload_sha256" in manifest
+    assert '"engine_native_tensor_payload": true' in manifest
     assert "transfer_" in manifest
 
 

@@ -1,0 +1,296 @@
+{
+  "beast_object_type": "c4x_sensorium_bpf_zero_provider_episode",
+  "bpf_receipt": {
+    "arda_attach_verified": true,
+    "arda_bpf_authoritative": true,
+    "arda_is_authoritative": true,
+    "arda_is_simulation": false,
+    "arda_phase3_required_maps_all_present": true,
+    "arda_required_maps_all_present": true,
+    "arda_status_receipt_digest": "sha256:5b80aadd1d4f3824534c52dae9f5c7879e8bfec9c2de5d4aa3f4b9ceb94d6e38",
+    "arda_valinor_kernel": true,
+    "attestation_digest": "sha256:b87ce050a03b9d3d1d4d6361efb20a10d8aab0c441ae0074c5e52e0eedd40290",
+    "authority": "kernel_observation_only",
+    "bpf_authority_present": true,
+    "bpftool_bpf_authority_present": true,
+    "cgroup_bound": true,
+    "claim_boundary": "Zero-provider witness is process-local instrumentation paired with existing ARDA/BPF authority. It proves this BEAST episode did not open provider sockets/DNS/connects in-process and that the witness can observe a positive comparator network attempt; it is not raw packet payload capture.",
+    "comparator_connect_attempts": 1,
+    "comparator_dns_activity": 1,
+    "comparator_error": "",
+    "comparator_host_digest": "sha256:3188cf53dae3664d78b4ef77a45466b5c3d98955384432df8e9b632e39b19244",
+    "dns_activity": 0,
+    "live_provider_comparator_observed_network": true,
+    "loaded_bpf_program_count": 37,
+    "outbound_connect_attempts": 0,
+    "privileged_bpftool_map_show": true,
+    "privileged_bpftool_net_show": true,
+    "privileged_bpftool_prog_show": true,
+    "provider_sockets_opened": 0,
+    "raw_packet_payload_retained": false,
+    "read_only_program": true,
+    "receipt_digest": "sha256:f6cb957d87a6424756bdcdff1a22d1604c1a1abfffc2ca1e867de60a666bb489",
+    "ring_loss_explicit": true,
+    "sensorium_episode_receipt_digest": "sha256:c308fb8515b11af5526174ebde00c967afe6a2a458f90ac20590ec87868a240d",
+    "source_receipt_digest": "sha256:704b474ae754f0a65ca1160b71837e8e11417abdacf9753098ed8adbdc808dd5",
+    "status": "closed_zero_provider_episode_with_positive_network_comparator",
+    "unexpected_child_processes": 0
+  },
+  "comparator_network_witness": {
+    "child_processes": 0,
+    "connect_attempts": 1,
+    "dns_activity": 1,
+    "network_observed": true,
+    "provider_hosts_digest": "sha256:863c29ed7d56b8ca2ca6e41658cf5040de90ebd5dac30aa848aedba2b760980b",
+    "provider_sockets_opened": 1
+  },
+  "created_at": "2026-08-03T23:37:24.106682+00:00",
+  "episode": {
+    "authority": "evidence_only",
+    "beast_object_type": "runtime_episode",
+    "causal_graph": {
+      "causal_edges": [
+        {
+          "confidence": 1.0,
+          "evidence": "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "relation": "EXPLICIT_CAUSE",
+          "source": "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "target": "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+          "relation": "REQUIRES",
+          "source": "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "target": "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4"
+        },
+        {
+          "confidence": 1.0,
+          "evidence": "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+          "relation": "EXPLICIT_CAUSE",
+          "source": "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+          "target": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+          "relation": "READS",
+          "source": "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "target": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": "route:zero_provider_local",
+          "relation": "READS",
+          "source": "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+          "target": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c"
+        },
+        {
+          "confidence": 1.0,
+          "evidence": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+          "relation": "EXPLICIT_CAUSE",
+          "source": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+          "target": "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83",
+          "relation": "REQUIRES",
+          "source": "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+          "target": "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+        }
+      ],
+      "causality": "explicit_resource_descriptor_or_actuator_evidence_only",
+      "edge_semantics": "order_only_compatibility_alias",
+      "edges": [
+        [
+          "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4"
+        ],
+        [
+          "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+          "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c"
+        ],
+        [
+          "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+          "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+        ]
+      ],
+      "event_facts": {
+        "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4": {
+          "branch": "local_digest_bound_read_only_replay",
+          "descriptor_refs": [],
+          "event_type": "build.branch_selected",
+          "operation": "proof.select",
+          "payload_sha256": "sha256:cf73a114b399d9e2e8953c554ad52a2fc9565a8fe33503d1c1711609b53987ee",
+          "phase": "decision",
+          "produces": [
+            "route:zero_provider_local"
+          ],
+          "reads": [],
+          "requires": [
+            "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366"
+          ],
+          "result": "selected",
+          "subject": "zero_provider_local_replay",
+          "writes": []
+        },
+        "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329": {
+          "branch": "",
+          "descriptor_refs": [],
+          "event_type": "health.verified",
+          "operation": "episode.health",
+          "payload_sha256": "sha256:7ff7fdcb6a8739637e6e14d0a31eb323119b4531f79bc3cccae627b2a9c5e034",
+          "phase": "verification",
+          "produces": [
+            "episode:zero_provider_witness"
+          ],
+          "reads": [],
+          "requires": [
+            "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83"
+          ],
+          "result": "success",
+          "subject": "zero_provider_witness",
+          "writes": []
+        },
+        "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c": {
+          "branch": "",
+          "descriptor_refs": [],
+          "event_type": "artifact.build_verified",
+          "operation": "artifact.verify",
+          "payload_sha256": "sha256:b0f29f810527ccdd246fec400b23d88b0aa2e5a1975a86a49e03c96d5169ad3a",
+          "phase": "verification",
+          "produces": [
+            "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83"
+          ],
+          "reads": [
+            "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+            "route:zero_provider_local"
+          ],
+          "requires": [],
+          "result": "success",
+          "subject": "c4x_deterministic_truth_receipt",
+          "writes": []
+        },
+        "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97": {
+          "branch": "",
+          "descriptor_refs": [],
+          "event_type": "file.source_inspected",
+          "operation": "file.inspect",
+          "payload_sha256": "sha256:3db80564cd348b8372ab2985ed352364ed3d14fe159a0fe1501fbf22087daddd",
+          "phase": "observation",
+          "produces": [
+            "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366"
+          ],
+          "reads": [
+            "file:sha256:232835767e9f6c8cdb241f1c1a53694258230b6e073e229e880adfeb22dcf77e"
+          ],
+          "requires": [],
+          "result": "observed",
+          "subject": "deterministic_intelligence_latest",
+          "writes": []
+        }
+      },
+      "nodes": [
+        "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+        "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+        "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+        "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+      ],
+      "ordered_edges": [
+        [
+          "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+          "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4"
+        ],
+        [
+          "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+          "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c"
+        ],
+        [
+          "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+          "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+        ]
+      ],
+      "ordering": "sequencer_offset"
+    },
+    "episode_hash": "sha256:11a3c2c94662798aaf33667fa7f9da507610f74a232d7284474081649da89c48",
+    "event_ids": [
+      "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+      "event:sha256:3c0cf03f1de37e58cf358ba309903c6781757f083f8b664e29a0a2862f2c21e4",
+      "event:sha256:a22beb431a6cae054f88963b01e21eea1909b18d94b6f93d9c3ae18ab96d881c",
+      "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+    ],
+    "event_range": {
+      "first": "event:sha256:fa195909d1ffa6adebc8e3f53856b2b6171c081106f50ba1a7beed7f22258a97",
+      "last": "event:sha256:814c113f987841192c0ba3f659dc84a672bb38ff131329e16e0d427d9006e329"
+    },
+    "initial_state_hash": "sha256:1921ba915b300b4c4275016560bfe21f3e8c76e61163889a05277eb510c7789b",
+    "mission_id": "physical-truth-digest-bound-one-shot-002-sensorium-bpf",
+    "objective_hash": "sha256:ff562b3c4dbdf2132a8921990b4e48b199125394ea9db43d6624c27dc04d430f",
+    "outcome": {
+      "effect_hash": "sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83",
+      "status": "success"
+    },
+    "resources": {
+      "dns_activity": 0.0,
+      "network_connects": 0.0,
+      "outbound_connect_attempts": 0.0,
+      "provider_calls": 0.0
+    },
+    "source_loss": {},
+    "version": "1.0",
+    "workspace_identity": "sha256:427957aadfbfadedd6980db85233017d293669f04d1b416662302938c94206b9"
+  },
+  "journal_metrics": {
+    "durable_events": 4,
+    "durable_offset": 4,
+    "head_hash": "sha256:65c392fd2ee88c4bdde34160cf9102052d3efef272bca803b70e1a402fae8612",
+    "integrity_fracture": null,
+    "integrity_ok": true
+  },
+  "mission_network_witness": {
+    "child_processes": 0,
+    "connect_attempts": 0,
+    "dns_activity": 0,
+    "network_observed": false,
+    "provider_hosts_digest": "sha256:863c29ed7d56b8ca2ca6e41658cf5040de90ebd5dac30aa848aedba2b760980b",
+    "provider_sockets_opened": 0
+  },
+  "receipt_digest": "sha256:463dff3f2cc450e104337c89ac04f7ef00e898d796efa49c826c79d3e2b7dff9",
+  "run_id": "physical-truth-digest-bound-one-shot-002-sensorium-bpf",
+  "sensorium_receipt": {
+    "durable_events": 4,
+    "episode_hash": "sha256:11a3c2c94662798aaf33667fa7f9da507610f74a232d7284474081649da89c48",
+    "explicit_loss_accounting": true,
+    "journal_head_hash": "sha256:65c392fd2ee88c4bdde34160cf9102052d3efef272bca803b70e1a402fae8612",
+    "journal_integrity_valid": true,
+    "missing_observations_lower_authority": true,
+    "observer_lifecycle_recorded": true,
+    "ordered_episode": true,
+    "raw_sensitive_payloads_absent": true,
+    "receipt_digest": "sha256:c308fb8515b11af5526174ebde00c967afe6a2a458f90ac20590ec87868a240d",
+    "source_loss": {},
+    "status": "closed_sensorium_zero_provider_episode"
+  },
+  "sequencer_metrics": {
+    "beast_object_type": "sensorium_sequencer_metrics",
+    "capacity": 64,
+    "displaced": 0,
+    "first_retained_offset": 1,
+    "generated_loss_events": 0,
+    "journal": {
+      "durable_events": 4,
+      "durable_offset": 4,
+      "head_hash": "sha256:65c392fd2ee88c4bdde34160cf9102052d3efef272bca803b70e1a402fae8612",
+      "integrity_fracture": null,
+      "integrity_ok": true
+    },
+    "last_offset": 4,
+    "privacy_redactions": 0,
+    "published": 4,
+    "read_only": true,
+    "retained": 4,
+    "version": "1.0"
+  },
+  "version": "1.0"
+}

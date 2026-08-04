@@ -1,0 +1,134 @@
+{
+  "arda_status_receipt": {},
+  "beast_object_type": "c4x_sudo_bpf_xdp_live_harvest",
+  "bpf_receipt": {
+    "arda_attach_verified": false,
+    "arda_bpf_authoritative": false,
+    "arda_is_authoritative": false,
+    "arda_is_simulation": false,
+    "arda_phase3_required_maps_all_present": false,
+    "arda_required_maps_all_present": false,
+    "arda_status_receipt_digest": "",
+    "arda_valinor_kernel": false,
+    "bpf_authority_present": false,
+    "bpftool_bpf_authority_present": false,
+    "cgroup_bound": false,
+    "dns_activity": -1,
+    "live_provider_comparator_observed_network": false,
+    "loaded_bpf_program_count": 0,
+    "outbound_connect_attempts": -1,
+    "privileged_bpftool_map_show": false,
+    "privileged_bpftool_net_show": false,
+    "privileged_bpftool_prog_show": false,
+    "provider_sockets_opened": -1,
+    "raw_packet_payload_retained": false,
+    "read_only_program": true,
+    "receipt_digest": "sha256:046ae0d57d8f7ff0fb2b615a3a037f729b4db6e2a0c0cb43a74d195ee1aca099",
+    "ring_loss_explicit": true,
+    "source_receipt_digest": "sha256:2dd795a268406464f8aa73bcbe9e901e8ee294c0f2cb80bd85b757867e1464c3",
+    "status": "bpf_authority_not_confirmed",
+    "unexpected_child_processes": -1
+  },
+  "claim_boundary": "Privileged kernel inventory and existing AF_XDP proof harvest. Does not claim zero-provider BPF witness without a closed observed episode.",
+  "commands": {
+    "bpftool_feature_probe_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "feature",
+        "probe"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:f8bddde1614658488d073efc2f474baf6ee8c0c53eeae369a2533e715705cc20",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bpftool_map_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "map",
+        "show"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:f8bddde1614658488d073efc2f474baf6ee8c0c53eeae369a2533e715705cc20",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bpftool_net_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "net",
+        "show"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:f8bddde1614658488d073efc2f474baf6ee8c0c53eeae369a2533e715705cc20",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bpftool_prog_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "prog",
+        "show"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:f8bddde1614658488d073efc2f474baf6ee8c0c53eeae369a2533e715705cc20",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mounts": {
+      "argv": [
+        "findmnt",
+        "-J",
+        "/sys/fs/bpf",
+        "/sys/kernel/tracing",
+        "/sys/kernel/debug/tracing"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "created_at": "2026-08-03T22:10:20.441484+00:00",
+  "receipt_digest": "sha256:de05999f2a8d6d9219ddbc9a9e926ec93448806e2959d6df89b1558a22483af0",
+  "version": "1.0",
+  "xdp_receipt": {
+    "af_xdp_worker_present": true,
+    "existing_xdp_proof_count": 3,
+    "guardian_policy_not_bypassed": false,
+    "isolated_veth_or_namespace": true,
+    "no_unrelated_traffic_redirected": false,
+    "policy_fail_open_or_closed_verified": false,
+    "receipt_digest": "sha256:2259e52755e3b6f79fd59220a27598cf700bcf9171c233fdaa48d950978959f9",
+    "redirect_pass_drop_observed": true,
+    "rx_ring_loss_reported": true,
+    "source_receipt_digest": "sha256:698d659e47a2ab031b607f4e69c02dff79f50928d3dad1cacbe7c4e970d45c49",
+    "status": "sudo_live_xdp_inventory_plus_existing_af_xdp_proofs_attack_suite_pending",
+    "unauthorized_cgroup_rejected": false,
+    "worker_death_observed": false,
+    "xdp_detach_detected": false,
+    "xdp_object_present": true
+  }
+}

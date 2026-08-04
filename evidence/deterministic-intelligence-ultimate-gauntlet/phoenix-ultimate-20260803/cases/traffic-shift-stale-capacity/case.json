@@ -1,0 +1,390 @@
+{
+  "joined_receipt": {
+    "beast_object_type": "deterministic_cross_modal_joined_receipt",
+    "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+    "current_claim_valid": false,
+    "failure_classes": [],
+    "family": "traffic_shift",
+    "joined_verification": true,
+    "phase_trace": [
+      "proof_graph_compiled",
+      "text_frame_realized",
+      "scene_plan_compiled",
+      "text_artifact_rendered",
+      "visual_artifact_rendered",
+      "joined_verified"
+    ],
+    "proof_first": true,
+    "proof_graph_digest": "sha256:38954a933792b60f6a02bc36a76a3356f7a34ca218f5633ecf1fd061eb20a63c",
+    "proof_graph_valid": true,
+    "provider_calls_used": 0,
+    "provider_policy": "residual_only",
+    "receipt_digest": "sha256:1db721c3d4688d6cf4bd1ee47a12285f5d2ae8583f29a8bec9db3e25d3720598",
+    "rendered_artifact_bytes": 3109,
+    "rendered_artifact_digest": "sha256:4ad602d82db7a6fe45c85edb02da1257150d203ca23ac63718744a3afa0e51d3",
+    "rendered_artifact_media_type": "image/svg+xml",
+    "request_digest": "sha256:4132b122f449e3d98e687bc569a8fac586515fe7ecc563de12ed7e94c0f86683",
+    "residual_packet_digests": [],
+    "residual_provenance_valid": true,
+    "scenario_id": "traffic-shift-stale-capacity",
+    "scene_plan_digest": "sha256:9178a3bb970f871d1554b9bfb2419cec3d7a5d8a73bd438d6d14028ecee43a5f",
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "status": "partial",
+    "text_artifact_bytes": 658,
+    "text_artifact_digest": "sha256:4446e1a14ee4b8cb32e85a8f8c8864ce82317892ceef0ce2146ca73f4c91d964",
+    "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+    "text_frame_digest": "sha256:8712df1be042f2f2c2cd97b1169ee7dc72f39e244137b06af97e07e8aaed4c14",
+    "text_semantically_valid": true,
+    "version": "1.0",
+    "visual_failure_class": "",
+    "visual_intent_fulfilled": true,
+    "visual_render_status": "rendered"
+  },
+  "proof_graph": {
+    "claims": [
+      {
+        "claim_id": "claim:traffic-shift-stale-capacity:source-capacity",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": false,
+        "fact_refs": [
+          "sha256:3061a3ff72a5cf41eb7a4cfc5bfcdeec2076e33cdfb36b4bc5f37959270f3c08"
+        ],
+        "metadata": {
+          "fact_type": "capacity_state"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "capacity",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:6bba3e76dee2f12ae0d6f451881e130247c99e7055dc101b52826252c3da9555",
+        "status": "stale",
+        "subject": "Aegis"
+      },
+      {
+        "claim_id": "claim:traffic-shift-stale-capacity:target-capacity",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": false,
+        "fact_refs": [
+          "sha256:88087363ba5dd87b62a332325805d9b38e4d55c17cb4ea8bb8443a0a26d7cbc3"
+        ],
+        "metadata": {
+          "fact_type": "capacity_state"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "capacity",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:92aa00bb5afcbf562bffa406930cac54c9ea8eb280c46b26c2e22b0f9c225e18",
+        "status": "stale",
+        "subject": "Commons"
+      },
+      {
+        "claim_id": "claim:traffic-shift-stale-capacity:route",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:cd9846175512e95200346d4184759ed883582bf45dd08b2f51c5e221004b4818"
+        ],
+        "metadata": {
+          "fact_type": "traffic_route"
+        },
+        "object": "Commons",
+        "policy_ref": "",
+        "predicate": "routes_to",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:45f876a305a1587229c6bf0d22ae57333981386b4c799c37b846bda97e46e509",
+        "status": "supported",
+        "subject": "Aegis"
+      },
+      {
+        "claim_id": "claim:traffic-shift-stale-capacity:traffic-shift",
+        "claim_type": "quantitative_threshold",
+        "confidence_class": "temporally_invalid",
+        "current_claim_allowed": false,
+        "fact_refs": [
+          "sha256:1d1d2f3edfdcfff0445ac4eb57391d80e2bc96a054f6c062a928c8864160bf6f",
+          "sha256:d033869adc527a3a83046e7201e6cd7ef32866bcffd4824ff9cb7fa2aec202a9",
+          "sha256:6f056d8bb5c1f723c021b13795690c56c4e0197344e83760846a860f272fcc75"
+        ],
+        "metadata": {
+          "family": "traffic_shift",
+          "minimum_reserve_percent": 15.0,
+          "shift_class": "unknown_current_state",
+          "shift_percent": 30.0,
+          "target_spare_percent": 60.0
+        },
+        "object": "Commons",
+        "policy_ref": "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d",
+        "predicate": "traffic_shift_safety",
+        "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+        "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+        "status": "stale",
+        "subject": "Aegis"
+      }
+    ],
+    "compile_sequence": 1,
+    "compiler_id": "beast.proof-first-compiler.v1",
+    "fact_digests": [
+      "sha256:3061a3ff72a5cf41eb7a4cfc5bfcdeec2076e33cdfb36b4bc5f37959270f3c08",
+      "sha256:88087363ba5dd87b62a332325805d9b38e4d55c17cb4ea8bb8443a0a26d7cbc3",
+      "sha256:cd9846175512e95200346d4184759ed883582bf45dd08b2f51c5e221004b4818",
+      "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+    ],
+    "family": "traffic_shift",
+    "graph_digest": "sha256:38954a933792b60f6a02bc36a76a3356f7a34ca218f5633ecf1fd061eb20a63c",
+    "graph_id": "proof:traffic_shift:4132b122f449e3d98e68",
+    "policy_digests": [
+      "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d"
+    ],
+    "request_digest": "sha256:4132b122f449e3d98e687bc569a8fac586515fe7ecc563de12ed7e94c0f86683",
+    "rule_digests": [
+      "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+    ],
+    "world_snapshot_digest": "sha256:c4b287b114c4ca6e20bca018cc3d738f8bebb2fd648aff60bcd02e6bddee099f"
+  },
+  "residual_packets": [],
+  "scenario": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "facts": [
+      {
+        "evidence_digest": "sha256:6bba3e76dee2f12ae0d6f451881e130247c99e7055dc101b52826252c3da9555",
+        "fact_id": "fact:capacity_state:Aegis:capacity:",
+        "fact_type": "capacity_state",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "capacity",
+        "subject": "Aegis",
+        "value": {
+          "load_percent": 84,
+          "spare_percent": 16
+        }
+      },
+      {
+        "evidence_digest": "sha256:92aa00bb5afcbf562bffa406930cac54c9ea8eb280c46b26c2e22b0f9c225e18",
+        "fact_id": "fact:capacity_state:Commons:capacity:",
+        "fact_type": "capacity_state",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "capacity",
+        "subject": "Commons",
+        "value": {
+          "load_percent": 40,
+          "spare_percent": 60
+        }
+      },
+      {
+        "evidence_digest": "sha256:45f876a305a1587229c6bf0d22ae57333981386b4c799c37b846bda97e46e509",
+        "fact_id": "fact:traffic_route:Aegis:routes_to:Commons",
+        "fact_type": "traffic_route",
+        "freshness_seconds": 300,
+        "object": "Commons",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "routes_to",
+        "subject": "Aegis",
+        "value": {
+          "state": "healthy"
+        }
+      },
+      {
+        "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+        "fact_id": "fact:current_evidence:runtime:current_evidence:",
+        "fact_type": "current_evidence",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "current_evidence",
+        "subject": "runtime",
+        "value": {
+          "state": "fresh"
+        }
+      }
+    ],
+    "family": "traffic_shift",
+    "force_layout_overflow": false,
+    "metadata": {
+      "shift_percent": 30,
+      "temporal_state": "stale"
+    },
+    "policies": [
+      {
+        "family": "traffic_shift",
+        "parameters": {
+          "minimum_reserve_percent": 15
+        },
+        "policy_id": "policy:traffic_shift:v1"
+      }
+    ],
+    "provider_policy": "residual_only",
+    "question": "Assess the traffic shift using an expired capacity snapshot.",
+    "rules": [
+      {
+        "authority": "verified_rule",
+        "family": "traffic_shift",
+        "parameters": {},
+        "predicate": "traffic_shift_capacity",
+        "rule_id": "rule:traffic_shift:traffic_shift_capacity:v1"
+      }
+    ],
+    "scenario_id": "traffic-shift-stale-capacity",
+    "source": "Aegis",
+    "target": "Commons",
+    "visual_assets": {
+      "deployment_safety:status_badge": "sha256:36831f2a49222b6a63299f591c52195d4ddebdec690d87d1b66a243a36d410e5",
+      "restart_risk:status_badge": "sha256:d87f9c783acaa9728da9e8fc298e619648d3ed30cacd485d36e8fc5b6b7e12ca",
+      "traffic_shift:status_badge": "sha256:6442eae4f72fe8088e164f9955f3688a5e0aeb5e84bfaea51e0cab9dd1fbe8a2"
+    }
+  },
+  "scene_plan": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "claim_refs": [
+      "claim:traffic-shift-stale-capacity:route",
+      "claim:traffic-shift-stale-capacity:source-capacity",
+      "claim:traffic-shift-stale-capacity:target-capacity",
+      "claim:traffic-shift-stale-capacity:traffic-shift"
+    ],
+    "compile_sequence": 3,
+    "compiler_id": "beast.deterministic-scene-plan.v1",
+    "family": "traffic_shift",
+    "graph_digest": "sha256:38954a933792b60f6a02bc36a76a3356f7a34ca218f5633ecf1fd061eb20a63c",
+    "plan_digest": "sha256:9178a3bb970f871d1554b9bfb2419cec3d7a5d8a73bd438d6d14028ecee43a5f",
+    "plan_id": "scene-plan:proof:traffic_shift:4132b122f449e3d98e68",
+    "primitives": [
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:source-capacity",
+        "evidence_state": "stale",
+        "height": 120,
+        "label": "Aegis",
+        "metadata": {},
+        "primitive_id": "source-capacity",
+        "primitive_type": "capacity_bar",
+        "width": 220,
+        "x": 70,
+        "y": 150
+      },
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:target-capacity",
+        "evidence_state": "stale",
+        "height": 120,
+        "label": "Commons",
+        "metadata": {},
+        "primitive_id": "target-capacity",
+        "primitive_type": "capacity_bar",
+        "width": 220,
+        "x": 670,
+        "y": 150
+      },
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:route",
+        "evidence_state": "supported",
+        "height": 40,
+        "label": "shift 30%",
+        "metadata": {},
+        "primitive_id": "traffic-arrow",
+        "primitive_type": "traffic_shift_arrow",
+        "width": 340,
+        "x": 310,
+        "y": 195
+      },
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+        "evidence_state": "stale",
+        "height": 70,
+        "label": "reserve 15%",
+        "metadata": {},
+        "primitive_id": "reserve-threshold",
+        "primitive_type": "policy_threshold",
+        "width": 300,
+        "x": 330,
+        "y": 70
+      },
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+        "evidence_state": "stale",
+        "height": 80,
+        "label": "unknown_current_state",
+        "metadata": {},
+        "primitive_id": "shift-badge",
+        "primitive_type": "status_badge",
+        "width": 260,
+        "x": 350,
+        "y": 330
+      },
+      {
+        "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+        "evidence_state": "stale",
+        "height": 55,
+        "label": "stale evidence",
+        "metadata": {},
+        "primitive_id": "epistemic-marker",
+        "primitive_type": "stale_marker",
+        "width": 300,
+        "x": 70,
+        "y": 430
+      }
+    ],
+    "residual_refs": [],
+    "unresolved_visual_gaps": [],
+    "visual_intent_fulfilled": true
+  },
+  "text_artifact": {
+    "bytes": 658,
+    "digest": "sha256:4446e1a14ee4b8cb32e85a8f8c8864ce82317892ceef0ce2146ca73f4c91d964",
+    "media_type": "application/vnd.beast.structured-answer+json",
+    "status": "rendered"
+  },
+  "text_frame": {
+    "claim_refs": [
+      "claim:traffic-shift-stale-capacity:source-capacity",
+      "claim:traffic-shift-stale-capacity:target-capacity",
+      "claim:traffic-shift-stale-capacity:route",
+      "claim:traffic-shift-stale-capacity:traffic-shift"
+    ],
+    "conclusion_claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+    "current_conclusion_allowed": false,
+    "epistemic_status": "stale",
+    "family": "traffic_shift",
+    "frame_digest": "sha256:8712df1be042f2f2c2cd97b1169ee7dc72f39e244137b06af97e07e8aaed4c14",
+    "frame_id": "text-frame:proof:traffic_shift:4132b122f449e3d98e68",
+    "graph_digest": "sha256:38954a933792b60f6a02bc36a76a3356f7a34ca218f5633ecf1fd061eb20a63c",
+    "headline": "Traffic-shift assessment",
+    "realize_sequence": 2,
+    "renderer_id": "beast.structured-text-frame.v1",
+    "residual_refs": [],
+    "summary_fields": {
+      "minimum_reserve_percent": 15.0,
+      "shift_class": "unknown_current_state",
+      "shift_percent": 30.0,
+      "source": "Aegis",
+      "target": "Commons",
+      "target_spare_percent": 60.0
+    }
+  },
+  "verification": {
+    "failure_classes": [],
+    "joined_verification": true,
+    "layout_valid": true,
+    "proof_first": true,
+    "residual_provenance_valid": true,
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "stale_language_valid": true,
+    "text_bytes_valid": true,
+    "verification_digest": "sha256:61e62c17544b3de6ce859cd36e1aa88b2e392c8d37e91fad535bdc146cbaa265",
+    "visual_bytes_valid": true
+  },
+  "visual_artifact": {
+    "bytes": 3109,
+    "digest": "sha256:4ad602d82db7a6fe45c85edb02da1257150d203ca23ac63718744a3afa0e51d3",
+    "failure_class": "",
+    "media_type": "image/svg+xml",
+    "status": "rendered"
+  }
+}

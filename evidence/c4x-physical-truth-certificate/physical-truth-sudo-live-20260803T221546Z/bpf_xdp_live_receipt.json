@@ -1,0 +1,170 @@
+{
+  "arda_status_receipt": {
+    "arm_mode": "ring0_loader",
+    "attach_verified": true,
+    "authoritative_maps_present": true,
+    "beast_object_type": "c4x_arda_status_harvest",
+    "bpf_authoritative": true,
+    "canonical_bpf_object_exists": true,
+    "canonical_loader_binary_exists": true,
+    "claim_boundary": "ARDA/Integritas authoritative BPF substrate status. This proves BPF attachment and pinned-map authority when present, but does not by itself prove BEAST's zero-provider observed episode.",
+    "command": [
+      "sudo",
+      "-n",
+      "/home/byron/Integritas-Mechanicus/arda_os/bin/arda",
+      "status",
+      "--json"
+    ],
+    "created_at": "2026-08-03T22:15:47.931234+00:00",
+    "enforcement_mode": "audit",
+    "is_authoritative": true,
+    "is_simulation": false,
+    "kernel": "6.12.96-valinor",
+    "loader_attempted": true,
+    "loader_last_error": null,
+    "ok": true,
+    "phase3_required_map_count": 3,
+    "phase3_required_maps_all_present": true,
+    "policy_bundle_present": false,
+    "present": true,
+    "receipt_digest": "sha256:5b80aadd1d4f3824534c52dae9f5c7879e8bfec9c2de5d4aa3f4b9ceb94d6e38",
+    "required_map_count": 6,
+    "required_maps_all_present": true,
+    "returncode": 0,
+    "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_digest": "sha256:7415d3781acf4f958d1cc09f25a76bbf9721505d1fe006ccb7e721d342858a02",
+    "valinor_kernel": true,
+    "version": "1.0"
+  },
+  "beast_object_type": "c4x_sudo_bpf_xdp_live_harvest",
+  "bpf_receipt": {
+    "arda_attach_verified": true,
+    "arda_bpf_authoritative": true,
+    "arda_is_authoritative": true,
+    "arda_is_simulation": false,
+    "arda_phase3_required_maps_all_present": true,
+    "arda_required_maps_all_present": true,
+    "arda_status_receipt_digest": "sha256:5b80aadd1d4f3824534c52dae9f5c7879e8bfec9c2de5d4aa3f4b9ceb94d6e38",
+    "arda_valinor_kernel": true,
+    "bpf_authority_present": true,
+    "bpftool_bpf_authority_present": true,
+    "cgroup_bound": true,
+    "dns_activity": -1,
+    "live_provider_comparator_observed_network": false,
+    "loaded_bpf_program_count": 37,
+    "outbound_connect_attempts": -1,
+    "privileged_bpftool_map_show": true,
+    "privileged_bpftool_net_show": true,
+    "privileged_bpftool_prog_show": true,
+    "provider_sockets_opened": -1,
+    "raw_packet_payload_retained": false,
+    "read_only_program": true,
+    "receipt_digest": "sha256:b04a4b5e86c81de1a35fb0b50a9b3358cb78a548da5c8e1b5dc06899d5bab543",
+    "ring_loss_explicit": true,
+    "source_receipt_digest": "sha256:704b474ae754f0a65ca1160b71837e8e11417abdacf9753098ed8adbdc808dd5",
+    "status": "bpf_authority_present_zero_provider_episode_pending",
+    "unexpected_child_processes": -1
+  },
+  "claim_boundary": "Privileged kernel inventory and existing AF_XDP proof harvest. Does not claim zero-provider BPF witness without a closed observed episode.",
+  "commands": {
+    "bpftool_feature_probe_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "feature",
+        "probe"
+      ],
+      "json_count": 6,
+      "json_kind": "dict",
+      "ok": true,
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:65f182bc2014abb635015684f3b142d31082e4df24e662af43d5673c40b2443a"
+    },
+    "bpftool_map_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "map",
+        "show"
+      ],
+      "json_count": 17,
+      "json_kind": "list",
+      "ok": true,
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:e50d314ea941b0219a09d62582615fb00a3a905cb843db9d945c2bb6700ee252"
+    },
+    "bpftool_net_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "net",
+        "show"
+      ],
+      "json_count": 1,
+      "json_kind": "list",
+      "ok": true,
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:ee3e52bb81b006a3a5c1a6d4bb45026eb39ebe77969335efd8d5156cec5ffa3d"
+    },
+    "bpftool_prog_show_json": {
+      "argv": [
+        "sudo",
+        "-n",
+        "bpftool",
+        "-j",
+        "prog",
+        "show"
+      ],
+      "json_count": 37,
+      "json_kind": "list",
+      "ok": true,
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:158d5efc0ac3041b9a7d41a22d2196773f2efb96ffebe391d726ca6a5f59ecae"
+    },
+    "mounts": {
+      "argv": [
+        "findmnt",
+        "-J",
+        "/sys/fs/bpf",
+        "/sys/kernel/tracing",
+        "/sys/kernel/debug/tracing"
+      ],
+      "json_count": 0,
+      "json_kind": "",
+      "ok": false,
+      "returncode": 1,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "created_at": "2026-08-03T22:15:49.937329+00:00",
+  "receipt_digest": "sha256:f78fffbf0631f4a3a9b32aeca95d532342a56163a1601a331d5215d790d3245a",
+  "version": "1.0",
+  "xdp_receipt": {
+    "af_xdp_worker_present": true,
+    "existing_xdp_proof_count": 3,
+    "guardian_policy_not_bypassed": false,
+    "isolated_veth_or_namespace": true,
+    "no_unrelated_traffic_redirected": false,
+    "policy_fail_open_or_closed_verified": false,
+    "receipt_digest": "sha256:2259e52755e3b6f79fd59220a27598cf700bcf9171c233fdaa48d950978959f9",
+    "redirect_pass_drop_observed": true,
+    "rx_ring_loss_reported": true,
+    "source_receipt_digest": "sha256:698d659e47a2ab031b607f4e69c02dff79f50928d3dad1cacbe7c4e970d45c49",
+    "status": "sudo_live_xdp_inventory_plus_existing_af_xdp_proofs_attack_suite_pending",
+    "unauthorized_cgroup_rejected": false,
+    "worker_death_observed": false,
+    "xdp_detach_detected": false,
+    "xdp_object_present": true
+  }
+}
