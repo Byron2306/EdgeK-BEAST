@@ -1103,6 +1103,15 @@ Goal:
     - Fix in progress:
       add `PyYAML==6.0.2` to the workflow dependency closure, push again and
       require a fresh remote packet plus Sigstore/GitHub attestation.
+    - Second independent run:
+      `https://github.com/Byron2306/EdgeK-BEAST/actions/runs/30937109797`.
+    - Honest result:
+      dependency closure progressed, but pytest loaded the global
+      `tests/conftest.py`, initialized the wider BEAST service factory and
+      failed on unrelated full-stack `numpy` dependency closure.
+    - Fix in progress:
+      run the two DIO remote witness contract tests with `--noconftest`; local
+      focused command gives `12 passed`.
 
 ## Operational Phase 3 implementation progress: multi-domain composition
 

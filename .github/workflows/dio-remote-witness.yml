@@ -55,6 +55,7 @@ jobs:
           PYTHONNOUSERSITE: "1"
         run: |
           python -m pytest \
+            --noconftest \
             tests/test_dio_distributed_quorum.py \
             tests/test_dio_cloud_attestation.py \
             -q
@@ -62,7 +63,7 @@ jobs:
       - name: Emit DIO GitHub witness packet
         env:
           DIO_GITHUB_TEST_STATUS: passed
-          DIO_GITHUB_TEST_COMMAND: "python -m pytest tests/test_dio_distributed_quorum.py tests/test_dio_cloud_attestation.py -q"
+          DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_distributed_quorum.py tests/test_dio_cloud_attestation.py -q"
         run: |
           python scripts/run_dio_github_actions_witness.py \
             --out evidence/dai-diode/phase2.1-github-witness/dio_github_actions_witness_packet.json
