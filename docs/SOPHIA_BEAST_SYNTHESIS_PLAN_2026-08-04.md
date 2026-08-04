@@ -2154,9 +2154,134 @@ Goal:
      `tests/test_dio_remote_witness_packet.py`,
      `tests/test_dio_distributed_quorum.py` and
      `tests/test_dio_cloud_attestation.py` (`33 passed`).
-6. Run a live mixed quorum with at least HF plus one cloud/GitHub autonomous
+5a. ~~Add shared-proposal cloud autonomous packet binding, Azure harvester
+   parity and a mixed witness readiness receipt.~~
+   - Bridge:
+     `app/kernel/dai/dio_cloud_autonomous_packet.py` now accepts a
+     coordinator-supplied `DIOProposalPacket`, so cloud autonomous witnesses can
+     sign over the same Commons proposal instead of minting isolated
+     cloud-local proposals.
+   - Harvester:
+     `scripts/harvest_dio_azure_tee_attestation.py` now supports
+     `--emit-autonomous-packet`, `--remote-runtime-observed` and
+     `--proposal-file`, matching the AWS/GCP autonomous packet path while still
+     refusing green credit without a green Azure guest-attestation harvest. The
+     AWS/GCP harvesters also expose `--proposal-file`, so all three cloud
+     lanes can bind autonomous signatures to a coordinator-supplied Commons
+     proposal.
+   - Readiness runner:
+     `scripts/run_dai_phase5_mixed_witness_readiness.py`.
+   - Fresh HF refresh:
+     `evidence/dai-diode/phase5-hf-witness/dio_hf_phase5_live_witness_receipt.json`.
+   - HF refreshed receipt digest:
+     `sha256:225b84ace597f5e017581683e289057aebfe251b396aa27961d273858a92938d`.
+   - Mixed readiness receipt:
+     `evidence/dai-diode/phase5-mixed-witness-readiness/dio_phase5_mixed_witness_readiness.json`.
+   - Mixed readiness digest:
+     `sha256:3eb98e2ddecc2e58df9e8bd9df49c04965ce9ea65cd698afb82cd29e9c6c301f`.
+   - Result:
+     HF and GitHub are fresh verified autonomous packets, but they do not yet
+     share one proposal. GCP/AWS are green cloud harvests that can become
+     autonomous packets only after in-runtime signing over the shared
+     coordinator proposal. The stored Azure harvest remains blocked with
+     `azure_no_vms_found_in_location`. A physical execution witness packet is
+     still required before full Commons quorum.
+   - Tests:
+     `tests/test_dio_cloud_autonomous_packet.py`,
+     `tests/test_dio_commons_coordinator.py`,
+     `tests/test_dio_github_actions_witness.py` and
+     `tests/test_dio_remote_witness_packet.py` (`18 passed`).
+5b. ~~Mint one shared Phase-5 Commons proposal and prove HF/GitHub can bind
+   autonomous packets to that exact proposal instead of self-minted smoke
+   proposals.~~
+   - Proposal minter:
+     `scripts/mint_dai_phase5_shared_proposal.py`.
+   - Shared proposal:
+     `evidence/dai-diode/phase5-shared-quorum/dio_phase5_shared_proposal.json`.
+   - Shared proposal packet digest:
+     `sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86`.
+   - Shared proposal digest:
+     `sha256:5df338a298b4f95abcc6edfcdc98772b787848c3cc0694a144110ac3553fcaff`.
+   - HF verifier:
+     `scripts/verify_dio_hf_witness.py` now accepts `--proposal-file`.
+   - Live HF shared-proposal receipt:
+     `evidence/dai-diode/phase5-shared-quorum/hf/dio_hf_shared_proposal_witness_receipt.json`.
+   - Live HF shared-proposal receipt digest:
+     `sha256:a1737d69a90592873087c7a3bdf40d7e118923db53bf6fd96120c99fa9c8da0d`.
+   - Live HF shared-proposal packet digest:
+     `sha256:334699f9c5d21687874c7ec8a54b1ecd04196b2c877518b1ffc9423d290365f9`.
+   - Live HF autonomous verification digest:
+     `sha256:b8e74bc8fb9cfda4020582a2b74a6951eed6fada7351c7c7233dcc469e94b8a3`.
+   - GitHub emitter:
+     `scripts/run_dio_github_actions_witness.py` now accepts
+     `--proposal-file`.
+   - GitHub workflow:
+     `.github/workflows/dio-remote-witness.yml` now accepts optional
+     `workflow_dispatch` input `proposal_json_b64`, decodes it inside the
+     runner and passes it to the packet emitter.
+   - Local GitHub shared-proposal packet:
+     `evidence/dai-diode/phase5-shared-quorum/github/dio_github_shared_proposal_witness_packet.local.json`.
+   - Local GitHub shared-proposal envelope digest:
+     `sha256:fb49dc3938627390c802d1c6bfe618c07075ecaf07b06bfa921fe8833c31f7e3`.
+   - Local GitHub shared-proposal packet digest:
+     `sha256:ff3aba97a3501974c08e8befb18d3a6921e68f278574a5261ed1ccbbb8a689fa`.
+   - Local GitHub shared-proposal verification digest:
+     `sha256:c299e4291728fa0059120f03d0e6788c7c290fa122728761cac4408975e1fb5e`.
+   - Result:
+     HF has already signed the shared proposal live with zero red gates.
+     GitHub shared-proposal signing verifies locally; the remaining step is a
+     live GitHub Actions dispatch from the updated workflow so GitHub OIDC /
+     Sigstore attestation binds the same shared proposal.
+   - Tests:
+     `tests/test_dio_github_actions_witness.py`,
+     `tests/test_dio_cloud_autonomous_packet.py`,
+     `tests/test_dio_commons_coordinator.py` and
+     `tests/test_dio_remote_witness_packet.py` (`19 passed`).
+6. ~~Run a live mixed quorum with at least HF plus one cloud/GitHub autonomous
    packet, while preserving the nonclaim that non-persistent sources remain
-   adapter-only.
+   adapter-only.~~
+   - Shared proposal packet digest:
+     `sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86`.
+   - Live HF semantic witness:
+     `evidence/dai-diode/phase5-shared-quorum/hf/dio_hf_shared_proposal_witness_receipt.json`.
+   - Live GitHub run:
+     `https://github.com/Byron2306/EdgeK-BEAST/actions/runs/30960436614`.
+   - Live GitHub packet:
+     `evidence/dai-diode/phase5-shared-quorum/github/run-30960436614/dio_github_actions_autonomous_witness_packet.json`.
+   - Live GitHub envelope digest:
+     `sha256:3440cb4385a732ff7160df7061149cb8772e87e8fb2c89caa0912e2e83cf2996`.
+   - Live GitHub verification digest:
+     `sha256:4ce16441ae173eafcaad2b4a12f01220e8cbdb7ee81805bdf75f3002121b4f4f`.
+   - Live GitHub/Sigstore artifact attestation:
+     verified by `gh attestation verify --repo Byron2306/EdgeK-BEAST`.
+   - GCP remote physical packet:
+     `evidence/dai-diode/phase5-shared-quorum/gcp-physical-remote/dio_gcp_autonomous_witness_envelope.json`.
+   - GCP remote physical envelope digest:
+     `sha256:de095c739633f7c06a48207b9bdd58085335b0dccf0bdda81e3811cfdb0b2462`.
+   - GCP remote governance packet:
+     `evidence/dai-diode/phase5-shared-quorum/gcp-governance-remote/dio_gcp_autonomous_witness_envelope.json`.
+   - GCP remote governance envelope digest:
+     `sha256:e443ec62d6406f1ea2af14e630bd1d69f2285a2df20536ed97ca01213f02b019`.
+   - Quorum replay:
+     `scripts/run_dai_phase5_shared_quorum_replay.py`.
+   - Quorum replay receipt:
+     `evidence/dai-diode/phase5-shared-quorum/dio_phase5_shared_quorum_replay.json`.
+   - Quorum replay digest:
+     `sha256:40a463606d84606260aaaaedde538ff691dd37e7f6cf939c4673a56c809e5a16`.
+   - Quorum report digest:
+     `sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d`.
+   - Result:
+     `4/4` autonomous packets verified against one shared proposal; quorum
+     decision `approve`; class `heterogeneous_distributed_quorum`; roles
+     present: semantic, adversarial, physical execution and governance; hardware
+     rooted node count `2`; red gates: none.
+   - Boundary:
+     GCP remote packets were signed inside the reachable Confidential VM and
+     admitted against frozen instance-description evidence, but the GCP harvest
+     still records `raw_provider_attestation_token_present=false` and
+     `publication_grade_hardware_attestation=false`. This is a real remote
+     autonomous Commons quorum, not yet the final publication-grade Google
+     attestation-token proof.
 7. Package Phase 5 only after autonomous packet gauntlet, live packet harvest
    and coordinator replay all pass from a clean source overlay.
 

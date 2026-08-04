@@ -1,0 +1,101 @@
+{
+  "authority_boundary": "shared autonomous quorum replay only; GCP physical witness remains inventory-admitted and not publication-grade provider-token attested",
+  "beast_object_type": "dio_phase5_shared_quorum_replay",
+  "evaluated_at": "2026-08-04T23:43:41.041207+00:00",
+  "execution_authority_allowed": false,
+  "green": true,
+  "production_authority_allowed": false,
+  "proposal_digest": "sha256:5df338a298b4f95abcc6edfcdc98772b787848c3cc0694a144110ac3553fcaff",
+  "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+  "provider_calls_used": 0,
+  "quorum": {
+    "admitted_node_count": 4,
+    "beast_object_type": "dio_distributed_quorum_report",
+    "decision": "approve",
+    "distinct_infrastructure_provider_count": 3,
+    "distinct_key_count": 4,
+    "distinct_runtime_platform_count": 3,
+    "execution_authority_allowed": false,
+    "hardware_rooted_node_count": 2,
+    "production_authority_allowed": false,
+    "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+    "quorum_class": "heterogeneous_distributed_quorum",
+    "red_gates": [],
+    "remote_node_count": 4,
+    "report_digest": "sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d",
+    "roles_present": [
+      "adversarial_witness",
+      "governance_witness",
+      "physical_execution_witness",
+      "semantic_witness"
+    ],
+    "valid_vote_count": 4,
+    "version": "2026-08-04.phase2.1.dio-distributed-quorum.v1",
+    "vote_digests": [
+      "sha256:37312d93e2b4f76674ad87acbe5e28192b25ec865380d22e6c442cde395018ea",
+      "sha256:3d43f110e83a63a67cc810080618fa85dbc4fc33c37895c5cda1fb00e54e9164",
+      "sha256:614cabb993359fe8e07425d33178d52e9993f40b944a9c3acc46079e6c804493",
+      "sha256:cd01e3d1a3fcd604be0f9af9acd3378b0f5463fdc80c892d1af02be6d99b3e4a"
+    ]
+  },
+  "red_gates": [],
+  "replay_digest": "sha256:40a463606d84606260aaaaedde538ff691dd37e7f6cf939c4673a56c809e5a16",
+  "witnesses": [
+    {
+      "admission_digest": "sha256:f54a67dfb0a6df8cf2f03781104bd78caac1cdb01028276a6ad25527e7b6358a",
+      "hardware_rooted_identity": false,
+      "maximum_authority": "remote_signed_software_witness_only",
+      "node_id": "dio:hf:semantic-witness-01",
+      "packet_digest": "sha256:334699f9c5d21687874c7ec8a54b1ecd04196b2c877518b1ffc9423d290365f9",
+      "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+      "provider": "huggingface",
+      "red_gates": [],
+      "remote_runtime_observed": true,
+      "role": "semantic_witness",
+      "verification_digest": "sha256:b8e74bc8fb9cfda4020582a2b74a6951eed6fada7351c7c7233dcc469e94b8a3",
+      "verified": true
+    },
+    {
+      "admission_digest": "sha256:9a8ab8b9829ddb0f969eca4f839ba032a08893948e34cccc8633a38b8fae4a41",
+      "hardware_rooted_identity": false,
+      "maximum_authority": "remote_oidc_sigstore_software_witness_only",
+      "node_id": "dio:github:actions-witness-01",
+      "packet_digest": "sha256:8eefa365e1bb089cf99596135f513198df9aa7a33a6b1827c2867fb50cfa6083",
+      "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+      "provider": "github",
+      "red_gates": [],
+      "remote_runtime_observed": true,
+      "role": "adversarial_witness",
+      "verification_digest": "sha256:55a939c4983d9ae4b63b249d326f75940ca70714b1e29b74126a8ce9326bdff6",
+      "verified": true
+    },
+    {
+      "admission_digest": "sha256:d278aedb43f8f9b2c7c64cfa0d5de187625f4212edfac04c4e8fe8c551497c2f",
+      "hardware_rooted_identity": true,
+      "maximum_authority": "hardware_rooted_governance_vote_only",
+      "node_id": "dio:gcp:tee-physical-01",
+      "packet_digest": "sha256:63e1c0386cde5ce9b8aa564c6cdfb88f1b8ef02ee40051b2afba1d4e5f2f67f7",
+      "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+      "provider": "gcp-physical",
+      "red_gates": [],
+      "remote_runtime_observed": true,
+      "role": "physical_execution_witness",
+      "verification_digest": "sha256:9b1ebd6544b7735504fdd665862cf65637c67fee1183d3ca6b32ac2af3ffa235",
+      "verified": true
+    },
+    {
+      "admission_digest": "sha256:7806bb735cb8e20f0ed3a1d9a7efb6a24ae2efc87ee42d4eab705144f0e64601",
+      "hardware_rooted_identity": true,
+      "maximum_authority": "hardware_rooted_governance_vote_only",
+      "node_id": "dio:gcp:tee-governance-remote-01",
+      "packet_digest": "sha256:156cfdd7ac99cb99248238ca688a69c5430db894dc35acde8be4e67e671ae4b6",
+      "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+      "provider": "gcp-governance",
+      "red_gates": [],
+      "remote_runtime_observed": true,
+      "role": "governance_witness",
+      "verification_digest": "sha256:b12f1f5f36b652a21a9e1c1105e84ec8d94565f01949c22c7eafc3a96b6ec3dc",
+      "verified": true
+    }
+  ]
+}
