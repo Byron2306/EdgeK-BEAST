@@ -1,0 +1,111 @@
+{
+  "beast_object_type": "forge_kv_ml_kem_transport_gauntlet",
+  "block_id": "kv_97a95ae9e3b9d35940ec",
+  "claim_boundary": "Checksum-bound KV network transfer plus Commons ML-KEM receipt binding; provider-call avoidance and token savings remain zero unless separate execution evidence exists",
+  "ml_kem_receipt_digest": "sha256:c653b6c12fc77a19a57c8d3d46755e3435cd203eff6c0f5dc765de6a13b51507",
+  "normalized_projection": {
+    "authority": "ml_kem_confirmed_checksum_bound_transfer_only",
+    "beast_object_type": "normalized_reduction_evidence",
+    "block_id": "kv_97a95ae9e3b9d35940ec",
+    "bytes_transferred_verified": 0,
+    "claim_class": "hypothesis",
+    "duplicate": false,
+    "engine": "sglang",
+    "engine_specific_proof": false,
+    "evidence_node_id": "sha256:54cd58b98141ceb1e376b48dc6656baf8375dd81c7a5e71ef3449d5ffbfe76c9",
+    "forge_kv_boundary": "ml_kem_bound_network_transport",
+    "ml_kem_algorithm": "ML-KEM-768",
+    "ml_kem_confirmed_count": 3,
+    "ml_kem_node_count": 3,
+    "ml_kem_pairwise_transcript_edges": 6,
+    "notes": [
+      "ML-KEM-confirmed peer session plus checksum-bound engine-native KV transfer verified; no token savings, portable KV reuse, or provider-call avoidance is counted"
+    ],
+    "original_receipt_digest": "sha256:c7d02e208335172036b8c7f55a065aaa74c793d2aaecea522f4f533079c94b07",
+    "payload_kind": "test_oracle",
+    "portable_raw_kv": false,
+    "projection_digest": "sha256:9176e7f884cf4560ec21b101edfb6282366a772016373272c26d713340846b72",
+    "provider_calls_avoided": 0,
+    "source_system": "forge_kv_prompt_cache",
+    "target_engine": "sglang",
+    "tensor_payload_format": "test-oracle",
+    "tensor_payload_sha256": "sha256:ab827c6800ace8271f9589a55fbe60c26f96a33cd1b30920603746bbd89c2296",
+    "tokens_avoided_observed": 0,
+    "transfer_id": "transfer_471b9cb1e3a0",
+    "transport_verified": false,
+    "validation_errors": [],
+    "verified": false,
+    "version": "1.0"
+  },
+  "observed_at": "2026-08-03T12:53:48.470830+00:00",
+  "payload_kind": "test_oracle",
+  "receipt_digest": "sha256:81669f8ab3c1477554336af6587ca32a1b2c54e12086a8badf4743a80a81a926",
+  "run_id": "2026-08-03T000000-forge-kv-mlkem-ci-a",
+  "source_manifest_digest": "sha256:f6aea8bed0c83e254f01a4ccb4c346a4c7ee4a3b1d824e264d602a21a374b091",
+  "transferred": true,
+  "transport_receipt": {
+    "authority": "ml_kem_confirmed_checksum_bound_transfer_only",
+    "beast_object_type": "forge_kv_ml_kem_transport_receipt",
+    "bytes_transferred_verified": 0,
+    "claim_boundary": "ML-KEM peer confirmation plus checksum-bound KV transfer only; no provider-call avoidance, model-quality equivalence, or portable raw-KV reuse is claimed",
+    "kv_transfer": {
+      "accepted": true,
+      "acknowledgement_digest": "sha256:bb10033d66cc2ea05156d00787d416308cfbecb75e5381c9deb33dbc1f0cd422",
+      "block_id": "kv_97a95ae9e3b9d35940ec",
+      "engine": "sglang",
+      "engine_native_tensor_payload": true,
+      "manifest_digest": "sha256:f6aea8bed0c83e254f01a4ccb4c346a4c7ee4a3b1d824e264d602a21a374b091",
+      "source_node": "forge-kv-mlkem-gauntlet",
+      "stored_location": "storage",
+      "target_endpoint_digest": "sha256:3dcf25ae9619dbe5edcc0bcf3b26920807f680ec9c2ee6b292ce02f129a84252",
+      "target_engine": "sglang",
+      "tensor_payload_format": "test-oracle",
+      "tensor_payload_sha256": "sha256:ab827c6800ace8271f9589a55fbe60c26f96a33cd1b30920603746bbd89c2296",
+      "tensor_payload_size_bytes": 54,
+      "transfer_id": "transfer_471b9cb1e3a0"
+    },
+    "ml_kem": {
+      "algorithm": "ML-KEM-768",
+      "ciphertext_digests": [
+        "sha256:8fe8c1cb86887cff9ebb3519bec65a499c31e947c1526e012f7e1609851a58ed",
+        "sha256:3525708941113f4674bccc346255848c80a961de50d13e8efd9c4c75840614fd",
+        "sha256:e645c076cc86071fe737e1ec579f31dc53f9ef27e4dae804d059eff0c1729de7"
+      ],
+      "confirmed_count": 3,
+      "node_count": 3,
+      "node_ids": [
+        "commons-node-a",
+        "commons-node-b",
+        "commons-node-c"
+      ],
+      "pairwise_transcript_edges": 6,
+      "public_key_digests": [
+        "sha256:34280c4e00bb2fe6210d8b0219e7277a686426bd800604b95591ffd084c87dde",
+        "sha256:3f03f31971f268bc9bce8f8634f1a5f947a29c90b36da42fee44018e3baa2c31",
+        "sha256:fd59cc20db1154f107b9f7d2bc989dc96fc5443b68d0608507a99f2257d85cb6"
+      ],
+      "receipt_digest": "sha256:c653b6c12fc77a19a57c8d3d46755e3435cd203eff6c0f5dc765de6a13b51507",
+      "secret_exported": false,
+      "secret_storage_policy": "shared_secret_bytes_never_serialized",
+      "status": "passed",
+      "transcript_digests": [
+        "sha256:e9c0e80a4412f348e3f034f61e53938c164ba35cd43e7d8e734e8ae32c555ed2",
+        "sha256:85148d621c341acdaa7e78be24d312bf16e188353063a2a9635edf5fecc46ce1",
+        "sha256:ac33ff5ea13083e8fb3964bdbf051dde649d38c03a1f0342c683a2ec05b47d1b"
+      ]
+    },
+    "observed_at": "2026-08-03T12:53:48.323334+00:00",
+    "payload_kind": "test_oracle",
+    "promotion_granted": false,
+    "provider_calls_avoided": 0,
+    "receipt_digest": "sha256:d08c28ae7eb480f53ff62ebd33ad040b6e13c3932026478c412706ed82fea7bd",
+    "secret_material_serialized": false,
+    "status": "failed",
+    "tensor_payload_serialized": false,
+    "tokens_avoided_observed": 0,
+    "transport_verified": false,
+    "verified": false,
+    "version": "1.0"
+  },
+  "version": "1.0"
+}

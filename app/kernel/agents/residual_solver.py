@@ -35,7 +35,7 @@ class ResidualSolverBoundary:
         run_id: str = "",
     ) -> Dict[str, Any]:
         raw_unresolved = payload.get("unresolved_fields")
-        unresolved = [str(item) for item in (raw_unresolved if raw_unresolved is not None else ["new"])]
+        unresolved = self._normalize_unresolved_fields(raw_unresolved)
         if not unresolved and payload.get("model_call_required") is False:
             resolved = payload.get("resolved_fields") if isinstance(payload.get("resolved_fields"), dict) else {}
             if not resolved:
@@ -110,6 +110,28 @@ class ResidualSolverBoundary:
                 error_type=type(exc).__name__,
             )
             raise
+        allowed_output = payload.get("allowed_output") if isinstance(payload.get("allowed_output"), dict) else {}
+        field_refusal = self._refuse_invalid_result_fields(result, unresolved, allowed_output)
+        if field_refusal is not None:
+            receipt = self.interceptor.complete(
+                interception,
+                response={"usage": result.get("usage", {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})},
+                status="refused",
+                provider_execution_requested=True,
+            )
+            return {
+                **result,
+                "status": "refused",
+                "verification_status": "rejected",
+                "route": "provider",
+                "provider_called": True,
+                "reason": field_refusal,
+                "unresolved_fields": unresolved,
+                "model_packet": model_packet,
+                "model_packet_digest": model_packet_digest,
+                "forge_kv_route": forge_route.to_dict() if forge_route else None,
+                "receipt": receipt.to_dict(),
+            }
         receipt = self.interceptor.complete(
             interception,
             response={"usage": result.get("usage", {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})},
@@ -133,6 +155,64 @@ class ResidualSolverBoundary:
         }
 
     @staticmethod
+    def _normalize_unresolved_fields(raw_unresolved: Any) -> list[str]:
+        if raw_unresolved is None:
+            raw_values = ["new"]
+        elif isinstance(raw_unresolved, str):
+            raw_values = [raw_unresolved]
+        elif isinstance(raw_unresolved, (list, tuple)):
+            raw_values = list(raw_unresolved)
+        else:
+            raise ValueError("unresolved_fields must be a string, list, tuple, or omitted")
+        result: list[str] = []
+        for item in raw_values:
+            field = str(item).strip()
+            if field and field not in result:
+                result.append(field)
+        return result
+
+    @staticmethod
+    def _refuse_invalid_result_fields(result: Dict[str, Any], unresolved: list[str], allowed_output: Dict[str, Any] | None = None) -> str | None:
+        fields = result.get("fields") if isinstance(result.get("fields"), dict) else {}
+        allowed = set(unresolved)
+        extra = sorted(set(str(key) for key in fields) - allowed)
+        if extra:
+            return "residual solver returned undeclared fields: " + ", ".join(extra)
+        missing = sorted(allowed - set(str(key) for key in fields))
+        if missing:
+            return "residual solver omitted required fields: " + ", ".join(missing)
+        schema = allowed_output or {}
+        for field in unresolved:
+            if field not in fields:
+                continue
+            field_schema = schema.get(field)
+            if field_schema == "string" or field_schema is str:
+                field_schema = {"type": "string"}
+            if not isinstance(field_schema, dict):
+                continue
+            value = fields[field]
+            expected_type = str(field_schema.get("type") or "")
+            if expected_type == "string" and not isinstance(value, str):
+                return f"residual solver returned invalid type for {field}: expected string"
+            if isinstance(value, str):
+                max_chars = field_schema.get("max_chars")
+                if isinstance(max_chars, int) and len(value) > max_chars:
+                    return f"residual solver returned overlong field {field}: max_chars {max_chars}"
+                max_words = field_schema.get("max_words")
+                if isinstance(max_words, int) and len(value.split()) > max_words:
+                    return f"residual solver returned overlong field {field}: max_words {max_words}"
+            allowed_values = field_schema.get("allowed_values")
+            if isinstance(allowed_values, list) and value not in allowed_values:
+                return f"residual solver returned disallowed value for {field}"
+        forbidden = sorted(
+            key for key in ("new_facts", "actions", "causal_claims")
+            if result.get(key)
+        )
+        if forbidden:
+            return "residual solver returned forbidden claim channels: " + ", ".join(forbidden)
+        return None
+
+    @staticmethod
     def _build_model_input(payload: Dict[str, Any], unresolved: list[str], *, retriever: Optional[VerifiedCapabilityRetriever] = None) -> Dict[str, Any]:
         """Strip governance and preparation metadata before the model call."""
         target = payload.get("target") if isinstance(payload.get("target"), dict) else {}
@@ -144,6 +224,25 @@ class ResidualSolverBoundary:
             guidance = retriever.patterns_for_model(payload, limit=3)
         if not isinstance(guidance, list):
             guidance = [guidance]
+        operation = str(payload.get("operation") or contract.get("operation") or "")
+        if operation == "lexicalize_answer_frame" or payload.get("task_family") == "beast.operator_language":
+            return {
+                "task": "lexicalize_answer_frame",
+                "template_id": str(payload.get("template_id") or ""),
+                "answer_frame_digest": str(payload.get("answer_frame_digest") or ""),
+                "target": target,
+                "failure": failure[-1600:],
+                "constraints": [str(item)[:400] for item in (payload.get("constraints") or [])],
+                "resolved_field_digests": dict(payload.get("resolved_field_digests") or {}),
+                "verified_claim_refs": list(payload.get("verified_claim_refs") or []),
+                "allowed_response": payload.get("allowed_output") if isinstance(payload.get("allowed_output"), dict) else {field: {"type": "string"} for field in unresolved},
+                "unresolved_fields": list(unresolved),
+                "residual_contract": contract or {
+                    "operation": "lexicalize_answer_frame",
+                    "allowed_fields": list(unresolved),
+                    "forbidden_claims": ("new_facts", "actions", "causal_claims"),
+                },
+            }
         tongue = compile_crystal_tongue({
             **payload,
             "target": target,

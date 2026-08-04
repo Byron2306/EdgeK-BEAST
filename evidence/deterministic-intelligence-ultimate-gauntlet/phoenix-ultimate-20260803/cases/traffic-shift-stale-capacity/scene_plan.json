@@ -1,0 +1,93 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:traffic-shift-stale-capacity:route",
+    "claim:traffic-shift-stale-capacity:source-capacity",
+    "claim:traffic-shift-stale-capacity:target-capacity",
+    "claim:traffic-shift-stale-capacity:traffic-shift"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "traffic_shift",
+  "graph_digest": "sha256:38954a933792b60f6a02bc36a76a3356f7a34ca218f5633ecf1fd061eb20a63c",
+  "plan_digest": "sha256:9178a3bb970f871d1554b9bfb2419cec3d7a5d8a73bd438d6d14028ecee43a5f",
+  "plan_id": "scene-plan:proof:traffic_shift:4132b122f449e3d98e68",
+  "primitives": [
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:source-capacity",
+      "evidence_state": "stale",
+      "height": 120,
+      "label": "Aegis",
+      "metadata": {},
+      "primitive_id": "source-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 70,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:target-capacity",
+      "evidence_state": "stale",
+      "height": 120,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 670,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:route",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "shift 30%",
+      "metadata": {},
+      "primitive_id": "traffic-arrow",
+      "primitive_type": "traffic_shift_arrow",
+      "width": 340,
+      "x": 310,
+      "y": 195
+    },
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+      "evidence_state": "stale",
+      "height": 70,
+      "label": "reserve 15%",
+      "metadata": {},
+      "primitive_id": "reserve-threshold",
+      "primitive_type": "policy_threshold",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+      "evidence_state": "stale",
+      "height": 80,
+      "label": "unknown_current_state",
+      "metadata": {},
+      "primitive_id": "shift-badge",
+      "primitive_type": "status_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    },
+    {
+      "claim_ref": "claim:traffic-shift-stale-capacity:traffic-shift",
+      "evidence_state": "stale",
+      "height": 55,
+      "label": "stale evidence",
+      "metadata": {},
+      "primitive_id": "epistemic-marker",
+      "primitive_type": "stale_marker",
+      "width": 300,
+      "x": 70,
+      "y": 430
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

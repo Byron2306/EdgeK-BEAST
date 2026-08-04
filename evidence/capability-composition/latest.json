@@ -1,0 +1,947 @@
+{
+  "beast_object_type": "capability_composition_gauntlet_receipt",
+  "capability_learning": {
+    "beast_object_type": "capability_learning_report",
+    "by_capability_type": {
+      "capability_composition": 11
+    },
+    "by_event_type": {
+      "composed": 8,
+      "refused": 3
+    },
+    "by_lifecycle_state": {
+      "composed": 5,
+      "residual_composed": 3,
+      "unsupported": 3
+    },
+    "capabilities": [
+      {
+        "authority": "read_verified_composition",
+        "capability_digest": "sha256:64e8ccd51604bf8295dcc79a8e281f27e07f0f506c469cba9d7f70b8cc0808b3",
+        "capability_id": "deployment-safety:3c4b553a085186ca34a64d75",
+        "capability_type": "capability_composition",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T14:52:52.525244+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T14:52:52.540265+00:00",
+        "last_receipt_digest": "sha256:834292e50b333670905ee00303d5c3e0844f2cbf96f8bfdd11fe49dbd925f009",
+        "lifecycle_state": "unsupported",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 1,
+        "reuse_hits": 11
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_digest": "sha256:5c7a078419759a923b036bbd985de88758b2ae4eafc9f227b943ba559f4b1c27",
+        "capability_id": "traffic-shift:f809bcc2d59c5fe013f9657d",
+        "capability_type": "capability_composition",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T14:52:52.495370+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T14:52:52.510556+00:00",
+        "last_receipt_digest": "sha256:ae5b5a48c5d7f3e8e7c93773fac6a1c85efd056ab3b69d8b5dfa29454c5349b5",
+        "lifecycle_state": "residual_composed",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 11
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_digest": "sha256:06b36260e5ffd062f9d4da35c11aeff30c5ff9ee4c77ed07790b02cf83e9a663",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_count": 7,
+        "first_observed_at": "2026-08-03T14:40:02.151621+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T14:52:52.482277+00:00",
+        "last_receipt_digest": "sha256:e85b05f70bea66253ff32da09ecd2b82ffb9d372efbcb9918d6c80c551c75ccd",
+        "lifecycle_state": "residual_composed",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 2,
+        "reuse_hits": 39
+      }
+    ],
+    "capability_count": 3,
+    "event_count": 11,
+    "fresh_work_units": 0,
+    "ledger_digest": "sha256:2acbd81095fabdf160b0e1e5ffe1493c95171106f8bc6f7dd70ddd7344da421c",
+    "ledger_path": "/home/byron/EdgeK-BEAST/.beast/state/capability_composition_gauntlet/capability_learning.jsonl",
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 0,
+    "recent_events": [
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "deployment-safety:3c4b553a085186ca34a64d75",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:f7d56f75412c34c6efd835e726deb0d04fcb26ef2b15e6250dfdc5e28ecd3666",
+        "event_type": "refused",
+        "evidence_digest": "sha256:87a999063c8b278cd3260ebb418c3f4aa29f6b57d3d5acda0a0097daab37c20a",
+        "fresh_work_units": 0,
+        "lifecycle_state": "unsupported",
+        "metadata": {
+          "component_count": 5,
+          "family": "deployment-safety",
+          "question_type": "deployment_safety",
+          "residual_used": false,
+          "unsupported_causal_gaps": [
+            "deployment_blast_radius_rule"
+          ]
+        },
+        "observed_at": "2026-08-03T14:52:52.540265+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:834292e50b333670905ee00303d5c3e0844f2cbf96f8bfdd11fe49dbd925f009",
+        "refusal_reason": "deployment_blast_radius_rule",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "deployment-safety:3c4b553a085186ca34a64d75",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:c52a0932c06ecea04c85ece6e4fc1ac0dbb967ebaa06792ac235457e41d2e7c7",
+        "event_type": "composed",
+        "evidence_digest": "sha256:c702a90bbafb597cad28c0129d8a6058823026657c2d6d228f07ff050ed55c5f",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 6,
+          "family": "deployment-safety",
+          "question_type": "deployment_safety",
+          "residual_used": false,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.525244+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:17c6e07d84757c0073785a32b36a7af995c560ed3a9f765a830d665215e6b325",
+        "refusal_reason": "",
+        "reuse_hits": 6
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "traffic-shift:f809bcc2d59c5fe013f9657d",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:4170a2ecb4ac74f21e1ed5bf3b9d2b0a034839d9032d834213f2ce5b21882473",
+        "event_type": "composed",
+        "evidence_digest": "sha256:dd2a1dc0f9e1965df118ce882e96087122cd3653fa6589da494a6dd570867a88",
+        "fresh_work_units": 0,
+        "lifecycle_state": "residual_composed",
+        "metadata": {
+          "component_count": 5,
+          "family": "traffic-shift",
+          "question_type": "traffic_shift_safety",
+          "residual_used": true,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.510556+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:ae5b5a48c5d7f3e8e7c93773fac6a1c85efd056ab3b69d8b5dfa29454c5349b5",
+        "refusal_reason": "",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "traffic-shift:f809bcc2d59c5fe013f9657d",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:7aea00303d67b502ce242c0960fce92ab067d3f0c583183b59d6eb8f586c646b",
+        "event_type": "composed",
+        "evidence_digest": "sha256:318d27bf4a89b477f1120d8558f7273400548ea9be8e134d4ffc2d670fc7bde0",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 6,
+          "family": "traffic-shift",
+          "question_type": "traffic_shift_safety",
+          "residual_used": false,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.495370+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:ce4e9b03bd2715d8f83f7b741b13f24ad0706eb120d14943a7eb6cbe10744073",
+        "refusal_reason": "",
+        "reuse_hits": 6
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:4ae45b98bc210a942890488e8cf3e207d6a2f26af4f9f80d24bfe16b8ae1a3cc",
+        "event_type": "composed",
+        "evidence_digest": "sha256:32b6df64e82da51a80b6cf6b8393f4f6822feb3e8b51dfeefd772ae739d5afda",
+        "fresh_work_units": 0,
+        "lifecycle_state": "residual_composed",
+        "metadata": {
+          "component_count": 5,
+          "family": "restart-destabilization",
+          "question_type": "restart_destabilization_risk",
+          "residual_used": true,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.482277+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:e85b05f70bea66253ff32da09ecd2b82ffb9d372efbcb9918d6c80c551c75ccd",
+        "refusal_reason": "",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:09966cd05f41b80f59d049d46b51fa81b94ccd78c65978febc479f128021b2e7",
+        "event_type": "refused",
+        "evidence_digest": "sha256:b262de4e4027c6105e9949b1128d5b96aeee5ceabedce2e6610c85fcabb5154a",
+        "fresh_work_units": 0,
+        "lifecycle_state": "unsupported",
+        "metadata": {
+          "component_count": 5,
+          "family": "restart-destabilization",
+          "question_type": "restart_destabilization_risk",
+          "residual_used": false,
+          "unsupported_causal_gaps": [
+            "restart_destabilization_causal_rule"
+          ]
+        },
+        "observed_at": "2026-08-03T14:52:52.466988+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:fa1a923b621a82d8cfeb0dcd6dfcbd73d7b5205eede537f63c1c3daa044a73a1",
+        "refusal_reason": "restart_destabilization_causal_rule",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:917e70222784336bc701be792908e0740b0ad0958ca929c62d03680c96fc2e5c",
+        "event_type": "composed",
+        "evidence_digest": "sha256:a717d5ff12cd8627fa550580f5ce0c9cad061016f09fc30d171e16cc259b98d8",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 7,
+          "family": "restart-destabilization",
+          "question_type": "restart_destabilization_risk",
+          "residual_used": false,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.452531+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:a72421069b9847c28856d2031c4b9818174f70bf8ed80aa0376cfd4d02a9b72d",
+        "refusal_reason": "",
+        "reuse_hits": 7
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:b56ba248285e5358a852ee1ade63abe7b618ae31af807207975b8e2b7e54c27d",
+        "event_type": "composed",
+        "evidence_digest": "sha256:8ef855b44a9da200b85d0dbe43e4cc33ff646f0d92482d61be658bb8a09b578f",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 6,
+          "family": "restart-destabilization",
+          "question_type": "restart_destabilization_risk",
+          "residual_used": false,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:52:52.439831+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:8de64334fbe2a912365b6f2fd36dcf6a2e57e896a0b87a94a9b5e3e399e6ab74",
+        "refusal_reason": "",
+        "reuse_hits": 6
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:c9a8dc9dc6c5705f8fadd34499916e3d4d0de09f5c9db106a801c14322f597c6",
+        "event_type": "composed",
+        "evidence_digest": "sha256:30a495ab167eb10187584c8b995299f601cf85d16c854ba9640ec89016b1148d",
+        "fresh_work_units": 0,
+        "lifecycle_state": "residual_composed",
+        "metadata": {
+          "component_count": 5,
+          "question_type": "restart_destabilization_risk",
+          "residual_used": true,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:40:02.180745+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:6066b449379679c0faeb17523485b8e29cfb626cd36de0541176cb02eed7b4c4",
+        "refusal_reason": "",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:7cd1f5a7aaf09cda87a2f2ad40fb718b691382fc491457b7e5ae6fd7a0c4182b",
+        "event_type": "refused",
+        "evidence_digest": "sha256:667d5041b70a21281c74967ac4d21cdcb86d7cdda0c33a993bef605ee2731c97",
+        "fresh_work_units": 0,
+        "lifecycle_state": "unsupported",
+        "metadata": {
+          "component_count": 5,
+          "question_type": "restart_destabilization_risk",
+          "residual_used": false,
+          "unsupported_causal_gaps": [
+            "restart_destabilization_causal_rule"
+          ]
+        },
+        "observed_at": "2026-08-03T14:40:02.165610+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:50e52b8f1c268fdd184ab9ef21986dec9b7e8594ffa8e7cf458a8aa46a051bb0",
+        "refusal_reason": "restart_destabilization_causal_rule",
+        "reuse_hits": 5
+      },
+      {
+        "authority": "read_verified_composition",
+        "capability_id": "restart-destabilization:f6660436a866b35c120b411e",
+        "capability_type": "capability_composition",
+        "event_digest": "sha256:e6a33e24689007293b6c77f839e6db0a20ce270b2b22b614d3ef8875fe6cafa5",
+        "event_type": "composed",
+        "evidence_digest": "sha256:2ee2ebe316fd038130e9b004fca7220ec85a2909e5bb4c3af949261de3c5857a",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 6,
+          "question_type": "restart_destabilization_risk",
+          "residual_used": false,
+          "unsupported_causal_gaps": []
+        },
+        "observed_at": "2026-08-03T14:40:02.151621+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:c3bee6317e0cb05b5c11ceafb58deda053fc2f5d099e23251557870efea07db6",
+        "refusal_reason": "",
+        "reuse_hits": 6
+      }
+    ],
+    "reuse_hits": 61,
+    "version": "1.0"
+  },
+  "cases": {
+    "deployment_safety_composed": {
+      "answer": {
+        "causal_claim": "deployment_safety_composed",
+        "risk_class": "low",
+        "summary": "Deployment for beast is low risk: service/evidence are stable, strategy is canary, rollback is automatic, and remaining SLO budget is 83%."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded deployment-safety composition only. The receipt may compare declared deployment strategy, rollback policy, service health, current evidence, SLO budget, and explicit deployment causal rule; otherwise it must refuse or route only declared deployment-risk fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:08ec048e41ae0b608ca01c95aad9c6013ae56a99fff5f5df6f52736fb127b854",
+        "sha256:c5ff34b6e85c1adfea0f5e13c0a696827d50a7ac6e690d4e0d8c95bcc06a7d8c",
+        "sha256:a4ab9db19b4f138df6514a0f57603ca0b64380b828243bb2de62eac91d536d3a",
+        "sha256:a7fed5821578f167d351e3daa0f6915a0e23042159a90877ad8b350a2d364cac",
+        "sha256:2df19cc57f9a718294967acc4ab01e4e77d29df010f291e447be10913736ae07"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:d4f9090adcea639c5ffd111a0f3df2ba1ab2f713ad3c9b9746e46682dd8e4046",
+        "deployment_causal_rule": "sha256:5f39aaed34fcccc65b2781cb54c92c111bfa56a55ba089a184826740aa367346",
+        "deployment_policy": "sha256:00addb534a8676412040f881191bafecb2d6b3af23e1aa901e6b7c916b65ff90",
+        "rollback_policy": "sha256:c93e99ff77f87ea3a622946393f20a39527c79105d16f685314aa91e39f265bc",
+        "service_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "slo_budget": "sha256:ec449593da3e8999cb9c14cf897d0af59d7960a2cb3e15673a952d915d0eac54"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.512257+00:00",
+      "evidence_node_id": "sha256:c702a90bbafb597cad28c0129d8a6058823026657c2d6d228f07ff050ed55c5f",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:3c4b553a085186ca34a64d753802bc3f00697f1e5b9781821aa4e71584390314",
+        "question_id": "question:deploy-beast-production",
+        "question_type": "deployment_safety",
+        "source_service": "beast",
+        "target_service": "production",
+        "utterance": "Can BEAST deploy safely right now?"
+      },
+      "receipt_digest": "sha256:17c6e07d84757c0073785a32b36a7af995c560ed3a9f765a830d665215e6b325",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    },
+    "deployment_safety_refused_gap": {
+      "answer": {},
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded deployment-safety composition only. The receipt may compare declared deployment strategy, rollback policy, service health, current evidence, SLO budget, and explicit deployment causal rule; otherwise it must refuse or route only declared deployment-risk fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:08ec048e41ae0b608ca01c95aad9c6013ae56a99fff5f5df6f52736fb127b854",
+        "sha256:c5ff34b6e85c1adfea0f5e13c0a696827d50a7ac6e690d4e0d8c95bcc06a7d8c",
+        "sha256:a4ab9db19b4f138df6514a0f57603ca0b64380b828243bb2de62eac91d536d3a",
+        "sha256:a7fed5821578f167d351e3daa0f6915a0e23042159a90877ad8b350a2d364cac"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:d4f9090adcea639c5ffd111a0f3df2ba1ab2f713ad3c9b9746e46682dd8e4046",
+        "deployment_policy": "sha256:00addb534a8676412040f881191bafecb2d6b3af23e1aa901e6b7c916b65ff90",
+        "rollback_policy": "sha256:c93e99ff77f87ea3a622946393f20a39527c79105d16f685314aa91e39f265bc",
+        "service_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "slo_budget": "sha256:ec449593da3e8999cb9c14cf897d0af59d7960a2cb3e15673a952d915d0eac54"
+      },
+      "composed": false,
+      "created_at": "2026-08-03T14:52:52.527214+00:00",
+      "evidence_node_id": "sha256:87a999063c8b278cd3260ebb418c3f4aa29f6b57d3d5acda0a0097daab37c20a",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:3c4b553a085186ca34a64d753802bc3f00697f1e5b9781821aa4e71584390314",
+        "question_id": "question:deploy-beast-production",
+        "question_type": "deployment_safety",
+        "source_service": "beast",
+        "target_service": "production",
+        "utterance": "Can BEAST deploy safely right now?"
+      },
+      "receipt_digest": "sha256:834292e50b333670905ee00303d5c3e0844f2cbf96f8bfdd11fe49dbd925f009",
+      "residual_payload": {
+        "allowed_output": {
+          "deployment_rationale": "string",
+          "deployment_risk_class": [
+            "low",
+            "elevated",
+            "unknown"
+          ]
+        },
+        "bounded_context": {
+          "current_evidence": {
+            "active_incidents": 0,
+            "state": "stable"
+          },
+          "dependency_relation": "no_direct_dependency",
+          "deployment_policy": {
+            "strategy": "canary"
+          },
+          "restart_policy": null,
+          "rollback_policy": {
+            "automatic": true,
+            "max_rollback_seconds": 60
+          },
+          "service_health": {
+            "state": "healthy"
+          },
+          "shift_policy": null,
+          "slo_budget": {
+            "remaining_error_budget_percent": 83
+          },
+          "source_health": null,
+          "target_headroom": null,
+          "target_health": null,
+          "traffic_route": null
+        },
+        "component_fact_digests": {
+          "current_evidence": "sha256:d4f9090adcea639c5ffd111a0f3df2ba1ab2f713ad3c9b9746e46682dd8e4046",
+          "deployment_policy": "sha256:00addb534a8676412040f881191bafecb2d6b3af23e1aa901e6b7c916b65ff90",
+          "rollback_policy": "sha256:c93e99ff77f87ea3a622946393f20a39527c79105d16f685314aa91e39f265bc",
+          "service_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+          "slo_budget": "sha256:ec449593da3e8999cb9c14cf897d0af59d7960a2cb3e15673a952d915d0eac54"
+        },
+        "forbidden_claims": [
+          "new_dependencies",
+          "actions_taken",
+          "unstated_slo_budget",
+          "provider_savings"
+        ],
+        "question_digest": "sha256:3c4b553a085186ca34a64d753802bc3f00697f1e5b9781821aa4e71584390314",
+        "residual_payload_digest": "sha256:d372f9a3cb251d9c643faefba7ebd6291a445f1d057aa1cec7b5f79acbf18df1",
+        "residual_scope": "deployment_gap_only",
+        "task_family": "capability_composition.deployment_safety",
+        "unresolved_fields": [
+          "deployment_risk_class",
+          "deployment_rationale"
+        ]
+      },
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "unsupported",
+      "unsupported_causal_gaps": [
+        "deployment_blast_radius_rule"
+      ],
+      "version": "1.0"
+    },
+    "restart_direct_composed": {
+      "answer": {
+        "causal_claim": "rolling_restart_compatible_with_dependents",
+        "risk_class": "low",
+        "summary": "Restarting beast is low destabilization risk for commons: topology shows a direct dependency, but the restart policy is rolling_with_healthcheck, current evidence is stable, and the causal rule supports compatible rolling restarts."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded restart-risk composition only. The receipt may infer risk from verified health, dependency topology, restart policy, current evidence, and an explicit causal rule; otherwise it must refuse or route only declared unresolved causal fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:9d7899df264d1adbcd48c63d006751b1362217a9c254272268eab1792eb81aac",
+        "sha256:6a30fb5a1ee858d8aa18693fcb42bf0e3dda23d343d39e741a4fa11f15ea62ab",
+        "sha256:e341cfa55be79663f6e1f53b1da5c6009311ec15e854d56f7508cb1c5af05e39",
+        "sha256:05d59d08edea8831745f374bd6093d65b344617e3d2e65d66f0ba08f8349b911"
+      ],
+      "component_fact_digests": {
+        "causal_rule": "sha256:43cb5902829240c97b18c8aee73070bcdfa5dcafb4eea445443bd486d2f634e7",
+        "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+        "dependency": "sha256:5bd43a42941b51a449d258d0b5e223f3db0f3e386689bc5122d949f2a0806e65",
+        "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+        "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.427639+00:00",
+      "evidence_node_id": "sha256:8ef855b44a9da200b85d0dbe43e4cc33ff646f0d92482d61be658bb8a09b578f",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "question_id": "question:restart-beast-affects-commons",
+        "question_type": "restart_destabilization_risk",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Could restarting BEAST destabilize Commons?"
+      },
+      "receipt_digest": "sha256:8de64334fbe2a912365b6f2fd36dcf6a2e57e896a0b87a94a9b5e3e399e6ab74",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    },
+    "restart_refused_gap": {
+      "answer": {},
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded restart-risk composition only. The receipt may infer risk from verified health, dependency topology, restart policy, current evidence, and an explicit causal rule; otherwise it must refuse or route only declared unresolved causal fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:9d7899df264d1adbcd48c63d006751b1362217a9c254272268eab1792eb81aac",
+        "sha256:6a30fb5a1ee858d8aa18693fcb42bf0e3dda23d343d39e741a4fa11f15ea62ab",
+        "sha256:e341cfa55be79663f6e1f53b1da5c6009311ec15e854d56f7508cb1c5af05e39"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+        "dependency": "sha256:5bd43a42941b51a449d258d0b5e223f3db0f3e386689bc5122d949f2a0806e65",
+        "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+        "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+      },
+      "composed": false,
+      "created_at": "2026-08-03T14:52:52.454091+00:00",
+      "evidence_node_id": "sha256:b262de4e4027c6105e9949b1128d5b96aeee5ceabedce2e6610c85fcabb5154a",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "question_id": "question:restart-beast-affects-commons",
+        "question_type": "restart_destabilization_risk",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Could restarting BEAST destabilize Commons?"
+      },
+      "receipt_digest": "sha256:fa1a923b621a82d8cfeb0dcd6dfcbd73d7b5205eede537f63c1c3daa044a73a1",
+      "residual_payload": {
+        "allowed_output": {
+          "causal_rationale": "string",
+          "destabilization_risk_class": [
+            "low",
+            "elevated",
+            "unknown"
+          ]
+        },
+        "bounded_context": {
+          "current_evidence": {
+            "restart_count": 0,
+            "state": "stable"
+          },
+          "dependency_relation": "target_depends_on_source",
+          "deployment_policy": null,
+          "restart_policy": {
+            "mode": "rolling_with_healthcheck"
+          },
+          "rollback_policy": null,
+          "service_health": null,
+          "shift_policy": null,
+          "slo_budget": null,
+          "source_health": {
+            "state": "healthy"
+          },
+          "target_headroom": null,
+          "target_health": {
+            "state": "healthy"
+          },
+          "traffic_route": null
+        },
+        "component_fact_digests": {
+          "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+          "dependency": "sha256:5bd43a42941b51a449d258d0b5e223f3db0f3e386689bc5122d949f2a0806e65",
+          "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+          "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+          "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+        },
+        "forbidden_claims": [
+          "new_dependencies",
+          "actions_taken",
+          "unstated_evidence",
+          "provider_savings"
+        ],
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "residual_payload_digest": "sha256:e28a48de6f4c07707a6804c9d4fcddab7b9bfe58e2d64318fa53b81a3b51beac",
+        "residual_scope": "causal_gap_only",
+        "task_family": "capability_composition.restart_destabilization",
+        "unresolved_fields": [
+          "destabilization_risk_class",
+          "causal_rationale"
+        ]
+      },
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "unsupported",
+      "unsupported_causal_gaps": [
+        "restart_destabilization_causal_rule"
+      ],
+      "version": "1.0"
+    },
+    "restart_residual_composed": {
+      "answer": {
+        "causal_claim": "bounded_residual_filled_missing_causal_rule",
+        "risk_class": "low",
+        "summary": "Residual filled only the declared causal gap: rolling health-checked restart is compatible with declared dependency and stable evidence."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded restart-risk composition only. The receipt may infer risk from verified health, dependency topology, restart policy, current evidence, and an explicit causal rule; otherwise it must refuse or route only declared unresolved causal fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:9d7899df264d1adbcd48c63d006751b1362217a9c254272268eab1792eb81aac",
+        "sha256:6a30fb5a1ee858d8aa18693fcb42bf0e3dda23d343d39e741a4fa11f15ea62ab",
+        "sha256:e341cfa55be79663f6e1f53b1da5c6009311ec15e854d56f7508cb1c5af05e39"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+        "dependency": "sha256:5bd43a42941b51a449d258d0b5e223f3db0f3e386689bc5122d949f2a0806e65",
+        "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+        "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.469414+00:00",
+      "evidence_node_id": "sha256:32b6df64e82da51a80b6cf6b8393f4f6822feb3e8b51dfeefd772ae739d5afda",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "question_id": "question:restart-beast-affects-commons",
+        "question_type": "restart_destabilization_risk",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Could restarting BEAST destabilize Commons?"
+      },
+      "receipt_digest": "sha256:e85b05f70bea66253ff32da09ecd2b82ffb9d372efbcb9918d6c80c551c75ccd",
+      "residual_payload": {
+        "allowed_output": {
+          "causal_rationale": "string",
+          "destabilization_risk_class": [
+            "low",
+            "elevated",
+            "unknown"
+          ]
+        },
+        "bounded_context": {
+          "current_evidence": {
+            "restart_count": 0,
+            "state": "stable"
+          },
+          "dependency_relation": "target_depends_on_source",
+          "deployment_policy": null,
+          "restart_policy": {
+            "mode": "rolling_with_healthcheck"
+          },
+          "rollback_policy": null,
+          "service_health": null,
+          "shift_policy": null,
+          "slo_budget": null,
+          "source_health": {
+            "state": "healthy"
+          },
+          "target_headroom": null,
+          "target_health": {
+            "state": "healthy"
+          },
+          "traffic_route": null
+        },
+        "component_fact_digests": {
+          "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+          "dependency": "sha256:5bd43a42941b51a449d258d0b5e223f3db0f3e386689bc5122d949f2a0806e65",
+          "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+          "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+          "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+        },
+        "forbidden_claims": [
+          "new_dependencies",
+          "actions_taken",
+          "unstated_evidence",
+          "provider_savings"
+        ],
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "residual_payload_digest": "sha256:e28a48de6f4c07707a6804c9d4fcddab7b9bfe58e2d64318fa53b81a3b51beac",
+        "residual_scope": "causal_gap_only",
+        "task_family": "capability_composition.restart_destabilization",
+        "unresolved_fields": [
+          "destabilization_risk_class",
+          "causal_rationale"
+        ]
+      },
+      "residual_receipt": {
+        "accepted": true,
+        "beast_object_type": "capability_composition_residual_receipt",
+        "created_at": "2026-08-03T14:52:52.469146+00:00",
+        "receipt_digest": "sha256:254e8dff0317574104ab8bc33e1e800e661bd134b3ba1b400438fa6a9f54e698",
+        "residual_payload_digest": "sha256:e28a48de6f4c07707a6804c9d4fcddab7b9bfe58e2d64318fa53b81a3b51beac",
+        "returned_fields": [
+          "causal_rationale",
+          "destabilization_risk_class"
+        ],
+        "version": "1.0"
+      },
+      "residual_used": true,
+      "status": "residual_composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    },
+    "restart_transitive_composed": {
+      "answer": {
+        "causal_claim": "rolling_restart_compatible_with_dependents",
+        "risk_class": "low",
+        "summary": "Restarting beast is low destabilization risk for commons: topology shows a transitive dependency path, but the restart policy is rolling_with_healthcheck, current evidence is stable, and the causal rule supports compatible rolling restarts."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded restart-risk composition only. The receipt may infer risk from verified health, dependency topology, restart policy, current evidence, and an explicit causal rule; otherwise it must refuse or route only declared unresolved causal fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:c48e5eb55a329b62f232c5834cd7ec406f0a1c9e2ebf728bd8ca2a232a924b26",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:6a30fb5a1ee858d8aa18693fcb42bf0e3dda23d343d39e741a4fa11f15ea62ab",
+        "sha256:e341cfa55be79663f6e1f53b1da5c6009311ec15e854d56f7508cb1c5af05e39",
+        "sha256:05d59d08edea8831745f374bd6093d65b344617e3d2e65d66f0ba08f8349b911",
+        "sha256:55113553316c00c8dcdcafa1344ebb290ca77797a576c62f03e622da886d5ce6",
+        "sha256:9f9c392d4ee0fffedec5798dd79307044db99a3e62fd32af60cf279feddaf476"
+      ],
+      "component_fact_digests": {
+        "causal_rule": "sha256:43cb5902829240c97b18c8aee73070bcdfa5dcafb4eea445443bd486d2f634e7",
+        "current_evidence": "sha256:a8d4a5978c1a541504039c1ddc165c2589139070b36d6b0e07c51548c8018416",
+        "dependency_edge_0": "sha256:59090ce4c483a5b6f5b7c6e7ec12119b40e0749b237ce2ea801d80484b19fdb3",
+        "dependency_edge_1": "sha256:07869e866978eb41a8ec1f10a4aa175998f16ab1c189f2d28cde4953404e2192",
+        "restart_policy": "sha256:ae0f2d05a662e2414918571656c24ccf5c73f946d8189e2d35ede3666625e53c",
+        "source_health": "sha256:86523357d1a6ec352f34fc792f1f042cce0561b217d1ff3b75a4c88ecc5e6b92",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.440615+00:00",
+      "evidence_node_id": "sha256:a717d5ff12cd8627fa550580f5ce0c9cad061016f09fc30d171e16cc259b98d8",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+        "question_id": "question:restart-beast-affects-commons",
+        "question_type": "restart_destabilization_risk",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Could restarting BEAST destabilize Commons?"
+      },
+      "receipt_digest": "sha256:a72421069b9847c28856d2031c4b9818174f70bf8ed80aa0376cfd4d02a9b72d",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    },
+    "traffic_shift_composed": {
+      "answer": {
+        "causal_claim": "traffic_shift_capacity_composed",
+        "risk_class": "low",
+        "summary": "Traffic shift from beast to commons is low risk: target is healthy, declared headroom is 40%, requested shift is 15%, and policy allows up to 25%."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded traffic-shift composition only. The receipt may compare declared route, target health, headroom, observed shift demand, and shift policy; otherwise it must refuse or route only declared capacity fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:b0d310939cadd7ca91dc73a46eada7cd4d06648a7f344df472aa2845fa420f3d",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:2be9e51e03869cf1bbf8b0b559afc3422b572dfd1e0690ef8abec966e8cc4133",
+        "sha256:1e0aebc17915c60944a3815bb5e4adb0601b196aca56cb44d86e2b241c244f39",
+        "sha256:c4d7efa7e49e858f6d03857ee20cc1465864d410f4a5545abce722ac861f7354",
+        "sha256:5e6acb6857f8c327d0b59f1742acb4fd859b36dd02f5b8b37541e4708062ef82"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:883dd12385360daaf216ab35016251562306762fe28528d6c1e2a794f8a2eaee",
+        "shift_policy": "sha256:045bd9983a2cee575b405e01ad0c8053d6a0e0bf89c73ae014cf9f21e2183c32",
+        "source_health": "sha256:068d759937e3c3e87e0ed9a855d9a52684ebddc5c58eada1706b1c0edcbf84bc",
+        "target_headroom": "sha256:8d6efd4783f21459d33d8650430996361d01602ac5a520ece8f545586d0ab110",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1",
+        "traffic_route": "sha256:f68166c79f8123d9140b176c2e33572f38d769833cf468bff54b68ffaa557089"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.483286+00:00",
+      "evidence_node_id": "sha256:318d27bf4a89b477f1120d8558f7273400548ea9be8e134d4ffc2d670fc7bde0",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f809bcc2d59c5fe013f9657d3ddfded572c152beff73181c4808a52b634103da",
+        "question_id": "question:shift-beast-traffic-to-commons",
+        "question_type": "traffic_shift_safety",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Can BEAST traffic shift to Commons safely?"
+      },
+      "receipt_digest": "sha256:ce4e9b03bd2715d8f83f7b741b13f24ad0706eb120d14943a7eb6cbe10744073",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    },
+    "traffic_shift_residual_composed": {
+      "answer": {
+        "causal_claim": "bounded_residual_filled_missing_capacity_rule",
+        "risk_class": "low",
+        "summary": "Residual filled only the declared capacity rule gap: target headroom can absorb the declared traffic shift."
+      },
+      "beast_object_type": "capability_composition_receipt",
+      "claim_boundary": "Bounded traffic-shift composition only. The receipt may compare declared route, target health, headroom, observed shift demand, and shift policy; otherwise it must refuse or route only declared capacity fields to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:b0d310939cadd7ca91dc73a46eada7cd4d06648a7f344df472aa2845fa420f3d",
+        "sha256:49c10aa553193708f00fa300aaae8d7a258531b72fc543e02e639aa3fecdbd14",
+        "sha256:2be9e51e03869cf1bbf8b0b559afc3422b572dfd1e0690ef8abec966e8cc4133",
+        "sha256:1e0aebc17915c60944a3815bb5e4adb0601b196aca56cb44d86e2b241c244f39",
+        "sha256:c4d7efa7e49e858f6d03857ee20cc1465864d410f4a5545abce722ac861f7354"
+      ],
+      "component_fact_digests": {
+        "current_evidence": "sha256:883dd12385360daaf216ab35016251562306762fe28528d6c1e2a794f8a2eaee",
+        "source_health": "sha256:068d759937e3c3e87e0ed9a855d9a52684ebddc5c58eada1706b1c0edcbf84bc",
+        "target_headroom": "sha256:8d6efd4783f21459d33d8650430996361d01602ac5a520ece8f545586d0ab110",
+        "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1",
+        "traffic_route": "sha256:f68166c79f8123d9140b176c2e33572f38d769833cf468bff54b68ffaa557089"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T14:52:52.497420+00:00",
+      "evidence_node_id": "sha256:dd2a1dc0f9e1965df118ce882e96087122cd3653fa6589da494a6dd570867a88",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:f809bcc2d59c5fe013f9657d3ddfded572c152beff73181c4808a52b634103da",
+        "question_id": "question:shift-beast-traffic-to-commons",
+        "question_type": "traffic_shift_safety",
+        "source_service": "beast",
+        "target_service": "commons",
+        "utterance": "Can BEAST traffic shift to Commons safely?"
+      },
+      "receipt_digest": "sha256:ae5b5a48c5d7f3e8e7c93773fac6a1c85efd056ab3b69d8b5dfa29454c5349b5",
+      "residual_payload": {
+        "allowed_output": {
+          "capacity_rationale": "string",
+          "capacity_risk_class": [
+            "low",
+            "elevated",
+            "unknown"
+          ]
+        },
+        "bounded_context": {
+          "current_evidence": {
+            "state": "stable",
+            "traffic_to_shift_percent": 15
+          },
+          "dependency_relation": "no_direct_dependency",
+          "deployment_policy": null,
+          "restart_policy": null,
+          "rollback_policy": null,
+          "service_health": null,
+          "shift_policy": null,
+          "slo_budget": null,
+          "source_health": {
+            "state": "degraded"
+          },
+          "target_headroom": {
+            "available_percent": 40
+          },
+          "target_health": {
+            "state": "healthy"
+          },
+          "traffic_route": {
+            "route": "weighted"
+          }
+        },
+        "component_fact_digests": {
+          "current_evidence": "sha256:883dd12385360daaf216ab35016251562306762fe28528d6c1e2a794f8a2eaee",
+          "source_health": "sha256:068d759937e3c3e87e0ed9a855d9a52684ebddc5c58eada1706b1c0edcbf84bc",
+          "target_headroom": "sha256:8d6efd4783f21459d33d8650430996361d01602ac5a520ece8f545586d0ab110",
+          "target_health": "sha256:114f238cd08cef70ea77d8e500bc7ace4a573fafe1b3b02291a1354a90a4a6e1",
+          "traffic_route": "sha256:f68166c79f8123d9140b176c2e33572f38d769833cf468bff54b68ffaa557089"
+        },
+        "forbidden_claims": [
+          "new_routes",
+          "actions_taken",
+          "unstated_capacity",
+          "provider_savings"
+        ],
+        "question_digest": "sha256:f809bcc2d59c5fe013f9657d3ddfded572c152beff73181c4808a52b634103da",
+        "residual_payload_digest": "sha256:240bc0d488854da0c1c9a79e33fe6adb252d4ee81a6d930506878857391efb51",
+        "residual_scope": "capacity_gap_only",
+        "task_family": "capability_composition.traffic_shift_safety",
+        "unresolved_fields": [
+          "capacity_risk_class",
+          "capacity_rationale"
+        ]
+      },
+      "residual_receipt": {
+        "accepted": true,
+        "beast_object_type": "capability_composition_residual_receipt",
+        "created_at": "2026-08-03T14:52:52.497073+00:00",
+        "receipt_digest": "sha256:ba3bb3f330140e35c811915b4606ed7f10ef2d3b47d315d4e3ea352922167744",
+        "residual_payload_digest": "sha256:240bc0d488854da0c1c9a79e33fe6adb252d4ee81a6d930506878857391efb51",
+        "returned_fields": [
+          "capacity_rationale",
+          "capacity_risk_class"
+        ],
+        "version": "1.0"
+      },
+      "residual_used": true,
+      "status": "residual_composed",
+      "unsupported_causal_gaps": [],
+      "version": "1.0"
+    }
+  },
+  "claim_boundary": "Capability composition gauntlet: proves bounded inference from multiple learned facts across restart topology, transitive dependency, traffic-shift capacity, and deployment/rollback/SLO families, while preserving gap refusal and residual routing limited to declared unresolved fields.",
+  "observed_at": "2026-08-03T14:52:52.540631+00:00",
+  "question_digests": {
+    "deployment_safety": "sha256:3c4b553a085186ca34a64d753802bc3f00697f1e5b9781821aa4e71584390314",
+    "restart": "sha256:f6660436a866b35c120b411ef755ffc6dc5733f5cd626fc85f0a7a634a6f2e4d",
+    "traffic_shift": "sha256:f809bcc2d59c5fe013f9657d3ddfded572c152beff73181c4808a52b634103da"
+  },
+  "receipt_digest": "sha256:94f412353d03b63d61dcca7951b5d5ff052fd6f5ddfb428cc3645d9bd52054a0",
+  "run_id": "2026-08-03T000000-capability-composition-b",
+  "scorecard": {
+    "case_count": 8,
+    "composed_cases": 4,
+    "composition_family_count": 3,
+    "provider_calls_used": 0,
+    "residual_compositions": 2,
+    "restart_residual_scope": "causal_gap_only",
+    "restart_residual_unresolved_fields": [
+      "destabilization_risk_class",
+      "causal_rationale"
+    ],
+    "traffic_residual_scope": "capacity_gap_only",
+    "traffic_residual_unresolved_fields": [
+      "capacity_risk_class",
+      "capacity_rationale"
+    ],
+    "transitive_dependency_edges_composed": 2,
+    "unsupported_refusals": 2
+  },
+  "version": "2.0"
+}

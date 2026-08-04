@@ -1,0 +1,3396 @@
+{
+  "arena_scorecard": {
+    "beast_truth_custody_gate_pass": true,
+    "compute_points_mixed_into_truth": false,
+    "critical_custody_failures": {
+      "beast_capability_composition_rule_engine": [
+        "semantic_without_proof_first",
+        "semantic_without_artifact_custody"
+      ],
+      "beast_topology_graph_adapter": [
+        "semantic_without_proof_first",
+        "semantic_without_artifact_custody"
+      ],
+      "external_rag_retrieval": [
+        "semantic_without_proof_first",
+        "semantic_without_artifact_custody"
+      ],
+      "model_generated_multimodal_stub": [
+        "semantic_without_proof_first",
+        "semantic_without_artifact_custody"
+      ],
+      "rule_engine_text_only": [
+        "semantic_without_proof_first",
+        "semantic_without_artifact_custody"
+      ]
+    },
+    "external_rag_enabled": true,
+    "heldout_cases": 12,
+    "heldout_operational_domains": 6,
+    "kv_case_coverage_count": 1,
+    "kv_runtime_measurements_supplied": true,
+    "provider_evidence_lanes": 9,
+    "randomized_topology_shapes": 4,
+    "truth_point_max_per_case": 16,
+    "truth_winner": "beast_c4x",
+    "truth_winner_points": 189
+  },
+  "beast_object_type": "c4x_three_front_truth_arena",
+  "cases": {
+    "heldout-deployment_safety-0-quill-edge-wisp-core": {
+      "oracle_expected": {
+        "class": "unsupported_without_rollout_rule",
+        "current_claim_allowed": false,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:4d195ed30a4ed63a630faa8928fb67ee73db0e9dac1147746fdcddc8cee0114e",
+        "source": "Quill-edge",
+        "status": "residual_required",
+        "target": "Wisp-core"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "facts": [
+          {
+            "evidence_digest": "sha256:cf2fab656f96937f6421c2456418609eb4317e0662eb7109801e8b547523194f",
+            "fact_id": "fact:deployment_stage:Quill-edge:stage:",
+            "fact_type": "deployment_stage",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "stage",
+            "subject": "Quill-edge",
+            "value": {
+              "stage": "canary_25"
+            }
+          },
+          {
+            "evidence_digest": "sha256:c85f45d3ef6eb640438cc0b418018c9f856fee66283665b12a6f77f34616d557",
+            "fact_id": "fact:health_gate:Quill-edge:health_gate:",
+            "fact_type": "health_gate",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health_gate",
+            "subject": "Quill-edge",
+            "value": {
+              "error_rate_percent": 1.55,
+              "passed": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:98554f3b9f47e56bccf43cfd182fc18f276dd08d1722e6e7d581cbd9f92623d6",
+            "fact_id": "fact:rollback_state:Quill-edge:rollback:",
+            "fact_type": "rollback_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "rollback",
+            "subject": "Quill-edge",
+            "value": {
+              "ready": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:25d3551e3c5f85020a9771d82362f5de5768a83840b29eb8807a02bc811ca199",
+            "fact_id": "fact:service_health:Wisp-core:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Wisp-core",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "library_search",
+          "topology_shape": "mesh_noise_with_anchor"
+        },
+        "policies": [
+          {
+            "family": "deployment_safety",
+            "parameters": {
+              "max_error_rate_percent": 1.0
+            },
+            "policy_id": "policy:deployment_safety:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Should deployment from Quill-edge continue toward Wisp-core? Render gates and rollback.",
+        "rule_count": 0,
+        "rules": [],
+        "scenario_digest": "sha256:4e0200e0d12afd17e690d14999c100537b0f08f843a64b7c56b5f762239e5946",
+        "scenario_id": "heldout-deployment_safety-0-quill-edge-wisp-core",
+        "source": "Quill-edge",
+        "target": "Wisp-core"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-deployment_safety-1-talon-core-vega-mesh": {
+      "oracle_expected": {
+        "class": "halt_or_rollback",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:0c6548e45a1ed7e4f0a45af20ff964e9552db223d116dffe362272f98ffbcfec",
+        "source": "Talon-core",
+        "status": "supported",
+        "target": "Vega-mesh"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "facts": [
+          {
+            "evidence_digest": "sha256:4ceefd6b8d0a2a8a02391e59b3dbb023bfde75fc3c1b50bd56d2c86696c8afa6",
+            "fact_id": "fact:deployment_stage:Talon-core:stage:",
+            "fact_type": "deployment_stage",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "stage",
+            "subject": "Talon-core",
+            "value": {
+              "stage": "regional_50"
+            }
+          },
+          {
+            "evidence_digest": "sha256:3e1ed0b0efe338c7aabf5b14075d1df6c1e84b417e793bf494b18983abd6c8f7",
+            "fact_id": "fact:health_gate:Talon-core:health_gate:",
+            "fact_type": "health_gate",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health_gate",
+            "subject": "Talon-core",
+            "value": {
+              "error_rate_percent": 3.5,
+              "passed": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:13ac4849f992f885399710f154ba5e01529fc2fddbe5c904d6a01dd5f3e63145",
+            "fact_id": "fact:rollback_state:Talon-core:rollback:",
+            "fact_type": "rollback_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "rollback",
+            "subject": "Talon-core",
+            "value": {
+              "ready": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:43809cf7b6fd793e21c9ddc1a28ae35a7d1f8c959a5fca1f44fa6f79d7702c2a",
+            "fact_id": "fact:service_health:Vega-mesh:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Vega-mesh",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "deployment_safety",
+        "force_layout_overflow": true,
+        "metadata": {
+          "operational_domain": "farm_sensor_grid",
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policies": [
+          {
+            "family": "deployment_safety",
+            "parameters": {
+              "max_error_rate_percent": 0.8
+            },
+            "policy_id": "policy:deployment_safety:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Should deployment from Talon-core continue toward Vega-mesh? Render gates and rollback.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "deployment_safety",
+            "parameters": {},
+            "predicate": "deployment_rollout_safety",
+            "rule_id": "rule:deployment_safety:deployment_rollout_safety:v1"
+          }
+        ],
+        "scenario_digest": "sha256:d11bbf9d9a4e48e849d7f5fab849bef0a0143706278e977c010422c10309f481",
+        "scenario_id": "heldout-deployment_safety-1-talon-core-vega-mesh",
+        "source": "Talon-core",
+        "target": "Vega-mesh"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-deployment_safety-2-pax-canary-yara-worker": {
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:b8baf814b045421a8fc8757b312c282c2e876ff76d6dc629ddc268ead5a88be6",
+        "source": "Pax-canary",
+        "status": "stale",
+        "target": "Yara-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "facts": [
+          {
+            "evidence_digest": "sha256:b93d33ae0938131fe0d7f8e9cd82ca76a1a1506882acd829fd6077054b963427",
+            "fact_id": "fact:deployment_stage:Pax-canary:stage:",
+            "fact_type": "deployment_stage",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "stage",
+            "subject": "Pax-canary",
+            "value": {
+              "stage": "canary_25"
+            }
+          },
+          {
+            "evidence_digest": "sha256:f39ffed6bb4ed6eb53680ec463eae2d1de0bd5cfc66ff5d0f659d0043c6064d4",
+            "fact_id": "fact:health_gate:Pax-canary:health_gate:",
+            "fact_type": "health_gate",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health_gate",
+            "subject": "Pax-canary",
+            "value": {
+              "error_rate_percent": 2.45,
+              "passed": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:aa386bd87ace12dd5c0f88c9c87138cc7f6d36189c368f0aeca5e8be7f0dfa66",
+            "fact_id": "fact:rollback_state:Pax-canary:rollback:",
+            "fact_type": "rollback_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "rollback",
+            "subject": "Pax-canary",
+            "value": {
+              "ready": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:d74d876d49cdd652e6b5463eda110392379fb82f477fff8df977cce6565cd85e",
+            "fact_id": "fact:service_health:Yara-worker:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Yara-worker",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "clinic_scheduler",
+          "temporal_state": "stale",
+          "topology_shape": "direct"
+        },
+        "policies": [
+          {
+            "family": "deployment_safety",
+            "parameters": {
+              "max_error_rate_percent": 1.0
+            },
+            "policy_id": "policy:deployment_safety:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Should deployment from Pax-canary continue toward Yara-worker? Render gates and rollback.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "deployment_safety",
+            "parameters": {},
+            "predicate": "deployment_rollout_safety",
+            "rule_id": "rule:deployment_safety:deployment_rollout_safety:v1"
+          }
+        ],
+        "scenario_digest": "sha256:2cf18203ebb354d51cdc8e10612e3e9ca62dba8ee5820cb6ab71b891fff6d5b6",
+        "scenario_id": "heldout-deployment_safety-2-pax-canary-yara-worker",
+        "source": "Pax-canary",
+        "target": "Yara-worker"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-deployment_safety-3-sora-canary-gale-edge": {
+      "oracle_expected": {
+        "class": "safe_to_continue",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:3a6896def493f5020abac9e85dad9111f89e2cc2e4f0f3b90cd695a1046b1057",
+        "source": "Sora-canary",
+        "status": "supported",
+        "target": "Gale-edge"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "facts": [
+          {
+            "evidence_digest": "sha256:b324098d0828047e0c0fb7f677b9232a1bdedc8eb0d34ce26bdb388625f6ee9f",
+            "fact_id": "fact:deployment_stage:Sora-canary:stage:",
+            "fact_type": "deployment_stage",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "stage",
+            "subject": "Sora-canary",
+            "value": {
+              "stage": "canary_10"
+            }
+          },
+          {
+            "evidence_digest": "sha256:3704f8b0351e2a842b4832b83b6d261b154ede1ba958b82ccfa8ea0cbd75fad0",
+            "fact_id": "fact:health_gate:Sora-canary:health_gate:",
+            "fact_type": "health_gate",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health_gate",
+            "subject": "Sora-canary",
+            "value": {
+              "error_rate_percent": 0.56,
+              "passed": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:175c5a7ebfbf87a43d537b205c85d288d02854f82074e13eea17116e4f6224fe",
+            "fact_id": "fact:rollback_state:Sora-canary:rollback:",
+            "fact_type": "rollback_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "rollback",
+            "subject": "Sora-canary",
+            "value": {
+              "ready": true
+            }
+          },
+          {
+            "evidence_digest": "sha256:42c3e6c4a280c6f9c61f2bdf7d2135e7a258a1fa8b5f54b13165043398310fab",
+            "fact_id": "fact:service_health:Gale-edge:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Gale-edge",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "topology_shape": "mesh_noise_with_anchor"
+        },
+        "policies": [
+          {
+            "family": "deployment_safety",
+            "parameters": {
+              "max_error_rate_percent": 0.8
+            },
+            "policy_id": "policy:deployment_safety:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Should deployment from Sora-canary continue toward Gale-edge? Render gates and rollback.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "deployment_safety",
+            "parameters": {},
+            "predicate": "deployment_rollout_safety",
+            "rule_id": "rule:deployment_safety:deployment_rollout_safety:v1"
+          }
+        ],
+        "scenario_digest": "sha256:13577619dd8e5b67c950e8e86412fde2232a3e312b4e6fb19509d79ee574a700",
+        "scenario_id": "heldout-deployment_safety-3-sora-canary-gale-edge",
+        "source": "Sora-canary",
+        "target": "Gale-edge"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-restart_risk-0-ari-core-halo-api": {
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:d815e647c6426d6fc1229743c2362161cb44697d4af8ea4b8c1413f5ba73169f",
+        "source": "Ari-core",
+        "status": "stale",
+        "target": "Halo-api"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "facts": [
+          {
+            "evidence_digest": "sha256:6d9e7472a6047d0ee5d22b09c5561baee8803dc43b3eb77ca7a12a97c5dff2aa",
+            "fact_id": "fact:service_health:Ari-core:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Ari-core",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:a1396c4d40d7afb7f72b950c02ef0ffb8ac430665fa374aa3bf7d398f9f42c67",
+            "fact_id": "fact:service_health:Halo-api:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Halo-api",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:ca1cbc7b0a069051b266e0a8bdf697ece75878ea44dea0fd469fc207769a1421",
+            "fact_id": "fact:dependency_topology:Halo-api:depends_on:Ari-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Ari-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Halo-api",
+            "value": {
+              "relation": "depends_on",
+              "shape": "fan_out_with_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:714593c11701977acc48f89664756e38b60015caba8dc49bc4f479abc95cecc5",
+            "fact_id": "fact:dependency_topology:Orin-canary:depends_on:Ari-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Ari-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Orin-canary",
+            "value": {
+              "relation": "depends_on",
+              "shape": "fan_out_with_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:35c7b650f9d87f4f7e1f654ef97aa22c5565d23d6e3fb3397a7bd82ce48ab25c",
+            "fact_id": "fact:dependency_topology:Gale-mesh:depends_on:Ari-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Ari-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Gale-mesh",
+            "value": {
+              "relation": "depends_on",
+              "shape": "fan_out_with_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:ec24c9ead62bace8dc0a9909a17dff0b8becdd760240b660080f57379d0a5d2d",
+            "fact_id": "fact:restart_policy:Ari-core:restart_policy:",
+            "fact_type": "restart_policy",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "restart_policy",
+            "subject": "Ari-core",
+            "value": {
+              "mode": "immediate"
+            }
+          },
+          {
+            "evidence_digest": "sha256:aa10ad267b45deccb108173741529a732b097902e6269fa4f2971ce2f1b30942",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "restart_count": 3,
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "temporal_state": "stale",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policies": [
+          {
+            "family": "restart_risk",
+            "parameters": {
+              "allowed_mode": "rolling_with_healthcheck"
+            },
+            "policy_id": "policy:restart_risk:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Could restarting Ari-core destabilize Halo-api? Render the dependency/risk path.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "restart_risk",
+            "parameters": {},
+            "predicate": "restart_destabilization",
+            "rule_id": "rule:restart_risk:restart_destabilization:v1"
+          }
+        ],
+        "scenario_digest": "sha256:e2eb947c66c66521b18ad55a0ce3d4e6cd7ae7ca193ab2edb3ab3437281c5478",
+        "scenario_id": "heldout-restart_risk-0-ari-core-halo-api",
+        "source": "Ari-core",
+        "target": "Halo-api"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-restart_risk-1-flux-core-zeno-edge": {
+      "oracle_expected": {
+        "class": "elevated",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:98d6e5a5dc58e7e41b831cba581619d9221322d899cffb5787ebd8857abd64e5",
+        "source": "Flux-core",
+        "status": "supported",
+        "target": "Zeno-edge"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "facts": [
+          {
+            "evidence_digest": "sha256:cfea3cddfb3557405be150d7c08459157b492beb039e1727b83a5b85870fa113",
+            "fact_id": "fact:service_health:Flux-core:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Flux-core",
+            "value": {
+              "state": "degraded"
+            }
+          },
+          {
+            "evidence_digest": "sha256:2fac27d2f37435829fbee83d40403e4865326bca477070c9abf2e404659ce738",
+            "fact_id": "fact:service_health:Zeno-edge:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Zeno-edge",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:a81ae9dcbf958f42ee8de89d4574792ab1019b7b4e0a29f35536846957232d6f",
+            "fact_id": "fact:dependency_topology:Zeno-edge:depends_on:Flux-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Flux-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Zeno-edge",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:57f4a5935aa110e359149c439d10450115859fd786f5fcc3bc73b83932515400",
+            "fact_id": "fact:dependency_topology:Zeno-edge:depends_on:Riven-worker",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Riven-worker",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Zeno-edge",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:2ce9ad539190a6c6d14547f828d6755ca0d37eb31627e9bd371195685ca04537",
+            "fact_id": "fact:dependency_topology:Riven-worker:depends_on:Flux-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Flux-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Riven-worker",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:d0812efd22f9beeba2c9576648481278fe2424adb4e5b1fb582b3f604c0826a5",
+            "fact_id": "fact:restart_policy:Flux-core:restart_policy:",
+            "fact_type": "restart_policy",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "restart_policy",
+            "subject": "Flux-core",
+            "value": {
+              "mode": "immediate"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e205231dad1610691b2b69f6f5a1f4f53408426e2c7320b3dc3f79e1a791b1bc",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "restart_count": 2,
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "emergency_dispatch",
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policies": [
+          {
+            "family": "restart_risk",
+            "parameters": {
+              "allowed_mode": "rolling_with_healthcheck"
+            },
+            "policy_id": "policy:restart_risk:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Could restarting Flux-core destabilize Zeno-edge? Render the dependency/risk path.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "restart_risk",
+            "parameters": {},
+            "predicate": "restart_destabilization",
+            "rule_id": "rule:restart_risk:restart_destabilization:v1"
+          }
+        ],
+        "scenario_digest": "sha256:8aa8636d3a439f4f035628e437e3e1868cec1836ee2cbcfdba6bad729f6c811e",
+        "scenario_id": "heldout-restart_risk-1-flux-core-zeno-edge",
+        "source": "Flux-core",
+        "target": "Zeno-edge"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-restart_risk-2-kite-canary-sora-edge": {
+      "oracle_expected": {
+        "class": "unsupported_without_causal_rule",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:020140abff5ea23f2257cde06d2e7d408e2ff47d1672ebd2a781df62e639802a",
+        "source": "Kite-canary",
+        "status": "residual_required",
+        "target": "Sora-edge"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "facts": [
+          {
+            "evidence_digest": "sha256:59d601dbff7f0d3f54a020e197bd9581d07079738564d2e2dca852176b3980d8",
+            "fact_id": "fact:service_health:Kite-canary:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Kite-canary",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:4fbfa1d5237b42aff5df62ee76b6e109ca9b4ee4910bfec3c21a1c89c35c06b7",
+            "fact_id": "fact:service_health:Sora-edge:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Sora-edge",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:5e269053a767accf575ae7b8c9ad08fc7c54db3ce5e71a15993abbfa1f6f2035",
+            "fact_id": "fact:dependency_topology:Sora-edge:depends_on:Kite-canary",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Kite-canary",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Sora-edge",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:c0327a3ca72e2b2253f51407e3109abf1712debff7cbd3778ff92af09bc645b9",
+            "fact_id": "fact:dependency_topology:Sora-edge:depends_on:Bex-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Bex-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Sora-edge",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:43e989f72236a57762bfccef9e2528ef27d936d6875e035c53505d8f509cbc60",
+            "fact_id": "fact:dependency_topology:Bex-core:depends_on:Kite-canary",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Kite-canary",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Bex-core",
+            "value": {
+              "relation": "depends_on",
+              "shape": "transitive_with_direct_anchor"
+            }
+          },
+          {
+            "evidence_digest": "sha256:219cf05ad6325f5760040b7e9bf0cdb4d000d55cc1b86ff4794a061f5f9fe284",
+            "fact_id": "fact:restart_policy:Kite-canary:restart_policy:",
+            "fact_type": "restart_policy",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "restart_policy",
+            "subject": "Kite-canary",
+            "value": {
+              "mode": "blue_green"
+            }
+          },
+          {
+            "evidence_digest": "sha256:67b234985bc33de8199f88f0bc81607d53b4c0b81604e8565a61c6e8e85cdc1d",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "restart_count": 0,
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policies": [
+          {
+            "family": "restart_risk",
+            "parameters": {
+              "allowed_mode": "rolling_with_healthcheck"
+            },
+            "policy_id": "policy:restart_risk:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Could restarting Kite-canary destabilize Sora-edge? Render the dependency/risk path.",
+        "rule_count": 0,
+        "rules": [],
+        "scenario_digest": "sha256:a13ff36d931d136231bf2c9ebc55d946524e1b433f4b01233a8a34b39c55940b",
+        "scenario_id": "heldout-restart_risk-2-kite-canary-sora-edge",
+        "source": "Kite-canary",
+        "target": "Sora-edge"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-restart_risk-3-riven-core-sora-edge": {
+      "oracle_expected": {
+        "class": "elevated",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:b8bc61f56e1f98e49025ff237219874f67268e3e9338982422f73c08d36b9f47",
+        "source": "Riven-core",
+        "status": "supported",
+        "target": "Sora-edge"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "facts": [
+          {
+            "evidence_digest": "sha256:eb15943c29078399828583cf43af232ed2ec28e0ba9cbfb225fab0f38a407346",
+            "fact_id": "fact:service_health:Riven-core:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Riven-core",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:4fbfa1d5237b42aff5df62ee76b6e109ca9b4ee4910bfec3c21a1c89c35c06b7",
+            "fact_id": "fact:service_health:Sora-edge:health:",
+            "fact_type": "service_health",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "health",
+            "subject": "Sora-edge",
+            "value": {
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:ba2143de2dbfa77ebdbb18b1aedecbc1b14e38e63382d87f41b979432342b8e8",
+            "fact_id": "fact:dependency_topology:Sora-edge:depends_on:Riven-core",
+            "fact_type": "dependency_topology",
+            "freshness_seconds": 300,
+            "object": "Riven-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "depends_on",
+            "subject": "Sora-edge",
+            "value": {
+              "relation": "depends_on",
+              "shape": "direct"
+            }
+          },
+          {
+            "evidence_digest": "sha256:3348e247bac67baf028e769ab2310cc615f340504acc351a7af8c9fcad49a34a",
+            "fact_id": "fact:restart_policy:Riven-core:restart_policy:",
+            "fact_type": "restart_policy",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "restart_policy",
+            "subject": "Riven-core",
+            "value": {
+              "mode": "immediate"
+            }
+          },
+          {
+            "evidence_digest": "sha256:67b234985bc33de8199f88f0bc81607d53b4c0b81604e8565a61c6e8e85cdc1d",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "restart_count": 0,
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "emergency_dispatch",
+          "topology_shape": "direct"
+        },
+        "policies": [
+          {
+            "family": "restart_risk",
+            "parameters": {
+              "allowed_mode": "rolling_with_healthcheck"
+            },
+            "policy_id": "policy:restart_risk:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Could restarting Riven-core destabilize Sora-edge? Render the dependency/risk path.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "restart_risk",
+            "parameters": {},
+            "predicate": "restart_destabilization",
+            "rule_id": "rule:restart_risk:restart_destabilization:v1"
+          }
+        ],
+        "scenario_digest": "sha256:767e5754cb59e5d2a945cecb8ec7c2fc52872ed526342ddb85fb23b469280ea8",
+        "scenario_id": "heldout-restart_risk-3-riven-core-sora-edge",
+        "source": "Riven-core",
+        "target": "Sora-edge"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-traffic_shift-0-riven-canary-eko-canary": {
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:251829f31614b8a0ba3a484e83789425126f034a2ca0dcc897a30b9805be512d",
+        "source": "Riven-canary",
+        "status": "stale",
+        "target": "Eko-canary"
+      },
+      "scenario": {
+        "fact_count": 4,
+        "facts": [
+          {
+            "evidence_digest": "sha256:4af22c8a565581f2598692339c13f507066cdf455d43ce4ba079e5f28a247691",
+            "fact_id": "fact:capacity_state:Riven-canary:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Riven-canary",
+            "value": {
+              "load_percent": 56,
+              "spare_percent": 52
+            }
+          },
+          {
+            "evidence_digest": "sha256:7ba5500c938f76d1f38fc333bafec22beb959674e8466462d77e8d6bfa7b4ea1",
+            "fact_id": "fact:capacity_state:Eko-canary:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Eko-canary",
+            "value": {
+              "load_percent": 30,
+              "spare_percent": 70
+            }
+          },
+          {
+            "evidence_digest": "sha256:82325ac7473145c473c967f89b4bd2c41a7f031ef76ffc47d8873d96053cf5da",
+            "fact_id": "fact:traffic_route:Riven-canary:routes_to:Eko-canary",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Eko-canary",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Riven-canary",
+            "value": {
+              "shape": "direct",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "clinic_scheduler",
+          "shift_percent": 20,
+          "temporal_state": "stale",
+          "topology_shape": "direct"
+        },
+        "policies": [
+          {
+            "family": "traffic_shift",
+            "parameters": {
+              "minimum_reserve_percent": 15
+            },
+            "policy_id": "policy:traffic_shift:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Can 20% traffic shift from Riven-canary to Eko-canary? Render capacity and route state.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "traffic_shift",
+            "parameters": {},
+            "predicate": "traffic_shift_capacity",
+            "rule_id": "rule:traffic_shift:traffic_shift_capacity:v1"
+          }
+        ],
+        "scenario_digest": "sha256:4a990785f999253da3c6818736ad7f9784a4806d045344058133702c5ed33e09",
+        "scenario_id": "heldout-traffic_shift-0-riven-canary-eko-canary",
+        "source": "Riven-canary",
+        "target": "Eko-canary"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-traffic_shift-1-wisp-worker-mira-core": {
+      "oracle_expected": {
+        "class": "unsafe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:e3a830627d98480949f4ebcdfd76102f06977b502071f0c8a90d59dd9828654c",
+        "source": "Wisp-worker",
+        "status": "supported",
+        "target": "Mira-core"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "facts": [
+          {
+            "evidence_digest": "sha256:32c63eaeaf3de79e9c43933d54a45216afca23a14d5c6753883c79b1492460af",
+            "fact_id": "fact:capacity_state:Wisp-worker:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Wisp-worker",
+            "value": {
+              "load_percent": 85,
+              "spare_percent": 38
+            }
+          },
+          {
+            "evidence_digest": "sha256:1553195131696d04ea9cccc6e35589aae7d24353ef4893aa29549f5820674a9e",
+            "fact_id": "fact:capacity_state:Mira-core:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Mira-core",
+            "value": {
+              "load_percent": 88,
+              "spare_percent": 12
+            }
+          },
+          {
+            "evidence_digest": "sha256:d455f120df5cc271f320ab215381122e9dc28e1ec54e5bae59d11a4b39bc7a4f",
+            "fact_id": "fact:traffic_route:Wisp-worker:routes_to:Mira-core",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Mira-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Wisp-worker",
+            "value": {
+              "shape": "fan_out_with_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:f938bd12a6dd526a48a39284ae2fef74311eddab366b0baee3c07f3da5b55100",
+            "fact_id": "fact:traffic_route:Wisp-worker:routes_to:Eko-api",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Eko-api",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Wisp-worker",
+            "value": {
+              "shape": "fan_out_with_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:111b1a7d712e8d83c4a0182acce286731ab87e2b0b6567adb16393c3ab3dd1f1",
+            "fact_id": "fact:traffic_route:Eko-api:routes_to:Mira-core",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Mira-core",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Eko-api",
+            "value": {
+              "shape": "fan_out_with_anchor",
+              "state": "degraded"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "shift_percent": 10,
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policies": [
+          {
+            "family": "traffic_shift",
+            "parameters": {
+              "minimum_reserve_percent": 20
+            },
+            "policy_id": "policy:traffic_shift:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Can 10% traffic shift from Wisp-worker to Mira-core? Render capacity and route state.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "traffic_shift",
+            "parameters": {},
+            "predicate": "traffic_shift_capacity",
+            "rule_id": "rule:traffic_shift:traffic_shift_capacity:v1"
+          }
+        ],
+        "scenario_digest": "sha256:561154dda0b780f02ec6dc7e907b698d509a5b43d13f217456e51f636ded6113",
+        "scenario_id": "heldout-traffic_shift-1-wisp-worker-mira-core",
+        "source": "Wisp-worker",
+        "target": "Mira-core"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-traffic_shift-2-ion-worker-quill-mesh": {
+      "oracle_expected": {
+        "class": "safe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:4d6e5218d3ac6b4de4368493760574ddb4a8f18ebb808fec92c74af1bee61e77",
+        "source": "Ion-worker",
+        "status": "supported",
+        "target": "Quill-mesh"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "facts": [
+          {
+            "evidence_digest": "sha256:ec6606e159b5588f87458cd84be1e3685c0ad5628f287d4ffdee138b97940797",
+            "fact_id": "fact:capacity_state:Ion-worker:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Ion-worker",
+            "value": {
+              "load_percent": 44,
+              "spare_percent": 62
+            }
+          },
+          {
+            "evidence_digest": "sha256:25db54ee3cf16f39d9542082a18ee63fb32834500a192f4874d0432d572ee8dd",
+            "fact_id": "fact:capacity_state:Quill-mesh:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Quill-mesh",
+            "value": {
+              "load_percent": 65,
+              "spare_percent": 35
+            }
+          },
+          {
+            "evidence_digest": "sha256:0e3fd4f54ffbd594c22970f875d478a1cfecd435477a075e053e72135a3242ad",
+            "fact_id": "fact:traffic_route:Ion-worker:routes_to:Quill-mesh",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Quill-mesh",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Ion-worker",
+            "value": {
+              "shape": "mesh_noise_with_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:91ca2c7fa463b91e16612bc79f6404160df9a017e5161bcb621bcd37da39f7b3",
+            "fact_id": "fact:traffic_route:Ion-worker:routes_to:Mira-mesh",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Mira-mesh",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Ion-worker",
+            "value": {
+              "shape": "mesh_noise_with_anchor",
+              "state": "degraded"
+            }
+          },
+          {
+            "evidence_digest": "sha256:565d93937a677f97bb00ad706d2f92992437215714d3f66c1ab82c5275ac6554",
+            "fact_id": "fact:traffic_route:Mira-mesh:routes_to:Quill-mesh",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Quill-mesh",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Mira-mesh",
+            "value": {
+              "shape": "mesh_noise_with_anchor",
+              "state": "degraded"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "library_search",
+          "shift_percent": 10,
+          "topology_shape": "mesh_noise_with_anchor"
+        },
+        "policies": [
+          {
+            "family": "traffic_shift",
+            "parameters": {
+              "minimum_reserve_percent": 20
+            },
+            "policy_id": "policy:traffic_shift:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Can 10% traffic shift from Ion-worker to Quill-mesh? Render capacity and route state.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "traffic_shift",
+            "parameters": {},
+            "predicate": "traffic_shift_capacity",
+            "rule_id": "rule:traffic_shift:traffic_shift_capacity:v1"
+          }
+        ],
+        "scenario_digest": "sha256:4929bb3a6f8a66485e6324b792d2fc2708fdfd576a3a955f4cd808caafa66b15",
+        "scenario_id": "heldout-traffic_shift-2-ion-worker-quill-mesh",
+        "source": "Ion-worker",
+        "target": "Quill-mesh"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    },
+    "heldout-traffic_shift-3-zeno-worker-kite-mesh": {
+      "oracle_expected": {
+        "class": "unsafe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:285a6948f714cf80de6a02773f8086c8de0400b0bdaaebd0c8649f3b8b884292",
+        "source": "Zeno-worker",
+        "status": "supported",
+        "target": "Kite-mesh"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "facts": [
+          {
+            "evidence_digest": "sha256:1a7b07cfd5a5613b1b835215508ad64975f71bae722c3054f5d5369cf91f5ded",
+            "fact_id": "fact:capacity_state:Zeno-worker:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Zeno-worker",
+            "value": {
+              "load_percent": 81,
+              "spare_percent": 66
+            }
+          },
+          {
+            "evidence_digest": "sha256:b49f4c9d3edbdebf42031fef9c4df12a77c0be47371799126d8bb85cec38dc66",
+            "fact_id": "fact:capacity_state:Kite-mesh:capacity:",
+            "fact_type": "capacity_state",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "capacity",
+            "subject": "Kite-mesh",
+            "value": {
+              "load_percent": 82,
+              "spare_percent": 18
+            }
+          },
+          {
+            "evidence_digest": "sha256:93ce96632052041e32d7c62833ecd89d6baf61c624a8d868cf2fa11ef1fb7189",
+            "fact_id": "fact:traffic_route:Zeno-worker:routes_to:Kite-mesh",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Kite-mesh",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Zeno-worker",
+            "value": {
+              "shape": "transitive_with_direct_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:60cb532471d225588dade000acce67a7c3e1c9baa45b86f170dfa6af2f21dfd5",
+            "fact_id": "fact:traffic_route:Zeno-worker:routes_to:Nox-worker",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Nox-worker",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Zeno-worker",
+            "value": {
+              "shape": "transitive_with_direct_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:3c0f1cc816080746c02ef935a63fb0bb272a1a412805f6511e6c6716dfbfe9ed",
+            "fact_id": "fact:traffic_route:Nox-worker:routes_to:Kite-mesh",
+            "fact_type": "traffic_route",
+            "freshness_seconds": 300,
+            "object": "Kite-mesh",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "routes_to",
+            "subject": "Nox-worker",
+            "value": {
+              "shape": "transitive_with_direct_anchor",
+              "state": "healthy"
+            }
+          },
+          {
+            "evidence_digest": "sha256:e50f45188536265c5a67e10c8764098db51b0ee6f9e6a6c1fd3267a80ddfffb2",
+            "fact_id": "fact:current_evidence:runtime:current_evidence:",
+            "fact_type": "current_evidence",
+            "freshness_seconds": 300,
+            "object": "",
+            "observed_at": "2026-08-03T15:30:00+00:00",
+            "predicate": "current_evidence",
+            "subject": "runtime",
+            "value": {
+              "state": "fresh"
+            }
+          }
+        ],
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "clinic_scheduler",
+          "shift_percent": 10,
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policies": [
+          {
+            "family": "traffic_shift",
+            "parameters": {
+              "minimum_reserve_percent": 20
+            },
+            "policy_id": "policy:traffic_shift:v1"
+          }
+        ],
+        "policy_count": 1,
+        "question": "Can 10% traffic shift from Zeno-worker to Kite-mesh? Render capacity and route state.",
+        "rule_count": 1,
+        "rules": [
+          {
+            "authority": "verified_rule",
+            "family": "traffic_shift",
+            "parameters": {},
+            "predicate": "traffic_shift_capacity",
+            "rule_id": "rule:traffic_shift:traffic_shift_capacity:v1"
+          }
+        ],
+        "scenario_digest": "sha256:c78b38a7645f27490de77cfe4125d8d79a08349b3b0bd76b1af266fca766c2ac",
+        "scenario_id": "heldout-traffic_shift-3-zeno-worker-kite-mesh",
+        "source": "Zeno-worker",
+        "target": "Kite-mesh"
+      },
+      "truth": {
+        "beast_c4x": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "semantic_correct": true,
+          "visual_present": true
+        },
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": true,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "semantic_correct": false,
+          "visual_present": false
+        }
+      }
+    }
+  },
+  "claim_boundary": "Three-front arena over the C4-X independent-oracle benchmark. Truth points are separate from raw compute measurements and hard custody/security gates. KV runtime credit is withheld unless runtime-native measurements are supplied; synthetic bytes are not accepted as public KV proof.",
+  "fronts": {
+    "compute_reuse": {
+      "kv_reuse_war": {
+        "accepted_runtime_native_evidence_required": true,
+        "case_contract": [
+          "exact_repeated_prefix",
+          "one_token_mutation_at_beginning",
+          "one_token_mutation_near_suffix",
+          "system_prompt_changed",
+          "tokenizer_revision_changed",
+          "model_revision_changed",
+          "quantization_or_precision_changed",
+          "policy_fingerprint_changed",
+          "engine_process_restarted",
+          "cache_transported_to_second_node",
+          "payload_bit_flipped",
+          "block_id_collision",
+          "cross_tenant_replay_attempt",
+          "cache_expired_or_stale",
+          "memory_pressure_eviction",
+          "concurrent_slots_no_cross_request_contamination"
+        ],
+        "covered_case_measurements": [
+          "exact_repeated_prefix"
+        ],
+        "missing_case_measurements": [
+          "one_token_mutation_at_beginning",
+          "one_token_mutation_near_suffix",
+          "system_prompt_changed",
+          "tokenizer_revision_changed",
+          "model_revision_changed",
+          "quantization_or_precision_changed",
+          "policy_fingerprint_changed",
+          "engine_process_restarted",
+          "cache_transported_to_second_node",
+          "payload_bit_flipped",
+          "block_id_collision",
+          "cross_tenant_replay_attempt",
+          "cache_expired_or_stale",
+          "memory_pressure_eviction",
+          "concurrent_slots_no_cross_request_contamination"
+        ],
+        "reported_lanes": {
+          "kv_forge_ml_kem_transport": {
+            "boundary": "Checksum-bound KV network transfer plus Commons ML-KEM receipt binding; provider-call avoidance and token savings remain zero unless separate execution evidence exists",
+            "cached_tokens_reused": 0,
+            "claim_class": "hypothesis",
+            "engine": "sglang",
+            "kv_cases_failed": [
+              "cache_transported_to_second_node"
+            ],
+            "kv_cases_passed": [],
+            "lane": "kv_reuse",
+            "payload_bytes_transported": 0,
+            "portable_raw_kv": false,
+            "provider_calls": 0,
+            "runtime_native_kv_state": false,
+            "runtime_native_prefix_cache": false,
+            "source_path": "evidence/forge-kv-ml-kem-transport/latest.json",
+            "source_receipt_digest": "sha256:81669f8ab3c1477554336af6587ca32a1b2c54e12086a8badf4743a80a81a926",
+            "synthetic_payload": true,
+            "transport_verified": false
+          },
+          "kv_llamacpp_prompt_cache": {
+            "boundary": "Local llama.cpp server prompt cache; no raw KV export and no external publication.",
+            "cached_tokens_reused": 962,
+            "claim_class": "observed_engine_local_prefix_cache",
+            "cold_ttft_ms": 13616.182,
+            "engine": "llama.cpp",
+            "input_tokens": 971,
+            "kv_cases_failed": [],
+            "kv_cases_passed": [
+              "exact_repeated_prefix"
+            ],
+            "lane": "kv_reuse",
+            "portable_raw_kv": false,
+            "prefill_tokens_computed": 9,
+            "provider_calls": 0,
+            "runtime_native_kv_state": true,
+            "runtime_native_prefix_cache": true,
+            "source_path": "evidence/forge_kv/llamacpp_prompt_cache_20260720T115125Z.json",
+            "source_receipt_digest": "sha256:9b7773fe490bd1fe395a242475b174f3acefa786ddc19e2e28fc6b8dd8fe8483",
+            "synthetic_payload": false,
+            "warm_ttft_ms": 226.166333
+          },
+          "kv_llamacpp_restart_boundary": {
+            "boundary": "controlled restart showed prompt cache did not survive as portable raw KV restore",
+            "cached_tokens_reused": 642,
+            "claim_class": "observed_restart_boundary",
+            "cold_ttft_ms": 9479.907,
+            "engine": "llama.cpp",
+            "input_tokens": 649,
+            "kv_cases_failed": [
+              "engine_process_restarted"
+            ],
+            "kv_cases_passed": [],
+            "lane": "kv_reuse",
+            "portable_raw_kv": false,
+            "prefill_tokens_computed": 649,
+            "provider_calls": 0,
+            "restart_restored_ttft_ms": 9383.251,
+            "runtime_native_kv_state": true,
+            "runtime_native_prefix_cache": true,
+            "source_path": "evidence/forge_kv/llamacpp_restart_boundary_20260720T131312Z.json",
+            "source_receipt_digest": "sha256:a46582d5e4cdac7883008ff56b012c62e41779e8f0ca481b721a2c7b5b55a3e8",
+            "synthetic_payload": false,
+            "warm_ttft_ms": 192.818
+          }
+        },
+        "runtime_measurements_supplied": true,
+        "score_boundary": "KV lanes publish compute reuse measurements only; no arbitrary intelligence points",
+        "synthetic_kv_payload_public_credit": false
+      },
+      "metric_contract": [
+        "cold_ttft_ms",
+        "warm_ttft_ms",
+        "restart_restored_ttft_ms",
+        "total_duration_ms",
+        "provider_calls",
+        "input_tokens",
+        "cached_tokens",
+        "output_tokens",
+        "prefill_tokens_computed",
+        "cached_tokens_reused",
+        "decode_tokens_per_second",
+        "payload_bytes_stored",
+        "payload_bytes_transported",
+        "store_latency_ms",
+        "restore_latency_ms",
+        "cpu_ram_bytes",
+        "gpu_vram_bytes",
+        "network_bytes",
+        "cost_usd"
+      ],
+      "provider_evidence": {
+        "lanes": {
+          "provider_fitness_cerebras_openai_gpt-oss-120b_cerebras": {
+            "average_latency_ms": null,
+            "boundary": "provider model fitness snapshot; not C4-X proof custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "openai/gpt-oss-120b:cerebras",
+            "negative_capability_count": 2,
+            "provider": "cerebras",
+            "provider_calls": 2,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 1,
+            "source_path": "benchmarks/results/beast_provider_model_fitness_live_free_model_fitness.json",
+            "source_receipt_digest": "sha256:781bb3f2d3c0e8d8bdd5fb7949d80af495259ace3ef7b2b5b8543b697a53b69f"
+          },
+          "provider_fitness_gemini_gemini-2.5-flash": {
+            "average_latency_ms": null,
+            "boundary": "provider model fitness snapshot; not C4-X proof custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "gemini-2.5-flash",
+            "negative_capability_count": 2,
+            "provider": "gemini",
+            "provider_calls": 2,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 1,
+            "source_path": "benchmarks/results/beast_provider_model_fitness_live_free_model_fitness.json",
+            "source_receipt_digest": "sha256:781bb3f2d3c0e8d8bdd5fb7949d80af495259ace3ef7b2b5b8543b697a53b69f"
+          },
+          "provider_fitness_groq_llama-3.1-8b-instant": {
+            "average_latency_ms": null,
+            "boundary": "provider model fitness snapshot; not C4-X proof custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "llama-3.1-8b-instant",
+            "negative_capability_count": 2,
+            "provider": "groq",
+            "provider_calls": 2,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 1,
+            "source_path": "benchmarks/results/beast_provider_model_fitness_live_free_model_fitness.json",
+            "source_receipt_digest": "sha256:781bb3f2d3c0e8d8bdd5fb7949d80af495259ace3ef7b2b5b8543b697a53b69f"
+          },
+          "provider_fitness_huggingface_openai_gpt-oss-120b": {
+            "average_latency_ms": null,
+            "boundary": "provider model fitness snapshot; not C4-X proof custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "openai/gpt-oss-120b",
+            "negative_capability_count": 2,
+            "provider": "huggingface",
+            "provider_calls": 2,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 1,
+            "source_path": "benchmarks/results/beast_provider_model_fitness_live_free_model_fitness.json",
+            "source_receipt_digest": "sha256:781bb3f2d3c0e8d8bdd5fb7949d80af495259ace3ef7b2b5b8543b697a53b69f"
+          },
+          "provider_fitness_openrouter_gptoss_openai_gpt-oss-120b": {
+            "average_latency_ms": null,
+            "boundary": "provider model fitness snapshot; not C4-X proof custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "openai/gpt-oss-120b",
+            "negative_capability_count": 2,
+            "provider": "openrouter_gptoss",
+            "provider_calls": 2,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 1,
+            "source_path": "benchmarks/results/beast_provider_model_fitness_live_free_model_fitness.json",
+            "source_receipt_digest": "sha256:781bb3f2d3c0e8d8bdd5fb7949d80af495259ace3ef7b2b5b8543b697a53b69f"
+          },
+          "provider_matrix_tournament": {
+            "average_latency_ms": 884.348941,
+            "boundary": "live provider reachability/configuration matrix; not C4-X proof custody",
+            "completion_rate": 0.117647,
+            "lane": "provider_matrix",
+            "model": "configured_provider_inventory",
+            "negative_capability_count": 15,
+            "provider": "multi_provider_registry",
+            "provider_calls": 17,
+            "provider_clean_completed": 2,
+            "provider_rescued_completed": 0,
+            "source_path": "benchmarks/results/provider_tournament_live_smoke_escalated/provider_tournament_gauntlet.json",
+            "source_receipt_digest": "sha256:b9aaa68d9f82bad53b7bc19dd56d0853e87ab5cd92ececc491c17cd8485a8c5a"
+          },
+          "provider_omni_live_nvidia_nim_full_beast": {
+            "average_latency_ms": 43567.817,
+            "average_provider_tokens": 5537.917,
+            "boundary": "Omni live provider lane; provider outputs may be rescued by BEAST but do not gain C4-X proof-first custody",
+            "completion_rate": 1.0,
+            "lane": "live_provider",
+            "model": "",
+            "provider": "nvidia_nim",
+            "provider_calls": 24,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 24,
+            "route_confidence": "medium",
+            "source_path": "benchmarks/results/beast_nvidia_nemotron_super_120_omni_gauntlet_live/omni_report.json",
+            "source_receipt_digest": "sha256:fa9f7e54e65a3958b4cd72d3c13ed44dea53ca8738b821516cb6c26805a02e72"
+          },
+          "provider_omni_live_nvidia_nim_raw": {
+            "average_latency_ms": 23821.99,
+            "average_provider_tokens": 1600.5,
+            "boundary": "Omni live provider lane; provider outputs may be rescued by BEAST but do not gain C4-X proof-first custody",
+            "completion_rate": 0.0,
+            "lane": "live_provider",
+            "model": "",
+            "provider": "nvidia_nim",
+            "provider_calls": 4,
+            "provider_clean_completed": 0,
+            "provider_rescued_completed": 0,
+            "route_confidence": "medium",
+            "source_path": "benchmarks/results/beast_nvidia_nemotron_super_120_omni_gauntlet_live/omni_report.json",
+            "source_receipt_digest": "sha256:fa9f7e54e65a3958b4cd72d3c13ed44dea53ca8738b821516cb6c26805a02e72"
+          },
+          "provider_teach_replay_generation_gauntlet": {
+            "boundary": "teach/replay generation lane; proves provider calls can drop after crystal/asset reuse, not C4-X proof custody",
+            "completion_rate": 1.0,
+            "lane": "provider_teach_replay",
+            "model": "chat:gemini|image:hf",
+            "provider": "hf",
+            "provider_calls": 0,
+            "provider_calls_avoided": 6,
+            "provider_clean_completed": 5,
+            "provider_receipt_digests": [],
+            "provider_rescued_completed": 0,
+            "source_path": "evidence/generation-gauntlet/2026-08-03T000000-live-gemini-hf-e.json",
+            "source_receipt_digest": "sha256:60393fd3cd946d1709a96e64d86c41d9e584a11bc8b997be7701f40696acb78b"
+          }
+        },
+        "score_boundary": "provider lanes report route fitness/usage/replay evidence only; they do not inherit proof-first C4-X custody"
+      },
+      "scoreboard": {
+        "beast_c4x": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "beast_c4x"
+        },
+        "beast_capability_composition_rule_engine": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "beast_capability_composition_rule_engine"
+        },
+        "beast_generation_provider_boundary": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 24,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "beast_generation_provider_boundary"
+        },
+        "beast_local_semantic_cache": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "beast_local_semantic_cache"
+        },
+        "beast_topology_graph_adapter": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "beast_topology_graph_adapter"
+        },
+        "cached_named_template": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "cached_named_template"
+        },
+        "external_rag_retrieval": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "external_rag_retrieval"
+        },
+        "knowledge_graph_topology_only": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "knowledge_graph_topology_only"
+        },
+        "model_generated_multimodal_stub": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 24,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "model_generated_multimodal_stub"
+        },
+        "rag_nearest_exemplar": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "rag_nearest_exemplar"
+        },
+        "rule_engine_text_only": {
+          "measurement_class": "benchmark_available_only",
+          "missing_metrics": [
+            "cold_ttft_ms",
+            "warm_ttft_ms",
+            "restart_restored_ttft_ms",
+            "total_duration_ms",
+            "provider_calls",
+            "input_tokens",
+            "cached_tokens",
+            "output_tokens",
+            "prefill_tokens_computed",
+            "cached_tokens_reused",
+            "decode_tokens_per_second",
+            "payload_bytes_stored",
+            "payload_bytes_transported",
+            "store_latency_ms",
+            "restore_latency_ms",
+            "cpu_ram_bytes",
+            "gpu_vram_bytes",
+            "network_bytes",
+            "cost_usd"
+          ],
+          "provider_calls": 0,
+          "raw_metrics": {},
+          "score_boundary": "raw measurements only; not mixed into truth points",
+          "system_id": "rule_engine_text_only"
+        }
+      }
+    },
+    "security_and_custody": {
+      "hard_gate_contract": {
+        "artifact_attestation": "required for public CI/release custody credit",
+        "cross_tenant_refusal": "required for KV custody credit",
+        "guardian_verification": "required for separate-process custody credit",
+        "residual_scope_enforcement": "required for residual-worker custody credit",
+        "signature_verification": "post-quantum credit only when fallback_used=false",
+        "stale_policy_refusal": "required for current-claim custody credit",
+        "tamper_rejection": "required for public custody credit; imported from custody sidecars when supplied",
+        "wrong_model_rejection": "required for KV/provider custody credit",
+        "wrong_tokenizer_rejection": "required for KV custody credit"
+      },
+      "scoreboard": {
+        "beast_c4x": {
+          "all_cases_artifact_custody": true,
+          "all_cases_proof_first": true,
+          "all_cases_semantic": true,
+          "all_cases_visual_present": false,
+          "critical_failures": [],
+          "custody_gate_pass": true,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "beast_c4x"
+        },
+        "beast_capability_composition_rule_engine": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": true,
+          "all_cases_visual_present": false,
+          "critical_failures": [
+            "semantic_without_proof_first",
+            "semantic_without_artifact_custody"
+          ],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "beast_capability_composition_rule_engine"
+        },
+        "beast_generation_provider_boundary": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": true,
+          "critical_failures": [],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "beast_generation_provider_boundary"
+        },
+        "beast_local_semantic_cache": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": false,
+          "critical_failures": [],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "beast_local_semantic_cache"
+        },
+        "beast_topology_graph_adapter": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": false,
+          "critical_failures": [
+            "semantic_without_proof_first",
+            "semantic_without_artifact_custody"
+          ],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "beast_topology_graph_adapter"
+        },
+        "cached_named_template": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": false,
+          "critical_failures": [],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "cached_named_template"
+        },
+        "external_rag_retrieval": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": false,
+          "critical_failures": [
+            "semantic_without_proof_first",
+            "semantic_without_artifact_custody"
+          ],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "external_rag_retrieval"
+        },
+        "knowledge_graph_topology_only": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": true,
+          "critical_failures": [],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "knowledge_graph_topology_only"
+        },
+        "model_generated_multimodal_stub": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": true,
+          "critical_failures": [
+            "semantic_without_proof_first",
+            "semantic_without_artifact_custody"
+          ],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "model_generated_multimodal_stub"
+        },
+        "rag_nearest_exemplar": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": true,
+          "critical_failures": [],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "rag_nearest_exemplar"
+        },
+        "rule_engine_text_only": {
+          "all_cases_artifact_custody": false,
+          "all_cases_proof_first": false,
+          "all_cases_semantic": false,
+          "all_cases_visual_present": false,
+          "critical_failures": [
+            "semantic_without_proof_first",
+            "semantic_without_artifact_custody"
+          ],
+          "custody_gate_pass": false,
+          "gate_boundary": "critical custody failures are reported as hard failures and are not averaged away by compute speed",
+          "independent_oracle": true,
+          "system_id": "rule_engine_text_only"
+        }
+      }
+    },
+    "truth_gauntlet": {
+      "point_contract": {
+        "cross_modal_entailment": 1,
+        "independent_oracle_agreement": 1,
+        "proof_graph_before_output": 3,
+        "semantic_correct": 4,
+        "text_artifact_custody": 2,
+        "uncertainty_refusal_correct": 3,
+        "visual_artifact_custody": 2
+      },
+      "scoreboard": {
+        "beast_c4x": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 11,
+          "independent_oracle_agreement": 12,
+          "proof_graph_before_output": 12,
+          "provider_calls_used": 0,
+          "semantic_correct": 12,
+          "system_id": "beast_c4x",
+          "text_artifact_custody": 12,
+          "truth_point_max": 192,
+          "truth_points": 189,
+          "truth_score": 0.984375,
+          "uncertainty_refusal_correct": 12,
+          "visual_artifact_custody": 11
+        },
+        "beast_capability_composition_rule_engine": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 12,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 12,
+          "system_id": "beast_capability_composition_rule_engine",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 96,
+          "truth_score": 0.5,
+          "uncertainty_refusal_correct": 12,
+          "visual_artifact_custody": 0
+        },
+        "beast_generation_provider_boundary": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 0,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 24,
+          "semantic_correct": 0,
+          "system_id": "beast_generation_provider_boundary",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 21,
+          "truth_score": 0.109375,
+          "uncertainty_refusal_correct": 7,
+          "visual_artifact_custody": 0
+        },
+        "beast_local_semantic_cache": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 0,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 0,
+          "system_id": "beast_local_semantic_cache",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 21,
+          "truth_score": 0.109375,
+          "uncertainty_refusal_correct": 7,
+          "visual_artifact_custody": 0
+        },
+        "beast_topology_graph_adapter": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 1,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 1,
+          "system_id": "beast_topology_graph_adapter",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 32,
+          "truth_score": 0.166667,
+          "uncertainty_refusal_correct": 9,
+          "visual_artifact_custody": 0
+        },
+        "cached_named_template": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 0,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 0,
+          "system_id": "cached_named_template",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 36,
+          "truth_score": 0.1875,
+          "uncertainty_refusal_correct": 12,
+          "visual_artifact_custody": 0
+        },
+        "external_rag_retrieval": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 11,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 11,
+          "system_id": "external_rag_retrieval",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 91,
+          "truth_score": 0.473958,
+          "uncertainty_refusal_correct": 12,
+          "visual_artifact_custody": 0
+        },
+        "knowledge_graph_topology_only": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 0,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 0,
+          "system_id": "knowledge_graph_topology_only",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 21,
+          "truth_score": 0.109375,
+          "uncertainty_refusal_correct": 7,
+          "visual_artifact_custody": 0
+        },
+        "model_generated_multimodal_stub": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 1,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 24,
+          "semantic_correct": 1,
+          "system_id": "model_generated_multimodal_stub",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 26,
+          "truth_score": 0.135417,
+          "uncertainty_refusal_correct": 7,
+          "visual_artifact_custody": 0
+        },
+        "rag_nearest_exemplar": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 0,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 0,
+          "system_id": "rag_nearest_exemplar",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 21,
+          "truth_score": 0.109375,
+          "uncertainty_refusal_correct": 7,
+          "visual_artifact_custody": 0
+        },
+        "rule_engine_text_only": {
+          "case_count": 12,
+          "compute_points_included": 0,
+          "cross_modal_entailment": 0,
+          "independent_oracle_agreement": 5,
+          "proof_graph_before_output": 0,
+          "provider_calls_used": 0,
+          "semantic_correct": 5,
+          "system_id": "rule_engine_text_only",
+          "text_artifact_custody": 0,
+          "truth_point_max": 192,
+          "truth_points": 61,
+          "truth_score": 0.317708,
+          "uncertainty_refusal_correct": 12,
+          "visual_artifact_custody": 0
+        }
+      }
+    }
+  },
+  "observed_at": "2026-08-03T19:22:41.512342+00:00",
+  "receipt_digest": "sha256:aa02ac8682a769c2002c5d1aa48f84d1a7a91a98f959a47243a149f6540e9e41",
+  "run_id": "truth-arena-live-rds-forge-provider-001",
+  "source_benchmark": {
+    "engine_freeze_digest": "sha256:fe6836990bd6f6513046bca25f35b9367294aa9819e37ffbdc6dbe7994e3fa82",
+    "evidence_root": "/home/byron/EdgeK-BEAST/evidence/c4x-truth-arena/_c4x-breakthrough-subruns/truth-arena-live-rds-forge-provider-001-c4x",
+    "generator_seed_digest": "sha256:bcf65b05ef93be22a7473e3bb6e474112095d0e1279576b3c328b4be05115f7f",
+    "independent_semantic_oracle": true,
+    "receipt_digest": "sha256:d8f3bb491e770ed114f4d1d47a844b8310a221585b642ce8d01c070e411391e5",
+    "run_id": "truth-arena-live-rds-forge-provider-001-c4x"
+  },
+  "version": "1.0"
+}

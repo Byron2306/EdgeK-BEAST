@@ -1,0 +1,123 @@
+{
+  "claims": [
+    {
+      "claim_id": "claim:deployment-health-gate-refutation:deployment-stage",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2"
+      ],
+      "metadata": {
+        "fact_type": "deployment_stage"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "stage",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:7a43f9f08195e6abdf10572e23347298ae801fc64fbc27ebba95630bc031a069",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-health-gate-refutation:health-gate",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:e07f1e5da68f883410de8d4173acf6cbc7afbde3972855af92e4d7371926137e"
+      ],
+      "metadata": {
+        "fact_type": "health_gate"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health_gate",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:d957ec3f1ff08c8f91199a4dc2ec83d2ca4b342f9701307829402056a8d25708",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-health-gate-refutation:rollback",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9"
+      ],
+      "metadata": {
+        "fact_type": "rollback_state"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "rollback",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:2b35bf9851fb0b069c79e0ddb4e378e94f329026b13a70c202e06a1f669b1673",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    },
+    {
+      "claim_id": "claim:deployment-health-gate-refutation:target-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+      "status": "supported",
+      "subject": "Commons"
+    },
+    {
+      "claim_id": "claim:deployment-health-gate-refutation:deployment-safety",
+      "claim_type": "staged_policy_gate",
+      "confidence_class": "gate_refuted",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:6f9956c9194f91f8a26bcd626179212b00387e4d05773be135e2d01b3b0f784f",
+        "sha256:8dcba213df5b3291fb83b5bdba6a74035df981786cb78ae8a44a69ab8942fe14",
+        "sha256:12abfb726cb3954ecd225bacb89b8b3330e0ab9a0449420f3c1df643e60f9f4c",
+        "sha256:050e02a1c435d22b66ca6ca059bc5e47b04136278c456a3eee47e005c05291b0"
+      ],
+      "metadata": {
+        "deployment_class": "halt_or_rollback",
+        "family": "deployment_safety"
+      },
+      "object": "Commons",
+      "policy_ref": "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d",
+      "predicate": "deployment_safety",
+      "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+      "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+      "status": "supported",
+      "subject": "BEAST-canary"
+    }
+  ],
+  "compile_sequence": 1,
+  "compiler_id": "beast.proof-first-compiler.v1",
+  "fact_digests": [
+    "sha256:d03fa11f6abf067692882b40e17b4510da0c7dc74b401bc54aa16c105ce777d2",
+    "sha256:e07f1e5da68f883410de8d4173acf6cbc7afbde3972855af92e4d7371926137e",
+    "sha256:a9f5bc97db66f7dc85e316918bfe330b6352dff388e5e3f3f27bb87adae5bfb9",
+    "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4",
+    "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+  ],
+  "family": "deployment_safety",
+  "graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+  "graph_id": "proof:deployment_safety:442321ccba06e9944049",
+  "policy_digests": [
+    "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d"
+  ],
+  "request_digest": "sha256:442321ccba06e994404910fe86c7022faeb68b18dc41d2e4c8bbf2babb7d0038",
+  "rule_digests": [
+    "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+  ],
+  "world_snapshot_digest": "sha256:b8196a5a8544206f89570c67101185f790245efc0c7198b13c7b399f45fba275"
+}

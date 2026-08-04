@@ -1,0 +1,196 @@
+{
+  "authority": "evidence_only",
+  "beast_object_type": "runtime_episode",
+  "causal_graph": {
+    "causal_edges": [
+      {
+        "confidence": 1.0,
+        "evidence": "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "relation": "EXPLICIT_CAUSE",
+        "source": "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "target": "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4"
+      },
+      {
+        "confidence": 0.95,
+        "evidence": "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+        "relation": "REQUIRES",
+        "source": "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "target": "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4"
+      },
+      {
+        "confidence": 1.0,
+        "evidence": "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+        "relation": "EXPLICIT_CAUSE",
+        "source": "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+        "target": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf"
+      },
+      {
+        "confidence": 0.95,
+        "evidence": "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+        "relation": "READS",
+        "source": "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "target": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf"
+      },
+      {
+        "confidence": 0.95,
+        "evidence": "route:zero_provider_local",
+        "relation": "READS",
+        "source": "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+        "target": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf"
+      },
+      {
+        "confidence": 1.0,
+        "evidence": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+        "relation": "EXPLICIT_CAUSE",
+        "source": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+        "target": "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+      },
+      {
+        "confidence": 0.95,
+        "evidence": "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83",
+        "relation": "REQUIRES",
+        "source": "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+        "target": "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+      }
+    ],
+    "causality": "explicit_resource_descriptor_or_actuator_evidence_only",
+    "edge_semantics": "order_only_compatibility_alias",
+    "edges": [
+      [
+        "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4"
+      ],
+      [
+        "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+        "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf"
+      ],
+      [
+        "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+        "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+      ]
+    ],
+    "event_facts": {
+      "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4": {
+        "branch": "local_digest_bound_read_only_replay",
+        "descriptor_refs": [],
+        "event_type": "build.branch_selected",
+        "operation": "proof.select",
+        "payload_sha256": "sha256:15e6916c294796cf05913a9887b0443ab4631d286829d10daa34c8dd4de17aed",
+        "phase": "decision",
+        "produces": [
+          "route:zero_provider_local"
+        ],
+        "reads": [],
+        "requires": [
+          "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366"
+        ],
+        "result": "selected",
+        "subject": "zero_provider_local_replay",
+        "writes": []
+      },
+      "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5": {
+        "branch": "",
+        "descriptor_refs": [],
+        "event_type": "file.source_inspected",
+        "operation": "file.inspect",
+        "payload_sha256": "sha256:3db80564cd348b8372ab2985ed352364ed3d14fe159a0fe1501fbf22087daddd",
+        "phase": "observation",
+        "produces": [
+          "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366"
+        ],
+        "reads": [
+          "file:sha256:232835767e9f6c8cdb241f1c1a53694258230b6e073e229e880adfeb22dcf77e"
+        ],
+        "requires": [],
+        "result": "observed",
+        "subject": "deterministic_intelligence_latest",
+        "writes": []
+      },
+      "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e": {
+        "branch": "",
+        "descriptor_refs": [],
+        "event_type": "health.verified",
+        "operation": "episode.health",
+        "payload_sha256": "sha256:2cecc48917db6016ddf9e16aa8552ddde155f836f55aa4cfabdbff5af8c40d94",
+        "phase": "verification",
+        "produces": [
+          "episode:zero_provider_witness"
+        ],
+        "reads": [],
+        "requires": [
+          "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83"
+        ],
+        "result": "success",
+        "subject": "zero_provider_witness",
+        "writes": []
+      },
+      "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf": {
+        "branch": "",
+        "descriptor_refs": [],
+        "event_type": "artifact.build_verified",
+        "operation": "artifact.verify",
+        "payload_sha256": "sha256:b06d9281586ed8cec8e8b72fa8a0b488cfae6e465990dabe586df24cea4164c0",
+        "phase": "verification",
+        "produces": [
+          "verified_artifact:sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83"
+        ],
+        "reads": [
+          "source_receipt:sha256:928ecaff1e39eaff9c5f4819d5941011ba4b1adb73564241286ea42fecb80366",
+          "route:zero_provider_local"
+        ],
+        "requires": [],
+        "result": "success",
+        "subject": "c4x_deterministic_truth_receipt",
+        "writes": []
+      }
+    },
+    "nodes": [
+      "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+      "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+      "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+      "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+    ],
+    "ordered_edges": [
+      [
+        "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+        "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4"
+      ],
+      [
+        "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+        "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf"
+      ],
+      [
+        "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+        "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+      ]
+    ],
+    "ordering": "sequencer_offset"
+  },
+  "episode_hash": "sha256:530a06133dbcfd928a6d8936603608e9f99af3d9968324ec0951d10c29f6fef6",
+  "event_ids": [
+    "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+    "event:sha256:0ce5edbe227053af4dc76c665c83732194190430927e6932af485657e68478f4",
+    "event:sha256:a1d72e4a96d5c6ae9968c84445f70791d7db487e07e8e0b4e62f1c9d31ababbf",
+    "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+  ],
+  "event_range": {
+    "first": "event:sha256:2199d92695a83e77fd0709e5085bde8b6a6cd3ee85efd0146d6b1321bed848d5",
+    "last": "event:sha256:4880e6e5f24b9b5073ae8bae930083d834e8e80c90f8ae46b5935603afda4a2e"
+  },
+  "initial_state_hash": "sha256:a5eaee53dd8f5f3d6ab6a67bfae373efe5fd9f6e60486bb8de56f522229857e4",
+  "mission_id": "physical-truth-source-file-bound-one-shot-003-sensorium-bpf",
+  "objective_hash": "sha256:ff562b3c4dbdf2132a8921990b4e48b199125394ea9db43d6624c27dc04d430f",
+  "outcome": {
+    "effect_hash": "sha256:a8d9fd6807b64ea2f83c6c8eee669bb0acf95ce2369fb092eb799b193cac4b83",
+    "status": "success"
+  },
+  "resources": {
+    "dns_activity": 0.0,
+    "network_connects": 0.0,
+    "outbound_connect_attempts": 0.0,
+    "provider_calls": 0.0
+  },
+  "source_loss": {},
+  "version": "1.0",
+  "workspace_identity": "sha256:427957aadfbfadedd6980db85233017d293669f04d1b416662302938c94206b9"
+}

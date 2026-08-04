@@ -1,0 +1,124 @@
+{
+  "algorithm": "ML-KEM-768",
+  "beast_object_type": "commons_ml_kem_gauntlet_receipt",
+  "failure_count": 0,
+  "failures": [],
+  "node_count": 3,
+  "nodes": [
+    {
+      "algorithm": "ML-KEM-768",
+      "base_url": "http://127.0.0.1:8111",
+      "challenge_confirmation_digest": "sha256:b66ff0807a6b55d34039596304bfc9ad0660afc0f2eeeec009585aa137671cbd",
+      "challenge_signature_digest": "sha256:6abe60f16be51bd1ebc149df0c6165fc64cb3b4409b56fd0a71c5e0281a36f48",
+      "ciphertext_digest": "sha256:27ee401c72104231aad6d3c46384b11b63cf11d2086dccd8d53762600b1cc3e4",
+      "ciphertext_size_bytes": 1088,
+      "confirmed": true,
+      "health_digest": "sha256:b0a8fe2ad9d702d30c424f69c2dbe8d0b629f752d5522cc5e2993c9e0f23aaf5",
+      "health_ok": true,
+      "node_id": "commons-node-a",
+      "public_key_digest": "sha256:d919e1edec7a5a683871de1b88d558225e01296b11f94301f96d59348267d132",
+      "public_key_document_digest": "sha256:be059fa2e5edcb2b3e3decb2447f3a49634d4d7e83fee3cffb0fbf5961d7510a",
+      "public_key_signature_digest": "sha256:5b4ceea21f1d8a9009818f518c1e0607b8ce9ec861685d241add4c6578edccfc",
+      "secret_exported": false,
+      "shared_secret_size_bytes": 32,
+      "transcript_digest": "sha256:7aa134c35e7d7e9794cade6d8d24992e45ecabe4ed61b4bbe6d406b58db6f9b2"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "base_url": "http://127.0.0.1:8112",
+      "challenge_confirmation_digest": "sha256:a291319ed379242c290c5a665598ed0adcc7e22c2cb492ba6a12186c8ce3b190",
+      "challenge_signature_digest": "sha256:7f26c514180375274f6ceee7c6f80cd7939cab4f120a04fdfaa167a267790b1f",
+      "ciphertext_digest": "sha256:022ab02af9495a830988c080c63b179f12053d444cb90cc3f4158e140d31e855",
+      "ciphertext_size_bytes": 1088,
+      "confirmed": true,
+      "health_digest": "sha256:67654242883d62059475e53d03323c1c195220bbb3f71fd144bcecd054110374",
+      "health_ok": true,
+      "node_id": "commons-node-b",
+      "public_key_digest": "sha256:bb292473e2e0047b50889da9ea3c26a20c3e0f62c355333656d584e7f208fbe8",
+      "public_key_document_digest": "sha256:0da46693b9a1df46cc7169710010efb986f85a072e4dd749dd2d39e0cbf4034b",
+      "public_key_signature_digest": "sha256:7175f40c6b2fa96dc68709fb0662adcc4b2c3012dd0b6e815aeef414813c0c89",
+      "secret_exported": false,
+      "shared_secret_size_bytes": 32,
+      "transcript_digest": "sha256:3641fa702f7560a36822cbe173219a7420d93c11cdf7906fa7efaad7e2667e10"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "base_url": "http://127.0.0.1:8113",
+      "challenge_confirmation_digest": "sha256:e9a55054eac9e1916c7d7d24061a2ee6c5f33e5fa53d2dc66fb9c924b8972cb0",
+      "challenge_signature_digest": "sha256:c65170b93668744b25da7aac45512e0f52c0206ccb9de13b9a080f6818d02a0b",
+      "ciphertext_digest": "sha256:751804c9e999a5d0f9b92f74053e84617a50481f92ad3cb2bdf3050e3d8f2e1b",
+      "ciphertext_size_bytes": 1088,
+      "confirmed": true,
+      "health_digest": "sha256:ac99ecb3a7c730bad33ed8ccf129173c429d7dd6097ca6cbb21681104b866c8e",
+      "health_ok": true,
+      "node_id": "commons-node-c",
+      "public_key_digest": "sha256:90c231f5bb9b03d912e8895899a50b9651534b49b2f45666d021d90db650802e",
+      "public_key_document_digest": "sha256:8cbaed6c9d3229e2c48228150f37878b35f8cb558f80cad82a4921736adb9936",
+      "public_key_signature_digest": "sha256:e844105fea8793af7c88a5ff8a477396eb5efc9de57d13483020469bdafbe5d6",
+      "secret_exported": false,
+      "shared_secret_size_bytes": 32,
+      "transcript_digest": "sha256:55b96c511009d089e447d1be50761eb0d97a4e3e018d3c8c7a90318d1756b0e4"
+    }
+  ],
+  "nodes_requested": [
+    "http://127.0.0.1:8111",
+    "http://127.0.0.1:8112",
+    "http://127.0.0.1:8113"
+  ],
+  "observed_at": "2026-08-03T23:37:26.107479+00:00",
+  "pairwise_transcript_matrix": [
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-a",
+      "pair_transcript_digest": "sha256:ef8aa3d82b18008ce399a29277ceefb034715e658ffd64b5b1b031f2461da856",
+      "source_health_digest": "sha256:b0a8fe2ad9d702d30c424f69c2dbe8d0b629f752d5522cc5e2993c9e0f23aaf5",
+      "target_public_key_digest": "sha256:bb292473e2e0047b50889da9ea3c26a20c3e0f62c355333656d584e7f208fbe8",
+      "to_node_id": "commons-node-b"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-a",
+      "pair_transcript_digest": "sha256:b31f38aaf8d0ff728f7abe072843b9d2a7f495677b4e941405f549ecaab62f6d",
+      "source_health_digest": "sha256:b0a8fe2ad9d702d30c424f69c2dbe8d0b629f752d5522cc5e2993c9e0f23aaf5",
+      "target_public_key_digest": "sha256:90c231f5bb9b03d912e8895899a50b9651534b49b2f45666d021d90db650802e",
+      "to_node_id": "commons-node-c"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-b",
+      "pair_transcript_digest": "sha256:5087cd91b709cff3df6256eb6f3f3bc9eeea9f844a6145d7bd0cca0540c6b6f1",
+      "source_health_digest": "sha256:67654242883d62059475e53d03323c1c195220bbb3f71fd144bcecd054110374",
+      "target_public_key_digest": "sha256:d919e1edec7a5a683871de1b88d558225e01296b11f94301f96d59348267d132",
+      "to_node_id": "commons-node-a"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-b",
+      "pair_transcript_digest": "sha256:4840c978defb3fc83031785784c4e5fc407ab62f90f66bfd75d03b6d9ccd6e5e",
+      "source_health_digest": "sha256:67654242883d62059475e53d03323c1c195220bbb3f71fd144bcecd054110374",
+      "target_public_key_digest": "sha256:90c231f5bb9b03d912e8895899a50b9651534b49b2f45666d021d90db650802e",
+      "to_node_id": "commons-node-c"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-c",
+      "pair_transcript_digest": "sha256:d0c2424cecca0cb89adcd96936d1453d6a428a5ccbcee424f6629812043032f4",
+      "source_health_digest": "sha256:ac99ecb3a7c730bad33ed8ccf129173c429d7dd6097ca6cbb21681104b866c8e",
+      "target_public_key_digest": "sha256:d919e1edec7a5a683871de1b88d558225e01296b11f94301f96d59348267d132",
+      "to_node_id": "commons-node-a"
+    },
+    {
+      "algorithm": "ML-KEM-768",
+      "from_node_id": "commons-node-c",
+      "pair_transcript_digest": "sha256:5b68cc6f564aabca481a56e10cca6c12240123e1828fd1ade66f668865d5d7a1",
+      "source_health_digest": "sha256:ac99ecb3a7c730bad33ed8ccf129173c429d7dd6097ca6cbb21681104b866c8e",
+      "target_public_key_digest": "sha256:bb292473e2e0047b50889da9ea3c26a20c3e0f62c355333656d584e7f208fbe8",
+      "to_node_id": "commons-node-b"
+    }
+  ],
+  "receipt_digest": "sha256:49611eea9e3ec292b293af17d780b925da0f56b17808d592c432c95ae4237b44",
+  "run_id": "physical-truth-digest-bound-one-shot-002-commons-ml-kem",
+  "secret_storage_policy": "shared_secret_bytes_never_serialized",
+  "status": "passed",
+  "version": "1.0"
+}

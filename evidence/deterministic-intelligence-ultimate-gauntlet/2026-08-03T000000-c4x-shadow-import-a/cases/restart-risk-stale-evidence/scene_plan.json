@@ -1,0 +1,94 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:restart-risk-stale-evidence:dependency",
+    "claim:restart-risk-stale-evidence:restart-policy",
+    "claim:restart-risk-stale-evidence:restart-risk",
+    "claim:restart-risk-stale-evidence:source-health",
+    "claim:restart-risk-stale-evidence:target-health"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "restart_risk",
+  "graph_digest": "sha256:b1870af9551a5403fc7ac61300bffa4e876684c992a212a8550460111bd30576",
+  "plan_digest": "sha256:76c41b1b238fe8c9521a061c9570bf8a05c498d14d530b7b675380e52b9e073e",
+  "plan_id": "scene-plan:proof:restart_risk:08787fefac7f94b5e91c",
+  "primitives": [
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:source-health",
+      "evidence_state": "stale",
+      "height": 100,
+      "label": "BEAST",
+      "metadata": {},
+      "primitive_id": "source-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 80,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:target-health",
+      "evidence_state": "stale",
+      "height": 100,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 680,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:dependency",
+      "evidence_state": "supported",
+      "height": 30,
+      "label": "depends on",
+      "metadata": {},
+      "primitive_id": "dependency-edge",
+      "primitive_type": "dependency_edge",
+      "width": 370,
+      "x": 290,
+      "y": 205
+    },
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:restart-policy",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "restart policy",
+      "metadata": {},
+      "primitive_id": "restart-policy",
+      "primitive_type": "policy_gate",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:restart-risk",
+      "evidence_state": "stale",
+      "height": 80,
+      "label": "unknown_current_state",
+      "metadata": {},
+      "primitive_id": "risk-badge",
+      "primitive_type": "risk_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    },
+    {
+      "claim_ref": "claim:restart-risk-stale-evidence:restart-risk",
+      "evidence_state": "stale",
+      "height": 55,
+      "label": "stale evidence",
+      "metadata": {},
+      "primitive_id": "epistemic-marker",
+      "primitive_type": "stale_marker",
+      "width": 300,
+      "x": 70,
+      "y": 430
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

@@ -1,0 +1,3148 @@
+{
+  "baseline_adapters": {
+    "cached_named_template": "Replays only named-scenario templates; held-out names miss.",
+    "knowledge_graph_topology_only": "Uses topology reachability and ignores policy/temporal/capacity gates.",
+    "model_generated_multimodal_stub": "Simulates provider multimodal answer with unverified text/SVG and provider cost.",
+    "rag_nearest_exemplar": "Retrieves a nearest named exemplar answer/diagram without proof custody.",
+    "rule_engine_text_only": "Computes text from rules but emits no proof-bound visual artifact."
+  },
+  "beast_object_type": "c4x_external_breakthrough_benchmark",
+  "cases": {
+    "heldout-deployment_safety-0-nox-mesh-halo-edge": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:80b26b4436f803311f63c63f67d018205392b498684e5d5237aa52e7981035fb",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:ff92e8efb1387cb6d9c953dc71ea366df7c5bbede903c27a47c9664618968319",
+          "rendered_artifact_bytes": 3123,
+          "rendered_artifact_digest": "sha256:25259c3bb9c332b763301a68ed3fa718d976ef6cc4cac767f819c0a8850d15be",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:95d0d00cbdbb32d2d15c8737a9c45a99f42c6c43b054f43d73dff34f355e7305",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-0-nox-mesh-halo-edge",
+          "scene_plan_digest": "sha256:ed6dc5fd8b83b32416410768fbac8e56974574bbd05fb76de772d73e5f673151",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 813,
+          "text_artifact_digest": "sha256:c2ee4456b5c2132216864abee9d82c575db09d7a800dcb6f2a3c6ac36a82f5b7",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:c460a0e9beba5202eabb5a55ea23c7b17fecd270f64386a054f3d392593e20ff",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-nox-mesh-halo-edge:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:c415293b1d9d73b3755a61d3e632790610c6175017ca7f9139bfbe0bf58a998a"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:8fc23766d1cd62ee7f83965d20a43faaa0a0e5f7eb79366e30b87e88b99f9173",
+              "status": "supported",
+              "subject": "Nox-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-nox-mesh-halo-edge:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:5c1990af988485ec190c48cd7d8d3c9dec330eb1d6e3a847f3c0f91e7534acbb"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:97a95d47771f07d4228e683ee311dae39d0189bbca73dcb7195753ba459378b8",
+              "status": "supported",
+              "subject": "Nox-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-nox-mesh-halo-edge:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:d2783bc52cee5a7faae63512807fb977168423fc6b2c8cb5610a37ce4a1d1ee7"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:83d0e5e77753e08e1ce63abad544b4eaf4a13e95e3dfb97dc96d3bdbc248fff8",
+              "status": "supported",
+              "subject": "Nox-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-nox-mesh-halo-edge:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:9683fae78c5fdd4423d05dd67dacbd1e562be18e9229f9c412595341590f627e"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3a58bd61a64bbc9682b4de65d416416fe5090d65588bf21d9d36290fc43c5bfa",
+              "status": "supported",
+              "subject": "Halo-edge"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-nox-mesh-halo-edge:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "gate_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6500f5aa2f619cbd52de9cd4d51f5253f43abc5cdbce0f5cc96eb26949504c0e",
+                "sha256:968f9e44fb1538f24c814737a56e4ae1dd31a71d848a1506944906643dd82ba0",
+                "sha256:f1637fcc80b393f3d83287783799cb792b8cc4cb997ed519174da74dd3aa69af",
+                "sha256:00eea9cc341ec7e0280a71b145f30584cad4efab15a8a58ae30e44c7d13ffbf8"
+              ],
+              "metadata": {
+                "deployment_class": "halt_or_rollback",
+                "family": "deployment_safety"
+              },
+              "object": "Halo-edge",
+              "policy_ref": "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Nox-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:c415293b1d9d73b3755a61d3e632790610c6175017ca7f9139bfbe0bf58a998a",
+            "sha256:5c1990af988485ec190c48cd7d8d3c9dec330eb1d6e3a847f3c0f91e7534acbb",
+            "sha256:d2783bc52cee5a7faae63512807fb977168423fc6b2c8cb5610a37ce4a1d1ee7",
+            "sha256:9683fae78c5fdd4423d05dd67dacbd1e562be18e9229f9c412595341590f627e",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:80b26b4436f803311f63c63f67d018205392b498684e5d5237aa52e7981035fb",
+          "graph_id": "proof:deployment_safety:95d0d00cbdbb32d2d15c",
+          "policy_digests": [
+            "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3"
+          ],
+          "request_digest": "sha256:95d0d00cbdbb32d2d15c8737a9c45a99f42c6c43b054f43d73dff34f355e7305",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:5d2aaf4f186644f66e4365d8d7c23fd1ce5e8c035db7519aebf4d2d6c7caded4"
+        }
+      },
+      "oracle_expected": {
+        "class": "halt_or_rollback",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:9253670122ac08b0049f112e430fa2654d74fc9084ec594f197530a771d5aeb8",
+        "source": "Nox-mesh",
+        "status": "supported",
+        "target": "Halo-edge"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "microgrid_control",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Nox-mesh continue toward Halo-edge? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:4155d36da49e60598513501a305f77e1559f235c1470009f15512fc96f18fa1a",
+        "scenario_id": "heldout-deployment_safety-0-nox-mesh-halo-edge",
+        "source": "Nox-mesh",
+        "target": "Halo-edge"
+      }
+    },
+    "heldout-deployment_safety-1-cyra-worker-halo-edge": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:b58d1a1e9d8c902c0a10d28903472f0f981281b76b5788ddb4333ea42705c4f7",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:3d1c153da68aa815ba2363d4dff9aeeea7c5f4ba8f98cf1badfce34c82fc7688",
+          "rendered_artifact_bytes": 3144,
+          "rendered_artifact_digest": "sha256:28fe2f813104eee59936562e56ea5eb44385784e3b73e333f91917dedf6fa52f",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:2984fd027bc05d0fb5d5b6c56a4df140c28bb85af9cd47a43a8578c875a65383",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-1-cyra-worker-halo-edge",
+          "scene_plan_digest": "sha256:81a88b8a00559638dcb8289db6b140a193caad5cba6b0052df11ac5f88a0797a",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 831,
+          "text_artifact_digest": "sha256:efa49fc1531c18bc990bb061252b4975a0494658188b70aff4f2a52ab8d51243",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:7a00a7edafc58d307c82c646b1e62ba9c396c0ce54c1f8203efea4a334601da2",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-cyra-worker-halo-edge:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:789fb3186598754b0eebf0f4ffe8a9498d655ba1e2b3f41e5513d674d459ea98"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:dc63167f7aacff66eb9043bfa91418357c063eb6056f82ef8c2e6edc2a7f77bf",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-cyra-worker-halo-edge:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6ee2319b253df952a57de43ab37bb9d0a51c9bc76e080541711fd33dc6d490d1"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:be10b43ca43ed7fce16b9fe45fb4fbc03404c4550576f8df68dbb8904c24eb29",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-cyra-worker-halo-edge:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6ec58f386271fd30f192cfe7fd040151bed7c88663fda583416566fc444f31aa"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b5d54aa8691ad60dc67ffef01e0cae3bf148b028e80d5a67f0435474854cabb2",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-cyra-worker-halo-edge:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:9683fae78c5fdd4423d05dd67dacbd1e562be18e9229f9c412595341590f627e"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3a58bd61a64bbc9682b4de65d416416fe5090d65588bf21d9d36290fc43c5bfa",
+              "status": "supported",
+              "subject": "Halo-edge"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-cyra-worker-halo-edge:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "gate_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ae2dc7422f72704718f86f70e9ec3cbea03165b4ff74da84d9845e051630f3a7",
+                "sha256:4841f56355332e776566856b08c96d088e80d1f21ee97c56c0ea51299a0f1c56",
+                "sha256:5f0b36ff054c8413a8b599aaa6197196fd216f8a97dde76314209d679151483b",
+                "sha256:46cecc547d17ac91a4246b41a52b415a914f2ae55676e891b2dcf8fe94c1dc18"
+              ],
+              "metadata": {
+                "deployment_class": "halt_or_rollback",
+                "family": "deployment_safety"
+              },
+              "object": "Halo-edge",
+              "policy_ref": "sha256:a115f6937a1b0291506a795836643c041b00a7d01183a79765662e68c25caf22",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:789fb3186598754b0eebf0f4ffe8a9498d655ba1e2b3f41e5513d674d459ea98",
+            "sha256:6ee2319b253df952a57de43ab37bb9d0a51c9bc76e080541711fd33dc6d490d1",
+            "sha256:6ec58f386271fd30f192cfe7fd040151bed7c88663fda583416566fc444f31aa",
+            "sha256:9683fae78c5fdd4423d05dd67dacbd1e562be18e9229f9c412595341590f627e",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:b58d1a1e9d8c902c0a10d28903472f0f981281b76b5788ddb4333ea42705c4f7",
+          "graph_id": "proof:deployment_safety:2984fd027bc05d0fb5d5",
+          "policy_digests": [
+            "sha256:a115f6937a1b0291506a795836643c041b00a7d01183a79765662e68c25caf22"
+          ],
+          "request_digest": "sha256:2984fd027bc05d0fb5d5b6c56a4df140c28bb85af9cd47a43a8578c875a65383",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:4b89fd5ed45f9ba33b0cc7dde2ff36b8e0d5d94b2d204370c0a14fd0b3d04ab2"
+        }
+      },
+      "oracle_expected": {
+        "class": "halt_or_rollback",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:2068e6885a638261b7fff718e10430794c1e245af4731b2ad726bb4581a8b3a1",
+        "source": "Cyra-worker",
+        "status": "supported",
+        "target": "Halo-edge"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Cyra-worker continue toward Halo-edge? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:b65d23b6ef6ba33b086265b16b60e115617aa2b5f5dd7177b8a53e908b340e62",
+        "scenario_id": "heldout-deployment_safety-1-cyra-worker-halo-edge",
+        "source": "Cyra-worker",
+        "target": "Halo-edge"
+      }
+    },
+    "heldout-deployment_safety-2-luma-mesh-kite-worker": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:30dcc15a9867ad4e50def019f6a1b694fc8efd84645789c1647324289c34fa53",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:c272eed07ffe17d1b360d92977d9a03c7dba680178e045d4cd37a2d8fa267993",
+          "rendered_artifact_bytes": 3144,
+          "rendered_artifact_digest": "sha256:b1befa0b11bf39cd647613741a13b6c688a699ed9c494a77f74ff955f27872e7",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:fb9a42920e1c8a8852db0def626fd4d11064b1af64dc42ba5dc04174ba9f1fc9",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-2-luma-mesh-kite-worker",
+          "scene_plan_digest": "sha256:e0615a0d0295f188c9a27da11fedb1b822848d1a617c53a27800146b8f5daa9d",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 831,
+          "text_artifact_digest": "sha256:c85513b48d7c1a0dee7066f31bf42fbe9cbebbb69651ff4be301ee3eb92c8b83",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:785f0cbd404a57f4c8a11b59caa4b6b5475d2239e2f42f7a5181bba034c78bb3",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-luma-mesh-kite-worker:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:5b1319e02bd0c676f6179c29fa03d68099c324b976b18564d7311d370f3b0c03"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d8099a8adf3ea91c3f0e76f778f7b60f16e5c8edc7d77c7b3c91bae200f32e2a",
+              "status": "supported",
+              "subject": "Luma-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-luma-mesh-kite-worker:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:7e53f18b13f051843557433e5dc2232e06af5939d9ae26576a9dd8eeae5f804d"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3ef7f3173f210d8bf4c60cffbf927169901b7c2cc80abc0c301232c5cff39b07",
+              "status": "supported",
+              "subject": "Luma-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-luma-mesh-kite-worker:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:271c95845d07106389767d3e73462bdc6922cfc3763f3cdef23d85c18e32ea97"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d74e98646d9fa45bfde579c29a624e89cf28e410868dcc9a8a419ed31c43457c",
+              "status": "supported",
+              "subject": "Luma-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-luma-mesh-kite-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:1bf572cc52131495516d55195ad100149d459280b48465f3f538d3ddde906780"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3e6fa73b11cba4dd5058c5eab7746a89dc57dc3c9cd78f5bdc3281ed90f5cd03",
+              "status": "supported",
+              "subject": "Kite-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-luma-mesh-kite-worker:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "gate_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:2601ad8459f1988ac2906e71042f96e7b6a6883a259e5fbcf3c98e982b9ce007",
+                "sha256:e615ec0d0a161acdc05f878ff876fe2a2ce8fe6f2a94da00ae5b8bece34fc8c7",
+                "sha256:535756139206b3c7c93d1a734e7c4a185a96af18ca4d54d602ddd6471854f505",
+                "sha256:050ef98d69fec8e0fbc6e7aa0c6c892c163ce805237a65008a568e47a050d4fc"
+              ],
+              "metadata": {
+                "deployment_class": "safe_to_continue",
+                "family": "deployment_safety"
+              },
+              "object": "Kite-worker",
+              "policy_ref": "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Luma-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:5b1319e02bd0c676f6179c29fa03d68099c324b976b18564d7311d370f3b0c03",
+            "sha256:7e53f18b13f051843557433e5dc2232e06af5939d9ae26576a9dd8eeae5f804d",
+            "sha256:271c95845d07106389767d3e73462bdc6922cfc3763f3cdef23d85c18e32ea97",
+            "sha256:1bf572cc52131495516d55195ad100149d459280b48465f3f538d3ddde906780",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:30dcc15a9867ad4e50def019f6a1b694fc8efd84645789c1647324289c34fa53",
+          "graph_id": "proof:deployment_safety:fb9a42920e1c8a8852db",
+          "policy_digests": [
+            "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3"
+          ],
+          "request_digest": "sha256:fb9a42920e1c8a8852db0def626fd4d11064b1af64dc42ba5dc04174ba9f1fc9",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:4a05766cd3c631e45b092f47f7c63276cd5442e0723a11ffeae23585ca857f40"
+        }
+      },
+      "oracle_expected": {
+        "class": "safe_to_continue",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:3a59a725be0a666f9d36c8d3a196e672ce03f2dc1eaf83accc9c0b9e8dc2aca5",
+        "source": "Luma-mesh",
+        "status": "supported",
+        "target": "Kite-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "farm_sensor_grid",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Luma-mesh continue toward Kite-worker? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:ff236d5fcaa50e7deda9f67a35d4a2974a9cc99ca472e8bca929efa970eba172",
+        "scenario_id": "heldout-deployment_safety-2-luma-mesh-kite-worker",
+        "source": "Luma-mesh",
+        "target": "Kite-worker"
+      }
+    },
+    "heldout-deployment_safety-3-orin-canary-wisp-canary": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:86d802083092bd7c3183a001d820b36300630ba8f6c0ca7acd344b1dac852ead",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:ce534ea239fa8f483aa773c62c6f04b688a6097bd386fe6861f925dd029c6066",
+          "rendered_artifact_bytes": 3158,
+          "rendered_artifact_digest": "sha256:8ef786d46a615d571132578524af3277aa995668b991e990bd7a5464d99b181d",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:3a0e03bafeac77c027dced87e15abb9fd02c4c4d8282f236f76fc26182be1233",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-3-orin-canary-wisp-canary",
+          "scene_plan_digest": "sha256:61cc92ac202404966855658d4d603ef190346347a9b880f4048ee68aad27be9a",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 843,
+          "text_artifact_digest": "sha256:3ed411e3dcf216651964b82ef927a2bd3fe1b536cfa0aa52772036a9c17346b8",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:e1308a8b9ffd9373fbd5aa8565caf950694a15b939243a954b760b96e42f48f7",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-orin-canary-wisp-canary:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:770dbc3715a7b39707cbafa48103e5aa2169783c913b062392678693f4e456c3"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:684b704e4c3483fc7ebd706c0bc036396a957cd46b023dc1960439d92ae85b60",
+              "status": "supported",
+              "subject": "Orin-canary"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-orin-canary-wisp-canary:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:d63b018abf22146fb3a09c20274754af974a74a84ca9e82090697f3637b31698"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:4707cd018e980ca59c1199ba944c5ffa418d4fdd95c73507dc885af1562b43ba",
+              "status": "supported",
+              "subject": "Orin-canary"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-orin-canary-wisp-canary:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:721a50069b48cfd2cb1663c80a5eabb65038cc07a08142b262afba846a5067c5"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:2bd114faa19fc9541d131693443c0bbd86b5e663ba77e4f18c939cc3bb2317db",
+              "status": "supported",
+              "subject": "Orin-canary"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-orin-canary-wisp-canary:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:01e4584a833d9a43d32e8905fb4efbdf571c87248f51e77fa7aea7e3b7af75b0"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b03492fe316d15a089052ec70ac809738fd1c912c9eaa7cc1ae9993a868c2eb3",
+              "status": "supported",
+              "subject": "Wisp-canary"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-orin-canary-wisp-canary:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "gate_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:45eaa4d0cd0d7bcd9c371010d1e995af9189a3ff7fab1eb33d512f6ff1fad668",
+                "sha256:aa63cfa7947d8d735451e1f677123655272995d272726146da69d16940d43913",
+                "sha256:1c2911b80866cffc14e11e61291707eea77f6a3cd2f427ef89eb9973f3ff73ca",
+                "sha256:d7e7443754d229d88b0197ca8ecb2e9f6880524918601dbba6cfbae43337b2b8"
+              ],
+              "metadata": {
+                "deployment_class": "halt_or_rollback",
+                "family": "deployment_safety"
+              },
+              "object": "Wisp-canary",
+              "policy_ref": "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Orin-canary"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:770dbc3715a7b39707cbafa48103e5aa2169783c913b062392678693f4e456c3",
+            "sha256:d63b018abf22146fb3a09c20274754af974a74a84ca9e82090697f3637b31698",
+            "sha256:721a50069b48cfd2cb1663c80a5eabb65038cc07a08142b262afba846a5067c5",
+            "sha256:01e4584a833d9a43d32e8905fb4efbdf571c87248f51e77fa7aea7e3b7af75b0",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:86d802083092bd7c3183a001d820b36300630ba8f6c0ca7acd344b1dac852ead",
+          "graph_id": "proof:deployment_safety:3a0e03bafeac77c027dc",
+          "policy_digests": [
+            "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3"
+          ],
+          "request_digest": "sha256:3a0e03bafeac77c027dced87e15abb9fd02c4c4d8282f236f76fc26182be1233",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:fac28115f14b78df3cc1196078959f263a4e759054fb6abe84549211b988e75e"
+        }
+      },
+      "oracle_expected": {
+        "class": "halt_or_rollback",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:48fe96cef8fb3ab696319166a074a77136e3bd1d65b68313e1d5670aff8ef521",
+        "source": "Orin-canary",
+        "status": "supported",
+        "target": "Wisp-canary"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "topology_shape": "mesh_noise_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Orin-canary continue toward Wisp-canary? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:01fecc7d3957df0cb530f7e071464abd3cc761a487c65b7f24bf7bf8a93a682d",
+        "scenario_id": "heldout-deployment_safety-3-orin-canary-wisp-canary",
+        "source": "Orin-canary",
+        "target": "Wisp-canary"
+      }
+    },
+    "heldout-restart_risk-0-sora-edge-nox-api": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:665bd50462fc26739a66205399aff5df917f6a50984ba945cc219a3f59a70222",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:e949533b794a70f2dfd15f3e78a51fdbafbba5058bcae2df9a6a6e17c0a3b43e",
+          "rendered_artifact_bytes": 3152,
+          "rendered_artifact_digest": "sha256:3fbaa2db438ead301a76f7bca9f99c2232ce7d87a226b8b02662581944a848cf",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:0c3500a94aca24e72e4002d72dcd24effe2d334463013acf44fc2d45c65554d6",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-0-sora-edge-nox-api",
+          "scene_plan_digest": "sha256:22f54d98aa13e60c1d85eda5624f29c383d1f890866f64570de10d76a64020db",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 777,
+          "text_artifact_digest": "sha256:3cf79754dcf862509ba76aa136ad83f293d82f99431b4e8555949a0184b0dd03",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:03fc5d5835c19582666577b92f5d65f8f997a55febd7c2a6ec69dbe17a688a6c",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-0-sora-edge-nox-api:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:7665fa5cd8ef4a729338201303e54e043b75d67d1f15405a7125c6a8dfad02ac"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:4fbfa1d5237b42aff5df62ee76b6e109ca9b4ee4910bfec3c21a1c89c35c06b7",
+              "status": "stale",
+              "subject": "Sora-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-sora-edge-nox-api:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:29cf3d85ee14a4ccf95fc660b0d14fd834143427b82a8df5ce5d1c2fc89f7dd7"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:4f4abd959b1694eb3f9a691a8f03a37234a6eb09af16097ca1a02886d4dbce77",
+              "status": "stale",
+              "subject": "Nox-api"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-sora-edge-nox-api:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ea5beada06289551459607fd50e24f88c8fd49cbaef3fe65c94c76511ed9ee5f"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Sora-edge",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:9ccc4c66a41b63ee94e28ddc097d3560a52c405dd454e82bc0b9e248cc576f83",
+              "status": "supported",
+              "subject": "Nox-api"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-sora-edge-nox-api:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ea9a882fe05b9364468dd52980da75522573054d8aed77e9b39bef1307875dbe"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c90d8552a87109ebf64dd99ea7f63baeceba7e42be86ffacdfc1727047247c56",
+              "status": "supported",
+              "subject": "Sora-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-sora-edge-nox-api:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:7176c924ef41f7a6c4ea076ffbd85823533316aaf0bfd00c964944d61c9a84c4",
+                "sha256:8ce126808d4ba0e5a4184d1019666ced34289e4cc2222009471ca4e1d223735b",
+                "sha256:30e7a1e3ee860da1bab34585feddada04155ac06c4e70100156a7466a64dc064",
+                "sha256:5fa2ca2ddd42333cda50875de2630bdb7bc709e531c4103b3fc0ca8fd8ba6a44"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "unknown_current_state"
+              },
+              "object": "Nox-api",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+              "status": "stale",
+              "subject": "Sora-edge"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:7665fa5cd8ef4a729338201303e54e043b75d67d1f15405a7125c6a8dfad02ac",
+            "sha256:29cf3d85ee14a4ccf95fc660b0d14fd834143427b82a8df5ce5d1c2fc89f7dd7",
+            "sha256:ea5beada06289551459607fd50e24f88c8fd49cbaef3fe65c94c76511ed9ee5f",
+            "sha256:03acacf081f878eb098241deca6e1d8b2fa77cea59c9343e1719bae9d943742e",
+            "sha256:fbdce50f7277b8e1c1c74968918afd843120668376517ecb18197ec26ccab5b1",
+            "sha256:ea9a882fe05b9364468dd52980da75522573054d8aed77e9b39bef1307875dbe",
+            "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:665bd50462fc26739a66205399aff5df917f6a50984ba945cc219a3f59a70222",
+          "graph_id": "proof:restart_risk:0c3500a94aca24e72e40",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:0c3500a94aca24e72e4002d72dcd24effe2d334463013acf44fc2d45c65554d6",
+          "rule_digests": [],
+          "world_snapshot_digest": "sha256:b50d8c5bbb7e3e770a7877a68eb9e6b149166c0203eaeacea2669c0dca3e1920"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:eff83d0929361280fe52e7f1270f3b7c6dd78896af69ec488b4d18a2c5825e21",
+        "source": "Sora-edge",
+        "status": "stale",
+        "target": "Nox-api"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "microgrid_control",
+          "temporal_state": "stale",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Sora-edge destabilize Nox-api? Render the dependency/risk path.",
+        "rule_count": 0,
+        "scenario_digest": "sha256:09ef2719810de4512e0086f57170f272d4811bb983927fac5eebe756b760aa76",
+        "scenario_id": "heldout-restart_risk-0-sora-edge-nox-api",
+        "source": "Sora-edge",
+        "target": "Nox-api"
+      }
+    },
+    "heldout-restart_risk-1-ari-edge-flux-edge": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 15,
+          "visual_present": false
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:64d190c16409b157065e74e02cd0ea6bcc952cf38af2d42995b5fb6caa6d5be7",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:51ed7c80ea14beec9e4d533a182e0ecfa0653bc2184167306764ad9749c8488c",
+          "rendered_artifact_bytes": 0,
+          "rendered_artifact_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:1e08beb191367e4c3e0ec6c4e4d328541601bfa2681e36af700d8b2086e01849",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-1-ari-edge-flux-edge",
+          "scene_plan_digest": "sha256:f94eb9b659f4b8dd4b6507e07b81e530489a8a8199b10cbd6fd48faf713b591c",
+          "scene_render_valid": false,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 775,
+          "text_artifact_digest": "sha256:6163ee3614cbfb15767f785ecf1f9f1c1efc58a5e20b457300c19c8b02bc2538",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:fe21d806bd70e6dccff4f1c8955600246d41c2eb490729402467882fadb52233",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "layout_overflow:forced-overflow:out_of_bounds",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "refused"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-1-ari-edge-flux-edge:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:e85daf0fc23879f13e24f695391bd6fb921790e8117264cf33da480220bdce37"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1b90607d9985575d44ece3dd4c8a2a1436ff91deb895b839844b75088a58d68d",
+              "status": "supported",
+              "subject": "Ari-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-ari-edge-flux-edge:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:5bb088d7a82a62ab09764997a265076163a7299207f04a78a12fab45358703d9"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:a09d0b2066ec8b6add8550c715b3ec8fd7ee7842573ac81ba1110faf2cc43db6",
+              "status": "supported",
+              "subject": "Flux-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-ari-edge-flux-edge:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:2ee701113eb499246cea040b371ad7cd7e4a30e4f2b541ee3ee34a78fe32b784"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Ari-edge",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:2dee3b1d1fa815114be07913341c812f3a2d60074d40a14abbc158ff57ee9d23",
+              "status": "supported",
+              "subject": "Flux-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-ari-edge-flux-edge:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:88a0d428aecbb645d7a170cf4573dec1f062efa82dd3292ebcf228c0e9fd177c"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:aa0d9052eb4a6e96bf337beee36645814be0a70f5f89b60b61a48f51a4011540",
+              "status": "supported",
+              "subject": "Ari-edge"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-ari-edge-flux-edge:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "rule_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:932cc99b8e89e48089c767024b084b03d7264cdb60c608e4de7fd1a111451e88",
+                "sha256:b7c3243d034423c8357611cd54b880bc0e861a2df473cdc444f7a181cd14cc49",
+                "sha256:0a94e896d5d19b83a31879ffe405bf583f3f0c28efdb6e8743f6538a92873587",
+                "sha256:12b79e18c833f4242a621b1e4e467c9090a127392ccc7ed75dc664c56036db5d"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "elevated"
+              },
+              "object": "Flux-edge",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+              "status": "supported",
+              "subject": "Ari-edge"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:e85daf0fc23879f13e24f695391bd6fb921790e8117264cf33da480220bdce37",
+            "sha256:5bb088d7a82a62ab09764997a265076163a7299207f04a78a12fab45358703d9",
+            "sha256:2ee701113eb499246cea040b371ad7cd7e4a30e4f2b541ee3ee34a78fe32b784",
+            "sha256:d2551a35c887c92cdd0b901dd7e26b2cff6e00508ccb44a6108c3e874ac8e273",
+            "sha256:3622544e14600396c3d5473ae8f3987fe8f29149305fd39486e4e5c461575cd9",
+            "sha256:88a0d428aecbb645d7a170cf4573dec1f062efa82dd3292ebcf228c0e9fd177c",
+            "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:64d190c16409b157065e74e02cd0ea6bcc952cf38af2d42995b5fb6caa6d5be7",
+          "graph_id": "proof:restart_risk:1e08beb191367e4c3e0e",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:1e08beb191367e4c3e0ec6c4e4d328541601bfa2681e36af700d8b2086e01849",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:a30e956a12a57e4f3613c01c413ec8535f6a1522f35c74cbee35bef93005c45d"
+        }
+      },
+      "oracle_expected": {
+        "class": "elevated",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:2ef826fc93915e1b9e1f7d83c7bfe0e4bdf56d6a7d45ae960ef3c94c4358fed9",
+        "source": "Ari-edge",
+        "status": "supported",
+        "target": "Flux-edge"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": true,
+        "metadata": {
+          "operational_domain": "library_search",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Ari-edge destabilize Flux-edge? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:3de551c1c6c9723d2e572c0e4cb1f5890821b10c528189cc85302c53121d5735",
+        "scenario_id": "heldout-restart_risk-1-ari-edge-flux-edge",
+        "source": "Ari-edge",
+        "target": "Flux-edge"
+      }
+    },
+    "heldout-restart_risk-2-riven-mesh-quill-worker": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:64b99100e64bb62cec8e7361cc12a9078eb084884a89284be3eab596f553c08d",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:1217f9c7e7c3301c46ba42dd2371368366180e01b49f6f50ecc212de3a29a729",
+          "rendered_artifact_bytes": 3194,
+          "rendered_artifact_digest": "sha256:4230e731a5703ef11f3de783e8fc0d90514ddf7ce7bd067dcda05d9ba1df53ca",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:19a22d5914279d15f393dd265c7588019a56dc53f89d9b0f2a167d3cfab1930f",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-2-riven-mesh-quill-worker",
+          "scene_plan_digest": "sha256:c52c6267b9c20515a7c6b1a1535395da663dff1911ca3b1c445742887c46631b",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 813,
+          "text_artifact_digest": "sha256:0402c5f35782cf4961a57c1a93fb40c0d554c30da019acf211db409e7f1bbff5",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:5c727c78dbd82f65ccb943764f864e44c42b4f845ba6d65786adc65f0a598cd3",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-2-riven-mesh-quill-worker:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:fdbc3c484dd957a85d16e41620da9c966ec48424d3b63ef9b1eba0a317eca655"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c824582c952e72996f44aa2ee55a8e12bceb892cbe638ab7595b925a5a3ef5a7",
+              "status": "stale",
+              "subject": "Riven-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-riven-mesh-quill-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:57d73fc6ddc516a0b7d68b3fda7744ca8bc5b28b3172aa7b6d0e92feb2d57aa9"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d28884d5dd45da46bef1c9ad1da9f67b546b7ac6df98dbcf2c2b2a4e1dfdaef6",
+              "status": "stale",
+              "subject": "Quill-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-riven-mesh-quill-worker:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:7581e6bb3a9e0912668f69fb8016be49f42d2c0c2a2205125c3140dd2dd953a2"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Riven-mesh",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:669617f42779dc2dc5c706e768396fc97908c43a4a73547601804f65bdf0a2a7",
+              "status": "supported",
+              "subject": "Quill-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-riven-mesh-quill-worker:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:0339884aeea3b4d10682f66f1bd1f9122d37b9738ae3383e1d7effd21052956c"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:71088d9c113086c29ed3dad3efac3afe5af52e8a071a75dbbc1c33108798411c",
+              "status": "supported",
+              "subject": "Riven-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-riven-mesh-quill-worker:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:f45dc3129103c80237139df58f800396456becc08fae9fbba9f6c1e66d3b4333",
+                "sha256:9a6365b9d443e25fb3a11610c485f717c86f567f7de07692d9fa6d035db6634d",
+                "sha256:3933447dae76a9b71b27e64fced949019194f689ebf601a3b876f8fc20d392cd",
+                "sha256:ad05035e19aa6c2f2fe3c464936475bf626062c3bf2eca388cd281d3af09cfd9"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "unknown_current_state"
+              },
+              "object": "Quill-worker",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc",
+              "status": "stale",
+              "subject": "Riven-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:fdbc3c484dd957a85d16e41620da9c966ec48424d3b63ef9b1eba0a317eca655",
+            "sha256:57d73fc6ddc516a0b7d68b3fda7744ca8bc5b28b3172aa7b6d0e92feb2d57aa9",
+            "sha256:7581e6bb3a9e0912668f69fb8016be49f42d2c0c2a2205125c3140dd2dd953a2",
+            "sha256:6d0353c6a000739d7ba6e717a99aeb29a914be67642e2a3efcafb241b61ae2c2",
+            "sha256:8f2ee7aad3258c9d4b5f946a82066a4c6ac78617403fb2067d5b31d43b688c33",
+            "sha256:0339884aeea3b4d10682f66f1bd1f9122d37b9738ae3383e1d7effd21052956c",
+            "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:64b99100e64bb62cec8e7361cc12a9078eb084884a89284be3eab596f553c08d",
+          "graph_id": "proof:restart_risk:19a22d5914279d15f393",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:19a22d5914279d15f393dd265c7588019a56dc53f89d9b0f2a167d3cfab1930f",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:5b0485bdeb6a8ec4b6d8ff205c6915216daec8c13dfa9c730533208d7abb45b6"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:bfa4c6a1495f0f7373f3245cf86f150f8fc1406470f6f31899de7c757688533f",
+        "source": "Riven-mesh",
+        "status": "stale",
+        "target": "Quill-worker"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "emergency_dispatch",
+          "temporal_state": "stale",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Riven-mesh destabilize Quill-worker? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:56165b53712e947cdfb3cc8a71bc62ccfdd2be4b3fbe35b8c4a37868a9719152",
+        "scenario_id": "heldout-restart_risk-2-riven-mesh-quill-worker",
+        "source": "Riven-mesh",
+        "target": "Quill-worker"
+      }
+    },
+    "heldout-restart_risk-3-luma-core-kite-canary": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:f52792bc45a375b5cf15053a7694d9cdd01146edf7a80429ea5c6449c94752af",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:942105ffafb7efdcb1282af058eb1a6e573f321ea1d3991d3fe71089541ed2c1",
+          "rendered_artifact_bytes": 2649,
+          "rendered_artifact_digest": "sha256:688d694a80d8b5eb548aa0d8e03bc876a69ea6b94defeb180e04fc0312e0dc04",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:95f9701238893c9e1a238b20185f219e5b79df75512c05cf38e64aca409fdd85",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-3-luma-core-kite-canary",
+          "scene_plan_digest": "sha256:a89513dfc00b30e2032741c5f2307a9eeea5b5efc659bd8c78f446ab70cf8be2",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 788,
+          "text_artifact_digest": "sha256:0bab4d0c74e25cae149a23bb80609a2ebe50125cbbb39fff3bf97290b2350f4e",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:9ed0262cbdd3fcf8cbbe388b1299be8d80943fb164d541ad1815e9428bc89e69",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-3-luma-core-kite-canary:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:abc823e461fdd06b400cd02afe0febcf4ba3299668d13cb8b6035a310aca6de9"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:7bcd1a64db4d32878df00dd5f4e03832239347a91ec600a96d5c0f2c1b877601",
+              "status": "supported",
+              "subject": "Luma-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-luma-core-kite-canary:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:696d8d8a34fae48b941ba471b9c6ec726dcef270250b024839d1ec09e202acbf"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:59d601dbff7f0d3f54a020e197bd9581d07079738564d2e2dca852176b3980d8",
+              "status": "supported",
+              "subject": "Kite-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-luma-core-kite-canary:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:63b370dd6b15364559b3718805bbad575df280609eaae18a294a350ad352323b"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Luma-core",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d975e21c831d28ccee12038d3ec8368a5a11a4bc9a6109da81d652ddea00d285",
+              "status": "supported",
+              "subject": "Kite-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-luma-core-kite-canary:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:8097f4a49e1fd14044543879ec5a7f146cfebe88ec6fee46a42724cf822c66ba"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1e5d7816d4bc20d6eae99e56b2d548537d404c190a680469dcfb378c1d999b9e",
+              "status": "supported",
+              "subject": "Luma-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-luma-core-kite-canary:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "rule_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:20196a0ab4397e832c9e35bda1fb985217c5b56ff27b1365123697c8421dcc9a",
+                "sha256:1d387ea750ba51f48603d4060705a17df1942ef1cd84d7807994b72f76cf4ccc",
+                "sha256:571ec576d97c09a203603f19b41e34898dc5685523a3ae66a6a3863cf4a57495",
+                "sha256:cc473a65137c3938a56622cf66d2854a349858d55673020e9dd009efdd832bab"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "low"
+              },
+              "object": "Kite-canary",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc",
+              "status": "supported",
+              "subject": "Luma-core"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:abc823e461fdd06b400cd02afe0febcf4ba3299668d13cb8b6035a310aca6de9",
+            "sha256:696d8d8a34fae48b941ba471b9c6ec726dcef270250b024839d1ec09e202acbf",
+            "sha256:63b370dd6b15364559b3718805bbad575df280609eaae18a294a350ad352323b",
+            "sha256:d6ebc6af83080179ae476876b213398dae9e8043a2ad78320a5d25434d31063c",
+            "sha256:bc6726344bec6db5bc73418b54728b6c289ccc9cf637ee52c1b003e1732484d2",
+            "sha256:8097f4a49e1fd14044543879ec5a7f146cfebe88ec6fee46a42724cf822c66ba",
+            "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:f52792bc45a375b5cf15053a7694d9cdd01146edf7a80429ea5c6449c94752af",
+          "graph_id": "proof:restart_risk:95f9701238893c9e1a23",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:95f9701238893c9e1a238b20185f219e5b79df75512c05cf38e64aca409fdd85",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:8deb3e913311e3227d28f1059bdf3cae2d7ea86643f6a879c6d5b79436d289f7"
+        }
+      },
+      "oracle_expected": {
+        "class": "low",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:b839e9c93acec7984e8d3e913e2da9eaad7192eafb0cd0848ca37cc72d1d5d16",
+        "source": "Luma-core",
+        "status": "supported",
+        "target": "Kite-canary"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Luma-core destabilize Kite-canary? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:a27f51a4865d09fc5eac5636b8c9713616d517b0a2c9952d0b1ba3e5d639f084",
+        "scenario_id": "heldout-restart_risk-3-luma-core-kite-canary",
+        "source": "Luma-core",
+        "target": "Kite-canary"
+      }
+    },
+    "heldout-traffic_shift-0-juno-mesh-talon-core": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": true,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 6,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:092b9b0340d84a9f98351509d716d9729ca1fd50e18e18e973d3bb7cdb13edf2",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:9b9e86376ef207adfc7d4e754f48f1b61f55802063ad75a7d221fd113e77f459",
+          "rendered_artifact_bytes": 2666,
+          "rendered_artifact_digest": "sha256:e0e54d916d5445539c4eb2d2a06516badc0e7775ed3fe0327b985eceab3864b3",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:947a3c9c7732764973cbaaf3ca953c80f011c3204db23847836548c12319141a",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-0-juno-mesh-talon-core",
+          "scene_plan_digest": "sha256:7f3cdadfe0ce009e1f624297b39d063fc599e6a226faad6da7cf07ea6647e261",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 676,
+          "text_artifact_digest": "sha256:d3a59a5ce80f8ab31a55131b473a20d36caab556f0636304e1b2fcb3c248e580",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:42b2273427be791fbf8d6d5b9f853f3c016ebdcec824c1a56eec0e1f9cf9ec09",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-juno-mesh-talon-core:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:3dab0f1b6f7c7079eedd2589cbf4c90c1e4c1b20a9d0017c2b6aa4cfab223bbe"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:0489f22b273c42177334b7f993971daad8e1482226c368ae78c29fad0d961af0",
+              "status": "supported",
+              "subject": "Juno-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-juno-mesh-talon-core:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6a643ec211d8eff85d514c772265e2568fea4ba66092edfbbbe6c2010e8ab928"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:601eb6143caa0a88c837d1d869b5128ed874f964d8d10b7bb5db4a2ecc0fe8af",
+              "status": "supported",
+              "subject": "Talon-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-juno-mesh-talon-core:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:826510a5ab9da053c67b6aa192189c89c4ea0193acb5646a3b71602d6f2959ba"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Talon-core",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:53a7f7f39ac68e8e88fac1c62c1c4a35cb2d1e38fcb102dc4db909e3d373225b",
+              "status": "supported",
+              "subject": "Juno-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-juno-mesh-talon-core:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "threshold_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:4b286ec4d5b2c9c0693234fbfb263fbfb5d02702f870f8eb394c1c060a2bc417",
+                "sha256:8cf156de187abce98a837dec0f996b9ad8a71832b577509690883cc0ee77ea17",
+                "sha256:3a64340714ea99ad56cff85eaf6ef6eee4f6057bbb7b567e1cbe3632a9a531a3"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 15.0,
+                "shift_class": "safe",
+                "shift_percent": 10.0,
+                "target_spare_percent": 70.0
+              },
+              "object": "Talon-core",
+              "policy_ref": "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Juno-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:3dab0f1b6f7c7079eedd2589cbf4c90c1e4c1b20a9d0017c2b6aa4cfab223bbe",
+            "sha256:6a643ec211d8eff85d514c772265e2568fea4ba66092edfbbbe6c2010e8ab928",
+            "sha256:826510a5ab9da053c67b6aa192189c89c4ea0193acb5646a3b71602d6f2959ba",
+            "sha256:5a161ce0731ab5262a82eb2cc27befac2346c5d8f53539851f6320443c08599e",
+            "sha256:6fd9a1e40d16f53301f7f976b3fd8b91568906232f30058a94388601fc32c947",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:092b9b0340d84a9f98351509d716d9729ca1fd50e18e18e973d3bb7cdb13edf2",
+          "graph_id": "proof:traffic_shift:947a3c9c7732764973cb",
+          "policy_digests": [
+            "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d"
+          ],
+          "request_digest": "sha256:947a3c9c7732764973cbaaf3ca953c80f011c3204db23847836548c12319141a",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:523cea62f858defe87d6d8002b09c5b894aec679853de0745b7a17fa437fa35e"
+        }
+      },
+      "oracle_expected": {
+        "class": "safe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:40ca48371123a43d22e1ef1f8916ef416cbc3eead783bac9cf69f0a4743986e2",
+        "source": "Juno-mesh",
+        "status": "supported",
+        "target": "Talon-core"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "microgrid_control",
+          "shift_percent": 10,
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 10% traffic shift from Juno-mesh to Talon-core? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:c144b6bf8dba6ed08ddef80ebabb8c7fd2746160ebecdc7b689039ff1a55e965",
+        "scenario_id": "heldout-traffic_shift-0-juno-mesh-talon-core",
+        "source": "Juno-mesh",
+        "target": "Talon-core"
+      }
+    },
+    "heldout-traffic_shift-1-ion-api-sora-core": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": true,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 6,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:f485936d4f28d03ce60a91bd608d79f0930fddd7c78e75232d4f3fbc110ed169",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:ded29efcf78550cd10f9cee6874972b6b38211d32f79809cda31c55e82b89458",
+          "rendered_artifact_bytes": 2648,
+          "rendered_artifact_digest": "sha256:983c4898d119cb5b63d38f3829f960e26cd8a9180f58abed67bcfd797a177277",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:f9e39807ae3e037e1c2b679f7b37696e5b08b6ff8422548ea0fa00b13953d61c",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-1-ion-api-sora-core",
+          "scene_plan_digest": "sha256:fd2c53e9a097175c8921ef60f88c50a46202d5b1fc78bfd7054449ba38bda190",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 661,
+          "text_artifact_digest": "sha256:80114e9681c2bee1c518310263daded12b809cf606bcfff0a9037504b8548267",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:829a96d97a957cc8c392e59c397f304af18672792510a7ec3cee58483d59c00f",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-ion-api-sora-core:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:079db96bf470c25a388f6458b5710f2cbf0f57d044e14d995632c89acf29dfa9"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:4b872f0ac4967e0130ffa1515c68abb1b0012359722d89b1e84be4baa6dc683c",
+              "status": "supported",
+              "subject": "Ion-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-ion-api-sora-core:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:c4733704ce4041571c11a858e1378c5c7717f92906f374a3730ea0d09b04d4ec"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:fcbab4c53b8e21d6b1d16b3d961f62ed20e460195171060f43f62be9cd8fb1f1",
+              "status": "supported",
+              "subject": "Sora-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-ion-api-sora-core:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6384217fd1e6fbb21d3e22e7b25ed74c3205561365dc4ceeafa57c287d3e7d0a"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Sora-core",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1c8cbbe33117fc1023a15930fc4f68685bd4cc04daaf94397b9dd481b238f605",
+              "status": "supported",
+              "subject": "Ion-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-ion-api-sora-core:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "threshold_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:05128037a298f22d1347f6b039a8e8701e4cde1c3775ace7a9e169dffe4bbf9b",
+                "sha256:74edceb6c25e9fa950d476d41babc930b4551cda732c8983f46d2152307f98cf",
+                "sha256:f9f19ce82fec7900789061d44bfb49e21f1c895878fad5fcdbfc22e422fe273e"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 10.0,
+                "shift_class": "safe",
+                "shift_percent": 20.0,
+                "target_spare_percent": 55.0
+              },
+              "object": "Sora-core",
+              "policy_ref": "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Ion-api"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:079db96bf470c25a388f6458b5710f2cbf0f57d044e14d995632c89acf29dfa9",
+            "sha256:c4733704ce4041571c11a858e1378c5c7717f92906f374a3730ea0d09b04d4ec",
+            "sha256:6384217fd1e6fbb21d3e22e7b25ed74c3205561365dc4ceeafa57c287d3e7d0a",
+            "sha256:28d2897dd49c0cbf853a505840ba97920b6cdd596f5ad0dcabe214128700dba9",
+            "sha256:61802adbba9391720c0b02cfa457a4d37f6870cde3611c3c9320a04a9689c415",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:f485936d4f28d03ce60a91bd608d79f0930fddd7c78e75232d4f3fbc110ed169",
+          "graph_id": "proof:traffic_shift:f9e39807ae3e037e1c2b",
+          "policy_digests": [
+            "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b"
+          ],
+          "request_digest": "sha256:f9e39807ae3e037e1c2b679f7b37696e5b08b6ff8422548ea0fa00b13953d61c",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:b1504693d3b0b6fdf1929a1117f62a696fff3421059e89b8a653e57b516ee43d"
+        }
+      },
+      "oracle_expected": {
+        "class": "safe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:02398a7cd07dac125ce232ca4f961c3a3c353773a65e3ee67c0c77eea8255fec",
+        "source": "Ion-api",
+        "status": "supported",
+        "target": "Sora-core"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "shift_percent": 20,
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 20% traffic shift from Ion-api to Sora-core? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:69694c88c64cf14ec74b99315abeb69ee6a8008b9fba547a4c70fe71f436bf26",
+        "scenario_id": "heldout-traffic_shift-1-ion-api-sora-core",
+        "source": "Ion-api",
+        "target": "Sora-core"
+      }
+    },
+    "heldout-traffic_shift-2-juno-worker-uma-worker": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": true,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 6,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:301c711c8f882b14b2e6ce0ecb717093d3b06a0a2ccbe4fdf69c7a7a5b78e879",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:92c83b7440487b771d9eb027ada4bf038a9060b824ebaddee0011a67b1905e0b",
+          "rendered_artifact_bytes": 2678,
+          "rendered_artifact_digest": "sha256:e3e9fe5bb9216af3c7205cb0a530f19eb217e31c8285f1e49290f267781470a1",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:b9a75d52bcc86ed311410a669eb141c506552a65e5cf50c54b1313347c95638a",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-2-juno-worker-uma-worker",
+          "scene_plan_digest": "sha256:d7c53ce29adf75516b8614b1c91a08bec37341ae7b764b5ae8795fda5b79da93",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 686,
+          "text_artifact_digest": "sha256:21760030035dec1beef7faa7584ad33bc26cbf16aa814a191b48f488fd72e67e",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:ef7fe8209592649691cf3518227b28285a1dee685cc384c3aee50e0557ec9763",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-juno-worker-uma-worker:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ff2bee7791030f908d5730b6c9a83d9c8442ce00df2db4ed8792db2aead23a8e"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c03f273f53498f7455c0bfbfc9eccb28f3c83465288ec11508ca24bf0c1852e8",
+              "status": "supported",
+              "subject": "Juno-worker"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-juno-worker-uma-worker:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:699f04fd5acff3a1e105284e1929aa7ded4314e9076b53bad129f13bfaf2ec63"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:783fbe1081cbe9e8d6b1d839be9f6c9f06d36395168dc45813486dc5d8e3c62c",
+              "status": "supported",
+              "subject": "Uma-worker"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-juno-worker-uma-worker:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:9bc814b48e39a54d2b913ec37a8e351bcde2bc7ec723c6e573583de0e2adf45c"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Uma-worker",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:336a8ae2a2ec95302adc825ba622b8433506699de262ffe042236bd29c8f49a6",
+              "status": "supported",
+              "subject": "Juno-worker"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-juno-worker-uma-worker:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "threshold_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:8997aaf87ee8eaa514c82726ade293fb0ea4c00b2012201c0e8b755ecfd7dc47",
+                "sha256:870cf9032e22eee6d263ee12cbd70e03fa4e158f4c43c36d679e1acd62bf1ce0",
+                "sha256:823e6c26cc9c230eb8ecdeb32b0ab9951852259e2366aa5afdb415bbd7ecb9a1"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 20.0,
+                "shift_class": "safe",
+                "shift_percent": 20.0,
+                "target_spare_percent": 70.0
+              },
+              "object": "Uma-worker",
+              "policy_ref": "sha256:b956080771c828ca83d36b26be6f549254a86f2ca7f4c1cb62426fc20fe441ab",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Juno-worker"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:ff2bee7791030f908d5730b6c9a83d9c8442ce00df2db4ed8792db2aead23a8e",
+            "sha256:699f04fd5acff3a1e105284e1929aa7ded4314e9076b53bad129f13bfaf2ec63",
+            "sha256:9bc814b48e39a54d2b913ec37a8e351bcde2bc7ec723c6e573583de0e2adf45c",
+            "sha256:a6d23b519c4b9e8566a4b4c1a150f3ed992579d33297bcb2eea6823ae15c8525",
+            "sha256:ef1dcd19a752c8523456113d52a6d8325c7ed119d019bda90c00e1c2e876a3aa",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:301c711c8f882b14b2e6ce0ecb717093d3b06a0a2ccbe4fdf69c7a7a5b78e879",
+          "graph_id": "proof:traffic_shift:b9a75d52bcc86ed31141",
+          "policy_digests": [
+            "sha256:b956080771c828ca83d36b26be6f549254a86f2ca7f4c1cb62426fc20fe441ab"
+          ],
+          "request_digest": "sha256:b9a75d52bcc86ed311410a669eb141c506552a65e5cf50c54b1313347c95638a",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:dbeecaa12f61eacbbcc12797a5650203f785c17b8f65a1412d76911d9333c38b"
+        }
+      },
+      "oracle_expected": {
+        "class": "safe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:15c4082fac57ad9d9bc8a2dff83918d2879ca22ee70d1a3f47599325ce46d2f8",
+        "source": "Juno-worker",
+        "status": "supported",
+        "target": "Uma-worker"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "shift_percent": 20,
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 20% traffic shift from Juno-worker to Uma-worker? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:dbb5605722cd2b3fc03f611101ead5ba856f5d872fac9ca20b72bad0b6dc5072",
+        "scenario_id": "heldout-traffic_shift-2-juno-worker-uma-worker",
+        "source": "Juno-worker",
+        "target": "Uma-worker"
+      }
+    },
+    "heldout-traffic_shift-3-wisp-core-flux-worker": {
+      "baselines": {
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 15,
+          "visual_present": false
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:024025f5f48b1276f96beb79d58858207593a35bddd7f469186e3af37991d562",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:8f3bea8ab4b004fbbf099969223beeffdd4279dfb23fd612fca6cd8607c06a84",
+          "rendered_artifact_bytes": 0,
+          "rendered_artifact_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:0608863d2dc608e2f344b4ce01f674203ea68baca813c006a6ff8ed993db0399",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-3-wisp-core-flux-worker",
+          "scene_plan_digest": "sha256:a2ee5c00eeaf5e434395bd9e7b10642fb90fb199f8baf42d1f7592cca07b1217",
+          "scene_render_valid": false,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 734,
+          "text_artifact_digest": "sha256:ae6e7ba244aacd19917f9c55d81e11ea967d97c8315a668846587c4e536dbf2e",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:28b2844778a88e683553f9b2890477f11461e73232c5114536d89189f79bbc86",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "layout_overflow:forced-overflow:out_of_bounds",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "refused"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-wisp-core-flux-worker:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:5aa7f88c2f21466b051bf540818acf156a72b3ead0757b96d82727ad13cb8b8a"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1583519ab13abca39142b0ffc0e47886964230530c5553cfeeb317385860784c",
+              "status": "stale",
+              "subject": "Wisp-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-wisp-core-flux-worker:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:03dd545a44e06b1c249b2db191fd841ee7c92822b8a9679fbb4e8af5a2358874"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:6b048112b1dd6d2c842e784f6d73d21b20103247396acdf537f5023f914dafe3",
+              "status": "stale",
+              "subject": "Flux-worker"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-wisp-core-flux-worker:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6f34c59b23ee6c12a442c4a5dccbea2ad16d3d14f8f556baf662930d417de93f"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Flux-worker",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:a49cfb26d95f146498c9510dcd3827a1f1e3516b86af99f689e6356b6bd996c1",
+              "status": "supported",
+              "subject": "Wisp-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-wisp-core-flux-worker:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:9ef94a6218431ad8b0e6f3a1f7f5aae56167164c34e3a6a75757ef9ee1653a5d",
+                "sha256:a97bf253d0f445864e6929dfdd165da93fe1f601898a6926fb613ee614205549",
+                "sha256:2afbceab8aff05b608a17cb662f212d83a1967ea56dc8e7e744b1728f9cdafb1"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 20.0,
+                "shift_class": "unknown_current_state",
+                "shift_percent": 15.0,
+                "target_spare_percent": 70.0
+              },
+              "object": "Flux-worker",
+              "policy_ref": "sha256:b956080771c828ca83d36b26be6f549254a86f2ca7f4c1cb62426fc20fe441ab",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "stale",
+              "subject": "Wisp-core"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:5aa7f88c2f21466b051bf540818acf156a72b3ead0757b96d82727ad13cb8b8a",
+            "sha256:03dd545a44e06b1c249b2db191fd841ee7c92822b8a9679fbb4e8af5a2358874",
+            "sha256:6f34c59b23ee6c12a442c4a5dccbea2ad16d3d14f8f556baf662930d417de93f",
+            "sha256:1fc45106a3c3c3ff6dec6269d69fcc07cd72c94cc3229d9afa95cda13af4a5fa",
+            "sha256:bcdbc2932f4149c47f592ce2d52f04d6c12407d1e3440cfbb3d6bc6485d27a60",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:024025f5f48b1276f96beb79d58858207593a35bddd7f469186e3af37991d562",
+          "graph_id": "proof:traffic_shift:0608863d2dc608e2f344",
+          "policy_digests": [
+            "sha256:b956080771c828ca83d36b26be6f549254a86f2ca7f4c1cb62426fc20fe441ab"
+          ],
+          "request_digest": "sha256:0608863d2dc608e2f344b4ce01f674203ea68baca813c006a6ff8ed993db0399",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:714144f6a2b56c1f3ddb650575b477b23453132afdefeb7adab4f1135a08b1da"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:c90a05b7278858c17963c8de2f0560a6993130fa7ab19aa14023df91e87ba602",
+        "source": "Wisp-core",
+        "status": "stale",
+        "target": "Flux-worker"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": true,
+        "metadata": {
+          "operational_domain": "library_search",
+          "shift_percent": 15,
+          "temporal_state": "stale",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 15% traffic shift from Wisp-core to Flux-worker? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:5e4279bc8bf27378a078b7ad2e1a8763a8741ad19cbd7e62ee362d8170c1be78",
+        "scenario_id": "heldout-traffic_shift-3-wisp-core-flux-worker",
+        "source": "Wisp-core",
+        "target": "Flux-worker"
+      }
+    }
+  },
+  "claim_boundary": "Reference external-breakthrough benchmark scaffold. Held-out cases are generated after engine freeze from an evaluator seed. Semantic scoring uses an independent oracle derived only from scenario facts, policies, rules, topology metadata, and temporal flags before BEAST execution. Baseline adapters are transparent local references and should be replaced by independent public implementations for third-party claims.",
+  "observed_at": "2026-08-03T17:25:00.153272+00:00",
+  "receipt_digest": "sha256:5e916c4204a8b1ddfb6caae9af31fde5363bbccd3535da210d3b85912c02c86e",
+  "run_id": "2026-08-03T-c4x-external-oracle-topology-domain",
+  "scorecard": {
+    "baseline_count": 5,
+    "baseline_scope": "local_reference_adapters_not_third_party_competitors",
+    "beast_artifact_custody_valid": 12,
+    "beast_beats_all_reference_baselines": true,
+    "beast_honest_uncertainty": 12,
+    "beast_provider_calls_used": 0,
+    "beast_semantic_correct": 12,
+    "breakthrough_protocol_pass": true,
+    "cross_modal_families": 3,
+    "engine_freeze_digest": "sha256:fe6836990bd6f6513046bca25f35b9367294aa9819e37ffbdc6dbe7994e3fa82",
+    "evaluator_seed": "outsider-oracle-topology-domain-2026-08-03",
+    "generator_seed_digest": "sha256:0478a5c510b376cd24c825e429103e2a78f57b3cb174ec0a973699017e896a87",
+    "heldout_cases": 12,
+    "heldout_operational_domains": 6,
+    "independent_semantic_oracle": true,
+    "operational_domain_counts": {
+      "emergency_dispatch": 1,
+      "farm_sensor_grid": 1,
+      "library_search": 2,
+      "microgrid_control": 3,
+      "robotics_cell": 3,
+      "water_station": 2
+    },
+    "oracle_source": "scenario_facts_rules_policies_metadata_before_beast_execution",
+    "randomized_service_names": 23,
+    "randomized_topology_shapes": 4,
+    "third_party_verifier_ready": true,
+    "topology_shape_counts": {
+      "fan_in_with_anchor": 6,
+      "fan_out_with_anchor": 3,
+      "mesh_noise_with_anchor": 1,
+      "transitive_with_direct_anchor": 2
+    }
+  },
+  "systems": {
+    "beast_c4x": {
+      "artifact_custody_valid": 12,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 12,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 1.0,
+      "semantic_correct": 12,
+      "total_score": 190,
+      "visual_present": 10
+    },
+    "cached_named_template": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 36,
+      "visual_present": 0
+    },
+    "knowledge_graph_topology_only": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 9,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 39,
+      "visual_present": 12
+    },
+    "model_generated_multimodal_stub": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 9,
+      "proof_first": 0,
+      "provider_calls_used": 24,
+      "semantic_accuracy": 0.25,
+      "semantic_correct": 3,
+      "total_score": 27,
+      "visual_present": 12
+    },
+    "rag_nearest_exemplar": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 9,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 39,
+      "visual_present": 12
+    },
+    "rule_engine_text_only": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.25,
+      "semantic_correct": 3,
+      "total_score": 48,
+      "visual_present": 0
+    }
+  },
+  "third_party_verifier": {
+    "baseline_adapter_contract": "external systems may submit answer_text, visual_bytes_digest, reported_status, reported_class, reported_current_claim_allowed, provider_calls_used",
+    "evaluator_seed_contract": "chosen after freeze; appears in generator_seed_digest",
+    "frozen_engine_digest": "sha256:fe6836990bd6f6513046bca25f35b9367294aa9819e37ffbdc6dbe7994e3fa82",
+    "semantic_oracle_contract": "must derive expected status/class from scenario facts before reading any system answer",
+    "verifier_command": "python3 scripts/verify_c4x_external_breakthrough_submission.py --benchmark <benchmark.json> --submission <submission.json>"
+  },
+  "version": "1.0"
+}

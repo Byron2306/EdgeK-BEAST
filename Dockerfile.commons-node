@@ -3,9 +3,32 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    BEAST_COMMONS_NODE_ROOT=/var/lib/beast/remote-commons
+    BEAST_COMMONS_NODE_ROOT=/var/lib/beast/remote-commons \
+    OQS_INSTALL_PATH=/opt/oqs \
+    LD_LIBRARY_PATH=/opt/oqs/lib:/opt/oqs/lib64
+
+ARG LIBOQS_VERSION=0.16.0
 
 WORKDIR /workspace
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        cmake \
+        git \
+        libssl-dev \
+        ninja-build \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --branch "${LIBOQS_VERSION}" --depth 1 https://github.com/open-quantum-safe/liboqs /tmp/liboqs \
+    && cmake -S /tmp/liboqs -B /tmp/liboqs/build -GNinja \
+        -DBUILD_SHARED_LIBS=ON \
+        -DOQS_BUILD_ONLY_LIB=ON \
+        -DOQS_MINIMAL_BUILD="KEM_ml_kem_768;SIG_ml_dsa_65" \
+        -DCMAKE_INSTALL_PREFIX="${OQS_INSTALL_PATH}" \
+    && cmake --build /tmp/liboqs/build --target install --parallel 4 \
+    && rm -rf /tmp/liboqs
 
 COPY requirements.commons-node.txt /workspace/requirements.commons-node.txt
 RUN pip install -r /workspace/requirements.commons-node.txt

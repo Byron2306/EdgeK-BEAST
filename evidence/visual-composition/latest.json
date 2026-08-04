@@ -1,0 +1,654 @@
+{
+  "beast_object_type": "visual_capability_composition_gauntlet_receipt",
+  "capability_learning": {
+    "beast_object_type": "capability_learning_report",
+    "by_capability_type": {
+      "visual_composition": 6
+    },
+    "by_event_type": {
+      "composed": 6
+    },
+    "by_lifecycle_state": {
+      "composed": 3,
+      "refuted": 1,
+      "residual_composed": 2
+    },
+    "capabilities": [
+      {
+        "authority": "render_only_composition",
+        "capability_digest": "sha256:3ce61022ff4ea9fb99c6d1609c8df16e9165fbf79a154635c22421c9f4db168f",
+        "capability_id": "layout-safety:c0a269b228ceef94b156500f",
+        "capability_type": "visual_composition",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T15:01:30.705091+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T15:01:30.722620+00:00",
+        "last_receipt_digest": "sha256:899ff950c3c6d8485f00ebc35c3529bf7ef0a41fee730a8ad1a5d411f9e3bd5d",
+        "lifecycle_state": "refuted",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 6
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_digest": "sha256:23231383b84e13dc719f7f44936919d0b0e0e95fa41a4d2003dffc3fdca6b366",
+        "capability_id": "promoted-region-reuse:b98c1786fc1199e09f7c720a",
+        "capability_type": "visual_composition",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T15:01:30.669618+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T15:01:30.688879+00:00",
+        "last_receipt_digest": "sha256:c4d3ce4253c6eece38821a84c9a592316ac2908859fb2c8fafc4da09ef92c868",
+        "lifecycle_state": "residual_composed",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 16
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_digest": "sha256:a8a9aae0922fbe680d29b7312bc3765f2844ea363942aaafe03c88958631bd24",
+        "capability_id": "status-card:31ec81a0146dbe98549a1e77",
+        "capability_type": "visual_composition",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T15:01:30.636123+00:00",
+        "fresh_work_units": 0,
+        "last_observed_at": "2026-08-03T15:01:30.651746+00:00",
+        "last_receipt_digest": "sha256:473a11ad2d1ee18b67ed9c8b2b0849368b1ff77805479004c902218df10858a3",
+        "lifecycle_state": "residual_composed",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 9
+      }
+    ],
+    "capability_count": 3,
+    "event_count": 6,
+    "fresh_work_units": 0,
+    "ledger_digest": "sha256:356b6f704c3986587503ab07a0dab26758205fc9aaabb7d8894d6fb867b5da5c",
+    "ledger_path": "/home/byron/EdgeK-BEAST/.beast/state/visual_composition_gauntlet/capability_learning.jsonl",
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 0,
+    "recent_events": [
+      {
+        "authority": "render_only_composition",
+        "capability_id": "layout-safety:c0a269b228ceef94b156500f",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:bce9b296095401ee0a28483b1310c6ddb942515ac3f1716512a7aeae9ea2922f",
+        "event_type": "composed",
+        "evidence_digest": "sha256:333074c51225861c5931a5f25855c8bb01e54a6579f9dbb8bace368d7a1af311",
+        "fresh_work_units": 0,
+        "lifecycle_state": "refuted",
+        "metadata": {
+          "component_count": 3,
+          "family": "layout-safety",
+          "question_type": "visual_layout_safety",
+          "render_authority": "render_only",
+          "residual_used": false,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.722620+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:899ff950c3c6d8485f00ebc35c3529bf7ef0a41fee730a8ad1a5d411f9e3bd5d",
+        "refusal_reason": "",
+        "reuse_hits": 3
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_id": "layout-safety:c0a269b228ceef94b156500f",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:0ca9d0210e4e031c7d42877a67853228ed5d0a0276135142bcac3471a4dead30",
+        "event_type": "composed",
+        "evidence_digest": "sha256:49534b329676aa01bdc828006798bab0a2fbad52bf12212c0c424825ea8aa542",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 3,
+          "family": "layout-safety",
+          "question_type": "visual_layout_safety",
+          "render_authority": "render_only",
+          "residual_used": false,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.705091+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:dde373bfae49a893f52fdc79c6502dc3b8b86f18297da4604675ae76b46d949b",
+        "refusal_reason": "",
+        "reuse_hits": 3
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_id": "promoted-region-reuse:b98c1786fc1199e09f7c720a",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:b785843da5046536ddaf356c40e17445bb1ca2d2b60e1174d1c59875392cdc9f",
+        "event_type": "composed",
+        "evidence_digest": "sha256:44a62b5ff50c63953e75f1411b2c71b551b62c1eefe5136c70fec61ad09f82f7",
+        "fresh_work_units": 0,
+        "lifecycle_state": "residual_composed",
+        "metadata": {
+          "component_count": 7,
+          "family": "promoted-region-reuse",
+          "question_type": "visual_promoted_region_reuse",
+          "render_authority": "render_only",
+          "residual_used": true,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.688879+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:c4d3ce4253c6eece38821a84c9a592316ac2908859fb2c8fafc4da09ef92c868",
+        "refusal_reason": "",
+        "reuse_hits": 7
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_id": "promoted-region-reuse:b98c1786fc1199e09f7c720a",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:470f1622a38d0a071e56bf2a7b8e7a8e5691af29ac4723539337fa220e1888c2",
+        "event_type": "composed",
+        "evidence_digest": "sha256:6e0f5d26c23102dab6f4610ee30d797692d9cf8b48f766205e8f6f91ab762dac",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 9,
+          "family": "promoted-region-reuse",
+          "question_type": "visual_promoted_region_reuse",
+          "render_authority": "render_only",
+          "residual_used": false,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.669618+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:373db4096aca4c072885e5de668960e6f44fcc3b74fc57eac8d9324d3c723929",
+        "refusal_reason": "",
+        "reuse_hits": 9
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_id": "status-card:31ec81a0146dbe98549a1e77",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:8d66466e4a2cbff67e482e0605c281f9234cbda49213ee24a3963a63a4bf34a5",
+        "event_type": "composed",
+        "evidence_digest": "sha256:9924239f407f5fed106cb44ff9dffc8a54a8db44a24e01b4a1b0ac12f67244be",
+        "fresh_work_units": 0,
+        "lifecycle_state": "residual_composed",
+        "metadata": {
+          "component_count": 4,
+          "family": "status-card",
+          "question_type": "visual_status_card_composition",
+          "render_authority": "render_only",
+          "residual_used": true,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.651746+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:473a11ad2d1ee18b67ed9c8b2b0849368b1ff77805479004c902218df10858a3",
+        "refusal_reason": "",
+        "reuse_hits": 4
+      },
+      {
+        "authority": "render_only_composition",
+        "capability_id": "status-card:31ec81a0146dbe98549a1e77",
+        "capability_type": "visual_composition",
+        "event_digest": "sha256:aa35146e872f8b0f28ba57d62b404cdc9203fb84ec4fe47a3f5ac86601af44f6",
+        "event_type": "composed",
+        "evidence_digest": "sha256:0b5b8b58c64e178199638c5be4c4b3c4745af45e8ac6045bc5fd03d82bcfe3c0",
+        "fresh_work_units": 0,
+        "lifecycle_state": "composed",
+        "metadata": {
+          "component_count": 5,
+          "family": "status-card",
+          "question_type": "visual_status_card_composition",
+          "render_authority": "render_only",
+          "residual_used": false,
+          "unsupported_visual_gaps": []
+        },
+        "observed_at": "2026-08-03T15:01:30.636123+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:a9da883eb8f537b73d5ec210c6a2687e219919dd0bd56c130fe326d4306939a0",
+        "refusal_reason": "",
+        "reuse_hits": 5
+      }
+    ],
+    "reuse_hits": 31,
+    "version": "1.0"
+  },
+  "cases": {
+    "layout_overflow_refuted": {
+      "answer": {
+        "layout_class": "unsafe",
+        "render_authority": "render_only",
+        "summary": "Asset placement would exceed 180x100 canvas bounds at (170, 24) with size 16x16."
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded visual layout composition only. The receipt can compare declared canvas, anchor, and asset dimensions for bounds safety; it does not resize, crop, or mutate the asset.",
+      "component_evidence_digests": [
+        "sha256:bad178d157d48ff00e73846958f8cc0fde4309c4c2ca7e02955b9ca1fba4292f",
+        "sha256:15d04ddd7d638d5b1411dea93a1691707e64ae3758d83bc0ba00eb8857d7b54b",
+        "sha256:cf21d8e483f26c781820a4886666833138c45a30b923c1b61b3ff793205b82a6"
+      ],
+      "component_fact_digests": {
+        "canvas_contract": "sha256:c3a2bb0f92906c0e4f3afa15274a52a80f9fa620f90510e706a9a0ce4e6e0151",
+        "layout_anchor": "sha256:0b335c329bfceeebb21ba2aa3e0207b51a2dcb282f7d27b48671195c8795797a",
+        "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.706353+00:00",
+      "evidence_node_id": "sha256:333074c51225861c5931a5f25855c8bb01e54a6579f9dbb8bace368d7a1af311",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:c0a269b228ceef94b156500fb1b43eb416a62bcbaa62af1a6ab18c5e0df069dd",
+        "question_id": "visual-question:layout-status-light",
+        "question_type": "visual_layout_safety",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "place status light inside the status card canvas"
+      },
+      "receipt_digest": "sha256:899ff950c3c6d8485f00ebc35c3529bf7ef0a41fee730a8ad1a5d411f9e3bd5d",
+      "render_authority": "render_only",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "refuted",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    },
+    "layout_safe_composed": {
+      "answer": {
+        "layout_class": "safe",
+        "render_authority": "render_only",
+        "summary": "Asset placement is within 180x100 canvas bounds at (120, 24) with size 16x16."
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded visual layout composition only. The receipt can compare declared canvas, anchor, and asset dimensions for bounds safety; it does not resize, crop, or mutate the asset.",
+      "component_evidence_digests": [
+        "sha256:bad178d157d48ff00e73846958f8cc0fde4309c4c2ca7e02955b9ca1fba4292f",
+        "sha256:6cff897771d0a639140fcc71cd0c7b2a59a1b0981f4f90ae9035ded5a1e9a023",
+        "sha256:cf21d8e483f26c781820a4886666833138c45a30b923c1b61b3ff793205b82a6"
+      ],
+      "component_fact_digests": {
+        "canvas_contract": "sha256:c3a2bb0f92906c0e4f3afa15274a52a80f9fa620f90510e706a9a0ce4e6e0151",
+        "layout_anchor": "sha256:4cea1915ec6ec55c95a499bc1b4be6503a0cf11486e36869c0fa5ec2e18deb20",
+        "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.690131+00:00",
+      "evidence_node_id": "sha256:49534b329676aa01bdc828006798bab0a2fbad52bf12212c0c424825ea8aa542",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:c0a269b228ceef94b156500fb1b43eb416a62bcbaa62af1a6ab18c5e0df069dd",
+        "question_id": "visual-question:layout-status-light",
+        "question_type": "visual_layout_safety",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "place status light inside the status card canvas"
+      },
+      "receipt_digest": "sha256:dde373bfae49a893f52fdc79c6502dc3b8b86f18297da4604675ae76b46d949b",
+      "render_authority": "render_only",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    },
+    "promoted_region_reuse_composed": {
+      "answer": {
+        "asset_digest": "sha256:7319749ba00ecb2f7ea65c1e6e3faa503805e5dba3f50227b8011af98d97d883",
+        "equivalence_receipt_digest": "sha256:6eeee1681ab15b1044b0e97b0c39b06b554c2f9de0739e45d2f1b7207b8a8edc",
+        "feature_embedding_digest": "sha256:4c962443203333a56dd7853d1cc0929c9e5fa6cdeb75e002090c1e8bb1b762cf",
+        "render_authority": "render_only",
+        "reuse_class": "equivalent",
+        "summary": "Region region:status-light can reuse promoted visual asset visual.promoted.status_light.green with quality, intent, perceptual, and equivalence evidence."
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded promoted-region visual reuse only. The receipt can authorize render-only reuse when quality, intent, perceptual, and exact/equivalence evidence are present. It cannot invent pixels or broaden visual intent.",
+      "component_evidence_digests": [
+        "sha256:e16be4b90ac88f4e0215fff5887651c1500a5303baf52cc6130009049cdccfed",
+        "sha256:59901151d5cc2573cd37c8cdc2b9470e44633ca3a2c4ef3962d2a92232dd6be9",
+        "sha256:abfdf64a2622d55551c4c9b0dc4414c412f030a78d13c9289509a978bed64dec",
+        "sha256:cf21d8e483f26c781820a4886666833138c45a30b923c1b61b3ff793205b82a6",
+        "sha256:2537ae87c41134a1d9df7e7a1529b955f460c08e88d4ee480e677625a1ec9549",
+        "sha256:829e6f8879523192af83f820f4b1252fb5d6f3c825458bb207fa9ed22c66c12e",
+        "sha256:e41b658c32d3a1b8c11b22d4105fc02b032665086566cc6de56e5de96cedf428",
+        "sha256:026abc81871fdc8f9864a026038040c0c191de6a59cb20d3df50fe1d565defb4",
+        "sha256:ca0e30684694dceab0125726deb0469d4fcc8f66f56d65724f0b3cf2d08af8c4"
+      ],
+      "component_fact_digests": {
+        "equivalence_receipt": "sha256:6eeee1681ab15b1044b0e97b0c39b06b554c2f9de0739e45d2f1b7207b8a8edc",
+        "feature_embedding": "sha256:4c962443203333a56dd7853d1cc0929c9e5fa6cdeb75e002090c1e8bb1b762cf",
+        "intent_receipt": "sha256:1c3fe38042faa95452d3f681861adafada512ee2435ffcbfca754885c525da11",
+        "perceptual_receipt": "sha256:5a888449b9017e72e0edb247bb451c3843ad8466ba35018670e2fe45ae1dad8c",
+        "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf",
+        "quality_receipt": "sha256:e8d2a959bc96ff9d7b98fc634b857c1d140a086856cbd659401dcc00b2c619bb",
+        "region_mask": "sha256:8e7494ad57ddb29ffbd1f061a9e2b954b4002af916d8656b443028dc250d421f",
+        "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+        "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.654119+00:00",
+      "evidence_node_id": "sha256:6e0f5d26c23102dab6f4610ee30d797692d9cf8b48f766205e8f6f91ab762dac",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:b98c1786fc1199e09f7c720a95a03f12056b3da580d50a55420fac473753742d",
+        "question_id": "visual-question:reuse-status-light",
+        "question_type": "visual_promoted_region_reuse",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "reuse verified green status light region"
+      },
+      "receipt_digest": "sha256:373db4096aca4c072885e5de668960e6f44fcc3b74fc57eac8d9324d3c723929",
+      "render_authority": "render_only",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    },
+    "promoted_region_reuse_residual_composed": {
+      "answer": {
+        "render_authority": "render_only",
+        "reuse_class": "missing",
+        "summary": "Residual confirmed only that exact/equivalence reuse evidence is missing; no pixels or assets were created."
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded promoted-region visual reuse only. The receipt can authorize render-only reuse when quality, intent, perceptual, and exact/equivalence evidence are present. It cannot invent pixels or broaden visual intent.",
+      "component_evidence_digests": [
+        "sha256:e16be4b90ac88f4e0215fff5887651c1500a5303baf52cc6130009049cdccfed",
+        "sha256:59901151d5cc2573cd37c8cdc2b9470e44633ca3a2c4ef3962d2a92232dd6be9",
+        "sha256:abfdf64a2622d55551c4c9b0dc4414c412f030a78d13c9289509a978bed64dec",
+        "sha256:cf21d8e483f26c781820a4886666833138c45a30b923c1b61b3ff793205b82a6",
+        "sha256:2537ae87c41134a1d9df7e7a1529b955f460c08e88d4ee480e677625a1ec9549",
+        "sha256:829e6f8879523192af83f820f4b1252fb5d6f3c825458bb207fa9ed22c66c12e",
+        "sha256:e41b658c32d3a1b8c11b22d4105fc02b032665086566cc6de56e5de96cedf428"
+      ],
+      "component_fact_digests": {
+        "intent_receipt": "sha256:1c3fe38042faa95452d3f681861adafada512ee2435ffcbfca754885c525da11",
+        "perceptual_receipt": "sha256:5a888449b9017e72e0edb247bb451c3843ad8466ba35018670e2fe45ae1dad8c",
+        "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf",
+        "quality_receipt": "sha256:e8d2a959bc96ff9d7b98fc634b857c1d140a086856cbd659401dcc00b2c619bb",
+        "region_mask": "sha256:8e7494ad57ddb29ffbd1f061a9e2b954b4002af916d8656b443028dc250d421f",
+        "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+        "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.672037+00:00",
+      "evidence_node_id": "sha256:44a62b5ff50c63953e75f1411b2c71b551b62c1eefe5136c70fec61ad09f82f7",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:b98c1786fc1199e09f7c720a95a03f12056b3da580d50a55420fac473753742d",
+        "question_id": "visual-question:reuse-status-light",
+        "question_type": "visual_promoted_region_reuse",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "reuse verified green status light region"
+      },
+      "receipt_digest": "sha256:c4d3ce4253c6eece38821a84c9a592316ac2908859fb2c8fafc4da09ef92c868",
+      "render_authority": "render_only",
+      "residual_payload": {
+        "allowed_output": {
+          "reuse_class": [
+            "exact",
+            "equivalent",
+            "missing"
+          ],
+          "visual_rationale": "string"
+        },
+        "bounded_context": {
+          "intent_receipt": {
+            "passed": true
+          },
+          "perceptual_receipt": {
+            "center_luma_lift": 0.42,
+            "passed": true
+          },
+          "promoted_asset": {
+            "asset_digest": "sha256:7319749ba00ecb2f7ea65c1e6e3faa503805e5dba3f50227b8011af98d97d883",
+            "asset_id": "visual.promoted.status_light.green",
+            "height": 16,
+            "state": "promoted",
+            "width": 16
+          },
+          "quality_receipt": {
+            "passed": true
+          },
+          "region_mask": {
+            "height": 16,
+            "width": 16,
+            "x": 120,
+            "y": 24
+          },
+          "scene_capsule": {
+            "capsule_digest": "sha256:bd946d9874c6ad192375260f4c63d9c38a4a0ee1818d4a1edb7d2c646849bf62"
+          },
+          "visual_intent": {
+            "color": "green",
+            "object": "status_light"
+          }
+        },
+        "component_fact_digests": {
+          "intent_receipt": "sha256:1c3fe38042faa95452d3f681861adafada512ee2435ffcbfca754885c525da11",
+          "perceptual_receipt": "sha256:5a888449b9017e72e0edb247bb451c3843ad8466ba35018670e2fe45ae1dad8c",
+          "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf",
+          "quality_receipt": "sha256:e8d2a959bc96ff9d7b98fc634b857c1d140a086856cbd659401dcc00b2c619bb",
+          "region_mask": "sha256:8e7494ad57ddb29ffbd1f061a9e2b954b4002af916d8656b443028dc250d421f",
+          "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+          "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+        },
+        "forbidden_claims": [
+          "new_pixels",
+          "new_assets",
+          "new_scene_authority",
+          "network_or_provider_use",
+          "physical_actions"
+        ],
+        "question_digest": "sha256:b98c1786fc1199e09f7c720a95a03f12056b3da580d50a55420fac473753742d",
+        "residual_payload_digest": "sha256:d581901c601180878deadb3773cb73772f6db90852939fbc4b276b618ed361e7",
+        "residual_scope": "visual_equivalence_gap_only",
+        "task_family": "visual_composition.promoted_region_reuse",
+        "unresolved_fields": [
+          "reuse_class",
+          "visual_rationale"
+        ]
+      },
+      "residual_receipt": {
+        "accepted": true,
+        "beast_object_type": "visual_capability_composition_residual_receipt",
+        "created_at": "2026-08-03T15:01:30.671714+00:00",
+        "receipt_digest": "sha256:16f90c3b47961f76eccc1b23e1ae416a954908834efc0742d0f19c39471d02c2",
+        "residual_payload_digest": "sha256:d581901c601180878deadb3773cb73772f6db90852939fbc4b276b618ed361e7",
+        "returned_fields": [
+          "reuse_class",
+          "visual_rationale"
+        ],
+        "version": "1.0"
+      },
+      "residual_used": true,
+      "status": "residual_composed",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    },
+    "status_card_composed": {
+      "answer": {
+        "asset_digest": "sha256:7319749ba00ecb2f7ea65c1e6e3faa503805e5dba3f50227b8011af98d97d883",
+        "composition_class": "deterministic_scene_plus_promoted_region",
+        "render_authority": "render_only",
+        "summary": "Scene scene:beast-status can render green healthy status light on BEAST card using promoted asset visual.promoted.status_light.green at anchor top_right.",
+        "visual_intent_digest": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded status-card visual composition only. The receipt can assert deterministic render-only assembly from a scene capsule, manifest, intent, anchor, and promoted asset. Missing asset selection may route only metadata fields, never pixels, to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:e16be4b90ac88f4e0215fff5887651c1500a5303baf52cc6130009049cdccfed",
+        "sha256:d9d3e065dcb0b0d44c9bf28bfdf6f316b78e79dd0352c5cff7f6a5310de4cbbd",
+        "sha256:abfdf64a2622d55551c4c9b0dc4414c412f030a78d13c9289509a978bed64dec",
+        "sha256:d094f4c92b0c58247d37113dee756ce00cfdfbee966d742b99df1da120ab4723",
+        "sha256:cf21d8e483f26c781820a4886666833138c45a30b923c1b61b3ff793205b82a6"
+      ],
+      "component_fact_digests": {
+        "asset_manifest": "sha256:6094a4daa032ea720faa272c58d0ceac05fbb9fb840325fdaa6be29204c948ce",
+        "layout_anchor": "sha256:55d3540e402eeb8e696be0aa37b81ea7d259ccf0d6269a6d9047031193bcec90",
+        "promoted_asset": "sha256:f90c9d1db755b3080d019120ad5149ac1dd9065f736e415910e5b180a0e94faf",
+        "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+        "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.621935+00:00",
+      "evidence_node_id": "sha256:0b5b8b58c64e178199638c5be4c4b3c4745af45e8ac6045bc5fd03d82bcfe3c0",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:31ec81a0146dbe98549a1e777323f3adb3fcef523d96a1b17ce93b3896e17a3f",
+        "question_id": "visual-question:status-card",
+        "question_type": "visual_status_card_composition",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "green healthy status light on BEAST card"
+      },
+      "receipt_digest": "sha256:a9da883eb8f537b73d5ec210c6a2687e219919dd0bd56c130fe326d4306939a0",
+      "render_authority": "render_only",
+      "residual_payload": {},
+      "residual_receipt": {},
+      "residual_used": false,
+      "status": "composed",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    },
+    "status_card_residual_composed": {
+      "answer": {
+        "composition_class": "equivalent",
+        "render_authority": "render_only",
+        "summary": "Residual selected only the equivalent asset class; no pixels, network, provider, or authority expansion occurred."
+      },
+      "beast_object_type": "visual_capability_composition_receipt",
+      "claim_boundary": "Bounded status-card visual composition only. The receipt can assert deterministic render-only assembly from a scene capsule, manifest, intent, anchor, and promoted asset. Missing asset selection may route only metadata fields, never pixels, to a residual worker.",
+      "component_evidence_digests": [
+        "sha256:e16be4b90ac88f4e0215fff5887651c1500a5303baf52cc6130009049cdccfed",
+        "sha256:d9d3e065dcb0b0d44c9bf28bfdf6f316b78e79dd0352c5cff7f6a5310de4cbbd",
+        "sha256:abfdf64a2622d55551c4c9b0dc4414c412f030a78d13c9289509a978bed64dec",
+        "sha256:d094f4c92b0c58247d37113dee756ce00cfdfbee966d742b99df1da120ab4723"
+      ],
+      "component_fact_digests": {
+        "asset_manifest": "sha256:6094a4daa032ea720faa272c58d0ceac05fbb9fb840325fdaa6be29204c948ce",
+        "layout_anchor": "sha256:55d3540e402eeb8e696be0aa37b81ea7d259ccf0d6269a6d9047031193bcec90",
+        "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+        "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+      },
+      "composed": true,
+      "created_at": "2026-08-03T15:01:30.637730+00:00",
+      "evidence_node_id": "sha256:9924239f407f5fed106cb44ff9dffc8a54a8db44a24e01b4a1b0ac12f67244be",
+      "provider_calls_used": 0,
+      "question": {
+        "question_digest": "sha256:31ec81a0146dbe98549a1e777323f3adb3fcef523d96a1b17ce93b3896e17a3f",
+        "question_id": "visual-question:status-card",
+        "question_type": "visual_status_card_composition",
+        "region_id": "region:status-light",
+        "scene_id": "scene:beast-status",
+        "visual_goal": "green healthy status light on BEAST card"
+      },
+      "receipt_digest": "sha256:473a11ad2d1ee18b67ed9c8b2b0849368b1ff77805479004c902218df10858a3",
+      "render_authority": "render_only",
+      "residual_payload": {
+        "allowed_output": {
+          "asset_candidate_class": [
+            "exact",
+            "equivalent",
+            "missing"
+          ],
+          "visual_rationale": "string"
+        },
+        "bounded_context": {
+          "asset_manifest": {
+            "manifest_digest": "sha256:6af63d73c1c48f3b42b6e926fb67507cfe1ca255e96c7cf120a1cea4d23622e4"
+          },
+          "layout_anchor": {
+            "anchor": "top_right",
+            "height": 16,
+            "width": 16,
+            "x": 120,
+            "y": 24
+          },
+          "scene_capsule": {
+            "capsule_digest": "sha256:bd946d9874c6ad192375260f4c63d9c38a4a0ee1818d4a1edb7d2c646849bf62"
+          },
+          "visual_intent": {
+            "color": "green",
+            "object": "status_light"
+          }
+        },
+        "component_fact_digests": {
+          "asset_manifest": "sha256:6094a4daa032ea720faa272c58d0ceac05fbb9fb840325fdaa6be29204c948ce",
+          "layout_anchor": "sha256:55d3540e402eeb8e696be0aa37b81ea7d259ccf0d6269a6d9047031193bcec90",
+          "scene_capsule": "sha256:66f57467ae9f132a7599909df11cdbcc589394b34a03222d4c59ef2844c8f4be",
+          "visual_intent": "sha256:80f685f242136d9f149d41fec13a15989fd7a3c2ecd1e7c51587ed1bca627732"
+        },
+        "forbidden_claims": [
+          "new_pixels",
+          "new_assets",
+          "new_scene_authority",
+          "network_or_provider_use",
+          "physical_actions"
+        ],
+        "question_digest": "sha256:31ec81a0146dbe98549a1e777323f3adb3fcef523d96a1b17ce93b3896e17a3f",
+        "residual_payload_digest": "sha256:a400e4106d645fa1bc41be942fa5b4ce834ec272fc83982f5bdb9c2eba370950",
+        "residual_scope": "asset_gap_only",
+        "task_family": "visual_composition.status_card",
+        "unresolved_fields": [
+          "asset_candidate_class",
+          "visual_rationale"
+        ]
+      },
+      "residual_receipt": {
+        "accepted": true,
+        "beast_object_type": "visual_capability_composition_residual_receipt",
+        "created_at": "2026-08-03T15:01:30.637520+00:00",
+        "receipt_digest": "sha256:9e52bd914656f5ce50b63200d73194202ca31cd4e4cb43ab03f88513a88b1e7e",
+        "residual_payload_digest": "sha256:a400e4106d645fa1bc41be942fa5b4ce834ec272fc83982f5bdb9c2eba370950",
+        "returned_fields": [
+          "asset_candidate_class",
+          "visual_rationale"
+        ],
+        "version": "1.0"
+      },
+      "residual_used": true,
+      "status": "residual_composed",
+      "unsupported_visual_gaps": [],
+      "version": "1.0"
+    }
+  },
+  "claim_boundary": "Visual composition gauntlet: proves render-only inference from scene/capsule, intent, promoted asset, quality/intent/perceptual/equivalence, and layout facts. Residual routing is metadata-only and forbids new pixels, new assets, provider/network use, or authority expansion.",
+  "observed_at": "2026-08-03T15:01:30.723260+00:00",
+  "question_digests": {
+    "layout_safety": "sha256:c0a269b228ceef94b156500fb1b43eb416a62bcbaa62af1a6ab18c5e0df069dd",
+    "promoted_region_reuse": "sha256:b98c1786fc1199e09f7c720a95a03f12056b3da580d50a55420fac473753742d",
+    "status_card": "sha256:31ec81a0146dbe98549a1e777323f3adb3fcef523d96a1b17ce93b3896e17a3f"
+  },
+  "receipt_digest": "sha256:5e509f2a17bff59cf2e51c913e38d3de5863d0544f1e33d45b2a1920d5b3874f",
+  "run_id": "2026-08-03T000000-visual-composition-a",
+  "scorecard": {
+    "case_count": 6,
+    "composed_cases": 3,
+    "provider_calls_used": 0,
+    "refuted_cases": 1,
+    "render_only_cases": 6,
+    "residual_compositions": 2,
+    "reuse_residual_scope": "visual_equivalence_gap_only",
+    "reuse_residual_unresolved_fields": [
+      "reuse_class",
+      "visual_rationale"
+    ],
+    "status_residual_scope": "asset_gap_only",
+    "status_residual_unresolved_fields": [
+      "asset_candidate_class",
+      "visual_rationale"
+    ],
+    "visual_family_count": 3
+  },
+  "version": "1.0"
+}

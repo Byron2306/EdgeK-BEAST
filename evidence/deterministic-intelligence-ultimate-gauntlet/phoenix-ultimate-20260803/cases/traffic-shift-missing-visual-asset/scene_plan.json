@@ -1,0 +1,99 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:traffic-shift-missing-visual-asset:route",
+    "claim:traffic-shift-missing-visual-asset:source-capacity",
+    "claim:traffic-shift-missing-visual-asset:target-capacity",
+    "claim:traffic-shift-missing-visual-asset:traffic-shift"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "traffic_shift",
+  "graph_digest": "sha256:f619652e890904d679e49767562bebaac32c891206a78018a7e823366c326d8f",
+  "plan_digest": "sha256:4f801e2f75ff3aac730841faa046e21c2985c49143396a0468c9eab493752065",
+  "plan_id": "scene-plan:proof:traffic_shift:a76d1b67fb82cd6cf4f4",
+  "primitives": [
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:source-capacity",
+      "evidence_state": "supported",
+      "height": 120,
+      "label": "Aegis",
+      "metadata": {},
+      "primitive_id": "source-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 70,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:target-capacity",
+      "evidence_state": "supported",
+      "height": 120,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 670,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:route",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "shift 30%",
+      "metadata": {},
+      "primitive_id": "traffic-arrow",
+      "primitive_type": "traffic_shift_arrow",
+      "width": 340,
+      "x": 310,
+      "y": 195
+    },
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:traffic-shift",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "reserve 15%",
+      "metadata": {},
+      "primitive_id": "reserve-threshold",
+      "primitive_type": "policy_threshold",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:traffic-shift",
+      "evidence_state": "supported",
+      "height": 80,
+      "label": "safe",
+      "metadata": {},
+      "primitive_id": "shift-badge",
+      "primitive_type": "status_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    },
+    {
+      "claim_ref": "claim:traffic-shift-missing-visual-asset:traffic-shift",
+      "evidence_state": "unsupported",
+      "height": 55,
+      "label": "asset unsupported",
+      "metadata": {
+        "requested_asset_key": "traffic_shift:status_badge"
+      },
+      "primitive_id": "asset-placeholder",
+      "primitive_type": "unsupported_marker",
+      "width": 180,
+      "x": 730,
+      "y": 390
+    }
+  ],
+  "residual_refs": [
+    "sha256:1bb1e8ccfc9a8429cc784d6a803a46e3abb5000e1df10efb5c67a8f07b471c43"
+  ],
+  "unresolved_visual_gaps": [
+    "missing_status_asset_metadata"
+  ],
+  "visual_intent_fulfilled": false
+}

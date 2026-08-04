@@ -1,0 +1,81 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:traffic-shift-capacity-mutated:route",
+    "claim:traffic-shift-capacity-mutated:source-capacity",
+    "claim:traffic-shift-capacity-mutated:target-capacity",
+    "claim:traffic-shift-capacity-mutated:traffic-shift"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "traffic_shift",
+  "graph_digest": "sha256:e45bd529eaa69b2a95e45ab2eb48e4229bb5cadc93e9972d86d003980f72ad3a",
+  "plan_digest": "sha256:aeb6db7f6aaac626b6e53656cd883466a38dc8dfa6bc65aeee4fa5467b63fab6",
+  "plan_id": "scene-plan:proof:traffic_shift:65b2db398f928b62ea17",
+  "primitives": [
+    {
+      "claim_ref": "claim:traffic-shift-capacity-mutated:source-capacity",
+      "evidence_state": "supported",
+      "height": 120,
+      "label": "Aegis",
+      "metadata": {},
+      "primitive_id": "source-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 70,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-capacity-mutated:target-capacity",
+      "evidence_state": "supported",
+      "height": 120,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target-capacity",
+      "primitive_type": "capacity_bar",
+      "width": 220,
+      "x": 670,
+      "y": 150
+    },
+    {
+      "claim_ref": "claim:traffic-shift-capacity-mutated:route",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "shift 30%",
+      "metadata": {},
+      "primitive_id": "traffic-arrow",
+      "primitive_type": "traffic_shift_arrow",
+      "width": 340,
+      "x": 310,
+      "y": 195
+    },
+    {
+      "claim_ref": "claim:traffic-shift-capacity-mutated:traffic-shift",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "reserve 15%",
+      "metadata": {},
+      "primitive_id": "reserve-threshold",
+      "primitive_type": "policy_threshold",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:traffic-shift-capacity-mutated:traffic-shift",
+      "evidence_state": "supported",
+      "height": 80,
+      "label": "unsafe",
+      "metadata": {},
+      "primitive_id": "shift-badge",
+      "primitive_type": "status_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

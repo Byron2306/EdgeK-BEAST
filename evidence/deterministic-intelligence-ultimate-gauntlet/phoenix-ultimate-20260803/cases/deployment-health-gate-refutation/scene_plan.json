@@ -1,0 +1,94 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:deployment-health-gate-refutation:deployment-safety",
+    "claim:deployment-health-gate-refutation:deployment-stage",
+    "claim:deployment-health-gate-refutation:health-gate",
+    "claim:deployment-health-gate-refutation:rollback",
+    "claim:deployment-health-gate-refutation:target-health"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "deployment_safety",
+  "graph_digest": "sha256:efe758d5a168aff07d541c0c5c9518fb14cf5588f7cd7b4c54b7a4dbc3395904",
+  "plan_digest": "sha256:14fa7c21d6abe8077f6f3408ecd3be19dcfa140ee76945b0811d885bc26a7d55",
+  "plan_id": "scene-plan:proof:deployment_safety:442321ccba06e9944049",
+  "primitives": [
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:deployment-stage",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "BEAST-canary",
+      "metadata": {},
+      "primitive_id": "stage",
+      "primitive_type": "deployment_stage",
+      "width": 190,
+      "x": 70,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:health-gate",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "health gate",
+      "metadata": {},
+      "primitive_id": "health-gate",
+      "primitive_type": "health_gate",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:deployment-safety",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "rollout path",
+      "metadata": {},
+      "primitive_id": "rollout-arrow",
+      "primitive_type": "rollout_arrow",
+      "width": 380,
+      "x": 280,
+      "y": 205
+    },
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:target-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 690,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:rollback",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "rollback path",
+      "metadata": {},
+      "primitive_id": "rollback",
+      "primitive_type": "rollback_edge",
+      "width": 380,
+      "x": 280,
+      "y": 310
+    },
+    {
+      "claim_ref": "claim:deployment-health-gate-refutation:deployment-safety",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "halt_or_rollback",
+      "metadata": {},
+      "primitive_id": "deployment-badge",
+      "primitive_type": "risk_badge",
+      "width": 260,
+      "x": 350,
+      "y": 390
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

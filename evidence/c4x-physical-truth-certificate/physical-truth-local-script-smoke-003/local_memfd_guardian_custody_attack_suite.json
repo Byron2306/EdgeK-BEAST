@@ -1,0 +1,35 @@
+{
+  "beast_object_type": "c4x_local_memfd_guardian_custody_attack_suite",
+  "claim_boundary": "User-space local custody proof. Turns memfd proof hard; Guardian still withholds final credit until producer-death-after-handoff is proven.",
+  "created_at": "2026-08-03T21:41:02.341144+00:00",
+  "guardian_receipt": {
+    "capsule_handoff_receipt_digest": "",
+    "expired_lease_rejected": false,
+    "joined_custody_receipt_signed": false,
+    "one_use_render_capability_consumed": false,
+    "process_lease_verified": false,
+    "producer_death_after_handoff_verified": false,
+    "receipt_digest": "sha256:27cd3467362aa76d05a8258f43ba142d72c749d93aae4cc42d047c0d8d68178f",
+    "replay_render_capability_rejected": false,
+    "runtime_error": "PermissionError: AF_UNIX SOCK_SEQPACKET bind is not permitted in this execution context",
+    "scm_rights_handoff_verified": false,
+    "separate_process": false,
+    "status": "local_guardian_attack_suite_completed_producer_death_case_pending",
+    "wrong_uid_rejected": false
+  },
+  "memfd_receipt": {
+    "capsule_digest": "sha256:f14c7a345b1048391b0f6c24271041660b7bf409e3da72acec6de6ce6c8d727c",
+    "digest_verified_after_seal": true,
+    "mutation_attempt_rejected": true,
+    "receipt_digest": "sha256:f4c48f0869deecc0b8aeb96b1e817b300a3021c32263858f9ba38f1ecf964009",
+    "seal_grow": true,
+    "seal_seal": true,
+    "seal_shrink": true,
+    "seal_write": true,
+    "sealed_memfd": true,
+    "status": "local_memfd_attack_suite_completed",
+    "wrong_fd_type_rejected": true
+  },
+  "receipt_digest": "sha256:e52316251e46936e01cddb8a9167ce2bd4fd5d56a67f9b1765d4e6dfaf0d17b5",
+  "version": "1.0"
+}

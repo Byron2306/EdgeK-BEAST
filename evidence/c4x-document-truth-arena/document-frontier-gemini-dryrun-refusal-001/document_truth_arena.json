@@ -1,0 +1,388 @@
+{
+  "beast_object_type": "c4x_document_truth_arena",
+  "claim_boundary": "Real local PDF corpus audit packet. Poppler text/page extraction and page-image rendering are local observations. Native Gemini vision and blinded human inspection are protocol lanes only until sidecar results are supplied. Merged-header table, footnote/statistical-notation, and chart extraction certificates require human/oracle annotations before truth credit is awarded.",
+  "corpus": [
+    {
+      "bytes": 442778,
+      "document_id": "blurred_text_extraction_limitations",
+      "first_page_image": {
+        "bytes": 237559,
+        "path": "evidence/c4x-document-truth-arena/document-frontier-gemini-dryrun-refusal-001/page_images/blurred_text_extraction_limitations.png",
+        "sha256": "sha256:4f1f877e08e4bc0e6075f18479dac3a98378d736d40a2442caf4eabf80afb56b",
+        "status": "ok"
+      },
+      "frontier_tasks": {
+        "chart_image_extraction_from_pdf": "page_image_rendered",
+        "footnotes_and_statistical_notation": "requires_oracle_annotation",
+        "merged_header_scientific_tables": "requires_oracle_annotation",
+        "native_gemini_vision_vs_blinded_human": "requires_sidecars",
+        "real_corpus_messy_pdf": true
+      },
+      "image_object_count": 0,
+      "likely_scanned_or_ocr_hostile": false,
+      "page_count": 17,
+      "path": "docs/external/obsidian-beast/Blurred Text Extraction Limitations.pdf",
+      "pdfinfo_status": "ok",
+      "sha256": "sha256:71ca78bd9bb10b4473b0fb23dfe424b49e1c98a4d59b1bbe4a7b190a8508c83c",
+      "text_char_count": 23929,
+      "text_digest": "sha256:4e571609575fc5530de6f2116814e2efdbd95fca4592dfa7734f4d4967f91a1f",
+      "title": "Blurred Text Extraction Limitations"
+    },
+    {
+      "bytes": 1372587,
+      "document_id": "inference_economy_v0_9",
+      "first_page_image": {
+        "bytes": 1311355,
+        "path": "evidence/c4x-document-truth-arena/document-frontier-gemini-dryrun-refusal-001/page_images/inference_economy_v0_9.png",
+        "sha256": "sha256:4eab650bd10d969940402725e5a5d0fca86d8085b52d455d0d3f8c711676a9f5",
+        "status": "ok"
+      },
+      "frontier_tasks": {
+        "chart_image_extraction_from_pdf": "page_image_rendered",
+        "footnotes_and_statistical_notation": "requires_oracle_annotation",
+        "merged_header_scientific_tables": "requires_oracle_annotation",
+        "native_gemini_vision_vs_blinded_human": "requires_sidecars",
+        "real_corpus_messy_pdf": true
+      },
+      "image_object_count": 3,
+      "likely_scanned_or_ocr_hostile": false,
+      "page_count": 27,
+      "path": "evidence/inference_economy_v0_9.pdf",
+      "pdfinfo_status": "ok",
+      "sha256": "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+      "text_char_count": 115354,
+      "text_digest": "sha256:02f50a70190a87f159fa1db9357485dd20ad90b6d8b8ee21057d03652d8abbf1",
+      "title": "inference_economy_v0_9"
+    },
+    {
+      "bytes": 1372587,
+      "document_id": "inference_economy_paper",
+      "first_page_image": {
+        "bytes": 1311355,
+        "path": "evidence/c4x-document-truth-arena/document-frontier-gemini-dryrun-refusal-001/page_images/inference_economy_paper.png",
+        "sha256": "sha256:4eab650bd10d969940402725e5a5d0fca86d8085b52d455d0d3f8c711676a9f5",
+        "status": "ok"
+      },
+      "frontier_tasks": {
+        "chart_image_extraction_from_pdf": "page_image_rendered",
+        "footnotes_and_statistical_notation": "requires_oracle_annotation",
+        "merged_header_scientific_tables": "requires_oracle_annotation",
+        "native_gemini_vision_vs_blinded_human": "requires_sidecars",
+        "real_corpus_messy_pdf": true
+      },
+      "image_object_count": 3,
+      "likely_scanned_or_ocr_hostile": false,
+      "page_count": 27,
+      "path": "assets/release/commons-media/inference-economy-paper.pdf",
+      "pdfinfo_status": "ok",
+      "sha256": "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+      "text_char_count": 115354,
+      "text_digest": "sha256:02f50a70190a87f159fa1db9357485dd20ad90b6d8b8ee21057d03652d8abbf1",
+      "title": "inference-economy-paper"
+    }
+  ],
+  "exports": {
+    "adjudication": "audit_packets/document_vision_adjudication.jsonl",
+    "csv": "audit_packets/document_corpus.csv",
+    "disagreements": "audit_packets/document_vision_disagreements.csv",
+    "gemini_vs_human_protocol": "audit_packets/gemini_vs_human_protocol.jsonl",
+    "human_annotation_packet": "audit_packets/human_annotation_packet.jsonl",
+    "jsonl": "audit_packets/document_corpus.jsonl",
+    "oracle_packet_template": "audit_packets/oracle_packet_template.jsonl",
+    "zotero": "audit_packets/zotero_items.json"
+  },
+  "lanes": {
+    "blinded_human_inspection": {
+      "annotation_count": 0,
+      "custody_valid": false,
+      "status": "pending_blinded_annotations"
+    },
+    "chart_image_extraction": {
+      "status": "page_images_rendered_or_attempted",
+      "truth_credit_awarded": false
+    },
+    "footnotes_and_statistical_notation": {
+      "status": "pending_or_failed_oracle_adjudication",
+      "truth_credit_awarded": false
+    },
+    "gemini_human_oracle_agreement": {
+      "status": "pending_or_failed_three_way_agreement",
+      "truth_credit_awarded": false
+    },
+    "independent_oracle": {
+      "annotation_count": 0,
+      "status": "pending_frozen_oracle_annotations",
+      "valid": false
+    },
+    "merged_header_scientific_tables": {
+      "status": "pending_or_failed_oracle_adjudication",
+      "truth_credit_awarded": false
+    },
+    "native_gemini_vision": {
+      "annotation_count": 3,
+      "custody_valid": false,
+      "status": "sidecar_supplied"
+    },
+    "pdf_page_image_extraction": {
+      "rendered_first_page_count": 3,
+      "status": "observed"
+    },
+    "poppler_text_extraction": {
+      "documents": 3,
+      "scanned_or_ocr_hostile_count": 0,
+      "status": "observed"
+    }
+  },
+  "observed_at": "2026-08-03T21:00:31.486249+00:00",
+  "receipt_digest": "sha256:296a23ca68d3da643b0356ef06f2ef12da2787fc7e6cb3e73bd78a5a27f4f652",
+  "run_id": "document-frontier-gemini-dryrun-refusal-001",
+  "scorecard": {
+    "certificate_gates": {
+      "blinded_human_inspection_custody": false,
+      "chart_image_extraction": false,
+      "footnotes_and_statistical_notation": false,
+      "gemini_human_oracle_agreement": false,
+      "independent_oracle_present": false,
+      "merged_header_scientific_tables": false,
+      "native_gemini_vision_custody": false,
+      "no_text_answer_generation": false
+    },
+    "gemini_vs_human_ready": false,
+    "independent_oracle_ready": false,
+    "missing_pdf_count": 0,
+    "page_images_rendered": 3,
+    "real_pdf_count": 3,
+    "reason_truth_credit_not_awarded": "requires source-digest-bound Gemini vision, blinded human annotations, frozen oracle annotations, and field-level agreement",
+    "scanned_or_ocr_hostile_count": 0,
+    "truth_credit_awarded": false
+  },
+  "version": "1.0",
+  "vision_adjudication": {
+    "beast_object_type": "c4x_document_vision_adjudication",
+    "certificate_gates": {
+      "blinded_human_inspection_custody": false,
+      "chart_image_extraction": false,
+      "footnotes_and_statistical_notation": false,
+      "gemini_human_oracle_agreement": false,
+      "independent_oracle_present": false,
+      "merged_header_scientific_tables": false,
+      "native_gemini_vision_custody": false,
+      "no_text_answer_generation": false
+    },
+    "claim_boundary": "Independent visual/scientific document adjudication only. Expected answers must come from frozen oracle rows, not BEAST conclusions. Gemini rows must be native vision observations; human rows must be blinded; all rows must bind to PDF or rendered-page source digests.",
+    "created_at": "2026-08-03T21:00:31.485839+00:00",
+    "document_receipts": [
+      {
+        "document_id": "blurred_text_extraction_limitations",
+        "document_sha256": "sha256:71ca78bd9bb10b4473b0fb23dfe424b49e1c98a4d59b1bbe4a7b190a8508c83c",
+        "failure_reasons": [
+          "oracle_valid",
+          "human_source_custody_valid",
+          "gemini_native_vision_independent",
+          "human_blinded_independent",
+          "oracle_has_required_structural_fields",
+          "gemini_matches_oracle",
+          "human_matches_oracle",
+          "gemini_human_match"
+        ],
+        "field_agreement": {
+          "chart_values": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "footnotes": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "merged_headers": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "statistical_notation": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "tables": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          }
+        },
+        "gemini_findings_digest": "sha256:556a1a76a7221f6f02b468be985975bd57d9966ed9d0a3252751826e9341682f",
+        "gemini_row_present": true,
+        "human_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "human_row_present": false,
+        "oracle_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "oracle_row_present": false,
+        "pass_reasons": {
+          "gemini_human_match": false,
+          "gemini_matches_oracle": false,
+          "gemini_native_vision_independent": false,
+          "gemini_source_custody_valid": true,
+          "human_blinded_independent": false,
+          "human_matches_oracle": false,
+          "human_source_custody_valid": false,
+          "oracle_has_required_structural_fields": false,
+          "oracle_valid": false
+        },
+        "passed": false,
+        "receipt_digest": "sha256:3b62a3704e7dd98a0e305f9e28d10bdce95a1ef9bcfa488e62088dd9660ffbae",
+        "source_digests": [
+          "sha256:71ca78bd9bb10b4473b0fb23dfe424b49e1c98a4d59b1bbe4a7b190a8508c83c",
+          "sha256:4f1f877e08e4bc0e6075f18479dac3a98378d736d40a2442caf4eabf80afb56b"
+        ]
+      },
+      {
+        "document_id": "inference_economy_v0_9",
+        "document_sha256": "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+        "failure_reasons": [
+          "oracle_valid",
+          "human_source_custody_valid",
+          "gemini_native_vision_independent",
+          "human_blinded_independent",
+          "oracle_has_required_structural_fields",
+          "gemini_matches_oracle",
+          "human_matches_oracle",
+          "gemini_human_match"
+        ],
+        "field_agreement": {
+          "chart_values": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "footnotes": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "merged_headers": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "statistical_notation": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "tables": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          }
+        },
+        "gemini_findings_digest": "sha256:556a1a76a7221f6f02b468be985975bd57d9966ed9d0a3252751826e9341682f",
+        "gemini_row_present": true,
+        "human_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "human_row_present": false,
+        "oracle_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "oracle_row_present": false,
+        "pass_reasons": {
+          "gemini_human_match": false,
+          "gemini_matches_oracle": false,
+          "gemini_native_vision_independent": false,
+          "gemini_source_custody_valid": true,
+          "human_blinded_independent": false,
+          "human_matches_oracle": false,
+          "human_source_custody_valid": false,
+          "oracle_has_required_structural_fields": false,
+          "oracle_valid": false
+        },
+        "passed": false,
+        "receipt_digest": "sha256:94e69d9b8e981fdb21acf03fd243a3755f086ae8fd5b0d0a875b1b4839faf497",
+        "source_digests": [
+          "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+          "sha256:4eab650bd10d969940402725e5a5d0fca86d8085b52d455d0d3f8c711676a9f5"
+        ]
+      },
+      {
+        "document_id": "inference_economy_paper",
+        "document_sha256": "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+        "failure_reasons": [
+          "oracle_valid",
+          "human_source_custody_valid",
+          "gemini_native_vision_independent",
+          "human_blinded_independent",
+          "oracle_has_required_structural_fields",
+          "gemini_matches_oracle",
+          "human_matches_oracle",
+          "gemini_human_match"
+        ],
+        "field_agreement": {
+          "chart_values": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "footnotes": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "merged_headers": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "statistical_notation": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          },
+          "tables": {
+            "gemini_human_match": false,
+            "gemini_matches_oracle": false,
+            "human_matches_oracle": false,
+            "oracle_field_present": false
+          }
+        },
+        "gemini_findings_digest": "sha256:556a1a76a7221f6f02b468be985975bd57d9966ed9d0a3252751826e9341682f",
+        "gemini_row_present": true,
+        "human_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "human_row_present": false,
+        "oracle_findings_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "oracle_row_present": false,
+        "pass_reasons": {
+          "gemini_human_match": false,
+          "gemini_matches_oracle": false,
+          "gemini_native_vision_independent": false,
+          "gemini_source_custody_valid": true,
+          "human_blinded_independent": false,
+          "human_matches_oracle": false,
+          "human_source_custody_valid": false,
+          "oracle_has_required_structural_fields": false,
+          "oracle_valid": false
+        },
+        "passed": false,
+        "receipt_digest": "sha256:64220418d9160a9dac36e6d085819d7977f11bf067de763d0e376fc3dccc0376",
+        "source_digests": [
+          "sha256:d02f085b66a539674baf60a659dec16ac19563dfedcb14307e14aae78e471513",
+          "sha256:4eab650bd10d969940402725e5a5d0fca86d8085b52d455d0d3f8c711676a9f5"
+        ]
+      }
+    ],
+    "real_document_count": 3,
+    "receipt_digest": "sha256:e6e540988d692b2b13ba4fef8480ed68992445bf5cc8f4b07855d0ea3bd5e08a",
+    "truth_credit_awarded": false,
+    "version": "1.0"
+  }
+}

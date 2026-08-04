@@ -1,0 +1,46 @@
+{
+  "beast_object_type": "c4x_pq_transport_gauntlet",
+  "claim_boundary": "Full C4-X PQ transport gate: ML-KEM key agreement plus ML-DSA authenticity and hostile tamper/replay/policy checks. Shared secrets and private signing keys are never serialized.",
+  "created_at": "2026-08-03T22:44:02.964704+00:00",
+  "pq_transport_receipt": {
+    "artifact_digest": "sha256:76c4d3c9cbaf316b9124300eb360e19dfe235ac7b5a3354ed2fa98b0eebf23fd",
+    "artifact_digest_verified": true,
+    "ciphertext_tamper_rejected": true,
+    "fallback": false,
+    "ml_dsa_receipt": {
+      "algorithm": "ML-DSA-65",
+      "available": false,
+      "ml_dsa_signature_verified": false,
+      "private_key_serialized": false,
+      "public_key_digest": "",
+      "signature_digest": "",
+      "signature_tamper_rejected": false
+    },
+    "ml_dsa_signature_verified": false,
+    "ml_kem_active": true,
+    "ml_kem_receipt": {
+      "algorithm": "ML-KEM-768",
+      "ciphertext_digest": "sha256:8ba4e2dac9e490afd57e34222fd368141174b1c75e5f8e0a71edd899d3eec60e",
+      "ciphertext_tamper_rejected": true,
+      "ml_kem_active": true,
+      "node": "http://127.0.0.1:8111",
+      "recipient_decapsulation_verified": true,
+      "secret_exported": false
+    },
+    "policy_scope_accepted": true,
+    "receipt_digest": "sha256:c657accaedf8eef6cf8bd481df6cee4997361b5f3e8c14fc7ab174f997825606",
+    "recipient_decapsulation_verified": true,
+    "replay_nonce_unused": true,
+    "replay_receipt": {
+      "first_use_accepted": true,
+      "nonce_digest": "sha256:eecd2086d821c9a581cb932b16a488e9cf67481e1bd9d84bd4610cdbade0a2f1",
+      "replay_nonce_unused": true,
+      "replay_refused": true
+    },
+    "signature_tamper_rejected": false,
+    "status": "failed"
+  },
+  "receipt_digest": "sha256:526046aa53cf643637a7a30b49c64f055612b0e59fe6ac4c45a3bbec6c38d675",
+  "run_id": "physical-truth-pq-transport-pre-ml-dsa-rebuild-002",
+  "version": "1.0"
+}

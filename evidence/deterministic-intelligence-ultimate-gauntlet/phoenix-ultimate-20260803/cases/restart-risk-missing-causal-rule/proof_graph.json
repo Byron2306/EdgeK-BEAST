@@ -1,0 +1,121 @@
+{
+  "claims": [
+    {
+      "claim_id": "claim:restart-risk-missing-causal-rule:source-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:35cddcc5bcee8d491e023f04d596bc120f98115c69810c4573094e2282ff0040"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:01a46237ea5f31e2cb0f7156446b1b8067701edecb52d88ce24dbec0a2acd1c9",
+      "status": "supported",
+      "subject": "BEAST"
+    },
+    {
+      "claim_id": "claim:restart-risk-missing-causal-rule:target-health",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4"
+      ],
+      "metadata": {
+        "fact_type": "service_health"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "health",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+      "status": "supported",
+      "subject": "Commons"
+    },
+    {
+      "claim_id": "claim:restart-risk-missing-causal-rule:dependency",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:6b1f4275e97400ccf250f39601f9e5367e4104b3438a3cfab74992bd554e7171"
+      ],
+      "metadata": {
+        "fact_type": "dependency_topology"
+      },
+      "object": "BEAST",
+      "policy_ref": "",
+      "predicate": "depends_on",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:28b359970ef0f8df4dc21423d5ba8ba85cad38c45f6ab73f76ef7ab4de7f83c2",
+      "status": "supported",
+      "subject": "Commons"
+    },
+    {
+      "claim_id": "claim:restart-risk-missing-causal-rule:restart-policy",
+      "claim_type": "observed_fact",
+      "confidence_class": "observed",
+      "current_claim_allowed": true,
+      "fact_refs": [
+        "sha256:11b12df3d0d64330efe9c5bf4d5da5b955e6726c9db5410165d39a4896967803"
+      ],
+      "metadata": {
+        "fact_type": "restart_policy"
+      },
+      "object": "",
+      "policy_ref": "",
+      "predicate": "restart_policy",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:a481133a3476ee4db4830a6775f7a8af392b7e7422813cd3e3960cd4af7d7110",
+      "status": "supported",
+      "subject": "BEAST"
+    },
+    {
+      "claim_id": "claim:restart-risk-missing-causal-rule:restart-risk",
+      "claim_type": "conditional_causal",
+      "confidence_class": "causal_rule_missing",
+      "current_claim_allowed": false,
+      "fact_refs": [
+        "sha256:981b5ff107370a92614ee616cf9129bc2f35bff7cf46d711a563995bb3408540",
+        "sha256:caab4289ed2852ff8484ba333eaf067cab6229433147d42cfbb79214d704dffb",
+        "sha256:858eefeee9d4e532389b78482df946f5983955795fe116e0e0f9706d7932e603",
+        "sha256:92a85de71068dce15429e10147139b97abe975fd535301d0495708344e9ad967"
+      ],
+      "metadata": {
+        "family": "restart_risk",
+        "risk_class": "unsupported_without_causal_rule"
+      },
+      "object": "Commons",
+      "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+      "predicate": "restart_destabilization_risk",
+      "rule_ref": "",
+      "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+      "status": "residual_required",
+      "subject": "BEAST"
+    }
+  ],
+  "compile_sequence": 1,
+  "compiler_id": "beast.proof-first-compiler.v1",
+  "fact_digests": [
+    "sha256:35cddcc5bcee8d491e023f04d596bc120f98115c69810c4573094e2282ff0040",
+    "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4",
+    "sha256:6b1f4275e97400ccf250f39601f9e5367e4104b3438a3cfab74992bd554e7171",
+    "sha256:11b12df3d0d64330efe9c5bf4d5da5b955e6726c9db5410165d39a4896967803",
+    "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+  ],
+  "family": "restart_risk",
+  "graph_digest": "sha256:e83a4e86c05d8af8ab41987d22efd5877f41b821e52b38bcdf13a2a1d734eaf2",
+  "graph_id": "proof:restart_risk:ccf3e537ab45649893fa",
+  "policy_digests": [
+    "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+  ],
+  "request_digest": "sha256:ccf3e537ab45649893fa67e9377d26d98a967a6277fc60a8718ac7eb7a492c5b",
+  "rule_digests": [],
+  "world_snapshot_digest": "sha256:6be3d39ef7b11fd50198d53b8cf721f09ddb5358f73a235b4f9bd2347f2c45eb"
+}

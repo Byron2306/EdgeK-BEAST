@@ -1,0 +1,49 @@
+{
+  "beast_object_type": "c4x_psi_governance_gauntlet",
+  "claim_boundary": "Safe PSI governance proof. It uses real /proc/pressure availability and controlled hostile snapshots; it does not intentionally OOM, fill the host disk, or corrupt evidence.",
+  "created_at": "2026-08-03T23:35:25.872985+00:00",
+  "psi_receipt": {
+    "authority": "scarcity_governance_certificate",
+    "capsule_lifecycle": {
+      "evicted_capsules": [
+        "low-priority"
+      ],
+      "pressure_level": "critical",
+      "protected_capsules": [
+        "proof-critical"
+      ],
+      "speculative_creation_allowed": false
+    },
+    "cpu_pressure_case": true,
+    "disk_case": {
+      "evidence_digest_preserved": true,
+      "refused_before_write": true,
+      "requested_bytes": 1024,
+      "virtual_free_bytes": 16
+    },
+    "disk_full_or_inode_case": true,
+    "evidence_not_corrupted": true,
+    "io_pressure_case": true,
+    "low_priority_work_shed_first": true,
+    "memory_pressure_case": true,
+    "near_oom_case": true,
+    "proof_and_custody_preserved": true,
+    "real_pressure_digest": "sha256:b99ed9cb35ae0c2290f4a24fa4208566ca08412c36ff3434c9f9ca48f8fadf9e",
+    "real_psi_capabilities": {
+      "damon_sysfs": true,
+      "ksm": true,
+      "memfd_create": true,
+      "pidfd_open": true,
+      "psi": true,
+      "resctrl": false,
+      "zswap": true
+    },
+    "receipt_digest": "sha256:89fe123459cb4294fa29f8b176819dacdb6e3eecba3404090cb59051a00ccab2",
+    "refused_before_corrupting_evidence": true,
+    "sensorium_loss_not_silent": true,
+    "status": "passed"
+  },
+  "receipt_digest": "sha256:14007b6a0feac5c3ead9f0382fcdf238ea318ac86821c8d45f2e404766d3c4bb",
+  "run_id": "physical-truth-digest-bound-one-shot-001-psi-governance",
+  "version": "1.0"
+}

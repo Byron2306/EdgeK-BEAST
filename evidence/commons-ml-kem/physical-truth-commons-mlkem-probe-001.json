@@ -1,0 +1,33 @@
+{
+  "algorithm": "ML-KEM-768",
+  "beast_object_type": "commons_ml_kem_gauntlet_receipt",
+  "failure_count": 3,
+  "failures": [
+    {
+      "base_url": "http://127.0.0.1:8111",
+      "failure": "ConnectError: [Errno 1] Operation not permitted"
+    },
+    {
+      "base_url": "http://127.0.0.1:8112",
+      "failure": "ConnectError: [Errno 1] Operation not permitted"
+    },
+    {
+      "base_url": "http://127.0.0.1:8113",
+      "failure": "ConnectError: [Errno 1] Operation not permitted"
+    }
+  ],
+  "node_count": 0,
+  "nodes": [],
+  "nodes_requested": [
+    "http://127.0.0.1:8111",
+    "http://127.0.0.1:8112",
+    "http://127.0.0.1:8113"
+  ],
+  "observed_at": "2026-08-03T22:30:06.395557+00:00",
+  "pairwise_transcript_matrix": [],
+  "receipt_digest": "sha256:1da39d6d8a5f2a1126e01f32e16e3b2830e632b340d524b94c5cbaf3c76b31f2",
+  "run_id": "physical-truth-commons-mlkem-probe-001",
+  "secret_storage_policy": "shared_secret_bytes_never_serialized",
+  "status": "failed",
+  "version": "1.0"
+}

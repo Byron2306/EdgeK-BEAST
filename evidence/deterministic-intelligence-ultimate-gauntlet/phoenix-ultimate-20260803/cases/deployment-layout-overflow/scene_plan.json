@@ -1,0 +1,106 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:deployment-layout-overflow:deployment-safety",
+    "claim:deployment-layout-overflow:deployment-stage",
+    "claim:deployment-layout-overflow:health-gate",
+    "claim:deployment-layout-overflow:rollback",
+    "claim:deployment-layout-overflow:target-health"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "deployment_safety",
+  "graph_digest": "sha256:0fa2499aefcadae83395406b477afe99914e1b7b3c7fdd221fdf2ab5442af984",
+  "plan_digest": "sha256:af0f40cd8aa2c4acbc549f4bc35061aaa8bbedc63635711a6be1af64260bcd39",
+  "plan_id": "scene-plan:proof:deployment_safety:6a36b7f26f15fbff86b8",
+  "primitives": [
+    {
+      "claim_ref": "claim:deployment-layout-overflow:deployment-stage",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "BEAST-canary",
+      "metadata": {},
+      "primitive_id": "stage",
+      "primitive_type": "deployment_stage",
+      "width": 190,
+      "x": 70,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:health-gate",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "health gate",
+      "metadata": {},
+      "primitive_id": "health-gate",
+      "primitive_type": "health_gate",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:deployment-safety",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "rollout path",
+      "metadata": {},
+      "primitive_id": "rollout-arrow",
+      "primitive_type": "rollout_arrow",
+      "width": 380,
+      "x": 280,
+      "y": 205
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:target-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 690,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:rollback",
+      "evidence_state": "supported",
+      "height": 40,
+      "label": "rollback path",
+      "metadata": {},
+      "primitive_id": "rollback",
+      "primitive_type": "rollback_edge",
+      "width": 380,
+      "x": 280,
+      "y": 310
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:deployment-safety",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "safe_to_continue",
+      "metadata": {},
+      "primitive_id": "deployment-badge",
+      "primitive_type": "risk_badge",
+      "width": 260,
+      "x": 350,
+      "y": 390
+    },
+    {
+      "claim_ref": "claim:deployment-layout-overflow:deployment-safety",
+      "evidence_state": "supported",
+      "height": 80,
+      "label": "overflow probe",
+      "metadata": {},
+      "primitive_id": "forced-overflow",
+      "primitive_type": "layout_probe",
+      "width": 160,
+      "x": 950,
+      "y": 530
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

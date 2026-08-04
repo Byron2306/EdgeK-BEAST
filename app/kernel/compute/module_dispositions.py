@@ -14,10 +14,13 @@ ONLINE_ENFORCEMENT = frozenset({
     "inference_interceptor", "kv_cache_transport", "kv_engine_adapter", "local_capabilities",
     "local_execution_gateway", "local_prefix_kv_store", "local_route_optimizer",
     "local_semantic_cache", "mission_crystal_lattice", "perceive",
+    "operator_language", "operator_language_plane",
     "physical_crystal_lifecycle", "proof_local_admission_bridge", "proof_local_compute",
-    "runtime_crystallizer", "socket_inventory", "streaming_interceptor",
+    "runtime_crystallizer", "scene_synthesis", "socket_inventory", "streaming_interceptor",
+    "semantic_generalizer",
+    "synthesis_contracts", "synthesis_plane",
     "typed_crystal_interpreter", "typed_crystal_ir", "file_build_transform",
-    "disk_pressure_cleanup", "displacement_economics",
+    "visual_residuals", "disk_pressure_cleanup", "displacement_economics",
 })
 
 SUPERVISED_EVIDENCE = frozenset({
@@ -33,7 +36,8 @@ SUPERVISED_EVIDENCE = frozenset({
     "scientific_uplift_experiment", "sensorium_port_crystal_experiment",
     "unified_evidence_packet", "evidence_job_supervisor", "milestone11_uplift",
     "sensorium_file_build_crystal_experiment",
-    "sensorium_disk_cleanup_experiment", "milestone11_cross_runtime",
+    "sensorium_disk_cleanup_experiment", "synthesis_measurement",
+    "operator_language_acceptance", "milestone11_cross_runtime",
 })
 
 OFFLINE_LIBRARY = frozenset({

@@ -1,0 +1,46 @@
+{
+  "beast_object_type": "c4x_pq_transport_gauntlet",
+  "claim_boundary": "Full C4-X PQ transport gate: ML-KEM key agreement plus ML-DSA authenticity and hostile tamper/replay/policy checks. Shared secrets and private signing keys are never serialized.",
+  "created_at": "2026-08-03T22:46:11.883481+00:00",
+  "pq_transport_receipt": {
+    "artifact_digest": "sha256:76c4d3c9cbaf316b9124300eb360e19dfe235ac7b5a3354ed2fa98b0eebf23fd",
+    "artifact_digest_verified": true,
+    "ciphertext_tamper_rejected": true,
+    "fallback": false,
+    "ml_dsa_receipt": {
+      "algorithm": "ML-DSA-65",
+      "available": true,
+      "ml_dsa_signature_verified": true,
+      "private_key_serialized": true,
+      "public_key_digest": "sha256:feeeb6e564d21cd7229ce0d260f9b7ffe6b1f0dcccc1738c98321ebd82516e4c",
+      "signature_digest": "sha256:032b0f595c4313e41b0661c4f4f45a30fa9c028146a44cdb4f90ce98e826d0c7",
+      "signature_tamper_rejected": true
+    },
+    "ml_dsa_signature_verified": true,
+    "ml_kem_active": true,
+    "ml_kem_receipt": {
+      "algorithm": "ML-KEM-768",
+      "ciphertext_digest": "sha256:d08d5a4352ce50f2c55916f6fa49e32ca8ffb51a428c269cc6a61454bf5d51af",
+      "ciphertext_tamper_rejected": true,
+      "ml_kem_active": true,
+      "node": "http://127.0.0.1:8111",
+      "recipient_decapsulation_verified": false,
+      "secret_exported": false
+    },
+    "policy_scope_accepted": true,
+    "receipt_digest": "sha256:aef5c06e00a0aa2ab7df4809aad56df6db9117067a26f52d6117570d3fc1aef3",
+    "recipient_decapsulation_verified": false,
+    "replay_nonce_unused": true,
+    "replay_receipt": {
+      "first_use_accepted": true,
+      "nonce_digest": "sha256:1f8a131d52935c9420c41c9189799c8951fb28359844b0a0bd6c761fbd70ba32",
+      "replay_nonce_unused": true,
+      "replay_refused": true
+    },
+    "signature_tamper_rejected": true,
+    "status": "failed"
+  },
+  "receipt_digest": "sha256:1b1624f7a749bbb589efad9e39073f7d79104df22bedd23c518428674b8b0003",
+  "run_id": "physical-truth-pq-transport-ml-dsa-live-001",
+  "version": "1.0"
+}

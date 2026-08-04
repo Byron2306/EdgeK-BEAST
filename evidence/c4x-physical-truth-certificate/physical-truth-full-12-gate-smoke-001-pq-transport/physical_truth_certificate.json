@@ -1,0 +1,285 @@
+{
+  "beast_object_type": "c4x_physical_truth_certificate",
+  "certificate_gates": {
+    "bpf_witness": true,
+    "c4x_truth": true,
+    "commons_replication": true,
+    "guardian_custody": true,
+    "memfd_custody": true,
+    "pq_transport": true,
+    "protocol_integrity": true,
+    "psi_governance": true,
+    "reuse": true,
+    "route_resilience": true,
+    "sensorium_observation": true,
+    "xdp_scope": true
+  },
+  "claim_boundary": "Final BEAST physical-truth claim. C4-X semantic proof, Sensorium/BPF observation, Crystal Bus protocol integrity, memfd/Guardian custody, reuse, post-quantum transport, Commons replication, route resilience, PSI governance, and scoped XDP must all pass independently. Missing or partial evidence lowers authority instead of being averaged away.",
+  "created_at": "2026-08-03T23:11:50.762136+00:00",
+  "critical_failures": [],
+  "layer_verdicts": [
+    {
+      "authority": "semantic_truth_only",
+      "checked": [
+        "proof_first",
+        "joined_verification",
+        "text_artifact_digest_valid",
+        "visual_artifact_digest_valid",
+        "unsupported_gaps_refused",
+        "provider_calls_used"
+      ],
+      "evidence_digest": "sha256:96bfccf15ec02028b2bf5f46cf1494e89b2f83496bd596f4655f789fddccea23",
+      "failure_reasons": [],
+      "layer": "c4x_truth",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:0f93d1e6a5ba637ce4701506010beb7f54d5f2b2ebc69045387aa055da897314"
+    },
+    {
+      "authority": "observation_only",
+      "checked": [
+        "ordered_episode",
+        "journal_integrity_valid",
+        "explicit_loss_accounting",
+        "raw_sensitive_payloads_absent",
+        "observer_lifecycle_recorded",
+        "missing_observations_lower_authority"
+      ],
+      "evidence_digest": "sha256:7dd3a758d3e50d56a5b645bcf28b586bfeb4a9c35f6bac5ae4d2c7a563d4b69c",
+      "failure_reasons": [],
+      "layer": "sensorium_observation",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:46edc5b7e5cccde44aa8b8dca5ff77392a7a929e95cf988afa2036e9cfcd2d29"
+    },
+    {
+      "authority": "kernel_observation_only",
+      "checked": [
+        "read_only_program",
+        "cgroup_bound",
+        "outbound_connect_attempts",
+        "dns_activity",
+        "provider_sockets_opened",
+        "unexpected_child_processes",
+        "live_provider_comparator_observed_network",
+        "ring_loss_explicit",
+        "raw_packet_payload_retained"
+      ],
+      "evidence_digest": "sha256:d1719f0d193def1a989ebfc346a45e5eb9ae95d23e87e5cc289e727830f714b2",
+      "failure_reasons": [],
+      "layer": "bpf_witness",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:9a9975d6480d2e93d88eabc2f2ff4d5946be4ca4a9aed7d9c7415c64955cbc26"
+    },
+    {
+      "authority": "host_local_protocol_integrity",
+      "checked": [
+        "af_unix_seqpacket",
+        "so_peercred_bound",
+        "session_id_bound",
+        "message_mac_or_signature_verified",
+        "sequence_replay_rejected",
+        "durable_high_water_checked",
+        "capability_lease_required",
+        "arda_appraisal_required",
+        "fd_count_type_seals_digest_verified",
+        "sender_death_after_handoff_verified",
+        "revocation_replay_rejected"
+      ],
+      "evidence_digest": "sha256:9236e1c2cb1ffe011c11a69941400af53a3ee37e06edb620ece73d3cea1f2c10",
+      "failure_reasons": [],
+      "layer": "protocol_integrity",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:68c27a5af8b596502e1e69e2e3509c1423a39af5f6c3900b59cc851c5494d5bd"
+    },
+    {
+      "authority": "kernel_immutable_artifact_custody",
+      "checked": [
+        "sealed_memfd",
+        "seal_write",
+        "seal_grow",
+        "seal_shrink",
+        "seal_seal",
+        "digest_verified_after_seal",
+        "mutation_attempt_rejected",
+        "wrong_fd_type_rejected"
+      ],
+      "evidence_digest": "sha256:60a4f3dab39a90918b433043d1fe8123fc83d2c7e87ac10e2785071ca28e4adc",
+      "failure_reasons": [],
+      "layer": "memfd_custody",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:a90f6462104d444c11baa2119534a9cf9ddc412d7fbe43f75d6c5d931e1c53d0"
+    },
+    {
+      "authority": "independent_custody_gatekeeper",
+      "checked": [
+        "separate_process",
+        "scm_rights_handoff_verified",
+        "process_lease_verified",
+        "one_use_render_capability_consumed",
+        "replay_render_capability_rejected",
+        "wrong_uid_rejected",
+        "expired_lease_rejected",
+        "producer_death_after_handoff_verified",
+        "joined_custody_receipt_signed"
+      ],
+      "evidence_digest": "sha256:695cce7282322b763a868b8c6f097a15e53df4890fe7731ed8b1cba889be59b3",
+      "failure_reasons": [],
+      "layer": "guardian_custody",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:e9f7d5d8faea5e02544cc21f7bd852fcc6f0b0a2cec3702ddf58a31eac28bcd9"
+    },
+    {
+      "authority": "reuse_certificate_only",
+      "checked": [
+        "exact_prefix_hit_verified",
+        "identity_mismatch_refused",
+        "corrupt_payload_rejected",
+        "restart_persistence_credit_only_if_demonstrated",
+        "cross_engine_import_refused_without_physical_success",
+        "crystal_composition_reuse_verified",
+        "semantic_truth_points_not_awarded_for_kv_speed"
+      ],
+      "evidence_digest": "sha256:3bbe3794df931cd8773e72ea0494fb3cca94a2d9938b06f13337845f6f20b6b1",
+      "failure_reasons": [],
+      "layer": "reuse",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:254aaf5b37634cf39f2e7501c735e273d2b72a118b61d2a9356ba258cc2626cc"
+    },
+    {
+      "authority": "transport_confidentiality_and_authenticity",
+      "checked": [
+        "ml_kem_active",
+        "ml_dsa_signature_verified",
+        "fallback",
+        "recipient_decapsulation_verified",
+        "ciphertext_tamper_rejected",
+        "signature_tamper_rejected",
+        "replay_nonce_unused",
+        "artifact_digest_verified",
+        "policy_scope_accepted"
+      ],
+      "evidence_digest": "sha256:3f2b90a145aaeffa50a4173f736b4b9b376fdfe42629e705918ec18f6b7bd311",
+      "failure_reasons": [],
+      "layer": "pq_transport",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:b68cf63a0ca024e6b87045f7eb639801dc32955cfee0a9dfeb1564593eb6d0a3"
+    },
+    {
+      "authority": "replication_certificate",
+      "checked": [
+        "imported_as_quarantined_hypothesis",
+        "clean_source_rebuild",
+        "independent_seed",
+        "independent_oracle",
+        "reproduction_successful",
+        "promotion_after_local_success_only",
+        "node_count_minimum_met"
+      ],
+      "evidence_digest": "sha256:323583357c21a1cec86e8693efc48446189bcfa15d87cccfeb8b854c1f321137",
+      "failure_reasons": [],
+      "layer": "commons_replication",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:a373071268864dc63e4a21934dd98d7801416667bfd91c61d7c0600f31f21156"
+    },
+    {
+      "authority": "route_resilience_certificate",
+      "checked": [
+        "deterministic_failure_schedule_hidden_from_router",
+        "attestation_failure_immediate_suppression",
+        "timeout_accumulates_penalty",
+        "429_suppression",
+        "recovery_after_decay",
+        "oscillation_bounded",
+        "decision_receipts_explain_route_change",
+        "beats_no_damping_retry_and_circuit_breaker"
+      ],
+      "evidence_digest": "sha256:8bb6e07391ac3216136238eb2235aea38fdab827d5769e58f59277b5d81a7870",
+      "failure_reasons": [],
+      "layer": "route_resilience",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:5214ce8a1e16c4c2511c67bff6197dfb3741f6c1e541e8782fe5b74fbf94a525"
+    },
+    {
+      "authority": "scarcity_governance_certificate",
+      "checked": [
+        "cpu_pressure_case",
+        "memory_pressure_case",
+        "io_pressure_case",
+        "near_oom_case",
+        "disk_full_or_inode_case",
+        "evidence_not_corrupted",
+        "sensorium_loss_not_silent",
+        "low_priority_work_shed_first",
+        "proof_and_custody_preserved",
+        "refused_before_corrupting_evidence"
+      ],
+      "evidence_digest": "sha256:f0d663b377b5dd2647ccdb1c82a6715bf6bb863f3fc6c5e8e1825257d6fc5207",
+      "failure_reasons": [],
+      "layer": "psi_governance",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:cb8e202118bad49057c09769a99e7dafd26520a98d4ee9ee66a77ef87af2618e"
+    },
+    {
+      "authority": "scoped_packet_actuation_certificate",
+      "checked": [
+        "isolated_veth_or_namespace",
+        "redirect_pass_drop_observed",
+        "unauthorized_cgroup_rejected",
+        "worker_death_observed",
+        "rx_ring_loss_reported",
+        "xdp_detach_detected",
+        "no_unrelated_traffic_redirected",
+        "policy_fail_open_or_closed_verified",
+        "guardian_policy_not_bypassed"
+      ],
+      "evidence_digest": "sha256:ca166f6cd164ecaf2cc7e65f694445d2e3d73790379325df619747ed4168348e",
+      "failure_reasons": [],
+      "layer": "xdp_scope",
+      "missing": [],
+      "passed": true,
+      "public_credit_allowed": true,
+      "verdict_digest": "sha256:364322844fc78e302cc5ff068ce8532772c09350d6a799a158b6b474cbb2b5c6"
+    }
+  ],
+  "no_averaging_rule": true,
+  "public_credit_allowed": true,
+  "receipt_digest": "sha256:95962282bcde05d992511ebb06308c031cefd1e8729378bcf9f9663bd4903cd7",
+  "required_layers": [
+    "c4x_truth",
+    "sensorium_observation",
+    "bpf_witness",
+    "protocol_integrity",
+    "memfd_custody",
+    "guardian_custody",
+    "reuse",
+    "pq_transport",
+    "commons_replication",
+    "route_resilience",
+    "psi_governance",
+    "xdp_scope"
+  ],
+  "run_id": "physical-truth-full-12-gate-smoke-001-pq-transport",
+  "truth_claim_allowed": true,
+  "version": "1.0"
+}

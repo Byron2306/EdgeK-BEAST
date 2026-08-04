@@ -1,0 +1,402 @@
+{
+  "joined_receipt": {
+    "beast_object_type": "deterministic_cross_modal_joined_receipt",
+    "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+    "current_claim_valid": false,
+    "failure_classes": [],
+    "family": "restart_risk",
+    "joined_verification": true,
+    "phase_trace": [
+      "proof_graph_compiled",
+      "text_frame_realized",
+      "scene_plan_compiled",
+      "text_artifact_rendered",
+      "visual_artifact_rendered",
+      "joined_verified"
+    ],
+    "proof_first": true,
+    "proof_graph_digest": "sha256:2433619b026863c0e526e07e8401b74b32ecba74a0fe4647c0f6e0e10a666c24",
+    "proof_graph_valid": true,
+    "provider_calls_used": 0,
+    "provider_policy": "residual_only",
+    "receipt_digest": "sha256:5ef0db60d2e0d1db367a59b8fa6ce27d912e4a4af2d2de234b510fcd6c9492d7",
+    "rendered_artifact_bytes": 3108,
+    "rendered_artifact_digest": "sha256:8ce7154c93ee343146ef0b64ef89c11c9ae0833881064dffeb854b7c2b4f28d8",
+    "rendered_artifact_media_type": "image/svg+xml",
+    "request_digest": "sha256:cc6941554f038e16f26bc37b4a04723a5e1f8dbc8cdfa3b87afb7afa039cb363",
+    "residual_packet_digests": [],
+    "residual_provenance_valid": true,
+    "scenario_id": "restart-risk-missing-dependency",
+    "scene_plan_digest": "sha256:e85d7770a70e4f6b30624242801d9e7252648f8606f67db8b1cbd9ac9a62a71b",
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "status": "partial",
+    "text_artifact_bytes": 670,
+    "text_artifact_digest": "sha256:3c6e88bac581d48d1b83fa11559e1f62c5e8b0cb3f27b39350b09d1477b261ab",
+    "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+    "text_frame_digest": "sha256:e1dd49bd351b89a069f3f3aaf053d0b5d3aef2e658790d11e6015e1f6799021b",
+    "text_semantically_valid": true,
+    "version": "1.0",
+    "visual_failure_class": "",
+    "visual_intent_fulfilled": true,
+    "visual_render_status": "rendered"
+  },
+  "proof_graph": {
+    "claims": [
+      {
+        "claim_id": "claim:restart-risk-missing-dependency:source-health",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:35cddcc5bcee8d491e023f04d596bc120f98115c69810c4573094e2282ff0040"
+        ],
+        "metadata": {
+          "fact_type": "service_health"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "health",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:01a46237ea5f31e2cb0f7156446b1b8067701edecb52d88ce24dbec0a2acd1c9",
+        "status": "supported",
+        "subject": "BEAST"
+      },
+      {
+        "claim_id": "claim:restart-risk-missing-dependency:target-health",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4"
+        ],
+        "metadata": {
+          "fact_type": "service_health"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "health",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+        "status": "supported",
+        "subject": "Commons"
+      },
+      {
+        "claim_id": "claim:restart-risk-missing-dependency:dependency",
+        "claim_type": "observed_fact",
+        "confidence_class": "missing_verified_fact",
+        "current_claim_allowed": false,
+        "fact_refs": [
+          "sha256:cc6941554f038e16f26bc37b4a04723a5e1f8dbc8cdfa3b87afb7afa039cb363"
+        ],
+        "metadata": {
+          "fact_type": "missing"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "dependency",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:cc6941554f038e16f26bc37b4a04723a5e1f8dbc8cdfa3b87afb7afa039cb363",
+        "status": "unsupported",
+        "subject": "BEAST"
+      },
+      {
+        "claim_id": "claim:restart-risk-missing-dependency:restart-policy",
+        "claim_type": "observed_fact",
+        "confidence_class": "observed",
+        "current_claim_allowed": true,
+        "fact_refs": [
+          "sha256:11b12df3d0d64330efe9c5bf4d5da5b955e6726c9db5410165d39a4896967803"
+        ],
+        "metadata": {
+          "fact_type": "restart_policy"
+        },
+        "object": "",
+        "policy_ref": "",
+        "predicate": "restart_policy",
+        "rule_ref": "",
+        "snapshot_ref": "sha256:a481133a3476ee4db4830a6775f7a8af392b7e7422813cd3e3960cd4af7d7110",
+        "status": "supported",
+        "subject": "BEAST"
+      },
+      {
+        "claim_id": "claim:restart-risk-missing-dependency:restart-risk",
+        "claim_type": "conditional_causal",
+        "confidence_class": "missing_verified_fact",
+        "current_claim_allowed": false,
+        "fact_refs": [
+          "sha256:876c86483f89fe116c94aa8029e545cea4b2f2b18483324e5f07e3d11a69a79b",
+          "sha256:9192849a86ea4f314e27922e964391c154bdf3ae2d2a57279de2f874f10b02db",
+          "sha256:24e6ec9dae27b334e3e7b927a6f9f14a8be5fcfee0765af19fc4b0de21072ccb",
+          "sha256:3e804f0f46a60cb701097a3d5281ca835ef48fc2baa10db57d5eaf9ee45462a9"
+        ],
+        "metadata": {
+          "family": "restart_risk",
+          "risk_class": "unsupported"
+        },
+        "object": "Commons",
+        "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+        "predicate": "restart_destabilization_risk",
+        "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+        "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+        "status": "unsupported",
+        "subject": "BEAST"
+      }
+    ],
+    "compile_sequence": 1,
+    "compiler_id": "beast.proof-first-compiler.v1",
+    "fact_digests": [
+      "sha256:35cddcc5bcee8d491e023f04d596bc120f98115c69810c4573094e2282ff0040",
+      "sha256:625063606a5d21730f4724cc2dad2f5013fbde889cb49d73f345b5d3761e6ab4",
+      "sha256:11b12df3d0d64330efe9c5bf4d5da5b955e6726c9db5410165d39a4896967803",
+      "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+    ],
+    "family": "restart_risk",
+    "graph_digest": "sha256:2433619b026863c0e526e07e8401b74b32ecba74a0fe4647c0f6e0e10a666c24",
+    "graph_id": "proof:restart_risk:cc6941554f038e16f26b",
+    "policy_digests": [
+      "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+    ],
+    "request_digest": "sha256:cc6941554f038e16f26bc37b4a04723a5e1f8dbc8cdfa3b87afb7afa039cb363",
+    "rule_digests": [
+      "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+    ],
+    "world_snapshot_digest": "sha256:bac23d9a42c6626feb124485c95a4482f2006fcf819b070347aa1ac75216ce6c"
+  },
+  "residual_packets": [],
+  "scenario": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "facts": [
+      {
+        "evidence_digest": "sha256:01a46237ea5f31e2cb0f7156446b1b8067701edecb52d88ce24dbec0a2acd1c9",
+        "fact_id": "fact:service_health:BEAST:health:",
+        "fact_type": "service_health",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "health",
+        "subject": "BEAST",
+        "value": {
+          "state": "healthy"
+        }
+      },
+      {
+        "evidence_digest": "sha256:bcd8497aa80883e2cd56adab4f74b1823afc228f0289fe2cefc45eebc18cbf0e",
+        "fact_id": "fact:service_health:Commons:health:",
+        "fact_type": "service_health",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "health",
+        "subject": "Commons",
+        "value": {
+          "state": "healthy"
+        }
+      },
+      {
+        "evidence_digest": "sha256:a481133a3476ee4db4830a6775f7a8af392b7e7422813cd3e3960cd4af7d7110",
+        "fact_id": "fact:restart_policy:BEAST:restart_policy:",
+        "fact_type": "restart_policy",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "restart_policy",
+        "subject": "BEAST",
+        "value": {
+          "mode": "rolling_with_healthcheck"
+        }
+      },
+      {
+        "evidence_digest": "sha256:67b234985bc33de8199f88f0bc81607d53b4c0b81604e8565a61c6e8e85cdc1d",
+        "fact_id": "fact:current_evidence:runtime:current_evidence:",
+        "fact_type": "current_evidence",
+        "freshness_seconds": 300,
+        "object": "",
+        "observed_at": "2026-08-03T15:30:00+00:00",
+        "predicate": "current_evidence",
+        "subject": "runtime",
+        "value": {
+          "restart_count": 0,
+          "state": "fresh"
+        }
+      }
+    ],
+    "family": "restart_risk",
+    "force_layout_overflow": false,
+    "metadata": {},
+    "policies": [
+      {
+        "family": "restart_risk",
+        "parameters": {
+          "allowed_mode": "rolling_with_healthcheck"
+        },
+        "policy_id": "policy:restart_risk:v1"
+      }
+    ],
+    "provider_policy": "residual_only",
+    "question": "Assess restart risk when no verified dependency edge is available.",
+    "rules": [
+      {
+        "authority": "verified_rule",
+        "family": "restart_risk",
+        "parameters": {},
+        "predicate": "restart_destabilization",
+        "rule_id": "rule:restart_risk:restart_destabilization:v1"
+      }
+    ],
+    "scenario_id": "restart-risk-missing-dependency",
+    "source": "BEAST",
+    "target": "Commons",
+    "visual_assets": {
+      "deployment_safety:status_badge": "sha256:36831f2a49222b6a63299f591c52195d4ddebdec690d87d1b66a243a36d410e5",
+      "restart_risk:status_badge": "sha256:d87f9c783acaa9728da9e8fc298e619648d3ed30cacd485d36e8fc5b6b7e12ca",
+      "traffic_shift:status_badge": "sha256:6442eae4f72fe8088e164f9955f3688a5e0aeb5e84bfaea51e0cab9dd1fbe8a2"
+    }
+  },
+  "scene_plan": {
+    "canvas_height": 540,
+    "canvas_width": 960,
+    "claim_refs": [
+      "claim:restart-risk-missing-dependency:dependency",
+      "claim:restart-risk-missing-dependency:restart-policy",
+      "claim:restart-risk-missing-dependency:restart-risk",
+      "claim:restart-risk-missing-dependency:source-health",
+      "claim:restart-risk-missing-dependency:target-health"
+    ],
+    "compile_sequence": 3,
+    "compiler_id": "beast.deterministic-scene-plan.v1",
+    "family": "restart_risk",
+    "graph_digest": "sha256:2433619b026863c0e526e07e8401b74b32ecba74a0fe4647c0f6e0e10a666c24",
+    "plan_digest": "sha256:e85d7770a70e4f6b30624242801d9e7252648f8606f67db8b1cbd9ac9a62a71b",
+    "plan_id": "scene-plan:proof:restart_risk:cc6941554f038e16f26b",
+    "primitives": [
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:source-health",
+        "evidence_state": "supported",
+        "height": 100,
+        "label": "BEAST",
+        "metadata": {},
+        "primitive_id": "source-node",
+        "primitive_type": "service_node",
+        "width": 190,
+        "x": 80,
+        "y": 170
+      },
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:target-health",
+        "evidence_state": "supported",
+        "height": 100,
+        "label": "Commons",
+        "metadata": {},
+        "primitive_id": "target-node",
+        "primitive_type": "service_node",
+        "width": 190,
+        "x": 680,
+        "y": 170
+      },
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:dependency",
+        "evidence_state": "unsupported",
+        "height": 30,
+        "label": "depends on",
+        "metadata": {},
+        "primitive_id": "dependency-edge",
+        "primitive_type": "dependency_edge",
+        "width": 370,
+        "x": 290,
+        "y": 205
+      },
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:restart-policy",
+        "evidence_state": "supported",
+        "height": 70,
+        "label": "restart policy",
+        "metadata": {},
+        "primitive_id": "restart-policy",
+        "primitive_type": "policy_gate",
+        "width": 300,
+        "x": 330,
+        "y": 70
+      },
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:restart-risk",
+        "evidence_state": "unsupported",
+        "height": 80,
+        "label": "unsupported",
+        "metadata": {},
+        "primitive_id": "risk-badge",
+        "primitive_type": "risk_badge",
+        "width": 260,
+        "x": 350,
+        "y": 330
+      },
+      {
+        "claim_ref": "claim:restart-risk-missing-dependency:restart-risk",
+        "evidence_state": "unsupported",
+        "height": 55,
+        "label": "unsupported",
+        "metadata": {},
+        "primitive_id": "epistemic-marker",
+        "primitive_type": "unsupported_marker",
+        "width": 300,
+        "x": 70,
+        "y": 430
+      }
+    ],
+    "residual_refs": [],
+    "unresolved_visual_gaps": [],
+    "visual_intent_fulfilled": true
+  },
+  "text_artifact": {
+    "bytes": 670,
+    "digest": "sha256:3c6e88bac581d48d1b83fa11559e1f62c5e8b0cb3f27b39350b09d1477b261ab",
+    "media_type": "application/vnd.beast.structured-answer+json",
+    "status": "rendered"
+  },
+  "text_frame": {
+    "claim_refs": [
+      "claim:restart-risk-missing-dependency:source-health",
+      "claim:restart-risk-missing-dependency:target-health",
+      "claim:restart-risk-missing-dependency:dependency",
+      "claim:restart-risk-missing-dependency:restart-policy",
+      "claim:restart-risk-missing-dependency:restart-risk"
+    ],
+    "conclusion_claim_ref": "claim:restart-risk-missing-dependency:restart-risk",
+    "current_conclusion_allowed": false,
+    "epistemic_status": "unsupported",
+    "family": "restart_risk",
+    "frame_digest": "sha256:e1dd49bd351b89a069f3f3aaf053d0b5d3aef2e658790d11e6015e1f6799021b",
+    "frame_id": "text-frame:proof:restart_risk:cc6941554f038e16f26b",
+    "graph_digest": "sha256:2433619b026863c0e526e07e8401b74b32ecba74a0fe4647c0f6e0e10a666c24",
+    "headline": "Restart-risk assessment",
+    "realize_sequence": 2,
+    "renderer_id": "beast.structured-text-frame.v1",
+    "residual_refs": [],
+    "summary_fields": {
+      "risk_class": "unsupported",
+      "source": "BEAST",
+      "target": "Commons"
+    }
+  },
+  "verification": {
+    "failure_classes": [],
+    "joined_verification": true,
+    "layout_valid": true,
+    "proof_first": true,
+    "residual_provenance_valid": true,
+    "scene_render_valid": true,
+    "scene_semantically_valid": true,
+    "stale_language_valid": true,
+    "text_bytes_valid": true,
+    "verification_digest": "sha256:36a7ce90dc3333d5edb7227e2e1d9496820141e9d8f0689f5ddea975438e8a7f",
+    "visual_bytes_valid": true
+  },
+  "visual_artifact": {
+    "bytes": 3108,
+    "digest": "sha256:8ce7154c93ee343146ef0b64ef89c11c9ae0833881064dffeb854b7c2b4f28d8",
+    "failure_class": "",
+    "media_type": "image/svg+xml",
+    "status": "rendered"
+  }
+}

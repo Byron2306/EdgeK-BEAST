@@ -29,6 +29,14 @@ from app.kernel.commons.remote_protocol import (
     sha256_bytes,
 )
 from app.kernel.commons.remote_store import CommonsBucketStore
+from app.kernel.commons.ml_kem import (
+    ML_KEM_ALGORITHM,
+    challenge_confirmation_body,
+    confirmation_mac,
+    decapsulate,
+    load_or_create_node_key,
+    public_key_document,
+)
 
 
 class BucketCreate(BaseModel):
@@ -48,6 +56,13 @@ class DiscoveryChallenge(BaseModel):
     descriptor_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
 
 
+class MLKEMChallenge(BaseModel):
+    public_key_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    ciphertext_b64: str = Field(min_length=32, max_length=8192)
+    challenge_nonce: str = Field(min_length=32, max_length=256)
+    transcript_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+
+
 @dataclass(frozen=True)
 class RemoteCommonsNodeConfig:
     root: Path
@@ -59,6 +74,7 @@ class RemoteCommonsNodeConfig:
     trust_evidence: tuple[Mapping[str, Any], ...] = ()
     trust_evidence_path: Path | None = None
     maximum_blob_bytes: int = 4 * 1024**3
+    ml_kem_secret_key_path: Path | None = None
 
 
 def _target(request: Request) -> str:
@@ -101,6 +117,9 @@ def _default_config() -> RemoteCommonsNodeConfig:
         trust_evidence=(),
         trust_evidence_path=Path(evidence_path_value).expanduser() if evidence_path_value else None,
         maximum_blob_bytes=int(os.environ.get("BEAST_COMMONS_MAX_BLOB_BYTES", str(4 * 1024**3))),
+        ml_kem_secret_key_path=Path(
+            os.environ.get("BEAST_COMMONS_ML_KEM_SECRET_KEY", str(root / "trust" / "ml-kem-768.secret"))
+        ).expanduser(),
     )
 
 
@@ -115,6 +134,7 @@ def build_remote_commons_app(config: RemoteCommonsNodeConfig) -> FastAPI:
         SqliteReplayLedger(config.root / "trust" / "request-replay.sqlite3"),
     )
     public_key = base64.b64encode(config.signing_key.public_key().public_bytes_raw()).decode("ascii")
+    ml_kem_cache: dict[str, Any] = {"key": None, "error": ""}
     application = FastAPI(
         title="BEAST Remote Commons Node",
         version="1.0.0",
@@ -149,13 +169,38 @@ def build_remote_commons_app(config: RemoteCommonsNodeConfig) -> FastAPI:
             evidence.append(dict(config.arda_appraisal))
         return evidence
 
+    def current_ml_kem_key():
+        if ml_kem_cache["key"] is not None:
+            return ml_kem_cache["key"]
+        try:
+            ml_kem_cache["key"] = load_or_create_node_key(
+                config.ml_kem_secret_key_path or (config.root / "trust" / "ml-kem-768.secret"),
+                algorithm=ML_KEM_ALGORITHM,
+            )
+            ml_kem_cache["error"] = ""
+        except Exception as exc:
+            ml_kem_cache["error"] = f"{type(exc).__name__}: {exc}"
+        return ml_kem_cache["key"]
+
     def signed_node_document() -> dict[str, Any]:
+        ml_kem_key = ml_kem_cache["key"]
+        ml_kem_public = (
+            public_key_document(node_id=config.node_id, workload_digest=config.workload_digest, key=ml_kem_key)
+            if ml_kem_key is not None else {}
+        )
         attestation_subject = {
             "node_id": config.node_id,
             "workload_digest": config.workload_digest,
             "node_public_key": public_key,
             "protocol": "beast-commons-http-signature-v1",
-            "capabilities": ["bucket_registry", "immutable_blobs", "signed_revisions", "replay_resistant_requests"],
+            "capabilities": [
+                "bucket_registry",
+                "immutable_blobs",
+                "signed_revisions",
+                "replay_resistant_requests",
+                *(["ml_kem_768_key_agreement_proof"] if ml_kem_key is not None else []),
+            ],
+            "ml_kem_public_key_digest": ml_kem_public.get("public_key_digest", ""),
             "maximum_authority": "verify_only",
         }
         descriptor = {
@@ -230,6 +275,53 @@ def build_remote_commons_app(config: RemoteCommonsNodeConfig) -> FastAPI:
             "proof": proof,
             "signature_algorithm": "ed25519",
             "node_signature": base64.b64encode(config.signing_key.sign(canonical_json(proof))).decode("ascii"),
+        }
+
+    @application.get("/v1/ml-kem/key")
+    async def ml_kem_key_document() -> dict[str, Any]:
+        ml_kem_key = current_ml_kem_key()
+        if ml_kem_key is None:
+            raise HTTPException(status_code=503, detail="Commons ML-KEM is unavailable: " + ml_kem_cache["error"])
+        document = public_key_document(
+            node_id=config.node_id,
+            workload_digest=config.workload_digest,
+            key=ml_kem_key,
+        )
+        return {
+            "document": document,
+            "signature_algorithm": "ed25519",
+            "node_signature": base64.b64encode(config.signing_key.sign(canonical_json(document))).decode("ascii"),
+        }
+
+    @application.post("/v1/ml-kem/challenge")
+    async def ml_kem_challenge(payload: MLKEMChallenge) -> dict[str, Any]:
+        ml_kem_key = current_ml_kem_key()
+        if ml_kem_key is None:
+            raise HTTPException(status_code=503, detail="Commons ML-KEM is unavailable: " + ml_kem_cache["error"])
+        if payload.public_key_digest != ml_kem_key.public_key_digest:
+            raise HTTPException(status_code=409, detail="ML-KEM public key digest changed; refresh key")
+        try:
+            ciphertext = base64.b64decode(payload.ciphertext_b64, validate=True)
+        except Exception as exc:
+            raise HTTPException(status_code=422, detail="ciphertext_b64 is not valid base64") from exc
+        shared_secret = decapsulate(ciphertext, ml_kem_key.secret_key, algorithm=ml_kem_key.algorithm)
+        body = challenge_confirmation_body(
+            node_id=config.node_id,
+            algorithm=ml_kem_key.algorithm,
+            public_key_digest=ml_kem_key.public_key_digest,
+            ciphertext_digest=sha256_bytes(ciphertext),
+            challenge_nonce=payload.challenge_nonce,
+            transcript_digest=payload.transcript_digest,
+        )
+        confirmation = {
+            **body,
+            "confirmation_mac_b64": confirmation_mac(shared_secret, body),
+        }
+        return {
+            "confirmation": confirmation,
+            "confirmation_digest": sha256_bytes(canonical_json(confirmation)),
+            "signature_algorithm": "ed25519",
+            "node_signature": base64.b64encode(config.signing_key.sign(canonical_json(confirmation))).decode("ascii"),
         }
 
     @application.get("/v1/buckets")

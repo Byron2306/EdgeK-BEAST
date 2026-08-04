@@ -1,0 +1,47 @@
+{
+  "beast_object_type": "c4x_pq_transport_gauntlet",
+  "claim_boundary": "Full C4-X PQ transport gate: ML-KEM key agreement plus ML-DSA authenticity and hostile tamper/replay/policy checks. Shared secrets and private signing keys are never serialized.",
+  "created_at": "2026-08-03T23:02:04.044547+00:00",
+  "pq_transport_receipt": {
+    "artifact_digest": "sha256:76c4d3c9cbaf316b9124300eb360e19dfe235ac7b5a3354ed2fa98b0eebf23fd",
+    "artifact_digest_verified": true,
+    "ciphertext_tamper_rejected": true,
+    "fallback": false,
+    "ml_dsa_receipt": {
+      "algorithm": "ML-DSA-65",
+      "available": true,
+      "ml_dsa_signature_verified": true,
+      "private_key_never_serialized": true,
+      "private_key_serialized": false,
+      "public_key_digest": "sha256:204b9ca02d3b493105196d0048cf5fabd1ed22efda5f83dfc2552b36b1a2efda",
+      "signature_digest": "sha256:b66218f26b69c4abf1db078c3ec729c6c25d1aafb9dd655fd98fa3347471b990",
+      "signature_tamper_rejected": true
+    },
+    "ml_dsa_signature_verified": true,
+    "ml_kem_active": true,
+    "ml_kem_receipt": {
+      "algorithm": "ML-KEM-768",
+      "ciphertext_digest": "sha256:d2191bc432b9ea3857e85f282c3d68f078978b2e6e34a9ef0777964933d1bbd2",
+      "ciphertext_tamper_rejected": true,
+      "ml_kem_active": true,
+      "node": "http://127.0.0.1:8111",
+      "recipient_decapsulation_verified": true,
+      "secret_exported": false
+    },
+    "policy_scope_accepted": true,
+    "receipt_digest": "sha256:62c1025945099212fb0538c3d88defb3f2065ecc3d17e6bfe7bf802cae0a990b",
+    "recipient_decapsulation_verified": true,
+    "replay_nonce_unused": true,
+    "replay_receipt": {
+      "first_use_accepted": true,
+      "nonce_digest": "sha256:4e5691b8d3c4c1d2122e208dd73e6a5940f998384bcc1669b96c85c8ce70cc18",
+      "replay_nonce_unused": true,
+      "replay_refused": true
+    },
+    "signature_tamper_rejected": true,
+    "status": "passed"
+  },
+  "receipt_digest": "sha256:b9f7e387c83206f9a4ac33525f18281b0c237564bb4c37283072f2d176778c38",
+  "run_id": "physical-truth-pq-transport-ml-dsa-live-002",
+  "version": "1.0"
+}

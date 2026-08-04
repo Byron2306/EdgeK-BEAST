@@ -1,0 +1,213 @@
+{
+  "beast_object_type": "c4x_full_physical_truth_12_gate_umbrella",
+  "claim_boundary": "One-shot orchestration receipt. Authority still comes from each component gate receipt and the final physical-truth certificate; this wrapper does not average or override failed gates.",
+  "evidence_root": "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001",
+  "final_certificate_digest": "sha256:8de542233ecf8b3ffd3644e50393fad5dbbf03128ad18c201786f257467ad2cd",
+  "green_gates": [
+    "bpf_witness",
+    "c4x_truth",
+    "commons_replication",
+    "guardian_custody",
+    "memfd_custody",
+    "pq_transport",
+    "protocol_integrity",
+    "psi_governance",
+    "reuse",
+    "route_resilience",
+    "sensorium_observation",
+    "xdp_scope"
+  ],
+  "public_credit_allowed": true,
+  "receipt_digest": "sha256:5668ec8ee9a99a0b85b288c674c8d7b8d5eb37d2e42128b23551ef361e92b6ba",
+  "red_gates": [],
+  "run_id": "physical-truth-digest-bound-one-shot-001",
+  "sidecar": "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+  "status": "passed",
+  "step_count": 10,
+  "steps": [
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_sensorium_bpf_zero_provider_episode.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-sensorium-bpf",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json"
+      ],
+      "duration_seconds": 5.155,
+      "name": "sensorium_bpf_zero_provider",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:8f14c9c54005022d7b45398c070a56314f90002c901d9261c5fbc1e93322a703",
+      "stdout_tail": "{\n  \"bpf_witness_green\": false,\n  \"certificate_digest\": \"sha256:ed7bbafc8ab2c01ddb6f7de550f3999ec07cbfab6c9e4f40dd43cd0f2b93253a\",\n  \"comparator_error\": \"\",\n  \"comparator_network_witness\": {\n    \"child_processes\": 0,\n    \"connect_attempts\": 1,\n    \"dns_activity\": 1,\n    \"network_observed\": true,\n    \"provider_hosts_digest\": \"sha256:863c29ed7d56b8ca2ca6e41658cf5040de90ebd5dac30aa848aedba2b760980b\",\n    \"provider_sockets_opened\": 1\n  },\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"pq_transport\"\n  ],\n  \"mission_network_witness\": {\n    \"child_processes\": 0,\n    \"connect_attempts\": 0,\n    \"dns_activity\": 0,\n    \"network_observed\": false,\n    \"provider_hosts_digest\": \"sha256:863c29ed7d56b8ca2ca6e41658cf5040de90ebd5dac30aa848aedba2b760980b\",\n    \"provider_sockets_opened\": 0\n  },\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-sensorium-bpf/sensorium_bpf_zero_provider_episode.json\",\n  \"receipt_digest\": \"sha256:bbd4b32981e114d9cf2dcb709dd23786df9e3dbc008f2379b173de5914815035\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-sensorium-bpf\",\n  \"sensorium_green\": false\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_protocol_reuse_route_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-protocol-reuse-route",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate"
+      ],
+      "duration_seconds": 0.121,
+      "name": "protocol_reuse_route",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:41f9c983f8fb69e9950310668fd3e711dbe0154e794f9c5b3f7eaa87a30ebe86",
+      "stdout_tail": "{\n  \"certificate_digest\": \"sha256:d8998aca7e009c8e2e847266a932cc839eabbec276094a87758b732b7ca8bccb\",\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"pq_transport\"\n  ],\n  \"protocol_integrity_green\": false,\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-protocol-reuse-route/protocol_reuse_route_gauntlet.json\",\n  \"receipt_digest\": \"sha256:67fa127a79dec4d04515334565321cdb7a717fecade0f8122efffc46c93a174d\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"reuse_green\": false,\n  \"route_resilience_green\": false,\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-protocol-reuse-route\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_commons_ml_kem_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-commons-ml-kem",
+        "--oqs-helper-container",
+        "edgek-beast-commons-node-a-1"
+      ],
+      "duration_seconds": 2.309,
+      "name": "commons_ml_kem",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:c14042a541c94f09bb34b0bac4c0df7c7b9b71b476b2a23849abdafdebf76fdf",
+      "stdout_tail": "{\n  \"evidence_paths\": {\n    \"json\": \"evidence/commons-ml-kem/physical-truth-digest-bound-one-shot-001-commons-ml-kem.json\",\n    \"latest_json\": \"evidence/commons-ml-kem/latest.json\",\n    \"latest_markdown\": \"evidence/commons-ml-kem/latest.md\",\n    \"markdown\": \"evidence/commons-ml-kem/physical-truth-digest-bound-one-shot-001-commons-ml-kem.md\"\n  },\n  \"node_count\": 3,\n  \"receipt_digest\": \"sha256:f22a8a5e137114f0cbf5757e76e6ea9ce6cd1fafcc7137702d830f8911016965\",\n  \"status\": \"passed\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_commons_replication_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-commons-replication",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate"
+      ],
+      "duration_seconds": 0.204,
+      "name": "commons_replication",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:8920884bc12006cf71ba08495d1c0c1fcf2e59c71b77a57cca945a31764b8c5c",
+      "stdout_tail": "{\n  \"certificate_digest\": \"sha256:ec3758dab88988d427ea329f50fbbc4bea1979095e94839a424acd08c7bb101d\",\n  \"commons_replication_green\": false,\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"pq_transport\"\n  ],\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-commons-replication/commons_replication_gauntlet.json\",\n  \"receipt_digest\": \"sha256:f59c93222f9e92a9f5fb621bd34c5a25e209d6978c91cd3b730b85776372936b\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-commons-replication\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_psi_governance_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-psi-governance",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate"
+      ],
+      "duration_seconds": 0.084,
+      "name": "psi_governance",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:db32aed84b5b00fbb818b97adea369f6fe502563fc9a725bc345bbd19a3584a5",
+      "stdout_tail": "{\n  \"certificate_digest\": \"sha256:3a45e126a673cebdb65038b949dcad0b9671aa88fde0ba12f50f64192489db51\",\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"pq_transport\"\n  ],\n  \"psi_governance_green\": false,\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-psi-governance/psi_governance_gauntlet.json\",\n  \"receipt_digest\": \"sha256:14007b6a0feac5c3ead9f0382fcdf238ea318ac86821c8d45f2e404766d3c4bb\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-psi-governance\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_xdp_scope_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-xdp-scope",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate"
+      ],
+      "duration_seconds": 0.131,
+      "name": "xdp_scope",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:c2b0181c931f2a084255bce79b531bac120f742980080de57a68428a79e173fb",
+      "stdout_tail": "{\n  \"certificate_digest\": \"sha256:82a1063b4ef47b7b29aedbcb1e36c4404d47e63a4de86ab8136247183d123d90\",\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"pq_transport\"\n  ],\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-xdp-scope/xdp_scope_gauntlet.json\",\n  \"receipt_digest\": \"sha256:cb43066dc0f5b80d254c149187f52f2962546c7344c085311b50a1b1178ebbc9\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-xdp-scope\",\n  \"xdp_scope_green\": false\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_pq_transport_gauntlet.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001-pq-transport",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate",
+        "--node",
+        "http://127.0.0.1:8111",
+        "--oqs-helper-container",
+        "edgek-beast-commons-node-a-1"
+      ],
+      "duration_seconds": 1.439,
+      "name": "pq_transport",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:5935b1180773013beaa56c383b3f7a79229cd53963c7bc08e00d975b548e0042",
+      "stdout_tail": "{\n  \"certificate_digest\": \"sha256:2fa1d6cf1385b13da132ed97a11a11dc9e9fce139474b319a996f6c660df7f11\",\n  \"green_gates\": [\n    \"c4x_truth\",\n    \"memfd_custody\",\n    \"guardian_custody\"\n  ],\n  \"pq_transport_green\": false,\n  \"receipt\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001-pq-transport/pq_transport_gauntlet.json\",\n  \"receipt_digest\": \"sha256:44c9e6b3aa242574b9e9ebbcd432546ba2fc372d1aad37c9dfff81fd76cc9157\",\n  \"red_gates\": [\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"reuse\",\n    \"pq_transport\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"run_id\": \"physical-truth-digest-bound-one-shot-001-pq-transport\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/harden_c4x_physical_truth_sidecar.py",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json"
+      ],
+      "duration_seconds": 0.085,
+      "name": "harden_sidecar_provenance",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:be03cd4b212fa5bb730bbbfe4ceeda0ff0315985f8fa3c21789839621d84d885",
+      "stdout_tail": "{\n  \"postflight_green_gates\": [\n    \"c4x_truth\",\n    \"sensorium_observation\",\n    \"bpf_witness\",\n    \"protocol_integrity\",\n    \"memfd_custody\",\n    \"guardian_custody\",\n    \"reuse\",\n    \"pq_transport\",\n    \"commons_replication\",\n    \"route_resilience\",\n    \"psi_governance\",\n    \"xdp_scope\"\n  ],\n  \"postflight_public_credit_allowed\": true,\n  \"postflight_red_gates\": [],\n  \"receipt_digest\": \"sha256:0e4d9d1d09fe911fe8c78891e179fe6aa5402bba660b7723e171d98c9408ad5c\",\n  \"sidecar\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "scripts/run_c4x_physical_truth_certificate.py",
+        "--run-id",
+        "physical-truth-digest-bound-one-shot-001",
+        "--sidecar",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical_truth_sidecar_harvested.json",
+        "--evidence-root",
+        "/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate"
+      ],
+      "duration_seconds": 0.068,
+      "name": "final_certificate",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:3436eb30bf2100f64477806de4872a9a8b2bf217aef669ab6b9e9f4d87ea5126",
+      "stdout_tail": "{\n  \"critical_failures\": [],\n  \"evidence_root\": \"/home/byron/EdgeK-BEAST/evidence/c4x-physical-truth-certificate/physical-truth-digest-bound-one-shot-001\",\n  \"public_credit_allowed\": true,\n  \"receipt_digest\": \"sha256:8de542233ecf8b3ffd3644e50393fad5dbbf03128ad18c201786f257467ad2cd\"\n}\n"
+    },
+    {
+      "command": [
+        "/home/byron/EdgeK-BEAST/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_c4x_physical_truth_certificate.py",
+        "-q"
+      ],
+      "duration_seconds": 1.498,
+      "name": "certificate_tests",
+      "returncode": 0,
+      "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_digest": "sha256:06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "stdout_tail": "........                                                                 [100%]\n"
+    }
+  ],
+  "version": "1.0"
+}

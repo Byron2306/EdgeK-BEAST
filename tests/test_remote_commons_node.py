@@ -14,6 +14,11 @@ from app.kernel.commons.remote_protocol import (
     canonical_json,
     sha256_bytes,
 )
+from app.kernel.commons.ml_kem import (
+    challenge_confirmation_body,
+    confirmation_mac,
+    encapsulate,
+)
 
 
 def _signed(signer, method, target, body=b""):
@@ -175,3 +180,58 @@ async def test_remote_commons_public_listing_does_not_expose_private_bucket(tmp_
         public = await client.get("/v1/buckets")
     assert created.status_code == 201
     assert public.json()["buckets"] == []
+
+
+@pytest.mark.asyncio
+async def test_remote_commons_ml_kem_challenge_confirms_decapsulation_without_secret_export(tmp_path):
+    node_key = Ed25519PrivateKey.generate()
+    app = build_remote_commons_app(RemoteCommonsNodeConfig(
+        root=tmp_path,
+        node_id="commons-node-mlkem",
+        signing_key=node_key,
+        trust_store=CommonsClientTrustStore(()),
+        workload_digest="sha256:" + "c" * 64,
+        arda_appraisal={},
+    ))
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://commons") as client:
+        key_response = await client.get("/v1/ml-kem/key")
+        assert key_response.status_code == 200
+        key_payload = key_response.json()
+        document = key_payload["document"]
+        assert document["algorithm"] == "ML-KEM-768"
+        assert document["secret_exported"] is False
+        node_key.public_key().verify(
+            base64.b64decode(key_payload["node_signature"]),
+            canonical_json(document),
+        )
+
+        ciphertext, shared_secret = encapsulate(base64.b64decode(document["public_key_b64"]))
+        nonce = "ml-kem-nonce-" + "x" * 32
+        transcript_digest = sha256_bytes(canonical_json({
+            "node_id": document["node_id"],
+            "algorithm": document["algorithm"],
+            "public_key_digest": document["public_key_digest"],
+        }))
+        challenge = await client.post("/v1/ml-kem/challenge", json={
+            "public_key_digest": document["public_key_digest"],
+            "ciphertext_b64": base64.b64encode(ciphertext).decode("ascii"),
+            "challenge_nonce": nonce,
+            "transcript_digest": transcript_digest,
+        })
+        assert challenge.status_code == 200
+        proof = challenge.json()
+        confirmation = proof["confirmation"]
+        body = challenge_confirmation_body(
+            node_id=document["node_id"],
+            algorithm=document["algorithm"],
+            public_key_digest=document["public_key_digest"],
+            ciphertext_digest=sha256_bytes(ciphertext),
+            challenge_nonce=nonce,
+            transcript_digest=transcript_digest,
+        )
+        assert confirmation["confirmation_mac_b64"] == confirmation_mac(shared_secret, body)
+        assert "shared_secret" not in canonical_json(proof).decode("utf-8")
+        node_key.public_key().verify(
+            base64.b64decode(proof["node_signature"]),
+            canonical_json(confirmation),
+        )

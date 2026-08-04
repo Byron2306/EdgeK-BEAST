@@ -1,0 +1,3819 @@
+{
+  "baseline_adapters": {
+    "beast_capability_composition_rule_engine": "Uses the existing CapabilityCompositionPlane as a no-provider rule/composition competitor.",
+    "beast_generation_provider_boundary": "Uses the existing generation provider adapter boundary in deterministic no-network stub mode.",
+    "beast_local_semantic_cache": "Uses the existing LocalSemanticCache lexical/dense-cache implementation against historical exemplars.",
+    "beast_topology_graph_adapter": "Uses an in-repo topology graph walk over dependency/route facts while ignoring policy and freshness.",
+    "cached_named_template": "Replays only named-scenario templates; held-out names miss.",
+    "external_rag_retrieval": "Calls an operator-supplied external RAG command with public scenario JSON and scores its answer/chunks against the independent oracle.",
+    "knowledge_graph_topology_only": "Uses topology reachability and ignores policy/temporal/capacity gates.",
+    "model_generated_multimodal_stub": "Simulates provider multimodal answer with unverified text/SVG and provider cost.",
+    "rag_nearest_exemplar": "Retrieves a nearest named exemplar answer/diagram without proof custody.",
+    "rule_engine_text_only": "Computes text from rules but emits no proof-bound visual artifact."
+  },
+  "beast_object_type": "c4x_external_breakthrough_benchmark",
+  "cases": {
+    "heldout-deployment_safety-0-ari-mesh-sora-worker": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:1a78b3ad02a4dd7169b2896544005b269b045ff7a7aae6258366c4ec79eabe46",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:a7d6938fdbd23125718c556c5893cff64ef23b3c07a802313c6041d2617171e8",
+          "rendered_artifact_bytes": 3137,
+          "rendered_artifact_digest": "sha256:7dd26af8a3a17d2883a1f7584f20ebe70a71130150ca000b00058f6c7fd4b2b1",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:d0da8c00e5882170742198f17fa135c658c21ee459d8b6551a7a35291579767d",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-0-ari-mesh-sora-worker",
+          "scene_plan_digest": "sha256:c8dc52a0608456b88eec88a308fc67ad5a501a13ef24231683e09faf83cb91c4",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 825,
+          "text_artifact_digest": "sha256:c93a44b05359cfd9bffbc857c34e310e693d06a2a844ca3f2cb4b4677a234177",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:8c26ea2c44e5d4ba0159c89e4f9842de1b963d38edd6dd0fb6ed485138868858",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-ari-mesh-sora-worker:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:866cc1b741cbcb7116f94587e3183bbb986ef8dbb89e5767ef556618859d1639"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d87e38994e8ec512726b9ae8a272c23ce38619fbd8fedc8b59228289fa88fb06",
+              "status": "supported",
+              "subject": "Ari-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-ari-mesh-sora-worker:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:c514fbeb7134f1f192d270bf059547aa972a1637c876c54bcd265cdbee12748a"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:0fb1b888cc9341339540934fdc150a3da086301e7fbab52db4ed8a15b09cb74b",
+              "status": "supported",
+              "subject": "Ari-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-ari-mesh-sora-worker:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:0e7e56e2af03fec6bad0104f8034df1eef59f80ab1cef6ed2761df663b49f66b"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1b2d148b7c5d13751daba5c6dd6b88d63535136d0008197753f6552eeed9afa7",
+              "status": "supported",
+              "subject": "Ari-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-ari-mesh-sora-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:c3561b2343f3a32b4349432b8b68ce582d102463f7ed30476b3b2d7ed383bbc1"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:72bcb047ded3a4c4380742c83f7d528c919ecc3d7edaff4ef191effa1a828564",
+              "status": "supported",
+              "subject": "Sora-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-0-ari-mesh-sora-worker:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "gate_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:17eb187e646230563be2b555f6ddc29cde7cd0986c252c37821fbafee31b679d",
+                "sha256:81ac2c36b29653285fac3a8fa643ede617a7814bef4ec1f24ae755c47cc0e9a0",
+                "sha256:4bd088f4a5ca99a04b526ac09a75fecc484af904f53b2e9d77b0d0529ac233a1",
+                "sha256:3eea40cf929f0eacfc0432f7d9a619259d3415656edd076fc2e09580f1fd30b2"
+              ],
+              "metadata": {
+                "deployment_class": "halt_or_rollback",
+                "family": "deployment_safety"
+              },
+              "object": "Sora-worker",
+              "policy_ref": "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Ari-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:866cc1b741cbcb7116f94587e3183bbb986ef8dbb89e5767ef556618859d1639",
+            "sha256:c514fbeb7134f1f192d270bf059547aa972a1637c876c54bcd265cdbee12748a",
+            "sha256:0e7e56e2af03fec6bad0104f8034df1eef59f80ab1cef6ed2761df663b49f66b",
+            "sha256:c3561b2343f3a32b4349432b8b68ce582d102463f7ed30476b3b2d7ed383bbc1",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:1a78b3ad02a4dd7169b2896544005b269b045ff7a7aae6258366c4ec79eabe46",
+          "graph_id": "proof:deployment_safety:d0da8c00e58821707421",
+          "policy_digests": [
+            "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d"
+          ],
+          "request_digest": "sha256:d0da8c00e5882170742198f17fa135c658c21ee459d8b6551a7a35291579767d",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:c0bc00d91eabb786ba21bda4cc19cd882fd62789bd5b22bd5561d25ea3de6d7b"
+        }
+      },
+      "oracle_expected": {
+        "class": "halt_or_rollback",
+        "current_claim_allowed": true,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:71fa581bae33acad516d960b0bcb4143651189d7afbd437ce2fb7380a9cc6636",
+        "source": "Ari-mesh",
+        "status": "supported",
+        "target": "Sora-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "library_search",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Ari-mesh continue toward Sora-worker? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:fb42523f078ac5e11631f512e12521204d8e2497c06bd5ca78851f5b6573e152",
+        "scenario_id": "heldout-deployment_safety-0-ari-mesh-sora-worker",
+        "source": "Ari-mesh",
+        "target": "Sora-worker"
+      }
+    },
+    "heldout-deployment_safety-1-gale-worker-pax-worker": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:b27b34dbf4813e9a884b591588ce16cdac3fd782374d8253dc587a5e440e4fb7",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:1014f46e3d785234bdc71252be585b32ec453e024829e2ece097a62e0e21bab8",
+          "rendered_artifact_bytes": 3695,
+          "rendered_artifact_digest": "sha256:8cb81a2a28aba13eab7e6478bf40e74953e02c0c3cfdf24979be940f89d7a70d",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:cf73bd4fe85a4a23d29775acc28dddcc1b4fd6f7c675d7e803543dc9ee5afa8c",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-1-gale-worker-pax-worker",
+          "scene_plan_digest": "sha256:c68e8111b40d2d661e13f4e99d86fba744f4f18eae3ff5664fa820e9f5348ec1",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 845,
+          "text_artifact_digest": "sha256:24fd2ae848b44fb10d8b42b69c1ce6711124e55b2329b0af28c73b4f6b186aa0",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:ecd6cce5e023a88cb394bae038804955a3c6bbd7408133cc9cf900495e6f1b6d",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-gale-worker-pax-worker:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:9b571118456d185b0869542aae0da03a27096dbecfcb3e55d451304ac5d059b5"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:5496548689eda591da4734dcb78b4613176fbbf0e1f6c76d0fcb2ce8ebc37050",
+              "status": "supported",
+              "subject": "Gale-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-gale-worker-pax-worker:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:f11d0a41bdfe59a23b15350d9d6bf2792deefd4de74b4b5b4747f3a56062670f"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:54e971672377471b672c61450e1fe37525c89398549324fb2ff2f86ff1adefc7",
+              "status": "stale",
+              "subject": "Gale-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-gale-worker-pax-worker:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ef7726e301281652698c6cb6fdfef418beade31cee3fb8e1bc2edcbd198c920f"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d3bdeb49fb068451513f9136db1607d180011ce0074891c1764aaf76790152d8",
+              "status": "supported",
+              "subject": "Gale-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-gale-worker-pax-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:93582d302cc4bdc2b3a7533d4d75b1ebf326d3f972d55859cdcfcaa5434836e8"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:614536393ebea6e1f0035d9226a57d588b8745d927f2f019475f5ab0be142d24",
+              "status": "stale",
+              "subject": "Pax-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-1-gale-worker-pax-worker:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:a87eb3b2116c25e70c94639207f9e49a81a34d16f93f7721a8c4f7a8f5ce87ba",
+                "sha256:0bc5684660a40c7ebff613a45e536f27f939c7b109ccd3470e3fcfa8008c50b4",
+                "sha256:37cd3e43c7a79415ae6acdbac32a013ad733048739dafdbbb24cc8f5ec700014",
+                "sha256:01ddf2e6d20357073028621cb527c61ceae9268ebb3fbb0577bc670b6ca80721"
+              ],
+              "metadata": {
+                "deployment_class": "unknown_current_state",
+                "family": "deployment_safety"
+              },
+              "object": "Pax-worker",
+              "policy_ref": "sha256:a115f6937a1b0291506a795836643c041b00a7d01183a79765662e68c25caf22",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "stale",
+              "subject": "Gale-worker"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:9b571118456d185b0869542aae0da03a27096dbecfcb3e55d451304ac5d059b5",
+            "sha256:f11d0a41bdfe59a23b15350d9d6bf2792deefd4de74b4b5b4747f3a56062670f",
+            "sha256:ef7726e301281652698c6cb6fdfef418beade31cee3fb8e1bc2edcbd198c920f",
+            "sha256:93582d302cc4bdc2b3a7533d4d75b1ebf326d3f972d55859cdcfcaa5434836e8",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:b27b34dbf4813e9a884b591588ce16cdac3fd782374d8253dc587a5e440e4fb7",
+          "graph_id": "proof:deployment_safety:cf73bd4fe85a4a23d297",
+          "policy_digests": [
+            "sha256:a115f6937a1b0291506a795836643c041b00a7d01183a79765662e68c25caf22"
+          ],
+          "request_digest": "sha256:cf73bd4fe85a4a23d29775acc28dddcc1b4fd6f7c675d7e803543dc9ee5afa8c",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:166c2fb0dba556f2374c6d4da56cfa3ba514691b41d518bfa4daa6f68652e827"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:d46d0dd920f06c19f9d643fe75d853f1a670bc50ef704280bedd1302205876fe",
+        "source": "Gale-worker",
+        "status": "stale",
+        "target": "Pax-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "microgrid_control",
+          "temporal_state": "stale",
+          "topology_shape": "mesh_noise_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Gale-worker continue toward Pax-worker? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:fc7dc9e7356c6b2c5ac9806a8f230367084afbbe7201acd32cde36c2413cd950",
+        "scenario_id": "heldout-deployment_safety-1-gale-worker-pax-worker",
+        "source": "Gale-worker",
+        "target": "Pax-worker"
+      }
+    },
+    "heldout-deployment_safety-2-cyra-worker-luma-api": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:26add40730883d9f60c05feda588856950d4a00e06d1169ff2bbd1247f0da20b",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:3fea51f1a68d3c843b8edcd21a9a3a9c1c7d876b6276be662527c88e800aca2f",
+          "rendered_artifact_bytes": 3679,
+          "rendered_artifact_digest": "sha256:d724acc5593a9cf4122ed47cdc780ce6c090616660b19c2a416e01996019f20e",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:255dcfe3fa95d332f7d1bb833910af717e9c026419b7df739126f01b099404ae",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-2-cyra-worker-luma-api",
+          "scene_plan_digest": "sha256:5645fa15d03d409403b4e83c627433e12d232a57dbc109b19ed0177c1526b012",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 833,
+          "text_artifact_digest": "sha256:b1971bb45741d77a79bc94671feafd44ad22cba37b548b0e8b7427c976f341a2",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:a99a77596c28ec91b0af07d683c50fa1cb71413e4f2dab24b4f1152a0a3a26df",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-cyra-worker-luma-api:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:789fb3186598754b0eebf0f4ffe8a9498d655ba1e2b3f41e5513d674d459ea98"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:dc63167f7aacff66eb9043bfa91418357c063eb6056f82ef8c2e6edc2a7f77bf",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-cyra-worker-luma-api:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:0521d3607aebe8c021569c5e2b0637b9c0bbe2ed63641505dcf2392eed82b5f6"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:2a099409c7fb6f653312129e3e99bb73807f5c8dd99a7b35f7b55eae347235d9",
+              "status": "stale",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-cyra-worker-luma-api:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:cdd15f4e89b2a4f26cdf3490596d6882a8de06e057d48d5fa29dfa73ba1c0954"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:430e326c6a623b7baa93806edaec5f210745dde66e5acb557774b33834046be7",
+              "status": "supported",
+              "subject": "Cyra-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-cyra-worker-luma-api:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:12092d8ad73f66713a758b6d77baf38a1cf3af61bddb4eb97569d9cc83474681"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:38a11a0e52a324400295b9051bc07399cd7aec9e2c84ef4f8f5ea54ba312f3d3",
+              "status": "stale",
+              "subject": "Luma-api"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-2-cyra-worker-luma-api:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:b5f8ab03e48f8835fc6238ebe59c44a8ece3c5adf28e1ff57accd8d294f05b0c",
+                "sha256:fed9338f40c63583838b56a47645e61e504373999422bd77e2a175009474b7aa",
+                "sha256:afb02b69e6a3924aec2e26a6b7ddb780de114bac220f1f9e427d7b6d4c3d9378",
+                "sha256:8281255685d14795d77d30550a20122fcfe7bbd1b9c348290186665c871e2729"
+              ],
+              "metadata": {
+                "deployment_class": "unknown_current_state",
+                "family": "deployment_safety"
+              },
+              "object": "Luma-api",
+              "policy_ref": "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d",
+              "predicate": "deployment_safety",
+              "rule_ref": "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "stale",
+              "subject": "Cyra-worker"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:789fb3186598754b0eebf0f4ffe8a9498d655ba1e2b3f41e5513d674d459ea98",
+            "sha256:0521d3607aebe8c021569c5e2b0637b9c0bbe2ed63641505dcf2392eed82b5f6",
+            "sha256:cdd15f4e89b2a4f26cdf3490596d6882a8de06e057d48d5fa29dfa73ba1c0954",
+            "sha256:12092d8ad73f66713a758b6d77baf38a1cf3af61bddb4eb97569d9cc83474681",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:26add40730883d9f60c05feda588856950d4a00e06d1169ff2bbd1247f0da20b",
+          "graph_id": "proof:deployment_safety:255dcfe3fa95d332f7d1",
+          "policy_digests": [
+            "sha256:8fa3434e18982a69b156a8cd2138814e4bca51f58d4cf177c1d71d51896d1d8d"
+          ],
+          "request_digest": "sha256:255dcfe3fa95d332f7d1bb833910af717e9c026419b7df739126f01b099404ae",
+          "rule_digests": [
+            "sha256:b756dbeeb7bfcb505a39a458cf86ff07feb3abb5a58d0fe27b3c53acc7fc304b"
+          ],
+          "world_snapshot_digest": "sha256:52044ad07cd7292bd96e9ef43e19828dc909022beea5aebb77519ea9b2ada876"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:2e71464b56f00101356b2b8ff177584776591ac385cd8b2511f404d140c7daae",
+        "source": "Cyra-worker",
+        "status": "stale",
+        "target": "Luma-api"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "microgrid_control",
+          "temporal_state": "stale",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Cyra-worker continue toward Luma-api? Render gates and rollback.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:afe2973c7c9a355aef1c1578b9c2f11606e6b856fea561bbc5fbeb316858ad63",
+        "scenario_id": "heldout-deployment_safety-2-cyra-worker-luma-api",
+        "source": "Cyra-worker",
+        "target": "Luma-api"
+      }
+    },
+    "heldout-deployment_safety-3-vega-api-eko-worker": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "deployment_safety",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:89a943dd4050b1e2aa1e376d013905efda137df01554ff3931280b8bf61850da",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:250d8dcfc523af74d595f457cb5e063139f69ce6839d2059108e6d9c15851167",
+          "rendered_artifact_bytes": 3727,
+          "rendered_artifact_digest": "sha256:707890a56fb0fa0bef1fded6a13251d9c79defe3dbbf4470caaff7dc1d0d82db",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:8e67f5ffe1c68b62521c2c90c5cbe2fd5b134831d9746ff04b8acb4fd5b3ece0",
+          "residual_packet_digests": [
+            "sha256:cabf8f0cbb5d3ad345ac461d3ab61be16ae6464bb1554ab5b7771314a48d465e"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-deployment_safety-3-vega-api-eko-worker",
+          "scene_plan_digest": "sha256:dc5e441eb52f0d1cffa492bfe86d207a77915d08259af10b376bf2c68a8dd841",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 822,
+          "text_artifact_digest": "sha256:03b07a0cd1bf49b13bb45869375964cbb913116c2919b97284cc61a8ead268b5",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:efdee5ba44f8249c5b899e16c556531e629d26cec1c03e14e826d73035907228",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-vega-api-eko-worker:deployment-stage",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:e0595f22fb40108e02ebb0319cd3df2dd10f9040679270c1f30587b0d91ef738"
+              ],
+              "metadata": {
+                "fact_type": "deployment_stage"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "stage",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:ba96ef846f66d6eb6c44dadac24e76fe9962980b5c946475bbe615578d40ea9f",
+              "status": "supported",
+              "subject": "Vega-api"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-vega-api-eko-worker:health-gate",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:2162553fdbf7409b976d3e222ab3152e721ad287cce9dd14823326700c3c7b4b"
+              ],
+              "metadata": {
+                "fact_type": "health_gate"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health_gate",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:9284536a83d568e3cee500c9a0e61468f6dee46711b1e350b153739606028949",
+              "status": "supported",
+              "subject": "Vega-api"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-vega-api-eko-worker:rollback",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:2bb8b21422f8e60a1d0537e8f7d0a6f9f90afb82982ebaad363ce7e4f4d4a085"
+              ],
+              "metadata": {
+                "fact_type": "rollback_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "rollback",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:1c01c2fda378d9acd6877efb95b2854209d68c0484a43adee0cbadfa1bad1b72",
+              "status": "supported",
+              "subject": "Vega-api"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-vega-api-eko-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:4dea30f7f5963e216a872bfb06f4bd55f2ede31b4f3d55ba69701e4041455934"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:0220d6f4f680aed8cd5fe27a79242008de4b242a5219ebd0c88cb3bf3f22a382",
+              "status": "supported",
+              "subject": "Eko-worker"
+            },
+            {
+              "claim_id": "claim:heldout-deployment_safety-3-vega-api-eko-worker:deployment-safety",
+              "claim_type": "staged_policy_gate",
+              "confidence_class": "rollout_rule_missing",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:cacff834526436d2e03c8a655d1d5e93b8e58022206db208e3c8b0cc0830d1e0",
+                "sha256:4afc39012aae8515bcc473e0d0f22aa6e5da5f119ca4dcb391b9290974333e61",
+                "sha256:f63f90556142aabb6613b585c3843bc88e8dcd220e16f0e6978ee88426d1f490",
+                "sha256:146effd110d77e57dec8f47a766300733680a4de34e044c046eb7fbec83ff6bd"
+              ],
+              "metadata": {
+                "deployment_class": "unsupported_without_rollout_rule",
+                "family": "deployment_safety"
+              },
+              "object": "Eko-worker",
+              "policy_ref": "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3",
+              "predicate": "deployment_safety",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "residual_required",
+              "subject": "Vega-api"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:e0595f22fb40108e02ebb0319cd3df2dd10f9040679270c1f30587b0d91ef738",
+            "sha256:2162553fdbf7409b976d3e222ab3152e721ad287cce9dd14823326700c3c7b4b",
+            "sha256:2bb8b21422f8e60a1d0537e8f7d0a6f9f90afb82982ebaad363ce7e4f4d4a085",
+            "sha256:4dea30f7f5963e216a872bfb06f4bd55f2ede31b4f3d55ba69701e4041455934",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "deployment_safety",
+          "graph_digest": "sha256:89a943dd4050b1e2aa1e376d013905efda137df01554ff3931280b8bf61850da",
+          "graph_id": "proof:deployment_safety:8e67f5ffe1c68b62521c",
+          "policy_digests": [
+            "sha256:43efe73c2adc6c7fe7bcd135e0515280275ce9b658a8ef3eb00c21364ab14ac3"
+          ],
+          "request_digest": "sha256:8e67f5ffe1c68b62521c2c90c5cbe2fd5b134831d9746ff04b8acb4fd5b3ece0",
+          "rule_digests": [],
+          "world_snapshot_digest": "sha256:a013ca88d2da31ed8cc6dbc1000ccd352b3562986e9cdf7d2310db5fbbeefbe0"
+        }
+      },
+      "oracle_expected": {
+        "class": "unsupported_without_rollout_rule",
+        "current_claim_allowed": false,
+        "family": "deployment_safety",
+        "oracle_input_digest": "sha256:4fbe2fc30811516ac30901deecf781af9b7e86edc561516748b8ce499585e867",
+        "source": "Vega-api",
+        "status": "residual_required",
+        "target": "Eko-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "deployment_safety",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "emergency_dispatch",
+          "topology_shape": "fan_out_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Should deployment from Vega-api continue toward Eko-worker? Render gates and rollback.",
+        "rule_count": 0,
+        "scenario_digest": "sha256:879cd852aadc3d698fa97888bb29e1b12e54dc7cbea8e79f4d4fbf06defc991e",
+        "scenario_id": "heldout-deployment_safety-3-vega-api-eko-worker",
+        "source": "Vega-api",
+        "target": "Eko-worker"
+      }
+    },
+    "heldout-restart_risk-0-nox-mesh-gale-canary": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:17bd345f23e45a9dcddd5953e79b05403dd61b2e6dcbfb5d168e1dea32a3ce82",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:e7a3461b613ba77a652fa6c18faf9be487891201202c0f5c32828ce3ad6fdb03",
+          "rendered_artifact_bytes": 3665,
+          "rendered_artifact_digest": "sha256:118b8b470feee75675185824c6a3a4e842f969a3c19fcc472975ef5e75a4bfc4",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:9a3fa286f4ac844738cd05fe08ec07446a49bac25bf12f2bc7e973a4254f6e41",
+          "residual_packet_digests": [
+            "sha256:0711c683fcbc6bda2439541e6ad6f611a08c2128cbf3f93288b376d4ac753987"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-0-nox-mesh-gale-canary",
+          "scene_plan_digest": "sha256:ff7185b00554732c34f78c7884e1f2bb2286a6b3d5e1a42e24719d4ae76b0bac",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 795,
+          "text_artifact_digest": "sha256:460e48c53c2131737b0fe90b23ee10cba44dcd79cbd9aa20eed4abc1941f03b6",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:457ca8e9434710c378259e3d35400365d76fa10bfbf9c53977df97699216e6cf",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": false,
+          "visual_render_status": "placeholder_rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-0-nox-mesh-gale-canary:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:91cc707634077858b2355a1eec24de915d0f3b0090beeb3476f553b8a7a5649a"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b4d86d2e068ba07cf772947124991fde77e3a6b67f474bd7012763947f929354",
+              "status": "stale",
+              "subject": "Nox-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-nox-mesh-gale-canary:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:f1bc7800fc52ff41a6f171fa845d18de0f3a35b835d8a886302b675f3ff94cf6"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:36f3526d6d17725e1f7798c723841cec00552aafbafbf93c48bc6519beee7b40",
+              "status": "stale",
+              "subject": "Gale-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-nox-mesh-gale-canary:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:d4da6e30d12e75e28ddd8edf0c254b89ad015479e5876cadc6e2d6c53eae8313"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Nox-mesh",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:5f6289a2761d6572f9b59cf8ccf298c9635f4a2761891afb28b625abaadc7dda",
+              "status": "supported",
+              "subject": "Gale-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-nox-mesh-gale-canary:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:b587f1a75f145f62663c1c97dd957cfa372de0ffdfb9d6771fdd6955f00d1d3a"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:9ecc908e5bb113d3cc14ddea74c82d988a9008decb421cf7787907d7b86ca754",
+              "status": "supported",
+              "subject": "Nox-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-0-nox-mesh-gale-canary:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:ba650c545d5daa2dcfc6b3ed7ee3d940a9a92edd62c501683309cdcdcbb3fa65",
+                "sha256:eb96a30a885747e8741a7075a1a79750e4344926961830c4bc8418b209fff5ba",
+                "sha256:0ef217f04d1ef85c438aac3bc57002bdb76730cb2fc14ebb1b5342a1d8f5b000",
+                "sha256:510e13145b8280136d21c4501c0a81de9f483704fe2f8f53a36d0973770ad983"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "unknown_current_state"
+              },
+              "object": "Gale-canary",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d",
+              "status": "stale",
+              "subject": "Nox-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:91cc707634077858b2355a1eec24de915d0f3b0090beeb3476f553b8a7a5649a",
+            "sha256:f1bc7800fc52ff41a6f171fa845d18de0f3a35b835d8a886302b675f3ff94cf6",
+            "sha256:d4da6e30d12e75e28ddd8edf0c254b89ad015479e5876cadc6e2d6c53eae8313",
+            "sha256:3ce7c18a38c34a6318e29fe3ce0a29a25b020b9b1f6149e1bdbb3a71b64e4379",
+            "sha256:b254072236b4d63483d5a302ec2f91206a296299f1cff035d1df7362bea76c99",
+            "sha256:b587f1a75f145f62663c1c97dd957cfa372de0ffdfb9d6771fdd6955f00d1d3a",
+            "sha256:7952e6ad157e1ff1ce2ce19d089aa65727e7a21c3e50bedd5afff1b648c7d83d"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:17bd345f23e45a9dcddd5953e79b05403dd61b2e6dcbfb5d168e1dea32a3ce82",
+          "graph_id": "proof:restart_risk:9a3fa286f4ac844738cd",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:9a3fa286f4ac844738cd05fe08ec07446a49bac25bf12f2bc7e973a4254f6e41",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:724961d2b0c6970045f30e3043d81fc3d018e5db8d470854a3620be369d81155"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:5e4561d5bb971c614d88de7fc8492ead98e190ad0592380df62685cf588edc50",
+        "source": "Nox-mesh",
+        "status": "stale",
+        "target": "Gale-canary"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "temporal_state": "stale",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Nox-mesh destabilize Gale-canary? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:0a0997eb2bec86f2e8897897c53102ae9a707c747e41d430de1a8ce42dbe5225",
+        "scenario_id": "heldout-restart_risk-0-nox-mesh-gale-canary",
+        "source": "Nox-mesh",
+        "target": "Gale-canary"
+      }
+    },
+    "heldout-restart_risk-1-cyra-core-juno-core": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:223fc2d9935b327280a77d9e603b0d828c9b608dcfe2fe9018689ffddcbcb1c5",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:4b1094322e75aad17803690fa58f3d263329e17275732fca5d742508760bfb5c",
+          "rendered_artifact_bytes": 3657,
+          "rendered_artifact_digest": "sha256:9f7c06584e28158996c4b54c41d413a0284391394f28ab5cd084396b27a82ca3",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:314e258b6f2d3943495608da19f6aa62311b1c87e7d96481cc49266fcf9eec79",
+          "residual_packet_digests": [
+            "sha256:8377beb4df82397cc9d4dd630fb552f2f95d68c53db46a01efde0aab9ebe3325"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-1-cyra-core-juno-core",
+          "scene_plan_digest": "sha256:fb4536a93dc284e587bc9b10b51b50b6183e76f6b2efa9df7e3ce84c52af7b9d",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 789,
+          "text_artifact_digest": "sha256:d82877296fe0277b7533a8f2ba0b613dc5114cf88332644d906a60b1a2b09ad1",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:b435d8c7f83fe094681dda7c8f18ab55aee7c3b3bcf203a325504e5aad4b999e",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": false,
+          "visual_render_status": "placeholder_rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-1-cyra-core-juno-core:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:de0a31dbbb3e6f03a9206467d3fa353a0b7093e592e23da8f4315aa47b157444"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:dbbe748cf91bff682cd2ffdf4acb54af9c3e1a35dcbdd23cbe3d9fa72a0509ef",
+              "status": "stale",
+              "subject": "Cyra-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-cyra-core-juno-core:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:bc557ac571d20cbae730f4455ac7be3881947fceef0ba5ca87d54a57d3fdff3d"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:0725f0de12f083b458a9c09759c89b594e747588c94d41adb12d12dcf05492e0",
+              "status": "stale",
+              "subject": "Juno-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-cyra-core-juno-core:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ee80f87c9fc09cc58a6ca82739eddbdeaf198de1363254f0960b0491f32f7d97"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Cyra-core",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:bedf3338a3506924992711736d6f8a040a65540c8ab8e7b699f59cb48b3d937e",
+              "status": "supported",
+              "subject": "Juno-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-cyra-core-juno-core:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:e4293b05a62d63a6a0730f73cd6b26dc426d2bae6cc60309743a6290a96e03e2"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:532a746bfe94845b13960f8c0b18f08712e1f573eb216b1c9baea66d6a3819cd",
+              "status": "supported",
+              "subject": "Cyra-core"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-1-cyra-core-juno-core:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "temporally_invalid",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:ba03c117ec1b51cf8807ff9cd99d953283a0cff69c79b3c0e4826393b2a0c3d3",
+                "sha256:3f08e9b26a58cf9f4c56a6000efebe70a5dbd323fba724b905415722991e0c59",
+                "sha256:56a0df237fd35de7ed4448bf2d006088dd40d57a27f193d253ae7e27aa45b0ec",
+                "sha256:d097cc51e19531b26d54a8251559ad45261ba00ee0cdcac2b3ad4b52c454b4ff"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "unknown_current_state"
+              },
+              "object": "Juno-core",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc",
+              "status": "stale",
+              "subject": "Cyra-core"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:de0a31dbbb3e6f03a9206467d3fa353a0b7093e592e23da8f4315aa47b157444",
+            "sha256:bc557ac571d20cbae730f4455ac7be3881947fceef0ba5ca87d54a57d3fdff3d",
+            "sha256:ee80f87c9fc09cc58a6ca82739eddbdeaf198de1363254f0960b0491f32f7d97",
+            "sha256:4bb4064e61099fccb85bd82a24b99b202a9f32683cc6230121bb5581e5b326ad",
+            "sha256:542010cb675f1a7d488217a7620b244c5435f063290c14a27f91d174f78dd8e7",
+            "sha256:e4293b05a62d63a6a0730f73cd6b26dc426d2bae6cc60309743a6290a96e03e2",
+            "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:223fc2d9935b327280a77d9e603b0d828c9b608dcfe2fe9018689ffddcbcb1c5",
+          "graph_id": "proof:restart_risk:314e258b6f2d39434956",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:314e258b6f2d3943495608da19f6aa62311b1c87e7d96481cc49266fcf9eec79",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:db967457e076ede944fcdf88382f14446767099e626b1da918e9d9c82ed3004e"
+        }
+      },
+      "oracle_expected": {
+        "class": "unknown_current_state",
+        "current_claim_allowed": false,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:7c7f5df5de9ca8c87f63f042a5e9e516a6570f3fb5febf789ced1da94cf482d9",
+        "source": "Cyra-core",
+        "status": "stale",
+        "target": "Juno-core"
+      },
+      "scenario": {
+        "fact_count": 7,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "library_search",
+          "temporal_state": "stale",
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Cyra-core destabilize Juno-core? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:7b7242f2dd5c17a4f41b5ea73105fc7a4c0cf9293e81fa514f626c48571499b3",
+        "scenario_id": "heldout-restart_risk-1-cyra-core-juno-core",
+        "source": "Cyra-core",
+        "target": "Juno-core"
+      }
+    },
+    "heldout-restart_risk-2-ari-worker-bex-worker": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:d757d60673f8f1e3f30016e52913aa5dde827b1ba1b5ed171e4bcb03187d40fd",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:48e263980d937326c1ea125b1dfabf3be21d74f9a6b0b81650c951b74bf00910",
+          "rendered_artifact_bytes": 3142,
+          "rendered_artifact_digest": "sha256:b98ecd9291a596b6fbab127742c4ec696071e5e5462c0f5b6e7cea58e7d22359",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:40fd4ec0c31863d3a47c1bb1d637d36e2f72c9f556dd9324b83436fa30a66ffa",
+          "residual_packet_digests": [
+            "sha256:73967f97f319309130d8f3967cc3eb97a1e15f7b5ada4516afd4dea3c5dc0dba"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-2-ari-worker-bex-worker",
+          "scene_plan_digest": "sha256:1e2805397894236d4a30fa8fd7254b86fb8b2cfc04eeb1c421813f13c2162eb2",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 788,
+          "text_artifact_digest": "sha256:a041fd7d1d7cccc0b78a11c6abce2b1452acded0f794a0da781576275d8de426",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:d8119f778a5a1b430d91767afbcd9a75d2460ffe803b6e1081fb85474618e101",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": false,
+          "visual_render_status": "placeholder_rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-2-ari-worker-bex-worker:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:5fc7d5164cc655955edf10a927d6370824929caa2831060fcbc752849d228113"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:f95dc4b60897b5c6135dfd0a48b0449c5ff991ccc67cfa90b456126940847d88",
+              "status": "supported",
+              "subject": "Ari-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-ari-worker-bex-worker:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:38b947c8f53f721f0fbea6a691245c4cd07e9fb1ec2ff2e34026bef77ff6dded"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:4882f66e3eb3e7b48d9420c2977b571e4894499d5abbbf8c4a689ce2ba618f5b",
+              "status": "supported",
+              "subject": "Bex-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-ari-worker-bex-worker:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:a435f13c06748336895205205b22357d5d2558d4748af2af87e26319f0081f71"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Ari-worker",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:a5487c84d776662d2879b874493947ea2ad2824198094aa3ec3fcd4ee8084c35",
+              "status": "supported",
+              "subject": "Bex-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-ari-worker-bex-worker:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:e1d0a5bd41223e56317dd60ce151e300cff25252545cc6732c6a3b933691f91b"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:44e1318c461de0f903497d849dce3efd5b34575c9dd862bdcd0826c874972767",
+              "status": "supported",
+              "subject": "Ari-worker"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-2-ari-worker-bex-worker:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "rule_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:17f864f9e9e7cf48f25b08986ca0ce1bcdfe1bba3bde7f130238008c5c12f4d1",
+                "sha256:5ceaa71a19b4dd66c7c3fee4d12b85ce5685947f014dd9f525cc933fda14c5a4",
+                "sha256:af10ab2ab6232de0714702ca29f19ddb7ac514537433897643403f507c16a2b2",
+                "sha256:8f6f72532acae4d3d74a267be633359db67f6ef3d3027e66c5411b686dddbf12"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "low"
+              },
+              "object": "Bex-worker",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:d21629a467fd2188930165150edf8a2ef16fe9920248d55c53af2eb8fd5671d9",
+              "status": "supported",
+              "subject": "Ari-worker"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:5fc7d5164cc655955edf10a927d6370824929caa2831060fcbc752849d228113",
+            "sha256:38b947c8f53f721f0fbea6a691245c4cd07e9fb1ec2ff2e34026bef77ff6dded",
+            "sha256:a435f13c06748336895205205b22357d5d2558d4748af2af87e26319f0081f71",
+            "sha256:e1d0a5bd41223e56317dd60ce151e300cff25252545cc6732c6a3b933691f91b",
+            "sha256:d21629a467fd2188930165150edf8a2ef16fe9920248d55c53af2eb8fd5671d9"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:d757d60673f8f1e3f30016e52913aa5dde827b1ba1b5ed171e4bcb03187d40fd",
+          "graph_id": "proof:restart_risk:40fd4ec0c31863d3a47c",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:40fd4ec0c31863d3a47c1bb1d637d36e2f72c9f556dd9324b83436fa30a66ffa",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:146e4c91b847f1eecb33db62e67a0884a883679e965076d5e0be36e7061c47e7"
+        }
+      },
+      "oracle_expected": {
+        "class": "low",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:ae7517477cb0d8fba14ee2b0bb647a573f16acd9e5ff73a99ea7450ac87bbfd4",
+        "source": "Ari-worker",
+        "status": "supported",
+        "target": "Bex-worker"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "topology_shape": "direct"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Ari-worker destabilize Bex-worker? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:7bd1247e4aa9b1a7ee4df1da3b4ec4d9420d45884bfd0543205121b3107e8295",
+        "scenario_id": "heldout-restart_risk-2-ari-worker-bex-worker",
+        "source": "Ari-worker",
+        "target": "Bex-worker"
+      }
+    },
+    "heldout-restart_risk-3-riven-mesh-kite-canary": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "restart_risk",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:9cc0d653f38870a17846baab08a5b4d418c3f8939f59b3dc0c62889ac81b1707",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:273d68dc3b8996e6f430fcfed7045075bcff0b2eee2aaeb5cd2d28739ddd8fda",
+          "rendered_artifact_bytes": 2655,
+          "rendered_artifact_digest": "sha256:66625c4f0da19a125fea7729c61169375f7e69e3d1e1b1ef8dc0cc0522e9a6ea",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:aeee09052f9d7841915e605d5b1a84b890eec4d70dd714a70f60cee59331b8e8",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-restart_risk-3-riven-mesh-kite-canary",
+          "scene_plan_digest": "sha256:79f3048b0e4c59b99d9c18649f572c845466504fca9a5d03983f1647aabd4c91",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 794,
+          "text_artifact_digest": "sha256:43b1a1e4c66b665ab06b23377340203946c90eeccdca28f70ef5d4a2c6520e83",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:191f8bb5ef7ce03e15d353f1504ad2205de5e3be82e7e7db6206efc6690d422c",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-restart_risk-3-riven-mesh-kite-canary:source-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:fdbc3c484dd957a85d16e41620da9c966ec48424d3b63ef9b1eba0a317eca655"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c824582c952e72996f44aa2ee55a8e12bceb892cbe638ab7595b925a5a3ef5a7",
+              "status": "supported",
+              "subject": "Riven-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-riven-mesh-kite-canary:target-health",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:696d8d8a34fae48b941ba471b9c6ec726dcef270250b024839d1ec09e202acbf"
+              ],
+              "metadata": {
+                "fact_type": "service_health"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "health",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:59d601dbff7f0d3f54a020e197bd9581d07079738564d2e2dca852176b3980d8",
+              "status": "supported",
+              "subject": "Kite-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-riven-mesh-kite-canary:dependency",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:ec84872d00867396c358db2786a1c3732f12120c9dc1a522f7fbed373e2c7180"
+              ],
+              "metadata": {
+                "fact_type": "dependency_topology"
+              },
+              "object": "Riven-mesh",
+              "policy_ref": "",
+              "predicate": "depends_on",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:e6d0232602b4ae2b96c6a2b3a7d0bbca27c090472913daaa1fbc959e83fac81a",
+              "status": "supported",
+              "subject": "Kite-canary"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-riven-mesh-kite-canary:restart-policy",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:a8c376f92e87bd651f5fc2c9cc96dbde813bb82adb0354b09d9298408b90d498"
+              ],
+              "metadata": {
+                "fact_type": "restart_policy"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "restart_policy",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:7b68f1998b1101e9add0653297cc75dbca8993cabaf0317a1bac3e69f3bdefce",
+              "status": "supported",
+              "subject": "Riven-mesh"
+            },
+            {
+              "claim_id": "claim:heldout-restart_risk-3-riven-mesh-kite-canary:restart-risk",
+              "claim_type": "conditional_causal",
+              "confidence_class": "rule_proven",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:836ce8de223e82493db71a496e94a2453a2b10a4347b8e0d0f1e656d7e925136",
+                "sha256:231d72c301ccda4f6fc9e9daee221499a577dbe2362af18459517f5e9fd7a8bb",
+                "sha256:810646a013b7cf78e07c1009e7c4ae600f99335ffd07f4669de783fad0db5822",
+                "sha256:14a02c69f6286b6a29c5102b0a3430c4dfbfcbe3c539e6316091d7954e899947"
+              ],
+              "metadata": {
+                "family": "restart_risk",
+                "risk_class": "low"
+              },
+              "object": "Kite-canary",
+              "policy_ref": "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7",
+              "predicate": "restart_destabilization_risk",
+              "rule_ref": "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1",
+              "snapshot_ref": "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc",
+              "status": "supported",
+              "subject": "Riven-mesh"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:fdbc3c484dd957a85d16e41620da9c966ec48424d3b63ef9b1eba0a317eca655",
+            "sha256:696d8d8a34fae48b941ba471b9c6ec726dcef270250b024839d1ec09e202acbf",
+            "sha256:ec84872d00867396c358db2786a1c3732f12120c9dc1a522f7fbed373e2c7180",
+            "sha256:a8c376f92e87bd651f5fc2c9cc96dbde813bb82adb0354b09d9298408b90d498",
+            "sha256:8924f0b37f5b0d02c8365f1240f9a5c2121e6378bd1e0ae6a48f406fad9624dc"
+          ],
+          "family": "restart_risk",
+          "graph_digest": "sha256:9cc0d653f38870a17846baab08a5b4d418c3f8939f59b3dc0c62889ac81b1707",
+          "graph_id": "proof:restart_risk:aeee09052f9d7841915e",
+          "policy_digests": [
+            "sha256:73fff98fb773eae3ff6075fe9e77c2b538b6e652be1b12e73050f3a9ed68dff7"
+          ],
+          "request_digest": "sha256:aeee09052f9d7841915e605d5b1a84b890eec4d70dd714a70f60cee59331b8e8",
+          "rule_digests": [
+            "sha256:cd27e34ce611e1e7294aa58be7eafdbfba69c00d205bd61a8c2fdf87b9be89c1"
+          ],
+          "world_snapshot_digest": "sha256:3a1b8db94bc22b6e040368c239eb5d2b6f4c048035c18592c822fbb2798e251b"
+        }
+      },
+      "oracle_expected": {
+        "class": "low",
+        "current_claim_allowed": true,
+        "family": "restart_risk",
+        "oracle_input_digest": "sha256:90c42c3a8e057b752621cf73ca49d7022fe87ed9d3b9c4525891fdb347a05039",
+        "source": "Riven-mesh",
+        "status": "supported",
+        "target": "Kite-canary"
+      },
+      "scenario": {
+        "fact_count": 5,
+        "family": "restart_risk",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "campus_lms",
+          "topology_shape": "direct"
+        },
+        "policy_count": 1,
+        "question": "Could restarting Riven-mesh destabilize Kite-canary? Render the dependency/risk path.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:577fa996e2685bdd04683ed42bb04f0e71bde8f64ec7c9c5e750751e31c8ca2b",
+        "scenario_id": "heldout-restart_risk-3-riven-mesh-kite-canary",
+        "source": "Riven-mesh",
+        "target": "Kite-canary"
+      }
+    },
+    "heldout-traffic_shift-0-vega-canary-flux-api": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:df5143b328954d8136b29b0a389ad7e3c7ec6cb3ee2d77eb2aefc74783f865a3",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:a1171bd1e36dd49505b68acfb5d36d5f20a633d25a1d7594ef20c84ee1425d25",
+          "rendered_artifact_bytes": 3269,
+          "rendered_artifact_digest": "sha256:f327d9d93a8d44eed31cc7c90b8f1a74d36d8b3e5a0f0493dfa767cff7a0b003",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:90891a9afe3bbad6faddedd6adb73e2d406bddac4dec67e972d3bf015b890c80",
+          "residual_packet_digests": [
+            "sha256:a20c50121b225ca84eb336a64ccc533baecc888f925967569f45e03a27403d5b"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-0-vega-canary-flux-api",
+          "scene_plan_digest": "sha256:ce5d64e1286c68f8eb72bd63d10569849930e00f43003ec605905641ca758ab4",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 724,
+          "text_artifact_digest": "sha256:c7ee4c397cfb3b3de2f2faba737bdb1da03b175dfec73cdc7adeac33e93d1735",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:4c70ee6472fff9a838dbaedc81c21fd350ddf340bd44fd605ae12d1bb6a0cac6",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-vega-canary-flux-api:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:7f92fdb8787931430c186453aca9d8123eeafc00983e9710221522c6a6345283"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b4ed2cfd6d7298f80c69b4ed15ba70a50286253a15cbeee61d2aef87a8fd2d75",
+              "status": "supported",
+              "subject": "Vega-canary"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-vega-canary-flux-api:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:f649c691774b3c73e9786e6fbf46f9a3c463963f73d02860963adea3c3c97ebc"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b38d6bfc271ce3cfc03fd676bd4bfc1b9e4214cfc6adcb50a10781154ebadf4d",
+              "status": "supported",
+              "subject": "Flux-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-vega-canary-flux-api:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:750c0226a341be869f112e963489f43d936ac180af573a8c5e83c5d37106e696"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Flux-api",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:b60daaee7cc171b0491232ee2a853d9c13ddff62a05d11588e6c5e7ea3069cf7",
+              "status": "supported",
+              "subject": "Vega-canary"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-0-vega-canary-flux-api:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "capacity_rule_missing",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:463592d52928a43888086923d3d10bdc6413ef9d988b2892d1435b808125b47a",
+                "sha256:a0fa92dff26f165b0697f7a880ce2d8cd9f79d89a8292b6072921b5a40d68ee1",
+                "sha256:ac348ade03e794ff6c5e2b64d5d531b92d61ddb40007b4b84ba8f97a749692f0"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 10.0,
+                "shift_class": "unsupported_without_capacity_rule",
+                "shift_percent": 15.0,
+                "target_spare_percent": 70.0
+              },
+              "object": "Flux-api",
+              "policy_ref": "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "residual_required",
+              "subject": "Vega-canary"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:7f92fdb8787931430c186453aca9d8123eeafc00983e9710221522c6a6345283",
+            "sha256:f649c691774b3c73e9786e6fbf46f9a3c463963f73d02860963adea3c3c97ebc",
+            "sha256:750c0226a341be869f112e963489f43d936ac180af573a8c5e83c5d37106e696",
+            "sha256:6cd91ede01a333d090ef96c5546d25ce6a0515b4660d8764aacea866dba7fbe5",
+            "sha256:9f3d76ec6f37b6dd35ab73470d0076838ed6f9d81d21fd8bdbea397c979b12e3",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:df5143b328954d8136b29b0a389ad7e3c7ec6cb3ee2d77eb2aefc74783f865a3",
+          "graph_id": "proof:traffic_shift:90891a9afe3bbad6fadd",
+          "policy_digests": [
+            "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b"
+          ],
+          "request_digest": "sha256:90891a9afe3bbad6faddedd6adb73e2d406bddac4dec67e972d3bf015b890c80",
+          "rule_digests": [],
+          "world_snapshot_digest": "sha256:0184a32dc28873a62091e3f34dd98f0440005aedeb1abe95a27ef64290260651"
+        }
+      },
+      "oracle_expected": {
+        "class": "unsupported_without_capacity_rule",
+        "current_claim_allowed": false,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:188dc6e398955e82ccf1048ee7ffc8eb6ceb19d324ee1b1056e96d8d1fe9939c",
+        "source": "Vega-canary",
+        "status": "residual_required",
+        "target": "Flux-api"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "robotics_cell",
+          "shift_percent": 15,
+          "topology_shape": "transitive_with_direct_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 15% traffic shift from Vega-canary to Flux-api? Render capacity and route state.",
+        "rule_count": 0,
+        "scenario_digest": "sha256:b3be7af6c9e96b9e39a61fcf31501d761692745d51679896e577a890c4d6788c",
+        "scenario_id": "heldout-traffic_shift-0-vega-canary-flux-api",
+        "source": "Vega-canary",
+        "target": "Flux-api"
+      }
+    },
+    "heldout-traffic_shift-1-riven-core-vega-canary": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 0,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": -1,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": false,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 1,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "rule_engine_text_only",
+          "total_score": 7,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": false,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:bd7042dbefdc8ab267679ffcd19f32b735584cbe8784d5b3165efef2057a056f",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:8c6b1359d73211e07d1e27fe33d75ccdef8ec2c8f7301b5dff3bfe44b2cff456",
+          "rendered_artifact_bytes": 3283,
+          "rendered_artifact_digest": "sha256:56a5d47cd17dbf880438c8fbd6257f3237e87a22c1c90e091635472ee911ed69",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:e420f88ee0cc1f2ff99d43fa467ee3a0e920c20fcdeb3513ccb8d92e162b7dcb",
+          "residual_packet_digests": [
+            "sha256:cd7a69256fba7fc09bd66850f18250af77b0d0cdab0d1add7e3046b174367aa6"
+          ],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-1-riven-core-vega-canary",
+          "scene_plan_digest": "sha256:05bd973559486eb71271e29210f3f5ae65bfec7cabce1d1c2e4f83f37a98c6de",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "partial",
+          "text_artifact_bytes": 734,
+          "text_artifact_digest": "sha256:ed0a7fce292c55523ea5512ab3b385a98ed33020bf284a7cb42082876997682a",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:64c7c11a82d218adbf392661861b0abe404615b3c77574df0484e340d4c1aee0",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-riven-core-vega-canary:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:fd5109d0fe85b06f1a0c507b1d9a27391d57017aa93ddeb8061f208f21336543"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:d52288dcaa5d7226f282cab365121ea3555d266384b6bb3e526a0a8e9dbe9e58",
+              "status": "supported",
+              "subject": "Riven-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-riven-core-vega-canary:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:bccf598cbec7cda3c1323c8970b7980fd6be20c0900f37ca6a230218312f4d64"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:239ef089b23e635d5fad24c51bff935654df987f3dbf45754c2841659a762b3d",
+              "status": "supported",
+              "subject": "Vega-canary"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-riven-core-vega-canary:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:bb9c4ab248e38b16a5a56990cc1776b2fc2d2da867341780567fb2fcd9bbdce0"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Vega-canary",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:f2f1de75c69a407f99dae4211884b7006a08c7b7860849f1e6bbb76cc31f786f",
+              "status": "supported",
+              "subject": "Riven-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-1-riven-core-vega-canary:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "capacity_rule_missing",
+              "current_claim_allowed": false,
+              "fact_refs": [
+                "sha256:db6b6db6fa2de609c51fdb66da0d1e3494f40bb166ff7efbcb896a7f7e1ee64e",
+                "sha256:88bdbbe8ca608038d8c91c192a5e72d471c389d22915a88d1039c11e36ce13c5",
+                "sha256:7878467cbc72ae0a0df7a70f49f24cf064d4d9a42bfc2c1d0d0600e6b511ae5a"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 10.0,
+                "shift_class": "unsupported_without_capacity_rule",
+                "shift_percent": 20.0,
+                "target_spare_percent": 55.0
+              },
+              "object": "Vega-canary",
+              "policy_ref": "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "residual_required",
+              "subject": "Riven-core"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:fd5109d0fe85b06f1a0c507b1d9a27391d57017aa93ddeb8061f208f21336543",
+            "sha256:bccf598cbec7cda3c1323c8970b7980fd6be20c0900f37ca6a230218312f4d64",
+            "sha256:bb9c4ab248e38b16a5a56990cc1776b2fc2d2da867341780567fb2fcd9bbdce0",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:bd7042dbefdc8ab267679ffcd19f32b735584cbe8784d5b3165efef2057a056f",
+          "graph_id": "proof:traffic_shift:e420f88ee0cc1f2ff99d",
+          "policy_digests": [
+            "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b"
+          ],
+          "request_digest": "sha256:e420f88ee0cc1f2ff99d43fa467ee3a0e920c20fcdeb3513ccb8d92e162b7dcb",
+          "rule_digests": [],
+          "world_snapshot_digest": "sha256:0a8dede51c9264dda9c88ad8f76e6a492a98d457192fb02e5d87cf7afad98842"
+        }
+      },
+      "oracle_expected": {
+        "class": "unsupported_without_capacity_rule",
+        "current_claim_allowed": false,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:c1f4a7e4808fcf4ea5c750385e72e1ed5b476594397a83da75b2c23f16e82ab2",
+        "source": "Riven-core",
+        "status": "residual_required",
+        "target": "Vega-canary"
+      },
+      "scenario": {
+        "fact_count": 4,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "water_station",
+          "shift_percent": 20,
+          "topology_shape": "direct"
+        },
+        "policy_count": 1,
+        "question": "Can 20% traffic shift from Riven-core to Vega-canary? Render capacity and route state.",
+        "rule_count": 0,
+        "scenario_digest": "sha256:f762e02dac2a291e2d373f3daf1ed13a0c5e64bbe19fbc5ddeeed139b481a33d",
+        "scenario_id": "heldout-traffic_shift-1-riven-core-vega-canary",
+        "source": "Riven-core",
+        "target": "Vega-canary"
+      }
+    },
+    "heldout-traffic_shift-2-yara-api-flux-canary": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:afdf51da12c8b1561369fb978fa76df462f578b4ef23880c520cf712f15658b7",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:e2cca986d623cd8df8fdb465f8fb7a21a092c53d55672b082adbf10a32065157",
+          "rendered_artifact_bytes": 2668,
+          "rendered_artifact_digest": "sha256:457e78eed545765d28c058b3c0bf044e8be6c0aed6b1afa7122290ad5c8b9c1f",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:5c7addb658e75cd407fb9d2f848dc44255411ba9845c557e9a72c6edd2636ba2",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-2-yara-api-flux-canary",
+          "scene_plan_digest": "sha256:b71a45d36680a1d6c454378d5143c529b9988474999dd77880129f17d949b433",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 678,
+          "text_artifact_digest": "sha256:79ad477ffef79595e16a37725011d89a2fee6253ff6673e77b81468d8aaea6ec",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:79dfabca230de00aa16c3ad3ec0795b7189f7adf338927809cb00d2f4cf6efb1",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-yara-api-flux-canary:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:969ba5b29401e011b414f941a605de221cebfa3efc9d7a83848aa8b25cbb8b4a"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:8abe73824bd91ff3f000d0a6770b3dbeaf7dae2c594d8069257c457f2fdc1fa1",
+              "status": "supported",
+              "subject": "Yara-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-yara-api-flux-canary:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:1a5ca37ec6b7076184cb18c72bcb84cffe35107c779546b9b347366f5a48ed90"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:2845c304cc37aa19914e45bcb429518d9011465ea0815d65154360a45ed45ad8",
+              "status": "supported",
+              "subject": "Flux-canary"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-yara-api-flux-canary:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:a25c95680f005a840dd5d244dc9d7b28339cc0c761941c97b8ce7da6ca221f18"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Flux-canary",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3e2163053ff814ff8c194b1d1b3e63dee100269e9be63cd152091e53277c6639",
+              "status": "supported",
+              "subject": "Yara-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-2-yara-api-flux-canary:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "threshold_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:fe9cf3c796b838f6040efbfe94106b031ffe6f9fe65d6f5b5ecc76acb5ee1662",
+                "sha256:1f2bf59b960dad9f339bc0fe58f95845dca7fd9cf876703eeae69e70fe3d566b",
+                "sha256:31cfe3db657c9dc4beda5bf93aab307beee68947a0ab7e64200a4388eb54978c"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 10.0,
+                "shift_class": "unsafe",
+                "shift_percent": 30.0,
+                "target_spare_percent": 35.0
+              },
+              "object": "Flux-canary",
+              "policy_ref": "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Yara-api"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:969ba5b29401e011b414f941a605de221cebfa3efc9d7a83848aa8b25cbb8b4a",
+            "sha256:1a5ca37ec6b7076184cb18c72bcb84cffe35107c779546b9b347366f5a48ed90",
+            "sha256:a25c95680f005a840dd5d244dc9d7b28339cc0c761941c97b8ce7da6ca221f18",
+            "sha256:093e7d54c03b5e5523aefe991c6c7a2a9445836cbe5b528d9b40d4ec06074cf2",
+            "sha256:06bd9d171682e8fbbad4ad8ffbc37899e210cea506d0355869795758260e83ef",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:afdf51da12c8b1561369fb978fa76df462f578b4ef23880c520cf712f15658b7",
+          "graph_id": "proof:traffic_shift:5c7addb658e75cd407fb",
+          "policy_digests": [
+            "sha256:868bd2f07bd67fe1ae978b3f500cb664fd4373b382598a84a9ab4afe8574445b"
+          ],
+          "request_digest": "sha256:5c7addb658e75cd407fb9d2f848dc44255411ba9845c557e9a72c6edd2636ba2",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:02679b46416e126398270de723c358b97f0a226e5123026ee3fe4db791235c04"
+        }
+      },
+      "oracle_expected": {
+        "class": "unsafe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:4f803b354e4a9e675a13d21459a279f5e283bab6b9c005ed22714b76a2c071f9",
+        "source": "Yara-api",
+        "status": "supported",
+        "target": "Flux-canary"
+      },
+      "scenario": {
+        "fact_count": 6,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "clinic_scheduler",
+          "shift_percent": 30,
+          "topology_shape": "fan_in_with_anchor"
+        },
+        "policy_count": 1,
+        "question": "Can 30% traffic shift from Yara-api to Flux-canary? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:e023ffa32f5c31b35f5a5473467bf013ac7642730839edf1dab4906f43167e79",
+        "scenario_id": "heldout-traffic_shift-2-yara-api-flux-canary",
+        "source": "Yara-api",
+        "target": "Flux-canary"
+      }
+    },
+    "heldout-traffic_shift-3-uma-api-gale-core": {
+      "baselines": {
+        "beast_capability_composition_rule_engine": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_capability_composition_rule_engine",
+          "total_score": 7,
+          "visual_present": false
+        },
+        "beast_generation_provider_boundary": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "beast_generation_provider_boundary",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "beast_local_semantic_cache": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_local_semantic_cache",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "beast_topology_graph_adapter": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "beast_topology_graph_adapter",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "cached_named_template": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "cached_named_template",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "external_rag_retrieval": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "external_rag_retrieval",
+          "total_score": 3,
+          "visual_present": false
+        },
+        "knowledge_graph_topology_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "knowledge_graph_topology_only",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "model_generated_multimodal_stub": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 2,
+          "semantic_correct": false,
+          "system_id": "model_generated_multimodal_stub",
+          "total_score": 2,
+          "visual_present": true
+        },
+        "rag_nearest_exemplar": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rag_nearest_exemplar",
+          "total_score": 4,
+          "visual_present": true
+        },
+        "rule_engine_text_only": {
+          "artifact_custody_valid": false,
+          "honest_uncertainty": true,
+          "proof_first": false,
+          "provider_calls_used": 0,
+          "semantic_correct": false,
+          "system_id": "rule_engine_text_only",
+          "total_score": 3,
+          "visual_present": false
+        }
+      },
+      "beast": {
+        "evaluation": {
+          "artifact_custody_valid": true,
+          "honest_uncertainty": true,
+          "proof_first": true,
+          "provider_calls_used": 0,
+          "semantic_correct": true,
+          "system_id": "beast_c4x",
+          "total_score": 16,
+          "visual_present": true
+        },
+        "joined_receipt": {
+          "beast_object_type": "deterministic_cross_modal_joined_receipt",
+          "claim_boundary": "This receipt proves bounded deterministic composition only for the supplied verified facts, rules, policies, temporal evidence, structured text frame, deterministic scene plan, and exact artifact bytes. It grants no execution authority and makes no unsupported causal claim.",
+          "current_claim_valid": true,
+          "failure_classes": [],
+          "family": "traffic_shift",
+          "joined_verification": true,
+          "phase_trace": [
+            "proof_graph_compiled",
+            "text_frame_realized",
+            "scene_plan_compiled",
+            "text_artifact_rendered",
+            "visual_artifact_rendered",
+            "joined_verified"
+          ],
+          "proof_first": true,
+          "proof_graph_digest": "sha256:4dfdbdab5b224a415c7c987fdc556d85f19cc768ce6419800dd5486b779c27e5",
+          "proof_graph_valid": true,
+          "provider_calls_used": 0,
+          "provider_policy": "residual_only",
+          "receipt_digest": "sha256:cb8420e04ed65a17850b6d4444e8f586b9d417e62c19ebfff29b09121dc255b9",
+          "rendered_artifact_bytes": 2650,
+          "rendered_artifact_digest": "sha256:ac4c97ef19fd76a5a2dac69405960f866579313e9f1ed5d9d03f63d21b040672",
+          "rendered_artifact_media_type": "image/svg+xml",
+          "request_digest": "sha256:a92dc7a5e268a4839a39df8d9053bfb4cf0ced48875aba97380886246722e7c5",
+          "residual_packet_digests": [],
+          "residual_provenance_valid": true,
+          "scenario_id": "heldout-traffic_shift-3-uma-api-gale-core",
+          "scene_plan_digest": "sha256:c72d6cfa7f2ff25834715d853b8ffc1b65aac0bc4f7b8a5cc6f3dc6c7de49656",
+          "scene_render_valid": true,
+          "scene_semantically_valid": true,
+          "status": "composed",
+          "text_artifact_bytes": 663,
+          "text_artifact_digest": "sha256:4706990561d2479a23ef4495c3befbd50a2062a6c2822be65c09b8b6365b0fd2",
+          "text_artifact_media_type": "application/vnd.beast.structured-answer+json",
+          "text_frame_digest": "sha256:e58c1a143e8537683c524f7bd3a3b6d78934a6bbb7b4852688906f8c601ef45f",
+          "text_semantically_valid": true,
+          "version": "1.0",
+          "visual_failure_class": "",
+          "visual_intent_fulfilled": true,
+          "visual_render_status": "rendered"
+        },
+        "proof_graph": {
+          "claims": [
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-uma-api-gale-core:source-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:b766fbca8ef703ac8616a81f3d2d8d0b26db28de13520772833bfc0afd4a64d6"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:64e11ef202227e9b7d196e94403d97f19d57dcb4d3a249cb58ed7fdfade1399a",
+              "status": "supported",
+              "subject": "Uma-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-uma-api-gale-core:target-capacity",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:fee957430fb28ed3f3b846bdd95a75a45388570027b3f37d8a5034113a096a5b"
+              ],
+              "metadata": {
+                "fact_type": "capacity_state"
+              },
+              "object": "",
+              "policy_ref": "",
+              "predicate": "capacity",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:fd5c6eb51ed2c8651e649dd9ec956dfc6e1e2aa0992d10f4ee6ab8eacc5d48c2",
+              "status": "supported",
+              "subject": "Gale-core"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-uma-api-gale-core:route",
+              "claim_type": "observed_fact",
+              "confidence_class": "observed",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:6d14176360a4cc2df2d124b9f35eab37dd0a6bed85ae4c3cf21a980402c99fd3"
+              ],
+              "metadata": {
+                "fact_type": "traffic_route"
+              },
+              "object": "Gale-core",
+              "policy_ref": "",
+              "predicate": "routes_to",
+              "rule_ref": "",
+              "snapshot_ref": "sha256:3c12329b28352c54a8681d08535889d4728685ffef9382e26ab4af0fe8613342",
+              "status": "supported",
+              "subject": "Uma-api"
+            },
+            {
+              "claim_id": "claim:heldout-traffic_shift-3-uma-api-gale-core:traffic-shift",
+              "claim_type": "quantitative_threshold",
+              "confidence_class": "threshold_refuted",
+              "current_claim_allowed": true,
+              "fact_refs": [
+                "sha256:47b734733f1866a879b80e9285c2f85e52bc33ddef7043a3be2fc56434f34d47",
+                "sha256:e38c5dbb46387a0b84f7c89f2af5e901087ca05f94ce268c1ad1f9b99c606eb1",
+                "sha256:f679ec5ef3d687849264346d44926c062f2c4b01e8b221d6ad741108c5220e46"
+              ],
+              "metadata": {
+                "family": "traffic_shift",
+                "minimum_reserve_percent": 15.0,
+                "shift_class": "unsafe",
+                "shift_percent": 30.0,
+                "target_spare_percent": 55.0
+              },
+              "object": "Gale-core",
+              "policy_ref": "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d",
+              "predicate": "traffic_shift_safety",
+              "rule_ref": "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452",
+              "snapshot_ref": "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708",
+              "status": "supported",
+              "subject": "Uma-api"
+            }
+          ],
+          "compile_sequence": 1,
+          "compiler_id": "beast.proof-first-compiler.v1",
+          "fact_digests": [
+            "sha256:b766fbca8ef703ac8616a81f3d2d8d0b26db28de13520772833bfc0afd4a64d6",
+            "sha256:fee957430fb28ed3f3b846bdd95a75a45388570027b3f37d8a5034113a096a5b",
+            "sha256:6d14176360a4cc2df2d124b9f35eab37dd0a6bed85ae4c3cf21a980402c99fd3",
+            "sha256:c3d70c7abc8fd7118d7c3ac64451c2b882d33e4091eec3a4a9482d74deb18708"
+          ],
+          "family": "traffic_shift",
+          "graph_digest": "sha256:4dfdbdab5b224a415c7c987fdc556d85f19cc768ce6419800dd5486b779c27e5",
+          "graph_id": "proof:traffic_shift:a92dc7a5e268a4839a39",
+          "policy_digests": [
+            "sha256:aae338754363ff18ce6dfcd0d7bde26a9492def21f4a3982ec8961b919dd810d"
+          ],
+          "request_digest": "sha256:a92dc7a5e268a4839a39df8d9053bfb4cf0ced48875aba97380886246722e7c5",
+          "rule_digests": [
+            "sha256:ed4b2c2ad62d0683b404eb7285e5c7a537d4fb6d2610735f7d58e1e0ad4ce452"
+          ],
+          "world_snapshot_digest": "sha256:56d18b7558ee0b168a5500990ac758ebc59989d8a7ac6de5e47641f63f2274da"
+        }
+      },
+      "oracle_expected": {
+        "class": "unsafe",
+        "current_claim_allowed": true,
+        "family": "traffic_shift",
+        "oracle_input_digest": "sha256:767d432d406b39167b3df4bb0c4b47870acdabdaa0d0d8c2764b6493c7549fdb",
+        "source": "Uma-api",
+        "status": "supported",
+        "target": "Gale-core"
+      },
+      "scenario": {
+        "fact_count": 4,
+        "family": "traffic_shift",
+        "force_layout_overflow": false,
+        "metadata": {
+          "operational_domain": "farm_sensor_grid",
+          "shift_percent": 30,
+          "topology_shape": "direct"
+        },
+        "policy_count": 1,
+        "question": "Can 30% traffic shift from Uma-api to Gale-core? Render capacity and route state.",
+        "rule_count": 1,
+        "scenario_digest": "sha256:4ca7e30cc3a8d4fc573c2dcafb5ec07e26972e23f44429bac405f9c0da0bf7f3",
+        "scenario_id": "heldout-traffic_shift-3-uma-api-gale-core",
+        "source": "Uma-api",
+        "target": "Gale-core"
+      }
+    }
+  },
+  "claim_boundary": "Reference external-breakthrough benchmark scaffold. Held-out cases are generated after engine freeze from an evaluator seed. Semantic scoring uses an independent oracle derived only from scenario facts, policies, rules, topology metadata, and temporal flags before BEAST execution. Baseline adapters are transparent local references and should be replaced by independent public implementations for third-party claims.",
+  "observed_at": "2026-08-03T18:23:32.363025+00:00",
+  "receipt_digest": "sha256:70a5d06444d331ce47249dcb16d9ecae2389d8796bbf34c406b2fc4658af9e8b",
+  "run_id": "pgvector-rag-real-run-001",
+  "scorecard": {
+    "baseline_count": 10,
+    "baseline_scope": "local_reference_adapters_plus_existing_in_repo_beast_subsystems_plus_external_rag_command_not_third_party_public_execution",
+    "beast_artifact_custody_valid": 12,
+    "beast_beats_all_baselines": true,
+    "beast_beats_all_reference_baselines": true,
+    "beast_honest_uncertainty": 12,
+    "beast_provider_calls_used": 0,
+    "beast_semantic_correct": 12,
+    "breakthrough_protocol_pass": true,
+    "cross_modal_families": 3,
+    "engine_freeze_digest": "sha256:fe6836990bd6f6513046bca25f35b9367294aa9819e37ffbdc6dbe7994e3fa82",
+    "evaluator_seed": "pgvector-rag-real-run-001",
+    "external_baseline_count": 1,
+    "external_rag_enabled": true,
+    "generator_seed_digest": "sha256:2bdc54127bea30c9c87c02edce68342753c4fc189cdbff42eece21b8ddaae46c",
+    "heldout_cases": 12,
+    "heldout_operational_domains": 8,
+    "in_repo_baseline_count": 4,
+    "independent_semantic_oracle": true,
+    "operational_domain_counts": {
+      "campus_lms": 1,
+      "clinic_scheduler": 1,
+      "emergency_dispatch": 1,
+      "farm_sensor_grid": 1,
+      "library_search": 2,
+      "microgrid_control": 2,
+      "robotics_cell": 1,
+      "water_station": 3
+    },
+    "oracle_source": "scenario_facts_rules_policies_metadata_before_beast_execution",
+    "randomized_service_names": 23,
+    "randomized_topology_shapes": 5,
+    "reference_baseline_count": 5,
+    "third_party_verifier_ready": true,
+    "topology_shape_counts": {
+      "direct": 4,
+      "fan_in_with_anchor": 3,
+      "fan_out_with_anchor": 3,
+      "mesh_noise_with_anchor": 1,
+      "transitive_with_direct_anchor": 1
+    }
+  },
+  "systems": {
+    "beast_c4x": {
+      "artifact_custody_valid": 12,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 12,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 1.0,
+      "semantic_correct": 12,
+      "total_score": 192,
+      "visual_present": 12
+    },
+    "beast_capability_composition_rule_engine": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.916667,
+      "semantic_correct": 11,
+      "total_score": 80,
+      "visual_present": 0
+    },
+    "beast_generation_provider_boundary": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 5,
+      "proof_first": 0,
+      "provider_calls_used": 24,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 3,
+      "visual_present": 12
+    },
+    "beast_local_semantic_cache": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 5,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 15,
+      "visual_present": 0
+    },
+    "beast_topology_graph_adapter": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 8,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.166667,
+      "semantic_correct": 2,
+      "total_score": 40,
+      "visual_present": 8
+    },
+    "cached_named_template": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 36,
+      "visual_present": 0
+    },
+    "external_rag_retrieval": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 36,
+      "visual_present": 0
+    },
+    "knowledge_graph_topology_only": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 5,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 27,
+      "visual_present": 12
+    },
+    "model_generated_multimodal_stub": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 5,
+      "proof_first": 0,
+      "provider_calls_used": 24,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 3,
+      "visual_present": 12
+    },
+    "rag_nearest_exemplar": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 5,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.0,
+      "semantic_correct": 0,
+      "total_score": 27,
+      "visual_present": 12
+    },
+    "rule_engine_text_only": {
+      "artifact_custody_valid": 0,
+      "case_count": 12,
+      "honest_uncertainty": 12,
+      "proof_first": 0,
+      "provider_calls_used": 0,
+      "semantic_accuracy": 0.583333,
+      "semantic_correct": 7,
+      "total_score": 64,
+      "visual_present": 0
+    }
+  },
+  "third_party_verifier": {
+    "baseline_adapter_contract": "external systems may submit answer_text, visual_present or visual_bytes, reported_status, reported_class, reported_current_claim_allowed, provider_calls_used",
+    "evaluator_seed_contract": "chosen after freeze; appears in generator_seed_digest",
+    "external_rag_command": ".venv/bin/python scripts/run_c4x_rds_rag_adapter.py",
+    "external_rag_protocol": "benchmark sends one c4x_external_rag_request JSON object on stdin per case; command returns benchmark output JSON or retrieval chunks JSON on stdout",
+    "frozen_engine_digest": "sha256:fe6836990bd6f6513046bca25f35b9367294aa9819e37ffbdc6dbe7994e3fa82",
+    "semantic_oracle_contract": "must derive expected status/class from scenario facts before reading any system answer",
+    "verifier_command": "python3 scripts/verify_c4x_external_breakthrough_submission.py --benchmark <benchmark.json> --submission <submission.json>"
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,781 @@
+{
+  "beast_object_type": "generation_gauntlet_receipt",
+  "capability_learning": {
+    "beast_object_type": "capability_learning_report",
+    "by_capability_type": {
+      "generation_gauntlet": 1,
+      "semantic_crystal": 6,
+      "visual_asset": 2
+    },
+    "by_event_type": {
+      "gauntlet_completed": 1,
+      "promoted": 4,
+      "reused": 4
+    },
+    "by_lifecycle_state": {
+      "active": 6,
+      "failed": 1,
+      "promoted": 2
+    },
+    "capabilities": [
+      {
+        "authority": "measurement_only",
+        "capability_digest": "sha256:5a09c8870fab61e68723051688fecd8e9a9f66ba446cd07c140876672e450cfb",
+        "capability_id": "generation-gauntlet:2026-08-03T000000-live-gemini-hf-c",
+        "capability_type": "generation_gauntlet",
+        "event_count": 1,
+        "first_observed_at": "2026-08-03T10:53:15.294800+00:00",
+        "fresh_work_units": 3,
+        "last_observed_at": "2026-08-03T10:53:15.294800+00:00",
+        "last_receipt_digest": "sha256:addfd67174abe80b115f34c14903286fb6bb71442e979069c55131d41fdc7748",
+        "lifecycle_state": "failed",
+        "provider_calls_avoided": 3,
+        "provider_calls_used": 5,
+        "refusal_count": 0,
+        "reuse_hits": 4
+      },
+      {
+        "authority": "render_only",
+        "capability_digest": "sha256:b2fb2382d525cb7772440c49d9a44c84d1e331eaed8afcbf3691f5d167b80383",
+        "capability_id": "beast.visual.region.fd507fc487f781b6e08a85cd",
+        "capability_type": "visual_asset",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:53:15.205246+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:53:15.261401+00:00",
+        "last_receipt_digest": "sha256:2ddd6f8b9fcfbf12785252a784576aaa916e9e529f4b0e3167149ab3289a4592",
+        "lifecycle_state": "promoted",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 1,
+        "refusal_count": 0,
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_digest": "sha256:f247acab11b763d744fce14496e6bb8b3eeb20c807dc045a68b985c0e41fe2eb",
+        "capability_id": "meaning-crystal:gauntlet:beast-endpoint",
+        "capability_type": "semantic_crystal",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:52:49.213090+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:52:49.234941+00:00",
+        "last_receipt_digest": "sha256:10fea7bbdafcdd8512b2d207441b8315299d7fc034e141ea64407be540ff6af2",
+        "lifecycle_state": "active",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_digest": "sha256:22e8182589597ced9e9d767e17be50915545eb11521ec9aa52d845a442996ea9",
+        "capability_id": "meaning-crystal:gauntlet:commons-health",
+        "capability_type": "semantic_crystal",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:52:39.854876+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:52:39.886882+00:00",
+        "last_receipt_digest": "sha256:e4fffb7be7289bbbd8f3d40976741d8b81ef61edae53b853fbd8240ac708b900",
+        "lifecycle_state": "active",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_digest": "sha256:f318f86c9b7fd2122787b439ebcec188a8170bb4c7184f83f48e156fbd6dc418",
+        "capability_id": "meaning-crystal:gauntlet:beast-health",
+        "capability_type": "semantic_crystal",
+        "event_count": 2,
+        "first_observed_at": "2026-08-03T10:52:29.660380+00:00",
+        "fresh_work_units": 2,
+        "last_observed_at": "2026-08-03T10:52:29.682061+00:00",
+        "last_receipt_digest": "sha256:e0b4592c7df9853a70b4dc1a18ac18794715896814228b2a5fa88df3cef29aa9",
+        "lifecycle_state": "active",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "refusal_count": 0,
+        "reuse_hits": 1
+      }
+    ],
+    "capability_count": 5,
+    "event_count": 9,
+    "fresh_work_units": 11,
+    "ledger_digest": "sha256:acd0932d120f610e0340190a8f4e675be50789edb50757f8296f02463eb22e56",
+    "ledger_path": ".beast/state/generation_gauntlets_live_gemini_hf_c/capability_learning.jsonl",
+    "provider_calls_avoided": 7,
+    "provider_calls_used": 6,
+    "recent_events": [
+      {
+        "authority": "measurement_only",
+        "capability_id": "generation-gauntlet:2026-08-03T000000-live-gemini-hf-c",
+        "capability_type": "generation_gauntlet",
+        "event_digest": "sha256:3747bf2b944969a00180f26982f1329a61804db2a83c13e76a3ecef58742abcb",
+        "event_type": "gauntlet_completed",
+        "evidence_digest": "sha256:addfd67174abe80b115f34c14903286fb6bb71442e979069c55131d41fdc7748",
+        "fresh_work_units": 3,
+        "lifecycle_state": "failed",
+        "metadata": {
+          "chat_provider_id": "gemini",
+          "image_status": "failed",
+          "provider_id": "hf",
+          "provider_mode": "live",
+          "semantic_crystal_count": 3,
+          "text_status": "passed",
+          "visual_asset_count": 1
+        },
+        "observed_at": "2026-08-03T10:53:15.294800+00:00",
+        "provider_calls_avoided": 3,
+        "provider_calls_used": 5,
+        "receipt_digest": "sha256:addfd67174abe80b115f34c14903286fb6bb71442e979069c55131d41fdc7748",
+        "refusal_reason": "",
+        "reuse_hits": 4
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "beast.visual.region.fd507fc487f781b6e08a85cd",
+        "capability_type": "visual_asset",
+        "event_digest": "sha256:4a40aeb9ff6368cb062131d94f59bdcaaf2c364d7394e5c16eca2435a1ec5937",
+        "event_type": "reused",
+        "evidence_digest": "sha256:9f2d53fc978be073a18572d36adcc38fe3c367dfcc34b468099dffed83dfb997",
+        "fresh_work_units": 0,
+        "lifecycle_state": "promoted",
+        "metadata": {
+          "asset_digest": "sha256:fb831a3a8e24c425b278080a1f630a1acb1f17d815ac5ada1bbfbd2ffe1cd3bb",
+          "equivalence_receipt_digest": "",
+          "local_residual_calls_avoided": 1,
+          "promotion_key": "sha256:fd507fc487f781b6e08a85cd798932af9bedcc000b2c8d7f0bf213b8511fa0b1"
+        },
+        "observed_at": "2026-08-03T10:53:15.261401+00:00",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:2ddd6f8b9fcfbf12785252a784576aaa916e9e529f4b0e3167149ab3289a4592",
+        "refusal_reason": "",
+        "reuse_hits": 1
+      },
+      {
+        "authority": "render_only",
+        "capability_id": "beast.visual.region.fd507fc487f781b6e08a85cd",
+        "capability_type": "visual_asset",
+        "event_digest": "sha256:c0d37b8136fbf823426a2df0d62b0c48684e49cde71b2cbcdb46cc62511f814e",
+        "event_type": "promoted",
+        "evidence_digest": "sha256:c2295709ea816f64cb523097bcd3a0b1998793729c5ed02300839e8f327cd0db",
+        "fresh_work_units": 2,
+        "lifecycle_state": "promoted",
+        "metadata": {
+          "asset_digest": "sha256:fb831a3a8e24c425b278080a1f630a1acb1f17d815ac5ada1bbfbd2ffe1cd3bb",
+          "equivalence_receipts": [],
+          "promotion_equivalence": "exact_digest",
+          "promotion_key": "sha256:fd507fc487f781b6e08a85cd798932af9bedcc000b2c8d7f0bf213b8511fa0b1"
+        },
+        "observed_at": "2026-08-03T10:53:15.205246+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 1,
+        "receipt_digest": "sha256:c2295709ea816f64cb523097bcd3a0b1998793729c5ed02300839e8f327cd0db",
+        "refusal_reason": "",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:beast-endpoint",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:b00c6431d60e44def1ea7a11b6b87f3e09f97ae54de20190dde9979e3589327a",
+        "event_type": "reused",
+        "evidence_digest": "sha256:04205fed7ffda62d2cdc90df58dbdb8a5e8ca067a07c8074e743d481634d8f60",
+        "fresh_work_units": 0,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_endpoint",
+          "operator_language_receipt_digest": "sha256:5e61ea237c090b7b4d8f3d73c35e4d058e1659ce27b1dbd833e834974694edd4",
+          "semantic_key_digest": "sha256:c8aea696cb625a3f31c8adddeddb38a4366f7ab4a1836cadd09fef062d642a86"
+        },
+        "observed_at": "2026-08-03T10:52:49.234941+00:00",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:10fea7bbdafcdd8512b2d207441b8315299d7fc034e141ea64407be540ff6af2",
+        "refusal_reason": "",
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:beast-endpoint",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:ca1d024dce2b96b69c0c16c35b48d7061ab84d0e26629449aa766f1820cfae37",
+        "event_type": "promoted",
+        "evidence_digest": "sha256:f8e2541251595177a2c3faa58d59e9f3bfc3b079c06923f31cd549f17d1ad6ec",
+        "fresh_work_units": 2,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_endpoint",
+          "semantic_key_digest": "sha256:c8aea696cb625a3f31c8adddeddb38a4366f7ab4a1836cadd09fef062d642a86"
+        },
+        "observed_at": "2026-08-03T10:52:49.213090+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:5c6e96e47b3926b205c9a96a617c1770c90bde42297edcb25188f6f66d7d6606",
+        "refusal_reason": "",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:commons-health",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:37c534767c40a03a9d5b3e103fbcf4d1b0e90571a4ffd11e193eef19d5cc5d48",
+        "event_type": "reused",
+        "evidence_digest": "sha256:621f63d349a47790ac464c4d3c4b9a80b187e7a9f97edd75b27093161ad88e50",
+        "fresh_work_units": 0,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_health",
+          "operator_language_receipt_digest": "sha256:06c5e40ed4717005f673e38de08a0629fd976e25f3be3032b8639c12bc42fdca",
+          "semantic_key_digest": "sha256:59b87f3b827a70e676a514ddb4ac50009b21647bc69dba5383f3cd8087c46a78"
+        },
+        "observed_at": "2026-08-03T10:52:39.886882+00:00",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:e4fffb7be7289bbbd8f3d40976741d8b81ef61edae53b853fbd8240ac708b900",
+        "refusal_reason": "",
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:commons-health",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:3be3850bfab048aa50bf3a0611ef3111e54678fa887bbf5aaffe9f31872eadaf",
+        "event_type": "promoted",
+        "evidence_digest": "sha256:76144d505399343e4ea1ab7c209ded2f1f2377aeb0dee9a73ec16b0bd81e7d6d",
+        "fresh_work_units": 2,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_health",
+          "semantic_key_digest": "sha256:59b87f3b827a70e676a514ddb4ac50009b21647bc69dba5383f3cd8087c46a78"
+        },
+        "observed_at": "2026-08-03T10:52:39.854876+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:3308289939626d7de9deded0ab5bb7197e54c7241a5aac5ac272ff00a8698d47",
+        "refusal_reason": "",
+        "reuse_hits": 0
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:beast-health",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:ddfa32a1185b1e99492ed7d1b8d4b0a9450cafd824876bb137ae573619333ce9",
+        "event_type": "reused",
+        "evidence_digest": "sha256:2428d81f069082518f927a4d1832154ae0390d3d7096a2d4fa6a92894ae76114",
+        "fresh_work_units": 0,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_health",
+          "operator_language_receipt_digest": "sha256:cdc5af48f236046d4e5856880c155bf4219c800ee04adbc8ba38066f2f4b05fd",
+          "semantic_key_digest": "sha256:744b3efb08ee6f50d5fd0e30260c887ce11348556bc6bc6058acbabde7f26fe7"
+        },
+        "observed_at": "2026-08-03T10:52:29.682061+00:00",
+        "provider_calls_avoided": 1,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:e0b4592c7df9853a70b4dc1a18ac18794715896814228b2a5fa88df3cef29aa9",
+        "refusal_reason": "",
+        "reuse_hits": 1
+      },
+      {
+        "authority": "read_verified",
+        "capability_id": "meaning-crystal:gauntlet:beast-health",
+        "capability_type": "semantic_crystal",
+        "event_digest": "sha256:df0259dd290df9eed5626e08787d921ec83d02335454798911705afe0998db13",
+        "event_type": "promoted",
+        "evidence_digest": "sha256:49e7e107f4e1dc6679a73dd9a6eeb55f9bc885b66f45b47b3fa4f9a33122601c",
+        "fresh_work_units": 2,
+        "lifecycle_state": "active",
+        "metadata": {
+          "domain": "service",
+          "intent": "read_service_health",
+          "semantic_key_digest": "sha256:744b3efb08ee6f50d5fd0e30260c887ce11348556bc6bc6058acbabde7f26fe7"
+        },
+        "observed_at": "2026-08-03T10:52:29.660380+00:00",
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "receipt_digest": "sha256:c26122a62ab560023c5329f8ef1873bb980e215eb2b0c37548aad1549374fd40",
+        "refusal_reason": "",
+        "reuse_hits": 0
+      }
+    ],
+    "reuse_hits": 8,
+    "version": "1.0"
+  },
+  "claim_boundary": "Live-provider boundary requested. Execution remains governed by adapter readiness, approval, and downstream gates.",
+  "image": {
+    "case_count": 2,
+    "cases": [
+      {
+        "case_id": "image:status-light:green",
+        "failure": "ConnectTimeout: _ssl.c:1012: The handshake operation timed out",
+        "promoted_asset_reused": false,
+        "prompt_digest": "sha256:75ce96b867bba7dd85035c07c8bc8ba0c763464cf8d6542511ea543cd547bf3d",
+        "provider_calls_used": 0,
+        "provider_teach_attempted": true,
+        "provider_teach_skipped_existing_asset": false,
+        "reuse_receipt_digest": ""
+      },
+      {
+        "case_id": "image:status-light:blue",
+        "failure": "",
+        "promoted_asset_reused": true,
+        "prompt_digest": "sha256:c4bbc4a52f91921f9a649ad93117065e3f7ef00fe2d0f6e6eb02c5a9fa7279ac",
+        "provider_calls_used": 2,
+        "provider_teach_attempted": true,
+        "provider_teach_skipped_existing_asset": false,
+        "reuse_receipt_digest": "sha256:2ddd6f8b9fcfbf12785252a784576aaa916e9e529f4b0e3167149ab3289a4592"
+      }
+    ],
+    "failed_count": 1,
+    "gauntlet_digest": "sha256:af455639016f0d8e8c929178761601f97ba71c1cd0c6ffbbcf20761b40d5158b",
+    "promoted_asset_reuse_hits": 1,
+    "provider_calls_used": 2,
+    "status": "failed",
+    "stored_asset_reuse_hits": 0
+  },
+  "learning_model": {
+    "semantic_crystals": "promote repeated verified operator-language episodes, then replay from stored registry",
+    "visual_assets": "promote repeated/equivalent verified region outputs into render-only assets, then reuse before provider fallback"
+  },
+  "observed_at": "2026-08-03T10:53:15.265026+00:00",
+  "provider_boundary": {
+    "adapter_inventory_digest": "sha256:54348cfdc1ef53a5a1986b390cde20bc12a2c5ccb0c7d79bce26924f6e49cc84",
+    "approval_present": true,
+    "chat_provider_id": "gemini",
+    "provider_id": "hf",
+    "provider_mode": "live",
+    "provider_receipt_digests": [
+      "sha256:0e4c00e6c796794e43e48e3d89459216c87b9b2cadfeb1d29e78bb0315b39708",
+      "sha256:b3b742872f93680fcf5fd25920715e16c357850597fa72976d14ac017b80db3b",
+      "sha256:07a96c2bbfc33ba2d13d64ef2b916fb7a77def8a45b31457568a61af50bfcbf5",
+      "sha256:69bc4c59a5fad681381ef4fb2eb47b49553c1da896d283aebc0f9de8e3b20cc2",
+      "sha256:12df7da506a3d8c663fd6e982efebda81a6f25eaf1aa2f7905f96af401010c65"
+    ]
+  },
+  "provider_call_log_digest": "sha256:6029768e8d5f98104c940c487e01c6a1b4c8a69755c55e3cfe1f2943f78d6484",
+  "receipt_digest": "sha256:596f43736385743be831a90b2ec17fde99a9a07092df40a24c7189a9a7980394",
+  "run_id": "2026-08-03T000000-live-gemini-hf-c",
+  "scorecard_after": {
+    "beast_object_type": "provider_reduction_scorecard",
+    "g9_bundle_health": [],
+    "normalized_evidence_events": 0,
+    "observed_channels": [
+      {
+        "channel": "semantic_crystals",
+        "channel_digest": "sha256:62707416f7a0038ed580b81dad865f0072ce356b7414ec47c88df3218db7a230",
+        "claim_class": "observed",
+        "events": 3,
+        "notes": [
+          "one avoided fresh operator-language interpretation counted as one provider-risk displacement witness"
+        ],
+        "provider_calls_avoided": 3,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "physical_crystals",
+        "channel_digest": "sha256:d749319329f75e58d611d488f0da6e74db6db5a7ae54c2df75c9fe06cbe472b7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts production_displacement_observation receipts only"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "verified_displacement_economics",
+        "channel_digest": "sha256:eb561d4a609bbf1d23a0135bcdc93225d4bc97854ceb90c5c908526b156e09de",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "paired net-positive economics receipts"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "scene_capsules",
+        "channel_digest": "sha256:a5c6cdebd8b4e8b561ac7e6eaec7929c6a648dd189c9326d632e96e44b4b70aa",
+        "claim_class": "observed",
+        "events": 5,
+        "notes": [
+          "deterministic visual composition is local, but does not count as provider-call avoidance until paired against provider image fallback"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_residuals",
+        "channel_digest": "sha256:9aea8ea3059fb36456959e47bec7abce4c34a2a758fbd0b1a033f53d93fc139b",
+        "claim_class": "observed",
+        "events": 1,
+        "notes": [
+          "local region-only image fills are wired; promoted asset reuse avoids repeated local residual execution but does not claim provider avoidance without paired provider fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 2,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "promoted_visual_assets",
+        "channel_digest": "sha256:4d6f432c76332542f8318d936a39517448ec4d86fa795b278221d935db6936e7",
+        "claim_class": "observed",
+        "events": 2,
+        "notes": [
+          "repeated verified region outputs can promote into render-only visual assets; provider avoidance remains conservative until paired with provider-fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_asset_refusals",
+        "channel_digest": "sha256:bd19e1cbc503231cefcf382f61389ec6b4dff7b359f474be99bdc47ea31ff901",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts refused visual promotion candidates such as low-quality, unstable, stale, or false reuse candidates"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "physical_crystal_replays": 0,
+    "provider_calls_avoided": 3,
+    "provider_calls_used": 3,
+    "provider_fallbacks": 0,
+    "provider_reduction_ratio": 0.5,
+    "scene_capsules_composed": 5,
+    "scorecard_digest": "sha256:bcf4679e7e64a186ab75a0ca3ab964bdeae04b22675294215c7bbf164dffa697",
+    "semantic_replays": 3,
+    "tokens_avoided_observed": 0,
+    "trend_buckets": [
+      {
+        "bucket_digest": "sha256:6b2c3ebe38d36f76038cfa97b826c7592617ee174c4e48748d6513887f0aaef3",
+        "events": 12,
+        "local_compute_events": 7,
+        "normalized_evidence_events": 0,
+        "notes": [
+          "visual asset promotion"
+        ],
+        "period": "2026-08-03",
+        "provider_calls_avoided": 3,
+        "provider_calls_used": 2,
+        "provider_fallback_events": 2,
+        "semantic_replays": 3,
+        "tokens_avoided_observed": 0,
+        "visual_asset_refusals": 0,
+        "visual_promoted_asset_reuses": 1
+      }
+    ],
+    "unsupported_or_estimated_channels": [
+      {
+        "channel": "visual_image_generation",
+        "channel_digest": "sha256:b6cb07342a6965011b7213c260a28a97ccc9820095f9f769df2378d4472984b8",
+        "claim_class": "route_selection_only",
+        "events": 4,
+        "notes": [
+          "local fills, explicit provider fallback, and promoted visual asset reuse are wired; net provider-avoidance claims still need paired fallback comparisons"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 2,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "forge_kv_prompt_cache",
+        "channel_digest": "sha256:2dfb3fa375359cb60a289c0b8aaf35f87c2d12421990ab0501ae5c2e76e0b18a",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no normalized Forge KV native-restore evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "grand_closure",
+        "channel_digest": "sha256:ee66d6ab90ab9e70b8cd13e75fc8ec177a81e3e3bd22e5347065221b91bb5f64",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "no normalized Grand Closure/G9 bundle-health evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "commons_spaces",
+        "channel_digest": "sha256:7d227c75b0d37465eb3c16ac1db40cb4b55cbae5dcae8bb0ec4dbdc08893dcca",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no locally reproduced/promoted Commons Space reduction receipt has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "version": "1.0",
+    "visual_asset_promotions": 1,
+    "visual_asset_refusals": 0,
+    "visual_asset_reuses": 1,
+    "visual_provider_fallbacks": 2,
+    "visual_regions_local": 0
+  },
+  "scorecard_before": {
+    "beast_object_type": "provider_reduction_scorecard",
+    "g9_bundle_health": [],
+    "normalized_evidence_events": 0,
+    "observed_channels": [
+      {
+        "channel": "semantic_crystals",
+        "channel_digest": "sha256:8a2f7e02a07a64e425afb25b2432265d6ffaf903e82f5539b776bb4ba3adc3dd",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "one avoided fresh operator-language interpretation counted as one provider-risk displacement witness"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "physical_crystals",
+        "channel_digest": "sha256:d749319329f75e58d611d488f0da6e74db6db5a7ae54c2df75c9fe06cbe472b7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts production_displacement_observation receipts only"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "verified_displacement_economics",
+        "channel_digest": "sha256:eb561d4a609bbf1d23a0135bcdc93225d4bc97854ceb90c5c908526b156e09de",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "paired net-positive economics receipts"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "scene_capsules",
+        "channel_digest": "sha256:c7e4a69afb7269e11849cb62d2871a27957b958c850c05a98b91a345c219e01b",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "deterministic visual composition is local, but does not count as provider-call avoidance until paired against provider image fallback"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_residuals",
+        "channel_digest": "sha256:bc99b50be1dd8ad71a935aee65c473d55d8cf2cc2b2c0fba3be822986d1c6ed8",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "local region-only image fills are wired; promoted asset reuse avoids repeated local residual execution but does not claim provider avoidance without paired provider fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "promoted_visual_assets",
+        "channel_digest": "sha256:d7e1fb136526b0b684130fc21840ce98271a1b3e1af3cb279afeece8f597ace7",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "repeated verified region outputs can promote into render-only visual assets; provider avoidance remains conservative until paired with provider-fallback evidence"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "visual_asset_refusals",
+        "channel_digest": "sha256:bd19e1cbc503231cefcf382f61389ec6b4dff7b359f474be99bdc47ea31ff901",
+        "claim_class": "observed",
+        "events": 0,
+        "notes": [
+          "counts refused visual promotion candidates such as low-quality, unstable, stale, or false reuse candidates"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "physical_crystal_replays": 0,
+    "provider_calls_avoided": 0,
+    "provider_calls_used": 0,
+    "provider_fallbacks": 0,
+    "provider_reduction_ratio": 0.0,
+    "scene_capsules_composed": 0,
+    "scorecard_digest": "sha256:dd8e0c1f7f167b177e766eb030adfbd23836403c6b0cc1578f4fd4371d519585",
+    "semantic_replays": 0,
+    "tokens_avoided_observed": 0,
+    "trend_buckets": [],
+    "unsupported_or_estimated_channels": [
+      {
+        "channel": "visual_image_generation",
+        "channel_digest": "sha256:30e8f73cebeff0d939f3efcd3f37d6f5608e10a5eb1dfd708a4a8df93f508d02",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "local fills, explicit provider fallback, and promoted visual asset reuse are wired; net provider-avoidance claims still need paired fallback comparisons"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "forge_kv_prompt_cache",
+        "channel_digest": "sha256:2dfb3fa375359cb60a289c0b8aaf35f87c2d12421990ab0501ae5c2e76e0b18a",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no normalized Forge KV native-restore evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "grand_closure",
+        "channel_digest": "sha256:ee66d6ab90ab9e70b8cd13e75fc8ec177a81e3e3bd22e5347065221b91bb5f64",
+        "claim_class": "route_selection_only",
+        "events": 0,
+        "notes": [
+          "no normalized Grand Closure/G9 bundle-health evidence has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      },
+      {
+        "channel": "commons_spaces",
+        "channel_digest": "sha256:7d227c75b0d37465eb3c16ac1db40cb4b55cbae5dcae8bb0ec4dbdc08893dcca",
+        "claim_class": "hypothesis",
+        "events": 0,
+        "notes": [
+          "no locally reproduced/promoted Commons Space reduction receipt has been ingested yet"
+        ],
+        "provider_calls_avoided": 0,
+        "provider_calls_used": 0,
+        "tokens_avoided_observed": 0
+      }
+    ],
+    "version": "1.0",
+    "visual_asset_promotions": 0,
+    "visual_asset_refusals": 0,
+    "visual_asset_reuses": 0,
+    "visual_provider_fallbacks": 0,
+    "visual_regions_local": 0
+  },
+  "state_root": ".beast/state/generation_gauntlets_live_gemini_hf_c",
+  "stored_capabilities": {
+    "semantic_crystal_count": 3,
+    "semantic_crystal_ids": [
+      "meaning-crystal:gauntlet:beast-endpoint",
+      "meaning-crystal:gauntlet:beast-health",
+      "meaning-crystal:gauntlet:commons-health"
+    ],
+    "semantic_registry_path": ".beast/state/generation_gauntlets_live_gemini_hf_c/semantic_crystals.jsonl",
+    "visual_asset_count": 1,
+    "visual_asset_ids": [
+      "beast.visual.region.fd507fc487f781b6e08a85cd"
+    ],
+    "visual_registry_digest": "sha256:6c0022679e7e632b142c5570361f9628df55bdb132148de31b492a4cf5854088"
+  },
+  "text": {
+    "actions_taken": 0,
+    "case_count": 3,
+    "cases": [
+      {
+        "action_taken": false,
+        "case_id": "text:service-health:beast",
+        "chat_provider_called": true,
+        "chat_provider_receipt_digest": "sha256:0e4c00e6c796794e43e48e3d89459216c87b9b2cadfeb1d29e78bb0315b39708",
+        "crystal_id": "meaning-crystal:gauntlet:beast-health",
+        "failure": "",
+        "promoted_now": true,
+        "provider_called": false,
+        "receipt_digest": "sha256:cdc5af48f236046d4e5856880c155bf4219c800ee04adbc8ba38066f2f4b05fd",
+        "replay_utterance_digest": "sha256:5cb829c609df250b1e0543b8eaa4ecd50954453370d21e6dd06486799cb71e49",
+        "replayed_after": true,
+        "stored_reuse_before_teach": false,
+        "train_utterance_digests": [
+          "sha256:369c405705c4a320112aae99a76ea5e566a66169cde5f038724813d2c3e3a3ff",
+          "sha256:278107e86aa1653d27e4e5c2764e966cb3e8a952c56190cece13efe8b2f55e81"
+        ]
+      },
+      {
+        "action_taken": false,
+        "case_id": "text:service-health:commons",
+        "chat_provider_called": true,
+        "chat_provider_receipt_digest": "sha256:b3b742872f93680fcf5fd25920715e16c357850597fa72976d14ac017b80db3b",
+        "crystal_id": "meaning-crystal:gauntlet:commons-health",
+        "failure": "",
+        "promoted_now": true,
+        "provider_called": false,
+        "receipt_digest": "sha256:06c5e40ed4717005f673e38de08a0629fd976e25f3be3032b8639c12bc42fdca",
+        "replay_utterance_digest": "sha256:82bb499255e117886c1b609f91da34d6c832da7afc409cf854d53f99e96400e1",
+        "replayed_after": true,
+        "stored_reuse_before_teach": false,
+        "train_utterance_digests": [
+          "sha256:bcf24046ef820db6eb10a97589c6078dc5141307e1bdf4e546117433d93c05d0",
+          "sha256:3fecbf3faef7f9a07f498e261c88ea4c731e2c451608e99bec52df502e3b346e"
+        ]
+      },
+      {
+        "action_taken": false,
+        "case_id": "text:service-endpoint:beast",
+        "chat_provider_called": true,
+        "chat_provider_receipt_digest": "sha256:07a96c2bbfc33ba2d13d64ef2b916fb7a77def8a45b31457568a61af50bfcbf5",
+        "crystal_id": "meaning-crystal:gauntlet:beast-endpoint",
+        "failure": "",
+        "promoted_now": true,
+        "provider_called": false,
+        "receipt_digest": "sha256:5e61ea237c090b7b4d8f3d73c35e4d058e1659ce27b1dbd833e834974694edd4",
+        "replay_utterance_digest": "sha256:d364d35dc5b274a9328f422e04ec3981f3ae1a870516a424b11d4f9ef8314e23",
+        "replayed_after": true,
+        "stored_reuse_before_teach": false,
+        "train_utterance_digests": [
+          "sha256:e997baf7b7d927b3d8d57d5772015830ab3db3d2ff1bf68721cf2ccd9f4ac3ec",
+          "sha256:7bf60d8ed2018e43c26b420cfc959685889120bc4c0331039ad71145aa6f7ddc"
+        ]
+      }
+    ],
+    "failed_count": 0,
+    "gauntlet_digest": "sha256:7b211204a4de13da7da8671d0d14ec82b0f72e9bc17dd5cee190a469b6ac7ab1",
+    "provider_calls_used": 3,
+    "semantic_promotions_new": 3,
+    "semantic_replay_hits": 3,
+    "status": "passed",
+    "stored_reuse_hits": 0
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,94 @@
+{
+  "canvas_height": 540,
+  "canvas_width": 960,
+  "claim_refs": [
+    "claim:restart-risk-missing-causal-rule:dependency",
+    "claim:restart-risk-missing-causal-rule:restart-policy",
+    "claim:restart-risk-missing-causal-rule:restart-risk",
+    "claim:restart-risk-missing-causal-rule:source-health",
+    "claim:restart-risk-missing-causal-rule:target-health"
+  ],
+  "compile_sequence": 3,
+  "compiler_id": "beast.deterministic-scene-plan.v1",
+  "family": "restart_risk",
+  "graph_digest": "sha256:e83a4e86c05d8af8ab41987d22efd5877f41b821e52b38bcdf13a2a1d734eaf2",
+  "plan_digest": "sha256:25c129e68379474f39aad0035498d0d8c9c2d13054b01d3eea4dda4cca0ae430",
+  "plan_id": "scene-plan:proof:restart_risk:ccf3e537ab45649893fa",
+  "primitives": [
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:source-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "BEAST",
+      "metadata": {},
+      "primitive_id": "source-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 80,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:target-health",
+      "evidence_state": "supported",
+      "height": 100,
+      "label": "Commons",
+      "metadata": {},
+      "primitive_id": "target-node",
+      "primitive_type": "service_node",
+      "width": 190,
+      "x": 680,
+      "y": 170
+    },
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:dependency",
+      "evidence_state": "supported",
+      "height": 30,
+      "label": "depends on",
+      "metadata": {},
+      "primitive_id": "dependency-edge",
+      "primitive_type": "dependency_edge",
+      "width": 370,
+      "x": 290,
+      "y": 205
+    },
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:restart-policy",
+      "evidence_state": "supported",
+      "height": 70,
+      "label": "restart policy",
+      "metadata": {},
+      "primitive_id": "restart-policy",
+      "primitive_type": "policy_gate",
+      "width": 300,
+      "x": 330,
+      "y": 70
+    },
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:restart-risk",
+      "evidence_state": "residual_required",
+      "height": 80,
+      "label": "unsupported_without_causal_rule",
+      "metadata": {},
+      "primitive_id": "risk-badge",
+      "primitive_type": "risk_badge",
+      "width": 260,
+      "x": 350,
+      "y": 330
+    },
+    {
+      "claim_ref": "claim:restart-risk-missing-causal-rule:restart-risk",
+      "evidence_state": "residual_required",
+      "height": 55,
+      "label": "unsupported",
+      "metadata": {},
+      "primitive_id": "epistemic-marker",
+      "primitive_type": "unsupported_marker",
+      "width": 300,
+      "x": 70,
+      "y": 430
+    }
+  ],
+  "residual_refs": [],
+  "unresolved_visual_gaps": [],
+  "visual_intent_fulfilled": true
+}

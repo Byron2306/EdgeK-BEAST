@@ -27,6 +27,7 @@ import httpx
 import yaml
 
 from app.kernel.registry.provider_registry import ProviderRegistry
+from app.kernel.networking.service_registry import ServiceRegistry
 from app.kernel.security.secret_vault import SecretVault
 
 
@@ -54,14 +55,26 @@ class KeepaliveRegistration:
 class DeploymentManager:
     """Generate deployment configs and manage cache keepalive state."""
 
-    def __init__(self, policies: Optional[Dict[str, Any]] = None, db_path: Optional[str] = None):
+    def __init__(
+        self,
+        policies: Optional[Dict[str, Any]] = None,
+        db_path: Optional[str] = None,
+        service_registry_path: Optional[str | Path] = None,
+    ):
         self.policies = policies or {}
         self.provider_registry = ProviderRegistry(self.policies)
         if db_path is None:
             db_path = Path(__file__).resolve().parents[2] / "data" / "deployment.db"
         self.db_path = Path(db_path)
+        self.service_registry_path = Path(service_registry_path or Path(__file__).resolve().parents[3] / ".byron" / "services.yaml")
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
+
+    def _beast_service(self):
+        return ServiceRegistry.from_file(self.service_registry_path).services["beast"]
+
+    def _beast_base_url(self) -> str:
+        return f"http://{self._beast_service().upstream}"
 
     def _connect(self):
         return container.get("observation_store").get_skills_conn()
@@ -105,9 +118,10 @@ class DeploymentManager:
     def generate_litellm_config(
         self,
         *,
-        beast_base_url: str = "http://127.0.0.1:8000",
+        beast_base_url: Optional[str] = None,
         include_mcp: bool = True,
     ) -> Dict[str, Any]:
+        beast_base_url = (beast_base_url or self._beast_base_url()).rstrip("/")
         model_list = []
         for provider in self.provider_registry.records(include_disabled=False):
             name = provider.provider_id
@@ -160,9 +174,9 @@ class DeploymentManager:
             "edgek_beast": {
                 "gateway_base_url": beast_base_url,
                 "governance": "BEAST remains the policy, compression, tool-laziness, and forensic layer.",
-                "provider_registry": f"{beast_base_url.rstrip('/')}/edgek/providers/registry",
-                "tool_call_interception": f"{beast_base_url.rstrip('/')}/edgek/tools/intercept",
-                "required_integrations": f"{beast_base_url.rstrip('/')}/edgek/tools/integrations",
+                "provider_registry": f"{beast_base_url}/edgek/providers/registry",
+                "tool_call_interception": f"{beast_base_url}/edgek/tools/intercept",
+                "required_integrations": f"{beast_base_url}/edgek/tools/integrations",
             },
         }
         if include_mcp:
@@ -179,9 +193,10 @@ class DeploymentManager:
         *,
         server_name: str = "localhost",
         listen_port: int = 8080,
-        beast_upstream: str = "127.0.0.1:8000",
+        beast_upstream: Optional[str] = None,
         litellm_upstream: str = "127.0.0.1:4000",
     ) -> str:
+        beast_upstream = beast_upstream or self._beast_service().upstream
         provider_locations = "\n".join(
             self._nginx_provider_location(record)
             for record in self.provider_registry.records(include_disabled=False)
