@@ -1095,6 +1095,14 @@ Goal:
       `sha256:4009784be2007daf4a0bcc43a8f5a15a7636c4cfd862d126bcbeb5584d4d9538`.
 18. Push and dispatch the GitHub workflow, then verify the downloaded packet
     with `gh attestation verify`.
+    - First independent run:
+      `https://github.com/Byron2306/EdgeK-BEAST/actions/runs/30936843912`.
+    - Honest result:
+      failed in clean GitHub runner before witness packet emission because
+      `PyYAML` was missing from the focused dependency install.
+    - Fix in progress:
+      add `PyYAML==6.0.2` to the workflow dependency closure, push again and
+      require a fresh remote packet plus Sigstore/GitHub attestation.
 
 ## Operational Phase 3 implementation progress: multi-domain composition
 
