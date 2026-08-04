@@ -56,15 +56,15 @@ jobs:
         run: |
           python -m pytest \
             --noconftest \
-            tests/test_dio_distributed_quorum.py \
             tests/test_dio_cloud_attestation.py \
             tests/test_dio_remote_witness_packet.py \
+            tests/test_dio_github_actions_witness.py \
             -q
 
       - name: Emit Phase-5 DIO GitHub autonomous witness packet
         env:
           DIO_GITHUB_TEST_STATUS: passed
-          DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_distributed_quorum.py tests/test_dio_cloud_attestation.py tests/test_dio_remote_witness_packet.py -q"
+          DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_cloud_attestation.py tests/test_dio_remote_witness_packet.py tests/test_dio_github_actions_witness.py -q"
         run: |
           python scripts/run_dio_github_actions_witness.py \
             --out evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json
