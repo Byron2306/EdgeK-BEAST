@@ -1,12 +1,13 @@
 """Cloud TEE attestation admission for DIO distributed witnesses.
 
-Azure/GCP accounts do not create quorum authority by themselves.  This module
+Azure/GCP/AWS accounts do not create quorum authority by themselves.  This module
 admits a cloud witness only after a provider-verified attestation has been
 normalized and pinned to the exact DIO policy: provider, TEE class, verifier
 build, measurement, signing key, nonce, role and freshness.
 
-The raw Azure MAA / Google Cloud Attestation token parser lives outside this
-contract.  This contract consumes its normalized, digest-bound output.
+The raw Azure MAA / Google Cloud Attestation / AWS Nitro attestation parser
+lives outside this contract.  This contract consumes its normalized,
+digest-bound output.
 """
 from __future__ import annotations
 
@@ -30,6 +31,7 @@ DIO_CLOUD_ATTESTATION_VERSION = "2026-08-04.phase2.1.dio-cloud-tee-attestation.v
 class DIOCloudProvider(str, Enum):
     AZURE = "azure"
     GCP = "gcp"
+    AWS = "aws"
 
 
 class DIOCloudTeeType(str, Enum):
@@ -37,11 +39,14 @@ class DIOCloudTeeType(str, Enum):
     AZURE_TDX = "azure_tdx"
     GCP_CONFIDENTIAL_VM_VTPM = "gcp_confidential_vm_vtpm"
     GCP_CONFIDENTIAL_SPACE = "gcp_confidential_space"
+    AWS_NITRO_TPM = "aws_nitro_tpm"
+    AWS_NITRO_ENCLAVE = "aws_nitro_enclave"
 
 
 class DIOCloudVerifier(str, Enum):
     AZURE_MAA = "azure_maa"
     GOOGLE_CLOUD_ATTESTATION = "google_cloud_attestation"
+    AWS_NITRO_ATTESTATION = "aws_nitro_attestation"
 
 
 @dataclass(frozen=True, slots=True)

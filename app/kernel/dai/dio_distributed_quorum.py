@@ -228,6 +228,7 @@ def evaluate_dio_distributed_quorum(
         HF_SOFTWARE_WITNESS_AUTHORITY,
         HARDWARE_WITNESS_AUTHORITY,
         LOCAL_EXECUTION_WITNESS_AUTHORITY,
+        "remote_oidc_sigstore_software_witness_only",
         "semantic_vote_only",
         "governance_vote_only",
     }
@@ -265,6 +266,7 @@ def evaluate_dio_distributed_quorum(
                 HF_SOFTWARE_WITNESS_AUTHORITY,
                 HARDWARE_WITNESS_AUTHORITY,
                 LOCAL_EXECUTION_WITNESS_AUTHORITY,
+                "remote_oidc_sigstore_software_witness_only",
                 "semantic_vote_only",
                 "governance_vote_only",
             },

@@ -24,6 +24,17 @@ from app.kernel.dai.dio_distributed_quorum import (
     sign_dio_vote,
     verify_dio_vote_signature,
 )
+from app.kernel.dai.dio_commons_online import (
+    DIO_COMMONS_ONLINE_VERSION,
+    DIOCommonsCapabilityManifest,
+    DIOCommonsChallenge,
+    DIOCommonsSpaceIdentity,
+    verify_commons_identity,
+)
+from app.kernel.dai.dio_remote_witness_packet import (
+    DIOAutonomousRemoteWitnessPacket,
+    verify_autonomous_remote_witness_packet,
+)
 
 
 def _key():
@@ -299,3 +310,108 @@ async def test_dio_hf_witness_app_attests_and_signs_bounded_vote():
     vote = DIORemoteWitnessVote(**{key: payload[key] for key in DIORemoteWitnessVote.__dataclass_fields__})
     assert vote.maximum_authority == HF_SOFTWARE_WITNESS_AUTHORITY
     assert verify_dio_vote_signature(vote, public_key_b64(key.public_key()))
+
+
+@pytest.mark.asyncio
+async def test_dio_hf_witness_app_exposes_phase4_canonical_commons_surface():
+    key = _key()
+    verifier = sha256_digest({"verifier": "hf-phase4"})
+    config = DIOHFWitnessConfig(
+        node_id="dio:hf:semantic-witness-01",
+        role=DIOWitnessRole.SEMANTIC,
+        signing_key=key,
+        verifier_commit=verifier,
+        container_manifest=sha256_digest({"container": "hf-space-phase4"}),
+        governance_epoch="dio-phase4-online-001",
+    )
+    app = build_dio_hf_witness_app(config)
+    proposal = _proposal()
+    proposal = replace(proposal, governance_epoch="dio-phase4-online-001")
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://hf-witness") as client:
+        identity_response = await client.get("/identity")
+        manifest_response = await client.get("/manifest")
+        attestation_response = await client.get("/attestation")
+        challenge_response = await client.post("/v1/challenge", json={
+            "proposal_digest": proposal.proposal_digest,
+            "evidence_root": proposal.evidence_root,
+            "world_state_hash": proposal.world_state_hash,
+            "governance_epoch": proposal.governance_epoch,
+            "challenge_nonce": proposal.challenge_nonce,
+        })
+        vote_response = await client.post("/v1/vote", json={"proposal": asdict(proposal)})
+        evaluate_response = await client.post("/v1/evaluate", json={"proposal": asdict(proposal)})
+        refresh_response = await client.post("/v1/refresh-attestation", json={"challenge_nonce": proposal.challenge_nonce})
+
+    assert identity_response.status_code == 200
+    assert manifest_response.status_code == 200
+    assert challenge_response.status_code == 200
+    identity_payload = identity_response.json()
+    signature = identity_payload.pop("identity_signature")
+    claimed_identity_digest = identity_payload.pop("identity_digest")
+    identity = DIOCommonsSpaceIdentity(**identity_payload)
+    manifest_payload = manifest_response.json()
+    claimed_manifest_digest = manifest_payload.pop("manifest_digest")
+    manifest = DIOCommonsCapabilityManifest(**manifest_payload)
+    challenge_payload = challenge_response.json()
+    challenge = DIOCommonsChallenge(**challenge_payload["challenge"])
+    vote = DIORemoteWitnessVote(**{field: vote_response.json()[field] for field in DIORemoteWitnessVote.__dataclass_fields__})
+    evaluated_vote = DIORemoteWitnessVote(**{field: evaluate_response.json()[field] for field in DIORemoteWitnessVote.__dataclass_fields__})
+
+    assert identity.version == DIO_COMMONS_ONLINE_VERSION
+    assert identity.identity_digest == claimed_identity_digest
+    assert manifest.manifest_digest == claimed_manifest_digest
+    assert identity.capability_manifest_digest == manifest.manifest_digest
+    assert verify_commons_identity(identity, signature) is True
+    assert challenge.challenge_digest == challenge_payload["challenge_digest"]
+    assert challenge_payload["attestation"]["challenge_nonce"] == proposal.challenge_nonce
+    assert attestation_response.json()["attestation_class"] == "signed_software_runtime"
+    assert refresh_response.json()["challenge_nonce"] == proposal.challenge_nonce
+    assert vote.maximum_authority == HF_SOFTWARE_WITNESS_AUTHORITY
+    assert verify_dio_vote_signature(vote, public_key_b64(key.public_key()))
+    assert evaluated_vote.proposal_digest == vote.proposal_digest == proposal.proposal_digest
+    assert verify_dio_vote_signature(evaluated_vote, public_key_b64(key.public_key()))
+
+
+@pytest.mark.asyncio
+async def test_dio_hf_witness_app_emits_phase5_autonomous_remote_packet():
+    key = _key()
+    verifier = sha256_digest({"verifier": "hf-phase5"})
+    config = DIOHFWitnessConfig(
+        node_id="dio:hf:semantic-witness-01",
+        role=DIOWitnessRole.SEMANTIC,
+        signing_key=key,
+        verifier_commit=verifier,
+        container_manifest=sha256_digest({"container": "hf-space-phase5"}),
+        governance_epoch="dio-phase5-online-001",
+    )
+    app = build_dio_hf_witness_app(config)
+    proposal = replace(_proposal(), governance_epoch="dio-phase5-online-001")
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://hf-witness") as client:
+        response = await client.post("/v1/autonomous-packet", json={"proposal": asdict(proposal)})
+
+    assert response.status_code == 200
+    now = datetime.now(timezone.utc)
+    payload = response.json()
+    admission_payload = dict(payload["admission"])
+    claimed_admission_digest = admission_payload.pop("admission_digest")
+    admission = DIOWitnessAdmission(**admission_payload)
+    packet_payload = dict(payload["packet"])
+    claimed_packet_digest = packet_payload.pop("packet_digest")
+    packet = DIOAutonomousRemoteWitnessPacket(**packet_payload)
+    report = verify_autonomous_remote_witness_packet(
+        packet=packet,
+        admission=admission,
+        proposal=proposal,
+        permitted_verifier_commits=(verifier,),
+        evaluation_time=now,
+    )
+
+    assert admission.admission_digest == claimed_admission_digest
+    assert packet.packet_digest == claimed_packet_digest
+    assert packet.maximum_authority == HF_SOFTWARE_WITNESS_AUTHORITY
+    assert packet.independently_evaluated is True
+    assert packet.remote_runtime_observed is True
+    assert report.verified is True
+    assert report.red_gates == ()

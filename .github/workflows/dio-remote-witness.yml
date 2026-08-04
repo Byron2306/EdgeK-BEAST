@@ -58,24 +58,25 @@ jobs:
             --noconftest \
             tests/test_dio_distributed_quorum.py \
             tests/test_dio_cloud_attestation.py \
+            tests/test_dio_remote_witness_packet.py \
             -q
 
-      - name: Emit DIO GitHub witness packet
+      - name: Emit Phase-5 DIO GitHub autonomous witness packet
         env:
           DIO_GITHUB_TEST_STATUS: passed
-          DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_distributed_quorum.py tests/test_dio_cloud_attestation.py -q"
+          DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_distributed_quorum.py tests/test_dio_cloud_attestation.py tests/test_dio_remote_witness_packet.py -q"
         run: |
           python scripts/run_dio_github_actions_witness.py \
-            --out evidence/dai-diode/phase2.1-github-witness/dio_github_actions_witness_packet.json
+            --out evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json
 
-      - name: Upload DIO GitHub witness packet
+      - name: Upload Phase-5 DIO GitHub autonomous witness packet
         uses: actions/upload-artifact@v4
         with:
-          name: dio-github-actions-witness-packet
-          path: evidence/dai-diode/phase2.1-github-witness/dio_github_actions_witness_packet.json
+          name: dio-github-actions-autonomous-witness-packet
+          path: evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json
           if-no-files-found: error
 
-      - name: Attest DIO GitHub witness packet
+      - name: Attest Phase-5 DIO GitHub autonomous witness packet
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: evidence/dai-diode/phase2.1-github-witness/dio_github_actions_witness_packet.json
+          subject-path: evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json

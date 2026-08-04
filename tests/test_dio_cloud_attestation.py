@@ -116,6 +116,22 @@ def test_gcp_confidential_vm_attestation_admits_hardware_rooted_witness():
     assert admission.attestation_digest == report.report_digest
 
 
+def test_aws_nitro_tpm_attestation_admits_hardware_rooted_witness():
+    now, _key, policy, evidence = _policy_and_evidence(
+        DIOCloudProvider.AWS,
+        DIOCloudTeeType.AWS_NITRO_TPM,
+        DIOCloudVerifier.AWS_NITRO_ATTESTATION,
+    )
+
+    admission, report = admit_cloud_tee_witness(evidence, policy, evaluation_time=now)
+
+    assert report.admitted is True
+    assert admission is not None
+    assert admission.infrastructure_provider == "aws"
+    assert admission.hardware_rooted_identity is True
+    assert admission.attestation_digest == report.report_digest
+
+
 def test_cloud_tee_attestation_rejects_wrong_nonce():
     now, _key, policy, evidence = _policy_and_evidence(
         DIOCloudProvider.AZURE,
