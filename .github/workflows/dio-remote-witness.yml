@@ -2,6 +2,11 @@ name: DIO Remote GitHub Witness
 
 on:
   workflow_dispatch:
+    inputs:
+      proposal_json_b64:
+        description: "Optional base64-encoded DIOProposalPacket JSON for shared Commons quorum"
+        required: false
+        type: string
   push:
     branches:
       - chore/wip-safety-hygiene
@@ -65,8 +70,15 @@ jobs:
         env:
           DIO_GITHUB_TEST_STATUS: passed
           DIO_GITHUB_TEST_COMMAND: "python -m pytest --noconftest tests/test_dio_cloud_attestation.py tests/test_dio_remote_witness_packet.py tests/test_dio_github_actions_witness.py -q"
+          DIO_SHARED_PROPOSAL_B64: ${{ inputs.proposal_json_b64 || '' }}
         run: |
+          PROPOSAL_ARGS=()
+          if [ -n "$DIO_SHARED_PROPOSAL_B64" ]; then
+            python -c 'import base64, os, pathlib; pathlib.Path("/tmp/dio-shared-proposal.json").write_bytes(base64.b64decode(os.environ["DIO_SHARED_PROPOSAL_B64"], validate=True))'
+            PROPOSAL_ARGS=(--proposal-file /tmp/dio-shared-proposal.json)
+          fi
           python scripts/run_dio_github_actions_witness.py \
+            "${PROPOSAL_ARGS[@]}" \
             --out evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json
 
       - name: Upload Phase-5 DIO GitHub autonomous witness packet

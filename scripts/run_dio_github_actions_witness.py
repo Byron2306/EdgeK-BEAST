@@ -47,12 +47,17 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=Path("evidence/dai-diode/phase5-github-witness/dio_github_actions_autonomous_witness_packet.json"))
     parser.add_argument("--test-status", default=os.environ.get("DIO_GITHUB_TEST_STATUS", "unknown"))
     parser.add_argument("--test-command", default=os.environ.get("DIO_GITHUB_TEST_COMMAND", ""))
+    parser.add_argument("--proposal-file", type=Path, default=None)
     parser.add_argument("--legacy", action="store_true", help="emit the older Phase-2.1 GitHub packet shape")
     args = parser.parse_args()
     packet = (
         build_legacy_packet(test_status=args.test_status, test_command=args.test_command)
         if args.legacy
-        else build_autonomous_packet(test_status=args.test_status, test_command=args.test_command)
+        else build_autonomous_packet(
+            test_status=args.test_status,
+            test_command=args.test_command,
+            proposal=_load_proposal(args.proposal_file) if args.proposal_file else None,
+        )
     )
     digest_field = "packet_digest" if args.legacy else "envelope_digest"
     packet[digest_field] = sha256_digest(packet)
@@ -105,7 +110,12 @@ def build_legacy_packet(*, test_status: str, test_command: str) -> dict[str, Any
     }
 
 
-def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str, Any]:
+def build_autonomous_packet(
+    *,
+    test_status: str,
+    test_command: str,
+    proposal: DIOProposalPacket | None = None,
+) -> dict[str, Any]:
     now = datetime.now(timezone.utc).replace(microsecond=0)
     expires_at = (now + timedelta(hours=24)).isoformat()
     workflow_identity = _workflow_identity()
@@ -135,23 +145,25 @@ def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str,
             "script": "scripts/run_dio_github_actions_witness.py",
         }
     )
-    proposal = DIOProposalPacket(
-        beast_object_type="dio_proposition_packet",
-        proposal_digest=sha256_digest(
-            {
-                "proposal": "github-actions-autonomous-witness",
-                "workflow_identity_digest": workflow_identity_digest,
-                "test_command_digest": test_evidence["test_command_digest"],
-            }
-        ),
-        capability_digest=sha256_digest({"capability": "github-actions-oidc-sigstore-software-witness"}),
-        evidence_root=sha256_digest({"evidence": "github-actions", "workflow_identity_digest": workflow_identity_digest}),
-        world_state_hash=sha256_digest({"world": "github-actions-witness", "git_head": source["git_head"]}),
-        governance_epoch="dio-phase5-github-actions-autonomous-001",
-        challenge_nonce="github-actions-autonomous-" + sha256_digest(workflow_identity).removeprefix("sha256:")[-32:],
-        issued_at=now.isoformat(),
-        expires_at=expires_at,
-    )
+    shared_proposal_supplied = proposal is not None
+    if proposal is None:
+        proposal = DIOProposalPacket(
+            beast_object_type="dio_proposition_packet",
+            proposal_digest=sha256_digest(
+                {
+                    "proposal": "github-actions-autonomous-witness",
+                    "workflow_identity_digest": workflow_identity_digest,
+                    "test_command_digest": test_evidence["test_command_digest"],
+                }
+            ),
+            capability_digest=sha256_digest({"capability": "github-actions-oidc-sigstore-software-witness"}),
+            evidence_root=sha256_digest({"evidence": "github-actions", "workflow_identity_digest": workflow_identity_digest}),
+            world_state_hash=sha256_digest({"world": "github-actions-witness", "git_head": source["git_head"]}),
+            governance_epoch="dio-phase5-github-actions-autonomous-001",
+            challenge_nonce="github-actions-autonomous-" + sha256_digest(workflow_identity).removeprefix("sha256:")[-32:],
+            issued_at=now.isoformat(),
+            expires_at=expires_at,
+        )
     admission = DIOWitnessAdmission(
         node_id="dio:github:actions-witness-01",
         role=DIOWitnessRole.ADVERSARIAL,
@@ -184,7 +196,7 @@ def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str,
             evidence_checked=(proposal.evidence_root, github_attestation_digest, test_evidence["test_command_digest"]),
             reason_codes=("github_actions_tests_passed" if test_status == "passed" else "github_actions_tests_not_passed", "artifact_attestation_required"),
             issued_at=now.isoformat(),
-            expires_at=expires_at,
+            expires_at=proposal.expires_at,
             maximum_authority=AUTHORITY,
         ),
         signing_key,
@@ -208,7 +220,7 @@ def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str,
             independently_evaluated=True,
             remote_runtime_observed=True,
             issued_at=now.isoformat(),
-            expires_at=expires_at,
+            expires_at=proposal.expires_at,
             maximum_authority=AUTHORITY,
         ),
         signing_key,
@@ -233,6 +245,7 @@ def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str,
         "github_attestation_subject_digest": github_attestation_digest,
         "source": source,
         "test_evidence": test_evidence,
+        "shared_proposal_supplied": shared_proposal_supplied,
         "proposal": _jsonable(proposal) | {"packet_digest": proposal.packet_digest},
         "admission": _jsonable(admission) | {"admission_digest": admission.admission_digest},
         "packet": _jsonable(packet) | {"packet_digest": packet.packet_digest},
@@ -254,6 +267,12 @@ def build_autonomous_packet(*, test_status: str, test_command: str) -> dict[str,
 def build_packet(*, test_status: str, test_command: str) -> dict[str, Any]:
     """Backward-compatible alias for tests/importers that expect the old name."""
     return build_autonomous_packet(test_status=test_status, test_command=test_command)
+
+
+def _load_proposal(path: Path) -> DIOProposalPacket:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload.pop("packet_digest", None)
+    return DIOProposalPacket(**payload)
 
 
 def _workflow_identity() -> dict[str, str]:

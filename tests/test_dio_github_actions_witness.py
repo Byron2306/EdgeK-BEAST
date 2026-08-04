@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from datetime import datetime, timedelta, timezone
 
 from app.kernel.compute.deterministic_intelligence import canonical_json, sha256_digest
+from app.kernel.dai.dio_distributed_quorum import DIOProposalPacket
 from scripts.run_dio_github_actions_witness import build_autonomous_packet, build_legacy_packet
 from scripts.verify_dio_github_actions_witness import verify
 
@@ -52,6 +54,33 @@ def test_github_actions_emits_phase5_autonomous_remote_witness_envelope(tmp_path
     assert packet["requires_github_artifact_attestation"] is True
     assert packet["requires_oidc_identity"] is True
     assert packet["maximum_authority"] == "remote_oidc_sigstore_software_witness_only"
+
+
+def test_github_actions_autonomous_packet_binds_supplied_shared_proposal(tmp_path: Path, monkeypatch) -> None:
+    _github_env(monkeypatch)
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    proposal = DIOProposalPacket(
+        beast_object_type="dio_proposition_packet",
+        proposal_digest=sha256_digest({"proposal": "shared-github-quorum"}),
+        capability_digest=sha256_digest({"capability": "shared-github-quorum"}),
+        evidence_root=sha256_digest({"evidence": "shared-github-quorum"}),
+        world_state_hash=sha256_digest({"world": "shared-github-quorum"}),
+        governance_epoch="dio-phase5-shared-quorum-test",
+        challenge_nonce="phase5-shared-github-" + "x" * 24,
+        issued_at=now.isoformat(),
+        expires_at=(now + timedelta(minutes=30)).isoformat(),
+    )
+    packet = build_autonomous_packet(test_status="passed", test_command="pytest --noconftest dio", proposal=proposal)
+    packet["envelope_digest"] = sha256_digest(packet)
+    path = _write_packet(tmp_path / "packet.json", packet)
+
+    receipt = verify(path)
+
+    assert receipt["verified"] is True
+    assert packet["shared_proposal_supplied"] is True
+    assert packet["proposal"]["packet_digest"] == proposal.packet_digest
+    assert packet["packet"]["proposal_packet_digest"] == proposal.packet_digest
+    assert packet["packet"]["vote"]["proposal_digest"] == proposal.proposal_digest
 
 
 def test_github_actions_autonomous_verifier_rejects_inner_packet_tamper_even_when_envelope_rehashed(
