@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: test selftest verify lint
+.PHONY: test selftest verify lint candidate-lint
 
 test:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) -m pytest -p no:cacheprovider -q
@@ -15,8 +15,12 @@ verify:
 		--trusted-fingerprint "$(TRUSTED_FINGERPRINT)" \
 		--expected-zip-sha256 "$(EXPECTED_ZIP_SHA256)"
 
+candidate-lint:
+	@test -n "$(CANDIDATE)" || (echo "Usage: make candidate-lint CANDIDATE=path STAGE=rc|final" && exit 2)
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) dai_lint.py "$(CANDIDATE)" --stage "$(or $(STAGE),rc)"
+
 lint:
 	$(PYTHON) -m py_compile \
-		dai_publication.py dai_publication_core.py dai_evidence.py dai_attack.py dai_ingest.py \
+		dai_publication.py dai_publication_core.py dai_evidence.py dai_attack.py dai_ingest.py dai_lint.py \
 		tests/test_dai_publication.py tests/test_dai_evidence.py \
-		tests/test_dai_attack.py tests/test_dai_ingest.py
+		tests/test_dai_attack.py tests/test_dai_ingest.py tests/test_dai_lint.py
