@@ -1,16 +1,17 @@
 {
   "schema": "dai.independent-oracle.v1",
+  "oracle_author_id": "replace-with-independent-author",
+  "oracle_author_key_fingerprint": "sha256:replaced-by-sign-object",
+  "public_key_path": "keys/replace-with-oracle-author-public-key.pem",
+  "subject_core_capsule_sha256": "sha256:replace-with-frozen-core-capsule-digest",
   "solver_freeze_commit": "replace-with-full-commit",
   "solver_freeze_tag": "replace-with-signed-tag",
-  "case_set_digest": "sha256:replace-with-64-lowercase-hex",
-  "oracle_author_ids": ["replace-with-independent-author"],
-  "oracle_author_key_fingerprints": ["sha256:replace-with-64-lowercase-hex"],
+  "case_set_digest": "sha256:replace-with-arena-cases-file-digest",
   "authored_after_solver_freeze": true,
-  "solver_internals_disclosed_to_authors": false,
+  "solver_internals_disclosed_to_author": false,
   "cases": [
     {
       "case_id": "replace-with-case-id",
-      "case_digest": "sha256:replace-with-64-lowercase-hex",
       "expected_action": "answer|refuse|unresolved",
       "expected_propositions": [],
       "forbidden_propositions": [],
@@ -22,7 +23,7 @@
       }
     }
   ],
-  "issued_at": "replace-with-rfc3339",
+  "issued_at": "replace-with-rfc3339-utc-z",
   "signature_algorithm": "Ed25519",
-  "signature_base64": "replace-with-detached-signature"
+  "signature_base64": "replaced-by-sign-object"
 }

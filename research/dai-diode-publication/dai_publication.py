@@ -2,10 +2,8 @@
 """Hardened public entry point for the DAI-Diode publication harness.
 
 The implementation remains in ``dai_publication_core`` so the first audited
-commit is preserved byte-for-byte. This shim applies a compatibility correction
-for ZIP tools that store POSIX permission bits without POSIX file-type bits.
-Such entries are ordinary files, not special devices. Explicit symlink and
-special-file type bits remain fail-closed.
+commit is preserved byte-for-byte. This shim applies compatibility and final-
+evidence hardening without mutating that historical core.
 """
 
 from __future__ import annotations
@@ -28,6 +26,26 @@ def _zip_entry_is_special_compat(info: zipfile.ZipInfo) -> bool:
 
 
 _core._zip_entry_is_special = _zip_entry_is_special_compat
+
+# Imported only after the core compatibility gate is installed.
+import dai_evidence as _evidence  # noqa: E402
+
+_original_validate_candidate = _core.validate_candidate
+
+
+def _validate_candidate_entry(candidate, *, stage):
+    # The hardened validator reuses the original RC checks. Temporarily expose
+    # the original function to avoid recursive dispatch through this shim.
+    current = _core.validate_candidate
+    _core.validate_candidate = _original_validate_candidate
+    try:
+        return _evidence.validate_candidate_hardened(candidate, stage=stage)
+    finally:
+        _core.validate_candidate = current
+
+
+_core.validate_candidate = _validate_candidate_entry
+validate_candidate = _validate_candidate_entry
 main = _core.main
 
 
