@@ -1,0 +1,293 @@
+{
+  "schema": "dai.semantic-attack-plan.v1",
+  "baseline_input": "SEMANTIC_ATTACK_BASELINE.json",
+  "baseline_expected": {
+    "returncode": 0,
+    "json": {
+      "/admission": "accept",
+      "/decision": "answer",
+      "/production_authority_allowed": false,
+      "/execution_authority_allowed": false
+    }
+  },
+  "attacks": [
+    {
+      "id": "authority-production-escalation",
+      "threat_class": "authority",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/policy/production_authority_allowed", "value": true}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject", "/decision": "refuse"},
+        "reason_code_contains": "authority_escalation"
+      }
+    },
+    {
+      "id": "authority-execution-escalation",
+      "threat_class": "authority",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/policy/execution_authority_allowed", "value": true}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject", "/decision": "refuse"},
+        "reason_code_contains": "authority_escalation"
+      }
+    },
+    {
+      "id": "predecessor-substitution",
+      "threat_class": "lineage",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/lineage/observed_predecessor_digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "predecessor_digest_mismatch"
+      }
+    },
+    {
+      "id": "remove-operational-provenance",
+      "threat_class": "provenance",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/provenance", "id": "receipt-operational"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "missing_provenance"
+      }
+    },
+    {
+      "id": "unsigned-provenance",
+      "threat_class": "provenance",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/provenance/0/signature_verified", "value": false}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "provenance_signature_invalid"
+      }
+    },
+    {
+      "id": "stale-lease",
+      "threat_class": "freshness",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/lease/expires_at", "value": "2000-01-01T00:00:00Z"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/decision": "refuse"},
+        "reason_code_contains": "lease_expired"
+      }
+    },
+    {
+      "id": "future-issued-lease",
+      "threat_class": "freshness",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/lease/issued_at", "value": "2100-01-01T00:00:00Z"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/decision": "refuse"},
+        "reason_code_contains": "lease_not_yet_valid"
+      }
+    },
+    {
+      "id": "relevance-query-substitution",
+      "threat_class": "semantic",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/relevance/query_digest", "value": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "relevance_query_mismatch"
+      }
+    },
+    {
+      "id": "route-widening",
+      "threat_class": "semantic",
+      "operations": [
+        {"op": "append_json_pointer", "pointer": "/route/speakable_fact_ids", "value": "fact-unsupported"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "route_exceeds_relevance"
+      }
+    },
+    {
+      "id": "semantic-digest-consistent-marker-substitution",
+      "threat_class": "semantic",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/semantic/declared_digest", "value": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "semantic_digest_mismatch"
+      }
+    },
+    {
+      "id": "text-claim-injection",
+      "threat_class": "expression",
+      "operations": [
+        {"op": "append_json_pointer", "pointer": "/expression/text_proposition_ids", "value": "fact-unsupported"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "text_expression_overreach"
+      }
+    },
+    {
+      "id": "svg-claim-injection",
+      "threat_class": "expression",
+      "operations": [
+        {"op": "append_json_pointer", "pointer": "/expression/svg_proposition_ids", "value": "fact-unsupported"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/admission": "reject"},
+        "reason_code_contains": "visual_expression_overreach"
+      }
+    },
+    {
+      "id": "proposal-digest-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/proposal_digest", "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "proposal_digest_mismatch"
+      }
+    },
+    {
+      "id": "capability-digest-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/capability_digest", "value": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "capability_digest_mismatch"
+      }
+    },
+    {
+      "id": "evidence-root-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/evidence_root", "value": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "evidence_root_mismatch"
+      }
+    },
+    {
+      "id": "world-state-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/world_state_hash", "value": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "world_state_mismatch"
+      }
+    },
+    {
+      "id": "governance-epoch-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/governance_epoch", "value": "wrong-epoch"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "governance_epoch_mismatch"
+      }
+    },
+    {
+      "id": "challenge-nonce-mismatch",
+      "threat_class": "quorum-binding",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/proposal/challenge_nonce", "value": "wrong-nonce-00000000000000000000"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "challenge_nonce_mismatch"
+      }
+    },
+    {
+      "id": "duplicate-witness-vote",
+      "threat_class": "quorum-independence",
+      "operations": [
+        {"op": "duplicate_list_item_by_id", "pointer": "/witnesses", "id": "witness-semantic"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "duplicate_vote"
+      }
+    },
+    {
+      "id": "operator-control-collapse",
+      "threat_class": "quorum-independence",
+      "operations": [
+        {"op": "copy_json_pointer", "source": "/witnesses/0/control_domain", "pointer": "/witnesses/1/control_domain"},
+        {"op": "copy_json_pointer", "source": "/witnesses/0/control_domain", "pointer": "/witnesses/2/control_domain"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "insufficient_distinct_control_domains"
+      }
+    },
+    {
+      "id": "provider-label-collapse",
+      "threat_class": "quorum-independence",
+      "operations": [
+        {"op": "copy_json_pointer", "source": "/witnesses/0/provider", "pointer": "/witnesses/1/provider"},
+        {"op": "copy_json_pointer", "source": "/witnesses/0/provider", "pointer": "/witnesses/2/provider"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/quorum_decision": "reject"},
+        "reason_code_contains": "insufficient_distinct_providers"
+      }
+    },
+    {
+      "id": "hidden-post-ledger-provider-call",
+      "threat_class": "offline-closure",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/runtime/provider_calls_after_ledger", "value": 1}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/publication_gate": "reject"},
+        "reason_code_contains": "post_ledger_provider_call_observed"
+      }
+    },
+    {
+      "id": "network-egress-enabled",
+      "threat_class": "offline-closure",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/runtime/network_default_egress", "value": "allow"}
+      ],
+      "expected": {
+        "returncode": 0,
+        "json": {"/publication_gate": "reject"},
+        "reason_code_contains": "network_denial_not_enforced"
+      }
+    }
+  ]
+}
