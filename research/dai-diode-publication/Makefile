@@ -13,4 +13,4 @@ verify:
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) dai_publication.py verify "$(RELEASE)" --trusted-fingerprint "$(TRUSTED_FINGERPRINT)"
 
 lint:
-	$(PYTHON) -m py_compile dai_publication.py tests/test_dai_publication.py
+	$(PYTHON) -m py_compile dai_publication.py dai_publication_core.py tests/test_dai_publication.py

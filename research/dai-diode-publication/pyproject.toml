@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dai-diode-publication"
-version = "0.1.0"
+version = "0.1.1"
 description = "Fail-closed publication, lineage, mutation, and ablation harness for DAI-Diode"
 requires-python = ">=3.11"
 dependencies = [
@@ -20,7 +20,7 @@ test = [
 dai-publication = "dai_publication:main"
 
 [tool.setuptools]
-py-modules = ["dai_publication"]
+py-modules = ["dai_publication", "dai_publication_core"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"

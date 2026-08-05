@@ -1,0 +1,34 @@
+{
+  "schema": "dai.network-denial-witness.v1",
+  "result": "unassessed",
+  "claim": "No outbound provider call was observed during the post-ledger deterministic arena under the declared network-denial policy.",
+  "release_zip_sha256": "sha256:replace-with-64-lowercase-hex",
+  "solver_digest": "sha256:replace-with-64-lowercase-hex",
+  "verifier_digest": "sha256:replace-with-64-lowercase-hex",
+  "container_or_vm_image_digest": "sha256:replace-with-64-lowercase-hex",
+  "network_policy_digest": "sha256:replace-with-64-lowercase-hex",
+  "network_policy": {
+    "default_egress": "deny",
+    "loopback_allowed": true,
+    "dns_allowed": false,
+    "exceptions": []
+  },
+  "observation_sources": [
+    "network_namespace_or_firewall_rules",
+    "socket_or_ebpf_trace",
+    "packet_capture_summary",
+    "process_tree",
+    "dns_attempt_log"
+  ],
+  "observed_outbound_connections": [],
+  "denied_connection_attempts": [],
+  "provider_calls_observed": 0,
+  "started_at": "replace-with-rfc3339",
+  "ended_at": "replace-with-rfc3339",
+  "observer_operator_id": "replace-with-independent-observer",
+  "observer_key_fingerprint": "sha256:replace-with-64-lowercase-hex",
+  "production_authority_allowed": false,
+  "execution_authority_allowed": false,
+  "signature_algorithm": "Ed25519",
+  "signature_base64": "replace-with-detached-signature"
+}

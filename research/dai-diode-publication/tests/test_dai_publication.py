@@ -120,7 +120,7 @@ def test_tracked_file_mutation_is_rejected(tmp_path: Path) -> None:
     dp.safe_extract_zip(release, extracted)
     target = extracted / "docs" / "claim.txt"
     target.write_text("changed\n", encoding="utf-8")
-    with pytest.raises(dp.PublicationError, match="digest mismatch"):
+    with pytest.raises(dp.PublicationError, match="(size|digest) mismatch"):
         dp.verify_release_directory(extracted, trusted_fingerprint=fingerprint)
 
 
