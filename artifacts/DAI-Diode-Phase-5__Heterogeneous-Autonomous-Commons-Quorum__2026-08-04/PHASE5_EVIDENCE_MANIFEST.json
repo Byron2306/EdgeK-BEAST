@@ -1,0 +1,111 @@
+{
+  "authority_boundary": {
+    "azure_boundary": "Azure MAA provider-service JWT/JWKS/x5c verification; not independent raw SNP VCEK reconstruction",
+    "execution_authority_allowed": false,
+    "gcp_boundary": "remote runtime packets plus separate provider-signature verification; not full raw AMD VCEK reconstruction",
+    "github_boundary": "remote OIDC/Sigstore adversarial software witness",
+    "hf_boundary": "remote signed software semantic witness",
+    "production_authority_allowed": false,
+    "provider_calls_used_during_replay": 0,
+    "quorum_authority": "bounded governance approval of one shared proposal only"
+  },
+  "beast_object_type": "dai_phase5_evidence_manifest",
+  "cloud_provider_verification": {
+    "azure_jwks_digest": "sha256:46b7ff1df1b903f9e9b1c1c43363199eea990025ea2852af44add3d14ed677a9",
+    "azure_maa_signature_verified": true,
+    "google_provider_signature_verified": true
+  },
+  "critical_files": [
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/dio_phase5_shared_proposal.json",
+      "sha256": "sha256:99971143fc97717937c93a12ec747e00a16efd782fe885346e88d5f9d9726781",
+      "size_bytes": 793
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/dio_phase5_shared_quorum_replay.json",
+      "sha256": "sha256:a00266d98be8055d59c102264601ddd1ab22a666d0c6e3a8249bdcafc3e0d994",
+      "size_bytes": 4952
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/hf/dio_hf_shared_proposal_witness_receipt.json",
+      "sha256": "sha256:03361fd8ef2d03e53a184ab2217fa884dd46a739920614ff7376c5ff76d96864",
+      "size_bytes": 17361
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/github/run-30960436614/dio_github_actions_autonomous_witness_verification.json",
+      "sha256": "sha256:7a4b917a58fff8f4fb79e44614af8ef2129dbc639c72a6aafe3d045531a17b85",
+      "size_bytes": 2000
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/gcp-physical-remote/dio_gcp_autonomous_witness_envelope.json",
+      "sha256": "sha256:2e33eb998b30abc48c3212a4b37d4df1ebff97dab652a663e1ad42e875ba578c",
+      "size_bytes": 7117
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/gcp-governance-remote/dio_gcp_autonomous_witness_envelope.json",
+      "sha256": "sha256:7c437e06ba58f87ebc0cfd2c9f0683e90b3062845e49677ab8a5973b2f34a67b",
+      "size_bytes": 7122
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/gcp/google-confidential-space-provider-signature-reverification.json",
+      "sha256": "sha256:cb2d7fa3bb8ebe8b7fdf6a2520726e0845d47cd8236901f69e608d6153b91e45",
+      "size_bytes": 4676
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/azure-live-maa-001/dio_azure_tee_attestation_harvest.json",
+      "sha256": "sha256:c3b8cdf35b5a133668d0e4b098aa51c0b9df202a75f6cfc0683e02e87bd374d6",
+      "size_bytes": 4715
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_maa_token_verification.json",
+      "sha256": "sha256:98d53063edec6a383dc6d49e9a8ecd069e1b2c1d03921df4cd179ea1396ff532",
+      "size_bytes": 3677
+    },
+    {
+      "path": "evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_maa_token_verification.offline.json",
+      "sha256": "sha256:b26d138485051d70c0b7bc61b8e2f01001e4eb6962ef6377da9432aa8083de68",
+      "size_bytes": 3696
+    },
+    {
+      "path": "evidence/dai-diode/phase5-remote-witness-packet/phase5_remote_witness_packet_gauntlet_receipt.json",
+      "sha256": "sha256:b74d84884c29fbd495abe5074fd1741d06fcb7cdda0d02fe05bfd49207112fc9",
+      "size_bytes": 1104
+    }
+  ],
+  "expected_receipts": {
+    "azure_admission_report_digest": "sha256:df5675269c407631b902d706759686b2662d45ac8888ff63ffe75843560b136a",
+    "azure_harvest_digest": "sha256:6b156024ccf83f7106b175b75e65f56b0e2bd4b119004d49125fff1bf96e2bcd",
+    "azure_jwks_digest": "sha256:46b7ff1df1b903f9e9b1c1c43363199eea990025ea2852af44add3d14ed677a9",
+    "azure_live_verification_digest": "sha256:13cd905ca91ef07b86752d8874d4e6d21e300214e111e883099a943899fd7316",
+    "azure_offline_verification_digest": "sha256:e164ff3d76bb6fa6f7eb53dd7f99e1e860f5d2cf0f630a1e5053a2722c168b94",
+    "gcp_governance_envelope_digest": "sha256:e443ec62d6406f1ea2af14e630bd1d69f2285a2df20536ed97ca01213f02b019",
+    "gcp_physical_envelope_digest": "sha256:de095c739633f7c06a48207b9bdd58085335b0dccf0bdda81e3811cfdb0b2462",
+    "gcp_provider_signature_verification_digest": "sha256:966bf9fb70c48cd9b0cec71132ba6fc4ba90cc3e64e3a27da8ce3d85901c2edf",
+    "github_live_envelope_digest": "sha256:3440cb4385a732ff7160df7061149cb8772e87e8fb2c89caa0912e2e83cf2996",
+    "github_live_verification_digest": "sha256:4ce16441ae173eafcaad2b4a12f01220e8cbdb7ee81805bdf75f3002121b4f4f",
+    "hf_shared_packet_digest": "sha256:334699f9c5d21687874c7ec8a54b1ecd04196b2c877518b1ffc9423d290365f9",
+    "hf_shared_receipt_digest": "sha256:a1737d69a90592873087c7a3bdf40d7e118923db53bf6fd96120c99fa9c8da0d",
+    "remote_packet_gauntlet_receipt_digest": "sha256:d73ee9ce91657c4492d31561303f15c59d17664a138c2ac3620115ea65c03ce4",
+    "shared_proposal_digest": "sha256:5df338a298b4f95abcc6edfcdc98772b787848c3cc0694a144110ac3553fcaff",
+    "shared_proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+    "shared_quorum_replay_digest": "sha256:40a463606d84606260aaaaedde538ff691dd37e7f6cf939c4673a56c809e5a16",
+    "shared_quorum_report_digest": "sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d"
+  },
+  "quorum": {
+    "admitted_node_count": 4,
+    "decision": "approve",
+    "hardware_rooted_node_count": 2,
+    "proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+    "quorum_class": "heterogeneous_distributed_quorum",
+    "report_digest": "sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d",
+    "roles_present": [
+      "adversarial_witness",
+      "governance_witness",
+      "physical_execution_witness",
+      "semantic_witness"
+    ],
+    "valid_vote_count": 4
+  },
+  "release_id": "DAI-Diode-Phase-5__Heterogeneous-Autonomous-Commons-Quorum__2026-08-04",
+  "version": "2026-08-04.phase5.heterogeneous-autonomous-quorum.v1"
+}

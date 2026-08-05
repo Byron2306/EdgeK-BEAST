@@ -1,0 +1,90 @@
+{
+  "etag": "\"1\"",
+  "fqdns": "",
+  "hardwareProfile": {
+    "vmSize": "Standard_DC2as_v6"
+  },
+  "id": "/subscriptions/658c71c0-13dd-4b25-8518-976b2809464e/resourceGroups/dio-azure-witness-sa-rg/providers/Microsoft.Compute/virtualMachines/dio-azure-tee-governance-01",
+  "identity": {
+    "principalId": "df413a18-b90b-44da-afad-f8e0bb5cc4a8",
+    "tenantId": "6e9e4c1a-099c-4c7a-9b37-7cb734828ff7",
+    "type": "SystemAssigned"
+  },
+  "location": "southafricanorth",
+  "macAddresses": "E4-FA-DE-0A-22-B6",
+  "name": "dio-azure-tee-governance-01",
+  "networkProfile": {
+    "networkInterfaces": [
+      {
+        "id": "/subscriptions/658c71c0-13dd-4b25-8518-976b2809464e/resourceGroups/dio-azure-witness-sa-rg/providers/Microsoft.Network/networkInterfaces/dio-azure-tee-governance-01VMNic",
+        "resourceGroup": "dio-azure-witness-sa-rg"
+      }
+    ]
+  },
+  "osProfile": {
+    "adminUsername": "azureuser",
+    "allowExtensionOperations": true,
+    "computerName": "dio-azure-tee-governance-01",
+    "linuxConfiguration": {
+      "disablePasswordAuthentication": true,
+      "patchSettings": {
+        "assessmentMode": "ImageDefault",
+        "patchMode": "ImageDefault"
+      },
+      "provisionVMAgent": true,
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXtrmdsRX511Uo0FhgqqQ+swZidiImZwlHwrtIyf5Os dio-azure-witness\n",
+            "path": "/home/azureuser/.ssh/authorized_keys"
+          }
+        ]
+      }
+    },
+    "requireGuestProvisionSignal": true,
+    "secrets": []
+  },
+  "powerState": "VM running",
+  "privateIps": "10.0.0.4",
+  "provisioningState": "Succeeded",
+  "publicIps": "102.37.98.155",
+  "resourceGroup": "dio-azure-witness-sa-rg",
+  "securityProfile": {
+    "securityType": "ConfidentialVM",
+    "uefiSettings": {
+      "secureBootEnabled": true,
+      "vTpmEnabled": true
+    }
+  },
+  "storageProfile": {
+    "dataDisks": [],
+    "diskControllerType": "SCSI",
+    "imageReference": {
+      "exactVersion": "22.04.202607310",
+      "offer": "0001-com-ubuntu-confidential-vm-jammy",
+      "publisher": "Canonical",
+      "sku": "22_04-lts-cvm",
+      "version": "latest"
+    },
+    "osDisk": {
+      "caching": "ReadWrite",
+      "createOption": "FromImage",
+      "deleteOption": "Detach",
+      "diskSizeGB": 30,
+      "managedDisk": {
+        "id": "/subscriptions/658c71c0-13dd-4b25-8518-976b2809464e/resourceGroups/dio-azure-witness-sa-rg/providers/Microsoft.Compute/disks/dio-azure-tee-governance-01_OsDisk_1_83db32ded7d0497b896d1991b7d7d6e2",
+        "resourceGroup": "dio-azure-witness-sa-rg",
+        "securityProfile": {
+          "securityEncryptionType": "VMGuestStateOnly"
+        },
+        "storageAccountType": "Premium_LRS"
+      },
+      "name": "dio-azure-tee-governance-01_OsDisk_1_83db32ded7d0497b896d1991b7d7d6e2",
+      "osType": "Linux"
+    }
+  },
+  "tags": {},
+  "timeCreated": "2026-08-04T23:51:56.4823993+00:00",
+  "type": "Microsoft.Compute/virtualMachines",
+  "vmId": "466fcc1d-cabc-4042-963c-6faf3ea9c586"
+}

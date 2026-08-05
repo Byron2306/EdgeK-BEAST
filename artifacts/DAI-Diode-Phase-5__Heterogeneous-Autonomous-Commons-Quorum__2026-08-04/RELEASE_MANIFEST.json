@@ -1,0 +1,42 @@
+{
+  "authority_boundary": {
+    "azure_boundary": "Azure MAA provider-service JWT/JWKS/x5c verification; not independent raw SNP VCEK reconstruction",
+    "execution_authority_allowed": false,
+    "gcp_boundary": "remote runtime packets plus separate provider-signature verification; not full raw AMD VCEK reconstruction",
+    "github_boundary": "remote OIDC/Sigstore adversarial software witness",
+    "hf_boundary": "remote signed software semantic witness",
+    "production_authority_allowed": false,
+    "provider_calls_used_during_replay": 0,
+    "quorum_authority": "bounded governance approval of one shared proposal only"
+  },
+  "beast_object_type": "dai_phase5_heterogeneous_autonomous_commons_quorum_release",
+  "date": "2026-08-04",
+  "expected_receipts": {
+    "azure_admission_report_digest": "sha256:df5675269c407631b902d706759686b2662d45ac8888ff63ffe75843560b136a",
+    "azure_harvest_digest": "sha256:6b156024ccf83f7106b175b75e65f56b0e2bd4b119004d49125fff1bf96e2bcd",
+    "azure_jwks_digest": "sha256:46b7ff1df1b903f9e9b1c1c43363199eea990025ea2852af44add3d14ed677a9",
+    "azure_live_verification_digest": "sha256:13cd905ca91ef07b86752d8874d4e6d21e300214e111e883099a943899fd7316",
+    "azure_offline_verification_digest": "sha256:e164ff3d76bb6fa6f7eb53dd7f99e1e860f5d2cf0f630a1e5053a2722c168b94",
+    "gcp_governance_envelope_digest": "sha256:e443ec62d6406f1ea2af14e630bd1d69f2285a2df20536ed97ca01213f02b019",
+    "gcp_physical_envelope_digest": "sha256:de095c739633f7c06a48207b9bdd58085335b0dccf0bdda81e3811cfdb0b2462",
+    "gcp_provider_signature_verification_digest": "sha256:966bf9fb70c48cd9b0cec71132ba6fc4ba90cc3e64e3a27da8ce3d85901c2edf",
+    "github_live_envelope_digest": "sha256:3440cb4385a732ff7160df7061149cb8772e87e8fb2c89caa0912e2e83cf2996",
+    "github_live_verification_digest": "sha256:4ce16441ae173eafcaad2b4a12f01220e8cbdb7ee81805bdf75f3002121b4f4f",
+    "hf_shared_packet_digest": "sha256:334699f9c5d21687874c7ec8a54b1ecd04196b2c877518b1ffc9423d290365f9",
+    "hf_shared_receipt_digest": "sha256:a1737d69a90592873087c7a3bdf40d7e118923db53bf6fd96120c99fa9c8da0d",
+    "remote_packet_gauntlet_receipt_digest": "sha256:d73ee9ce91657c4492d31561303f15c59d17664a138c2ac3620115ea65c03ce4",
+    "shared_proposal_digest": "sha256:5df338a298b4f95abcc6edfcdc98772b787848c3cc0694a144110ac3553fcaff",
+    "shared_proposal_packet_digest": "sha256:974d47dcb8f3d46b78f72de97b86a1f7960176423dcea46c37574810650bea86",
+    "shared_quorum_replay_digest": "sha256:40a463606d84606260aaaaedde538ff691dd37e7f6cf939c4673a56c809e5a16",
+    "shared_quorum_report_digest": "sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d"
+  },
+  "file_manifest_digest": "sha256:b34a809302e719347b05c8b6d3e0b3862d3955f49f5fe6fe3ec3e4cbad6f4452",
+  "one_command_clean_reproduce": "./reproduce_clean_environment.sh /path/to/clean/EdgeK-BEAST",
+  "one_command_verify": "python3 verify_phase5_bundle.py",
+  "phase5_evidence_manifest_digest": "sha256:128326bc58eec92fcc51fbf314bbba42214aa59fc15c001b75d4489295e3a4ce",
+  "prior_phase4_fossil_sha256": "sha256:fc9e2af6a5f5419cdf67ae1d88d9d076e492b76252b0526510d259e894f986e7",
+  "release_id": "DAI-Diode-Phase-5__Heterogeneous-Autonomous-Commons-Quorum__2026-08-04",
+  "release_manifest_digest": "sha256:7b921c8d1aecbcd2cbb3ee8fae6b5e7a856883e07d68c924d7259283eb2ae905",
+  "strongest_claim": "One shared proposal was approved by four independently signed autonomous witness packets spanning HF, GitHub/Sigstore and GCP remote runtime evidence, with separate Google and Azure provider attestation verification receipts preserved.",
+  "title": "DAI Diode Phase 5 - Heterogeneous Autonomous Commons Quorum"
+}

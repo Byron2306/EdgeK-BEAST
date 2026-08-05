@@ -2339,8 +2339,41 @@ Goal:
      Azure now has provider-service MAA JWT verification and BEAST admission
      evidence. This is still not an independent AMD VCEK reconstruction of the
      raw SNP report, and production authority remains deliberately off.
-7. Package Phase 5 only after autonomous packet gauntlet, live packet harvest
-   and coordinator replay all pass from a clean source overlay.
+7. ~~Package Phase 5 only after autonomous packet gauntlet, live packet harvest
+   and coordinator replay all pass from a clean source overlay.~~
+   - Package script:
+     `scripts/package_dai_phase5_artifact.py`.
+   - Frozen release identity:
+     `DAI-Diode-Phase-5__Heterogeneous-Autonomous-Commons-Quorum__2026-08-04`.
+   - Bundle directory:
+     `artifacts/DAI-Diode-Phase-5__Heterogeneous-Autonomous-Commons-Quorum__2026-08-04`.
+   - Sealed ZIP:
+     `artifacts/DAI-Diode-Phase-5__Heterogeneous-Autonomous-Commons-Quorum__2026-08-04.zip`.
+   - ZIP digest:
+     `sha256:041c4fe10c6b360f318e0c2271a4d9a671c8a922a38973178c2f007b23bc876d`.
+   - Phase-5 evidence manifest digest:
+     `sha256:128326bc58eec92fcc51fbf314bbba42214aa59fc15c001b75d4489295e3a4ce`.
+   - One-command verifier:
+     `python3 verify_phase5_bundle.py`.
+   - Verifier result:
+     `verified=true`, `entry_count=85`, `provider_calls_used=0`,
+     `production_authority_allowed=false`,
+     `execution_authority_allowed=false`.
+   - Shared quorum report digest:
+     `sha256:a031335809e7e98609691d56ea297829204eeb6500bfc48a135f3767d558be4d`.
+   - Self-contained contents:
+     shared proposal, live HF shared-proposal receipt, live GitHub
+     Actions/Sigstore verification, GCP physical/governance remote envelopes,
+     Google Confidential Space provider-signature re-verification, Azure live
+     Confidential VM MAA token/JWKS/x5c verification with offline JWKS replay,
+     remote witness packet gauntlet, Phase-4 predecessor fossil, source overlay,
+     focused tests, dependency manifests, SHA-256 manifest, claims/nonclaims,
+     authority map and clean-environment reproduction guide.
+   - Boundary:
+     the fossil proves a bounded heterogeneous autonomous Commons quorum and
+     provider-service attestation closure. It still does not grant production
+     execution authority and does not claim independent AMD VCEK reconstruction
+     of raw SNP reports.
 
 ## Cross-phase closure hardening: verifier and provenance blockers
 
