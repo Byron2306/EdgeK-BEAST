@@ -1,0 +1,93 @@
+{
+  "schema": "dai.semantic-attack-baseline.v1",
+  "lineage": {
+    "canonical_tip_digest": "sha256:replace-with-64-lowercase-hex",
+    "expected_predecessor_digest": "sha256:replace-with-64-lowercase-hex",
+    "observed_predecessor_digest": "sha256:replace-with-same-64-lowercase-hex"
+  },
+  "policy": {
+    "production_authority_allowed": false,
+    "execution_authority_allowed": false,
+    "evaluation_time": "replace-with-rfc3339-utc-z",
+    "unsupported_action": "refuse"
+  },
+  "lease": {
+    "issued_at": "replace-with-rfc3339-before-evaluation",
+    "expires_at": "replace-with-rfc3339-after-evaluation"
+  },
+  "query": {
+    "query_id": "replace-with-query-id",
+    "digest": "sha256:replace-with-64-lowercase-hex"
+  },
+  "capabilities": [
+    {"id": "restart-risk", "family": "operational_truth"},
+    {"id": "source-support", "family": "sophia_source_support"}
+  ],
+  "facts": [
+    {"id": "fact-restart-risk", "provenance_id": "receipt-operational"},
+    {"id": "fact-source-support", "provenance_id": "receipt-sophia"}
+  ],
+  "provenance": [
+    {"id": "receipt-operational", "issuer": "replace-with-issuer", "signature_verified": true},
+    {"id": "receipt-sophia", "issuer": "replace-with-issuer", "signature_verified": true}
+  ],
+  "relevance": {
+    "query_digest": "sha256:replace-with-query-digest",
+    "selected_fact_ids": ["fact-restart-risk", "fact-source-support"]
+  },
+  "route": {
+    "speakable_fact_ids": ["fact-restart-risk", "fact-source-support"],
+    "refusal_fact_ids": []
+  },
+  "semantic": {
+    "declared_digest": "sha256:replace-with-recomputed-semantic-digest",
+    "recomputed_digest": "sha256:replace-with-same-semantic-digest"
+  },
+  "expression": {
+    "text_proposition_ids": ["fact-restart-risk", "fact-source-support"],
+    "svg_proposition_ids": ["fact-restart-risk", "fact-source-support"],
+    "text": "replace-with-canonical-text",
+    "svg_ast": {"nodes": [], "edges": [], "labels": []}
+  },
+  "proposal": {
+    "proposal_digest": "sha256:replace-with-64-lowercase-hex",
+    "capability_digest": "sha256:replace-with-64-lowercase-hex",
+    "evidence_root": "sha256:replace-with-64-lowercase-hex",
+    "world_state_hash": "sha256:replace-with-64-lowercase-hex",
+    "governance_epoch": "replace-with-epoch",
+    "challenge_nonce": "replace-with-shared-nonce"
+  },
+  "witnesses": [
+    {
+      "id": "witness-semantic",
+      "operator_id": "operator-a",
+      "control_domain": "control-a",
+      "provider": "provider-a",
+      "signing_key_fingerprint": "sha256:replace-with-64-lowercase-hex",
+      "role": "semantic",
+      "decision": "approve"
+    },
+    {
+      "id": "witness-adversarial",
+      "operator_id": "operator-b",
+      "control_domain": "control-b",
+      "provider": "provider-b",
+      "signing_key_fingerprint": "sha256:replace-with-64-lowercase-hex",
+      "role": "adversarial",
+      "decision": "approve"
+    },
+    {
+      "id": "witness-governance",
+      "operator_id": "operator-c",
+      "control_domain": "control-c",
+      "provider": "provider-c",
+      "signing_key_fingerprint": "sha256:replace-with-64-lowercase-hex",
+      "role": "governance",
+      "decision": "approve"
+    }
+  ],
+  "runtime": {
+    "provider_calls_after_ledger": 0,
+    "network_default_egress": "deny"
+  }
+}

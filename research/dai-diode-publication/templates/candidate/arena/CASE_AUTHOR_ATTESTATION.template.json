@@ -1,0 +1,21 @@
+{
+  "schema": "dai.case-author-attestation.v1",
+  "author_id": "replace-with-independent-author-id",
+  "author_key_fingerprint": "sha256:replaced-by-sign-object",
+  "public_key_path": "keys/replace-with-case-author-public-key.pem",
+  "subject_core_capsule_sha256": "sha256:replace-with-frozen-core-capsule-digest",
+  "solver_freeze_commit": "replace-with-full-commit",
+  "solver_freeze_tag": "replace-with-signed-tag",
+  "case_set_digest": "sha256:replace-with-arena-cases-file-digest",
+  "statements": {
+    "cases_authored_after_solver_freeze": true,
+    "author_did_not_modify_solver": true,
+    "author_did_not_receive_private_solver_outputs_before_oracle_freeze": true,
+    "failed_cases_will_not_be_removed_without_append_only_correction": true,
+    "oracle_was_signed_before_solver_execution": true
+  },
+  "conflicts_of_interest": [],
+  "issued_at": "replace-with-rfc3339-utc-z",
+  "signature_algorithm": "Ed25519",
+  "signature_base64": "replaced-by-sign-object"
+}

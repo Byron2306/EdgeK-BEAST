@@ -1,0 +1,223 @@
+{
+  "schema": "dai.convergence-ledger.v1",
+  "release_candidate": "replace-with-release-id",
+  "repositories": [
+    {
+      "organ": "sophia",
+      "repository": "Byron2306/Sophia-AI",
+      "commit": "replace-with-full-commit",
+      "tree_digest": "sha256:replace-with-64-lowercase-hex",
+      "source_archive_sha256": "sha256:replace-with-64-lowercase-hex",
+      "admitted_objects": []
+    },
+    {
+      "organ": "integritas_arda",
+      "repository": "Byron2306/Integritas-Mechanicus",
+      "commit": "replace-with-full-commit",
+      "tree_digest": "sha256:replace-with-64-lowercase-hex",
+      "source_archive_sha256": "sha256:replace-with-64-lowercase-hex",
+      "admitted_objects": []
+    },
+    {
+      "organ": "seraph",
+      "repository": "Byron2306/Seraph-AI",
+      "commit": "replace-with-full-commit",
+      "tree_digest": "sha256:replace-with-64-lowercase-hex",
+      "source_archive_sha256": "sha256:replace-with-64-lowercase-hex",
+      "admitted_objects": []
+    },
+    {
+      "organ": "metatron",
+      "repository": "Byron2306/Metatron",
+      "commit": "replace-with-full-commit",
+      "tree_digest": "sha256:replace-with-64-lowercase-hex",
+      "source_archive_sha256": "sha256:replace-with-64-lowercase-hex",
+      "admitted_objects": []
+    },
+    {
+      "organ": "beast_dai_diode",
+      "repository": "Byron2306/EdgeK-BEAST",
+      "commit": "replace-with-full-commit",
+      "tree_digest": "sha256:replace-with-64-lowercase-hex",
+      "source_archive_sha256": "sha256:replace-with-64-lowercase-hex",
+      "admitted_objects": []
+    }
+  ],
+  "authority_invariants": [
+    {
+      "id": "INV-PEDAGOGY-NOT-AUTHORSHIP",
+      "statement": "Pedagogical assistance and similarity-risk findings cannot claim learner authorship or plagiarism guilt.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-EVIDENCE-NOT-PERMISSION",
+      "statement": "Attestation, telemetry, pedagogy, cyber findings, quorum, and successful execution do not independently grant execution or production authority.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-ARDA-NOT-INTENT",
+      "statement": "Arda appraises measured state but cannot approve source changes, semantic claims, deployment intent, or business purpose.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-METATRON-NOT-UPSTREAM-GRANT",
+      "statement": "Metatron may admit or veto a consequential edge but cannot mint the upstream BEAST capability or ARDA appraisal it verifies.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-SERAPH-NOT-CRYPTO-OVERRIDE",
+      "statement": "Behavioral, harmonic, deception, or threat confidence cannot override failed cryptographic, attestation, policy, or provenance checks.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-CUSTODY-NOT-AUTHORITY",
+      "statement": "Possession or transfer of a crystal does not confer its semantic or execution authority.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-OBSERVATION-NOT-TRUTH",
+      "statement": "Sensor observations and telemetry contribute bounded evidence; missing or lost observation remains explicit and no silent absence becomes fact.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-EXPRESSION-NOT-NEW-CLAIM",
+      "statement": "Text and visual expression may project only propositions admitted by the verified semantic object.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-REMOTE-NOT-LOCAL-AUTHORITY",
+      "statement": "Remote Commons discovery and quorum create evidence or candidates; local adoption requires independent verification and policy.",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "INV-EXECUTION-NOT-FUTURE-AUTHORITY",
+      "statement": "Successful bounded execution and postconditions cannot directly mint, widen, renew, or promote future production authority.",
+      "status": "unassessed",
+      "evidence": []
+    }
+  ],
+  "integration_edges": [
+    {
+      "id": "EDGE-SOPHIA-INTEGRITAS",
+      "from": "sophia",
+      "to": "integritas_arda",
+      "contract": "signed pedagogical, assessment, provenance, similarity-risk, and continuity evidence",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "EDGE-INTEGRITAS-BEAST",
+      "from": "integritas_arda",
+      "to": "beast_dai_diode",
+      "contract": "admitted academic and attestation evidence with exact transformation receipt",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "EDGE-SERAPH-METATRON",
+      "from": "seraph",
+      "to": "metatron",
+      "contract": "threat, deception, harmonic, world-state, telemetry, policy, and governed-dispatch evidence",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "EDGE-BEAST-ARDA",
+      "from": "beast_dai_diode",
+      "to": "integritas_arda",
+      "contract": "request-digest-bound appraisal request and one-use capability",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "EDGE-ARDA-METATRON",
+      "from": "integritas_arda",
+      "to": "metatron",
+      "contract": "accepted short-lived appraisal plus exact BEAST capability request",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "id": "EDGE-METATRON-BEAST-EXECUTOR",
+      "from": "metatron",
+      "to": "beast_dai_diode",
+      "contract": "signed consequential-edge decision and one-use exact-action authority",
+      "adapter_digest": "sha256:replace-with-64-lowercase-hex",
+      "native_signature_preserved": false,
+      "status": "unassessed",
+      "evidence": []
+    }
+  ],
+  "required_mixed_domain_cases": [
+    {
+      "case_id": "academic-authorship-assistance",
+      "required_organs": ["sophia", "integritas_arda", "seraph", "metatron", "beast_dai_diode"],
+      "expected_action": "answer_or_refuse_under_exact_oracle",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "case_id": "academic-integrity-under-deception-and-stale-world-state",
+      "required_organs": ["sophia", "integritas_arda", "seraph", "metatron", "beast_dai_diode"],
+      "expected_action": "refuse",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "case_id": "attested-cyber-remediation-with-pedagogical-noninterference",
+      "required_organs": ["integritas_arda", "seraph", "metatron", "beast_dai_diode"],
+      "expected_action": "bounded_execute_or_veto",
+      "status": "unassessed",
+      "evidence": []
+    },
+    {
+      "case_id": "cross-domain-capability-composition",
+      "required_organs": ["sophia", "integritas_arda", "seraph", "metatron", "beast_dai_diode"],
+      "expected_action": "new_supported_answer_or_principled_refusal",
+      "status": "unassessed",
+      "evidence": []
+    }
+  ],
+  "required_ablations": [
+    "remove_sophia_pedagogy",
+    "remove_similarity_provenance_guard",
+    "remove_arda_appraisal",
+    "remove_seraph_deception",
+    "remove_harmonic_cadence",
+    "remove_world_state",
+    "remove_telemetry_loss_evidence",
+    "remove_beast_semantic_composition",
+    "remove_crystal_custody",
+    "remove_commons_quorum",
+    "remove_execution_to_production_diode"
+  ],
+  "review_required": true,
+  "reviewers": [],
+  "conflicts": [
+    {
+      "type": "template_not_resolved",
+      "message": "The convergence claim remains withheld until every repository identity, integration edge, authority invariant, mixed-domain case, mutation, ablation, and independent reproduction is green."
+    }
+  ],
+  "production_authority_allowed": false,
+  "execution_authority_allowed": false
+}

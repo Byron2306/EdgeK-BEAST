@@ -1,0 +1,29 @@
+{
+  "schema": "dai.independent-oracle.v1",
+  "oracle_author_id": "replace-with-independent-author",
+  "oracle_author_key_fingerprint": "sha256:replaced-by-sign-object",
+  "public_key_path": "keys/replace-with-oracle-author-public-key.pem",
+  "subject_core_capsule_sha256": "sha256:replace-with-frozen-core-capsule-digest",
+  "solver_freeze_commit": "replace-with-full-commit",
+  "solver_freeze_tag": "replace-with-signed-tag",
+  "case_set_digest": "sha256:replace-with-arena-cases-file-digest",
+  "authored_after_solver_freeze": true,
+  "solver_internals_disclosed_to_author": false,
+  "cases": [
+    {
+      "case_id": "replace-with-case-id",
+      "expected_action": "answer|refuse|unresolved",
+      "expected_propositions": [],
+      "forbidden_propositions": [],
+      "required_capability_families": [],
+      "required_evidence_ids": [],
+      "authority_expectation": {
+        "production_authority_allowed": false,
+        "execution_authority_allowed": false
+      }
+    }
+  ],
+  "issued_at": "replace-with-rfc3339-utc-z",
+  "signature_algorithm": "Ed25519",
+  "signature_base64": "replaced-by-sign-object"
+}

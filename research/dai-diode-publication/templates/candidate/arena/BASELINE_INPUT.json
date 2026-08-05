@@ -1,0 +1,35 @@
+{
+  "schema": "dai.ablation-baseline.v1",
+  "capabilities": [
+    {"id": "phase1-kernel-boundary", "family": "bounded_execution"},
+    {"id": "phase2-stale-listener-exact-x2", "family": "operational_truth"},
+    {"id": "phase3-multi-domain-composition", "family": "capability_composition"},
+    {"id": "phase3.1-closed-world-provenance", "family": "signed_provenance"},
+    {"id": "phase4-attestation", "family": "remote_attestation"},
+    {"id": "phase5-heterogeneous-quorum", "family": "commons_quorum"},
+    {"id": "phase6.2-mixed-truth-arena", "family": "mixed_capability_reasoning"}
+  ],
+  "evidence": [
+    {"id": "lineage-ledger", "required": true},
+    {"id": "authority-policy", "required": true},
+    {"id": "semantic-route", "required": true},
+    {"id": "semantic-digest", "required": true},
+    {"id": "independent-oracle", "required": true},
+    {"id": "network-denial-witness", "required": true}
+  ],
+  "quorum": {
+    "minimum_distinct_operators": 3,
+    "minimum_distinct_keys": 3,
+    "minimum_distinct_providers": 3,
+    "witnesses": [
+      {"id": "operator-a", "role": "semantic"},
+      {"id": "operator-b", "role": "adversarial"},
+      {"id": "operator-c", "role": "governance"}
+    ]
+  },
+  "policy": {
+    "production_authority_allowed": false,
+    "execution_authority_allowed": false,
+    "unsupported_action": "refuse"
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dai-diode/dai-publication.schema.json",
+  "title": "DAI-Diode publication object schemas",
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "fileEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safePath"},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_authority_allowed", "production_authority_allowed"],
+      "properties": {
+        "execution_authority_allowed": {"const": false},
+        "production_authority_allowed": {"const": false}
+      }
+    },
+    "releaseManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "release_id",
+        "source_date_epoch",
+        "created_at_utc",
+        "authority",
+        "entry_count",
+        "total_size_bytes",
+        "entries"
+      ],
+      "properties": {
+        "schema": {"const": "dai.release-manifest.v1"},
+        "release_id": {"type": "string", "minLength": 1, "pattern": "^[^/\\\\]+$"},
+        "source_date_epoch": {"type": "integer", "minimum": 315532800},
+        "created_at_utc": {"type": "string", "format": "date-time"},
+        "authority": {"$ref": "#/$defs/authorityBoundary"},
+        "entry_count": {"type": "integer", "minimum": 1},
+        "total_size_bytes": {"type": "integer", "minimum": 1},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/fileEntry"}
+        }
+      }
+    },
+    "signaturePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "algorithm",
+        "signed_object",
+        "signed_object_sha256",
+        "public_key_path",
+        "public_key_fingerprint",
+        "signature_base64"
+      ],
+      "properties": {
+        "schema": {"const": "dai.detached-signature.v1"},
+        "algorithm": {"const": "Ed25519"},
+        "signed_object": {"const": "RELEASE_MANIFEST.json"},
+        "signed_object_sha256": {"$ref": "#/$defs/sha256"},
+        "public_key_path": {"const": "publisher.ed25519.pub.pem"},
+        "public_key_fingerprint": {"$ref": "#/$defs/sha256"},
+        "signature_base64": {"type": "string", "minLength": 80}
+      }
+    },
+    "lineageNode": {
+      "type": "object",
+      "required": ["digest"],
+      "properties": {
+        "digest": {"$ref": "#/$defs/sha256"},
+        "display_name": {"type": "string"},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "phase": {"type": ["string", "null"], "pattern": "^[0-9]+(?:\\.[0-9]+)?$"},
+        "release_ids": {"type": "array", "items": {"type": "string"}},
+        "zip_inventory_digest": {"$ref": "#/$defs/sha256"},
+        "zip_entry_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "lineageEdge": {
+      "type": "object",
+      "required": ["source", "target", "kind"],
+      "properties": {
+        "source": {"$ref": "#/$defs/sha256"},
+        "target": {"$ref": "#/$defs/sha256"},
+        "kind": {"enum": ["contains", "references", "predecessor", "declared_predecessor", "supersedes", "corrects"]},
+        "evidence": {}
+      }
+    },
+    "lineageLedger": {
+      "type": "object",
+      "required": ["schema", "required_phase_sequence", "nodes", "edges", "conflicts", "review_required"],
+      "properties": {
+        "schema": {"const": "dai.lineage-ledger.v1"},
+        "required_phase_sequence": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}
+        },
+        "nodes": {"type": "array", "items": {"$ref": "#/$defs/lineageNode"}},
+        "edges": {"type": "array", "items": {"$ref": "#/$defs/lineageEdge"}},
+        "dangling_lineage_references": {"type": "array"},
+        "conflicts": {"type": "array"},
+        "review_required": {"type": "boolean"},
+        "reviewers": {"type": "array", "items": {"type": "string"}},
+        "production_authority_allowed": {"const": false},
+        "execution_authority_allowed": {"const": false}
+      }
+    },
+    "reproductionReport": {
+      "type": "object",
+      "required": [
+        "schema",
+        "operator_id",
+        "operator_key_fingerprint",
+        "release_zip_sha256",
+        "environment_digest",
+        "verifier_digest",
+        "semantic_result_digest",
+        "result"
+      ],
+      "properties": {
+        "schema": {"const": "dai.independent-reproduction.v1"},
+        "operator_id": {"type": "string", "minLength": 1},
+        "operator_key_fingerprint": {"$ref": "#/$defs/sha256"},
+        "release_zip_sha256": {"$ref": "#/$defs/sha256"},
+        "environment_digest": {"$ref": "#/$defs/sha256"},
+        "verifier_digest": {"$ref": "#/$defs/sha256"},
+        "semantic_result_digest": {"$ref": "#/$defs/sha256"},
+        "mutation_report_digest": {"$ref": "#/$defs/sha256"},
+        "result": {"enum": ["pass", "fail"]},
+        "signature": {"type": "string"}
+      }
+    },
+    "witnessPacket": {
+      "type": "object",
+      "required": [
+        "schema",
+        "operator_id",
+        "infrastructure_provider",
+        "signing_key_fingerprint",
+        "proposal_digest",
+        "capability_digest",
+        "evidence_root",
+        "world_state_hash",
+        "governance_epoch",
+        "challenge_nonce",
+        "decision",
+        "production_authority_allowed",
+        "execution_authority_allowed"
+      ],
+      "properties": {
+        "schema": {"const": "dai.commons-witness-packet.v1"},
+        "operator_id": {"type": "string", "minLength": 1},
+        "infrastructure_provider": {"type": "string", "minLength": 1},
+        "runtime_platform": {"type": "string"},
+        "signing_key_fingerprint": {"$ref": "#/$defs/sha256"},
+        "proposal_digest": {"$ref": "#/$defs/sha256"},
+        "capability_digest": {"$ref": "#/$defs/sha256"},
+        "evidence_root": {"$ref": "#/$defs/sha256"},
+        "world_state_hash": {"$ref": "#/$defs/sha256"},
+        "governance_epoch": {"type": ["string", "integer"]},
+        "challenge_nonce": {"type": "string", "minLength": 16},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "decision": {"enum": ["approve", "reject", "abstain"]},
+        "production_authority_allowed": {"const": false},
+        "execution_authority_allowed": {"const": false}
+      }
+    }
+  },
+  "oneOf": [
+    {"$ref": "#/$defs/releaseManifest"},
+    {"$ref": "#/$defs/signaturePacket"},
+    {"$ref": "#/$defs/lineageLedger"},
+    {"$ref": "#/$defs/reproductionReport"},
+    {"$ref": "#/$defs/witnessPacket"}
+  ]
+}
