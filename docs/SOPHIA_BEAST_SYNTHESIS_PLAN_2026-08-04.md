@@ -2707,3 +2707,54 @@ Not supportable without much stronger evidence:
 - unbreakable security.
 
 This bounded ladder makes the work stronger, not smaller.
+
+## Phase 6 implementation progress: Deterministic Intelligence Arena
+
+Goal:
+
+> Move the center of gravity back from attestation to intelligence: prove that
+> BEAST can acquire a capability family once, promote it under verification,
+> solve post-freeze randomized held-out variants with zero provider calls,
+> produce text and visual artifacts from one canonical meaning object, refuse
+> unsupported causal gaps, and compare honestly against reference cache/RAG/rule
+> baselines.
+
+1. ~~Add the first deterministic-intelligence arena slice.~~
+   - Module:
+     `app/kernel/dai/phase6_deterministic_arena.py`.
+   - Runner:
+     `scripts/run_dai_phase6_deterministic_arena.py`.
+   - Tests:
+     `tests/test_dai_phase6_deterministic_arena.py`.
+   - Evidence:
+     `evidence/dai-diode/phase6-deterministic-arena/dai_phase6_deterministic_arena_receipt.json`.
+   - Receipt digest:
+     `sha256:e072ff6606f8654ee132b4c1740bacd9538e1d87fb849f8116d8f2e4b1602073`.
+   - Result:
+     `9/9` post-freeze randomized cases semantically correct; `9/9`
+     text+visual joined verification green; `3` first-exposure bounded
+     residual/acquisition calls; `0` provider calls after verified promotion;
+     provider-call displacement `3`.
+   - Capability law:
+     first exposure promotes a family-level restart-risk composition capability,
+     not an exact cached answer. Held-out variants use randomized service names,
+     dependency paths, current-evidence states and unsupported-edge refusals.
+   - Expression law:
+     deterministic text and SVG are compiled independently from the same Phase-3
+     canonical composition/relevance/route object; text and visual entailment
+     receipts independently recompute semantic digest, route binding, fact
+     polarity/value and closed-world output.
+   - Refusal law:
+     unsupported topology edges and residual-required current evidence produce a
+     dedicated refusal artifact only; residual values are not narrated as facts.
+   - Baseline boundary:
+     this slice includes local reference baselines for exact cache, cached
+     template, RAG-like current-evidence retrieval and rule-like edge checking.
+     It does not yet claim victory over live third-party RAG, KG or model-only
+     systems.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `10 passed`.
+   - Authority boundary:
+     provider calls during deterministic solve: `0`; production authority:
+     `false`; execution authority: `false`.
