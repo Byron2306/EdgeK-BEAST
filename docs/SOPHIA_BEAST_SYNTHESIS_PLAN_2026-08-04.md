@@ -2282,6 +2282,63 @@ Goal:
      `publication_grade_hardware_attestation=false`. This is a real remote
      autonomous Commons quorum, not yet the final publication-grade Google
      attestation-token proof.
+6a. ~~Push Google/Azure provider attestation closure for the cloud witness
+    lanes.~~
+   - Google re-verification:
+     the preserved Google Confidential Space packet was reverified against the
+     frozen Google JWKS/signature path instead of relying on a loose packet
+     shape.
+   - Google verification receipt:
+     `evidence/dai-diode/phase5-shared-quorum/gcp/google-confidential-space-provider-signature-reverification.json`.
+   - Google packet digest:
+     `sha256:c3118d58a8aed6d3c63c1c62a917603b00fd1d28bdca97a5b2b6856c57ef33cb`.
+   - Google verification digest:
+     `sha256:966bf9fb70c48cd9b0cec71132ba6fc4ba90cc3e64e3a27da8ce3d85901c2edf`.
+   - Google result:
+     compact JWT signature verified with Google JWKS; expected image digest,
+     image reference, project, zone, instance, evidence root, temporal validity
+     and packet nonce binding all passed with no red gates.
+   - Azure live Confidential VM:
+     `dio-azure-tee-governance-01` in `southafricanorth`,
+     `Standard_DC2as_v6`, `ConfidentialVM`, vTPM enabled, Secure Boot enabled,
+     VM ID `466fcc1d-cabc-4042-963c-6faf3ea9c586`.
+   - Azure raw MAA token:
+     `evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_maa_token.jwt`.
+   - Azure raw MAA token file digest:
+     `sha256:d0875afbb34068e7881aa01ca8ed3fef7a5989b1ea73c9236d26246590d5b196`.
+   - Azure VM description:
+     `evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_tee_governance_01_vm_description.json`.
+   - Azure VM description file digest:
+     `sha256:ab5b7e188d4b14173270eb25f34c96a278e8767283e63a1dd56f28525f7e8e45`.
+   - Azure BEAST harvest:
+     `evidence/dai-diode/phase5-shared-quorum/azure-live-maa-001/dio_azure_tee_attestation_harvest.json`.
+   - Azure harvest digest:
+     `sha256:6b156024ccf83f7106b175b75e65f56b0e2bd4b119004d49125fff1bf96e2bcd`.
+   - Azure admission report digest:
+     `sha256:df5675269c407631b902d706759686b2662d45ac8888ff63ffe75843560b136a`.
+   - Azure MAA verifier:
+     `scripts/verify_dio_azure_maa_token.py`.
+   - Azure live verifier receipt:
+     `evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_maa_token_verification.json`.
+   - Azure live verification digest:
+     `sha256:13cd905ca91ef07b86752d8874d4e6d21e300214e111e883099a943899fd7316`.
+   - Azure frozen JWKS:
+     `evidence/dai-diode/phase5-shared-quorum/azure/azure-maa-jwks.json`.
+   - Azure JWKS digest:
+     `sha256:46b7ff1df1b903f9e9b1c1c43363199eea990025ea2852af44add3d14ed677a9`.
+   - Azure offline verifier receipt:
+     `evidence/dai-diode/phase5-shared-quorum/azure/dio_azure_maa_token_verification.offline.json`.
+   - Azure offline verification digest:
+     `sha256:e164ff3d76bb6fa6f7eb53dd7f99e1e860f5d2cf0f630a1e5053a2722c168b94`.
+   - Azure result:
+     MAA compact JWT verified as RS256 against Azure Attestation JWKS/x5c leaf;
+     issuer matched the token `jku` origin; token was temporally fresh; Azure VM
+     attestation type, protocol v3, SEV-SNP isolation, Azure-compliant CVM
+     status, Secure Boot, vTPM and VM ID binding all passed with no red gates.
+   - Boundary:
+     Azure now has provider-service MAA JWT verification and BEAST admission
+     evidence. This is still not an independent AMD VCEK reconstruction of the
+     raw SNP report, and production authority remains deliberately off.
 7. Package Phase 5 only after autonomous packet gauntlet, live packet harvest
    and coordinator replay all pass from a clean source overlay.
 
