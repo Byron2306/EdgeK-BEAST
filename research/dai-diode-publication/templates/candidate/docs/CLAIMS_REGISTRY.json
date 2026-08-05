@@ -1,0 +1,74 @@
+{
+  "schema": "dai.claims-registry.v1",
+  "release_status": "research_candidate",
+  "claims": [
+    {
+      "id": "CLAIM-INTEGRITY",
+      "text": "The published release bytes match the signed exact-path manifest.",
+      "status": "unassessed",
+      "required_evidence": ["RELEASE_MANIFEST.json", "RELEASE_MANIFEST.sig.json", "external_fingerprint_anchor", "external_zip_digest_anchor"]
+    },
+    {
+      "id": "CLAIM-LINEAGE",
+      "text": "The declared DAI-Diode lineage from Phase 1 to the final release is exact, acyclic, and digest-closed.",
+      "status": "unassessed",
+      "required_evidence": ["lineage/LINEAGE_LEDGER.json", "predecessor_internal_verification_reports"]
+    },
+    {
+      "id": "CLAIM-BDI",
+      "text": "DAI-Diode validates bounded deterministic intelligence as an engineering architecture over the declared evidence world.",
+      "status": "unassessed",
+      "required_evidence": ["docs/BDI_VALIDITY_CRITERIA.json", "arena/RESULTS.json", "reports/MUTATION_REPORT.json", "reports/ABLATION_REPORT.json", "reports/NETWORK_DENIAL_WITNESS.json"]
+    },
+    {
+      "id": "CLAIM-COMPOSITION",
+      "text": "Stored capabilities from distinct declared families compose deterministically to answer supported mixed cases and refuse unsupported or contradictory cases.",
+      "status": "unassessed",
+      "required_evidence": ["arena/RESULTS.json", "reports/ABLATION_REPORT.json"]
+    },
+    {
+      "id": "CLAIM-EXPRESSION",
+      "text": "Text and SVG outputs are exact projections of one verified semantic object and cannot widen the authorized claim surface.",
+      "status": "unassessed",
+      "required_evidence": ["expression_ast_verification_report", "expression_mutation_report"]
+    },
+    {
+      "id": "CLAIM-OFFLINE",
+      "text": "No outbound provider call was observed during the post-ledger deterministic arena under the declared network-denial policy.",
+      "status": "unassessed",
+      "required_evidence": ["reports/NETWORK_DENIAL_WITNESS.json"]
+    },
+    {
+      "id": "CLAIM-QUORUM",
+      "text": "Independently controlled heterogeneous witnesses evaluated one exact digest-bound proposition and produced a replayable authority-bounded quorum.",
+      "status": "unassessed",
+      "required_evidence": ["evidence/quorum", "quorum_independence_report", "raw_attestation_evidence"]
+    },
+    {
+      "id": "CLAIM-REPRODUCTION",
+      "text": "At least two external operators independently reproduced the declared verification and semantic result from the public release.",
+      "status": "unassessed",
+      "required_evidence": ["reports/reproductions"]
+    },
+    {
+      "id": "CLAIM-WORLD-FIRST",
+      "text": "To our knowledge, DAI-Diode is the first publicly documented system to combine closed-world deterministic entailment, signed provenance, authority-bounded expression, multi-domain capability composition, and heterogeneous attested quorum in a replayable evidence architecture.",
+      "status": "withheld_pending_prior_art_and_external_review",
+      "required_evidence": ["docs/PRIOR_ART_MATRIX.csv", "independent_prior_art_review"]
+    }
+  ],
+  "nonclaims": [
+    "artificial general intelligence",
+    "open-world omniscience",
+    "arbitrary natural-language understanding",
+    "consciousness or sentience",
+    "neural models are obsolete",
+    "production or execution authority",
+    "publisher identity from a self-contained key alone",
+    "trusted time from a timestamp field alone",
+    "general visual entailment beyond the declared canonical AST",
+    "world-first priority without prior-art and outside review"
+  ],
+  "production_authority_allowed": false,
+  "execution_authority_allowed": false
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "dai.ablation-plan.v1",
+  "baseline_input": "BASELINE_INPUT.json",
+  "variants": [
+    {
+      "id": "baseline-all-support",
+      "operations": [],
+      "expected": {
+        "/decision": "answer",
+        "/production_authority_allowed": false,
+        "/execution_authority_allowed": false
+      }
+    },
+    {
+      "id": "remove-phase3-composition",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/capabilities", "id": "phase3-multi-domain-composition"}
+      ],
+      "expected": {"/decision": "refuse"}
+    },
+    {
+      "id": "remove-phase3.1-provenance",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/capabilities", "id": "phase3.1-closed-world-provenance"}
+      ],
+      "expected": {"/admission": "reject"}
+    },
+    {
+      "id": "remove-phase4-attestation",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/capabilities", "id": "phase4-attestation"}
+      ],
+      "expected": {"/attestation_claim_available": false}
+    },
+    {
+      "id": "remove-phase5-quorum",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/capabilities", "id": "phase5-heterogeneous-quorum"}
+      ],
+      "expected": {"/quorum_decision": "unavailable"}
+    },
+    {
+      "id": "remove-phase6.2-mixed-reasoning",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/capabilities", "id": "phase6.2-mixed-truth-arena"}
+      ],
+      "expected": {"/decision": "refuse"}
+    },
+    {
+      "id": "remove-lineage-ledger",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "lineage-ledger"}
+      ],
+      "expected": {"/admission": "reject"}
+    },
+    {
+      "id": "remove-authority-policy",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "authority-policy"}
+      ],
+      "expected": {"/decision": "refuse"}
+    },
+    {
+      "id": "remove-semantic-route",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "semantic-route"}
+      ],
+      "expected": {"/decision": "refuse"}
+    },
+    {
+      "id": "remove-semantic-digest",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "semantic-digest"}
+      ],
+      "expected": {"/expression_verification": "reject"}
+    },
+    {
+      "id": "remove-independent-oracle",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "independent-oracle"}
+      ],
+      "expected": {"/publication_gate": "reject"}
+    },
+    {
+      "id": "remove-network-witness",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/evidence", "id": "network-denial-witness"}
+      ],
+      "expected": {"/offline_claim_available": false}
+    },
+    {
+      "id": "remove-one-quorum-operator",
+      "operations": [
+        {"op": "remove_list_item_by_id", "pointer": "/quorum/witnesses", "id": "operator-c"}
+      ],
+      "expected": {"/quorum_decision": "reject"}
+    },
+    {
+      "id": "attempt-authority-escalation",
+      "operations": [
+        {"op": "set_json_pointer", "pointer": "/policy/production_authority_allowed", "value": true}
+      ],
+      "expected": {
+        "/admission": "reject",
+        "/production_authority_allowed": false
+      }
+    }
+  ]
+}
