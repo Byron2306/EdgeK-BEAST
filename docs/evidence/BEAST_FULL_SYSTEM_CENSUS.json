@@ -397963,6 +397963,34 @@
       "imports": [
         "__future__.annotations",
         "argparse",
+        "collections.Counter",
+        "copy.deepcopy",
+        "hashlib",
+        "json",
+        "pathlib.Path",
+        "typing.Any",
+        "typing.Iterable"
+      ],
+      "language": "python",
+      "layer": "operations_proof",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "scripts/trace_beast_coding_agent_runtime.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
+        "__future__.annotations",
+        "argparse",
         "datasets.Dataset",
         "json",
         "pathlib.Path",
@@ -423434,6 +423462,33 @@
       "composition_roots": [],
       "disposition": "unclassified",
       "imports": [
+        "__future__.annotations",
+        "copy.deepcopy",
+        "hashlib",
+        "json",
+        "pytest",
+        "scripts.trace_beast_coding_agent_runtime.merge_trace_records",
+        "scripts.trace_beast_coding_agent_runtime.trace_records_from_agent_run_events",
+        "scripts.trace_beast_coding_agent_runtime.verify_agent_run_event_chain"
+      ],
+      "language": "python",
+      "layer": "verification_tests",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "tests/test_trace_beast_coding_agent_runtime.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
         "app.cli.api.BackendSnapshot",
         "app.cli.api.BeastApiClient",
         "app.cli.api.load_master_mega_evidence",
@@ -424329,13 +424384,18 @@
       "category_counts": {
         "OFFLINE_LIBRARY": 18,
         "ONLINE_ENFORCEMENT": 50,
+        "RETIRED": 1,
         "SUPERVISED_EVIDENCE": 32
       },
+      "retired_tombstones": [
+        {
+          "module": "crystal_integrations",
+          "reason": "duplicate compatibility registry removed; use local_capabilities"
+        }
+      ],
       "runtime_promotion": false,
       "source": "app/kernel/compute/module_dispositions.py",
-      "stale_modules": [
-        "RETIRED:crystal_integrations"
-      ]
+      "stale_modules": []
     },
     "override_source": "Phase 0 source-reviewed responsibility overlay; runtime participation remains unverified until traced",
     "stale_paths": []
@@ -424344,20 +424404,20 @@
     "agent_relevance_counts": {
       "direct": 8,
       "supporting": 1,
-      "unclassified": 18872
+      "unclassified": 18874
     },
-    "component_count": 18881,
+    "component_count": 18883,
     "disposition_counts": {
       "online_supporting": 50,
       "stranded": 18,
       "supervised_offline": 32,
-      "unclassified": 18781
+      "unclassified": 18783
     },
     "language_counts": {
       "javascript": 2081,
       "json": 5477,
       "powershell": 5,
-      "python": 11223,
+      "python": 11225,
       "shell": 31,
       "toml": 17,
       "yaml": 47
@@ -424374,11 +424434,11 @@
       "interface_ingress": 8232,
       "kernel_other": 156,
       "memory_evidence": 13,
-      "operations_proof": 183,
+      "operations_proof": 184,
       "perception_sensorium": 69,
       "repository_support": 9424,
       "semantic_context": 21,
-      "verification_tests": 366,
+      "verification_tests": 367,
       "workspace_state": 8
     }
   },

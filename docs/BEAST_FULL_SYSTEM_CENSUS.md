@@ -4,7 +4,7 @@
 
 **Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18881**
+Static components discovered: **18883**
 
 ## Layer counts
 
@@ -21,11 +21,11 @@ Static components discovered: **18881**
 | `interface_ingress` | 8232 |
 | `kernel_other` | 156 |
 | `memory_evidence` | 13 |
-| `operations_proof` | 183 |
+| `operations_proof` | 184 |
 | `perception_sensorium` | 69 |
 | `repository_support` | 9424 |
 | `semantic_context` | 21 |
-| `verification_tests` | 366 |
+| `verification_tests` | 367 |
 | `workspace_state` | 8 |
 
 ## Disposition counts
@@ -35,7 +35,7 @@ Static components discovered: **18881**
 | `online_supporting` | 50 |
 | `stranded` | 18 |
 | `supervised_offline` | 32 |
-| `unclassified` | 18781 |
+| `unclassified` | 18783 |
 
 ## Runtime evidence state
 
@@ -17628,6 +17628,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `scripts/submit_beast_crystal_mission.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/test_regex.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/test_regex_2.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
+| `scripts/trace_beast_coding_agent_runtime.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/train_true_lora_adapter.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/verify_bpf_loopback_lab.sh` | `operations_proof` | `shell` | `unverified` | `unverified` | `unclassified` |
 | `scripts/verify_c4x_external_breakthrough_submission.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -18891,6 +18892,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `tests/test_tool_laziness_plugin.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_tpm_appraisal_issuer.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_tpm_attestation_contract.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
+| `tests/test_trace_beast_coding_agent_runtime.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_tui_intelligence.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_tui_output_governance.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_tui_stream_recovery.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
