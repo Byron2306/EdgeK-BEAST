@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.run_beast_coding_agent_census_journeys import run_all_journeys
+from scripts.trace_beast_coding_agent_runtime import verify_agent_run_event_chain
 
 
 UNPROVEN = {
@@ -35,6 +36,13 @@ def build_phase2_trace(journeys: list[dict]) -> dict:
             raise ValueError("verified AgentRun chain and matching head required")
         if chain.get("events") != journey.get("event_count") or chain.get("run_id") != run_id:
             raise ValueError("AgentRun chain counts or identity differ")
+        raw_events = journey.get("event_chain")
+        if not isinstance(raw_events, list) or not raw_events:
+            raise ValueError("raw AgentRun event chain required")
+        verified = verify_agent_run_event_chain(raw_events)
+        if verified["head_hash"] != chain["head_hash"] or verified["event_count"] != chain["events"] or verified["run_id"] != run_id:
+            raise ValueError("raw event chain differs from journey summary")
+        refs = {f"agent_run:{run_id}:event:{event['sequence']}:{event['event_hash']}" for event in raw_events}
         if journey.get("evidence_class") != "observed_production_backend_scripted_provider":
             raise ValueError("unexpected journey evidence class")
         boundary = journey.get("proof_boundaries") or {}
@@ -51,6 +59,8 @@ def build_phase2_trace(journeys: list[dict]) -> dict:
             ref = str(record.get("evidence_ref") or "")
             if not ref.startswith(f"agent_run:{run_id}:event:"):
                 raise ValueError("trace record missing AgentRun evidence reference")
+            if ref not in refs:
+                raise ValueError("trace record event hash not in verified AgentRun chain")
             sequence.append({"component": record["component_path"], "event": record["event"],
                              "evidence_ref": ref, "timestamp": record["timestamp"]})
         if not sequence:
