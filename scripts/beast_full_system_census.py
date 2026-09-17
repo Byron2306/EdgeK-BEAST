@@ -337,6 +337,7 @@ def apply_compute_module_dispositions(report: dict[str, Any], root: Path) -> dic
 
     by_path = {item["path"]: item for item in result["components"]}
     stale_modules: list[str] = []
+    retired_tombstones: list[dict[str, str]] = []
     category_counts: Counter[str] = Counter()
 
     for category in ("ONLINE_ENFORCEMENT", "SUPERVISED_EVIDENCE", "OFFLINE_LIBRARY"):
@@ -354,10 +355,10 @@ def apply_compute_module_dispositions(report: dict[str, Any], root: Path) -> dic
     for module_name, reason in sorted((source.get("RETIRED") or {}).items()):
         component_path = f"app/kernel/compute/{module_name}.py"
         item = by_path.get(component_path)
-        if item is None:
-            stale_modules.append(f"RETIRED:{module_name}")
-            continue
         category_counts["RETIRED"] += 1
+        if item is None:
+            retired_tombstones.append({"module": module_name, "reason": str(reason)})
+            continue
         item["disposition"] = "retired"
         item["notes"] = sorted(set(item["notes"] + [
             "source_disposition:RETIRED",
@@ -369,6 +370,7 @@ def apply_compute_module_dispositions(report: dict[str, Any], root: Path) -> dic
         "source": "app/kernel/compute/module_dispositions.py",
         "category_counts": dict(sorted(category_counts.items())),
         "stale_modules": sorted(stale_modules),
+        "retired_tombstones": retired_tombstones,
         "runtime_promotion": False,
     }
     result["overlay"] = overlay
