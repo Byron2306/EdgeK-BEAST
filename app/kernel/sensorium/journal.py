@@ -13,6 +13,7 @@ from app.kernel.sensorium.contracts import SensorEvent
 from app.kernel.sensorium.event_sequencer import SequencedEvent
 
 VALID_EVENT_VOCABULARY = {
+    "agent.run.observed",
     "socket.open",
     "socket.close",
     "process.spawn",
