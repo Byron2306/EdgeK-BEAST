@@ -195,13 +195,29 @@ def run_cross_file_mutation_journey(root: Path) -> dict[str, Any]:
         ]
     )
     final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=8).run(run_id))
-    return _finalize_journey(
+    journey = _finalize_journey(
         "cross_file_mutation",
         engine,
         run_id,
         final,
         source_paths=["values.py", "consumer.py"],
     )
+    expected_source = {
+        "values.py": "VALUE = 2\n",
+        "consumer.py": "from values import VALUE\nRESULT = VALUE + 1\n",
+    }
+    unresolved = [
+        path for path, expected in expected_source.items()
+        if journey["final_source"].get(path) != expected
+    ]
+    journey["objective_assessment"] = {
+        "satisfied": not unresolved,
+        "unresolved_paths": unresolved,
+        "finding": "" if not unresolved else "completed_with_unresolved_cross_file_objective",
+        "assessment_basis": "exact_final_source_comparison",
+        "expected_source": expected_source,
+    }
+    return journey
 
 
 def run_failed_verification_repair_journey(root: Path) -> dict[str, Any]:
@@ -244,6 +260,12 @@ def render_runtime_map(journeys: list[dict[str, Any]]) -> str:
             if record.get("component_path")
         }
     )
+    gaps = [
+        journey.get("objective_assessment")
+        for journey in journeys
+        if isinstance(journey.get("objective_assessment"), dict)
+        and journey["objective_assessment"].get("satisfied") is False
+    ]
     lines = [
         "# BEAST Coding Agent Runtime Map",
         "",
@@ -275,6 +297,19 @@ def render_runtime_map(journeys: list[dict[str, Any]]) -> str:
         lines.append(
             f"| `{journey['journey_id']}` | `{journey['final_state']}` | "
             f"{journey['event_count']} | {len(journey.get('tool_observations') or [])} |"
+        )
+    if gaps:
+        lines.extend(["", "## Observed gaps", ""])
+        for gap in gaps:
+            lines.append(
+                f"- `{gap.get('finding')}`: unresolved paths "
+                f"{', '.join(f'`{path}`' for path in gap.get('unresolved_paths') or [])}."
+            )
+        lines.extend(
+            [
+                "",
+                "The cross-file finding is an observation of current behavior, not a Phase 0 repair. The planner can satisfy its latest-mutation verification and SourcePlan guard while part of the original multi-file objective remains unresolved.",
+            ]
         )
     lines.extend(
         [
