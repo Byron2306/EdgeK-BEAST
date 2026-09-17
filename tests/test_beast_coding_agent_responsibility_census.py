@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from scripts.beast_coding_agent_responsibility_census import (
@@ -199,3 +202,54 @@ def test_markdown_exposes_authority_conflicts_and_evidence_boundaries():
     assert "unresolved_conflict" in text
     assert "observed_runtime" in text
     assert "Phase 1 ownership conflicts" in text
+
+
+def test_repo_responsibility_manifest_is_complete_against_canonical_census():
+    root = Path(__file__).resolve().parents[1]
+    census_path = root / "docs" / "evidence" / "BEAST_FULL_SYSTEM_CENSUS.json"
+    config_path = root / "config" / "beast_coding_agent_responsibilities.json"
+
+    assert config_path.exists(), "Phase 0 requires the real coding-agent responsibility manifest"
+
+    census = json.loads(census_path.read_text(encoding="utf-8"))
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    validation = validate_responsibility_config(census, config)
+    report = build_responsibility_report(census, config)
+
+    assert validation["valid"] is True
+    assert validation["missing_paths"] == []
+    assert report["summary"]["responsibility_count"] >= 24
+    assert report["summary"]["claimant_count"] >= 70
+    assert report["summary"]["unique_claimant_count"] >= 40
+    assert report["summary"]["phase1_conflict_count"] >= 15
+    assert report["summary"]["unresolved_conflict_count"] >= 10
+
+    ids = {item["id"] for item in report["responsibilities"]}
+    expected = {
+        "model_output_protocol",
+        "repository_context_selection",
+        "context_budget_and_compaction",
+        "governed_inference_routing",
+        "verification_gate",
+        "agent_memory_and_continuity",
+        "sensorium_agent_observation",
+        "verified_inference_reuse",
+        "mission_edit_reuse_lattice",
+        "crystal_generalization_promotion_and_replay",
+        "crystal_transport_and_memfd_capsules",
+        "task_input_governance",
+        "planner_completion_decision",
+    }
+    assert expected <= ids
+
+    planning = next(item for item in report["responsibilities"] if item["id"] == "runtime_planning")
+    assert planning["status"] == "observed_authoritative"
+    assert planning["current_authorities"] == ["app/kernel/agents/planner_runtime.py"]
+    assert planning["claimants"][0]["evidence"] == "observed_runtime"
+
+    transport = next(
+        item for item in report["responsibilities"]
+        if item["id"] == "crystal_transport_and_memfd_capsules"
+    )
+    assert transport["status"] == "dormant_or_stranded"
+    assert "not ambient execution or confidentiality authority" in transport["finding"]
