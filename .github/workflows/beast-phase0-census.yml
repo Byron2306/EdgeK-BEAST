@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/beast-coding-agent-phase0-census
+  pull_request:
+    branches:
+      - agent/dai-diode-final-publication-closure
   workflow_dispatch:
 
 permissions:
@@ -111,6 +114,7 @@ jobs:
             docs/BEAST_FULL_SYSTEM_CENSUS.md
 
       - name: Commit generated census artifacts when changed
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         run: |
           if git diff --quiet -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md; then
             echo "Canonical census artifacts unchanged."
