@@ -379676,6 +379676,24 @@
       "layer": "repository_support",
       "notes": [],
       "overlap_candidates": [],
+      "path": "docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [],
+      "language": "json",
+      "layer": "repository_support",
+      "notes": [],
+      "overlap_candidates": [],
       "path": "docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json",
       "runtime": {
         "constructed": "unverified",
@@ -398114,6 +398132,30 @@
       "claimed_responsibilities": [],
       "composition_roots": [],
       "disposition": "unclassified",
+      "imports": [
+        "__future__.annotations",
+        "argparse",
+        "json",
+        "pathlib.Path",
+        "typing.Any"
+      ],
+      "language": "python",
+      "layer": "operations_proof",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "scripts/verify_beast_phase0_census_exit.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
       "imports": [],
       "language": "shell",
       "layer": "operations_proof",
@@ -416440,6 +416482,31 @@
         "json",
         "pathlib.Path",
         "pytest",
+        "scripts.verify_beast_phase0_census_exit.build_phase0_closure",
+        "scripts.verify_beast_phase0_census_exit.render_phase0_closure_markdown"
+      ],
+      "language": "python",
+      "layer": "verification_tests",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "tests/test_beast_coding_agent_phase0_closure.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
+        "__future__.annotations",
+        "json",
+        "pathlib.Path",
+        "pytest",
         "scripts.beast_coding_agent_responsibility_census.build_responsibility_report",
         "scripts.beast_coding_agent_responsibility_census.render_responsibility_markdown",
         "scripts.beast_coding_agent_responsibility_census.validate_responsibility_config"
@@ -424547,20 +424614,20 @@
     "agent_relevance_counts": {
       "direct": 8,
       "supporting": 1,
-      "unclassified": 18880
+      "unclassified": 18883
     },
-    "component_count": 18889,
+    "component_count": 18892,
     "disposition_counts": {
       "online_supporting": 50,
       "stranded": 18,
       "supervised_offline": 32,
-      "unclassified": 18789
+      "unclassified": 18792
     },
     "language_counts": {
       "javascript": 2081,
-      "json": 5479,
+      "json": 5480,
       "powershell": 5,
-      "python": 11229,
+      "python": 11231,
       "shell": 31,
       "toml": 17,
       "yaml": 47
@@ -424577,11 +424644,11 @@
       "interface_ingress": 8232,
       "kernel_other": 156,
       "memory_evidence": 13,
-      "operations_proof": 186,
+      "operations_proof": 187,
       "perception_sensorium": 69,
-      "repository_support": 9426,
+      "repository_support": 9427,
       "semantic_context": 21,
-      "verification_tests": 369,
+      "verification_tests": 370,
       "workspace_state": 8
     }
   },

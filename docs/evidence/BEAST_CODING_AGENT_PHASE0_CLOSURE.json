@@ -1,50 +1,24 @@
 {
   "beast_object_type": "beast_coding_agent_phase0_closure",
-  "version": "1.0",
-  "status": "phase0_census_complete_with_phase1_queue",
   "coding_agent_fixed": false,
-  "scope": {
-    "full_repository_static_inventory_complete": true,
-    "coding_agent_responsibility_claimants_classified": true,
-    "runtime_backend_slice_observed": true,
-    "phase1_authority_resolution_required": true
+  "exit_conditions": {
+    "cross_file_defect_retained": true,
+    "full_static_census_present": true,
+    "observed_backend_journeys_present": true,
+    "phase1_queue_finite_and_explicit": true,
+    "responsibility_artifacts_deterministic": true,
+    "responsibility_manifest_resolved_against_census": true,
+    "runtime_overclaim_prohibited": true
   },
-  "summary": {
-    "static_component_count": 18889,
-    "static_layer_count": 17,
-    "responsibility_count": 24,
-    "claimant_count": 70,
-    "unique_claimant_count": 42,
-    "unresolved_conflict_count": 13,
-    "phase1_conflict_count": 17
-  },
-  "runtime_evidence": {
-    "backend_path_observed": true,
-    "journey_count": 4,
-    "journeys": [
-      "analysis_only",
-      "single_file_mutation",
-      "cross_file_mutation",
-      "verification_failure_repair"
-    ],
-    "observed_component_producers": [
-      "app/kernel/agents/planner_runtime.py",
-      "app/kernel/agents/run_store.py",
-      "app/kernel/agents/tool_runtime.py"
-    ],
-    "desktop_renderer_ingress_proven": false,
-    "real_ollama_or_nim_provider_proven": false,
-    "sensorium_mirror_proven": false
+  "invariants": {
+    "closure_meaning": "Phase 0 proves census, responsibility classification, and a bounded observed backend runtime slice. It does not prove the desktop/model/Sensorium path and does not mean the coding agent is repaired.",
+    "compression_edit_boundary": "Editable source and patch anchors remain exact; compressed representations must not become mutation authority.",
+    "memfd_transport_boundary": "Sealed memfd/capsule transport is available as immutable transport evidence, not ambient execution or confidentiality authority; it is not observed in the coding-agent journey.",
+    "static_census_runtime_truth": "unverified_until_observed_receipt"
   },
   "observed_gaps": [
     "completed_with_unresolved_cross_file_objective"
   ],
-  "invariants": {
-    "static_census_runtime_truth": "unverified_until_observed_receipt",
-    "memfd_transport_boundary": "Sealed memfd/capsule transport is available as immutable transport evidence, not ambient execution or confidentiality authority; it is not observed in the coding-agent journey.",
-    "compression_edit_boundary": "Editable source and patch anchors remain exact; compressed representations must not become mutation authority.",
-    "closure_meaning": "Phase 0 proves census, responsibility classification, and a bounded observed backend runtime slice. It does not prove the desktop/model/Sensorium path and does not mean the coding agent is repaired."
-  },
   "phase1_conflicts": [
     "agent_memory_and_continuity",
     "agent_run_launch_and_provider_selection",
@@ -64,13 +38,39 @@
     "verification_gate",
     "verified_inference_reuse"
   ],
-  "exit_conditions": {
-    "full_static_census_present": true,
-    "responsibility_manifest_resolved_against_census": true,
-    "responsibility_artifacts_deterministic": true,
-    "observed_backend_journeys_present": true,
-    "cross_file_defect_retained": true,
-    "runtime_overclaim_prohibited": true,
-    "phase1_queue_finite_and_explicit": true
-  }
+  "runtime_evidence": {
+    "backend_path_observed": true,
+    "desktop_renderer_ingress_proven": false,
+    "journey_count": 4,
+    "journeys": [
+      "analysis_only",
+      "single_file_mutation",
+      "cross_file_mutation",
+      "verification_failure_repair"
+    ],
+    "observed_component_producers": [
+      "app/kernel/agents/planner_runtime.py",
+      "app/kernel/agents/run_store.py",
+      "app/kernel/agents/tool_runtime.py"
+    ],
+    "real_ollama_or_nim_provider_proven": false,
+    "sensorium_mirror_proven": false
+  },
+  "scope": {
+    "coding_agent_responsibility_claimants_classified": true,
+    "full_repository_static_inventory_complete": true,
+    "phase1_authority_resolution_required": true,
+    "runtime_backend_slice_observed": true
+  },
+  "status": "phase0_census_complete_with_phase1_queue",
+  "summary": {
+    "claimant_count": 70,
+    "phase1_conflict_count": 17,
+    "responsibility_count": 24,
+    "static_component_count": 18892,
+    "static_layer_count": 17,
+    "unique_claimant_count": 42,
+    "unresolved_conflict_count": 13
+  },
+  "version": "1.0"
 }

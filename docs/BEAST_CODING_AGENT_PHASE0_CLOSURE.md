@@ -6,7 +6,7 @@ Phase 0 closes the census and responsibility-mapping problem. It does **not** cl
 
 ## Census boundary
 
-- Static components inventoried: **18889**
+- Static components inventoried: **18892**
 - Static layers represented: **17**
 - Coding-agent responsibilities: **24**
 - Claimant relationships: **70** across **42** unique organs

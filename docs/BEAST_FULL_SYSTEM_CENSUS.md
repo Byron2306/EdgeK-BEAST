@@ -4,7 +4,7 @@
 
 **Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18889**
+Static components discovered: **18892**
 
 ## Layer counts
 
@@ -21,11 +21,11 @@ Static components discovered: **18889**
 | `interface_ingress` | 8232 |
 | `kernel_other` | 156 |
 | `memory_evidence` | 13 |
-| `operations_proof` | 186 |
+| `operations_proof` | 187 |
 | `perception_sensorium` | 69 |
-| `repository_support` | 9426 |
+| `repository_support` | 9427 |
 | `semantic_context` | 21 |
-| `verification_tests` | 369 |
+| `verification_tests` | 370 |
 | `workspace_state` | 8 |
 
 ## Disposition counts
@@ -35,7 +35,7 @@ Static components discovered: **18889**
 | `online_supporting` | 50 |
 | `stranded` | 18 |
 | `supervised_offline` | 32 |
-| `unclassified` | 18789 |
+| `unclassified` | 18792 |
 
 ## Runtime evidence state
 
@@ -16746,6 +16746,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `desktop-ide/tests/gateway-host-route-recovery.test.js` | `interface_ingress` | `javascript` | `unverified` | `unverified` | `unclassified` |
 | `desktop-ide/visual-audit/report.json` | `interface_ingress` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docker-compose.commons-lab.yml` | `repository_support` | `yaml` | `unverified` | `unverified` | `unclassified` |
+| `docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/beast-milestones-10-11-proof-bundle-summary-2026-07-15.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/deployed-enforcement-probe-2026-07-15.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
@@ -17634,6 +17635,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `scripts/test_regex_2.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/trace_beast_coding_agent_runtime.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/train_true_lora_adapter.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
+| `scripts/verify_beast_phase0_census_exit.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/verify_bpf_loopback_lab.sh` | `operations_proof` | `shell` | `unverified` | `unverified` | `unclassified` |
 | `scripts/verify_c4x_external_breakthrough_submission.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/verify_discovery_agnostic_receipt.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -18611,6 +18613,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `tests/test_beast_cli_executor.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_cli_script.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_coding_agent_census_journeys.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
+| `tests/test_beast_coding_agent_phase0_closure.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_coding_agent_responsibility_census.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_full_system_census.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_budget_governance.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
