@@ -91,12 +91,23 @@ jobs:
             --json-out docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
             --md-out docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
 
+      - name: Generate Phase 0 closure outputs
+        run: |
+          python scripts/verify_beast_phase0_census_exit.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --responsibility docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --runtime-map /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md \
+            --json-out docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json \
+            --md-out docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+
       - name: Verify deterministic regeneration
         run: |
           cp docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json /tmp/beast-census-first.json
           cp docs/BEAST_FULL_SYSTEM_CENSUS.md /tmp/beast-census-first.md
           cp docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json /tmp/beast-responsibility-first.json
           cp docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md /tmp/beast-responsibility-first.md
+          cp docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json /tmp/beast-closure-first.json
+          cp docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md /tmp/beast-closure-first.md
           python scripts/beast_full_system_census.py \
             --root . \
             --json-out docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
@@ -106,10 +117,18 @@ jobs:
             --config config/beast_coding_agent_responsibilities.json \
             --json-out docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
             --md-out docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+          python scripts/verify_beast_phase0_census_exit.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --responsibility docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --runtime-map /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md \
+            --json-out docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json \
+            --md-out docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
           diff -u /tmp/beast-census-first.json docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
           diff -u /tmp/beast-census-first.md docs/BEAST_FULL_SYSTEM_CENSUS.md
           diff -u /tmp/beast-responsibility-first.json docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json
           diff -u /tmp/beast-responsibility-first.md docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+          diff -u /tmp/beast-closure-first.json docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json
+          diff -u /tmp/beast-closure-first.md docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
 
       - name: Validate census truth boundaries
         run: |
@@ -182,6 +201,26 @@ jobs:
           if len(responsibility.get('phase1_conflicts') or []) != 17:
               raise SystemExit('Phase 1 conflict queue size drifted')
 
+          closure = json.loads(
+              Path('docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json').read_text()
+          )
+          if closure.get('status') != 'phase0_census_complete_with_phase1_queue':
+              raise SystemExit('Phase 0 closure status is not complete-with-Phase1-queue')
+          if closure.get('coding_agent_fixed') is not False:
+              raise SystemExit('Phase 0 closure illegally claims the coding agent is fixed')
+          closure_runtime = closure.get('runtime_evidence') or {}
+          for key in (
+              'desktop_renderer_ingress_proven',
+              'real_ollama_or_nim_provider_proven',
+              'sensorium_mirror_proven',
+          ):
+              if closure_runtime.get(key) is not False:
+                  raise SystemExit(f'Phase 0 closure overclaims runtime evidence: {key}')
+          if closure.get('observed_gaps') != ['completed_with_unresolved_cross_file_objective']:
+              raise SystemExit('Phase 0 closure lost the cross-file completion defect')
+          if len(closure.get('phase1_conflicts') or []) != 17:
+              raise SystemExit('Phase 0 closure Phase 1 queue drifted')
+
           summary = report['summary']
           print('component_count=', summary['component_count'])
           print('layer_counts=', json.dumps(summary['layer_counts'], sort_keys=True))
@@ -199,6 +238,7 @@ jobs:
           report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
           runtime = json.loads(Path('/tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json').read_text())
           responsibility = json.loads(Path('docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json').read_text())
+          closure = json.loads(Path('docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json').read_text())
           summary = report['summary']
           print('# BEAST Phase 0 Census')
           print()
@@ -242,6 +282,11 @@ jobs:
               print(f'- `{item}`')
           print()
           print('Static runtime fields remain `unverified`; runtime journey evidence is a separate artifact until evidence-backed overlay merge.')
+          print()
+          print('## Phase 0 exit')
+          print()
+          print(f"Status: `{closure['status']}`; coding agent fixed: `{closure['coding_agent_fixed']}`.")
+          print('Phase 0 closes census/reachability/responsibility mapping only; the 17-item Phase 1 authority queue remains mandatory.')
           PY
 
       - name: Upload census evidence artifact
@@ -253,6 +298,8 @@ jobs:
             docs/BEAST_FULL_SYSTEM_CENSUS.md
             docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json
             docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+            docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json
+            docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
 
       - name: Upload runtime journey evidence artifact
         uses: actions/upload-artifact@v4
@@ -265,12 +312,12 @@ jobs:
       - name: Commit generated census artifacts when changed
         if: github.event_name == 'push'
         run: |
-          if [ -z "$(git status --porcelain -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md)" ]; then
+          if [ -z "$(git status --porcelain -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md)" ]; then
             echo "Canonical census artifacts unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+          git add docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
           git commit -m "audit: generate BEAST Phase 0 census artifacts [skip ci]"
           git push origin HEAD:agent/beast-coding-agent-phase0-census
