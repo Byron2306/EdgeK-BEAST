@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from beast_full_system_census import (
+    apply_compute_module_dispositions,
     apply_overrides,
     load_overrides,
     render_markdown,
@@ -159,3 +160,29 @@ def test_override_loader_rejects_invalid_disposition(tmp_path):
 
     with pytest.raises(ValueError, match="invalid disposition"):
         load_overrides(override_path)
+
+
+def test_compute_disposition_registry_is_source_evidence_not_runtime_proof(tmp_path):
+    compute_dir = tmp_path / "app/kernel/compute"
+    compute_dir.mkdir(parents=True)
+    for name in ("compute_plane", "benchmark", "crystal_hypergraph", "legacy"):
+        (compute_dir / f"{name}.py").write_text("x=1\n", encoding="utf-8")
+    (compute_dir / "module_dispositions.py").write_text(
+        "ONLINE_ENFORCEMENT = frozenset({'compute_plane'})\n"
+        "SUPERVISED_EVIDENCE = frozenset({'benchmark'})\n"
+        "OFFLINE_LIBRARY = frozenset({'crystal_hypergraph'})\n"
+        "RETIRED = {'legacy': 'replaced'}\n",
+        encoding="utf-8",
+    )
+
+    report = apply_compute_module_dispositions(scan_repository(tmp_path), tmp_path)
+    by_path = {item["path"]: item for item in report["components"]}
+
+    assert by_path["app/kernel/compute/compute_plane.py"]["disposition"] == "online_supporting"
+    assert by_path["app/kernel/compute/benchmark.py"]["disposition"] == "supervised_offline"
+    assert by_path["app/kernel/compute/crystal_hypergraph.py"]["disposition"] == "stranded"
+    assert by_path["app/kernel/compute/legacy.py"]["disposition"] == "retired"
+    assert "source_disposition:ONLINE_ENFORCEMENT" in by_path["app/kernel/compute/compute_plane.py"]["notes"]
+    assert "source_disposition:OFFLINE_LIBRARY" in by_path["app/kernel/compute/crystal_hypergraph.py"]["notes"]
+    assert by_path["app/kernel/compute/compute_plane.py"]["runtime"]["constructed"] == "unverified"
+    assert by_path["app/kernel/compute/compute_plane.py"]["runtime"]["invoked"] == "unverified"
