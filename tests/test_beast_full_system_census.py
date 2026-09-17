@@ -67,3 +67,17 @@ def test_ignores_generated_and_backup_trees(tmp_path):
     report = scan_repository(tmp_path)
     paths = [item["path"] for item in report["components"]]
     assert paths == ["app/live.py"]
+
+
+def test_ignores_canonical_census_output_from_its_own_inventory(tmp_path):
+    (tmp_path / "app").mkdir()
+    (tmp_path / "docs/evidence").mkdir(parents=True)
+    (tmp_path / "app/live.py").write_text("x=1\n", encoding="utf-8")
+    (tmp_path / "docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json").write_text(
+        '{"beast_object_type":"beast_full_system_census"}\n', encoding="utf-8"
+    )
+
+    report = scan_repository(tmp_path)
+    paths = [item["path"] for item in report["components"]]
+
+    assert paths == ["app/live.py"]
