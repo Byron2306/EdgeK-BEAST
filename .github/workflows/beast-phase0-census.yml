@@ -38,6 +38,42 @@ jobs:
             tests/test_trace_beast_coding_agent_runtime.py \
             tests/test_beast_coding_agent_census_journeys.py
 
+      - name: Run observed production-backend coding-agent journeys
+        run: |
+          python scripts/run_beast_coding_agent_census_journeys.py \
+            --json-out /tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json \
+            --map-out /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
+          cat /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
+
+      - name: Validate runtime evidence boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          bundle = json.loads(Path('/tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json').read_text())
+          journeys = bundle.get('journeys') or []
+          if len(journeys) != 4:
+              raise SystemExit(f'expected 4 runtime journeys, found {len(journeys)}')
+          if bundle.get('proof_boundaries', {}).get('desktop_renderer_ingress') is not False:
+              raise SystemExit('runtime journey artifact overclaims desktop renderer ingress')
+          if bundle.get('proof_boundaries', {}).get('real_ollama_or_nim_provider') is not False:
+              raise SystemExit('runtime journey artifact overclaims real provider execution')
+          if bundle.get('proof_boundaries', {}).get('sensorium_mirror_receipt') is not False:
+              raise SystemExit('runtime journey artifact overclaims Sensorium mirroring')
+          cross = next(item for item in journeys if item.get('journey_id') == 'cross_file_mutation')
+          finding = (cross.get('objective_assessment') or {}).get('finding')
+          if finding != 'completed_with_unresolved_cross_file_objective':
+              raise SystemExit(f'cross-file observed finding changed unexpectedly: {finding!r}')
+          if (cross.get('objective_assessment') or {}).get('unresolved_paths') != ['consumer.py']:
+              raise SystemExit('cross-file unresolved path evidence changed unexpectedly')
+          for journey in journeys:
+              chain = journey.get('chain_verification') or {}
+              if chain.get('head_matches') is not True:
+                  raise SystemExit(f"invalid AgentRun chain for {journey.get('journey_id')}")
+          print('runtime_journeys=', [item.get('journey_id') for item in journeys])
+          print('cross_file_finding=', finding)
+          PY
+
       - name: Generate canonical census outputs
         run: |
           python scripts/beast_full_system_census.py \
@@ -117,6 +153,7 @@ jobs:
           import json
           from pathlib import Path
           report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
+          runtime = json.loads(Path('/tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json').read_text())
           summary = report['summary']
           print('# BEAST Phase 0 Census')
           print()
@@ -143,7 +180,14 @@ jobs:
           for relevance, count in summary['agent_relevance_counts'].items():
               print(f'| `{relevance}` | {count} |')
           print()
-          print('Runtime fields remain `unverified` until evidence-backed runtime overlays are applied.')
+          print('## Observed backend journeys')
+          print()
+          for journey in runtime.get('journeys') or []:
+              assessment = journey.get('objective_assessment') or {}
+              suffix = f"; finding `{assessment.get('finding')}`" if assessment.get('finding') else ''
+              print(f"- `{journey.get('journey_id')}`: `{journey.get('final_state')}`{suffix}")
+          print()
+          print('Static runtime fields remain `unverified`; runtime journey evidence is a separate artifact until evidence-backed overlay merge.')
           PY
 
       - name: Upload census evidence artifact
@@ -153,6 +197,14 @@ jobs:
           path: |
             docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
             docs/BEAST_FULL_SYSTEM_CENSUS.md
+
+      - name: Upload runtime journey evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase0-runtime-journeys
+          path: |
+            /tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json
+            /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
 
       - name: Commit generated census artifacts when changed
         if: github.event_name == 'push'
