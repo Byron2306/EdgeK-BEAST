@@ -1,0 +1,362 @@
+{
+  "version": "1.0",
+  "truth_boundary": "Target authority contracts do not prove live wiring. Runtime claims require independently observed receipts.",
+  "resolutions": [
+    {
+      "id": "agent_memory_and_continuity",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "run_continuity_truth",
+          "path": "app/kernel/agents/run_store.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "long_lived_residue",
+          "path": "app/kernel/storage/memory_hull.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "separate_run_store_events_from_memory_hull_residue",
+        "require_provenance_before_long_lived_memory_promotion"
+      ],
+      "invariant": "RunStore owns durable run history; MemoryHull holds optional long-lived residue and cannot rewrite the event chain.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "agent_run_launch_and_provider_selection",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "coding_agent_launch",
+          "path": "app/routes/ide_routes/agent_runs.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "provider_route_admission",
+          "path": "app/kernel/compute/compute_plane.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "bind_agent_run_launch_to_compute_route_receipt",
+        "make_renderer_provider_preference_advisory"
+      ],
+      "invariant": "Backend route binds the mission and governed compute admits the provider; frontend preference is only a request.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "coding_evidence_production",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "run_event_truth",
+          "path": "app/kernel/agents/run_store.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "evidence_preservation",
+          "path": "app/kernel/storage/evidence_chronicle.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "link_agent_run_receipts_to_chronicle_without_rewriting_status"
+      ],
+      "invariant": "The observed run ledger is primary; Chronicle preserves derived evidence without asserting unobserved success.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "context_budget_and_compaction",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "model_handoff_budget",
+          "path": "app/kernel/data_processing/context_packet.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "source_bound_compression",
+          "path": "app/kernel/compute/compression_pipeline.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "remove_frontend_three_file_truncation",
+        "preserve_exact_editable_anchors_during_compaction"
+      ],
+      "invariant": "ContextPacket sets the final handoff budget; source-bound summaries cannot authorize editable anchors.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "crystal_generalization_promotion_and_replay",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "candidate_generalization",
+          "path": "app/kernel/compute/runtime_crystallizer.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "physical_promotion",
+          "path": "app/kernel/compute/physical_crystal_lifecycle.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "typed_replay",
+          "path": "app/kernel/compute/typed_crystal_interpreter.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "require_transfer_verification_before_physical_promotion",
+        "revalidate_typed_replay_against_current_source"
+      ],
+      "invariant": "Separate candidate, promotion, and typed replay gates retain distinct authority; no replay authorizes a mutation.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "crystal_transport_and_memfd_capsules",
+      "kind": "transport_only",
+      "authority_contracts": [
+        {
+          "scope": "immutable_capsule_transport",
+          "path": "app/kernel/crystal_bus/fd_transport.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "prove_fd_transport_on_coding_agent_path_before_activation"
+      ],
+      "invariant": "Sealed memfd transport does not grant execution or confidentiality authority and is not observed on the coding-agent route.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "governed_inference_routing",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "coding_agent_inference_composition",
+          "path": "app/kernel/compute/compute_plane.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "route_typed_planner_provider_attempts_through_compute_plane"
+      ],
+      "invariant": "One compute composition root governs every provider attempt; direct local calls must be routed through it.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "local_planner_provider_budget",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "effective_ollama_budget",
+          "path": "app/kernel/agents/ollama_planner_provider.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "surface_effective_num_ctx_and_num_predict_in_operator_telemetry",
+        "remove_hard_coded_48_token_continuation_limit"
+      ],
+      "invariant": "The effective provider num_ctx and num_predict own executable limits; UI budget estimates must mirror them.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "mission_edit_reuse_lattice",
+      "kind": "advisory_only",
+      "authority_contracts": [
+        {
+          "scope": "verified_edit_reuse_advice",
+          "path": "app/kernel/compute/mission_crystal_lattice.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "expose_lattice_matches_as_advice_only"
+      ],
+      "invariant": "Lattice matches are advisory and never apply edits or convey approval.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "model_output_protocol",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "typed_planner_decision",
+          "path": "app/kernel/agents/planner_provider.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "direct_source_patch_output",
+          "path": "app/kernel/governance/output_governor.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [
+        {
+          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
+          "role": "ux_hint_only"
+        }
+      ],
+      "required_repairs": [
+        "remove_frontend_action_ir_from_typed_planner_objective",
+        "preserve_output_governor_for_direct_source_patch_output"
+      ],
+      "invariant": "Typed planner decisions and source-patch Action IR are different protocols; frontend instructions cannot bind both as one.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "planner_completion_decision",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "whole_objective_completion",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "require_whole_objective_evidence_before_terminal_complete",
+        "regress_unresolved_consumer_py_cross_file_case"
+      ],
+      "invariant": "Planner completion requires proof that the entire original objective is satisfied, including consumer.py in cross-file work.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "repository_context_selection",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "repository_candidate_discovery",
+          "path": "app/kernel/data_processing/code_cortex.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "model_handoff_context",
+          "path": "app/kernel/data_processing/context_packet.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "feed_code_cortex_candidates_into_context_packet",
+        "prove_cross_file_discovery_without_manual_three_file_attachment"
+      ],
+      "invariant": "Code Cortex discovers candidates; ContextPacket owns final evidence-bound handoff, including late files.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "sensorium_agent_observation",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "observation_admission",
+          "path": "app/kernel/sensorium/runtime.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "require_independent_sensorium_delivery_receipt"
+      ],
+      "invariant": "Sensorium must issue an independent receipt before mirror delivery is called observed.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "sourceplan_handoff_and_approval",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "sourceplan_approval",
+          "path": "app/kernel/agents/sourceplan_approval.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "sourceplan_evidence_handoff",
+          "path": "app/kernel/evidence/sourceplan_handoff.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "enforce_explicit_sourceplan_approval_before_mutation",
+        "bind_handoff_to_source_hash_and_capability"
+      ],
+      "invariant": "SourcePlan approval is explicit; handoff preserves evidence and planner state alone is not mutation authority.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "task_input_governance",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "typed_mission_envelope",
+          "path": "app/kernel/execution/task_envelope.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "canonicalize_renderer_intent_into_task_envelope",
+        "reject_unauthorized_task_mode_escalation"
+      ],
+      "invariant": "TaskEnvelope owns mission constraints; frontend mode is operator intent, not a policy grant.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "verification_gate",
+      "kind": "scoped_chain",
+      "authority_contracts": [
+        {
+          "scope": "fresh_mutation_verification",
+          "path": "app/kernel/agents/phase_d_execution.py",
+          "authority": "authoritative"
+        },
+        {
+          "scope": "post_apply_evidence_admission",
+          "path": "app/kernel/evidence/post_apply_gate.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "bind_phase_d_verify_to_post_apply_evidence_gate",
+        "block_completion_on_unresolved_original_objective"
+      ],
+      "invariant": "Fresh worktree verification precedes post-apply evidence admission and whole-objective completion.",
+      "runtime_status": "target_only_unverified"
+    },
+    {
+      "id": "verified_inference_reuse",
+      "kind": "single_authority",
+      "authority_contracts": [
+        {
+          "scope": "reuse_admission",
+          "path": "app/kernel/compute/crystal_reuse_gateway.py",
+          "authority": "authoritative"
+        }
+      ],
+      "demotions": [],
+      "required_repairs": [
+        "require_current_source_and_policy_digests_before_reuse",
+        "prohibit_reuse_from_granting_mutation_authority"
+      ],
+      "invariant": "ReuseGateway decides verified inference reuse; cached content never grants action authority.",
+      "runtime_status": "target_only_unverified"
+    }
+  ]
+}
