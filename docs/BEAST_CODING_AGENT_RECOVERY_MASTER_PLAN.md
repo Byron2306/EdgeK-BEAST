@@ -1,0 +1,80 @@
+# BEAST Coding Agent Recovery Master Plan
+
+Date: 2026-09-17
+Status: **Phase 0 IN PROGRESS**
+Working branch: `agent/beast-coding-agent-phase0-census`
+Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
+
+## Programme objective
+
+Make the BEAST coding agent a coherent vertical slice through the existing organism rather than a thin LLM wrapper. Existing BEAST organs for perception, semantic indexing, context construction, compression, compute routing, interception, memory, evidence, Sensorium, execution, quality, crystals/lattices, distributed operation and governance must be inventoried before deciding what to wire or consolidate.
+
+The programme does not assume that every existing organ belongs in the live coding path. Each component must earn a disposition based on responsibility, production ownership and evidence.
+
+## Phase sequence
+
+| Phase | Objective | Exit condition |
+|---|---|---|
+| **0. Full Organism Census** | Establish repository and runtime truth across all coding-agent-relevant BEAST layers. | Complete canonical census, observed runtime map, explicit dispositions and overlap list. |
+| **1. Responsibility & Authority Map** | Assign one authoritative owner for each cognitive/operational responsibility and classify support/duplicates. | No unresolved competing authority for repository discovery, context, memory, routing, mutation, verification, evidence or reuse. |
+| **2. Current Agent Trace** | Measure real request paths across analysis, edits, repair and remote operation. | Every observed edge is evidence-backed; speculative edges are separate. |
+| **3. Agent Core Repair** | Repair known deterministic planner/integration defects. | Simple governed local-model mutation completes reliably with truthful telemetry. |
+| **4. Perception & Repository Intelligence** | Integrate repository indexing, Code Cortex and Sensorium-derived world state into task discovery. | Cross-file tasks discover relevant evidence without manual three-file attachment dependence. |
+| **5. Context Architecture** | Establish canonical Context Packet and evidence-preserving compression. | Context remains task-relevant under pressure while exact editable anchors remain authoritative. |
+| **6. Memory Architecture** | Assign explicit roles to working, episodic, durable, evidence and forensic memory families. | One documented promotion/read path with no competing authoritative memory stores. |
+| **7. Compute, Reuse & Crystallisation** | Route tasks through BEAST compute/reuse machinery and use verified crystals/lattices where appropriate. | Requests can choose deterministic reuse, local inference or stronger provider routes based on evidence. |
+| **8. Governed Execution** | Consolidate mutation authority, worktrees, isolation, rollback and approvals. | Every mutation has source, authority, diff, verification and rollback lineage. |
+| **9. Verification, Repair & Learning** | Integrate Quality Cascade, failure analysis, negative evidence and promotion. | Injected failures are detected, repaired or refused, and recorded without unsupported completion claims. |
+| **10. Distributed BEAST** | Extend the same cognitive/governance contracts to Commons, Forge and remote workspaces. | Local and remote coding requests share one semantic and authority model. |
+| **11. Operator Surface Unification** | Make backend state legible in the Pair Programmer/IDE. | UI reflects actual planner phase, evidence, route, verification and human gates. |
+| **12. Agent Gauntlet & Promotion** | Measure integrated BEAST against baseline across controlled coding tasks. | Evidence-backed promotion decision across simple, cross-file, repair, large-repo and remote tasks. |
+
+## Phase 0 rules
+
+1. No coding-agent behavioral repairs are mixed into census work.
+2. File presence, imports, registries, tests, documentation and historical proof artifacts do not prove live wiring.
+3. Runtime construction/invocation/authority begins `unverified` and requires runtime evidence to change.
+4. Existing offline or supervised scientific machinery remains distinct from production request-path enforcement.
+5. Existing exact-source boundaries are preserved; compressed context never becomes mutation authority.
+
+## Phase 0 census domains
+
+The census covers interface/ingress, agency/planning, perception/Sensorium, semantic understanding, context/compression, memory/evidence, compute/inference, interception, crystals/lattices/reuse, governance/authority, execution/worktrees, verification/Quality Cascade, distributed Commons/Forge, operations/supervision, CI/proof and operator presentation.
+
+Additional domains discovered during scanning are added rather than forced into the wrong bucket.
+
+## Already verified inputs to later phases
+
+These findings are recorded as later-phase defects and are **not repaired during Phase 0**:
+
+- Local mutating AgentRun defaults to a planner turn budget that is shorter than the clean mandatory lifecycle it enforces.
+- Frontend mutating prompts demand BEAST Action IR while the backend typed planner demands a distinct PlannerDecision protocol.
+- Actual Ollama planner context/output defaults are much smaller than the renderer telemetry suggests, including a hard-coded smaller native-context generation path.
+- Frontend/planner context can be clipped to three files before backend retrieval has a chance to reason across the repository.
+- Compact planner prompt handling uses prefix truncation, risking loss of late observations/authority/repair evidence.
+- The current Agentic Loop Endurance workflow can fail during test import because its dependency install is incomplete, so its red status does not necessarily mean the planner tests themselves ran.
+
+## Phase 0 current checkpoint
+
+Implemented on the Phase 0 branch:
+
+- approved Phase 0 design spec;
+- detailed implementation plan;
+- deterministic mixed-language census scanner;
+- test-first scanner contract covering Python, JavaScript and workflow discovery;
+- explicit `unverified` runtime/authority defaults;
+- ignore rules preventing backup, dependency, build and virtual-environment trees from polluting the census.
+
+The scanner is only the first static pass. Phase 0 remains open until the real repository inventory is generated inside the BEAST checkout, existing module disposition evidence is overlaid, representative coding-agent journeys are traced, and responsibility overlaps are classified.
+
+## Canonical Phase 0 outputs
+
+- `docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json`
+- `docs/BEAST_FULL_SYSTEM_CENSUS.md`
+- `docs/BEAST_CODING_AGENT_RUNTIME_MAP.md`
+- this master plan
+- census and runtime-trace tests
+
+## Phase 0 exit gate
+
+Phase 0 closes only when every coding-agent-relevant component has an explicit disposition; static and runtime truth are separate; observed request paths can be reconstructed end to end; duplicate responsibility claims are explicit; proof-only/offline systems cannot be mistaken for enforcement; and Phase 1 receives a finite list of ownership conflicts instead of architectural guesswork.
