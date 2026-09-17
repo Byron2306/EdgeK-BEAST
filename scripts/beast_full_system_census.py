@@ -25,6 +25,9 @@ IGNORED_PARTS = {
     ".pytest_cache", ".mypy_cache", ".ruff_cache", "dist", "build",
     ".venv", "venv",
 }
+IGNORED_FILES = {
+    "docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json",
+}
 
 JS_IMPORT_PATTERNS = (
     re.compile(r'''(?:import|export)\s+(?:[^'\"]*?\s+from\s+)?['\"]([^'\"]+)['\"]'''),
@@ -133,6 +136,8 @@ def _iter_scannable_files(root: Path):
         if not path.is_file():
             continue
         rel = path.relative_to(root)
+        if rel.as_posix() in IGNORED_FILES:
+            continue
         if any(part in IGNORED_PARTS for part in rel.parts):
             continue
         if path.suffix.lower() not in SCANNED_SUFFIXES:
@@ -180,6 +185,7 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 "documentation, registries, or generated artifacts."
             ),
             "ignored_parts": sorted(IGNORED_PARTS),
+            "ignored_files": sorted(IGNORED_FILES),
         },
         "summary": {
             "component_count": len(components),
