@@ -21,6 +21,7 @@ jobs:
     env:
       BEAST_LIVE_DOCKER_ACCEPTANCE: '1'
       BEAST_LIVE_SSH_DOCKER_ACCEPTANCE: '1'
+      BEAST_LIVE_DOCKER_IMAGE: 'beast-disposable-sshd:live'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,6 +33,8 @@ jobs:
         run: |
           docker version
           ssh -V
+      - name: Build the repository's disposable target image
+        run: docker build -t "$BEAST_LIVE_DOCKER_IMAGE" tests/fixtures/disposable-sshd
       - name: Run live disposable remote promotion tests
         run: |
           python -m pytest -q --noconftest \
