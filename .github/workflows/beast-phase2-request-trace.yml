@@ -1,0 +1,50 @@
+name: BEAST Phase 2 Request Trace
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase2-runtime-trace
+  pull_request:
+    paths:
+      - 'scripts/beast_coding_agent_phase2_trace.py'
+      - 'tests/test_beast_coding_agent_phase2_trace.py'
+      - '.github/workflows/beast-phase2-request-trace.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-trace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - name: Test receipt boundaries and backend journeys
+        run: |
+          python -m pytest -q --noconftest \
+            tests/test_beast_coding_agent_phase2_trace.py \
+            tests/test_beast_coding_agent_census_journeys.py
+      - name: Capture request path evidence
+        run: |
+          python scripts/beast_coding_agent_phase2_trace.py \
+            --json-out /tmp/BEAST_PHASE2_REQUEST_TRACE.json \
+            --md-out /tmp/BEAST_PHASE2_REQUEST_TRACE.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('/tmp/BEAST_PHASE2_REQUEST_TRACE.json').read_text())
+          assert len(report['journeys']) == 4
+          assert report['phase2_exit_met'] is False
+          assert all(report['edges'][name]['state'] == 'unverified' for name in (
+              'desktop_ingress', 'real_model_provider', 'sensorium_delivery', 'remote_dispatch_return'))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase2-backend-request-trace
+          path: |
+            /tmp/BEAST_PHASE2_REQUEST_TRACE.json
+            /tmp/BEAST_PHASE2_REQUEST_TRACE.md
