@@ -4,7 +4,7 @@
 
 **Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18883**
+Static components discovered: **18885**
 
 ## Layer counts
 
@@ -21,11 +21,11 @@ Static components discovered: **18883**
 | `interface_ingress` | 8232 |
 | `kernel_other` | 156 |
 | `memory_evidence` | 13 |
-| `operations_proof` | 184 |
+| `operations_proof` | 185 |
 | `perception_sensorium` | 69 |
 | `repository_support` | 9424 |
 | `semantic_context` | 21 |
-| `verification_tests` | 367 |
+| `verification_tests` | 368 |
 | `workspace_state` | 8 |
 
 ## Disposition counts
@@ -35,7 +35,7 @@ Static components discovered: **18883**
 | `online_supporting` | 50 |
 | `stranded` | 18 |
 | `supervised_offline` | 32 |
-| `unclassified` | 18783 |
+| `unclassified` | 18785 |
 
 ## Runtime evidence state
 
@@ -17574,6 +17574,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `scripts/provision_guardian_validation.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/provision_remote_commons_lab.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/replay_c4x_shadow_crystal.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
+| `scripts/run_beast_coding_agent_census_journeys.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/run_c4x_commons_replication_gauntlet.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/run_c4x_external_breakthrough_benchmark.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
 | `scripts/run_c4x_full_physical_truth_12_gate_gauntlet.py` | `operations_proof` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -18606,6 +18607,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `tests/test_ast_compressor.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_cli_executor.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_cli_script.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
+| `tests/test_beast_coding_agent_census_journeys.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_beast_full_system_census.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_budget_governance.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |
 | `tests/test_c4x_document_and_freeze.py` | `verification_tests` | `python` | `unverified` | `unverified` | `unclassified` |

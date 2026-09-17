@@ -396257,6 +396257,38 @@
       "disposition": "unclassified",
       "imports": [
         "__future__.annotations",
+        "app.kernel.agents.planner_provider.ScriptedPlannerProvider",
+        "app.kernel.agents.planner_runtime.AgentPlannerRuntime",
+        "app.kernel.agents.run_engine.AgentRunEngine",
+        "argparse",
+        "asyncio",
+        "json",
+        "pathlib.Path",
+        "scripts.trace_beast_coding_agent_runtime.trace_records_from_agent_run_events",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "typing.Any"
+      ],
+      "language": "python",
+      "layer": "operations_proof",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "scripts/run_beast_coding_agent_census_journeys.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
+        "__future__.annotations",
         "app.kernel.commons.proof_carrying_artifact.CommonsFederation",
         "app.kernel.commons.proof_carrying_artifact.ProofArtifactAdmission",
         "app.kernel.compute.deterministic_intelligence.sha256_digest",
@@ -416319,6 +416351,31 @@
       "composition_roots": [],
       "disposition": "unclassified",
       "imports": [
+        "__future__.annotations",
+        "scripts.run_beast_coding_agent_census_journeys.render_runtime_map",
+        "scripts.run_beast_coding_agent_census_journeys.run_analysis_journey",
+        "scripts.run_beast_coding_agent_census_journeys.run_cross_file_mutation_journey",
+        "scripts.run_beast_coding_agent_census_journeys.run_failed_verification_repair_journey",
+        "scripts.run_beast_coding_agent_census_journeys.run_single_file_mutation_journey"
+      ],
+      "language": "python",
+      "layer": "verification_tests",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "tests/test_beast_coding_agent_census_journeys.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
         "beast_full_system_census.apply_compute_module_dispositions",
         "beast_full_system_census.apply_overrides",
         "beast_full_system_census.load_overrides",
@@ -424404,20 +424461,20 @@
     "agent_relevance_counts": {
       "direct": 8,
       "supporting": 1,
-      "unclassified": 18874
+      "unclassified": 18876
     },
-    "component_count": 18883,
+    "component_count": 18885,
     "disposition_counts": {
       "online_supporting": 50,
       "stranded": 18,
       "supervised_offline": 32,
-      "unclassified": 18783
+      "unclassified": 18785
     },
     "language_counts": {
       "javascript": 2081,
       "json": 5477,
       "powershell": 5,
-      "python": 11225,
+      "python": 11227,
       "shell": 31,
       "toml": 17,
       "yaml": 47
@@ -424434,11 +424491,11 @@
       "interface_ingress": 8232,
       "kernel_other": 156,
       "memory_evidence": 13,
-      "operations_proof": 184,
+      "operations_proof": 185,
       "perception_sensorium": 69,
       "repository_support": 9424,
       "semantic_context": 21,
-      "verification_tests": 367,
+      "verification_tests": 368,
       "workspace_state": 8
     }
   },
