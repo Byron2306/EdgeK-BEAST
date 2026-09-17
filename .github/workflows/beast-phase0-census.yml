@@ -28,8 +28,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install focused test dependency
-        run: python -m pip install -U pytest
+      - name: Install repository test environment
+        run: python -m pip install -r requirements.txt
 
       - name: Verify census scanner tests
         run: python -m pytest -q tests/test_beast_full_system_census.py
