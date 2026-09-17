@@ -4,7 +4,7 @@
 
 **Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18887**
+Static components discovered: **18888**
 
 ## Layer counts
 
@@ -23,7 +23,7 @@ Static components discovered: **18887**
 | `memory_evidence` | 13 |
 | `operations_proof` | 186 |
 | `perception_sensorium` | 69 |
-| `repository_support` | 9424 |
+| `repository_support` | 9425 |
 | `semantic_context` | 21 |
 | `verification_tests` | 369 |
 | `workspace_state` | 8 |
@@ -35,7 +35,7 @@ Static components discovered: **18887**
 | `online_supporting` | 50 |
 | `stranded` | 18 |
 | `supervised_offline` | 32 |
-| `unclassified` | 18787 |
+| `unclassified` | 18788 |
 
 ## Runtime evidence state
 
@@ -8526,6 +8526,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `benchmarks/xai_omni_tasks.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `catalog/beast-ide-catalog.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `config/beast_coding_agent_census_overrides.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
+| `config/beast_coding_agent_responsibilities.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `conftest.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `construct_bindings.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `contracts/agent-run-contract.v1.yaml` | `repository_support` | `yaml` | `unverified` | `unverified` | `unclassified` |

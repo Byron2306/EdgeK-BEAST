@@ -163735,6 +163735,24 @@
       "claimed_responsibilities": [],
       "composition_roots": [],
       "disposition": "unclassified",
+      "imports": [],
+      "language": "json",
+      "layer": "repository_support",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "config/beast_coding_agent_responsibilities.json",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
       "imports": [
         "os",
         "pathlib.Path"
@@ -416401,6 +416419,8 @@
       "disposition": "unclassified",
       "imports": [
         "__future__.annotations",
+        "json",
+        "pathlib.Path",
         "pytest",
         "scripts.beast_coding_agent_responsibility_census.build_responsibility_report",
         "scripts.beast_coding_agent_responsibility_census.render_responsibility_markdown",
@@ -424509,18 +424529,18 @@
     "agent_relevance_counts": {
       "direct": 8,
       "supporting": 1,
-      "unclassified": 18878
+      "unclassified": 18879
     },
-    "component_count": 18887,
+    "component_count": 18888,
     "disposition_counts": {
       "online_supporting": 50,
       "stranded": 18,
       "supervised_offline": 32,
-      "unclassified": 18787
+      "unclassified": 18788
     },
     "language_counts": {
       "javascript": 2081,
-      "json": 5477,
+      "json": 5478,
       "powershell": 5,
       "python": 11229,
       "shell": 31,
@@ -424541,7 +424561,7 @@
       "memory_evidence": 13,
       "operations_proof": 186,
       "perception_sensorium": 69,
-      "repository_support": 9424,
+      "repository_support": 9425,
       "semantic_context": 21,
       "verification_tests": 369,
       "workspace_state": 8
