@@ -393685,6 +393685,30 @@
       "imports": [
         "__future__.annotations",
         "argparse",
+        "json",
+        "pathlib.Path",
+        "typing.Any"
+      ],
+      "language": "python",
+      "layer": "operations_proof",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "scripts/beast_coding_agent_responsibility_census.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
+        "__future__.annotations",
+        "argparse",
         "ast",
         "collections.Counter",
         "copy.deepcopy",
@@ -416376,6 +416400,30 @@
       "composition_roots": [],
       "disposition": "unclassified",
       "imports": [
+        "__future__.annotations",
+        "pytest",
+        "scripts.beast_coding_agent_responsibility_census.build_responsibility_report",
+        "scripts.beast_coding_agent_responsibility_census.render_responsibility_markdown",
+        "scripts.beast_coding_agent_responsibility_census.validate_responsibility_config"
+      ],
+      "language": "python",
+      "layer": "verification_tests",
+      "notes": [],
+      "overlap_candidates": [],
+      "path": "tests/test_beast_coding_agent_responsibility_census.py",
+      "runtime": {
+        "constructed": "unverified",
+        "evidence_producing": "unverified",
+        "invoked": "unverified"
+      }
+    },
+    {
+      "agent_relevance": "unclassified",
+      "authority": "unverified",
+      "claimed_responsibilities": [],
+      "composition_roots": [],
+      "disposition": "unclassified",
+      "imports": [
         "beast_full_system_census.apply_compute_module_dispositions",
         "beast_full_system_census.apply_overrides",
         "beast_full_system_census.load_overrides",
@@ -424461,20 +424509,20 @@
     "agent_relevance_counts": {
       "direct": 8,
       "supporting": 1,
-      "unclassified": 18876
+      "unclassified": 18878
     },
-    "component_count": 18885,
+    "component_count": 18887,
     "disposition_counts": {
       "online_supporting": 50,
       "stranded": 18,
       "supervised_offline": 32,
-      "unclassified": 18785
+      "unclassified": 18787
     },
     "language_counts": {
       "javascript": 2081,
       "json": 5477,
       "powershell": 5,
-      "python": 11227,
+      "python": 11229,
       "shell": 31,
       "toml": 17,
       "yaml": 47
@@ -424491,11 +424539,11 @@
       "interface_ingress": 8232,
       "kernel_other": 156,
       "memory_evidence": 13,
-      "operations_proof": 185,
+      "operations_proof": 186,
       "perception_sensorium": 69,
       "repository_support": 9424,
       "semantic_context": 21,
-      "verification_tests": 368,
+      "verification_tests": 369,
       "workspace_state": 8
     }
   },
