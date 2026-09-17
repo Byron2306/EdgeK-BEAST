@@ -2,9 +2,9 @@
 
 ## Methodology
 
-**Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
+**Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18880**
+Static components discovered: **18881**
 
 ## Layer counts
 
@@ -23,14 +23,23 @@ Static components discovered: **18880**
 | `memory_evidence` | 13 |
 | `operations_proof` | 183 |
 | `perception_sensorium` | 69 |
-| `repository_support` | 9423 |
+| `repository_support` | 9424 |
 | `semantic_context` | 21 |
 | `verification_tests` | 366 |
 | `workspace_state` | 8 |
 
+## Disposition counts
+
+| Disposition | Components |
+|---|---:|
+| `online_supporting` | 50 |
+| `stranded` | 18 |
+| `supervised_offline` | 32 |
+| `unclassified` | 18781 |
+
 ## Runtime evidence state
 
-All runtime fields begin as `unverified`. Phase 0 runtime tracing and composition-root analysis promote those fields only when evidence exists.
+All runtime fields begin as `unverified`. Source-evidence and responsibility overlays do not promote runtime truth. Phase 0 runtime tracing promotes those fields only when matching request evidence exists.
 
 ## Component inventory
 
@@ -250,16 +259,16 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/commons/tpm_attestation.py` | `distributed_commons` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/commons_spaces.py` | `kernel_other` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/__init__.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/ablation_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/ablation_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/accelerator_stack.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/action_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/action_resolver.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/adaptive_dispatcher.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/adaptive_inference.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/agent_scheduler.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/action_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/action_resolver.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/adaptive_dispatcher.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/adaptive_inference.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/agent_scheduler.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/amortization_ledger.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/ast_compressor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/benchmark.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/ast_compressor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/benchmark.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/c4x_physical_truth_certificate.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/cache_aware_engine_selector.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/capability_composition.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -274,71 +283,71 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/capsule_rollout.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/capsule_sensorium.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/capsule_value_model.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/causal_inference.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/cloud_disabled_replay_benchmark.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/causal_inference.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/cloud_disabled_replay_benchmark.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/compound_crystallization.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/compression_pipeline.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/compute_forge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/compute_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/compute_ledger.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/compute_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/container.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/compression_pipeline.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/compute_forge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/compute_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/compute_ledger.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/compute_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/container.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/context_transfer_manifest.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/cross_modal_composition.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crucible_lane_runner.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_assistance_compiler.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_autopromotion_daemon.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_bus.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_autopromotion_daemon.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/crystal_bus.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/crystal_candidate_adapter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_capsule_forge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_credit_quarantine.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_distillation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_evidence_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_credit_quarantine.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/crystal_distillation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/crystal_evidence_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/crystal_execution.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_execution_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_forks.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_forks.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/crystal_frontier_crucible.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_generalizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_hypergraph.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_integration_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_generalizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/crystal_hypergraph.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/crystal_integration_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/crystal_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_materializer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_promotion_evidence_sources.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_materializer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/crystal_promotion_evidence_sources.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/crystal_proof_conductor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_replay_lab.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_reuse_gateway.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_replay_lab.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/crystal_reuse_gateway.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/crystal_route_service.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_runtime_boundary.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_staleness_policy.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_runtime_boundary.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/crystal_staleness_policy.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/crystal_strengthening.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_tongue.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_tongue_c3.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_tongue_codebook.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystal_tool_boundary.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystal_tool_boundary.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/crystal_vector_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystal_verifier_synthesis.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/crystalbench_authoring.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/crystallized_compute_proof.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/definitive_crystal_lane_proof.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/crystallized_compute_proof.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/definitive_crystal_lane_proof.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/deterministic_decomposer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/deterministic_intelligence.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/discovery_agnostic_reuse.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/disk_pressure_cleanup.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/displacement.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/displacement_economics.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/disk_pressure_cleanup.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/displacement.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/displacement_economics.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/displacement_observatory.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/distributed_forge_scheduler.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/distributed_forge_scheduler.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/document_vision_adjudication.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/earth_shattering_proof_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/earth_shattering_proof_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/engine_candidate_adapter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/enterprise.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/equivalence_engine.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/evidence_job_supervisor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/factory.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/file_build_transform.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/final_boss_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/enterprise.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/equivalence_engine.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/evidence_job_supervisor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/factory.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/file_build_transform.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/final_boss_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/forge_credit_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/forge_isolation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/forge_isolation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/forge_kv_api.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/forge_kv_attestation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/forge_kv_benchmark.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -376,11 +385,11 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/forge_kv_remote_attestation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/forge_kv_s3.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/forge_kv_xet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/forge_supervisor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/full_spectrum_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/forge_supervisor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/full_spectrum_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/generation_provider_adapters.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/generation_synthesis_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/governed_crystal_executor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/governed_crystal_executor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/grand_closure_g2.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/grand_closure_g2_api.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/grand_closure_g3.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -398,42 +407,42 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/grand_closure_g8_cli.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/grand_closure_g9.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/grand_closure_g9_cli.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/hard_coding_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/hardware_adapter_validation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/heldout_replay.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/hard_coding_crystallization_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/hardware_adapter_validation.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/heldout_replay.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/inference_cost_predictor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/inference_engine_fabric.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/inference_interceptor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/integration_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/integration_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/inference_engine_fabric.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/inference_interceptor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/integration_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/integration_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/interactive_lane_monitor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/interference_buckets.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/kv_cache_transport.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/kv_engine_adapter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/kv_restore_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_capabilities.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_compute_cascade.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_execution_gateway.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_prefix_kv_store.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_route_optimizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/local_semantic_cache.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/memory_policy.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/milestone11_cross_runtime.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/milestone11_uplift.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/mission_crystal_lattice.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/interference_buckets.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/kv_cache_transport.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/kv_engine_adapter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/kv_restore_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/local_capabilities.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/local_compute_cascade.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/local_execution_gateway.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/local_prefix_kv_store.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/local_route_optimizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/local_semantic_cache.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/memory_policy.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/milestone11_cross_runtime.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/milestone11_uplift.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/mission_crystal_lattice.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/module_dispositions.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/native_context_restore_verifier.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/native_context_transfer_lab.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/nim_live_probe.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/nim_live_probe.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/ollama_cpu_profile.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/ollama_pressure_controller.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/operator_language.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/operator_language_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/operator_language_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/perceive.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/physical_crystal_lifecycle.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/port_conflict_crystal.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/port_conflict_fixture.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/operator_language.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/operator_language_acceptance.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/operator_language_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/perceive.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/physical_crystal_lifecycle.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/port_conflict_crystal.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/port_conflict_fixture.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/prism_crystal_capsule_executor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/prism_r5_workload_governor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/prism_r6_economics_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -442,10 +451,10 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/proof_critical_pinning.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/proof_first_cross_modal.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/proof_graph.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/proof_local_admission_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/proof_local_compute.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/provider_tournament_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/public_benchmark_grading_daemon.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/proof_local_admission_bridge.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/proof_local_compute.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/provider_tournament_gauntlet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/public_benchmark_grading_daemon.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/quality_equivalence_harness.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/residual_candidate.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/residual_compute_api.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -458,14 +467,14 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/residual_economics.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/residual_pressure_governor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/residual_refusal.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/resource_executor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/runtime_crystallizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/resource_executor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
+| `app/kernel/compute/runtime_crystallizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/runtime_optimization_gate.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/scene_synthesis.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/scientific_uplift_experiment.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/sealed_capsule.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/scene_synthesis.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/scientific_uplift_experiment.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/sealed_capsule.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `stranded` |
 | `app/kernel/compute/semantic_applicability.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/semantic_generalizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/semantic_generalizer.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/compute/semantic_matchers/beast_local_semantic_matcher.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/semantic_matchers/gptcache_matcher.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/semantic_matchers/hybrid_semantic_matcher.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -473,20 +482,20 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `app/kernel/compute/semantic_result_candidate.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/semantic_result_verifier.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/semantic_reuse_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/sensorium_disk_cleanup_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/sensorium_file_build_crystal_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/sensorium_port_crystal_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/socket_inventory.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/streaming_interceptor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/synthesis_contracts.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/synthesis_measurement.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/synthesis_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/typed_crystal_interpreter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/typed_crystal_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/unified_evidence_packet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/sensorium_disk_cleanup_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/sensorium_file_build_crystal_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/sensorium_port_crystal_experiment.py` | `perception_sensorium` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/socket_inventory.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/streaming_interceptor.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/synthesis_contracts.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/synthesis_measurement.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
+| `app/kernel/compute/synthesis_plane.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/typed_crystal_interpreter.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/typed_crystal_ir.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
+| `app/kernel/compute/unified_evidence_packet.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `supervised_offline` |
 | `app/kernel/compute/visual_capability_composition.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/compute/visual_proof_provider_gate.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
-| `app/kernel/compute/visual_residuals.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `unclassified` |
+| `app/kernel/compute/visual_residuals.py` | `compute_reuse` | `python` | `unverified` | `unverified` | `online_supporting` |
 | `app/kernel/crystal_bus/__init__.py` | `crystal_transport` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/crystal_bus/capsule_messages.py` | `crystal_transport` | `python` | `unverified` | `unverified` | `unclassified` |
 | `app/kernel/crystal_bus/fd_transport.py` | `crystal_transport` | `python` | `unverified` | `unverified` | `unclassified` |
@@ -8516,6 +8525,7 @@ All runtime fields begin as `unverified`. Phase 0 runtime tracing and compositio
 | `benchmarks/tinyllama_opus_real_execution_test.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `benchmarks/xai_omni_tasks.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `catalog/beast-ide-catalog.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
+| `config/beast_coding_agent_census_overrides.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `conftest.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `construct_bindings.py` | `repository_support` | `python` | `unverified` | `unverified` | `unclassified` |
 | `contracts/agent-run-contract.v1.yaml` | `repository_support` | `yaml` | `unverified` | `unverified` | `unclassified` |
