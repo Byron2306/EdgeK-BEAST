@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout Phase 0 branch
+      - name: Checkout triggering revision
         uses: actions/checkout@v4
         with:
-          ref: agent/beast-coding-agent-phase0-census
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -52,7 +52,7 @@ jobs:
           diff -u /tmp/beast-census-first.json docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
           diff -u /tmp/beast-census-first.md docs/BEAST_FULL_SYSTEM_CENSUS.md
 
-      - name: Validate minimum organism coverage
+      - name: Validate census truth boundaries
         run: |
           python - <<'PY'
           import json
@@ -78,10 +78,33 @@ jobs:
           if missing:
               raise SystemExit('missing required census domains: ' + ', '.join(missing))
 
+          overlay = report.get('overlay') or {}
+          stale_paths = overlay.get('stale_paths') or []
+          if stale_paths:
+              raise SystemExit('stale responsibility overrides: ' + ', '.join(stale_paths))
+
+          compute_overlay = overlay.get('compute_module_dispositions') or {}
+          stale_modules = compute_overlay.get('stale_modules') or []
+          if stale_modules:
+              raise SystemExit('stale compute disposition entries: ' + ', '.join(stale_modules))
+          if compute_overlay.get('runtime_promotion') is not False:
+              raise SystemExit('compute source dispositions must not promote runtime truth')
+
+          promoted_runtime = [
+              item['path']
+              for item in report['components']
+              if any(value != 'unverified' for value in item['runtime'].values())
+          ]
+          if promoted_runtime:
+              raise SystemExit('static census illegally promoted runtime truth: ' + ', '.join(promoted_runtime[:20]))
+
           summary = report['summary']
           print('component_count=', summary['component_count'])
           print('layer_counts=', json.dumps(summary['layer_counts'], sort_keys=True))
           print('language_counts=', json.dumps(summary['language_counts'], sort_keys=True))
+          print('disposition_counts=', json.dumps(summary['disposition_counts'], sort_keys=True))
+          print('agent_relevance_counts=', json.dumps(summary['agent_relevance_counts'], sort_keys=True))
+          print('compute_disposition_counts=', json.dumps(compute_overlay.get('category_counts') or {}, sort_keys=True))
           PY
 
       - name: Write census summary
@@ -102,6 +125,20 @@ jobs:
           for layer, count in summary['layer_counts'].items():
               print(f'| `{layer}` | {count} |')
           print()
+          print('## Disposition counts')
+          print()
+          print('| Disposition | Count |')
+          print('|---|---:|')
+          for disposition, count in summary['disposition_counts'].items():
+              print(f'| `{disposition}` | {count} |')
+          print()
+          print('## Agent relevance')
+          print()
+          print('| Relevance | Count |')
+          print('|---|---:|')
+          for relevance, count in summary['agent_relevance_counts'].items():
+              print(f'| `{relevance}` | {count} |')
+          print()
           print('Runtime fields remain `unverified` until evidence-backed runtime overlays are applied.')
           PY
 
@@ -114,7 +151,7 @@ jobs:
             docs/BEAST_FULL_SYSTEM_CENSUS.md
 
       - name: Commit generated census artifacts when changed
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push'
         run: |
           if [ -z "$(git status --porcelain -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md)" ]; then
             echo "Canonical census artifacts unchanged."
