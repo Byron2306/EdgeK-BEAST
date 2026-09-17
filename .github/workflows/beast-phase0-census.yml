@@ -1,0 +1,323 @@
+name: BEAST Phase 0 Census
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase0-census
+  pull_request:
+    branches:
+      - agent/dai-diode-final-publication-closure
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout triggering revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install repository test environment
+        run: python -m pip install -r requirements.txt
+
+      - name: Verify Phase 0 census, trace, journey, and responsibility contracts
+        run: |
+          python -m pytest -q --noconftest \
+            tests/test_beast_full_system_census.py \
+            tests/test_trace_beast_coding_agent_runtime.py \
+            tests/test_beast_coding_agent_census_journeys.py \
+            tests/test_beast_coding_agent_responsibility_census.py \
+            tests/test_beast_coding_agent_phase0_closure.py
+
+      - name: Run observed production-backend coding-agent journeys
+        run: |
+          python scripts/run_beast_coding_agent_census_journeys.py \
+            --json-out /tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json \
+            --map-out /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
+          cat /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
+
+      - name: Validate runtime evidence boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          bundle = json.loads(Path('/tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json').read_text())
+          journeys = bundle.get('journeys') or []
+          if len(journeys) != 4:
+              raise SystemExit(f'expected 4 runtime journeys, found {len(journeys)}')
+          if bundle.get('proof_boundaries', {}).get('desktop_renderer_ingress') is not False:
+              raise SystemExit('runtime journey artifact overclaims desktop renderer ingress')
+          if bundle.get('proof_boundaries', {}).get('real_ollama_or_nim_provider') is not False:
+              raise SystemExit('runtime journey artifact overclaims real provider execution')
+          if bundle.get('proof_boundaries', {}).get('sensorium_mirror_receipt') is not False:
+              raise SystemExit('runtime journey artifact overclaims Sensorium mirroring')
+          cross = next(item for item in journeys if item.get('journey_id') == 'cross_file_mutation')
+          finding = (cross.get('objective_assessment') or {}).get('finding')
+          if finding != 'completed_with_unresolved_cross_file_objective':
+              raise SystemExit(f'cross-file observed finding changed unexpectedly: {finding!r}')
+          if (cross.get('objective_assessment') or {}).get('unresolved_paths') != ['consumer.py']:
+              raise SystemExit('cross-file unresolved path evidence changed unexpectedly')
+          for journey in journeys:
+              chain = journey.get('chain_verification') or {}
+              if chain.get('head_matches') is not True:
+                  raise SystemExit(f"invalid AgentRun chain for {journey.get('journey_id')}")
+          print('runtime_journeys=', [item.get('journey_id') for item in journeys])
+          print('cross_file_finding=', finding)
+          PY
+
+      - name: Generate canonical census outputs
+        run: |
+          python scripts/beast_full_system_census.py \
+            --root . \
+            --json-out docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --md-out docs/BEAST_FULL_SYSTEM_CENSUS.md
+
+      - name: Generate coding-agent responsibility census outputs
+        run: |
+          python scripts/beast_coding_agent_responsibility_census.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --config config/beast_coding_agent_responsibilities.json \
+            --json-out docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --md-out docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+
+      - name: Generate Phase 0 closure outputs
+        run: |
+          python scripts/verify_beast_phase0_census_exit.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --responsibility docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --runtime-map /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md \
+            --json-out docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json \
+            --md-out docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+
+      - name: Verify deterministic regeneration
+        run: |
+          cp docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json /tmp/beast-census-first.json
+          cp docs/BEAST_FULL_SYSTEM_CENSUS.md /tmp/beast-census-first.md
+          cp docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json /tmp/beast-responsibility-first.json
+          cp docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md /tmp/beast-responsibility-first.md
+          cp docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json /tmp/beast-closure-first.json
+          cp docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md /tmp/beast-closure-first.md
+          python scripts/beast_full_system_census.py \
+            --root . \
+            --json-out docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --md-out docs/BEAST_FULL_SYSTEM_CENSUS.md
+          python scripts/beast_coding_agent_responsibility_census.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --config config/beast_coding_agent_responsibilities.json \
+            --json-out docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --md-out docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+          python scripts/verify_beast_phase0_census_exit.py \
+            --census docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --responsibility docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json \
+            --runtime-map /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md \
+            --json-out docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json \
+            --md-out docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+          diff -u /tmp/beast-census-first.json docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
+          diff -u /tmp/beast-census-first.md docs/BEAST_FULL_SYSTEM_CENSUS.md
+          diff -u /tmp/beast-responsibility-first.json docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json
+          diff -u /tmp/beast-responsibility-first.md docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+          diff -u /tmp/beast-closure-first.json docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json
+          diff -u /tmp/beast-closure-first.md docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+
+      - name: Validate census truth boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
+          paths = [item['path'] for item in report['components']]
+          required = {
+              'desktop-ide/': any(p.startswith('desktop-ide/') for p in paths),
+              'app/routes/': any(p.startswith('app/routes/') for p in paths),
+              'app/kernel/agents/': any(p.startswith('app/kernel/agents/') for p in paths),
+              'app/kernel/data_processing/': any(p.startswith('app/kernel/data_processing/') for p in paths),
+              'app/kernel/compute/': any(p.startswith('app/kernel/compute/') for p in paths),
+              'app/kernel/storage/': any(p.startswith('app/kernel/storage/') for p in paths),
+              'app/kernel/governance/': any(p.startswith('app/kernel/governance/') for p in paths),
+              'app/kernel/execution/': any(p.startswith('app/kernel/execution/') for p in paths),
+              'app/kernel/commons/': any(p.startswith('app/kernel/commons/') for p in paths),
+              'scripts/': any(p.startswith('scripts/') for p in paths),
+              '.github/workflows/': any(p.startswith('.github/workflows/') for p in paths),
+              'tests/': any(p.startswith('tests/') for p in paths),
+          }
+          missing = [name for name, present in required.items() if not present]
+          if missing:
+              raise SystemExit('missing required census domains: ' + ', '.join(missing))
+
+          overlay = report.get('overlay') or {}
+          stale_paths = overlay.get('stale_paths') or []
+          if stale_paths:
+              raise SystemExit('stale responsibility overrides: ' + ', '.join(stale_paths))
+
+          compute_overlay = overlay.get('compute_module_dispositions') or {}
+          stale_modules = compute_overlay.get('stale_modules') or []
+          if stale_modules:
+              raise SystemExit('stale compute disposition entries: ' + ', '.join(stale_modules))
+          if compute_overlay.get('runtime_promotion') is not False:
+              raise SystemExit('compute source dispositions must not promote runtime truth')
+
+          promoted_runtime = [
+              item['path']
+              for item in report['components']
+              if any(value != 'unverified' for value in item['runtime'].values())
+          ]
+          if promoted_runtime:
+              raise SystemExit('static census illegally promoted runtime truth: ' + ', '.join(promoted_runtime[:20]))
+
+          responsibility = json.loads(
+              Path('docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json').read_text()
+          )
+          responsibility_summary = responsibility.get('summary') or {}
+          expected_responsibility = {
+              'responsibility_count': 24,
+              'claimant_count': 70,
+              'unique_claimant_count': 42,
+              'unresolved_conflict_count': 13,
+              'phase1_conflict_count': 17,
+          }
+          for key, expected in expected_responsibility.items():
+              actual = responsibility_summary.get(key)
+              if actual != expected:
+                  raise SystemExit(f'responsibility census {key} drifted: {actual!r} != {expected!r}')
+          by_id = {item.get('id'): item for item in responsibility.get('responsibilities') or []}
+          completion = by_id.get('planner_completion_decision') or {}
+          if completion.get('phase1_required') is not True:
+              raise SystemExit('planner completion defect disappeared from Phase 1 queue')
+          transport = by_id.get('crystal_transport_and_memfd_capsules') or {}
+          if 'not ambient execution or confidentiality authority' not in str(transport.get('finding') or ''):
+              raise SystemExit('memfd transport authority boundary is missing')
+          if len(responsibility.get('phase1_conflicts') or []) != 17:
+              raise SystemExit('Phase 1 conflict queue size drifted')
+
+          closure = json.loads(
+              Path('docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json').read_text()
+          )
+          if closure.get('status') != 'phase0_census_complete_with_phase1_queue':
+              raise SystemExit('Phase 0 closure status is not complete-with-Phase1-queue')
+          if closure.get('coding_agent_fixed') is not False:
+              raise SystemExit('Phase 0 closure illegally claims the coding agent is fixed')
+          closure_runtime = closure.get('runtime_evidence') or {}
+          for key in (
+              'desktop_renderer_ingress_proven',
+              'real_ollama_or_nim_provider_proven',
+              'sensorium_mirror_proven',
+          ):
+              if closure_runtime.get(key) is not False:
+                  raise SystemExit(f'Phase 0 closure overclaims runtime evidence: {key}')
+          if closure.get('observed_gaps') != ['completed_with_unresolved_cross_file_objective']:
+              raise SystemExit('Phase 0 closure lost the cross-file completion defect')
+          if len(closure.get('phase1_conflicts') or []) != 17:
+              raise SystemExit('Phase 0 closure Phase 1 queue drifted')
+
+          summary = report['summary']
+          print('component_count=', summary['component_count'])
+          print('layer_counts=', json.dumps(summary['layer_counts'], sort_keys=True))
+          print('language_counts=', json.dumps(summary['language_counts'], sort_keys=True))
+          print('disposition_counts=', json.dumps(summary['disposition_counts'], sort_keys=True))
+          print('agent_relevance_counts=', json.dumps(summary['agent_relevance_counts'], sort_keys=True))
+          print('compute_disposition_counts=', json.dumps(compute_overlay.get('category_counts') or {}, sort_keys=True))
+          PY
+
+      - name: Write census summary
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
+          runtime = json.loads(Path('/tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json').read_text())
+          responsibility = json.loads(Path('docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json').read_text())
+          closure = json.loads(Path('docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json').read_text())
+          summary = report['summary']
+          print('# BEAST Phase 0 Census')
+          print()
+          print(f"Static components discovered: **{summary['component_count']}**")
+          print()
+          print('## Layer counts')
+          print()
+          print('| Layer | Count |')
+          print('|---|---:|')
+          for layer, count in summary['layer_counts'].items():
+              print(f'| `{layer}` | {count} |')
+          print()
+          print('## Disposition counts')
+          print()
+          print('| Disposition | Count |')
+          print('|---|---:|')
+          for disposition, count in summary['disposition_counts'].items():
+              print(f'| `{disposition}` | {count} |')
+          print()
+          print('## Agent relevance')
+          print()
+          print('| Relevance | Count |')
+          print('|---|---:|')
+          for relevance, count in summary['agent_relevance_counts'].items():
+              print(f'| `{relevance}` | {count} |')
+          print()
+          print('## Observed backend journeys')
+          print()
+          for journey in runtime.get('journeys') or []:
+              assessment = journey.get('objective_assessment') or {}
+              suffix = f"; finding `{assessment.get('finding')}`" if assessment.get('finding') else ''
+              print(f"- `{journey.get('journey_id')}`: `{journey.get('final_state')}`{suffix}")
+          print()
+          rs = responsibility['summary']
+          print('## Coding-agent responsibility census')
+          print()
+          print(f"Responsibilities: **{rs['responsibility_count']}**; claimants: **{rs['claimant_count']}**; unique organs: **{rs['unique_claimant_count']}**.")
+          print(f"Unresolved ownership conflicts: **{rs['unresolved_conflict_count']}**; Phase 1 queue: **{rs['phase1_conflict_count']}**.")
+          print()
+          for item in responsibility.get('phase1_conflicts') or []:
+              print(f'- `{item}`')
+          print()
+          print('Static runtime fields remain `unverified`; runtime journey evidence is a separate artifact until evidence-backed overlay merge.')
+          print()
+          print('## Phase 0 exit')
+          print()
+          print(f"Status: `{closure['status']}`; coding agent fixed: `{closure['coding_agent_fixed']}`.")
+          print('Phase 0 closes census/reachability/responsibility mapping only; the 17-item Phase 1 authority queue remains mandatory.')
+          PY
+
+      - name: Upload census evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase0-census
+          path: |
+            docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
+            docs/BEAST_FULL_SYSTEM_CENSUS.md
+            docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json
+            docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md
+            docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json
+            docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+
+      - name: Upload runtime journey evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase0-runtime-journeys
+          path: |
+            /tmp/BEAST_CODING_AGENT_RUNTIME_JOURNEYS.json
+            /tmp/BEAST_CODING_AGENT_RUNTIME_MAP.md
+
+      - name: Commit generated census artifacts when changed
+        if: github.event_name == 'push'
+        run: |
+          if [ -z "$(git status --porcelain -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md)" ]; then
+            echo "Canonical census artifacts unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md
+          git commit -m "audit: generate BEAST Phase 0 census artifacts [skip ci]"
+          git push origin HEAD:agent/beast-coding-agent-phase0-census

@@ -1,0 +1,164 @@
+{
+  "source": "Phase 0 source-reviewed responsibility overlay; runtime participation remains unverified until traced",
+  "components": {
+    "app/kernel/compute/compute_plane.py": {
+      "disposition": "online_supporting",
+      "agent_relevance": "direct",
+      "composition_roots": [
+        "app/kernel/compute/compute_plane.py"
+      ],
+      "claimed_responsibilities": [
+        "compute_composition",
+        "governed_compute_lifecycle",
+        "inference_route_ownership"
+      ],
+      "overlap_candidates": [
+        "app/kernel/compute/inference_interceptor.py",
+        "app/kernel/compute/streaming_interceptor.py"
+      ],
+      "notes": [
+        "source_review: module declares itself the production composition root for governed BEAST computation",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/data_processing/code_cortex.py": {
+      "disposition": "unclassified",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "repository_semantic_query",
+        "symbol_search",
+        "dependency_query",
+        "editing_context_proposal"
+      ],
+      "overlap_candidates": [
+        "app/kernel/data_processing/context_packet.py",
+        "app/kernel/agents/planner_runtime.py"
+      ],
+      "notes": [
+        "source_review: read-oriented code intelligence adapter",
+        "source_review: may propose edit intent but does not write files",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/data_processing/context_packet.py": {
+      "disposition": "unclassified",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "model_handoff_context",
+        "context_selection",
+        "context_budgeting",
+        "evidence_backed_context_packet"
+      ],
+      "overlap_candidates": [
+        "app/kernel/data_processing/code_cortex.py",
+        "app/kernel/compute/compression_pipeline.py",
+        "app/kernel/agents/planner_runtime.py"
+      ],
+      "notes": [
+        "source_review: bounded deterministic model-handoff context construction",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/data_processing/quality_cascade.py": {
+      "disposition": "unclassified",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "deterministic_quality_checks",
+        "local_verification_before_escalation",
+        "quality_evidence_emission"
+      ],
+      "overlap_candidates": [
+        "app/kernel/agents/planner_runtime.py"
+      ],
+      "notes": [
+        "source_review: deterministic local checks with evidence/report output",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/sensorium/runtime.py": {
+      "disposition": "unclassified",
+      "agent_relevance": "supporting",
+      "claimed_responsibilities": [
+        "physical_observation_composition",
+        "runtime_episode_ownership",
+        "sensorium_read_model",
+        "crystal_generalization_entrypoint"
+      ],
+      "overlap_candidates": [],
+      "notes": [
+        "source_review: Sensorium runtime composition root",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/compute/compression_pipeline.py": {
+      "disposition": "online_supporting",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "semantic_context_compression",
+        "chunked_context_handoff",
+        "exact_source_boundary_preservation"
+      ],
+      "overlap_candidates": [
+        "app/kernel/data_processing/context_packet.py",
+        "app/kernel/compute/ast_compressor.py"
+      ],
+      "notes": [
+        "source_review: compression forbids editable source and patch anchors",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/compute/inference_interceptor.py": {
+      "disposition": "online_supporting",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "inference_interception",
+        "compute_governance_gate",
+        "verified_reuse_enforcement",
+        "compute_receipt_emission"
+      ],
+      "overlap_candidates": [
+        "app/kernel/compute/compute_plane.py",
+        "app/kernel/compute/streaming_interceptor.py"
+      ],
+      "notes": [
+        "source_review: governed provider execution interception boundary",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/compute/streaming_interceptor.py": {
+      "disposition": "online_supporting",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "stream_output_interception",
+        "governed_object_early_stop",
+        "stream_repair_or_escalation",
+        "output_token_savings_measurement"
+      ],
+      "overlap_candidates": [
+        "app/kernel/compute/inference_interceptor.py"
+      ],
+      "notes": [
+        "source_review: incremental governed-output interception and early stopping",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    },
+    "app/kernel/compute/crystal_reuse_gateway.py": {
+      "disposition": "online_supporting",
+      "agent_relevance": "direct",
+      "claimed_responsibilities": [
+        "verified_inference_reuse",
+        "semantic_reuse",
+        "kv_prefill_reuse",
+        "verified_result_promotion"
+      ],
+      "overlap_candidates": [
+        "app/kernel/compute/mission_crystal_lattice.py",
+        "app/kernel/data_processing/generative_crystals.py"
+      ],
+      "notes": [
+        "source_review: crystal-aware inference reuse gateway",
+        "runtime_coding_agent_participation:unverified"
+      ]
+    }
+  }
+}
