@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 0 IN PROGRESS**
+Status: **Phase 0 COMPLETE — Phase 1 authority queue frozen**
 Working branch: `agent/beast-coding-agent-phase0-census`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -54,18 +54,36 @@ These findings are recorded as later-phase defects and are **not repaired during
 - Compact planner prompt handling uses prefix truncation, risking loss of late observations/authority/repair evidence.
 - The current Agentic Loop Endurance workflow can fail during test import because its dependency install is incomplete, so its red status does not necessarily mean the planner tests themselves ran.
 
-## Phase 0 current checkpoint
+## Phase 0 closure checkpoint
 
-Implemented on the Phase 0 branch:
+Phase 0 is closed by the canonical receipt `docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json` with status `phase0_census_complete_with_phase1_queue`.
 
-- approved Phase 0 design spec;
-- detailed implementation plan;
-- deterministic mixed-language census scanner;
-- test-first scanner contract covering Python, JavaScript and workflow discovery;
-- explicit `unverified` runtime/authority defaults;
-- ignore rules preventing backup, dependency, build and virtual-environment trees from polluting the census.
+Fresh GitHub Actions verification on commit `8d182210f4cf62a73ab0594a071a714c6525ac51`, run `35285563945`, passed the complete Phase 0 lane:
 
-The scanner is only the first static pass. Phase 0 remains open until the real repository inventory is generated inside the BEAST checkout, existing module disposition evidence is overlaid, representative coding-agent journeys are traced, and responsibility overlaps are classified.
+- five census/runtime/responsibility/closure contract suites;
+- four observed production-backend journeys: analysis-only, single-file mutation, cross-file mutation, and verification-failure repair;
+- runtime overclaim guards;
+- full-system census generation;
+- coding-agent responsibility census generation;
+- Phase 0 closure generation;
+- byte-deterministic regeneration of all canonical artifacts;
+- census and authority truth-boundary validation;
+- evidence artifact publication.
+
+The frozen closure truth is:
+
+- 18,889 static scannable components across 17 census layers;
+- 24 coding-agent responsibilities;
+- 70 claimant relationships across 42 unique organs;
+- 13 unresolved competing-authority conflicts;
+- a finite 17-item Phase 1 authority queue;
+- backend AgentRun/planner/tool execution observed through scripted-provider journeys;
+- desktop Pair Programmer ingress, real Ollama/NIM execution, and Sensorium mirror delivery still unproven by the Phase 0 runtime harness;
+- the cross-file defect retained as `completed_with_unresolved_cross_file_objective`, where `consumer.py` can remain unresolved despite a completed run;
+- sealed memfd/capsule transport retained as immutable transport evidence, not ambient execution or confidentiality authority;
+- editable source and patch anchors remain exact and may not inherit mutation authority from compressed representations.
+
+Phase 0 therefore closes the census and responsibility-classification problem. It does **not** claim the coding agent is repaired. Behavioral repairs begin only after Phase 1 resolves authority ownership.
 
 ## Canonical Phase 0 outputs
 
@@ -73,8 +91,12 @@ The scanner is only the first static pass. Phase 0 remains open until the real r
 - `docs/BEAST_FULL_SYSTEM_CENSUS.md`
 - `docs/BEAST_CODING_AGENT_RUNTIME_MAP.md`
 - this master plan
+- `docs/evidence/BEAST_CODING_AGENT_PHASE0_CLOSURE.json`
+- `docs/BEAST_CODING_AGENT_PHASE0_CLOSURE.md`
+- `docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json`
+- `docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md`
 - census and runtime-trace tests
 
 ## Phase 0 exit gate
 
-Phase 0 closes only when every coding-agent-relevant component has an explicit disposition; static and runtime truth are separate; observed request paths can be reconstructed end to end; duplicate responsibility claims are explicit; proof-only/offline systems cannot be mistaken for enforcement; and Phase 1 receives a finite list of ownership conflicts instead of architectural guesswork.
+Phase 0 closes only when every coding-agent-relevant component has an explicit disposition; static and runtime truth are separate; observed request paths can be reconstructed end to end; duplicate responsibility claims are explicit; proof-only/offline systems cannot be mistaken for enforcement; and Phase 1 receives a finite list of ownership conflicts instead of architectural guesswork. **Satisfied by the canonical Phase 0 closure receipt and successful run `35285563945`.**
