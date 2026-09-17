@@ -31,12 +31,13 @@ jobs:
       - name: Install repository test environment
         run: python -m pip install -r requirements.txt
 
-      - name: Verify Phase 0 census, trace, and journey contracts
+      - name: Verify Phase 0 census, trace, journey, and responsibility contracts
         run: |
           python -m pytest -q --noconftest \
             tests/test_beast_full_system_census.py \
             tests/test_trace_beast_coding_agent_runtime.py \
-            tests/test_beast_coding_agent_census_journeys.py
+            tests/test_beast_coding_agent_census_journeys.py \
+            tests/test_beast_coding_agent_responsibility_census.py
 
       - name: Run observed production-backend coding-agent journeys
         run: |
