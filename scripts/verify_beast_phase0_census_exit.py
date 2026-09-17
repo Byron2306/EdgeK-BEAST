@@ -119,11 +119,11 @@ def _verify_runtime_map(runtime_map: str) -> dict[str, Any]:
     missing_journeys = [
         journey
         for journey in EXPECTED_JOURNEYS
-        if f"| \`{journey}\` | \`completed\` |" not in text
+        if f"| `{journey}` | `completed` |" not in text
     ]
     if missing_journeys:
         raise ValueError("runtime map missing completed journeys: " + ", ".join(missing_journeys))
-    if f"\`{CROSS_FILE_GAP}\`" not in text or "\`consumer.py\`" not in text:
+    if f"`{CROSS_FILE_GAP}`" not in text or "`consumer.py`" not in text:
         raise ValueError("runtime map is missing the observed cross-file completion gap")
 
     producers = [
@@ -133,7 +133,7 @@ def _verify_runtime_map(runtime_map: str) -> dict[str, Any]:
             "app/kernel/agents/run_store.py",
             "app/kernel/agents/tool_runtime.py",
         )
-        if f"\`{path}\`" in text
+        if f"`{path}`" in text
     ]
     if len(producers) != 3:
         raise ValueError("runtime map lost an observed backend producer")
@@ -226,7 +226,7 @@ def render_phase0_closure_markdown(report: dict[str, Any]) -> str:
     lines = [
         "# BEAST Coding Agent Phase 0 Closure",
         "",
-        f"**Status:** \`{report['status']}\`",
+        f"**Status:** `{report['status']}`",
         "",
         "Phase 0 closes the census and responsibility-mapping problem. It does **not** claim the coding agent is fixed.",
         "",
@@ -239,7 +239,7 @@ def render_phase0_closure_markdown(report: dict[str, Any]) -> str:
         f"- Explicit unresolved authority conflicts: **{summary['unresolved_conflict_count']}**",
         f"- Phase 1 queue: **{summary['phase1_conflict_count']}** items",
         "",
-        "Static census runtime fields remain \`unverified\` until receipt-backed observation exists.",
+        "Static census runtime fields remain `unverified` until receipt-backed observation exists.",
         "",
         "## Runtime evidence",
         "",
@@ -247,7 +247,7 @@ def render_phase0_closure_markdown(report: dict[str, Any]) -> str:
         "",
     ]
     for journey in runtime["journeys"]:
-        lines.append(f"- \`{journey}\`: completed")
+        lines.append(f"- `{journey}`: completed")
     lines.extend(
         [
             "",
@@ -257,7 +257,7 @@ def render_phase0_closure_markdown(report: dict[str, Any]) -> str:
             "",
             "## Retained observed defect",
             "",
-            f"- \`{CROSS_FILE_GAP}\`: the cross-file journey may complete while \`consumer.py\` remains unresolved.",
+            f"- `{CROSS_FILE_GAP}`: the cross-file journey may complete while `consumer.py` remains unresolved.",
             "",
             "## Authority invariants",
             "",
@@ -268,7 +268,7 @@ def render_phase0_closure_markdown(report: dict[str, Any]) -> str:
             "",
         ]
     )
-    lines.extend(f"- \`{item}\`" for item in report["phase1_conflicts"])
+    lines.extend(f"- `{item}`" for item in report["phase1_conflicts"])
     lines.extend(
         [
             "",
