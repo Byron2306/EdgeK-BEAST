@@ -27,7 +27,8 @@ jobs:
         run: |
           python -m pytest -q --noconftest \
             tests/test_beast_coding_agent_phase2_trace.py \
-            tests/test_beast_coding_agent_census_journeys.py
+            tests/test_beast_coding_agent_census_journeys.py \
+            tests/phase2/test_sensorium_agent_run_receipt.py
       - name: Capture request path evidence
         run: |
           python scripts/beast_coding_agent_phase2_trace.py \
