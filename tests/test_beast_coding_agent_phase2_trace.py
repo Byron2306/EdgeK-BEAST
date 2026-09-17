@@ -33,3 +33,16 @@ def test_missing_chain_proof_or_unsupported_provider_claim_fails_closed(tmp_path
     broken["proof_boundaries"]["real_ollama_or_nim_provider"] = True
     with pytest.raises(ValueError, match="independent receipt"):
         build_phase2_trace([broken])
+
+
+def test_tampered_observation_or_raw_event_cannot_inherit_chain_proof(tmp_path):
+    journey = run_analysis_journey(tmp_path / "analysis")
+    broken = deepcopy(journey)
+    broken["trace_records"][0]["evidence_ref"] = broken["trace_records"][0]["evidence_ref"][:-1] + "0"
+    with pytest.raises(ValueError, match="event hash"):
+        build_phase2_trace([broken])
+
+    broken = deepcopy(journey)
+    broken["event_chain"][0]["payload"] = {"tampered": True}
+    with pytest.raises(ValueError, match="hash mismatch"):
+        build_phase2_trace([broken])
