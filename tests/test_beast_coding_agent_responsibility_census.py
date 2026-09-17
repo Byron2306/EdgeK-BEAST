@@ -273,3 +273,21 @@ def test_committed_responsibility_artifacts_match_manifest_and_census():
     committed = json.loads(json_path.read_text(encoding="utf-8"))
     assert committed == expected
     assert md_path.read_text(encoding="utf-8") == render_responsibility_markdown(expected)
+
+
+def test_phase0_workflow_regenerates_and_publishes_responsibility_census():
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "beast-phase0-census.yml").read_text(
+        encoding="utf-8"
+    )
+
+    required_fragments = [
+        "scripts/beast_coding_agent_responsibility_census.py",
+        "config/beast_coding_agent_responsibilities.json",
+        "docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json",
+        "docs/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md",
+        "diff -u /tmp/beast-responsibility-first.json",
+        "diff -u /tmp/beast-responsibility-first.md",
+    ]
+    for fragment in required_fragments:
+        assert fragment in workflow
