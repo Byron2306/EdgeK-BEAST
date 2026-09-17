@@ -1,21 +1,5 @@
 {
   "beast_object_type": "beast_coding_agent_responsibility_census",
-  "version": "1.0",
-  "truth_rule": "A responsibility claim identifies current ownership pressure; it does not promote runtime participation unless the claimant evidence is observed_runtime.",
-  "summary": {
-    "responsibility_count": 24,
-    "claimant_count": 70,
-    "unique_claimant_count": 42,
-    "unresolved_conflict_count": 13,
-    "phase1_conflict_count": 17,
-    "status_counts": {
-      "dormant_or_stranded": 1,
-      "observed_authoritative": 4,
-      "static_authoritative": 5,
-      "supporting_only": 1,
-      "unresolved_conflict": 13
-    }
-  },
   "phase1_conflicts": [
     "agent_memory_and_continuity",
     "agent_run_launch_and_provider_selection",
@@ -37,314 +21,265 @@
   ],
   "responsibilities": [
     {
-      "id": "run_identity_and_durable_event_ledger",
-      "phase1_required": false,
-      "status": "observed_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 2,
       "claimants": [
         {
-          "path": "app/kernel/agents/run_store.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/run_store.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/agents/run_engine.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_supporting",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/run_engine.py",
+          "role": "supporting"
         }
       ],
-      "finding": "Observed backend journeys persist hash-chained AgentRun state and events through AgentRunStore; AgentRunEngine orchestrates the lifecycle.",
       "current_authorities": [
         "app/kernel/agents/run_store.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "Observed backend journeys persist hash-chained AgentRun state and events through AgentRunStore; AgentRunEngine orchestrates the lifecycle.",
+      "id": "run_identity_and_durable_event_ledger",
+      "phase1_required": false,
+      "status": "observed_authoritative"
     },
     {
-      "id": "runtime_planning",
-      "phase1_required": false,
-      "status": "observed_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 1,
       "claimants": [
         {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "current_authority"
         }
       ],
-      "finding": "Observed backend journeys execute AgentPlannerRuntime as the typed planning loop.",
       "current_authorities": [
         "app/kernel/agents/planner_runtime.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 1
+      "finding": "Observed backend journeys execute AgentPlannerRuntime as the typed planning loop.",
+      "id": "runtime_planning",
+      "phase1_required": false,
+      "status": "observed_authoritative"
     },
     {
-      "id": "tool_execution_dispatch",
-      "phase1_required": false,
-      "status": "observed_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 2,
       "claimants": [
         {
-          "path": "app/kernel/agents/tool_runtime.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/tool_runtime.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/agents/worktree_tools.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/agents/worktree_tools.py",
+          "role": "supporting"
         }
       ],
-      "finding": "Observed backend journeys dispatch typed tools through AgentToolRuntime; worktree tools provide the isolated mutation primitives.",
       "current_authorities": [
         "app/kernel/agents/tool_runtime.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "Observed backend journeys dispatch typed tools through AgentToolRuntime; worktree tools provide the isolated mutation primitives.",
+      "id": "tool_execution_dispatch",
+      "phase1_required": false,
+      "status": "observed_authoritative"
     },
     {
-      "id": "planner_completion_decision",
-      "phase1_required": true,
-      "status": "observed_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 1,
       "claimants": [
         {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "current_authority"
         }
       ],
-      "finding": "Current completion authority is observed in AgentPlannerRuntime, but the Phase 0 cross-file journey completed with consumer.py unresolved; completion semantics require redesign before promotion.",
       "current_authorities": [
         "app/kernel/agents/planner_runtime.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 1
+      "finding": "Current completion authority is observed in AgentPlannerRuntime, but the Phase 0 cross-file journey completed with consumer.py unresolved; completion semantics require redesign before promotion.",
+      "id": "planner_completion_decision",
+      "phase1_required": true,
+      "status": "observed_authoritative"
     },
     {
-      "id": "operator_mode_and_prompt_intent",
-      "phase1_required": false,
-      "status": "static_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 2,
       "claimants": [
         {
-          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_authoritative",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
+          "role": "current_authority"
         },
         {
-          "path": "desktop-ide/renderer/js/ai/agent-client.js",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/agent-client.js",
+          "role": "supporting"
         }
       ],
-      "finding": "The renderer mode controller owns user-selected ask/edit/agent/review intent and builds mode-specific instructions; the agent client transports that decision.",
       "current_authorities": [
         "desktop-ide/renderer/js/ai/mode-controller.js"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "The renderer mode controller owns user-selected ask/edit/agent/review intent and builds mode-specific instructions; the agent client transports that decision.",
+      "id": "operator_mode_and_prompt_intent",
+      "phase1_required": false,
+      "status": "static_authoritative"
     },
     {
-      "id": "model_output_protocol",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
-      "claimants": [
-        {
-          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "candidate_authority",
-          "disposition": "online_authoritative",
-          "agent_relevance": "direct",
-          "evidence": "observed_runtime"
-        },
-        {
-          "path": "app/kernel/governance/output_governor.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/compute/action_ir.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        }
-      ],
-      "finding": "Renderer instructions demand Action IR while the observed typed planner consumes PlannerDecision tool/complete/blocked decisions; OutputGovernor separately compiles provider Action IR. Protocol ownership is split.",
-      "current_authorities": [],
       "candidate_authorities": [
         "app/kernel/agents/planner_runtime.py",
         "app/kernel/governance/output_governor.py",
         "desktop-ide/renderer/js/ai/mode-controller.js"
       ],
-      "claimant_count": 4
-    },
-    {
-      "id": "agent_run_launch_and_provider_selection",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 4,
       "claimants": [
         {
-          "path": "desktop-ide/renderer/js/ai/agent-client.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/routes/ide_routes/agent_runs.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/inference_interceptor.py",
-          "role": "candidate_authority",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "evidence": "static_contract",
+          "path": "app/kernel/governance/output_governor.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/compute_plane.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/action_ir.py",
+          "role": "supporting"
         }
       ],
-      "finding": "Renderer routing, AgentRun backend provider preference, and the governed compute plane all participate in provider/route choice; the coding-agent composition root is not singularly owned.",
       "current_authorities": [],
+      "finding": "Renderer instructions demand Action IR while the observed typed planner consumes PlannerDecision tool/complete/blocked decisions; OutputGovernor separately compiles provider Action IR. Protocol ownership is split.",
+      "id": "model_output_protocol",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/compute/compute_plane.py",
         "app/kernel/compute/inference_interceptor.py",
         "app/routes/ide_routes/agent_runs.py",
         "desktop-ide/renderer/js/ai/agent-client.js"
       ],
-      "claimant_count": 4
-    },
-    {
-      "id": "repository_context_selection",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 4,
       "claimants": [
         {
-          "path": "desktop-ide/renderer/js/ai/context-picker.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/agent-client.js",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/data_processing/context_packet.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/routes/ide_routes/agent_runs.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/data_processing/code_cortex.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/agents/semantic_context.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "desktop-ide/renderer/js/ai/context-manifest.js",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/inference_interceptor.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/compute_plane.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "Frontend selection, deterministic ContextPacket packing, Code Cortex repository intelligence, semantic planner context, and the renderer manifest all claim parts of context selection without one explicit authority boundary.",
       "current_authorities": [],
+      "finding": "Renderer routing, AgentRun backend provider preference, and the governed compute plane all participate in provider/route choice; the coding-agent composition root is not singularly owned.",
+      "id": "agent_run_launch_and_provider_selection",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/agents/semantic_context.py",
         "app/kernel/data_processing/code_cortex.py",
         "app/kernel/data_processing/context_packet.py",
         "desktop-ide/renderer/js/ai/context-picker.js"
       ],
-      "claimant_count": 5
-    },
-    {
-      "id": "context_budget_and_compaction",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 5,
       "claimants": [
         {
-          "path": "desktop-ide/renderer/js/beast-ai-coding.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/context-picker.js",
+          "role": "candidate_authority"
         },
         {
-          "path": "desktop-ide/renderer/js/ai/agent-client.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/execution/task_envelope.py",
-          "role": "candidate_authority",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        },
-        {
+          "evidence": "static_contract",
           "path": "app/kernel/data_processing/context_packet.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/compression_pipeline.py",
-          "role": "candidate_authority",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/data_processing/code_cortex.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/agents/semantic_context.py",
+          "role": "candidate_authority"
+        },
+        {
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "candidate_authority",
-          "disposition": "online_authoritative",
-          "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/context-manifest.js",
+          "role": "supporting"
         }
       ],
-      "finding": "The renderer clips planner context to three files, TaskEnvelope defaults to eight files/8K tokens, ContextPacket performs bounded evidence packing, CompressionPipeline offers source-bound compression, and PlannerRuntime performs its own compaction. Budget ownership is fragmented.",
       "current_authorities": [],
+      "finding": "Frontend selection, deterministic ContextPacket packing, Code Cortex repository intelligence, semantic planner context, and the renderer manifest all claim parts of context selection without one explicit authority boundary.",
+      "id": "repository_context_selection",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/agents/planner_runtime.py",
         "app/kernel/compute/compression_pipeline.py",
@@ -353,520 +288,585 @@
         "desktop-ide/renderer/js/ai/agent-client.js",
         "desktop-ide/renderer/js/beast-ai-coding.js"
       ],
-      "claimant_count": 6
-    },
-    {
-      "id": "editable_source_exactness",
-      "phase1_required": false,
-      "status": "static_authoritative",
+      "claimant_count": 6,
       "claimants": [
         {
-          "path": "app/kernel/compute/compression_pipeline.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/beast-ai-coding.js",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/action_ir.py",
-          "role": "supporting",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/agent-client.js",
+          "role": "candidate_authority"
+        },
+        {
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/execution/task_envelope.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/data_processing/context_packet.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/compression_pipeline.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "CompressionPipeline explicitly forbids compression for editable source and patch anchors; exact references remain required for mutation anchors.",
+      "current_authorities": [],
+      "finding": "The renderer clips planner context to three files, TaskEnvelope defaults to eight files/8K tokens, ContextPacket performs bounded evidence packing, CompressionPipeline offers source-bound compression, and PlannerRuntime performs its own compaction. Budget ownership is fragmented.",
+      "id": "context_budget_and_compaction",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
+      "candidate_authorities": [],
+      "claimant_count": 2,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_authoritative",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/compression_pipeline.py",
+          "role": "current_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/action_ir.py",
+          "role": "supporting"
+        }
+      ],
       "current_authorities": [
         "app/kernel/compute/compression_pipeline.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "CompressionPipeline explicitly forbids compression for editable source and patch anchors; exact references remain required for mutation anchors.",
+      "id": "editable_source_exactness",
+      "phase1_required": false,
+      "status": "static_authoritative"
     },
     {
-      "id": "local_planner_provider_budget",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
-      "claimants": [
-        {
-          "path": "app/kernel/agents/ollama_planner_provider.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "desktop-ide/renderer/js/beast-ai-coding.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "desktop-ide/renderer/js/ai/agent-client.js",
-          "role": "supporting",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        }
-      ],
-      "finding": "Backend Ollama defaults use 768 context and 96 predicted tokens (48 on native-context continuation), while renderer profiles advertise materially larger context/output budgets. Operator-visible and executable budgets disagree.",
-      "current_authorities": [],
       "candidate_authorities": [
         "app/kernel/agents/ollama_planner_provider.py",
         "desktop-ide/renderer/js/beast-ai-coding.js"
       ],
-      "claimant_count": 3
-    },
-    {
-      "id": "governed_inference_routing",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 3,
       "claimants": [
         {
-          "path": "app/kernel/compute/inference_interceptor.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/kernel/compute/compute_plane.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/routes/ide_routes/agent_runs.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/agents/ollama_planner_provider.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/beast-ai-coding.js",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/agent-client.js",
+          "role": "supporting"
         }
       ],
-      "finding": "BEAST has a governed compute/interception plane, while the coding-agent route can prefer direct local planner execution. Phase 1 must establish one coding-agent inference composition root.",
       "current_authorities": [],
+      "finding": "Backend Ollama defaults use 768 context and 96 predicted tokens (48 on native-context continuation), while renderer profiles advertise materially larger context/output budgets. Operator-visible and executable budgets disagree.",
+      "id": "local_planner_provider_budget",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/compute/compute_plane.py",
         "app/kernel/compute/inference_interceptor.py",
         "app/routes/ide_routes/agent_runs.py"
       ],
-      "claimant_count": 3
-    },
-    {
-      "id": "stream_output_admission",
-      "phase1_required": false,
-      "status": "static_authoritative",
+      "claimant_count": 3,
       "claimants": [
         {
-          "path": "app/kernel/compute/streaming_interceptor.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/inference_interceptor.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/governance/output_governor.py",
-          "role": "supporting",
+          "agent_relevance": "supporting",
           "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/compute_plane.py",
+          "role": "candidate_authority"
+        },
+        {
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/routes/ide_routes/agent_runs.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "StreamingInterceptor governs incremental structured output and early-stop/repair behavior; OutputGovernor performs deterministic post-stream validation and compilation.",
+      "current_authorities": [],
+      "finding": "BEAST has a governed compute/interception plane, while the coding-agent route can prefer direct local planner execution. Phase 1 must establish one coding-agent inference composition root.",
+      "id": "governed_inference_routing",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
+      "candidate_authorities": [],
+      "claimant_count": 2,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_authoritative",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/streaming_interceptor.py",
+          "role": "current_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/governance/output_governor.py",
+          "role": "supporting"
+        }
+      ],
       "current_authorities": [
         "app/kernel/compute/streaming_interceptor.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "StreamingInterceptor governs incremental structured output and early-stop/repair behavior; OutputGovernor performs deterministic post-stream validation and compilation.",
+      "id": "stream_output_admission",
+      "phase1_required": false,
+      "status": "static_authoritative"
     },
     {
-      "id": "verification_gate",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
-      "claimants": [
-        {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
-          "agent_relevance": "direct",
-          "evidence": "observed_runtime"
-        },
-        {
-          "path": "app/kernel/data_processing/quality_cascade.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/evidence/post_apply_gate.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        }
-      ],
-      "finding": "Observed planner execution enforces worktree.verify after mutation, while QualityCascade and the post-apply evidence gate provide broader verification semantics that are not observed in the coding-agent journey.",
-      "current_authorities": [
-        "app/kernel/agents/planner_runtime.py"
-      ],
       "candidate_authorities": [
         "app/kernel/data_processing/quality_cascade.py",
         "app/kernel/evidence/post_apply_gate.py"
       ],
-      "claimant_count": 3
-    },
-    {
-      "id": "sourceplan_handoff_and_approval",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 3,
       "claimants": [
         {
-          "path": "app/kernel/agents/planner_runtime.py",
-          "role": "current_authority",
+          "agent_relevance": "direct",
           "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "current_authority"
+        },
+        {
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/data_processing/quality_cascade.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/agents/sourceplan_approval.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/evidence/sourceplan_handoff.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/approvals/mode_engine.py",
-          "role": "supporting",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/approvals/capability_runtime.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "evidence": "static_contract",
+          "path": "app/kernel/evidence/post_apply_gate.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "PlannerRuntime requires SourcePlan draft evidence, while approval, handoff, and capability layers separately define whether mutation may proceed. Their authority boundaries need one explicit chain.",
       "current_authorities": [
         "app/kernel/agents/planner_runtime.py"
       ],
+      "finding": "Observed planner execution enforces worktree.verify after mutation, while QualityCascade and the post-apply evidence gate provide broader verification semantics that are not observed in the coding-agent journey.",
+      "id": "verification_gate",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/agents/sourceplan_approval.py",
         "app/kernel/evidence/sourceplan_handoff.py"
       ],
-      "claimant_count": 5
-    },
-    {
-      "id": "agent_memory_and_continuity",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 5,
       "claimants": [
         {
-          "path": "app/kernel/agents/run_store.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/planner_runtime.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/storage/memory_hull.py",
-          "role": "candidate_authority",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "evidence": "static_contract",
+          "path": "app/kernel/agents/sourceplan_approval.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/storage/memory_stack.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/evidence/sourceplan_handoff.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/approvals/mode_engine.py",
+          "role": "supporting"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/approvals/capability_runtime.py",
+          "role": "supporting"
         }
       ],
-      "finding": "AgentRunStore is observed for durable run continuity, while Memory Hull and Memory Stack provide longer-lived residue, project facts, skills, and forensic memory. The coding agent has no explicit memory tier contract tying them together.",
       "current_authorities": [
-        "app/kernel/agents/run_store.py"
+        "app/kernel/agents/planner_runtime.py"
       ],
+      "finding": "PlannerRuntime requires SourcePlan draft evidence, while approval, handoff, and capability layers separately define whether mutation may proceed. Their authority boundaries need one explicit chain.",
+      "id": "sourceplan_handoff_and_approval",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/storage/memory_hull.py",
         "app/kernel/storage/memory_stack.py"
       ],
-      "claimant_count": 3
-    },
-    {
-      "id": "coding_evidence_production",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 3,
       "claimants": [
         {
-          "path": "app/kernel/agents/run_store.py",
-          "role": "current_authority",
+          "agent_relevance": "direct",
           "disposition": "online_authoritative",
-          "agent_relevance": "direct",
-          "evidence": "observed_runtime"
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/run_store.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/storage/evidence_envelope.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/storage/memory_hull.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/storage/evidence_chronicle.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/data_processing/quality_cascade.py",
-          "role": "supporting",
           "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "evidence": "static_contract",
+          "path": "app/kernel/storage/memory_stack.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "The observed agent ledger proves run/tool/planner events, while evidence envelopes and Chronicle are separate proof stores used by adjacent organs. Phase 1 must define which receipts constitute coding-agent truth.",
       "current_authorities": [
         "app/kernel/agents/run_store.py"
       ],
+      "finding": "AgentRunStore is observed for durable run continuity, while Memory Hull and Memory Stack provide longer-lived residue, project facts, skills, and forensic memory. The coding agent has no explicit memory tier contract tying them together.",
+      "id": "agent_memory_and_continuity",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/storage/evidence_chronicle.py",
         "app/kernel/storage/evidence_envelope.py"
       ],
-      "claimant_count": 4
-    },
-    {
-      "id": "sensorium_agent_observation",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
+      "claimant_count": 4,
       "claimants": [
         {
-          "path": "app/kernel/agents/run_engine.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "direct",
-          "evidence": "static_contract"
+          "disposition": "online_authoritative",
+          "evidence": "observed_runtime",
+          "path": "app/kernel/agents/run_store.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/sensorium/runtime.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "not_runtime_proven"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/storage/evidence_envelope.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/storage/evidence_chronicle.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/data_processing/quality_cascade.py",
+          "role": "supporting"
         }
       ],
-      "finding": "AgentRunEngine attempts best-effort Sensorium mirroring, but the Phase 0 runtime harness has no independent Sensorium receipt. The observation edge remains unproven.",
-      "current_authorities": [],
+      "current_authorities": [
+        "app/kernel/agents/run_store.py"
+      ],
+      "finding": "The observed agent ledger proves run/tool/planner events, while evidence envelopes and Chronicle are separate proof stores used by adjacent organs. Phase 1 must define which receipts constitute coding-agent truth.",
+      "id": "coding_evidence_production",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [
         "app/kernel/agents/run_engine.py",
         "app/kernel/sensorium/runtime.py"
       ],
-      "claimant_count": 2
-    },
-    {
-      "id": "verified_inference_reuse",
-      "phase1_required": true,
-      "status": "static_authoritative",
+      "claimant_count": 2,
       "claimants": [
         {
-          "path": "app/kernel/compute/crystal_reuse_gateway.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "agent_relevance": "direct",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/agents/run_engine.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/storage/memory_hull.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "static_contract"
+          "disposition": "online_supporting",
+          "evidence": "not_runtime_proven",
+          "path": "app/kernel/sensorium/runtime.py",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "CrystalReuseGateway defines verified replay/semantic credit/KV/local execution ordering and only promotes verified results, but Phase 0 has not observed it on the coding-agent path.",
+      "current_authorities": [],
+      "finding": "AgentRunEngine attempts best-effort Sensorium mirroring, but the Phase 0 runtime harness has no independent Sensorium receipt. The observation edge remains unproven.",
+      "id": "sensorium_agent_observation",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
+      "candidate_authorities": [],
+      "claimant_count": 2,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_authoritative",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/crystal_reuse_gateway.py",
+          "role": "current_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/storage/memory_hull.py",
+          "role": "supporting"
+        }
+      ],
       "current_authorities": [
         "app/kernel/compute/crystal_reuse_gateway.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "CrystalReuseGateway defines verified replay/semantic credit/KV/local execution ordering and only promotes verified results, but Phase 0 has not observed it on the coding-agent path.",
+      "id": "verified_inference_reuse",
+      "phase1_required": true,
+      "status": "static_authoritative"
     },
     {
-      "id": "mission_edit_reuse_lattice",
-      "phase1_required": true,
-      "status": "static_authoritative",
+      "candidate_authorities": [],
+      "claimant_count": 2,
       "claimants": [
         {
-          "path": "app/kernel/compute/mission_crystal_lattice.py",
-          "role": "current_authority",
-          "disposition": "online_authoritative",
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_authoritative",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/mission_crystal_lattice.py",
+          "role": "current_authority"
         },
         {
-          "path": "app/kernel/compute/runtime_crystallizer.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/runtime_crystallizer.py",
+          "role": "supporting"
         }
       ],
-      "finding": "MissionCrystalLattice records verified SourcePlan situations but is explicitly advisory/no-auto-apply; it should feed planning without becoming mutation authority.",
       "current_authorities": [
         "app/kernel/compute/mission_crystal_lattice.py"
       ],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "finding": "MissionCrystalLattice records verified SourcePlan situations but is explicitly advisory/no-auto-apply; it should feed planning without becoming mutation authority.",
+      "id": "mission_edit_reuse_lattice",
+      "phase1_required": true,
+      "status": "static_authoritative"
     },
     {
-      "id": "crystal_generalization_promotion_and_replay",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
-      "claimants": [
-        {
-          "path": "app/kernel/compute/runtime_crystallizer.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/kernel/compute/physical_crystal_lifecycle.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/kernel/compute/typed_crystal_interpreter.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        },
-        {
-          "path": "app/kernel/compute/crystal_reuse_gateway.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        }
-      ],
-      "finding": "BEAST already has separate generalization, physical-promotion, typed replay, and reuse-routing organs. Coding-agent integration must preserve their distinct authority gates instead of collapsing them into generic memory.",
-      "current_authorities": [],
       "candidate_authorities": [
         "app/kernel/compute/crystal_reuse_gateway.py",
         "app/kernel/compute/physical_crystal_lifecycle.py",
         "app/kernel/compute/runtime_crystallizer.py",
         "app/kernel/compute/typed_crystal_interpreter.py"
       ],
-      "claimant_count": 4
+      "claimant_count": 4,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/runtime_crystallizer.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/physical_crystal_lifecycle.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/typed_crystal_interpreter.py",
+          "role": "candidate_authority"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/crystal_reuse_gateway.py",
+          "role": "candidate_authority"
+        }
+      ],
+      "current_authorities": [],
+      "finding": "BEAST already has separate generalization, physical-promotion, typed replay, and reuse-routing organs. Coding-agent integration must preserve their distinct authority gates instead of collapsing them into generic memory.",
+      "id": "crystal_generalization_promotion_and_replay",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
     },
     {
+      "candidate_authorities": [],
+      "claimant_count": 2,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "dormant_gated",
+          "evidence": "not_runtime_proven",
+          "path": "app/kernel/crystal_bus/fd_transport.py",
+          "role": "dormant_candidate"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "stranded",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/sealed_capsule.py",
+          "role": "dormant_candidate"
+        }
+      ],
+      "current_authorities": [],
+      "finding": "Sealed memfd/capsule transport is available as immutable transport evidence, not ambient execution or confidentiality authority; it is not observed in the coding-agent journey.",
       "id": "crystal_transport_and_memfd_capsules",
       "phase1_required": true,
-      "status": "dormant_or_stranded",
-      "claimants": [
-        {
-          "path": "app/kernel/crystal_bus/fd_transport.py",
-          "role": "dormant_candidate",
-          "disposition": "dormant_gated",
-          "agent_relevance": "supporting",
-          "evidence": "not_runtime_proven"
-        },
-        {
-          "path": "app/kernel/compute/sealed_capsule.py",
-          "role": "dormant_candidate",
-          "disposition": "stranded",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
-        }
-      ],
-      "finding": "Sealed memfd/capsule transport is available as immutable transport evidence, not ambient execution or confidentiality authority; it is not observed in the coding-agent journey.",
-      "current_authorities": [],
-      "candidate_authorities": [],
-      "claimant_count": 2
+      "status": "dormant_or_stranded"
     },
     {
-      "id": "task_input_governance",
-      "phase1_required": true,
-      "status": "unresolved_conflict",
-      "claimants": [
-        {
-          "path": "app/kernel/execution/task_envelope.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "app/kernel/approvals/mode_engine.py",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "static_contract"
-        },
-        {
-          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
-          "role": "candidate_authority",
-          "disposition": "online_supporting",
-          "agent_relevance": "direct",
-          "evidence": "static_contract"
-        }
-      ],
-      "finding": "Natural-language intent is interpreted independently by renderer mode rules, TaskEnvelope classification/budgets, and approval-mode policy. A single typed coding mission envelope is not yet authoritative.",
-      "current_authorities": [],
       "candidate_authorities": [
         "app/kernel/approvals/mode_engine.py",
         "app/kernel/execution/task_envelope.py",
         "desktop-ide/renderer/js/ai/mode-controller.js"
       ],
-      "claimant_count": 3
-    },
-    {
-      "id": "distributed_execution_and_forge",
-      "phase1_required": false,
-      "status": "supporting_only",
+      "claimant_count": 3,
       "claimants": [
         {
-          "path": "app/kernel/compute/distributed_forge_scheduler.py",
-          "role": "supporting",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "evidence": "static_contract",
+          "path": "app/kernel/execution/task_envelope.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/forge_supervisor.py",
-          "role": "supporting",
-          "disposition": "online_supporting",
           "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "disposition": "online_supporting",
+          "evidence": "static_contract",
+          "path": "app/kernel/approvals/mode_engine.py",
+          "role": "candidate_authority"
         },
         {
-          "path": "app/kernel/compute/compute_plane.py",
-          "role": "supporting",
+          "agent_relevance": "direct",
           "disposition": "online_supporting",
-          "agent_relevance": "supporting",
-          "evidence": "existing_disposition_registry"
+          "evidence": "static_contract",
+          "path": "desktop-ide/renderer/js/ai/mode-controller.js",
+          "role": "candidate_authority"
         }
       ],
-      "finding": "Distributed Forge is production-classified compute infrastructure, but Phase 0 does not observe it in the coding-agent journeys; it remains supporting until a coding-agent route requires it.",
       "current_authorities": [],
+      "finding": "Natural-language intent is interpreted independently by renderer mode rules, TaskEnvelope classification/budgets, and approval-mode policy. A single typed coding mission envelope is not yet authoritative.",
+      "id": "task_input_governance",
+      "phase1_required": true,
+      "status": "unresolved_conflict"
+    },
+    {
       "candidate_authorities": [],
-      "claimant_count": 3
+      "claimant_count": 3,
+      "claimants": [
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/distributed_forge_scheduler.py",
+          "role": "supporting"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/forge_supervisor.py",
+          "role": "supporting"
+        },
+        {
+          "agent_relevance": "supporting",
+          "disposition": "online_supporting",
+          "evidence": "existing_disposition_registry",
+          "path": "app/kernel/compute/compute_plane.py",
+          "role": "supporting"
+        }
+      ],
+      "current_authorities": [],
+      "finding": "Distributed Forge is production-classified compute infrastructure, but Phase 0 does not observe it in the coding-agent journeys; it remains supporting until a coding-agent route requires it.",
+      "id": "distributed_execution_and_forge",
+      "phase1_required": false,
+      "status": "supporting_only"
     }
-  ]
+  ],
+  "summary": {
+    "claimant_count": 70,
+    "phase1_conflict_count": 17,
+    "responsibility_count": 24,
+    "status_counts": {
+      "dormant_or_stranded": 1,
+      "observed_authoritative": 4,
+      "static_authoritative": 5,
+      "supporting_only": 1,
+      "unresolved_conflict": 13
+    },
+    "unique_claimant_count": 42,
+    "unresolved_conflict_count": 13
+  },
+  "truth_rule": "A responsibility claim identifies current ownership pressure; it does not promote runtime participation unless the claimant evidence is observed_runtime.",
+  "version": "1.0"
 }
