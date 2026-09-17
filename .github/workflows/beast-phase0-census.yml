@@ -116,7 +116,7 @@ jobs:
       - name: Commit generated census artifacts when changed
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         run: |
-          if git diff --quiet -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md; then
+          if [ -z "$(git status --porcelain -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md)" ]; then
             echo "Canonical census artifacts unchanged."
             exit 0
           fi
