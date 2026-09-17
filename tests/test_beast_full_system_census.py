@@ -186,3 +186,24 @@ def test_compute_disposition_registry_is_source_evidence_not_runtime_proof(tmp_p
     assert "source_disposition:OFFLINE_LIBRARY" in by_path["app/kernel/compute/crystal_hypergraph.py"]["notes"]
     assert by_path["app/kernel/compute/compute_plane.py"]["runtime"]["constructed"] == "unverified"
     assert by_path["app/kernel/compute/compute_plane.py"]["runtime"]["invoked"] == "unverified"
+
+
+def test_missing_retired_compute_module_is_a_tombstone_not_a_stale_live_reference(tmp_path):
+    compute_dir = tmp_path / "app/kernel/compute"
+    compute_dir.mkdir(parents=True)
+    (compute_dir / "compute_plane.py").write_text("x=1\n", encoding="utf-8")
+    (compute_dir / "module_dispositions.py").write_text(
+        "ONLINE_ENFORCEMENT = frozenset({'compute_plane'})\n"
+        "SUPERVISED_EVIDENCE = frozenset()\n"
+        "OFFLINE_LIBRARY = frozenset()\n"
+        "RETIRED = {'removed_duplicate': 'duplicate removed'}\n",
+        encoding="utf-8",
+    )
+
+    report = apply_compute_module_dispositions(scan_repository(tmp_path), tmp_path)
+    overlay = report["overlay"]["compute_module_dispositions"]
+
+    assert overlay["stale_modules"] == []
+    assert overlay["retired_tombstones"] == [
+        {"module": "removed_duplicate", "reason": "duplicate removed"}
+    ]
