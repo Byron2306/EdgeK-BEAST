@@ -1,0 +1,32 @@
+name: BEAST Phase 1 Authority Map
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase1-authority-map
+      - agent/beast-coding-agent-phase1-resolutions
+  pull_request:
+    paths:
+      - 'config/beast_coding_agent_authority_resolutions.json'
+      - 'docs/BEAST_CODING_AGENT_PHASE1_AUTHORITY_MAP.md'
+      - 'scripts/beast_coding_agent_authority_map.py'
+      - 'tests/test_beast_coding_agent_authority_map.py'
+      - '.github/workflows/beast-phase1-authority-map.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authority-map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - name: Verify Phase 1 authority contract
+        run: python -m pytest -q --noconftest tests/test_beast_coding_agent_authority_map.py
+      - name: Verify deterministic rendered map
+        run: python scripts/beast_coding_agent_authority_map.py --check
