@@ -253,3 +253,23 @@ def test_repo_responsibility_manifest_is_complete_against_canonical_census():
     )
     assert transport["status"] == "dormant_or_stranded"
     assert "not ambient execution or confidentiality authority" in transport["finding"]
+
+
+def test_committed_responsibility_artifacts_match_manifest_and_census():
+    root = Path(__file__).resolve().parents[1]
+    census = json.loads(
+        (root / "docs" / "evidence" / "BEAST_FULL_SYSTEM_CENSUS.json").read_text(encoding="utf-8")
+    )
+    config = json.loads(
+        (root / "config" / "beast_coding_agent_responsibilities.json").read_text(encoding="utf-8")
+    )
+    json_path = root / "docs" / "evidence" / "BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json"
+    md_path = root / "docs" / "BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.md"
+
+    assert json_path.exists(), "Phase 0 must publish the machine-readable responsibility census"
+    assert md_path.exists(), "Phase 0 must publish the human-readable responsibility census"
+
+    expected = build_responsibility_report(census, config)
+    committed = json.loads(json_path.read_text(encoding="utf-8"))
+    assert committed == expected
+    assert md_path.read_text(encoding="utf-8") == render_responsibility_markdown(expected)
