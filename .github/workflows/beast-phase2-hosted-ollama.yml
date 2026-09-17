@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - agent/beast-coding-agent-phase2-runtime-trace
+  pull_request:
+    paths:
+      - '.github/workflows/beast-phase2-hosted-ollama.yml'
+      - 'app/kernel/agents/ollama_planner_provider.py'
+      - 'tests/phase2/test_live_ollama_provider_acceptance.py'
+      - 'requirements.txt'
   workflow_dispatch:
 
 permissions:
