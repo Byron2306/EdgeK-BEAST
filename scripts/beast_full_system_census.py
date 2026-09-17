@@ -2,8 +2,8 @@
 """Generate a deterministic BEAST full-system census.
 
 This scanner intentionally separates static repository facts from runtime truth.
-It never treats imports, files, tests, or docs as proof that a component is
-constructed or invoked in production.
+It never treats imports, files, tests, docs, registries, or historical evidence
+as proof that a component is constructed or invoked in production.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import ast
 from collections import Counter
+from copy import deepcopy
 import json
 from pathlib import Path
 import re
@@ -27,6 +28,29 @@ IGNORED_PARTS = {
 }
 IGNORED_FILES = {
     "docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json",
+}
+ALLOWED_DISPOSITIONS = {
+    "online_authoritative",
+    "online_supporting",
+    "supervised_offline",
+    "dormant_gated",
+    "stranded",
+    "duplicate_candidate",
+    "compatibility_shim",
+    "retired",
+    "unclassified",
+}
+ALLOWED_AGENT_RELEVANCE = {
+    "direct", "supporting", "future", "irrelevant", "unclassified",
+}
+OVERLAY_LIST_FIELDS = {
+    "composition_roots", "claimed_responsibilities", "overlap_candidates", "notes",
+}
+COMPUTE_SOURCE_MAP = {
+    "ONLINE_ENFORCEMENT": "online_supporting",
+    "SUPERVISED_EVIDENCE": "supervised_offline",
+    "OFFLINE_LIBRARY": "stranded",
+    "RETIRED": "retired",
 }
 
 JS_IMPORT_PATTERNS = (
@@ -145,6 +169,17 @@ def _iter_scannable_files(root: Path):
         yield path
 
 
+def _refresh_summary(report: dict[str, Any]) -> None:
+    components = report["components"]
+    report["summary"] = {
+        "component_count": len(components),
+        "layer_counts": dict(sorted(Counter(x["layer"] for x in components).items())),
+        "language_counts": dict(sorted(Counter(x["language"] for x in components).items())),
+        "disposition_counts": dict(sorted(Counter(x["disposition"] for x in components).items())),
+        "agent_relevance_counts": dict(sorted(Counter(x["agent_relevance"] for x in components).items())),
+    }
+
+
 def scan_repository(root: Path) -> dict[str, Any]:
     root = Path(root).resolve()
     components = []
@@ -168,32 +203,177 @@ def scan_repository(root: Path) -> dict[str, Any]:
                 "authority": "unverified",
                 "disposition": "unclassified",
                 "agent_relevance": "unclassified",
+                "composition_roots": [],
+                "claimed_responsibilities": [],
+                "overlap_candidates": [],
                 "notes": [],
             }
         )
 
     components.sort(key=lambda item: item["path"])
-    layer_counts = dict(sorted(Counter(x["layer"] for x in components).items()))
-    language_counts = dict(sorted(Counter(x["language"] for x in components).items()))
-    return {
+    report = {
         "beast_object_type": "beast_full_system_census",
-        "version": "0.1",
+        "version": "0.2",
         "methodology": {
-            "scope": "static repository inventory",
+            "scope": "static repository inventory plus source-evidence overlays",
             "runtime_truth_rule": (
                 "Runtime status is not inferred from imports, file presence, tests, "
-                "documentation, registries, or generated artifacts."
+                "documentation, registries, source dispositions, or generated artifacts."
             ),
             "ignored_parts": sorted(IGNORED_PARTS),
             "ignored_files": sorted(IGNORED_FILES),
         },
-        "summary": {
-            "component_count": len(components),
-            "layer_counts": layer_counts,
-            "language_counts": language_counts,
-        },
+        "summary": {},
         "components": components,
     }
+    _refresh_summary(report)
+    return report
+
+
+def load_overrides(path: Path) -> dict[str, Any]:
+    path = Path(path)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"invalid census overrides: {path}") from exc
+    if not isinstance(payload, dict) or not isinstance(payload.get("components", {}), dict):
+        raise ValueError("invalid census overrides: 'components' must be an object")
+
+    components = payload.get("components", {})
+    for component_path, override in components.items():
+        if not isinstance(component_path, str) or not isinstance(override, dict):
+            raise ValueError("invalid census override component record")
+        disposition = override.get("disposition")
+        if disposition is not None and disposition not in ALLOWED_DISPOSITIONS:
+            raise ValueError(f"invalid disposition: {disposition}")
+        relevance = override.get("agent_relevance")
+        if relevance is not None and relevance not in ALLOWED_AGENT_RELEVANCE:
+            raise ValueError(f"invalid agent relevance: {relevance}")
+        for field in OVERLAY_LIST_FIELDS:
+            value = override.get(field)
+            if value is not None and (
+                not isinstance(value, list) or not all(isinstance(item, str) for item in value)
+            ):
+                raise ValueError(f"invalid override field {field}: expected list[str]")
+    return payload
+
+
+def apply_overrides(report: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:
+    result = deepcopy(report)
+    by_path = {item["path"]: item for item in result["components"]}
+    stale_paths: list[str] = []
+    applied_paths: list[str] = []
+
+    for component_path, override in sorted((overrides.get("components") or {}).items()):
+        item = by_path.get(component_path)
+        if item is None:
+            stale_paths.append(component_path)
+            continue
+        applied_paths.append(component_path)
+        if "disposition" in override:
+            item["disposition"] = override["disposition"]
+        if "agent_relevance" in override:
+            item["agent_relevance"] = override["agent_relevance"]
+        for field in ("composition_roots", "claimed_responsibilities", "overlap_candidates"):
+            if field in override:
+                item[field] = sorted(set(override[field]))
+        if "notes" in override:
+            item["notes"] = sorted(set(item.get("notes", []) + override["notes"]))
+
+    overlay = dict(result.get("overlay") or {})
+    overlay["override_source"] = overrides.get("source", "config/beast_coding_agent_census_overrides.json")
+    overlay["applied_paths"] = sorted(applied_paths)
+    overlay["stale_paths"] = sorted(stale_paths)
+    result["overlay"] = overlay
+    _refresh_summary(result)
+    return result
+
+
+def _literal_string_collection(node: ast.AST) -> set[str]:
+    target = node
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "frozenset":
+        if len(node.args) != 1 or node.keywords:
+            return set()
+        target = node.args[0]
+    try:
+        value = ast.literal_eval(target)
+    except (ValueError, TypeError, SyntaxError):
+        return set()
+    if not isinstance(value, (set, frozenset, list, tuple)):
+        return set()
+    return {item for item in value if isinstance(item, str)}
+
+
+def _read_compute_disposition_source(path: Path) -> dict[str, Any]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return {}
+    found: dict[str, Any] = {}
+    wanted = {"ONLINE_ENFORCEMENT", "SUPERVISED_EVIDENCE", "OFFLINE_LIBRARY", "RETIRED"}
+    for node in tree.body:
+        if not isinstance(node, ast.Assign) or len(node.targets) != 1 or not isinstance(node.targets[0], ast.Name):
+            continue
+        name = node.targets[0].id
+        if name not in wanted:
+            continue
+        if name == "RETIRED":
+            try:
+                value = ast.literal_eval(node.value)
+            except (ValueError, TypeError, SyntaxError):
+                value = {}
+            found[name] = value if isinstance(value, dict) else {}
+        else:
+            found[name] = _literal_string_collection(node.value)
+    return found
+
+
+def apply_compute_module_dispositions(report: dict[str, Any], root: Path) -> dict[str, Any]:
+    result = deepcopy(report)
+    source_path = Path(root).resolve() / "app/kernel/compute/module_dispositions.py"
+    source = _read_compute_disposition_source(source_path)
+    if not source:
+        return result
+
+    by_path = {item["path"]: item for item in result["components"]}
+    stale_modules: list[str] = []
+    category_counts: Counter[str] = Counter()
+
+    for category in ("ONLINE_ENFORCEMENT", "SUPERVISED_EVIDENCE", "OFFLINE_LIBRARY"):
+        for module_name in sorted(source.get(category, set())):
+            component_path = f"app/kernel/compute/{module_name}.py"
+            item = by_path.get(component_path)
+            if item is None:
+                stale_modules.append(f"{category}:{module_name}")
+                continue
+            category_counts[category] += 1
+            if item["disposition"] == "unclassified":
+                item["disposition"] = COMPUTE_SOURCE_MAP[category]
+            item["notes"] = sorted(set(item["notes"] + [f"source_disposition:{category}"]))
+
+    for module_name, reason in sorted((source.get("RETIRED") or {}).items()):
+        component_path = f"app/kernel/compute/{module_name}.py"
+        item = by_path.get(component_path)
+        if item is None:
+            stale_modules.append(f"RETIRED:{module_name}")
+            continue
+        category_counts["RETIRED"] += 1
+        item["disposition"] = "retired"
+        item["notes"] = sorted(set(item["notes"] + [
+            "source_disposition:RETIRED",
+            f"source_retired_reason:{reason}",
+        ]))
+
+    overlay = dict(result.get("overlay") or {})
+    overlay["compute_module_dispositions"] = {
+        "source": "app/kernel/compute/module_dispositions.py",
+        "category_counts": dict(sorted(category_counts.items())),
+        "stale_modules": sorted(stale_modules),
+        "runtime_promotion": False,
+    }
+    result["overlay"] = overlay
+    _refresh_summary(result)
+    return result
 
 
 def render_markdown(report: dict[str, Any]) -> str:
@@ -204,8 +384,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         "## Methodology",
         "",
         "**Runtime status is not inferred from imports.** File presence, tests, documentation, "
-        "registry entries, generated evidence, and static reachability are not sufficient to "
-        "claim that an organ is constructed or invoked in a live coding-agent request.",
+        "registry entries, source disposition labels, generated evidence, and static reachability "
+        "are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.",
         "",
         f"Static components discovered: **{summary['component_count']}**",
         "",
@@ -216,13 +396,17 @@ def render_markdown(report: dict[str, Any]) -> str:
     ]
     for layer, count in summary["layer_counts"].items():
         lines.append(f"| `{layer}` | {count} |")
+    lines.extend(["", "## Disposition counts", "", "| Disposition | Components |", "|---|---:|"])
+    for disposition, count in summary.get("disposition_counts", {}).items():
+        lines.append(f"| `{disposition}` | {count} |")
     lines.extend(
         [
             "",
             "## Runtime evidence state",
             "",
-            "All runtime fields begin as `unverified`. Phase 0 runtime tracing and composition-root "
-            "analysis promote those fields only when evidence exists.",
+            "All runtime fields begin as `unverified`. Source-evidence and responsibility overlays "
+            "do not promote runtime truth. Phase 0 runtime tracing promotes those fields only when "
+            "matching request evidence exists.",
             "",
             "## Component inventory",
             "",
@@ -245,9 +429,17 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--md-out", type=Path)
+    parser.add_argument("--overrides", type=Path)
     args = parser.parse_args()
 
-    report = scan_repository(args.root)
+    root = args.root.resolve()
+    report = scan_repository(root)
+    report = apply_compute_module_dispositions(report, root)
+
+    override_path = args.overrides or (root / "config/beast_coding_agent_census_overrides.json")
+    if override_path.exists():
+        report = apply_overrides(report, load_overrides(override_path))
+
     json_text = json.dumps(report, indent=2, sort_keys=True) + "\n"
     md_text = render_markdown(report)
 
