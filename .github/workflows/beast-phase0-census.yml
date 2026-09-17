@@ -1,0 +1,123 @@
+name: BEAST Phase 0 Census
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase0-census
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Phase 0 branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/beast-coding-agent-phase0-census
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install focused test dependency
+        run: python -m pip install -U pytest
+
+      - name: Verify census scanner tests
+        run: python -m pytest -q tests/test_beast_full_system_census.py
+
+      - name: Generate canonical census outputs
+        run: |
+          python scripts/beast_full_system_census.py \
+            --root . \
+            --json-out docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --md-out docs/BEAST_FULL_SYSTEM_CENSUS.md
+
+      - name: Verify deterministic regeneration
+        run: |
+          cp docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json /tmp/beast-census-first.json
+          cp docs/BEAST_FULL_SYSTEM_CENSUS.md /tmp/beast-census-first.md
+          python scripts/beast_full_system_census.py \
+            --root . \
+            --json-out docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json \
+            --md-out docs/BEAST_FULL_SYSTEM_CENSUS.md
+          diff -u /tmp/beast-census-first.json docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
+          diff -u /tmp/beast-census-first.md docs/BEAST_FULL_SYSTEM_CENSUS.md
+
+      - name: Validate minimum organism coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
+          paths = [item['path'] for item in report['components']]
+          required = {
+              'desktop-ide/': any(p.startswith('desktop-ide/') for p in paths),
+              'app/routes/': any(p.startswith('app/routes/') for p in paths),
+              'app/kernel/agents/': any(p.startswith('app/kernel/agents/') for p in paths),
+              'app/kernel/data_processing/': any(p.startswith('app/kernel/data_processing/') for p in paths),
+              'app/kernel/compute/': any(p.startswith('app/kernel/compute/') for p in paths),
+              'app/kernel/storage/': any(p.startswith('app/kernel/storage/') for p in paths),
+              'app/kernel/governance/': any(p.startswith('app/kernel/governance/') for p in paths),
+              'app/kernel/execution/': any(p.startswith('app/kernel/execution/') for p in paths),
+              'app/kernel/commons/': any(p.startswith('app/kernel/commons/') for p in paths),
+              'scripts/': any(p.startswith('scripts/') for p in paths),
+              '.github/workflows/': any(p.startswith('.github/workflows/') for p in paths),
+              'tests/': any(p.startswith('tests/') for p in paths),
+          }
+          missing = [name for name, present in required.items() if not present]
+          if missing:
+              raise SystemExit('missing required census domains: ' + ', '.join(missing))
+
+          summary = report['summary']
+          print('component_count=', summary['component_count'])
+          print('layer_counts=', json.dumps(summary['layer_counts'], sort_keys=True))
+          print('language_counts=', json.dumps(summary['language_counts'], sort_keys=True))
+          PY
+
+      - name: Write census summary
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          report = json.loads(Path('docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json').read_text())
+          summary = report['summary']
+          print('# BEAST Phase 0 Census')
+          print()
+          print(f"Static components discovered: **{summary['component_count']}**")
+          print()
+          print('## Layer counts')
+          print()
+          print('| Layer | Count |')
+          print('|---|---:|')
+          for layer, count in summary['layer_counts'].items():
+              print(f'| `{layer}` | {count} |')
+          print()
+          print('Runtime fields remain `unverified` until evidence-backed runtime overlays are applied.')
+          PY
+
+      - name: Upload census evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase0-census
+          path: |
+            docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json
+            docs/BEAST_FULL_SYSTEM_CENSUS.md
+
+      - name: Commit generated census artifacts when changed
+        run: |
+          if git diff --quiet -- docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md; then
+            echo "Canonical census artifacts unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/evidence/BEAST_FULL_SYSTEM_CENSUS.json docs/BEAST_FULL_SYSTEM_CENSUS.md
+          git commit -m "audit: generate BEAST full-system census baseline [skip ci]"
+          git push origin HEAD:agent/beast-coding-agent-phase0-census
