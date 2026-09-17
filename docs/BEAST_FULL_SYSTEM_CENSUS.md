@@ -4,7 +4,7 @@
 
 **Runtime status is not inferred from imports.** File presence, tests, documentation, registry entries, source disposition labels, generated evidence, and static reachability are not sufficient to claim that an organ is constructed or invoked in a live coding-agent request.
 
-Static components discovered: **18888**
+Static components discovered: **18889**
 
 ## Layer counts
 
@@ -23,7 +23,7 @@ Static components discovered: **18888**
 | `memory_evidence` | 13 |
 | `operations_proof` | 186 |
 | `perception_sensorium` | 69 |
-| `repository_support` | 9425 |
+| `repository_support` | 9426 |
 | `semantic_context` | 21 |
 | `verification_tests` | 369 |
 | `workspace_state` | 8 |
@@ -35,7 +35,7 @@ Static components discovered: **18888**
 | `online_supporting` | 50 |
 | `stranded` | 18 |
 | `supervised_offline` | 32 |
-| `unclassified` | 18788 |
+| `unclassified` | 18789 |
 
 ## Runtime evidence state
 
@@ -16746,6 +16746,7 @@ All runtime fields begin as `unverified`. Source-evidence and responsibility ove
 | `desktop-ide/tests/gateway-host-route-recovery.test.js` | `interface_ingress` | `javascript` | `unverified` | `unverified` | `unclassified` |
 | `desktop-ide/visual-audit/report.json` | `interface_ingress` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docker-compose.commons-lab.yml` | `repository_support` | `yaml` | `unverified` | `unverified` | `unclassified` |
+| `docs/evidence/BEAST_CODING_AGENT_RESPONSIBILITY_CENSUS.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/beast-milestones-10-11-proof-bundle-summary-2026-07-15.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/deployed-enforcement-probe-2026-07-15.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
 | `docs/evidence/isolated-disk-cleanup-live-2026-07-15.json` | `repository_support` | `json` | `unverified` | `unverified` | `unclassified` |
