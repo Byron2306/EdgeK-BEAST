@@ -23,6 +23,7 @@ from app.kernel.agents.tool_models import (
 )
 from app.kernel.agents.tool_registry import AgentToolRegistry
 from app.kernel.agents.least_authority import authorize_agent_tool
+from app.kernel.agents.run_budget import RunBudgetExceeded, tool_budget_receipt
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -792,6 +793,33 @@ class AgentToolRuntime:
             raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
+
+        budget_receipt = tool_budget_receipt(
+            run,
+            self.engine.store.events(run_id, limit=100000),
+            spec,
+            arguments,
+        )
+        budget_event = "agent.budget.authorized" if budget_receipt["allowed"] else "agent.budget.exhausted"
+        self.engine.emit(run_id, budget_event, {"budget_receipt": budget_receipt})
+        self.engine.merge_checkpoint(run_id, {
+            "last_budget_receipt_id": budget_receipt["receipt_id"],
+            "last_budget_receipt_hash": budget_receipt["receipt_hash"],
+            "last_budget_allowed": budget_receipt["allowed"],
+            "last_budget_action": budget_receipt["action"],
+        })
+        if not budget_receipt["allowed"]:
+            from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
+            current = self.engine.store.get_run(run_id) or {}
+            if normalize_state(str(current.get("state") or "created")) not in TERMINAL_STATES:
+                reason = "; ".join(
+                    str(item.get("reason") or "")
+                    for item in budget_receipt.get("violations", [])
+                    if isinstance(item, dict)
+                ) or "AgentRun budget exhausted"
+                self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=reason)
+            raise RunBudgetExceeded(budget_receipt)
+
         context = ToolExecutionContext(
             run_id=run_id,
             workspace_root=str(run.get("root_path") or self.engine.workspace_root),
@@ -811,6 +839,7 @@ class AgentToolRuntime:
             "execution_target": target,
             "execution_target_payload": target_payload,
             "authority_receipt": authority,
+            "budget_receipt": budget_receipt,
         })
         status = "completed"
         result: dict[str, Any] = {}
