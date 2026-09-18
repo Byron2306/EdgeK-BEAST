@@ -307,13 +307,21 @@ def list_listening_ports(limit: int = 300) -> Dict[str, Any]:
         rows = _ports_via_proc(limit)
         source = "procfs"
     rows.sort(key=lambda item: (item.get("proto") or "", int(item.get("port") or 0)))
+    restricted = (
+        not rows
+        and os.environ.get("PREFIX", "").startswith("/data/data/com.termux/")
+        and not os.access("/proc/net/tcp", os.R_OK)
+    )
     return {
         "ok": True,
         "beast_object_type": "beast_ide_ports",
         "version": "1.0",
-        "source": source,
+        "source": "android_restricted" if restricted else source,
         "count": len(rows),
         "ports": rows,
+        "enumeration_available": not restricted,
+        "measurement": "unavailable" if restricted else "observed",
+        "reason": "android_proc_net_restricted" if restricted else "",
         "read_only": True,
     }
 
@@ -1015,10 +1023,20 @@ def _resource_telemetry() -> Dict[str, Any]:
         resources["memory"] = {"percent": 0.0, "available": False, "source": "unavailable"}
 
     try:
-        stat = os.statvfs("/")
+        # On Android, "/" is not the storage surface a Termux workspace lives on
+        # and can report a misleading 100% usage. Measure the Termux home/prefix
+        # filesystem instead. On ordinary hosts, keep the conventional root probe.
+        prefix = os.environ.get("PREFIX", "")
+        disk_path = os.environ.get("HOME", prefix) if prefix.startswith("/data/data/com.termux/") else "/"
+        stat = os.statvfs(disk_path)
         total = int(stat.f_blocks * stat.f_frsize)
         free = int(stat.f_bavail * stat.f_frsize)
-        resources["disk"] = {"percent": round((total - free) / total * 100.0, 1) if total else 0.0, "available": bool(total), "source": "statvfs"}
+        resources["disk"] = {
+            "percent": round((total - free) / total * 100.0, 1) if total else 0.0,
+            "available": bool(total),
+            "source": "statvfs",
+            "path": disk_path,
+        }
     except Exception:
         resources["disk"] = {"percent": 0.0, "available": False, "source": "unavailable"}
 
@@ -1063,7 +1081,8 @@ def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30
             "extensions": True,
         },
         "summary": {
-            "listening_ports": ports.get("count", 0),
+            "listening_ports": ports.get("count") if ports.get("enumeration_available", True) else None,
+            "ports_available": ports.get("enumeration_available", True),
             "processes_total": processes.get("total", 0),
             "python": environment.get("python", {}).get("version", ""),
             "in_virtualenv": environment.get("python", {}).get("in_virtualenv", False),
