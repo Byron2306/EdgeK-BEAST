@@ -19,6 +19,7 @@ from app.kernel.agents.run_budget import RunBudgetExceeded, budget_snapshot, nor
 from app.kernel.agents.semantic_context import semantic_context_contract
 from app.kernel.agents.tool_runtime import ToolExecutionFailed
 from app.kernel.agents.verification_planner import plan_verification
+from app.kernel.agents.verification_ladder import next_verification_stage, verification_ladder_enabled, verification_ladder_receipt
 
 
 class PlannerBudgetExhausted(RuntimeError):
@@ -1040,12 +1041,38 @@ class AgentPlannerRuntime:
                 and len(set(mutation_paths)) < 32
             ):
                 return None
+            verify_command = cls._default_verification_command(state)
+            if verification_ladder_enabled(run):
+                ladder_run = dict(run)
+                checkpoint = dict(ladder_run.get("checkpoint") or {})
+                checkpoint["planner"] = state.as_dict()
+                ladder_run["checkpoint"] = checkpoint
+                stage = next_verification_stage(ladder_run)
+                if isinstance(stage, dict) and isinstance(stage.get("command"), list):
+                    verify_command = list(stage["command"])
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="worktree.verify",
-                arguments={"command": cls._default_verification_command(state)},
+                arguments={"command": verify_command},
                 rationale="A bounded verifier must run after the latest mutation before BEAST can prepare SourcePlan evidence.",
             )
+
+        if mutation_paths and verification_ladder_enabled(run):
+            ladder_run = dict(run)
+            checkpoint = dict(ladder_run.get("checkpoint") or {})
+            checkpoint["planner"] = state.as_dict()
+            ladder_run["checkpoint"] = checkpoint
+            ladder = verification_ladder_receipt(ladder_run)
+            if not ladder["complete"]:
+                stage = next_verification_stage(ladder_run)
+                if isinstance(stage, dict) and isinstance(stage.get("command"), list):
+                    return PlannerDecision(
+                        decision_type=PlannerDecisionType.TOOL,
+                        tool_id="worktree.verify",
+                        arguments={"command": list(stage["command"])},
+                        rationale=f"Phase 3 verification ladder requires {stage.get('stage')} before SourcePlan synthesis.",
+                    )
+
         latest_sourceplan_index = cls._latest_index(state, {"worktree.sourceplan_draft"}, completed_only=True)
         if (
             isinstance(latest_verify, dict)
@@ -1076,6 +1103,13 @@ class AgentPlannerRuntime:
         latest_mutation_index = AgentPlannerRuntime._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = AgentPlannerRuntime._latest_index(state, {"worktree.verify"}, completed_only=True)
         latest_sourceplan_index = AgentPlannerRuntime._latest_index(state, {"worktree.sourceplan_draft"}, completed_only=True)
+        if verification_ladder_enabled(run):
+            ladder_run = dict(run)
+            checkpoint = dict(ladder_run.get("checkpoint") or {})
+            checkpoint["planner"] = state.as_dict()
+            ladder_run["checkpoint"] = checkpoint
+            if not verification_ladder_receipt(ladder_run)["complete"]:
+                return False
         return latest_verify_index >= latest_mutation_index >= 0 and latest_sourceplan_index >= latest_verify_index >= 0
 
     @classmethod
