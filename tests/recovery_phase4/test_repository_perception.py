@@ -68,6 +68,49 @@ def _run(engine: AgentRunEngine, *, objective: str) -> str:
     return run_id
 
 
+
+def test_first_model_tool_cannot_bypass_canonical_repository_perception(tmp_path):
+    root = _repo(tmp_path)
+    engine = AgentRunEngine(root)
+    run_id = _run(engine, objective="Repair calculate_total without attached files.")
+
+    provider = ScriptedPlannerProvider([
+        {
+            "decision_type": "tool",
+            "tool_id": "workspace.read_range",
+            "arguments": {"path": "app/main.py", "start_line": 1, "line_count": 40},
+        },
+    ])
+    final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=1).run(run_id))
+    observations = final["checkpoint"]["planner"]["observations"]
+    assert observations
+    assert observations[0]["tool_id"] == "workspace.discover_context"
+    assert observations[0]["status"] == "completed"
+    assert "pricing.py" in observations[0]["result"]["candidate_paths"]
+
+
+def test_failed_read_does_not_satisfy_repository_inspection_gate(tmp_path):
+    root = _repo(tmp_path)
+    engine = AgentRunEngine(root)
+    run_id = _run(engine, objective="Repair calculate_total without attached files.")
+    provider = ScriptedPlannerProvider([
+        {"decision_type": "complete", "summary": "unused"},
+    ])
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=2)
+    state = runtime._load_state(run_id)
+    state.observations = [{
+        "observation_id": "failed-read",
+        "tool_id": "workspace.read_range",
+        "status": "failed",
+        "arguments": {"path": "missing.py"},
+        "result": {},
+        "error": "missing.py",
+    }]
+    required = runtime._required_phase_decision(engine.store.get_run(run_id) or {}, state)
+    assert required is not None
+    assert required.tool_id == "workspace.discover_context"
+
+
 def test_repository_perception_discovers_definition_and_dependent_without_attachments(tmp_path):
     root = _repo(tmp_path)
     engine = AgentRunEngine(root)
