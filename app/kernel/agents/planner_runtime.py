@@ -832,6 +832,8 @@ class AgentPlannerRuntime:
                 "authority": discovery.get("authority"),
                 "hint_paths": list(discovery.get("hint_paths") or [])[:8],
                 "discovered_paths": list(discovery.get("discovered_paths") or [])[:16],
+                "required_evidence_paths": list(discovery.get("required_evidence_paths") or [])[:16],
+                "required_evidence_policy": discovery.get("required_evidence_policy") if isinstance(discovery.get("required_evidence_policy"), dict) else {},
                 "path_reasons": {
                     path: reasons
                     for path, reasons in list((discovery.get("path_reasons") or {}).items())[:20]
@@ -979,6 +981,18 @@ class AgentPlannerRuntime:
         ]
 
     @classmethod
+    def _required_discovery_evidence_paths(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "code_cortex.discover")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        return [
+            str(path).strip()
+            for path in (result.get("required_evidence_paths") or [])
+            if str(path).strip()
+        ]
+
+    @classmethod
     def _scope_paths(cls, run: dict[str, Any], state: PlannerState) -> list[str]:
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         semantic = request.get("semantic_context") if isinstance(request.get("semantic_context"), dict) else {}
@@ -1066,6 +1080,21 @@ class AgentPlannerRuntime:
             )
         inspected_paths = cls._inspected_paths(state)
         mutation_paths = cls._latest_mutation_paths(state)
+
+        # Recovery Phase 4: Code Cortex may identify direct dependents that a
+        # cross-file objective explicitly requires the planner to consider.
+        # Discovery still grants no mutation authority. Force an exact source
+        # read before verification or handoff can skip that evidence.
+        required_evidence_paths = cls._required_discovery_evidence_paths(state)
+        unread_required = [path for path in required_evidence_paths if path not in inspected_paths]
+        if unread_required:
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="workspace.read_range",
+                arguments={"path": unread_required[0], "start_line": 1, "line_count": 220},
+                rationale="Recovery Phase 4 requires exact inspection of a Code Cortex direct dependency before cross-file verification.",
+            )
+
         if not inspected_paths and not mutation_paths:
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             context_files = {
