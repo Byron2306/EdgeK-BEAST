@@ -29,6 +29,18 @@ def test_list_listening_ports_shape():
         assert set(("proto", "port", "status")).issubset(row.keys())
 
 
+def test_restricted_procfs_inode_scan_degrades_gracefully(monkeypatch):
+    original_iterdir = Path.iterdir
+
+    def guarded_iterdir(path):
+        if str(path) == "/proc":
+            raise PermissionError("android procfs enumeration denied")
+        return original_iterdir(path)
+
+    monkeypatch.setattr(Path, "iterdir", guarded_iterdir)
+    assert si._inode_pid_map() == {}
+
+
 def test_list_processes_finds_current_interpreter():
     payload = si.list_processes(query="", limit=200)
     assert payload["ok"] is True

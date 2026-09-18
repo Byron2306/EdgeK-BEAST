@@ -1,0 +1,67 @@
+name: BEAST Phase 4 Completion Gate
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase4-durable-approvals
+  pull_request:
+    paths:
+      - 'app/kernel/approvals/**'
+      - 'app/kernel/agents/**'
+      - 'app/routes/ide_routes/agent_runs.py'
+      - 'tests/phase4/**'
+      - 'tests/test_phase4_9_sensitive_data_controls.py'
+      - 'tests/test_phase4_10_external_content_admission.py'
+      - 'tests/phase3/**'
+      - 'scripts/beast_coding_agent_phase4_closure.py'
+      - '.github/workflows/beast-phase4-completion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase4-completion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Prove canonical Phase 4 approval subsystem
+        run: |
+          python -m pytest -q --noconftest             tests/phase4/test_phase4_1_approval_contracts.py             tests/phase4/test_phase4_2_durable_approval_store.py             tests/phase4/test_phase4_3_risk_classifier.py             tests/phase4/test_phase4_4_rich_approval_envelope.py             tests/phase4/test_phase4_5_approval_scope_engine.py             tests/phase4/test_phase4_6_request_bound_capability.py             tests/phase4/test_phase4_7_capability_runtime.py             tests/phase4/test_phase4_11_durable_approval_cards.py             tests/phase4/test_phase4_12_revocation_policy_admin.py             tests/phase4/test_phase4_13_end_to_end_closure.py             tests/test_phase4_9_sensitive_data_controls.py             tests/test_phase4_10_external_content_admission.py             tests/phase4/test_agent_selection_fallback.py             --junitxml=/tmp/phase4-canonical.xml
+
+      - name: Prove live durable approval restart and one-use exact-step resume
+        run: |
+          python -m pytest -q --noconftest             tests/phase4/test_agentrun_durable_approval_integration.py             --junitxml=/tmp/phase4-live-approval.xml
+
+      - name: Prove live permission modes and bounded autonomy
+        run: |
+          python -m pytest -q --noconftest             tests/phase4/test_live_permission_modes.py             --junitxml=/tmp/phase4-modes.xml
+
+      - name: Prove live sensitive and external-content controls
+        run: |
+          python -m pytest -q --noconftest             tests/phase4/test_live_sensitive_external_controls.py             --junitxml=/tmp/phase4-sensitive-external.xml
+
+      - name: Preserve Phase 3 coding-agent behavior
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_least_authority_runtime.py             tests/phase3/test_run_budget_policy.py             tests/phase3/test_planner_stagnation.py             tests/phase3/test_verification_ladder.py             tests/phase3/test_phase3_seeded_defect_gauntlet.py             tests/routes/test_agent_tool_runtime.py             --junitxml=/tmp/phase4-phase3-regression.xml
+
+      - name: Compile Phase 4 closure receipt
+        run: |
+          python scripts/beast_coding_agent_phase4_closure.py             --canonical-junit /tmp/phase4-canonical.xml             --live-approval-junit /tmp/phase4-live-approval.xml             --modes-junit /tmp/phase4-modes.xml             --sensitive-external-junit /tmp/phase4-sensitive-external.xml             --phase3-regression-junit /tmp/phase4-phase3-regression.xml             --json-out /tmp/BEAST_PHASE4_COMPLETION.json             --md-out /tmp/BEAST_PHASE4_COMPLETION.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase4-completion-receipt
+          path: |
+            /tmp/BEAST_PHASE4_COMPLETION.json
+            /tmp/BEAST_PHASE4_COMPLETION.md
+            /tmp/phase4-*.xml

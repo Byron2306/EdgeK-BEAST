@@ -1,0 +1,35 @@
+name: BEAST Phase 4 Termux Portability
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase4-durable-approvals
+  pull_request:
+    paths:
+      - 'app/kernel/workspaces/system_inspector.py'
+      - 'tests/test_ide_system_plane.py'
+      - 'scripts/termux/run_phase4_android_gauntlet.sh'
+      - '.github/workflows/beast-phase4-termux-portability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install BEAST dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install cryptography
+      - name: Validate Android gauntlet shell
+        run: bash -n scripts/termux/run_phase4_android_gauntlet.sh
+      - name: Prove restricted procfs degrades instead of breaking system snapshot
+        run: |
+          python -m pytest -q --noconftest             tests/test_ide_system_plane.py             -k 'restricted_procfs_inode_scan_degrades_gracefully or read_only_system_routes_return_ok or system_snapshot_advertises_capabilities'

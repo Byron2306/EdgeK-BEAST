@@ -198,7 +198,15 @@ def _decode_proc_address(value: str) -> tuple[str, int]:
 def _inode_pid_map() -> Dict[str, Dict[str, Any]]:
     mapping: Dict[str, Dict[str, Any]] = {}
     proc_root = Path("/proc")
-    for proc_dir in proc_root.iterdir() if proc_root.exists() else []:
+    try:
+        proc_dirs = list(proc_root.iterdir()) if proc_root.exists() else []
+    except (OSError, PermissionError):
+        # Android/Termux can expose selected /proc files while denying process
+        # directory enumeration. Port inspection is advisory/read-only, so
+        # degrade to unattributed socket rows instead of failing the entire
+        # IDE system snapshot and BEAST readiness probe.
+        return mapping
+    for proc_dir in proc_dirs:
         if not proc_dir.name.isdigit():
             continue
         pid = int(proc_dir.name)
