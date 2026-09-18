@@ -421,6 +421,7 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
             run = context.engine.store.get_run(context.run_id) or {}
             checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
             mutation_epoch = max(0, int(checkpoint.get("worktree_mutation_epoch") or 0))
+            result["mutation_epoch"] = mutation_epoch
             context.engine.merge_checkpoint(context.run_id, {
                 "verification": {
                     "ok": bool(result["ok"]),
@@ -499,6 +500,7 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
         run = context.engine.store.get_run(context.run_id) or {}
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         mutation_epoch = max(0, int(checkpoint.get("worktree_mutation_epoch") or 0))
+        result["mutation_epoch"] = mutation_epoch
         context.engine.merge_checkpoint(context.run_id, {
             "verification": {
                 "ok": bool(result["ok"]),
