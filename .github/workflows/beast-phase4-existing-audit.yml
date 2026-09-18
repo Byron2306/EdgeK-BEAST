@@ -1,0 +1,39 @@
+name: BEAST Phase 4 Existing Approval Audit
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase4-durable-approvals
+  pull_request:
+    paths:
+      - 'app/kernel/approvals/**'
+      - 'app/kernel/agents/**'
+      - 'app/routes/ide_routes/agent_runs.py'
+      - 'tests/phase4/**'
+      - 'tests/test_phase4_9_sensitive_data_controls.py'
+      - 'tests/test_phase4_10_external_content_admission.py'
+      - '.github/workflows/beast-phase4-existing-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  approval-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Prove existing Phase 4 approval organs
+        run: |
+          python -m pytest -q --noconftest             tests/phase4             tests/test_phase4_9_sensitive_data_controls.py             tests/test_phase4_10_external_content_admission.py             --junitxml=/tmp/beast-phase4-existing-audit.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase4-existing-audit
+          path: /tmp/beast-phase4-existing-audit.xml
