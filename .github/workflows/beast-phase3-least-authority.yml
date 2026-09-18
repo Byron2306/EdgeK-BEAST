@@ -1,0 +1,41 @@
+name: BEAST Phase 3 Least Authority
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase3-least-authority
+  pull_request:
+    paths:
+      - 'app/kernel/agents/least_authority.py'
+      - 'app/kernel/agents/tool_models.py'
+      - 'app/kernel/agents/tool_runtime.py'
+      - 'tests/phase3/**'
+      - 'tests/phase2/**'
+      - 'tests/test_beast_coding_agent_census_journeys.py'
+      - '.github/workflows/beast-phase3-least-authority.yml'
+      - 'docs/BEAST_CODING_AGENT_PHASE3_PLAN.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  least-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Prove Phase 3 authority classes and runtime receipts
+        run: |
+          python -m pytest -q --noconftest \
+            tests/phase3/test_least_authority_runtime.py
+      - name: Preserve Phase 2 multi-file and Sensorium behavior
+        run: |
+          python -m pytest -q --noconftest \
+            tests/phase2/test_multifile_phase_guard.py \
+            tests/phase2/test_sensorium_agent_run_receipt.py \
+            tests/test_beast_coding_agent_census_journeys.py
