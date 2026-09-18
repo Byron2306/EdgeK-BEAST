@@ -1362,8 +1362,18 @@ class AgentPlannerRuntime:
                     "model": usage.get("model"),
                     "prompt_chars": usage.get("prompt_chars", 0),
                     "completion_chars": usage.get("completion_chars", 0),
+                    "prompt_eval_count": usage.get("prompt_eval_count"),
+                    "completion_eval_count": usage.get("completion_eval_count"),
                     "latency_ms": usage.get("latency_ms"),
-                    "usage": usage.get("usage") if isinstance(usage.get("usage"), dict) else {},
+                    "timeout_seconds": usage.get("timeout_seconds"),
+                    "num_ctx": usage.get("num_ctx"),
+                    "num_predict": usage.get("num_predict"),
+                    "num_thread": usage.get("num_thread"),
+                    "num_batch": usage.get("num_batch"),
+                    "route": usage.get("route") if isinstance(usage.get("route"), dict) else {},
+                    "pressure": usage.get("pressure") if isinstance(usage.get("pressure"), dict) else {},
+                    "forge_kv": usage.get("forge_kv") if isinstance(usage.get("forge_kv"), dict) else {},
+                    "runtime_sensor": usage.get("runtime_sensor") if isinstance(usage.get("runtime_sensor"), dict) else {},
                     "finish_reason": usage.get("finish_reason"),
                 })
                 try:
@@ -1373,6 +1383,10 @@ class AgentPlannerRuntime:
                         "latency_ms": usage.get("latency_ms"),
                         "prompt_chars": usage.get("prompt_chars", 0),
                         "completion_chars": usage.get("completion_chars", 0),
+                        "prompt_eval_count": usage.get("prompt_eval_count"),
+                        "completion_eval_count": usage.get("completion_eval_count"),
+                        "num_ctx": usage.get("num_ctx"),
+                        "num_predict": usage.get("num_predict"),
                     })
                 except Exception as exc:
                     self.engine.emit(run_id, "agent.plan.integration.failed", {
