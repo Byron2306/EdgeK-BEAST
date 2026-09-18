@@ -587,6 +587,13 @@ async def _worktree_sourceplan(arguments: dict[str, Any], context: ToolExecution
     run = context.engine.store.get_run(context.run_id) if context.engine else {}
     checkpoint = run.get("checkpoint") if isinstance(run, dict) and isinstance(run.get("checkpoint"), dict) else {}
     verification = checkpoint.get("verification") if isinstance(checkpoint.get("verification"), dict) else {}
+    ladder_receipt: dict[str, Any] = {}
+    if isinstance(run, dict):
+        from app.kernel.agents.verification_ladder import verification_ladder_enabled, verification_ladder_receipt
+        if verification_ladder_enabled(run):
+            ladder_receipt = verification_ladder_receipt(run)
+            if not ladder_receipt.get("complete"):
+                raise PermissionError("SourcePlan synthesis requires every Phase 3 verification ladder stage to pass")
     mutation_epoch = max(0, int(checkpoint.get("worktree_mutation_epoch") or 0))
     verification_epoch = max(-1, int(verification.get("mutation_epoch") if verification.get("mutation_epoch") is not None else -1))
     if not verification.get("ok") or verification.get("stale") or verification_epoch != mutation_epoch:
@@ -622,6 +629,7 @@ async def _worktree_sourceplan(arguments: dict[str, Any], context: ToolExecution
             "files": plan.get("files") or [],
             "plan": plan,
             "requires_operator_translation": bool(plan.get("requires_operator_translation")),
+            "verification_ladder_receipt": ladder_receipt,
         }
         context.engine.merge_checkpoint(context.run_id, {
             "sourceplan": {
@@ -633,6 +641,9 @@ async def _worktree_sourceplan(arguments: dict[str, Any], context: ToolExecution
                 "execution_target": str(context.execution_target or "local"),
                 "execution_target_payload": dict(context.execution_target_payload or {}),
                 "target_execution": str(result.get("target_execution") or ""),
+                "verification_ladder_receipt_id": str(ladder_receipt.get("receipt_id") or ""),
+                "verification_ladder_receipt_hash": str(ladder_receipt.get("receipt_hash") or ""),
+                "verification_ladder_complete": bool(ladder_receipt.get("complete")) if ladder_receipt else False,
             }
         })
         context.engine.emit(context.run_id, "agent.sourceplan.ready", event_payload)
