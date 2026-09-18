@@ -58,7 +58,7 @@ jobs:
           grep -q -- '--with-nginx' /tmp/termux-up-help.txt
       - name: Assert Android gauntlet closure contract
         run: |
-          grep -q 'test_request_replan_continues_same_run_with_governance_observation' scripts/termux/run_phase4_android_gauntlet.sh
+          grep -q 'test_request_replan_continues_same_run_with_governance_observation' scripts/termux/compile_phase4_android_receipt.py
           grep -q 'test_permanent_deny_persists_tool_revocation_across_runs' scripts/termux/compile_phase4_android_receipt.py
           grep -q 'test_restart_approval_route_executes_exact_step_before_worker_relaunch' scripts/termux/compile_phase4_android_receipt.py
           grep -q 'tests/phase2/test_live_ollama_provider_acceptance.py' scripts/termux/run_phase4_android_gauntlet.sh
