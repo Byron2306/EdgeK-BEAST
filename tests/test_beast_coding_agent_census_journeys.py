@@ -41,23 +41,19 @@ def test_single_file_mutation_journey_observes_full_governed_lifecycle(tmp_path)
     assert "agent.verification.passed" in journey["event_types"]
 
 
-def test_cross_file_mutation_journey_records_premature_completion_gap(tmp_path):
+def test_cross_file_mutation_journey_completes_bounded_multi_file_objective(tmp_path):
     journey = run_cross_file_mutation_journey(tmp_path / "cross")
 
     assert journey["final_state"] == "completed"
     assert journey["chain_verification"]["head_matches"] is True
     tools = _tool_ids(journey)
     assert tools.count("workspace.read_range") >= 2
-    # Current phase enforcement substitutes verify after the first mutation,
-    # so the second scripted mutation never executes even though the run later
-    # satisfies the verification/SourcePlan completion guard.
-    assert tools.count("worktree.replace_exact") == 1
-    assert "agent.planner.phase_enforced" in journey["event_types"]
+    assert tools.count("worktree.replace_exact") == 2
     assert journey["final_source"]["values.py"] == "VALUE = 2\n"
-    assert journey["final_source"]["consumer.py"] == "from values import VALUE\nRESULT = VALUE\n"
-    assert journey["objective_assessment"]["satisfied"] is False
-    assert journey["objective_assessment"]["unresolved_paths"] == ["consumer.py"]
-    assert journey["objective_assessment"]["finding"] == "completed_with_unresolved_cross_file_objective"
+    assert journey["final_source"]["consumer.py"] == "from values import VALUE\nRESULT = VALUE + 1\n"
+    assert journey["objective_assessment"]["satisfied"] is True
+    assert journey["objective_assessment"]["unresolved_paths"] == []
+    assert journey["objective_assessment"]["finding"] == ""
 
 
 def test_failed_verification_repair_journey_records_failure_and_recovery(tmp_path):
@@ -83,4 +79,4 @@ def test_runtime_map_keeps_harness_observation_separate_from_unproven_edges(tmp_
     assert "Sensorium mirror receipt: **not proven by AgentRun ledger events alone**" in text
     assert "app/kernel/agents/planner_runtime.py" in text
     assert "app/kernel/agents/tool_runtime.py" in text
-    assert "completed_with_unresolved_cross_file_objective" in text
+    assert "completed_with_unresolved_cross_file_objective" not in text
