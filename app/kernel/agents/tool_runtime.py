@@ -841,6 +841,17 @@ class AgentToolRuntime:
                     arguments=arguments,
                     execution_target=target,
                 )
+                sensitive = phase4_evaluation.get("sensitive_classification") if isinstance(
+                    phase4_evaluation.get("sensitive_classification"), dict
+                ) else {}
+                if sensitive.get("sensitive"):
+                    approval_request = phase4_binding.get("request") if isinstance(phase4_binding.get("request"), dict) else {}
+                    evidence_policy = approval_request.get("evidence_policy") if isinstance(approval_request.get("evidence_policy"), dict) else {}
+                    if str(evidence_policy.get("sensitive_classification_digest") or "") != str(sensitive.get("classification_digest") or ""):
+                        raise PermissionError("sensitive-data classification changed after approval")
+                    approved_decision = phase4_binding.get("decision") if isinstance(phase4_binding.get("decision"), dict) else {}
+                    if str(approved_decision.get("scope") or "") not in {"ONCE", "EDITED_SCOPE_ONCE"}:
+                        raise PermissionError("sensitive-data access requires a one-use approval scope")
             except Exception as exc:
                 self.engine.emit(run_id, "agent.approval.exact_call_refused", {
                     "approval_id": request.approval_id,
@@ -863,6 +874,32 @@ class AgentToolRuntime:
                 "execution_target": target,
                 "capability_id": str(((run.get("checkpoint") or {}).get("approval_resume") or {}).get("capability_id") or ""),
                 "consumption_receipt_digest": str((phase4_binding.get("receipt") or {}).get("receipt_digest") or ""),
+            })
+
+        event_arguments: dict[str, Any] = dict(arguments)
+        sensitive_controller = None
+        sensitive_policy = None
+        sensitive_classification = (
+            phase4_evaluation.get("sensitive_classification")
+            if isinstance(phase4_evaluation.get("sensitive_classification"), dict)
+            else {}
+        )
+        sensitive_arguments_receipt: dict[str, Any] = {}
+        if phase4_enabled and sensitive_classification.get("sensitive"):
+            from app.kernel.approvals.sensitive_data import SensitiveDataController
+            sensitive_controller = SensitiveDataController()
+            sensitive_policy = phase4_evaluation.get("sensitive_policy")
+            sensitive_arguments_receipt = sensitive_controller.redact(
+                dict(arguments),
+                surface="log",
+                policy=sensitive_policy,
+            )
+            redacted_arguments = sensitive_arguments_receipt.get("redacted_payload")
+            event_arguments = redacted_arguments if isinstance(redacted_arguments, dict) else {}
+            self.engine.emit(run_id, "agent.sensitive_data.arguments_redacted", {
+                "tool_id": spec.tool_id,
+                "classification_digest": str(sensitive_classification.get("classification_digest") or ""),
+                "redaction_receipt": sensitive_arguments_receipt,
             })
 
         budget_receipt = tool_budget_receipt(
@@ -904,7 +941,7 @@ class AgentToolRuntime:
         self.engine.emit(run_id, "agent.tool.started", {
             "tool_id": spec.tool_id,
             "tool_version": spec.version,
-            "arguments": arguments,
+            "arguments": event_arguments,
             "risk": spec.risk.value,
             "effect": spec.effect.value,
             "execution_target": target,
@@ -919,17 +956,54 @@ class AgentToolRuntime:
         try:
             assert spec.handler is not None
             raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
-            result, truncated = _bounded_text(raw if isinstance(raw, dict) else {"value": raw}, spec.max_output_bytes)
+            raw_result = raw if isinstance(raw, dict) else {"value": raw}
+            if sensitive_controller is not None and sensitive_policy is not None:
+                redaction_receipt = sensitive_controller.redact(
+                    {"secret": raw_result},
+                    surface="model",
+                    policy=sensitive_policy,
+                )
+                redacted_payload = redaction_receipt.get("redacted_payload")
+                redacted_result = (
+                    redacted_payload.get("secret")
+                    if isinstance(redacted_payload, dict)
+                    else {"redacted": True}
+                )
+                safe_result = {
+                    "beast_object_type": "beast_sensitive_tool_observation",
+                    "version": "1.0",
+                    "sensitive": True,
+                    "classification_digest": str(sensitive_classification.get("classification_digest") or ""),
+                    "provider_visibility": str(sensitive_classification.get("provider_visibility") or "redacted_only"),
+                    "redacted_result": redacted_result,
+                    "redaction_receipt": redaction_receipt,
+                }
+                result, truncated = _bounded_text(safe_result, spec.max_output_bytes)
+                self.engine.emit(run_id, "agent.sensitive_data.result_redacted", {
+                    "tool_id": spec.tool_id,
+                    "classification_digest": str(sensitive_classification.get("classification_digest") or ""),
+                    "redaction_receipt": redaction_receipt,
+                })
+            else:
+                result, truncated = _bounded_text(raw_result, spec.max_output_bytes)
             if isinstance(raw, dict) and raw.get("ok") is False:
                 status = "failed"
-                error = str(raw.get("error") or raw.get("message") or f"tool {spec.tool_id} reported failure")
+                if sensitive_controller is not None:
+                    error = "sensitive tool reported failure; raw error withheld"
+                else:
+                    error = str(raw.get("error") or raw.get("message") or f"tool {spec.tool_id} reported failure")
         except asyncio.CancelledError:
             status = "cancelled"
             error = "tool execution cancelled"
             raise
         except Exception as exc:
             status = "failed"
-            error = str(exc)
+            if sensitive_controller is not None:
+                error = "sensitive tool execution failed; raw exception withheld; digest=" + hashlib.sha256(
+                    str(exc).encode("utf-8")
+                ).hexdigest()
+            else:
+                error = str(exc)
         completed = time.time()
         digest = hashlib.sha256(json.dumps(result, sort_keys=True, default=str).encode("utf-8")).hexdigest()
         observation = ToolObservation(
@@ -941,7 +1015,7 @@ class AgentToolRuntime:
             started_at=started,
             completed_at=completed,
             duration_ms=max(0, int((completed - started) * 1000)),
-            arguments=arguments,
+            arguments=event_arguments,
             result=result,
             error=error,
             truncated=truncated,
