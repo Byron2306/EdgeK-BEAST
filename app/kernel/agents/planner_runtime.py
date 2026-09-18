@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 import uuid
+from pathlib import Path
 from dataclasses import replace
 from typing import Any
 
@@ -450,7 +451,7 @@ class AgentPlannerRuntime:
                 "worktree.sourceplan_draft",
             ]
         return [
-            "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range",
+            "workspace.discover_context", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range",
             "worktree.bind", "worktree.sourceplan_draft", "worktree.replace_exact",
             "worktree.write_file", "worktree.verify",
         ]
@@ -516,24 +517,26 @@ class AgentPlannerRuntime:
 
     @staticmethod
     def _bootstrap_agent_decision(run: dict[str, Any], state: PlannerState, decision: PlannerDecision | None = None):
-        """Guarantee a real observation before a coding agent may summarize.
+        """Guarantee canonical repository perception before agent planning.
 
-        Small local models sometimes describe the required first inspection in
-        their rationale but incorrectly serialize it as ``complete``.  The
-        initial workspace index is read-only and bounded, so it is safe to
-        make that prerequisite deterministic instead of trusting a model's
-        first JSON enum.
+        Small local models sometimes summarize before discovering repository
+        evidence. Recovery Phase 4 makes Code Cortex-backed discovery a
+        deterministic read-only prerequisite while preserving exact-source
+        reads as the authority for mutation.
         """
         if str(run.get("mode") or "").strip().lower() != "agent" or state.observations:
             return None
-        if isinstance(decision, PlannerDecision):
-            if decision.decision_type is PlannerDecisionType.TOOL:
-                return None
+        if (
+            isinstance(decision, PlannerDecision)
+            and decision.decision_type is PlannerDecisionType.TOOL
+            and decision.tool_id == "workspace.discover_context"
+        ):
+            return None
         return PlannerDecision(
             decision_type=PlannerDecisionType.TOOL,
-            tool_id="workspace.index",
-            arguments={"limit": 1200, "include_symbols": True},
-            rationale="Mandatory bounded workspace index before agent planning.",
+            tool_id="workspace.discover_context",
+            arguments={"query": str(run.get("objective") or ""), "limit": 16, "index_limit": 1200},
+            rationale="Mandatory canonical repository perception is the first mutating-agent observation; model-selected tools cannot bypass discovery.",
         )
 
     def _prompt(self, run: dict[str, Any], state: PlannerState) -> str:
@@ -935,6 +938,53 @@ class AgentPlannerRuntime:
         return ""
 
     @classmethod
+    def _discovered_read_path(cls, state: PlannerState) -> str:
+        observation = cls._latest_completed_observation(state, "workspace.discover_context")
+        if not isinstance(observation, dict):
+            return ""
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        rows = result.get("candidates") if isinstance(result.get("candidates"), list) else []
+        terms = result.get("query_terms") if isinstance(result.get("query_terms"), list) else []
+        primary_term = str(terms[0] or "").strip() if terms else ""
+
+        def is_test_path(path: str) -> bool:
+            lowered = path.lower()
+            name = Path(path).name.lower()
+            return (
+                "/tests/" in f"/{lowered}/"
+                or "/test/" in f"/{lowered}/"
+                or name.startswith("test_")
+                or name.endswith("_test.py")
+                or ".spec." in name
+                or ".test." in name
+            )
+
+        if primary_term:
+            marker = f"symbol_search:{primary_term}"
+            for item in rows:
+                if not isinstance(item, dict):
+                    continue
+                path = str(item.get("path") or "").strip()
+                reasons = [str(reason or "") for reason in (item.get("reasons") or [])]
+                if path and not is_test_path(path) and marker in reasons:
+                    return path
+
+        for item in rows:
+            if not isinstance(item, dict):
+                continue
+            path = str(item.get("path") or "").strip()
+            if path and not is_test_path(path):
+                return path
+
+        candidates = result.get("candidate_paths") if isinstance(result.get("candidate_paths"), list) else []
+        for item in candidates:
+            path = str(item or "").strip()
+            if path:
+                return path
+        return ""
+
+
+    @classmethod
     def _default_verification_command(cls, state: PlannerState) -> list[str]:
         changed = cls._latest_mutation_paths(state)
         python_files = [path for path in changed if path.endswith(".py")]
@@ -972,15 +1022,22 @@ class AgentPlannerRuntime:
         observed = cls._observed_tool_ids(state)
         if not observed:
             return None
-        inspected = any(tool in observed for tool in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
-        if not inspected and "worktree.bind" not in observed:
+        completed = {
+            str(item.get("tool_id") or "")
+            for item in state.observations
+            if isinstance(item, dict)
+            and str(item.get("status") or "") == "completed"
+            and str(item.get("tool_id") or "")
+        }
+        inspected = any(tool in completed for tool in {"workspace.discover_context", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
+        if not inspected and "worktree.bind" not in completed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
-                tool_id="workspace.index",
-                arguments={"limit": 1200, "include_symbols": True},
-                rationale="Mutating agent runs require an evidence index before worktree binding.",
+                tool_id="workspace.discover_context",
+                arguments={"query": str(run.get("objective") or ""), "limit": 16, "index_limit": 1200},
+                rationale="Mutating agent runs require canonical Code Cortex repository discovery before worktree binding.",
             )
-        if "worktree.bind" not in observed:
+        if "worktree.bind" not in completed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="worktree.bind",
@@ -1019,7 +1076,7 @@ class AgentPlannerRuntime:
                     or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files"))
                 )
                 broad_creation = bool(valid_creation and broad_wave)
-            targeted_path = cls._targeted_read_path(run)
+            targeted_path = cls._targeted_read_path(run) or cls._discovered_read_path(state)
             if targeted_path and not (scoped_creation or broad_creation):
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
@@ -1128,7 +1185,7 @@ class AgentPlannerRuntime:
                 text = str(value) if isinstance(value, str) else value
                 marker = "[truncated]"
                 compact_result[key] = text[: 2400 - len(marker)] + marker if isinstance(text, str) and len(text) > 2400 else text
-            elif key in {"matches", "entries", "files", "symbols", "tests", "diagnostics", "codeActions", "code_actions"} and isinstance(value, list):
+            elif key in {"matches", "entries", "files", "symbols", "tests", "diagnostics", "codeActions", "code_actions", "candidates", "candidate_paths", "dependents"} and isinstance(value, list):
                 # Preserve navigable evidence, not a second copy of the
                 # repository. The full result remains durable in the ledger.
                 compact_result[key] = [
@@ -1140,6 +1197,12 @@ class AgentPlannerRuntime:
                     if isinstance(item, dict) else str(item)[:180]
                     for item in value[:12]
                 ]
+            elif key in {"code_cortex", "sensorium", "structural_index"} and isinstance(value, dict):
+                compact_result[key] = {
+                    field: value.get(field)
+                    for field in ("owner", "active_adapter", "change_count", "baseline_or_current", "index_digest", "truncated", "summary")
+                    if value.get(field) is not None and value.get(field) != ""
+                }
             elif key in {"semantic", "navigation", "diagnostics", "refactor", "renamePreview", "rename_preview"} and isinstance(value, dict):
                 compact_result[key] = {
                     field: value.get(field)
