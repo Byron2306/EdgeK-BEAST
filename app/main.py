@@ -3233,6 +3233,7 @@ def _edgek_platform_snapshot_sync(
         workspace_root,
         port_limit=max(1, min(int(port_limit), 200)),
         process_limit=max(1, min(int(process_limit), 100)),
+        quick=True,
     )
     runtime_state = runtime_governor.state()
     prec_state = prec_lifecycle.state()
