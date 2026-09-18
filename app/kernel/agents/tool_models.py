@@ -41,6 +41,9 @@ class ToolSpec:
     requires_worktree: bool = False
     idempotent: bool = True
     targets: tuple[str, ...] = ("local",)
+    authority_class: str = ""
+    redaction_policy: str = "source"
+    evidence_level: str = "summary"
     handler: ToolHandler | None = field(default=None, repr=False, compare=False)
 
     def public_dict(self) -> dict[str, Any]:
@@ -49,6 +52,13 @@ class ToolSpec:
         data["risk"] = self.risk.value
         data["effect"] = self.effect.value
         data["targets"] = list(self.targets)
+        if not str(data.get("authority_class") or "").strip():
+            data["authority_class"] = {
+                ToolEffect.READ: "A_READ_AUTOMATIC" if not self.requires_approval else "B_READ_SENSITIVE",
+                ToolEffect.ISOLATED_MUTATION: "C_ISOLATED_MUTATION",
+                ToolEffect.EXECUTION: "D_CONSEQUENTIAL_EXECUTION",
+                ToolEffect.PROMOTION: "E_NEVER_MODEL_AUTHORIZED",
+            }[self.effect]
         return data
 
 

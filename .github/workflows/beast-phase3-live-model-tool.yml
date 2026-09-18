@@ -1,0 +1,55 @@
+name: BEAST Phase 3 Live Model Tool Acceptance
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase3-least-authority
+  pull_request:
+    paths:
+      - 'app/kernel/agents/least_authority.py'
+      - 'app/kernel/agents/run_budget.py'
+      - 'app/kernel/agents/tool_runtime.py'
+      - 'app/kernel/agents/ollama_planner_provider.py'
+      - 'tests/phase3/test_live_ollama_least_authority.py'
+      - '.github/workflows/beast-phase3-live-model-tool.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-model-tool:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      BEAST_PHASE3_LIVE_OLLAMA: '1'
+      BEAST_PHASE3_LIVE_OLLAMA_MODEL: qwen2.5:0.5b
+      BEAST_OLLAMA_NUM_CTX: '2048'
+      BEAST_OLLAMA_NUM_PREDICT: '128'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: Start Ollama and pull bounded model
+        run: |
+          ollama serve >/tmp/beast-phase3-ollama.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          ollama pull "$BEAST_PHASE3_LIVE_OLLAMA_MODEL"
+      - name: Prove real model-selected tool through Phase 3 gates
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_live_ollama_least_authority.py             --junitxml=/tmp/beast-phase3-live-model-tool.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase3-live-model-tool
+          path: |
+            /tmp/beast-phase3-live-model-tool.xml
+            /tmp/beast-phase3-ollama.log

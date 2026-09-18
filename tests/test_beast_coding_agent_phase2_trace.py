@@ -39,7 +39,10 @@ def test_missing_chain_proof_or_unsupported_provider_claim_fails_closed(tmp_path
 def test_tampered_observation_or_raw_event_cannot_inherit_chain_proof(tmp_path):
     journey = run_analysis_journey(tmp_path / "analysis")
     broken = deepcopy(journey)
-    broken["trace_records"][0]["evidence_ref"] = broken["trace_records"][0]["evidence_ref"][:-1] + "0"
+    original_ref = str(broken["trace_records"][0]["evidence_ref"])
+    replacement = "0" if not original_ref.endswith("0") else "1"
+    broken["trace_records"][0]["evidence_ref"] = original_ref[:-1] + replacement
+    assert broken["trace_records"][0]["evidence_ref"] != original_ref
     with pytest.raises(ValueError, match="event hash"):
         build_phase2_trace([broken])
 

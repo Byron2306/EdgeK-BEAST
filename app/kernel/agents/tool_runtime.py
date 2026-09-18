@@ -22,6 +22,8 @@ from app.kernel.agents.tool_models import (
     ToolSpec,
 )
 from app.kernel.agents.tool_registry import AgentToolRegistry
+from app.kernel.agents.least_authority import authorize_agent_tool
+from app.kernel.agents.run_budget import RunBudgetExceeded, tool_budget_receipt
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -762,18 +764,62 @@ class AgentToolRuntime:
         arguments = self.registry.validate_arguments(spec, request.arguments)
         target = str(request.execution_target or "local")
         target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else {}
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        worktree_root = str(checkpoint.get("worktree_root") or "")
+        approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
+        authority = authorize_agent_tool(
+            spec,
+            run_id=run_id,
+            execution_target=target,
+            approval_status=str((approval or {}).get("status") or ""),
+            approval_id=request.approval_id,
+            worktree_bound=bool(worktree_root),
+        )
+        authority_event = "agent.tool.authorized" if authority["allowed"] else "agent.tool.refused"
+        self.engine.emit(run_id, authority_event, {"authority_receipt": authority})
+        self.engine.merge_checkpoint(run_id, {
+            "last_tool_authority_receipt_id": authority["receipt_id"],
+            "last_tool_authority_receipt_hash": authority["receipt_hash"],
+            "last_tool_authority_class": authority["authority_class"],
+            "last_tool_authority_allowed": authority["allowed"],
+        })
+        if not authority["allowed"]:
+            raise PermissionError(f"tool {spec.tool_id} refused: {authority['reason']}")
         if target not in spec.targets:
             raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         if spec.effect == ToolEffect.PROMOTION:
             raise PermissionError("promotion tools are never agent-executable")
-        if spec.requires_approval:
-            approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
-            if not approval or approval.get("status") != "approved":
-                raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
-        worktree_root = str(checkpoint.get("worktree_root") or "")
+        if spec.requires_approval and (not approval or approval.get("status") != "approved"):
+            raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
+
+        budget_receipt = tool_budget_receipt(
+            run,
+            self.engine.store.events(run_id, limit=100000),
+            spec,
+            arguments,
+        )
+        budget_event = "agent.budget.authorized" if budget_receipt["allowed"] else "agent.budget.exhausted"
+        self.engine.emit(run_id, budget_event, {"budget_receipt": budget_receipt})
+        self.engine.merge_checkpoint(run_id, {
+            "last_budget_receipt_id": budget_receipt["receipt_id"],
+            "last_budget_receipt_hash": budget_receipt["receipt_hash"],
+            "last_budget_allowed": budget_receipt["allowed"],
+            "last_budget_action": budget_receipt["action"],
+        })
+        if not budget_receipt["allowed"]:
+            from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
+            current = self.engine.store.get_run(run_id) or {}
+            if normalize_state(str(current.get("state") or "created")) not in TERMINAL_STATES:
+                reason = "; ".join(
+                    str(item.get("reason") or "")
+                    for item in budget_receipt.get("violations", [])
+                    if isinstance(item, dict)
+                ) or "AgentRun budget exhausted"
+                self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=reason)
+            raise RunBudgetExceeded(budget_receipt)
+
         context = ToolExecutionContext(
             run_id=run_id,
             workspace_root=str(run.get("root_path") or self.engine.workspace_root),
@@ -792,6 +838,8 @@ class AgentToolRuntime:
             "effect": spec.effect.value,
             "execution_target": target,
             "execution_target_payload": target_payload,
+            "authority_receipt": authority,
+            "budget_receipt": budget_receipt,
         })
         status = "completed"
         result: dict[str, Any] = {}
