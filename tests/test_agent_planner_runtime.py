@@ -1472,8 +1472,29 @@ def test_large_real_repo_endurance_touches_20_files_and_hands_off_sourceplan(tmp
         {"decision_type": "complete", "summary": "Large repo endurance mutation verified and handed off."},
     ])
     final = asyncio.run(AgentPlannerRuntime(engine, ScriptedPlannerProvider(decisions), max_turns=32, observation_limit=50).run(run_id))
-    assert final["state"] == "completed"
     planner = final["checkpoint"]["planner"]
+    phase_events = [
+        event["payload"]
+        for event in engine.store.events(run_id, limit=500)
+        if event["event_type"] == "agent.planner.phase_enforced"
+    ]
+    diagnostic = {
+        "state": final["state"],
+        "turn": planner.get("turn"),
+        "status": planner.get("status"),
+        "last_decision": planner.get("last_decision"),
+        "observations": [
+            {
+                "tool_id": item.get("tool_id"),
+                "status": item.get("status"),
+                "path": ((item.get("result") or {}).get("path") if isinstance(item.get("result"), dict) else ""),
+                "error": item.get("error"),
+            }
+            for item in planner.get("observations", [])
+        ],
+        "phase_enforced": phase_events,
+    }
+    assert final["state"] == "completed", repr(diagnostic)
     changed = [item["result"]["path"] for item in planner["observations"] if item.get("tool_id") == "worktree.write_file" and item.get("status") == "completed"]
     assert len(set(changed)) >= 20
     assert any(item.get("tool_id") == "worktree.verify" and item.get("status") == "completed" for item in planner["observations"])

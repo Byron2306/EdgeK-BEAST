@@ -19,9 +19,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Python test dependencies
-        run: python -m pip install -U pytest
+        run: python -m pip install -r requirements.txt
       - name: Run focused agentic loop contracts
-        run: python -m pytest tests/test_agent_planner_runtime.py -q -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"
+        run: python -m pytest --noconftest tests/test_agent_planner_runtime.py -q -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"
 
   ecosystem-adapters:
     name: IDE ecosystem test adapters

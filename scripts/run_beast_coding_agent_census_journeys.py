@@ -106,6 +106,7 @@ def _finalize_journey(
         "run_id": run_id,
         "final_state": str(final.get("state") or ""),
         "chain_verification": chain,
+        "event_chain": events,
         "event_count": len(events),
         "event_types": [str(event.get("event_type") or "") for event in events],
         "tool_observations": _tool_observations(events),

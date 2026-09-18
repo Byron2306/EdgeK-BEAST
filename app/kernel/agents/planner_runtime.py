@@ -973,25 +973,65 @@ class AgentPlannerRuntime:
                 rationale="Mutating agent runs require an isolated worktree before any file mutation.",
             )
         inspected_paths = cls._inspected_paths(state)
-        if not inspected_paths:
+        mutation_paths = cls._latest_mutation_paths(state)
+        if not inspected_paths and not mutation_paths:
+            request = run.get("request") if isinstance(run.get("request"), dict) else {}
+            context_files = {
+                str(path).strip()
+                for path in (request.get("context_files") or [])
+                if str(path).strip()
+            }
+            decision_path = ""
+            scoped_creation = False
+            broad_creation = False
+            if (
+                isinstance(decision, PlannerDecision)
+                and decision.decision_type is PlannerDecisionType.TOOL
+                and decision.tool_id == "worktree.write_file"
+            ):
+                decision_path = str(decision.arguments.get("path") or "").strip()
+                valid_creation = bool(decision_path and not cls._invalid_mutation_reason(decision))
+                scoped_creation = bool(valid_creation and decision_path in context_files)
+                objective = str(run.get("objective") or "").casefold()
+                broad_wave = bool(
+                    request.get("long_horizon")
+                    or request.get("monorepo")
+                    or request.get("architecture_planning")
+                    or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files"))
+                )
+                broad_creation = bool(valid_creation and broad_wave)
             targeted_path = cls._targeted_read_path(run)
-            if targeted_path:
+            if targeted_path and not (scoped_creation or broad_creation):
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
                     tool_id="workspace.read_range",
                     arguments={"path": targeted_path, "start_line": 1, "line_count": 220},
-                    rationale="A bounded file read is required after bind when no exact file contents have been inspected yet.",
+                    rationale="A bounded file read is required after bind before the first mutation when no exact file contents have been inspected yet.",
                 )
-        mutation_paths = cls._latest_mutation_paths(state)
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
         if mutation_paths and (latest_verify_index < 0 or latest_mutation_index > latest_verify_index):
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             objective = str(run.get("objective") or "").casefold()
+            context_files = {
+                str(path).strip()
+                for path in (request.get("context_files") or [])
+                if str(path).strip()
+            }
+            decision_path = ""
+            if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+                decision_path = str(decision.arguments.get("path") or "").strip()
             broad_wave = bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning") or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
+            bounded_multi_file_wave = bool(
+                len(context_files) > 1
+                and decision_path
+                and decision_path in context_files
+                and decision_path in inspected_paths
+                and decision_path not in set(mutation_paths)
+            )
             if (
-                broad_wave
+                (broad_wave or bounded_multi_file_wave)
                 and isinstance(decision, PlannerDecision)
                 and decision.decision_type is PlannerDecisionType.TOOL
                 and decision.tool_id in {"worktree.write_file", "worktree.replace_exact"}

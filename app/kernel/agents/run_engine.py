@@ -270,7 +270,7 @@ class AgentRunEngine:
         try:
             payload = event.get("payload") if isinstance(event.get("payload"), dict) else {}
             runtime.observe_owned(
-                event_type=str(event.get("event_type") or "agent.run.event"),
+                event_type="agent.run.observed",
                 source="beast_agent_run_engine",
                 payload_schema="beast.sensor.agent_run_event.v1",
                 mission_id=str(event.get("run_id") or ""),
@@ -280,6 +280,7 @@ class AgentRunEngine:
                     "sequence": int(event.get("sequence") or 0),
                     "legacy_type": str(event.get("legacy_type") or ""),
                     "event_hash": str(event.get("event_hash") or ""),
+                    "source_event_type": str(event.get("event_type") or ""),
                     "payload_keys": sorted(payload.keys()),
                     "payload_included": False,
                 },

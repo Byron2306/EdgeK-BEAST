@@ -1,0 +1,47 @@
+name: BEAST Phase 2 Hosted Remote Acceptance
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase2-runtime-trace
+  pull_request:
+    paths:
+      - '.github/workflows/beast-phase2-hosted-remote.yml'
+      - 'tests/phase2/test_live_remote_promotion_acceptance.py'
+      - 'tests/fixtures/disposable-sshd/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  disposable-remote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      BEAST_LIVE_DOCKER_ACCEPTANCE: '1'
+      BEAST_LIVE_SSH_DOCKER_ACCEPTANCE: '1'
+      BEAST_LIVE_DOCKER_IMAGE: 'beast-disposable-sshd:live'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Prove Docker and SSH target availability
+        run: |
+          docker version
+          ssh -V
+      - name: Build the repository's disposable target image
+        run: docker build -t "$BEAST_LIVE_DOCKER_IMAGE" tests/fixtures/disposable-sshd
+      - name: Run live disposable remote promotion tests
+        run: |
+          python -m pytest -q --noconftest \
+            tests/phase2/test_live_remote_promotion_acceptance.py \
+            --junitxml=/tmp/beast-phase2-disposable-remote.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase2-disposable-remote-results
+          path: /tmp/beast-phase2-disposable-remote.xml
