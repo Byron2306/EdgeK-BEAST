@@ -108,6 +108,16 @@ def main() -> int:
         "mcp_http": get_json("http://127.0.0.1:8765/mcp/health"),
         "ollama": get_json("http://127.0.0.1:11434/api/tags"),
     }
+    desktop_contract = health["desktop_contract"].get("payload")
+    desktop_contract_ready = bool(
+        isinstance(desktop_contract, dict)
+        and desktop_contract.get("contract") == "beast-desktop-enterprise-v1"
+        and desktop_contract.get("status") == "ready"
+        and all(bool(value) for value in (desktop_contract.get("checks") or {}).values())
+    )
+    health["desktop_contract"]["semantic_ready"] = desktop_contract_ready
+    health["desktop_contract"]["ok"] = bool(health["desktop_contract"]["ok"] and desktop_contract_ready)
+
     backend_ready = all(item["ok"] for item in health.values())
     all_tests = all(bool(item.get("passed")) for item in groups.values())
     passed = termux and backend_ready and all_tests
