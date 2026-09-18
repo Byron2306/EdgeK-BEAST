@@ -315,7 +315,7 @@
       return seeded.platform;
     }
     try {
-      const params=new URLSearchParams({session_id:'default',limit:'8',route_limit:'10',event_limit:'8',process_limit:'30',port_limit:'40'});
+      const params=new URLSearchParams({session_id:'default',limit:'8',route_limit:'10',event_limit:'8',process_limit:'30',port_limit:'40',quick:'true'});
       if(workspaceRoot()) params.set('root_path',workspaceRoot());
       const localPhaseEvidence = typeof window.beastDesktop?.phaseEvidence === 'function'
         ? window.beastDesktop.phaseEvidence().catch(()=>null)
