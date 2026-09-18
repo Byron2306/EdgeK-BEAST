@@ -767,6 +767,37 @@ class AgentToolRuntime:
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         worktree_root = str(checkpoint.get("worktree_root") or "")
         approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
+
+        phase4_runtime = None
+        phase4_evaluation: dict[str, Any] = {}
+        phase4_enabled = False
+        from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
+        if durable_approvals_enabled(run):
+            phase4_enabled = True
+            phase4_runtime = DurableAgentApprovalRuntime(
+                str(run.get("root_path") or self.engine.workspace_root)
+            )
+            phase4_evaluation = phase4_runtime.evaluate_for_tool(
+                run=run,
+                spec=spec,
+                arguments=arguments,
+                execution_target=target,
+                worktree_bound=bool(worktree_root),
+            )
+            self.engine.emit(run_id, "agent.permission_mode.evaluated", {
+                "tool_id": spec.tool_id,
+                "tool_version": spec.version,
+                "permission_mode": str((phase4_evaluation.get("mode_decision") or {}).get("mode") or ""),
+                "decision_digest": str((phase4_evaluation.get("mode_decision") or {}).get("decision_digest") or ""),
+                "auto_authorized": bool(phase4_evaluation.get("auto_authorized")),
+                "requires_approval": bool(phase4_evaluation.get("requires_approval")),
+                "denied": bool(phase4_evaluation.get("denied")),
+                "reasons": list((phase4_evaluation.get("mode_decision") or {}).get("reasons") or []),
+            })
+            if phase4_evaluation.get("denied"):
+                reason = "; ".join(str(item) for item in (phase4_evaluation.get("mode_decision") or {}).get("reasons") or [])
+                raise PermissionError(reason or f"tool {spec.tool_id} denied by Phase 4 permission mode")
+
         authority = authorize_agent_tool(
             spec,
             run_id=run_id,
@@ -774,6 +805,7 @@ class AgentToolRuntime:
             approval_status=str((approval or {}).get("status") or ""),
             approval_id=request.approval_id,
             worktree_bound=bool(worktree_root),
+            policy_auto_authorized=bool(phase4_evaluation.get("auto_authorized")),
         )
         authority_event = "agent.tool.authorized" if authority["allowed"] else "agent.tool.refused"
         self.engine.emit(run_id, authority_event, {"authority_receipt": authority})
@@ -789,19 +821,20 @@ class AgentToolRuntime:
             raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         if spec.effect == ToolEffect.PROMOTION:
             raise PermissionError("promotion tools are never agent-executable")
-        if spec.requires_approval and (not approval or approval.get("status") != "approved"):
+        phase4_requires_approval = bool(phase4_evaluation.get("requires_approval"))
+        if phase4_enabled:
+            if phase4_requires_approval and (not approval or approval.get("status") != "approved"):
+                raise PermissionError(f"tool {spec.tool_id} requires an approved Phase 4 capability")
+        elif spec.requires_approval and (not approval or approval.get("status") != "approved"):
             raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
 
         phase4_binding: dict[str, Any] = {}
-        if spec.requires_approval:
-            from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
-        if spec.requires_approval and durable_approvals_enabled(run):
+        if phase4_enabled and phase4_requires_approval:
             try:
-                phase4_binding = DurableAgentApprovalRuntime(
-                    str(run.get("root_path") or self.engine.workspace_root)
-                ).validate_consumed_call(
+                assert phase4_runtime is not None
+                phase4_binding = phase4_runtime.validate_consumed_call(
                     run=run,
                     approval_id=request.approval_id,
                     spec=spec,
