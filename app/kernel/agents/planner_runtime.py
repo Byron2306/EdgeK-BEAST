@@ -759,7 +759,7 @@ class AgentPlannerRuntime:
                 self.engine.emit(run_id, "agent.permission_mode.refused", {
                     "tool_id": decision.tool_id,
                     "tool_version": spec.version,
-                    "reason": "; ".join(str(item) for item in (phase4_evaluation.get("mode_decision") or {}).get("reasons") or []),
+                    "reason": "; ".join(str(item) for item in phase4_evaluation.get("reasons") or []),
                 })
                 return None
             if phase4_evaluation.get("auto_authorized"):
