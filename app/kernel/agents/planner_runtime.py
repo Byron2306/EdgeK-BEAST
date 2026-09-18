@@ -720,11 +720,55 @@ class AgentPlannerRuntime:
             spec = self.engine.tool_registry.get(decision.tool_id)
         except Exception:
             return decision
-        if not getattr(spec, "requires_approval", False):
-            return decision
-
         phase4 = durable_approvals_enabled(run)
-        if not phase4:
+        current_run = self.engine.store.get_run(run_id) or run
+        checkpoint = current_run.get("checkpoint") if isinstance(current_run.get("checkpoint"), dict) else {}
+        worktree_bound = bool(checkpoint.get("worktree_root"))
+        phase4_runtime = None
+        phase4_evaluation: dict[str, Any] = {}
+
+        if phase4:
+            phase4_runtime = DurableAgentApprovalRuntime(
+                str(run.get("root_path") or self.engine.workspace_root)
+            )
+            try:
+                phase4_evaluation = phase4_runtime.evaluate_for_tool(
+                    run=current_run,
+                    spec=spec,
+                    arguments=decision.arguments,
+                    execution_target=decision.execution_target,
+                    worktree_bound=worktree_bound,
+                )
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.permission_mode.refused", {
+                    "tool_id": decision.tool_id,
+                    "tool_version": spec.version,
+                    "reason": str(exc),
+                })
+                return None
+            self.engine.emit(run_id, "agent.permission_mode.planner_decision", {
+                "tool_id": decision.tool_id,
+                "tool_version": spec.version,
+                "permission_mode": str((phase4_evaluation.get("mode_decision") or {}).get("mode") or ""),
+                "decision_digest": str((phase4_evaluation.get("mode_decision") or {}).get("decision_digest") or ""),
+                "auto_authorized": bool(phase4_evaluation.get("auto_authorized")),
+                "requires_approval": bool(phase4_evaluation.get("requires_approval")),
+                "denied": bool(phase4_evaluation.get("denied")),
+            })
+            if phase4_evaluation.get("denied"):
+                self.engine.emit(run_id, "agent.permission_mode.refused", {
+                    "tool_id": decision.tool_id,
+                    "tool_version": spec.version,
+                    "reason": "; ".join(str(item) for item in (phase4_evaluation.get("mode_decision") or {}).get("reasons") or []),
+                })
+                return None
+            if phase4_evaluation.get("auto_authorized"):
+                return decision
+            if not phase4_evaluation.get("requires_approval"):
+                return None
+        else:
+            if not getattr(spec, "requires_approval", False):
+                return decision
             approvals = self.engine.store.approvals(run_id)
             existing = next(
                 (
@@ -745,16 +789,12 @@ class AgentPlannerRuntime:
                 paths.append(str(value))
         step_id = self._active_plan_step_id(run_id, decision.tool_id)
         target_payload = self._execution_target_payload(run, decision.execution_target)
-        current_run = self.engine.store.get_run(run_id) or run
-        checkpoint = current_run.get("checkpoint") if isinstance(current_run.get("checkpoint"), dict) else {}
-        worktree_bound = bool(checkpoint.get("worktree_root"))
 
         phase4_artifacts: dict[str, Any] = {}
         if phase4:
             try:
-                phase4_artifacts = DurableAgentApprovalRuntime(
-                    str(run.get("root_path") or self.engine.workspace_root)
-                ).create_for_tool(
+                assert phase4_runtime is not None
+                phase4_artifacts = phase4_runtime.create_for_tool(
                     run=current_run,
                     step_id=step_id,
                     approval_id=approval_id,
