@@ -78,9 +78,7 @@ _bootstrap_tui_runtime()
 # with the gateway's durable stores before Uvicorn has started, leaving a
 # desktop-managed gateway alive but not listening.  Keep eager setup for CLI
 # commands that need it, but let server processes initialise once in-app.
-_command_name = sys.argv[1] if len(sys.argv) > 1 else ""
-_lightweight_verify = _command_name == "verify" and len(sys.argv) > 2 and sys.argv[2] == "release-contract"
-if _command_name not in {
+_lightweight_commands = {
     "crystal-proof",
     "gateway",
     "commons-gateway",
@@ -88,7 +86,13 @@ if _command_name not in {
     "termux-up",
     "termux-status",
     "termux-down",
-} and not _lightweight_verify:
+}
+_command_name = next(
+    (name for name in _lightweight_commands if name in sys.argv[1:]),
+    sys.argv[1] if len(sys.argv) > 1 else "",
+)
+_lightweight_verify = "verify" in sys.argv[1:] and "release-contract" in sys.argv[1:]
+if _command_name not in _lightweight_commands and not _lightweight_verify:
     with contextlib.redirect_stdout(sys.stderr):
         from app.kernel.compute.factory import ServiceFactory
         ServiceFactory.initialize()
