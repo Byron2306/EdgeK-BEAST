@@ -55,7 +55,10 @@ def test_package_report_detects_node_and_python(tmp_path):
     assert report["ok"] is True
     assert report["python"]["installed_distribution_count"] > 0
     locations = {m["location"] for m in report["node"]["manifests"]}
-    assert "." in locations  # root package.json exists in this repo
+    # The current repository keeps its Node manifests in component roots rather
+    # than requiring a synthetic top-level package.json.
+    assert "desktop-ide" in locations
+    assert "vscode-extension" in locations
 
 
 def test_extensions_report_lists_vscode_commands():
