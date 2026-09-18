@@ -285,7 +285,7 @@ async def test_review_mode_lifts_read_only_tool_into_durable_approval(tmp_path):
                 "operator_id": "operator:review-test",
             },
         )
-        assert rejected.status_code == 200
+        assert rejected.status_code == 200, rejected.text
         assert rejected.json()["phase4"]["approved"] is False
         await _wait_async(client, root, run_id, {"policy_blocked"})
 
