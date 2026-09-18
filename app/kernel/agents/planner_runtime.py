@@ -1337,6 +1337,110 @@ class AgentPlannerRuntime:
             projected["result"] = {"summary": encoded[:2800] + "[truncated]", "truncated": True}
         return projected
 
+    async def resume_exact_suspended_step(self, run_id: str) -> dict[str, Any] | None:
+        """Execute one capability-consumed suspended step before fresh planning.
+
+        This is deliberately narrower than resume_run: it only acts when the
+        durable Phase 4 capability runtime has already consumed a capability
+        into READY_FOR_EXACT_TOOL_EXECUTION and the persisted suspended call
+        still matches that receipt.
+        """
+        run = self.engine.store.get_run(run_id)
+        if not run:
+            raise KeyError(f"unknown agent run: {run_id}")
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        resume = checkpoint.get("approval_resume") if isinstance(checkpoint.get("approval_resume"), dict) else {}
+        if str(resume.get("status") or "") != "READY_FOR_EXACT_TOOL_EXECUTION":
+            return None
+        suspended = checkpoint.get("suspended_step") if isinstance(checkpoint.get("suspended_step"), dict) else {}
+        checks = {
+            "approval_id": (suspended.get("approval_id"), resume.get("approval_id")),
+            "step_id": (suspended.get("step_id"), resume.get("step_id")),
+            "tool_id": (suspended.get("tool_id"), resume.get("tool_id")),
+            "tool_version": (suspended.get("tool_version"), resume.get("tool_version")),
+            "execution_target": (
+                str(suspended.get("execution_target") or "local"),
+                str(resume.get("execution_target") or "local"),
+            ),
+        }
+        for field, (left, right) in checks.items():
+            if str(left or "") != str(right or ""):
+                raise PermissionError(f"restart exact-step {field} binding mismatch")
+        arguments = suspended.get("arguments") if isinstance(suspended.get("arguments"), dict) else {}
+        if not arguments and str(suspended.get("tool_id") or ""):
+            # Empty arguments are valid for some tools, but a non-mapping
+            # suspended call is never reconstructable.
+            arguments = {}
+        approval_id = str(resume.get("approval_id") or "")
+        tool_id = str(resume.get("tool_id") or "")
+        target = str(resume.get("execution_target") or suspended.get("execution_target") or "local")
+        target_payload = suspended.get("execution_target_payload") if isinstance(suspended.get("execution_target_payload"), dict) else {}
+
+        self.engine.emit(run_id, "agent.approval.restart_exact_step.started", {
+            "approval_id": approval_id,
+            "capability_id": str(resume.get("capability_id") or ""),
+            "step_id": str(resume.get("step_id") or ""),
+            "tool_id": tool_id,
+            "tool_version": str(resume.get("tool_version") or ""),
+            "execution_target": target,
+        })
+        try:
+            observation = await self.engine.execute_tool(
+                run_id,
+                tool_id,
+                arguments,
+                execution_target=target,
+                execution_target_payload=target_payload,
+                approval_id=approval_id,
+            )
+        except ToolExecutionFailed as exc:
+            observation = exc.observation.as_dict()
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.approval.restart_exact_step.failed", {
+                "approval_id": approval_id,
+                "step_id": str(resume.get("step_id") or ""),
+                "tool_id": tool_id,
+                "reason": str(exc),
+            })
+            raise
+
+        state = self._load_state(run_id)
+        state.observations.append(observation)
+        state.observations = state.observations[-self.observation_limit:]
+        state.status = "running"
+        state.blocker = ""
+        self._save_state(state)
+        current = self.engine.store.get_run(run_id) or {}
+        if normalize_state(str(current.get("state") or "created")) not in TERMINAL_STATES:
+            self.engine.store.transition(run_id, AgentRunState.UPDATING_PLAN)
+        self.engine.emit(run_id, "agent.planner.observation.accepted", {
+            "turn": state.turn,
+            "observation_id": observation.get("observation_id"),
+            "tool_id": observation.get("tool_id"),
+            "status": observation.get("status"),
+            "evidence_digest": observation.get("evidence_digest", ""),
+            "source": "phase4_restart_exact_step",
+        })
+        self.engine.emit(run_id, "agent.approval.restart_exact_step.executed", {
+            "approval_id": approval_id,
+            "capability_id": str(resume.get("capability_id") or ""),
+            "step_id": str(resume.get("step_id") or ""),
+            "tool_id": tool_id,
+            "observation_id": observation.get("observation_id"),
+            "status": observation.get("status"),
+            "evidence_digest": observation.get("evidence_digest", ""),
+        })
+        try:
+            self.planning_integrations.sync_phase1_progress(run_id, observation)
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.plan.integration.failed", {
+                "integration_id": "phase1_multi_file_execution_planning",
+                "reason": f"{type(exc).__name__}: {exc}",
+                "tool_id": observation.get("tool_id"),
+                "source": "phase4_restart_exact_step",
+            })
+        return observation
+
     async def run(self, run_id: str) -> dict[str, Any]:
         run = self.engine.store.get_run(run_id)
         if not run:
@@ -1345,6 +1449,8 @@ class AgentPlannerRuntime:
         if current in TERMINAL_STATES:
             return run
         self.engine.attach_current_task(run_id)
+        await self.resume_exact_suspended_step(run_id)
+        run = self.engine.store.get_run(run_id) or run
         state = self._load_state(run_id)
         state.max_turns = planner_turn_limit(run, self.max_turns)
         state.max_repair_cycles = self.max_repair_cycles
@@ -1945,8 +2051,65 @@ class AgentPlannerRuntime:
             self.engine.store.transition(run_id, AgentRunState.EXECUTING_TOOL)
             authorized = await self._authorize_tool(run, run_id, decision)
             if authorized is None:
+                latest = self.engine.store.get_run(run_id) or {}
+                latest_checkpoint = latest.get("checkpoint") if isinstance(latest.get("checkpoint"), dict) else {}
+                phase4_approval = latest_checkpoint.get("phase4_approval") if isinstance(latest_checkpoint.get("phase4_approval"), dict) else {}
+                phase4_decision = phase4_approval.get("decision") if isinstance(phase4_approval.get("decision"), dict) else {}
+                decision_name = str(phase4_decision.get("decision") or "")
+                if (
+                    durable_approvals_enabled(latest)
+                    and str(phase4_approval.get("status") or "") == "REQUEST_REPLAN"
+                    and decision_name == "REQUEST_REPLAN"
+                ):
+                    reason = str(phase4_decision.get("reason") or "operator requested a new plan")
+                    decision_digest = str(phase4_decision.get("decision_digest") or "")
+                    governance_observation = {
+                        "beast_object_type": "beast_governance_observation",
+                        "version": "1.0",
+                        "observation_id": f"approval-replan-{str(phase4_approval.get('approval_id') or '')}",
+                        "run_id": run_id,
+                        "tool_id": "governance.approval_replan",
+                        "tool_version": "1",
+                        "status": "completed",
+                        "arguments": {},
+                        "result": {
+                            "required_action": "replan",
+                            "denied_tool_id": decision.tool_id,
+                            "approval_id": str(phase4_approval.get("approval_id") or ""),
+                            "decision": decision_name,
+                            "reason": reason,
+                            "repeat_same_call_authorized": False,
+                        },
+                        "error": "",
+                        "truncated": False,
+                        "evidence_digest": decision_digest.removeprefix("sha256:"),
+                    }
+                    state.observations.append(governance_observation)
+                    state.observations = state.observations[-self.observation_limit:]
+                    state.status = "running"
+                    state.blocker = ""
+                    self.engine.emit(run_id, "agent.approval.replan_requested", {
+                        "approval_id": str(phase4_approval.get("approval_id") or ""),
+                        "tool_id": decision.tool_id,
+                        "reason": reason,
+                        "decision_digest": decision_digest,
+                    })
+                    self.engine.emit(run_id, "agent.planner.observation.accepted", {
+                        "turn": state.turn,
+                        "observation_id": governance_observation["observation_id"],
+                        "tool_id": governance_observation["tool_id"],
+                        "status": governance_observation["status"],
+                        "evidence_digest": governance_observation["evidence_digest"],
+                    })
+                    self._save_state(state)
+                    continue
+
+                reason = str(phase4_decision.get("reason") or "")
                 state.status = "blocked"
-                state.blocker = f"operator did not approve {decision.tool_id}"
+                if decision_name == "PERMANENTLY_DENY":
+                    state.blocker = reason or f"operator permanently denied {decision.tool_id}"
+                else:
+                    state.blocker = reason or f"operator did not approve {decision.tool_id}"
                 self._save_state(state)
                 self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
                 return self.engine.store.get_run(run_id) or {}
