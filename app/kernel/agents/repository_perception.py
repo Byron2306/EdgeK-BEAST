@@ -188,7 +188,7 @@ class RepositoryPerception:
                     detail=str(item.get("name") or ""),
                 )
 
-        for term in terms[:8]:
+        for term_index, term in enumerate(terms[:8]):
             try:
                 found = self.code_cortex.search_symbols(workspace, term, limit=max(4, min(limit, 12)))
             except Exception:
@@ -204,9 +204,9 @@ class RepositoryPerception:
                 if path:
                     add_candidate(
                         path,
-                        score=18,
+                        score=24 + max(0, 7 - term_index) * 3,
                         source="code_cortex",
-                        reason="symbol_search",
+                        reason=f"symbol_search:{term}",
                         detail=str(item.get("name") or term),
                     )
 
@@ -233,6 +233,8 @@ class RepositoryPerception:
             receipt = found.get("receipt") if isinstance(found.get("receipt"), dict) else {}
             if receipt:
                 cortex_receipts.append(dict(receipt))
+            if found.get("results"):
+                add_candidate(path, score=6, source="code_cortex", reason="has_dependents")
             for item in found.get("results") or []:
                 if not isinstance(item, dict):
                     continue
@@ -244,9 +246,10 @@ class RepositoryPerception:
                     "path": dep_path,
                     "matched_imports": item.get("matched_imports") or [],
                 })
+                is_test = bool(re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.", dep_path, flags=re.I))
                 add_candidate(
                     dep_path,
-                    score=12,
+                    score=3 if is_test else 8,
                     source="code_cortex",
                     reason=f"dependent_of:{path}",
                 )
@@ -265,6 +268,15 @@ class RepositoryPerception:
                 "occurred_at": change.occurred_at,
             })
             add_candidate(rel, score=4, source="sensorium", reason=f"workspace_{change.kind}")
+
+        objective_lower = str(objective or "").lower()
+        test_focused = any(term in objective_lower for term in ("test", "pytest", "spec", "assertion"))
+        if not test_focused:
+            for row in candidate_rows.values():
+                path = str(row.get("path") or "")
+                if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.", path, flags=re.I):
+                    row["score"] = int(row.get("score") or 0) - 18
+                    row["reasons"].append("non_test_objective_penalty")
 
         candidates = sorted(
             candidate_rows.values(),
