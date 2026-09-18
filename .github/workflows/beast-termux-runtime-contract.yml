@@ -1,0 +1,65 @@
+name: BEAST Termux Runtime Contract
+
+on:
+  push:
+    branches:
+      - agent/beast-phase4-termux-runtime
+  pull_request:
+    paths:
+      - 'bin/beast'
+      - 'scripts/termux/**'
+      - 'docs/BEAST_TERMUX_ANDROID_RUNTIME.md'
+      - '.github/workflows/beast-termux-runtime-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile Python entrypoints
+        run: |
+          python -m py_compile             bin/beast             scripts/termux/compile_phase4_android_receipt.py
+      - name: Validate shell launchers
+        run: |
+          bash -n scripts/termux/install_native_runtime.sh
+          bash -n scripts/termux/run_phase4_android_gauntlet.sh
+          bash -n scripts/termux/setup_desktop_debian.sh
+          bash -n scripts/termux/launch_desktop_ide.sh
+      - name: Validate Termux CLI parser and JSON status contract
+        env:
+          PREFIX: /data/data/com.termux/files/usr
+          TERMUX_VERSION: ci-contract
+        run: |
+          python bin/beast --agent termux-status > /tmp/termux-status.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('/tmp/termux-status.json').read_text())
+          assert payload['command'] == 'termux-status'
+          assert payload['platform'] == 'termux-android'
+          assert set(payload['required_services']) == {
+              'gateway', 'proxy', 'mcp_gateway', 'providers',
+              'desktop_contract', 'mcp_http', 'ollama'
+          }
+          assert payload['status'] in {'ready', 'attention'}
+          PY
+          python bin/beast termux-up --help >/tmp/termux-up-help.txt
+          grep -q -- '--with-litellm' /tmp/termux-up-help.txt
+          grep -q -- '--with-nginx' /tmp/termux-up-help.txt
+      - name: Assert Android gauntlet closure contract
+        run: |
+          grep -q 'test_request_replan_continues_same_run_with_governance_observation' scripts/termux/compile_phase4_android_receipt.py
+          grep -q 'test_permanent_deny_persists_tool_revocation_across_runs' scripts/termux/compile_phase4_android_receipt.py
+          grep -q 'test_restart_approval_route_executes_exact_step_before_worker_relaunch' scripts/termux/compile_phase4_android_receipt.py
+          grep -q 'tests/phase2/test_live_ollama_provider_acceptance.py' scripts/termux/run_phase4_android_gauntlet.sh
+          grep -q 'tests/phase2/test_live_desktop_agent_ingress.py' scripts/termux/run_phase4_android_gauntlet.sh
