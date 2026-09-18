@@ -4,6 +4,7 @@ import json
 import os
 import socket
 import subprocess
+import tempfile
 import threading
 import time
 from pathlib import Path
@@ -78,7 +79,8 @@ def test_live_desktop_renderer_creates_backend_agent_session(tmp_path: Path):
     assert stored["model"] == "phase2-model"
     assert stored["files"] == ["sample.py"]
 
-    output = Path(os.environ.get("BEAST_PHASE2_DESKTOP_RECEIPT", "/tmp/BEAST_PHASE2_DESKTOP_INGRESS.json"))
+    output = Path(os.environ.get("BEAST_PHASE2_DESKTOP_RECEIPT", str(Path(tempfile.gettempdir()) / "BEAST_PHASE2_DESKTOP_INGRESS.json")))
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({
         **receipt,
         "backend_receipt": {
