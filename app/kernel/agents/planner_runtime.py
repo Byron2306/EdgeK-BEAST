@@ -10,6 +10,7 @@ from dataclasses import replace
 from typing import Any
 
 from app.kernel.agents.failure_analyst import analyze_failure
+from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
@@ -714,58 +715,138 @@ class AgentPlannerRuntime:
         return False
 
     async def _authorize_tool(self, run: dict[str, Any], run_id: str, decision: PlannerDecision) -> PlannerDecision | None:
-        """Create and await an approval card instead of treating it as a tool error."""
+        """Create and await a governed capability request for one tool step."""
         try:
             spec = self.engine.tool_registry.get(decision.tool_id)
         except Exception:
             return decision
         if not getattr(spec, "requires_approval", False):
             return decision
-        approvals = self.engine.store.approvals(run_id)
-        existing = next(
-            (
-                item for item in reversed(approvals)
-                if item.get("status") == "approved"
-                and self._approval_satisfies_tool(item, decision.tool_id)
-            ),
-            None,
-        )
-        if existing:
-            return replace(decision, approval_id=str(existing.get("approval_id") or ""))
+
+        phase4 = durable_approvals_enabled(run)
+        if not phase4:
+            approvals = self.engine.store.approvals(run_id)
+            existing = next(
+                (
+                    item for item in reversed(approvals)
+                    if item.get("status") == "approved"
+                    and self._approval_satisfies_tool(item, decision.tool_id)
+                ),
+                None,
+            )
+            if existing:
+                return replace(decision, approval_id=str(existing.get("approval_id") or ""))
+
         approval_id = f"approval-{uuid.uuid4().hex[:16]}"
         paths = []
         for key in ("path", "target_path"):
             value = decision.arguments.get(key)
             if value:
                 paths.append(str(value))
-        request = {
+        step_id = self._active_plan_step_id(run_id, decision.tool_id)
+        target_payload = self._execution_target_payload(run, decision.execution_target)
+        current_run = self.engine.store.get_run(run_id) or run
+        checkpoint = current_run.get("checkpoint") if isinstance(current_run.get("checkpoint"), dict) else {}
+        worktree_bound = bool(checkpoint.get("worktree_root"))
+
+        phase4_artifacts: dict[str, Any] = {}
+        if phase4:
+            try:
+                phase4_artifacts = DurableAgentApprovalRuntime(
+                    str(run.get("root_path") or self.engine.workspace_root)
+                ).create_for_tool(
+                    run=current_run,
+                    step_id=step_id,
+                    approval_id=approval_id,
+                    spec=spec,
+                    arguments=decision.arguments,
+                    execution_target=decision.execution_target,
+                    worktree_bound=worktree_bound,
+                    budget_impact={"tool_calls": 1},
+                )
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.approval.policy_refused", {
+                    "approval_id": approval_id,
+                    "step_id": step_id,
+                    "tool_id": decision.tool_id,
+                    "tool_version": spec.version,
+                    "reason": str(exc),
+                })
+                self.engine.merge_checkpoint(run_id, {
+                    "approval_refusal_reason": str(exc),
+                    "approval_refusal_tool_id": decision.tool_id,
+                })
+                return None
+
+        legacy_request = {
             "request_id": approval_id,
             "run_id": run_id,
+            "step_id": step_id,
             "tool_id": decision.tool_id,
+            "tool_version": spec.version,
             "summary": f"Approve governed agent tool: {getattr(spec, 'title', decision.tool_id)}",
-            "risk_class": getattr(getattr(spec, "risk", None), "value", "governed"),
+            "risk_class": (
+                str((phase4_artifacts.get("classification") or {}).get("risk_class") or "")
+                or getattr(getattr(spec, "risk", None), "value", "governed")
+            ),
             "execution_target": decision.execution_target,
             "capabilities": [{
                 "id": decision.tool_id,
                 "label": getattr(spec, "title", decision.tool_id),
                 "paths": paths,
             }],
-            "safe_arguments": decision.arguments,
+            "safe_arguments": (
+                dict((phase4_artifacts.get("envelope") or {}).get("argument_view") or {})
+                if phase4 else decision.arguments
+            ),
             "affected_files": paths,
             "expected_side_effects": ["The agent may perform only this bounded tool step; SourcePlan remains required for promotion."],
+            "phase4_durable": phase4,
+            "request_digest": str((phase4_artifacts.get("request") or {}).get("request_digest") or ""),
+            "card_digest": str((phase4_artifacts.get("card") or {}).get("card_digest") or ""),
         }
-        step_id = self._active_plan_step_id(run_id, decision.tool_id)
-        self.engine.merge_checkpoint(run_id, {
-            "suspended_step": {
-                "step_id": step_id,
-                "approval_id": approval_id,
-                "tool_id": decision.tool_id,
-            },
+        suspended_step = {
+            "step_id": step_id,
+            "approval_id": approval_id,
+            "tool_id": decision.tool_id,
+            "tool_version": spec.version,
+            "arguments": dict(decision.arguments),
+            "execution_target": str(decision.execution_target or "local"),
+            "execution_target_payload": dict(target_payload),
+            "phase4_durable": phase4,
+            "request_digest": legacy_request["request_digest"],
+            "card_digest": legacy_request["card_digest"],
+        }
+        checkpoint_delta: dict[str, Any] = {
+            "suspended_step": suspended_step,
             "suspended_step_id": step_id,
             "suspended_approval_id": approval_id,
+        }
+        if phase4:
+            checkpoint_delta["phase4_approval"] = {
+                "approval_id": approval_id,
+                "step_id": step_id,
+                "tool_id": decision.tool_id,
+                "request": phase4_artifacts.get("request") or {},
+                "classification": phase4_artifacts.get("classification") or {},
+                "mode_profile": phase4_artifacts.get("mode_profile") or {},
+                "mode_decision": phase4_artifacts.get("mode_decision") or {},
+                "envelope_digest": str((phase4_artifacts.get("envelope") or {}).get("envelope_digest") or ""),
+                "card_digest": str((phase4_artifacts.get("card") or {}).get("card_digest") or ""),
+                "status": "PENDING",
+            }
+        self.engine.merge_checkpoint(run_id, checkpoint_delta)
+        self.engine.store.create_approval(run_id, legacy_request)
+        self.engine.emit(run_id, "agent.approval.requested", {
+            **legacy_request,
+            "phase4": {
+                "enabled": phase4,
+                "request_digest": legacy_request["request_digest"],
+                "card_digest": legacy_request["card_digest"],
+                "permission_mode": str((phase4_artifacts.get("request") or {}).get("permission_mode") or ""),
+                "requested_scope": str((phase4_artifacts.get("request") or {}).get("requested_scope") or ""),
+            },
         })
-        self.engine.store.create_approval(run_id, request)
-        self.engine.emit(run_id, "agent.approval.requested", request)
         try:
             self.planning_integrations.sync_phase6_approval(run_id, "agent.approval.requested", {
                 "approval_id": approval_id,
@@ -788,6 +869,41 @@ class AgentPlannerRuntime:
         )
         if not approved:
             return None
+
+        if phase4:
+            resumed = self.engine.store.get_run(run_id) or {}
+            resumed_checkpoint = resumed.get("checkpoint") if isinstance(resumed.get("checkpoint"), dict) else {}
+            resume = resumed_checkpoint.get("approval_resume") if isinstance(resumed_checkpoint.get("approval_resume"), dict) else {}
+            if (
+                str(resume.get("status") or "") != "READY_FOR_EXACT_TOOL_EXECUTION"
+                or str(resume.get("approval_id") or "") != approval_id
+                or str(resume.get("step_id") or "") != step_id
+                or str(resume.get("tool_id") or "") != decision.tool_id
+            ):
+                self.engine.emit(run_id, "agent.approval.resume_refused", {
+                    "approval_id": approval_id,
+                    "step_id": step_id,
+                    "tool_id": decision.tool_id,
+                    "reason": "durable capability did not resume the exact suspended step",
+                })
+                return None
+            try:
+                self.planning_integrations.sync_phase6_approval(run_id, "agent.approval.capability_consumed", {
+                    "approval_id": approval_id,
+                    "capability_id": str(resume.get("capability_id") or ""),
+                    "tool_id": decision.tool_id,
+                    "step_id": step_id,
+                    "resume_state": AgentRunState.EXECUTING_TOOL.value,
+                })
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.plan.integration.failed", {
+                    "integration_id": "phase6_approval_pause_resume",
+                    "reason": f"{type(exc).__name__}: {exc}",
+                    "event_type": "agent.approval.capability_consumed",
+                    "tool_id": decision.tool_id,
+                })
+            return replace(decision, approval_id=approval_id)
+
         self.engine.store.transition(run_id, AgentRunState.PLANNING)
         try:
             self.planning_integrations.sync_phase6_approval(run_id, "agent.approval.capability_consumed", {
