@@ -1310,13 +1310,18 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         return {"ok": True, "run_id": run_id, "count": len(approvals), "approvals": approvals}
 
     @router.post("/edgek/agent-runs/{run_id}/approvals/{approval_id}")
-    async def edgek_agent_run_approval_resolve(run_id: str, approval_id: str, payload: dict[str, Any] = None):
+    async def edgek_agent_run_approval_resolve(request: Request, run_id: str, approval_id: str, payload: dict[str, Any] = None):
         payload = payload or {}
         root = _root(payload.get("root_path"))
         engine = AgentRunEngine(root)
         run = engine.store.get_run(run_id)
         if not run:
             raise HTTPException(status_code=404, detail=f"unknown agent run: {run_id}")
+        pre_resolution_state = normalize_state(str(run.get("state") or "created"))
+        restart_recovered_pause = (
+            pre_resolution_state.value == "paused"
+            and "runtime_restarted" in str(run.get("error") or "")
+        )
 
         if durable_approvals_enabled(run):
             runtime = DurableAgentApprovalRuntime(root)
@@ -1418,6 +1423,37 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 if state.value in {"waiting_for_approval", "paused"}:
                     engine.store.transition(run_id, "planning")
 
+            restart_exact_step_observation: dict[str, Any] = {}
+            execution = AGENT_RUN_WORKERS.status(run_id)
+            if approved and restart_recovered_pause:
+                helper = AgentPlannerRuntime(
+                    engine,
+                    HeuristicPlannerProvider(),
+                    max_turns=_planner_max_turns(run, run.get("request") if isinstance(run.get("request"), dict) else {}),
+                    context_packet_builder=ctx.context_packet_builder,
+                    execution_gateway=ctx.execution_gateway,
+                    compute_governor=ctx.compute_governor,
+                )
+                try:
+                    resumed_observation = await helper.resume_exact_suspended_step(run_id)
+                except (PermissionError, RuntimeError, ValueError) as exc:
+                    raise HTTPException(status_code=409, detail=str(exc)) from exc
+                restart_exact_step_observation = resumed_observation or {}
+                latest_run = engine.store.get_run(run_id) or run
+                if restart_exact_step_observation:
+                    execution = _launch_for_run(
+                        request.app,
+                        root,
+                        latest_run,
+                        ctx=ctx,
+                    )
+                    engine.emit(run_id, "agent.approval.restart_worker_relaunched", {
+                        "approval_id": approval_id,
+                        "tool_id": str(restart_exact_step_observation.get("tool_id") or ""),
+                        "observation_id": str(restart_exact_step_observation.get("observation_id") or ""),
+                        "execution": execution,
+                    })
+
             event = engine.emit(run_id, "agent.approval.resolved", {
                 "approval_id": approval_id,
                 "approved": approved,
@@ -1428,6 +1464,8 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 "capability_digest": str((phase4.get("capability") or {}).get("capability_digest") or ""),
                 "consumption_receipt_digest": str(consumption.get("receipt_digest") or ""),
                 "revocation_digest": str(revocation.get("revocation_digest") or ""),
+                "restart_exact_step_observation_id": str(restart_exact_step_observation.get("observation_id") or ""),
+                "restart_worker_relaunched": bool(restart_exact_step_observation),
                 "phase4_durable": True,
             })
             return {
@@ -1436,6 +1474,8 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 "phase4": phase4,
                 "consumption_receipt": consumption,
                 "revocation": revocation,
+                "restart_exact_step_observation": restart_exact_step_observation,
+                "execution": execution,
                 "event": event,
                 "run": engine.store.get_run(run_id),
             }
