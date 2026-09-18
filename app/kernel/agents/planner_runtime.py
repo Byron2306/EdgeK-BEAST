@@ -989,9 +989,24 @@ class AgentPlannerRuntime:
         if mutation_paths and (latest_verify_index < 0 or latest_mutation_index > latest_verify_index):
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             objective = str(run.get("objective") or "").casefold()
+            context_files = {
+                str(path).strip()
+                for path in (request.get("context_files") or [])
+                if str(path).strip()
+            }
+            decision_path = ""
+            if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+                decision_path = str(decision.arguments.get("path") or "").strip()
             broad_wave = bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning") or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
+            bounded_multi_file_wave = bool(
+                len(context_files) > 1
+                and decision_path
+                and decision_path in context_files
+                and decision_path in inspected_paths
+                and decision_path not in set(mutation_paths)
+            )
             if (
-                broad_wave
+                (broad_wave or bounded_multi_file_wave)
                 and isinstance(decision, PlannerDecision)
                 and decision.decision_type is PlannerDecisionType.TOOL
                 and decision.tool_id in {"worktree.write_file", "worktree.replace_exact"}
