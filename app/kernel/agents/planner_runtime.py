@@ -526,14 +526,17 @@ class AgentPlannerRuntime:
         """
         if str(run.get("mode") or "").strip().lower() != "agent" or state.observations:
             return None
-        if isinstance(decision, PlannerDecision):
-            if decision.decision_type is PlannerDecisionType.TOOL:
-                return None
+        if (
+            isinstance(decision, PlannerDecision)
+            and decision.decision_type is PlannerDecisionType.TOOL
+            and decision.tool_id == "workspace.discover_context"
+        ):
+            return None
         return PlannerDecision(
             decision_type=PlannerDecisionType.TOOL,
             tool_id="workspace.discover_context",
             arguments={"query": str(run.get("objective") or ""), "limit": 16, "index_limit": 1200},
-            rationale="Mandatory Code Cortex + structural index + Sensorium repository perception before agent planning.",
+            rationale="Mandatory canonical repository perception is the first mutating-agent observation; model-selected tools cannot bypass discovery.",
         )
 
     def _prompt(self, run: dict[str, Any], state: PlannerState) -> str:
@@ -1019,15 +1022,22 @@ class AgentPlannerRuntime:
         observed = cls._observed_tool_ids(state)
         if not observed:
             return None
-        inspected = any(tool in observed for tool in {"workspace.discover_context", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
-        if not inspected and "worktree.bind" not in observed:
+        completed = {
+            str(item.get("tool_id") or "")
+            for item in state.observations
+            if isinstance(item, dict)
+            and str(item.get("status") or "") == "completed"
+            and str(item.get("tool_id") or "")
+        }
+        inspected = any(tool in completed for tool in {"workspace.discover_context", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
+        if not inspected and "worktree.bind" not in completed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="workspace.discover_context",
                 arguments={"query": str(run.get("objective") or ""), "limit": 16, "index_limit": 1200},
                 rationale="Mutating agent runs require canonical Code Cortex repository discovery before worktree binding.",
             )
-        if "worktree.bind" not in observed:
+        if "worktree.bind" not in completed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="worktree.bind",
