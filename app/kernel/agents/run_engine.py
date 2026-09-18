@@ -320,4 +320,5 @@ class AgentRunEngine:
                 "source_event_type": str(event.get("event_type") or ""),
                 "source_event_hash": str(event.get("event_hash") or ""),
                 "reason": type(exc).__name__,
+                "error_detail": str(exc)[:240],
             }
