@@ -184,15 +184,51 @@ def _ollama_base_url(run: dict[str, Any]) -> str:
     return str(explicit or _planner_provider_base_url()).rstrip("/")
 
 
-def _planner_max_turns(run: dict[str, Any], request_payload: dict[str, Any]) -> int:
-    requested = (run.get("budget") or {}).get("max_turns") or request_payload.get("max_turns")
-    if requested is not None:
-        return max(1, min(int(requested), 64))
+def _planner_lifecycle_minimum(run: dict[str, Any]) -> int:
+    mode = str(run.get("mode") or "").strip().lower()
+    # Clean mutation lifecycle: inspect -> bind -> authoritative read -> mutate
+    # -> verify -> SourcePlan -> complete. Keep one additional turn for a
+    # bounded schema correction without making repair the normal case.
+    return 8 if mode in {"agent", "edit", "implementer"} else 3
+
+
+def _planner_turn_budget(run: dict[str, Any], request_payload: dict[str, Any]) -> dict[str, Any]:
+    raw_budget = run.get("budget") if isinstance(run.get("budget"), dict) else {}
+    requested = raw_budget.get("max_turns")
+    source = "run_budget"
+    if requested is None:
+        requested = request_payload.get("max_turns")
+        source = "request"
     provider = str(run.get("provider") or "").strip().lower()
     mode = str(run.get("mode") or "").strip().lower()
-    if provider in {"ollama", "local_ollama"} and mode in {"agent", "edit", "implementer"}:
-        return 5
-    return 8
+    minimum = _planner_lifecycle_minimum(run)
+    if requested is not None:
+        effective = max(1, min(int(requested), 64))
+        defaulted = False
+    elif provider in {"ollama", "local_ollama"} and mode in {"agent", "edit", "implementer"}:
+        effective = 12
+        source = "local_mutation_default"
+        defaulted = True
+    elif mode in {"agent", "edit", "implementer"}:
+        effective = 10
+        source = "mutation_default"
+        defaulted = True
+    else:
+        effective = 8
+        source = "analysis_default"
+        defaulted = True
+    return {
+        "requested": int(requested) if requested is not None else None,
+        "effective": effective,
+        "lifecycle_minimum": minimum,
+        "below_lifecycle_minimum": effective < minimum,
+        "source": source,
+        "defaulted": defaulted,
+    }
+
+
+def _planner_max_turns(run: dict[str, Any], request_payload: dict[str, Any]) -> int:
+    return int(_planner_turn_budget(run, request_payload)["effective"])
 
 
 def _normalized_execution_request(payload: dict[str, Any], request_payload: dict[str, Any], session: dict[str, Any]) -> dict[str, Any]:
@@ -381,6 +417,15 @@ async def _execute_planner_run(
             return "".join(parts)
 
         provider = CallbackPlannerProvider(_next)
+    request_payload = run.get("request") if isinstance(run.get("request"), dict) else {}
+    budget_truth = _planner_turn_budget(run, request_payload)
+    # The launcher may supply an explicit already-resolved value. Record that
+    # exact runtime truth rather than reconstructing a different number.
+    budget_truth["effective"] = int(max_turns)
+    budget_truth["below_lifecycle_minimum"] = int(max_turns) < int(budget_truth["lifecycle_minimum"])
+    engine.emit(run_id, "agent.planner.turn_budget", budget_truth)
+    engine.merge_checkpoint(run_id, {"planner_turn_budget": budget_truth})
+
     runtime = AgentPlannerRuntime(
         engine,
         provider,
