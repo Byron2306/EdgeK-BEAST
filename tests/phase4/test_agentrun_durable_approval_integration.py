@@ -281,6 +281,7 @@ async def test_review_mode_lifts_read_only_tool_into_durable_approval(tmp_path):
                 "root_path": str(root),
                 "approved": False,
                 "decision": "REJECT",
+                "reason": "Read-only access is not required for this run.",
                 "operator_id": "operator:review-test",
             },
         )
