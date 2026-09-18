@@ -871,6 +871,8 @@ class AgentPlannerRuntime:
                     "hint_paths": discovery.get("hint_paths"),
                     "candidate_paths": discovery.get("candidate_paths"),
                     "discovered_paths": discovery.get("discovered_paths"),
+                    "required_evidence_paths": discovery.get("required_evidence_paths"),
+                    "required_evidence_policy": discovery.get("required_evidence_policy"),
                     "path_reasons": discovery.get("path_reasons"),
                     "context_packet_id": discovery.get("context_packet_id"),
                     "context_packet_hash": discovery.get("context_packet_hash"),
