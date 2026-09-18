@@ -76,7 +76,7 @@ class AgentOperationsConsoleViewModel:
         worktree = self._worktree(payloads, checkpoint, run)
         verification = self._verification(events, checkpoint)
         sourceplan = self._sourceplan(payloads, checkpoint)
-        recovery = self._recovery(run, checkpoint)
+        recovery = self._recovery(run, checkpoint, payloads)
         route = self._provider_route(payloads, run)
 
         snapshot = {
@@ -118,6 +118,17 @@ class AgentOperationsConsoleViewModel:
             "provider_route": route,
             "sourceplan": sourceplan,
             "recovery": recovery,
+            "operator_summary": self._operator_summary(
+                run=run,
+                plan=plan,
+                approvals=approvals,
+                worktree=worktree,
+                verification=verification,
+                budget=self._budget(budget, payloads),
+                provider_route=route,
+                sourceplan=sourceplan,
+                recovery=recovery,
+            ),
             "authority": "console_projection_read_only",
             "grants_execution_authority": False,
             "grants_workspace_mutation": False,
@@ -251,14 +262,161 @@ class AgentOperationsConsoleViewModel:
         }
 
     @staticmethod
-    def _recovery(run: dict[str, Any], checkpoint: dict[str, Any]) -> dict[str, Any]:
+    def _recovery(run: dict[str, Any], checkpoint: dict[str, Any], payloads: list[dict[str, Any]]) -> dict[str, Any]:
         state = str(run.get("state") or "")
         paused = state == "paused"
+        error = str(run.get("error") or _dict(checkpoint.get("recovery")).get("reason") or "")
+        lower = error.lower()
+        latest = _dict(payloads[-1]) if payloads else {}
+        cards: list[dict[str, Any]] = []
+
+        def add(code: str, title: str, detail: str, actions: list[str], severity: str = "warning") -> None:
+            if any(item["code"] == code for item in cards):
+                return
+            cards.append({
+                "code": code,
+                "title": title,
+                "detail": detail,
+                "severity": severity,
+                "valid_next_actions": actions,
+            })
+
+        if state == "waiting_for_approval":
+            add("approval_required", "Approval required", "The current step is paused until the operator resolves its durable approval card.", ["review_approval", "reject_and_replan"], "info")
+        if "expired" in lower and "approval" in lower:
+            add("approval_expired", "Approval expired", error or "The approval expired before the step resumed.", ["request_fresh_approval", "replan"])
+        if any(token in lower for token in ("provider unavailable", "provider_unavailable", "connection refused", "provider timeout")):
+            add("provider_unavailable", "Provider unavailable", error or "The selected model provider is unavailable.", ["retry_provider", "choose_provider", "pause_run"])
+        if any(token in lower for token in ("schema invalid", "invalid schema", "plannerdecision", "model schema")):
+            add("model_schema_invalid", "Model schema invalid", error or "The provider response did not satisfy the typed planner schema.", ["retry_schema_repair", "choose_provider", "pause_run"])
+        if any(token in lower for token in ("tool denied", "permissionerror", "policy_blocked", "refused")):
+            add("tool_denied", "Tool denied", error or "Policy refused the requested tool action.", ["inspect_policy", "replan"])
+        if any(token in lower for token in ("target disconnected", "ssh", "remote disconnected")) and "disconnect" in lower:
+            add("target_disconnected", "Execution target disconnected", error or "The selected execution target is unavailable.", ["reconnect_target", "pause_run", "replan"])
+        if "timed out" in lower or "timeout" in lower:
+            add("test_timed_out", "Verification timed out", error or "A bounded verification step exceeded its timeout.", ["retry_verification", "narrow_verification", "replan"])
+        if state == "budget_exhausted" or "budget" in lower and "exhaust" in lower:
+            add("budget_exhausted", "Budget exhausted", error or "The run reached a declared budget limit.", ["review_budget", "start_new_run"], "error")
+        if paused:
+            add("run_paused", "Run paused", error or "The durable run is paused.", ["resume_run", "cancel_run"], "info")
+        if paused or bool(checkpoint.get("recovery")):
+            add("run_recoverable", "Run recoverable", "A durable checkpoint is available; the run does not need conversation reconstruction.", ["resume_run", "inspect_checkpoint"], "info")
+        worktree = _dict(checkpoint.get("worktree"))
+        if bool(worktree.get("dirty")) or bool(latest.get("worktree_dirty")):
+            add("worktree_dirty", "Worktree has uncommitted changes", "Review the isolated changes before further mutation or handoff.", ["review_worktree", "verify_changes"])
+        sourceplan = _dict(checkpoint.get("sourceplan"))
+        if bool(sourceplan.get("stale")) or bool(sourceplan.get("stale_base")) or bool(latest.get("sourceplan_stale")):
+            add("sourceplan_stale", "SourcePlan base changed", "The SourcePlan was prepared against an older workspace base and must be refreshed.", ["refresh_sourceplan", "review_worktree"], "error")
+
         return {
             "restart_safe": True,
             "reconstruction_from_conversation_required": False,
             "paused": paused,
             "recoverable": paused or bool(checkpoint.get("recovery")),
-            "reason": str(run.get("error") or _dict(checkpoint.get("recovery")).get("reason") or ""),
+            "reason": error,
             "checkpoint_present": bool(checkpoint),
+            "cards": cards,
+            "card_count": len(cards),
+        }
+
+    @staticmethod
+    def _operator_summary(
+        *,
+        run: dict[str, Any],
+        plan: dict[str, Any],
+        approvals: list[dict[str, Any]],
+        worktree: dict[str, Any],
+        verification: dict[str, Any],
+        budget: dict[str, Any],
+        provider_route: dict[str, Any],
+        sourceplan: dict[str, Any],
+        recovery: dict[str, Any],
+    ) -> dict[str, Any]:
+        state = str(run.get("state") or "")
+        pending = sum(1 for item in approvals if str(item.get("status") or "") == "pending")
+        changed = _list(worktree.get("changed_files"))
+        verification_status = str(verification.get("status") or "not_started")
+        sourceplan_status = str(sourceplan.get("status") or "not_created")
+        next_actions: list[dict[str, str]] = []
+
+        def action(action_id: str, label: str, reason: str) -> None:
+            if any(item["id"] == action_id for item in next_actions):
+                return
+            next_actions.append({"id": action_id, "label": label, "reason": reason})
+
+        if pending:
+            action("review_approval", "Review approval", "A durable capability decision is blocking the current step.")
+            action("reject_and_replan", "Reject and replan", "Continue without widening authority.")
+        if state == "paused":
+            action("resume_run", "Resume run", "A durable checkpoint is available.")
+            action("cancel_run", "Cancel run", "Stop the paused run without further tool execution.")
+        if state == "budget_exhausted":
+            action("review_budget", "Review budget", "The current run cannot consume more governed budget.")
+            action("start_new_run", "Start new run", "A new run can use an explicitly revised budget profile.")
+        if verification_status in {"failed", "error"}:
+            action("inspect_verification", "Inspect verification", "A check failed and must be understood before promotion.")
+            action("replan", "Replan repair", "Use the failure evidence to produce a bounded repair.")
+        elif changed and verification_status not in {"passed", "completed", "success"}:
+            action("run_verification", "Run verification", "Worktree changes exist without a fresh passing verification result.")
+        if sourceplan_status in {"ready", "available"} and not bool(sourceplan.get("promotion_authorized")):
+            action("review_sourceplan", "Review SourcePlan", "The plan is ready for human promotion review.")
+        if bool(sourceplan.get("promotion_authorized")):
+            action("promote_sourceplan", "Promote SourcePlan", "Promotion authority has been granted outside the model loop.")
+        if not next_actions and state in {"completed", "cancelled"}:
+            action("review_run", "Review completed run", "Inspect evidence, changes and final handoff.")
+        if not next_actions:
+            action("continue_run", "Continue run", "No operator intervention is currently required.")
+
+        blockers = []
+        if pending:
+            blockers.append(f"{pending} approval request(s) pending")
+        if verification_status in {"failed", "error"}:
+            blockers.append("verification failed")
+        if state == "budget_exhausted":
+            blockers.append("budget exhausted")
+        if recovery.get("cards"):
+            blockers.extend(str(item.get("title") or "") for item in recovery["cards"] if str(item.get("severity") or "") == "error")
+
+        headline = {
+            "waiting_for_approval": "Waiting for operator authority",
+            "paused": "Run paused and recoverable",
+            "budget_exhausted": "Run stopped at its budget boundary",
+            "completed": "Run completed",
+            "cancelled": "Run cancelled",
+            "policy_blocked": "Run blocked by policy",
+        }.get(state, "Agent run in progress")
+
+        return {
+            "headline": headline,
+            "state": state,
+            "objective": str(run.get("objective") or ""),
+            "active_step_id": str(plan.get("active_step_id") or ""),
+            "what_changed": {
+                "changed_file_count": len(changed),
+                "changed_files": changed[:20],
+                "worktree_status": str(worktree.get("status") or ""),
+            },
+            "what_passed": {
+                "verification_status": verification_status,
+                "verification_count": int(verification.get("count") or 0),
+            },
+            "what_remains": {
+                "sourceplan_status": sourceplan_status,
+                "promotion_ready": bool(sourceplan.get("promotion_ready")),
+                "promotion_authorized": bool(sourceplan.get("promotion_authorized")),
+                "pending_approvals": pending,
+                "blockers": blockers,
+            },
+            "provider": {
+                "provider": str(provider_route.get("provider") or ""),
+                "model": str(provider_route.get("model") or ""),
+                "reason": str(provider_route.get("reason") or ""),
+                "local": bool(provider_route.get("local")),
+            },
+            "budget": {
+                "exhausted": bool(budget.get("exhausted")),
+                "remaining": _dict(budget.get("remaining")),
+            },
+            "next_actions": next_actions,
+            "requires_raw_logs": False,
         }
