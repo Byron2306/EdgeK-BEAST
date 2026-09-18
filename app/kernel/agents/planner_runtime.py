@@ -1057,7 +1057,12 @@ class AgentPlannerRuntime:
                 rationale="A bounded verifier must run after the latest mutation before BEAST can prepare SourcePlan evidence.",
             )
 
-        if mutation_paths and verification_ladder_enabled(run):
+        if (
+            mutation_paths
+            and verification_ladder_enabled(run)
+            and isinstance(latest_verify, dict)
+            and str(latest_verify.get("status") or "") == "completed"
+        ):
             ladder_run = dict(run)
             checkpoint = dict(ladder_run.get("checkpoint") or {})
             checkpoint["planner"] = state.as_dict()
