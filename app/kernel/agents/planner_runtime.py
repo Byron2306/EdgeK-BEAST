@@ -939,16 +939,42 @@ class AgentPlannerRuntime:
         if not isinstance(observation, dict):
             return ""
         result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
-        candidates = result.get("candidate_paths") if isinstance(result.get("candidate_paths"), list) else []
-        for item in candidates:
-            path = str(item or "").strip()
-            if path:
-                return path
         rows = result.get("candidates") if isinstance(result.get("candidates"), list) else []
+        terms = result.get("query_terms") if isinstance(result.get("query_terms"), list) else []
+        primary_term = str(terms[0] or "").strip() if terms else ""
+
+        def is_test_path(path: str) -> bool:
+            lowered = path.lower()
+            name = Path(path).name.lower()
+            return (
+                "/tests/" in f"/{lowered}/"
+                or "/test/" in f"/{lowered}/"
+                or name.startswith("test_")
+                or name.endswith("_test.py")
+                or ".spec." in name
+                or ".test." in name
+            )
+
+        if primary_term:
+            marker = f"symbol_search:{primary_term}"
+            for item in rows:
+                if not isinstance(item, dict):
+                    continue
+                path = str(item.get("path") or "").strip()
+                reasons = [str(reason or "") for reason in (item.get("reasons") or [])]
+                if path and not is_test_path(path) and marker in reasons:
+                    return path
+
         for item in rows:
             if not isinstance(item, dict):
                 continue
             path = str(item.get("path") or "").strip()
+            if path and not is_test_path(path):
+                return path
+
+        candidates = result.get("candidate_paths") if isinstance(result.get("candidate_paths"), list) else []
+        for item in candidates:
+            path = str(item or "").strip()
             if path:
                 return path
         return ""
