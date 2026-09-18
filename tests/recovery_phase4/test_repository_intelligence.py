@@ -144,6 +144,9 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
     assert discovery["mutation_authority"] is False
     assert discovery["hint_paths"] == ["producer.py"]
     assert "consumer.py" in discovery["discovered_paths"]
+    assert discovery["required_evidence_paths"] == ["consumer.py"]
+    assert discovery["required_evidence_policy"]["authority"] == "inspection_required_only"
+    assert discovery["required_evidence_policy"]["mutation_authority"] is False
     assert "dependent_of:producer.py" in discovery["path_reasons"]["consumer.py"]
     assert discovery["sensorium_world_state"]["authority"] == "observation_only"
     assert discovery["sensorium_world_state"]["admitted"] is True, discovery["sensorium_world_state"]
@@ -227,3 +230,62 @@ def test_discovered_file_requires_exact_read_before_replace(tmp_path):
     assert required is not None
     assert required.tool_id == "workspace.read_range"
     assert required.arguments["path"] == "consumer.py"
+
+
+def test_cross_file_direct_dependency_must_be_exact_read_before_verification(tmp_path):
+    root = _repo(tmp_path)
+    engine = AgentRunEngine(root)
+    run_id = engine.create_run(
+        session_id="recovery-phase4-required-evidence",
+        objective="Cross-file task: update producer and its dependent consumer, then verify.",
+        mode="agent",
+        provider="simulated",
+        model="phase4-test",
+        request={
+            "context_files": ["producer.py"],
+            "semantic_context": {"active_file": "producer.py"},
+        },
+    )["run_id"]
+    runtime = AgentPlannerRuntime(
+        engine,
+        ScriptedPlannerProvider([]),
+        context_packet_builder=_builder(),
+    )
+    run = engine.store.get_run(run_id) or {}
+    state = runtime._admit_repository_discovery(run, runtime._load_state(run_id))
+
+    state.observations.extend([
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"worktree_root": str(root / ".beast-worktree")},
+        },
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {"path": "producer.py", "content": "VALUE = 1\n"},
+        },
+        {
+            "tool_id": "worktree.replace_exact",
+            "status": "completed",
+            "result": {"path": "producer.py"},
+            "arguments": {
+                "path": "producer.py",
+                "old_text": "VALUE = 1",
+                "new_text": "VALUE = 2",
+            },
+        },
+    ])
+
+    from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
+
+    attempted_verify = PlannerDecision(
+        decision_type=PlannerDecisionType.TOOL,
+        tool_id="worktree.verify",
+        arguments={"command": ["python", "-m", "py_compile", "producer.py"]},
+    )
+    required = AgentPlannerRuntime._required_phase_decision(run, state, attempted_verify)
+    assert required is not None
+    assert required.tool_id == "workspace.read_range"
+    assert required.arguments["path"] == "consumer.py"
+    assert "exact inspection" in required.rationale
