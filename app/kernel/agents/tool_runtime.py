@@ -22,6 +22,7 @@ from app.kernel.agents.tool_models import (
     ToolSpec,
 )
 from app.kernel.agents.tool_registry import AgentToolRegistry
+from app.kernel.agents.least_authority import authorize_agent_tool
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -762,16 +763,33 @@ class AgentToolRuntime:
         arguments = self.registry.validate_arguments(spec, request.arguments)
         target = str(request.execution_target or "local")
         target_payload = request.execution_target_payload if isinstance(request.execution_target_payload, dict) else {}
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        worktree_root = str(checkpoint.get("worktree_root") or "")
+        approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
+        authority = authorize_agent_tool(
+            spec,
+            run_id=run_id,
+            execution_target=target,
+            approval_status=str((approval or {}).get("status") or ""),
+            approval_id=request.approval_id,
+            worktree_bound=bool(worktree_root),
+        )
+        authority_event = "agent.tool.authorized" if authority["allowed"] else "agent.tool.refused"
+        self.engine.emit(run_id, authority_event, {"authority_receipt": authority})
+        self.engine.merge_checkpoint(run_id, {
+            "last_tool_authority_receipt_id": authority["receipt_id"],
+            "last_tool_authority_receipt_hash": authority["receipt_hash"],
+            "last_tool_authority_class": authority["authority_class"],
+            "last_tool_authority_allowed": authority["allowed"],
+        })
+        if not authority["allowed"]:
+            raise PermissionError(f"tool {spec.tool_id} refused: {authority['reason']}")
         if target not in spec.targets:
             raise PermissionError(f"tool {spec.tool_id} does not support target {target}")
         if spec.effect == ToolEffect.PROMOTION:
             raise PermissionError("promotion tools are never agent-executable")
-        if spec.requires_approval:
-            approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
-            if not approval or approval.get("status") != "approved":
-                raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
-        worktree_root = str(checkpoint.get("worktree_root") or "")
+        if spec.requires_approval and (not approval or approval.get("status") != "approved"):
+            raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
         context = ToolExecutionContext(
@@ -792,6 +810,7 @@ class AgentToolRuntime:
             "effect": spec.effect.value,
             "execution_target": target,
             "execution_target_payload": target_payload,
+            "authority_receipt": authority,
         })
         status = "completed"
         result: dict[str, Any] = {}
