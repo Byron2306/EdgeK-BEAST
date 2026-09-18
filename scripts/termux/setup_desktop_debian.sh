@@ -11,7 +11,7 @@ pkg update -y
 pkg install -y proot-distro x11-repo
 pkg install -y termux-x11-nightly rsync
 
-if ! proot-distro list 2>/dev/null | grep -qE '^.*debian.*installed'; then
+if [[ ! -d "$PREFIX/var/lib/proot-distro/installed-rootfs/debian" ]]; then
   proot-distro install debian
 fi
 
