@@ -49,3 +49,54 @@ def test_required_phase_still_forces_verify_for_out_of_scope_second_mutation(tmp
     assert required.tool_id == "worktree.verify"
     assert required.arguments["command"][:3] == ["python", "-m", "py_compile"]
     assert required.arguments["command"][-1] == "values.py"
+
+
+def test_required_phase_allows_explicit_scoped_creation_without_impossible_preread(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    created = engine.create_run(
+        session_id="phase2-new-file-guard",
+        objective="Create an explicitly scoped new module",
+        mode="agent",
+        provider="simulated",
+        model="phase2-scripted",
+        request={"context_files": ["packages/new/module.py"], "monorepo": True},
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    state = runtime._load_state(created["run_id"])
+    state.observations = [
+        {"tool_id": "workspace.index", "status": "completed", "result": {"ok": True}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"worktree_root": str(tmp_path / "wt")}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.write_file",
+        "arguments": {"path": "packages/new/module.py", "content": "VALUE = 1\\n"},
+    })
+    assert runtime._required_phase_decision(engine.store.get_run(created["run_id"]), state, decision) is None
+
+
+def test_required_phase_keeps_preread_for_existing_file_style_replacement(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    created = engine.create_run(
+        session_id="phase2-existing-file-guard",
+        objective="Edit an explicitly scoped existing module",
+        mode="agent",
+        provider="simulated",
+        model="phase2-scripted",
+        request={"context_files": ["existing.py"]},
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    state = runtime._load_state(created["run_id"])
+    state.observations = [
+        {"tool_id": "workspace.index", "status": "completed", "result": {"ok": True}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"worktree_root": str(tmp_path / "wt")}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"path": "existing.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"},
+    })
+    required = runtime._required_phase_decision(engine.store.get_run(created["run_id"]), state, decision)
+    assert required is not None
+    assert required.tool_id == "workspace.read_range"
+    assert required.arguments["path"] == "existing.py"
