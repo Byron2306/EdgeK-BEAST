@@ -21,6 +21,10 @@ from app.kernel.sensorium.ollama_runtime_sensor import OllamaRuntimeSensor
 from app.kernel.sensorium.workspace_invalidation import WorkspaceInvalidationBus
 
 
+DEFAULT_OLLAMA_PLANNER_NUM_CTX = 2048
+DEFAULT_OLLAMA_PLANNER_NUM_PREDICT = 128
+
+
 class OllamaPlannerProvider:
     """Use Ollama as a bounded next-action planner."""
 
@@ -148,7 +152,7 @@ class OllamaPlannerProvider:
     async def probe(self) -> dict[str, Any]:
         payload = await asyncio.to_thread(self._request_json, "/api/tags", None, 10.0)
         models = [str(item.get("name") or "") for item in payload.get("models", []) if isinstance(item, dict)]
-        return {"ok": self.model in models, "model": self.model, "models": models, "base_url": self.base_url}
+        return {"ok": self.model in models, "model": self.model, "models": models, "base_url": self.base_url, "runtime_limits": {"num_ctx": self._num_ctx(), "num_predict": self._num_predict()}}
 
     async def _preflight(self) -> None:
         if self._preflight_ok:
@@ -255,6 +259,10 @@ class OllamaPlannerProvider:
                     "eval_duration_ns": body.get("eval_duration"),
                     "latency_ms": round(float(body.get("total_duration") or 0) / 1_000_000.0, 3) if body.get("total_duration") is not None else None,
                     "timeout_seconds": request_timeout,
+                    "num_ctx": self._num_ctx(),
+                    "num_predict": self._num_predict(),
+                    "num_thread": self._num_thread(),
+                    "num_batch": self._num_batch(),
                 }
                 raw = str(body.get("response") or "")
                 mode = str(run.get("mode") or "").strip().lower()
@@ -427,9 +435,9 @@ class OllamaPlannerProvider:
         self._pressure_decision = None
         if self.pressure_controller is None:
             return
-        requested_predict = int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
+        requested_predict = int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", str(DEFAULT_OLLAMA_PLANNER_NUM_PREDICT)))
         decision = self.pressure_controller.decide(
-            num_ctx=int(os.environ.get("BEAST_OLLAMA_NUM_CTX", "768")),
+            num_ctx=int(os.environ.get("BEAST_OLLAMA_NUM_CTX", str(DEFAULT_OLLAMA_PLANNER_NUM_CTX))),
             num_predict=requested_predict,
             min_predict=64,
             reuse_mode=reuse_mode,
@@ -440,10 +448,10 @@ class OllamaPlannerProvider:
             raise PlannerDecisionError(f"Ollama admission suppressed by host pressure: {decision.reason}")
 
     def _num_ctx(self) -> int:
-        return int(self._pressure_decision.num_ctx if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_CTX", "768"))
+        return int(self._pressure_decision.num_ctx if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_CTX", str(DEFAULT_OLLAMA_PLANNER_NUM_CTX)))
 
     def _num_predict(self) -> int:
-        return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
+        return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", str(DEFAULT_OLLAMA_PLANNER_NUM_PREDICT)))
 
     def _request_options(self) -> dict[str, int]:
         if self._pressure_decision is not None:
@@ -574,6 +582,10 @@ class OllamaPlannerProvider:
             "load_duration_ns": result.get("load_duration"),
             "eval_duration_ns": result.get("eval_duration"),
             "forge_kv": {"mode": "native_context", "context_id": block.context_id, "stable_prefix_chars": len(stable_prefix), "suffix_chars": len(request_suffix), "suffix_only": True},
+            "num_ctx": self._num_ctx(),
+            "num_predict": self._num_predict(),
+            "num_thread": self._num_thread(),
+            "num_batch": self._num_batch(),
         }
         decision = parse_planner_decision(str(result.get("response") or ""))
         if (
@@ -611,7 +623,7 @@ class OllamaPlannerProvider:
         result = self.forge_kv_manager.generate_with_context(
             block,
             suffix,
-            48,
+            self._num_predict(),
             options={"temperature": self.temperature, "seed": self.seed + int(turn), "num_ctx": self._num_ctx(), "num_thread": self._num_thread(), "num_batch": self._num_batch()},
             keep_alive=os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
         )

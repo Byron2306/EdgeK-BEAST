@@ -1,0 +1,62 @@
+name: BEAST Recovery Phase 3 Live Local Mutation
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase3-core-repair
+  pull_request:
+    paths:
+      - 'app/kernel/agents/**'
+      - 'tests/recovery_phase3/test_live_local_model_mutation.py'
+      - '.github/workflows/beast-recovery-phase3-live-local.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-local-mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BEAST_RECOVERY_PHASE3_LIVE_OLLAMA: '1'
+      BEAST_RECOVERY_PHASE3_MODEL: qwen2.5:0.5b
+      BEAST_OLLAMA_NUM_CTX: '2048'
+      BEAST_OLLAMA_NUM_PREDICT: '128'
+      BEAST_OLLAMA_PLANNER_TIMEOUT: '180'
+      BEAST_OLLAMA_PREFLIGHT_TIMEOUT: '10'
+      BEAST_OLLAMA_KEEP_ALIVE: '10m'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install BEAST dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install "cryptography>=43,<48" "numpy>=2,<3"
+
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama and pull bounded local model
+        run: |
+          ollama serve >/tmp/beast-recovery-phase3-ollama.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          ollama pull "$BEAST_RECOVERY_PHASE3_MODEL"
+
+      - name: Prove governed local-model mutation with truthful telemetry
+        run: |
+          python -m pytest -vv --noconftest             tests/recovery_phase3/test_live_local_model_mutation.py             --junitxml=/tmp/beast-recovery-phase3-live.xml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-recovery-phase3-live-local
+          path: |
+            /tmp/beast-recovery-phase3-live.xml
+            /tmp/beast-recovery-phase3-ollama.log

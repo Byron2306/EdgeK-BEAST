@@ -107,6 +107,25 @@ class AgentPlannerRuntime:
         return bool(state.repair_cycles > 0 or state.verification_failures or state.turn >= 2)
 
     @staticmethod
+    def _bounded_planner_prompt(prompt: str, limit: int) -> str:
+        """Bound compact-model prompts without dropping late authority/repair evidence.
+
+        The planner contract lives at the front of the prompt while the newest
+        observations, authority, context and repair evidence live at the tail.
+        Prefix-only truncation kept the former and silently discarded the
+        latter. Preserve both ends and mark the removed middle explicitly.
+        """
+        limit = max(1200, int(limit))
+        if len(prompt) <= limit:
+            return prompt
+        marker = "\n...<BEAST_MIDDLE_CONTEXT_COMPACTED>...\n"
+        head = max(700, int(limit * 0.44))
+        tail = max(700, limit - head - len(marker))
+        if head + tail + len(marker) > limit:
+            tail = max(1, limit - head - len(marker))
+        return prompt[:head] + marker + prompt[-tail:]
+
+    @staticmethod
     def _compact_retry_prompt(prompt: str) -> str:
         contract = (
             "\n\nRETRY MODE: Return one valid planner JSON object only. "
@@ -669,7 +688,7 @@ class AgentPlannerRuntime:
             f"{context_contract}{semantic_contract}{plan_contract}{repair_contract}"
         )
         if compact_provider:
-            return prompt[:(3600 if late_compact_turn else 4800)]
+            return self._bounded_planner_prompt(prompt, 3600 if late_compact_turn else 4800)
         return prompt
 
     async def _await_tool_approval(self, run_id: str, approval_id: str, *, timeout_seconds: float = 3600.0) -> bool:
@@ -1343,8 +1362,18 @@ class AgentPlannerRuntime:
                     "model": usage.get("model"),
                     "prompt_chars": usage.get("prompt_chars", 0),
                     "completion_chars": usage.get("completion_chars", 0),
+                    "prompt_eval_count": usage.get("prompt_eval_count"),
+                    "completion_eval_count": usage.get("completion_eval_count"),
                     "latency_ms": usage.get("latency_ms"),
-                    "usage": usage.get("usage") if isinstance(usage.get("usage"), dict) else {},
+                    "timeout_seconds": usage.get("timeout_seconds"),
+                    "num_ctx": usage.get("num_ctx"),
+                    "num_predict": usage.get("num_predict"),
+                    "num_thread": usage.get("num_thread"),
+                    "num_batch": usage.get("num_batch"),
+                    "route": usage.get("route") if isinstance(usage.get("route"), dict) else {},
+                    "pressure": usage.get("pressure") if isinstance(usage.get("pressure"), dict) else {},
+                    "forge_kv": usage.get("forge_kv") if isinstance(usage.get("forge_kv"), dict) else {},
+                    "runtime_sensor": usage.get("runtime_sensor") if isinstance(usage.get("runtime_sensor"), dict) else {},
                     "finish_reason": usage.get("finish_reason"),
                 })
                 try:
@@ -1354,6 +1383,10 @@ class AgentPlannerRuntime:
                         "latency_ms": usage.get("latency_ms"),
                         "prompt_chars": usage.get("prompt_chars", 0),
                         "completion_chars": usage.get("completion_chars", 0),
+                        "prompt_eval_count": usage.get("prompt_eval_count"),
+                        "completion_eval_count": usage.get("completion_eval_count"),
+                        "num_ctx": usage.get("num_ctx"),
+                        "num_predict": usage.get("num_predict"),
                     })
                 except Exception as exc:
                     self.engine.emit(run_id, "agent.plan.integration.failed", {

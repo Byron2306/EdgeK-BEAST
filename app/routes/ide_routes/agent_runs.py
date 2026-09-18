@@ -32,6 +32,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from app.kernel.agents.run_engine import AgentRunEngine
+from app.kernel.agents.core_repair_policy import planner_lifecycle_minimum as _planner_lifecycle_minimum, planner_turn_budget as _planner_turn_budget
 from app.kernel.commons.route_damping import RouteFlapDampener
 from app.kernel.operations_console import (AgentOperationsConsoleViewModel, DurableConsoleEventProjection, WorkbenchModeEngine, ObjectivePlanWorkspace, ContextManifestStore, ContextManifestConsole, LiveRunTimelineConsole, WorktreeChangesDiffConsole, VerificationConsole)
 from app.kernel.operations_console.context_console import ContextManifestConsole
@@ -185,14 +186,7 @@ def _ollama_base_url(run: dict[str, Any]) -> str:
 
 
 def _planner_max_turns(run: dict[str, Any], request_payload: dict[str, Any]) -> int:
-    requested = (run.get("budget") or {}).get("max_turns") or request_payload.get("max_turns")
-    if requested is not None:
-        return max(1, min(int(requested), 64))
-    provider = str(run.get("provider") or "").strip().lower()
-    mode = str(run.get("mode") or "").strip().lower()
-    if provider in {"ollama", "local_ollama"} and mode in {"agent", "edit", "implementer"}:
-        return 5
-    return 8
+    return int(_planner_turn_budget(run, request_payload)["effective"])
 
 
 def _normalized_execution_request(payload: dict[str, Any], request_payload: dict[str, Any], session: dict[str, Any]) -> dict[str, Any]:
@@ -381,6 +375,15 @@ async def _execute_planner_run(
             return "".join(parts)
 
         provider = CallbackPlannerProvider(_next)
+    request_payload = run.get("request") if isinstance(run.get("request"), dict) else {}
+    budget_truth = _planner_turn_budget(run, request_payload)
+    # The launcher may supply an explicit already-resolved value. Record that
+    # exact runtime truth rather than reconstructing a different number.
+    budget_truth["effective"] = int(max_turns)
+    budget_truth["below_lifecycle_minimum"] = int(max_turns) < int(budget_truth["lifecycle_minimum"])
+    engine.emit(run_id, "agent.planner.turn_budget", budget_truth)
+    engine.merge_checkpoint(run_id, {"planner_turn_budget": budget_truth})
+
     runtime = AgentPlannerRuntime(
         engine,
         provider,

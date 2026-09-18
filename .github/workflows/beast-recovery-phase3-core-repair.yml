@@ -1,0 +1,57 @@
+name: BEAST Recovery Phase 3 Core Repair
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase3-core-repair
+  pull_request:
+    paths:
+      - 'app/kernel/agents/**'
+      - 'app/routes/ide_routes/agent_runs.py'
+      - 'desktop-ide/renderer/js/ai/**'
+      - 'desktop-ide/renderer/js/beast-ai-coding.js'
+      - 'tests/recovery_phase3/**'
+      - 'tests/test_agent_planner_runtime.py'
+      - 'tests/phase2/**'
+      - '.github/workflows/agentic-loop-endurance.yml'
+      - '.github/workflows/beast-recovery-phase3-core-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install actual planner import surface
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install "cryptography>=43,<48" "numpy>=2,<3"
+
+      - name: Check repaired renderer modules
+        run: |
+          node --check desktop-ide/renderer/js/ai/agent-client.js
+          node --check desktop-ide/renderer/js/ai/mode-controller.js
+          node --check desktop-ide/renderer/js/beast-ai-coding.js
+
+      - name: Prove Recovery Phase 3 repair contracts
+        run: |
+          python -m pytest -q --noconftest             tests/recovery_phase3/test_core_repair_contracts.py
+
+      - name: Preserve canonical planner behavior
+        run: |
+          python -m pytest -q --noconftest             tests/test_agent_planner_runtime.py             -k "budget_edge_autofinalizes or planner_turn_budget or large_real_repo_endurance or provider_quality_ledger or capability_scored_provider"
+
+      - name: Preserve Recovery Phase 2 runtime trace behavior
+        run: |
+          python -m pytest -q --noconftest             tests/test_beast_coding_agent_phase2_trace.py             tests/test_beast_coding_agent_census_journeys.py             tests/phase2/test_multifile_phase_guard.py             tests/phase2/test_sensorium_agent_run_receipt.py

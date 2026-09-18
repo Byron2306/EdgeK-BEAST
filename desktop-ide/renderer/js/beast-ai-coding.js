@@ -13,7 +13,10 @@
       MAX_CONTEXT_FILES:48,
       RELIABLE_LOCAL_CODER:'qwen2.5:3b',
       RELIABLE_LOCAL_PROFILE:Object.freeze({ maxFiles:3, contextChars:2400, askTokens:768, editTokens:1024 }),
-      RELIABLE_PLANNER_PROFILE:Object.freeze({ maxFiles:3, contextChars:3200, askTokens:1024, editTokens:1536 })
+      // Detached AgentRun planners receive repository hints, not an inline
+      // three-file prompt. Native model limits are enforced and reported by
+      // the backend provider; these request values mirror its safe defaults.
+      RELIABLE_PLANNER_PROFILE:Object.freeze({ maxFiles:48, contextChars:3200, askTokens:128, editTokens:128, plannerTurns:12 })
     },
     root:() => BeastStore.get().workspace.root || '',
     gatewayUrl:() => BeastRuntime.gatewayUrl || BeastStore.get().connection.gatewayUrl || 'http://127.0.0.1:8101',
