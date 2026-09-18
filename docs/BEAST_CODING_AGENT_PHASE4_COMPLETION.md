@@ -2,7 +2,7 @@
 
 **Status:** PASS  
 **Phase:** 4 — Durable approval and autonomy controls  
-**Implementation head:** `099dac9e60e678ddd18e60ea7b334716b99b0b37`  
+**Implementation head:** `3e7238a915aa673b042fdfebb8e9b779db61e33a`  
 **Base Phase 3 head:** `712b0b3d8720b2e0ad13a45e338f97d9b5194e63`
 
 ## Exit result
@@ -90,8 +90,41 @@ The persisted suspended step must still match the capability's:
 - workspace id;
 - execution target.
 
-The capability then resumes into `EXECUTING_TOOL`, not broad planning
-authority.
+The capability first resumes into `EXECUTING_TOOL`, not broad planning
+authority. On a genuine restart-recovered pause, the approval route then
+executes the persisted exact suspended call before any fresh planner decision
+is permitted. Its observation is restored into durable planner state and only
+then is the planner worker relaunched.
+
+Hosted acceptance therefore proves the stronger restart sequence:
+
+```text
+WAITING_FOR_APPROVAL
+  -> backend restart
+  -> PAUSED(runtime_restarted)
+  -> operator approval
+  -> one-use capability consumed
+  -> exact suspended call executed
+  -> observation persisted
+  -> planner worker relaunched
+  -> fresh planning may continue
+```
+
+## 3.1 Negative operator decisions
+
+Phase 4 preserves three distinct negative decisions rather than flattening them
+into a generic rejection:
+
+- `REJECT` refuses the exact requested action and blocks the current action;
+- `REQUEST_REPLAN` writes a digest-bound governance observation into the same
+  AgentRun and permits the planner to choose a different action without granting
+  the rejected call any authority;
+- `PERMANENTLY_DENY` writes a durable workspace-local `TOOL` revocation.
+  Later runs are refused before a new approval can be created, including when
+  that tool would otherwise be automatic under `GUIDED`.
+
+The live Phase 4 closure requires named acceptance tests for both replan
+continuation and durable permanent denial.
 
 ## 4. Permission modes
 
@@ -189,6 +222,7 @@ On the Phase 4 implementation head, the following all completed successfully:
 - BEAST Phase 4 Completion Gate
 - BEAST Phase 3 Completion Gate
 - BEAST Phase 3 Least Authority
+- BEAST Phase 3 Live Model Tool Acceptance
 - Agentic Loop Endurance
 - BEAST Phase 2 Desktop Ingress Acceptance
 - BEAST Phase 2 Completion Gate
@@ -202,17 +236,20 @@ The Phase 4 implementation also caught and corrected:
 3. missing live binding between the previously standalone Phase 4 subsystem and
    the coding-agent planner/tool runtime;
 4. the distinction between worktree bootstrap and already-isolated mutation;
-5. live response admission for external prompt-injection content.
+5. live response admission for external prompt-injection content;
+6. negative operator choices being collapsed into generic rejection;
+7. restart recovery stopping at authority restoration instead of automatically
+   executing the exact persisted suspended call.
 
 ## Closure evidence
 
 Unified Phase 4 completion workflow run:
 
 ```text
-workflow_run: 35302635971
+workflow_run: 35303193546
 artifact: beast-phase4-completion-receipt
-artifact_id: 10530303878
-digest: sha256:4f7f734425410d3ab43644568d016efd2b35c206402a66d4d4272d6317368e98
+artifact_id: 10530456035
+digest: sha256:303be3f5c86739e89d452360945336621ce661502c9e577294bb8339b99a4084
 ```
 
 The compiler emitted:
@@ -220,6 +257,16 @@ The compiler emitted:
 ```json
 {
   "phase4_exit_met": true,
+  "exit_gate": {
+    "approval_survives_restart": true,
+    "exact_paused_step_resumed": true,
+    "restart_route_executes_exact_step_before_replanning": true,
+    "request_replan_continues_same_run": true,
+    "permanent_deny_persists_tool_revocation": true,
+    "request_bound_capability": true,
+    "single_use_capability": true,
+    "future_authority_widened": false
+  },
   "gates": {
     "canonical_phase4_subsystem": true,
     "live_durable_approval_and_restart": true,
@@ -233,11 +280,14 @@ The compiler emitted:
 Additional same-head evidence:
 
 ```text
-Phase 4 audit:             35302635970  PASS
-Phase 3 completion:        35302637472  PASS
-Agentic loop endurance:    35302637447  PASS
-Phase 2 desktop ingress:   35302637462  PASS
-Phase 2 completion:        35302637458  PASS
+Phase 4 completion:        35303193546  PASS
+Phase 4 audit:             35303193555  PASS
+Phase 3 completion:        35303193550  PASS
+Phase 3 least authority:   35303193586  PASS
+Phase 3 live model:        35303193563  PASS
+Agentic loop endurance:    35303193565  PASS
+Phase 2 desktop ingress:   35303193706  PASS
+Phase 2 completion:        35303193618  PASS
 ```
 
 ## Evidence boundary
@@ -247,6 +297,18 @@ This record proves the hosted Linux Phase 4 acceptance matrix.
 The native Android/Termux evidence remains Phase 2 evidence. The complete Phase
 4 approval/restart/permission/sensitive-data gauntlet has not yet been rerun on
 Android/Termux and is not claimed here.
+
+The live approval JUnit on the implementation head contains exactly the six
+required named proofs with zero failures, zero errors and zero skips:
+
+```text
+test_live_planner_uses_one_use_phase4_capability
+test_review_mode_lifts_read_only_tool_into_durable_approval
+test_restart_paused_approval_consumes_exact_capability
+test_request_replan_continues_same_run_with_governance_observation
+test_permanent_deny_persists_tool_revocation_across_runs
+test_restart_approval_route_executes_exact_step_before_worker_relaunch
+```
 
 Phase 4 completion is an execution-governance proof. It does not itself grant
 or imply SourcePlan promotion authority.
