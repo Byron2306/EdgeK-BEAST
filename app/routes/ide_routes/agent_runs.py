@@ -32,6 +32,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from app.kernel.agents.run_engine import AgentRunEngine
+from app.kernel.agents.core_repair_policy import planner_lifecycle_minimum as _planner_lifecycle_minimum, planner_turn_budget as _planner_turn_budget
 from app.kernel.commons.route_damping import RouteFlapDampener
 from app.kernel.operations_console import (AgentOperationsConsoleViewModel, DurableConsoleEventProjection, WorkbenchModeEngine, ObjectivePlanWorkspace, ContextManifestStore, ContextManifestConsole, LiveRunTimelineConsole, WorktreeChangesDiffConsole, VerificationConsole)
 from app.kernel.operations_console.context_console import ContextManifestConsole
@@ -182,49 +183,6 @@ def _ollama_base_url(run: dict[str, Any]) -> str:
         or request.get("ollama_host")
     )
     return str(explicit or _planner_provider_base_url()).rstrip("/")
-
-
-def _planner_lifecycle_minimum(run: dict[str, Any]) -> int:
-    mode = str(run.get("mode") or "").strip().lower()
-    # Clean mutation lifecycle: inspect -> bind -> authoritative read -> mutate
-    # -> verify -> SourcePlan -> complete. Keep one additional turn for a
-    # bounded schema correction without making repair the normal case.
-    return 8 if mode in {"agent", "edit", "implementer"} else 3
-
-
-def _planner_turn_budget(run: dict[str, Any], request_payload: dict[str, Any]) -> dict[str, Any]:
-    raw_budget = run.get("budget") if isinstance(run.get("budget"), dict) else {}
-    requested = raw_budget.get("max_turns")
-    source = "run_budget"
-    if requested is None:
-        requested = request_payload.get("max_turns")
-        source = "request"
-    provider = str(run.get("provider") or "").strip().lower()
-    mode = str(run.get("mode") or "").strip().lower()
-    minimum = _planner_lifecycle_minimum(run)
-    if requested is not None:
-        effective = max(1, min(int(requested), 64))
-        defaulted = False
-    elif provider in {"ollama", "local_ollama"} and mode in {"agent", "edit", "implementer"}:
-        effective = 12
-        source = "local_mutation_default"
-        defaulted = True
-    elif mode in {"agent", "edit", "implementer"}:
-        effective = 10
-        source = "mutation_default"
-        defaulted = True
-    else:
-        effective = 8
-        source = "analysis_default"
-        defaulted = True
-    return {
-        "requested": int(requested) if requested is not None else None,
-        "effective": effective,
-        "lifecycle_minimum": minimum,
-        "below_lifecycle_minimum": effective < minimum,
-        "source": source,
-        "defaulted": defaulted,
-    }
 
 
 def _planner_max_turns(run: dict[str, Any], request_payload: dict[str, Any]) -> int:
