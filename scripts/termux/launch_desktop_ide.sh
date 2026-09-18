@@ -21,8 +21,17 @@ if ! pgrep -f "termux-x11 ${DISPLAY_ID}" >/dev/null 2>&1; then
   sleep 2
 fi
 
+# Bring the Android X11 activity to the foreground when the installed
+# Termux:X11 app exposes the standard activity.
+am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity >/dev/null 2>&1 || true
+
 echo "[BEAST] Launching Electron shell in Debian proot against native backend..."
-proot-distro login debian   --shared-tmp   --bind "$NATIVE_WORKSPACE:$NATIVE_WORKSPACE"   --env DISPLAY="$DISPLAY_ID"   -- bash -lc "
+proot-distro login debian \
+  --shared-tmp \
+  --bind "$NATIVE_WORKSPACE:$NATIVE_WORKSPACE" \
+  --bind "$NATIVE_WORKSPACE:/mnt/beast-source" \
+  --env DISPLAY="$DISPLAY_ID" \
+  -- bash -lc "
 set -e
 export DISPLAY='$DISPLAY_ID'
 export BEAST_DESKTOP_GATEWAY='http://127.0.0.1:8101'
@@ -31,6 +40,18 @@ export BEAST_WORKSPACE='$NATIVE_WORKSPACE'
 export BEAST_ACTIVE_WORKSPACE='$NATIVE_WORKSPACE'
 export BEAST_CONTEXT_WORKSPACE='$NATIVE_WORKSPACE'
 export BEAST_ELECTRON_SANDBOX='0'
+
+# Refresh the glibc desktop copy from the native checkout while preserving its
+# Debian node_modules. Never share native Termux/Bionic node_modules here.
+rsync -a --delete \
+  --exclude .git \
+  --exclude .venv \
+  --exclude venv \
+  --exclude node_modules \
+  --exclude .beast \
+  --exclude deploy/run \
+  /mnt/beast-source/ /root/EdgeK-BEAST-desktop/
+
 if ! pgrep -x openbox >/dev/null 2>&1; then
   openbox >/tmp/beast-openbox.log 2>&1 &
 fi
