@@ -240,8 +240,8 @@ class DurableAgentApprovalRuntime:
             "tool_id": spec.tool_id,
             "tool_version": spec.version,
             "arguments": dict(arguments),
-            "workspace_id": action["workspace_id"],
-            "execution_target": action["execution_target"],
+            "workspace_id": evaluation["action"]["workspace_id"],
+            "execution_target": evaluation["action"]["execution_target"],
             "affected_resources": resources,
             "data_egress": [],
             "expected_side_effects": [
