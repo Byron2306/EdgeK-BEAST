@@ -957,9 +957,81 @@ class AgentToolRuntime:
             assert spec.handler is not None
             raw = await asyncio.wait_for(spec.handler(arguments, context), timeout=max(0.1, spec.timeout_seconds))
             raw_result = raw if isinstance(raw, dict) else {"value": raw}
+
+            external_result = raw_result
+            external_receipt: dict[str, Any] = {}
+            external_keys = {"source_type", "source_uri", "fetch_receipt_digest", "content"}
+            if phase4_enabled and external_keys.issubset(set(raw_result)):
+                from app.kernel.approvals.external_content import (
+                    ExternalContentAdmissionController,
+                    policy_from_external_payload,
+                )
+                generation = str(
+                    (phase4_evaluation.get("classification") or {}).get("policy_generation")
+                    or "policy:phase4-runtime-v1"
+                )
+                external_policy = policy_from_external_payload({"generation": generation})
+                external_controller = ExternalContentAdmissionController()
+                external_payload = {
+                    "source_type": raw_result.get("source_type"),
+                    "source_uri": raw_result.get("source_uri"),
+                    "source_domain": raw_result.get("source_domain"),
+                    "fetch_receipt_digest": raw_result.get("fetch_receipt_digest"),
+                    "fetch_authorized": bool(raw_result.get("fetch_authorized")),
+                    "content": raw_result.get("content"),
+                }
+                classification = external_controller.classify(
+                    external_payload,
+                    policy=external_policy,
+                )
+                operator_decision = None
+                if classification.get("quarantine_required") or classification.get("human_review_required"):
+                    operator_decision = {
+                        "decision": "QUARANTINE",
+                        "classification_digest": classification["classification_digest"],
+                        "review_acknowledged": True,
+                    }
+                admission = external_controller.admit(
+                    external_payload,
+                    classification=classification,
+                    policy=external_policy,
+                    operator_decision=operator_decision,
+                )
+                external_receipt = {
+                    "classification": classification,
+                    "admission": admission,
+                }
+                external_result = {
+                    "beast_object_type": "beast_external_tool_observation",
+                    "version": "1.0",
+                    "source_type": classification.get("source_type"),
+                    "source_uri": classification.get("source_uri"),
+                    "risk_level": classification.get("risk_level"),
+                    "classification_digest": classification.get("classification_digest"),
+                    "admission_receipt_digest": admission.get("receipt_digest"),
+                    "model_context_allowed": bool(admission.get("model_context_allowed")),
+                    "quarantined": bool(admission.get("quarantined")),
+                    "admitted_content": str(admission.get("admitted_content") or ""),
+                    "provenance_label": admission.get("provenance_label") or {},
+                }
+                self.engine.emit(run_id, "agent.external_content.classified", {
+                    "tool_id": spec.tool_id,
+                    "classification": classification,
+                })
+                self.engine.emit(
+                    run_id,
+                    "agent.external_content.admitted"
+                    if admission.get("model_context_allowed")
+                    else "agent.external_content.quarantined",
+                    {
+                        "tool_id": spec.tool_id,
+                        "admission": admission,
+                    },
+                )
+
             if sensitive_controller is not None and sensitive_policy is not None:
                 redaction_receipt = sensitive_controller.redact(
-                    {"secret": raw_result},
+                    {"secret": external_result},
                     surface="model",
                     policy=sensitive_policy,
                 )
@@ -985,7 +1057,7 @@ class AgentToolRuntime:
                     "redaction_receipt": redaction_receipt,
                 })
             else:
-                result, truncated = _bounded_text(raw_result, spec.max_output_bytes)
+                result, truncated = _bounded_text(external_result, spec.max_output_bytes)
             if isinstance(raw, dict) and raw.get("ok") is False:
                 status = "failed"
                 if sensitive_controller is not None:
