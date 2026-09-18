@@ -146,7 +146,7 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
     assert "consumer.py" in discovery["discovered_paths"]
     assert "dependent_of:producer.py" in discovery["path_reasons"]["consumer.py"]
     assert discovery["sensorium_world_state"]["authority"] == "observation_only"
-    assert discovery["sensorium_world_state"]["admitted"] is True
+    assert discovery["sensorium_world_state"]["admitted"] is True, discovery["sensorium_world_state"]
 
     planner = checkpoint["planner"]
     observations = planner["observations"]
