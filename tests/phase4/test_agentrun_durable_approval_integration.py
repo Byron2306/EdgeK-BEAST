@@ -220,6 +220,75 @@ async def test_live_planner_uses_one_use_phase4_capability(tmp_path):
         )
 
 
+@pytest.mark.asyncio
+async def test_review_mode_lifts_read_only_tool_into_durable_approval(tmp_path):
+    root = _repo(tmp_path)
+    app = _app(root)
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        session_response = await client.post("/edgek/ide/agent-sessions/create", json={
+            "workspace_root": str(root),
+            "task": "List workspace under review mode.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+        })
+        session = session_response.json()["session"]
+        created = await client.post("/edgek/agent-runs", json={
+            "workspace_root": str(root),
+            "session_id": session["session_id"],
+            "task": "List workspace under review mode.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+            "launch": False,
+            "request": {
+                "prompt": "List workspace under review mode.",
+                "durable_approvals": True,
+                "permission_mode": "REVIEW",
+                "approval_timeout_seconds": 30,
+            },
+            "budget": {"profile": "balanced"},
+        })
+        run_id = created.json()["run"]["run_id"]
+
+        launched = await client.post(f"/edgek/agent-runs/{run_id}/planner/execute", json={
+            "workspace_root": str(root),
+            "max_turns": 3,
+            "simulate_decisions": [
+                {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            ],
+        })
+        assert launched.status_code == 200
+        waiting = await _wait_async(client, root, run_id, {"waiting_for_approval"})
+        suspended = waiting["checkpoint"]["suspended_step"]
+        assert suspended["tool_id"] == "workspace.list"
+        assert suspended["phase4_durable"] is True
+
+        approvals_response = await client.get(
+            f"/edgek/agent-runs/{run_id}/approvals",
+            params={"root_path": str(root)},
+        )
+        approval = approvals_response.json()["approvals"][0]
+        card = DurableApprovalCardStore(root).get(approval["approval_id"])
+        classification = card["envelope"]["classification"]
+        assert classification["tool_class"] == "READ_ONLY"
+        assert classification["requirement"] == "REQUIRE_APPROVAL"
+
+        rejected = await client.post(
+            f"/edgek/agent-runs/{run_id}/approvals/{approval['approval_id']}",
+            json={
+                "root_path": str(root),
+                "approved": False,
+                "decision": "REJECT",
+                "operator_id": "operator:review-test",
+            },
+        )
+        assert rejected.status_code == 200
+        assert rejected.json()["phase4"]["approved"] is False
+        await _wait_async(client, root, run_id, {"policy_blocked"})
+
+
 def test_restart_paused_approval_consumes_exact_capability(tmp_path):
     root = _repo(tmp_path)
     engine = AgentRunEngine(root)
