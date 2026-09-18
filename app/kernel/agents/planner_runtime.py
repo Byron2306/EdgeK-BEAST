@@ -13,6 +13,7 @@ from app.kernel.agents.failure_analyst import analyze_failure
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
+from app.kernel.agents.planner_stagnation import evaluate_stagnation
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
 from app.kernel.agents.run_budget import RunBudgetExceeded, budget_snapshot, normalized_model_usage, planner_turn_limit, planner_turn_receipt, post_model_usage_receipt
 from app.kernel.agents.semantic_context import semantic_context_contract
@@ -1575,6 +1576,57 @@ class AgentPlannerRuntime:
                             "reason": retried_reason,
                             "error": "retry_returned_invalid_mutation",
                         })
+            stagnation = evaluate_stagnation(
+                self.engine.store.get_run(run_id) or run,
+                state,
+                decision,
+                self.engine.store.events(run_id, limit=100000),
+            )
+            if stagnation["detected"]:
+                state.turn += 1
+                state.last_decision = decision.as_dict()
+                self.engine.emit(run_id, "agent.planner.decision", {
+                    "turn": state.turn,
+                    "decision": decision.as_dict(),
+                })
+                self.engine.emit(run_id, "agent.stagnation.detected", {
+                    "turn": state.turn,
+                    "stagnation_receipt": stagnation,
+                })
+                if stagnation["action"] == "stop":
+                    state.status = "policy_blocked"
+                    state.blocker = str(stagnation.get("reason") or "planner stagnation detected")
+                    self._save_state(state)
+                    self.engine.store.transition(run_id, AgentRunState.POLICY_BLOCKED, error=state.blocker)
+                    return self.engine.store.get_run(run_id) or {}
+                guard_observation = {
+                    "observation_id": f"stagnation-{stagnation['receipt_id']}",
+                    "run_id": run_id,
+                    "tool_id": "planner.stagnation_guard",
+                    "tool_version": "1",
+                    "status": "failed",
+                    "arguments": {},
+                    "result": {
+                        "required_action": "replan",
+                        "signal": stagnation["signal"],
+                        "decision_fingerprint": stagnation["decision_fingerprint"],
+                    },
+                    "error": str(stagnation.get("reason") or "planner must replan"),
+                    "truncated": False,
+                    "evidence_digest": str(stagnation["receipt_hash"]).removeprefix("sha256:"),
+                }
+                state.observations.append(guard_observation)
+                state.observations = state.observations[-self.observation_limit:]
+                self.engine.emit(run_id, "agent.planner.observation.accepted", {
+                    "turn": state.turn,
+                    "observation_id": guard_observation["observation_id"],
+                    "tool_id": guard_observation["tool_id"],
+                    "status": guard_observation["status"],
+                    "evidence_digest": guard_observation["evidence_digest"],
+                })
+                self._save_state(state)
+                continue
+
             state.turn += 1
             state.last_decision = decision.as_dict()
             self.engine.emit(run_id, "agent.planner.decision", {
