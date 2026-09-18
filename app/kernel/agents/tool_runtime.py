@@ -24,6 +24,7 @@ from app.kernel.agents.tool_models import (
 from app.kernel.agents.tool_registry import AgentToolRegistry
 from app.kernel.agents.least_authority import authorize_agent_tool
 from app.kernel.agents.run_budget import RunBudgetExceeded, tool_budget_receipt
+from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -794,6 +795,42 @@ class AgentToolRuntime:
         if spec.requires_worktree and not worktree_root:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
 
+        phase4_binding: dict[str, Any] = {}
+        if spec.requires_approval and durable_approvals_enabled(run):
+            try:
+                phase4_binding = DurableAgentApprovalRuntime(
+                    str(run.get("root_path") or self.engine.workspace_root)
+                ).validate_consumed_call(
+                    run=run,
+                    approval_id=request.approval_id,
+                    spec=spec,
+                    arguments=arguments,
+                    execution_target=target,
+                )
+            except Exception as exc:
+                self.engine.emit(run_id, "agent.approval.exact_call_refused", {
+                    "approval_id": request.approval_id,
+                    "tool_id": spec.tool_id,
+                    "tool_version": spec.version,
+                    "execution_target": target,
+                    "reason": str(exc),
+                })
+                raise
+            self.engine.merge_checkpoint(run_id, {
+                "approval_resume": {
+                    **dict((run.get("checkpoint") or {}).get("approval_resume") or {}),
+                    "status": "TOOL_EXECUTION_STARTED",
+                }
+            })
+            self.engine.emit(run_id, "agent.approval.exact_call_authorized", {
+                "approval_id": request.approval_id,
+                "tool_id": spec.tool_id,
+                "tool_version": spec.version,
+                "execution_target": target,
+                "capability_id": str(((run.get("checkpoint") or {}).get("approval_resume") or {}).get("capability_id") or ""),
+                "consumption_receipt_digest": str((phase4_binding.get("receipt") or {}).get("receipt_digest") or ""),
+            })
+
         budget_receipt = tool_budget_receipt(
             run,
             self.engine.store.events(run_id, limit=100000),
@@ -878,12 +915,33 @@ class AgentToolRuntime:
         )
         event_type = "agent.tool.completed" if status == "completed" else "agent.tool.failed"
         self.engine.emit(run_id, event_type, {"observation": observation.as_dict()})
-        self.engine.merge_checkpoint(run_id, {
+        checkpoint_delta = {
             "last_observation_id": observation.observation_id,
             "last_tool_id": observation.tool_id,
             "last_tool_status": observation.status,
             "last_tool_evidence_digest": observation.evidence_digest,
-        })
+        }
+        if phase4_binding:
+            latest_run = self.engine.store.get_run(run_id) or {}
+            latest_checkpoint = latest_run.get("checkpoint") if isinstance(latest_run.get("checkpoint"), dict) else {}
+            resume = latest_checkpoint.get("approval_resume") if isinstance(latest_checkpoint.get("approval_resume"), dict) else {}
+            checkpoint_delta["approval_resume"] = {
+                **resume,
+                "status": "CONSUMED_COMPLETED" if status == "completed" else "CONSUMED_FAILED",
+                "observation_id": observation.observation_id,
+                "tool_status": observation.status,
+                "evidence_digest": observation.evidence_digest,
+            }
+        self.engine.merge_checkpoint(run_id, checkpoint_delta)
+        if phase4_binding:
+            self.engine.emit(run_id, "agent.approval.exact_call_consumed", {
+                "approval_id": request.approval_id,
+                "tool_id": spec.tool_id,
+                "tool_version": spec.version,
+                "observation_id": observation.observation_id,
+                "tool_status": observation.status,
+                "replay_allowed": False,
+            })
         if status != "completed":
             raise ToolExecutionFailed(observation)
         return observation
