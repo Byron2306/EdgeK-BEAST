@@ -49,7 +49,7 @@ def register_system_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str,
     _root = ctx._root
 
     @router.get("/edgek/ide/system-snapshot")
-    async def edgek_ide_system_snapshot(root_path: str = None, process_query: str = "", port_limit: int = 60, process_limit: int = 30):
+    async def edgek_ide_system_snapshot(root_path: str = None, process_query: str = "", port_limit: int = 60, process_limit: int = 30, quick: bool = False):
         root = _root(root_path)
         return await asyncio.to_thread(
             system_inspector.system_snapshot,
@@ -57,6 +57,7 @@ def register_system_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[str,
             port_limit=max(1, min(int(port_limit), 500)),
             process_limit=max(1, min(int(process_limit), 200)),
             process_query=process_query,
+            quick=quick,
         )
 
     @router.get("/edgek/ide/ports")
