@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -88,7 +89,23 @@ def test_real_local_model_discovers_cross_file_context_without_attachments_then_
         ).run(run_id)
     )
 
-    assert final["state"] == "completed", final
+    if final["state"] != "completed":
+        events = engine.store.events(run_id, limit=1000)
+        diagnostic = {
+            "state": final.get("state"),
+            "error": final.get("error"),
+            "checkpoint": final.get("checkpoint"),
+            "recent_events": [
+                {
+                    "event_type": event.get("event_type"),
+                    "payload": event.get("payload"),
+                }
+                for event in events[-40:]
+            ],
+            "provider_route": getattr(provider, "last_route", {}),
+            "provider_usage": getattr(provider, "last_usage", {}),
+        }
+        pytest.fail(json.dumps(diagnostic, indent=2, sort_keys=True, default=str))
     observations = final["checkpoint"]["planner"]["observations"]
     assert observations[0]["tool_id"] == "workspace.discover_context"
     perception = observations[0]["result"]
