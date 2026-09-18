@@ -26,7 +26,7 @@ jobs:
           # actual import surface so CI cannot fail before planner tests start.
           python -m pip install "cryptography>=43,<48" "numpy>=2,<3"
       - name: Prove planner test module imports
-        run: python -c "import tests.test_agent_planner_runtime as m; print(m.__name__)"
+        run: python -m pytest --collect-only --noconftest tests/test_agent_planner_runtime.py -q
       - name: Run focused agentic loop contracts
         run: python -m pytest --noconftest tests/test_agent_planner_runtime.py -q -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"
 
