@@ -630,7 +630,7 @@
       const endpoints={
         rootInfo:'/edgek/root-info',snapshot:`/edgek/ide/snapshot?${new URLSearchParams({root_path:root(),objective:'doctor-scan'})}`,
         actions:'/edgek/ide/actions/manifest',tooling:`/edgek/ide/tooling-snapshot?${new URLSearchParams({root_path:root(),active_file:activeFile()})}`,
-        system:`/edgek/ide/system-snapshot?${new URLSearchParams({root_path:root(),port_limit:'30',process_limit:'30'})}`,
+        system:`/edgek/ide/system-snapshot?${new URLSearchParams({root_path:root(),port_limit:'30',process_limit:'30',quick:'true'})}`,
         mcp:'/edgek/mcp/state',plugins:'/edgek/plugins'
       };
       const results={};
