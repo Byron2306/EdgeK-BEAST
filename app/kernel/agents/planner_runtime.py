@@ -974,8 +974,27 @@ class AgentPlannerRuntime:
             )
         inspected_paths = cls._inspected_paths(state)
         if not inspected_paths:
+            request = run.get("request") if isinstance(run.get("request"), dict) else {}
+            context_files = {
+                str(path).strip()
+                for path in (request.get("context_files") or [])
+                if str(path).strip()
+            }
+            decision_path = ""
+            scoped_creation = False
+            if (
+                isinstance(decision, PlannerDecision)
+                and decision.decision_type is PlannerDecisionType.TOOL
+                and decision.tool_id == "worktree.write_file"
+            ):
+                decision_path = str(decision.arguments.get("path") or "").strip()
+                scoped_creation = bool(
+                    decision_path
+                    and decision_path in context_files
+                    and not cls._invalid_mutation_reason(decision)
+                )
             targeted_path = cls._targeted_read_path(run)
-            if targeted_path:
+            if targeted_path and not scoped_creation:
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
                     tool_id="workspace.read_range",
