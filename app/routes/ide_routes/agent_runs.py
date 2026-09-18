@@ -32,6 +32,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from app.kernel.agents.run_engine import AgentRunEngine
+from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
 from app.kernel.commons.route_damping import RouteFlapDampener
 from app.kernel.operations_console import (AgentOperationsConsoleViewModel, DurableConsoleEventProjection, WorkbenchModeEngine, ObjectivePlanWorkspace, ContextManifestStore, ContextManifestConsole, LiveRunTimelineConsole, WorktreeChangesDiffConsole, VerificationConsole)
 from app.kernel.operations_console.context_console import ContextManifestConsole
@@ -1313,6 +1314,105 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         payload = payload or {}
         root = _root(payload.get("root_path"))
         engine = AgentRunEngine(root)
+        run = engine.store.get_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404, detail=f"unknown agent run: {run_id}")
+
+        if durable_approvals_enabled(run):
+            runtime = DurableAgentApprovalRuntime(root)
+            try:
+                phase4 = runtime.resolve(
+                    approval_id=approval_id,
+                    resolution=payload,
+                    run=run,
+                )
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=str(exc)) from exc
+            except (PermissionError, TypeError, ValueError) as exc:
+                raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+            approved = bool(phase4.get("approved"))
+            legacy_resolution = {
+                **payload,
+                "approved": approved,
+                "scope": str((phase4.get("decision") or {}).get("scope") or payload.get("scope") or "ONCE"),
+                "phase4_durable": True,
+                "decision_digest": str((phase4.get("decision") or {}).get("decision_digest") or ""),
+            }
+            try:
+                approval = engine.store.resolve_approval(run_id, approval_id, legacy_resolution)
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+            current = engine.store.get_run(run_id) or run
+            checkpoint = current.get("checkpoint") if isinstance(current.get("checkpoint"), dict) else {}
+            prior_phase4 = checkpoint.get("phase4_approval") if isinstance(checkpoint.get("phase4_approval"), dict) else {}
+            phase4_checkpoint = {
+                **prior_phase4,
+                "approval_id": approval_id,
+                "decision": phase4.get("decision") or {},
+                "card_digest": str((phase4.get("card") or {}).get("card_digest") or ""),
+                "durable_state": str((phase4.get("durable_approval") or {}).get("state") or ""),
+                "approved": approved,
+                "status": "APPROVED_CAPABILITY_PENDING_CONSUMPTION" if approved else "REJECTED",
+            }
+            if approved:
+                phase4_checkpoint.update({
+                    "scope_grant": phase4.get("scope_grant") or {},
+                    "scope_match": phase4.get("scope_match") or {},
+                    "capability": phase4.get("capability") or {},
+                    "capability_id": str((phase4.get("capability") or {}).get("capability_id") or ""),
+                    "capability_digest": str((phase4.get("capability") or {}).get("capability_digest") or ""),
+                })
+            engine.merge_checkpoint(run_id, {"phase4_approval": phase4_checkpoint})
+
+            consumption: dict[str, Any] = {}
+            if approved:
+                try:
+                    consumption = runtime.consume_and_resume(
+                        capability=phase4.get("capability") or {},
+                        request=phase4.get("request") or {},
+                    )
+                except KeyError as exc:
+                    raise HTTPException(status_code=404, detail=str(exc)) from exc
+                except (PermissionError, TypeError, ValueError) as exc:
+                    raise HTTPException(status_code=409, detail=str(exc)) from exc
+                latest = engine.store.get_run(run_id) or {}
+                latest_checkpoint = latest.get("checkpoint") if isinstance(latest.get("checkpoint"), dict) else {}
+                latest_phase4 = latest_checkpoint.get("phase4_approval") if isinstance(latest_checkpoint.get("phase4_approval"), dict) else {}
+                engine.merge_checkpoint(run_id, {
+                    "phase4_approval": {
+                        **latest_phase4,
+                        "status": "CAPABILITY_CONSUMED_EXACT_STEP_READY",
+                        "consumption_receipt": consumption,
+                        "consumption_receipt_digest": str(consumption.get("receipt_digest") or ""),
+                    }
+                })
+            else:
+                state = normalize_state(str((engine.store.get_run(run_id) or {}).get("state") or "created"))
+                if state.value in {"waiting_for_approval", "paused"}:
+                    engine.store.transition(run_id, "planning")
+
+            event = engine.emit(run_id, "agent.approval.resolved", {
+                "approval_id": approval_id,
+                "approved": approved,
+                "decision": str((phase4.get("decision") or {}).get("decision") or ""),
+                "scope": str((phase4.get("decision") or {}).get("scope") or ""),
+                "decision_digest": str((phase4.get("decision") or {}).get("decision_digest") or ""),
+                "capability_id": str((phase4.get("capability") or {}).get("capability_id") or ""),
+                "capability_digest": str((phase4.get("capability") or {}).get("capability_digest") or ""),
+                "consumption_receipt_digest": str(consumption.get("receipt_digest") or ""),
+                "phase4_durable": True,
+            })
+            return {
+                "ok": True,
+                "approval": approval,
+                "phase4": phase4,
+                "consumption_receipt": consumption,
+                "event": event,
+                "run": engine.store.get_run(run_id),
+            }
+
         try:
             approval = engine.store.resolve_approval(run_id, approval_id, payload)
         except KeyError as exc:
