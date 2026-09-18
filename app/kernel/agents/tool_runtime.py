@@ -22,6 +22,7 @@ from app.kernel.agents.tool_models import (
     ToolSpec,
 )
 from app.kernel.agents.tool_registry import AgentToolRegistry
+from app.kernel.agents.repository_perception import RepositoryPerception
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -665,6 +666,38 @@ print(json.dumps({
     }
 
 
+async def _workspace_discover_context(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    if str(context.execution_target or "local") != "local":
+        raise ValueError("workspace.discover_context is local-only until Recovery Phase 10 distributed parity")
+    run = context.engine.store.get_run(context.run_id) or {}
+    objective = str(arguments.get("query") or run.get("objective") or "").strip()
+    if not objective:
+        raise ValueError("repository discovery requires a query or AgentRun objective")
+    request = run.get("request") if isinstance(run.get("request"), dict) else {}
+    seeds = arguments.get("seed_files") if isinstance(arguments.get("seed_files"), list) else []
+    if not seeds:
+        seeds = request.get("context_files") if isinstance(request.get("context_files"), list) else []
+    structural = await _workspace_index(
+        {
+            "limit": max(200, min(int(arguments.get("index_limit") or 1200), 5000)),
+            "include_symbols": True,
+        },
+        context,
+    )
+    perception = RepositoryPerception().discover(
+        root=context.workspace_root,
+        objective=objective,
+        structural_index=structural,
+        seed_files=[str(item) for item in seeds if str(item).strip()],
+        limit=max(4, min(int(arguments.get("limit") or 16), 40)),
+    )
+    return {
+        **perception,
+        "execution_target": context.execution_target,
+        "target_execution": "local_repository_perception",
+    }
+
+
 async def _git_status(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
     root = Path(context.worktree_root or context.workspace_root).resolve()
     process = await asyncio.create_subprocess_exec(
@@ -694,6 +727,29 @@ def build_default_tool_registry() -> AgentToolRegistry:
         max_output_bytes=262144,
         targets=("local", "ssh", "container"),
         handler=_workspace_index,
+    ))
+    registry.register(ToolSpec(
+        tool_id="workspace.discover_context",
+        version="1",
+        title="Discover repository context",
+        description="Use canonical Code Cortex discovery, structural repository indexing, and Sensorium workspace state to find relevant cross-file evidence. Advisory only; exact reads remain required before mutation.",
+        category="workspace",
+        risk=ToolRisk.LOW,
+        effect=ToolEffect.READ,
+        input_schema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "seed_files": {"type": "array", "items": {"type": "string"}},
+                "limit": {"type": "integer"},
+                "index_limit": {"type": "integer"},
+            },
+            "additionalProperties": False,
+        },
+        timeout_seconds=40,
+        max_output_bytes=262144,
+        targets=("local",),
+        handler=_workspace_discover_context,
     ))
     registry.register(ToolSpec(
         tool_id="workspace.list",
