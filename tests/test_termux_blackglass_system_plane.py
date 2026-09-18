@@ -16,3 +16,18 @@ def test_blackglass_projects_nested_system_snapshot_contract():
     assert "systemInventory?.processes?.processes" in source
     assert "systemTelemetry?.resources || systemPayload?.summary?.resources" in source
     assert "ports,processes" in source
+
+
+def test_phone_runtime_uses_quick_system_snapshots():
+    inspector = Path("app/kernel/workspaces/system_inspector.py").read_text(encoding="utf-8")
+    routes = Path("app/routes/ide_routes/system.py").read_text(encoding="utf-8")
+    app = Path("app/main.py").read_text(encoding="utf-8")
+    utility = Path("desktop-ide/renderer/js/beast-utility-orchestration-bridge.js").read_text(encoding="utf-8")
+    doctor = Path("desktop-ide/renderer/js/beast-terminal-tooling-doctor-bridge.js").read_text(encoding="utf-8")
+
+    assert 'quick: bool = False' in inspector
+    assert 'probe_tools=not quick' in inspector
+    assert 'quick: bool = False' in routes
+    assert 'quick=True' in app
+    assert "quick:'true'" in utility
+    assert "quick:'true'" in doctor
