@@ -179,9 +179,21 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
         if item["tool_id"] == "worktree.replace_exact"
         and item.get("result", {}).get("path") == "consumer.py"
     )
+    producer_mutation = next(
+        item for item in observations
+        if item["tool_id"] == "worktree.replace_exact"
+        and item.get("result", {}).get("path") == "producer.py"
+    )
+    verification = next(
+        item for item in observations
+        if item["tool_id"] == "worktree.verify"
+        and item.get("status") == "completed"
+    )
     assert observations.index(discovery_observation) < observations.index(consumer_read)
-    assert observations.index(consumer_read) < observations.index(producer_read)
-    assert observations.index(producer_read) < observations.index(consumer_mutation)
+    assert observations.index(producer_read) < observations.index(producer_mutation)
+    assert observations.index(consumer_read) < observations.index(consumer_mutation)
+    assert observations.index(producer_mutation) < observations.index(verification)
+    assert observations.index(consumer_mutation) < observations.index(verification)
 
     worktree = Path(checkpoint["worktree_root"])
     assert (root / "producer.py").read_text(encoding="utf-8") == "VALUE = 1\n"
