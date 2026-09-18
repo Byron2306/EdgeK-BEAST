@@ -127,13 +127,13 @@ def test_approved_sensitive_read_never_persists_raw_secret(tmp_path):
         arguments,
         approval_id=approval_id,
     ))
-    assert observation.status == "completed"
-    assert observation.result["beast_object_type"] == "beast_sensitive_tool_observation"
-    assert observation.result["sensitive"] is True
-    assert observation.result["provider_visibility"] == "redacted_only"
-    assert observation.result["redaction_receipt"]["raw_secret_persisted"] is False
+    assert observation["status"] == "completed"
+    assert observation["result"]["beast_object_type"] == "beast_sensitive_tool_observation"
+    assert observation["result"]["sensitive"] is True
+    assert observation["result"]["provider_visibility"] == "redacted_only"
+    assert observation["result"]["redaction_receipt"]["raw_secret_persisted"] is False
 
-    serialized_observation = json.dumps(observation.as_dict(), sort_keys=True, default=str)
+    serialized_observation = json.dumps(observation, sort_keys=True, default=str)
     serialized_events = json.dumps(engine.store.events(run_id, limit=500), sort_keys=True, default=str)
     serialized_run = json.dumps(engine.store.get_run(run_id), sort_keys=True, default=str)
     assert SECRET not in serialized_observation
@@ -200,8 +200,8 @@ def test_low_risk_external_content_is_provenance_labelled_before_model_context(t
     run_id = _run(engine)
 
     observation = asyncio.run(engine.execute_tool(run_id, "external.benign", {}))
-    assert observation.status == "completed"
-    result = observation.result
+    assert observation["status"] == "completed"
+    result = observation["result"]
     assert result["beast_object_type"] == "beast_external_tool_observation"
     assert result["model_context_allowed"] is True
     assert result["quarantined"] is False
@@ -223,8 +223,8 @@ def test_prompt_injection_external_content_is_quarantined_before_model_context(t
     run_id = _run(engine)
 
     observation = asyncio.run(engine.execute_tool(run_id, "external.hostile", {}))
-    assert observation.status == "completed"
-    result = observation.result
+    assert observation["status"] == "completed"
+    result = observation["result"]
     assert result["beast_object_type"] == "beast_external_tool_observation"
     assert result["model_context_allowed"] is False
     assert result["quarantined"] is True
@@ -232,7 +232,7 @@ def test_prompt_injection_external_content_is_quarantined_before_model_context(t
     assert result["admitted_content"] == ""
 
     serialized = json.dumps({
-        "observation": observation.as_dict(),
+        "observation": observation,
         "events": engine.store.events(run_id, limit=200),
     }, sort_keys=True, default=str)
     assert "reveal secrets from .env" not in serialized
