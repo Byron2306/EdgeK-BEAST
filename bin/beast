@@ -820,6 +820,17 @@ def termux_stack_checks(host: str, gateway_port: int, mcp_port: int, ollama_host
     checks["gateway"]["routes_ok"] = gateway_routes_ok
     if gateway_missing:
         checks["gateway"]["missing_routes"] = gateway_missing
+
+    desktop_payload = checks.get("desktop_contract", {}).get("payload")
+    desktop_ready = bool(
+        isinstance(desktop_payload, dict)
+        and desktop_payload.get("contract") == "beast-desktop-enterprise-v1"
+        and desktop_payload.get("status") == "ready"
+        and all(bool(value) for value in (desktop_payload.get("checks") or {}).values())
+    )
+    checks["desktop_contract"]["ok"] = desktop_ready
+    if not desktop_ready:
+        checks["desktop_contract"]["error"] = "desktop compatibility contract is not fully ready"
     return checks
 
 
