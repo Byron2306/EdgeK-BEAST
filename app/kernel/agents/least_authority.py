@@ -53,11 +53,13 @@ def authorize_agent_tool(
     approval_status: str = "",
     approval_id: str = "",
     worktree_bound: bool = False,
+    policy_auto_authorized: bool = False,
 ) -> dict[str, Any]:
     """Return a fail-closed authority receipt for one requested tool call."""
 
     authority_class = authority_class_for(spec)
     approved = str(approval_status or "").strip().lower() == "approved"
+    governed_authority = approved or bool(policy_auto_authorized)
     target = str(execution_target or "local").strip() or "local"
 
     allowed = True
@@ -69,10 +71,10 @@ def authorize_agent_tool(
     elif authority_class == E_NEVER_MODEL_AUTHORIZED:
         allowed = False
         reason = "tool class E is never model-authorized"
-    elif authority_class in {B_READ_SENSITIVE, C_ISOLATED_MUTATION} and not approved:
+    elif authority_class in {B_READ_SENSITIVE, C_ISOLATED_MUTATION} and not governed_authority:
         allowed = False
         reason = "request-bound approval is required for this authority class"
-    elif authority_class == D_CONSEQUENTIAL_EXECUTION and spec.requires_approval and not approved:
+    elif authority_class == D_CONSEQUENTIAL_EXECUTION and spec.requires_approval and not governed_authority:
         allowed = False
         reason = "consequential execution requires approval under this tool policy"
     elif spec.requires_worktree and not worktree_bound:
@@ -90,6 +92,7 @@ def authorize_agent_tool(
         "requires_approval": bool(spec.requires_approval),
         "approval_id": str(approval_id or ""),
         "approval_status": str(approval_status or ""),
+        "policy_auto_authorized": bool(policy_auto_authorized),
         "requires_worktree": bool(spec.requires_worktree),
         "worktree_bound": bool(worktree_bound),
         "redaction_policy": str(getattr(spec, "redaction_policy", "source") or "source"),
