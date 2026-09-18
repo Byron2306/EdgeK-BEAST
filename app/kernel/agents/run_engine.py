@@ -120,6 +120,24 @@ class AgentRunEngine:
         self._mirror_event(event)
         return event
 
+    def emit_with_sensorium(self, run_id: str, event_type: str, payload: dict[str, Any] | None = None, *, legacy_type: str = "") -> dict[str, Any]:
+        """Append one authoritative AgentRun event and report Sensorium admission separately.
+
+        The AgentRun ledger remains authoritative. Sensorium is observational;
+        a missing Sensorium receipt lowers the world-state evidence claim but
+        never deletes or mutates the durable AgentRun event.
+        """
+        event = self.store.append_event(run_id, event_type, payload or {}, legacy_type=legacy_type)
+        sensorium = self._mirror_event(event)
+        return {
+            "event": event,
+            "sensorium": sensorium or {
+                "admitted": False,
+                "authority": "observation_only",
+                "reason": "sensorium_admission_unavailable",
+            },
+        }
+
     def checkpoint(self, run_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         return self.store.checkpoint(run_id, payload)
 
@@ -263,13 +281,13 @@ class AgentRunEngine:
         if events:
             self._mirror_event(events[0])
 
-    def _mirror_event(self, event: dict[str, Any]) -> None:
+    def _mirror_event(self, event: dict[str, Any]) -> dict[str, Any] | None:
         runtime = self._sensorium_runtime()
         if not runtime:
-            return
+            return None
         try:
             payload = event.get("payload") if isinstance(event.get("payload"), dict) else {}
-            runtime.observe_owned(
+            receipt = runtime.observe_owned(
                 event_type="agent.run.observed",
                 source="beast_agent_run_engine",
                 payload_schema="beast.sensor.agent_run_event.v1",
@@ -285,7 +303,21 @@ class AgentRunEngine:
                     "payload_included": False,
                 },
             )
-        except Exception:
+            value = receipt.to_dict() if hasattr(receipt, "to_dict") else {}
+            return {
+                "admitted": bool(value),
+                "authority": "observation_only",
+                "source_event_type": str(event.get("event_type") or ""),
+                "source_event_hash": str(event.get("event_hash") or ""),
+                "receipt": value,
+            }
+        except Exception as exc:
             # The durable run ledger is authoritative for AgentRun replay.
-            # Sensorium mirroring is deliberately best-effort in Phase 2A.
-            return
+            # Sensorium mirroring is deliberately best-effort.
+            return {
+                "admitted": False,
+                "authority": "observation_only",
+                "source_event_type": str(event.get("event_type") or ""),
+                "source_event_hash": str(event.get("event_hash") or ""),
+                "reason": type(exc).__name__,
+            }
