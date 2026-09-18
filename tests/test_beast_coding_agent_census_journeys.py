@@ -30,7 +30,7 @@ def test_single_file_mutation_journey_observes_full_governed_lifecycle(tmp_path)
     assert journey["chain_verification"]["head_matches"] is True
     tools = _tool_ids(journey)
     assert tools == [
-        "workspace.index",
+        "workspace.discover_context",
         "worktree.bind",
         "workspace.read_range",
         "worktree.replace_exact",
