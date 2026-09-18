@@ -159,7 +159,7 @@
       model = RELIABLE_LOCAL_CODER;
       provider = String(preferred.provider || provider);
       localStorage.setItem('beast.pair-programmer.local-model-migrated', '1');
-      appendTrace('routing', `Reliable local coding profile selected: ${RELIABLE_LOCAL_CODER} · 8K context · 4K output`);
+      appendTrace('routing', `Reliable local coding profile selected: ${RELIABLE_LOCAL_CODER}. Detached planner runtime limits are enforced and reported by the backend.`);
     }
     if (model) localStorage.setItem('beast.model', model);
     if (provider) localStorage.setItem('beast.provider', provider);
@@ -451,7 +451,7 @@
     return /timeout|timed out|aborted/i.test(String(error?.message || error || ''));
   }
 
-  async function createDurableAgentRun(payload, { localCoder = false, detachedPlannerLaunch = false, maxTurns = 5 } = {}) {
+  async function createDurableAgentRun(payload, { localCoder = false, detachedPlannerLaunch = false, maxTurns = 12 } = {}) {
     if (!detachedPlannerLaunch) {
       return BeastRuntime.request('/edgek/agent-runs', {
         method:'POST', timeoutMs:45000,
@@ -525,17 +525,23 @@
       }
       localCoder = routeIsWeakLocalOllama(route);
     }
-    if (localCoder && files.length > RELIABLE_LOCAL_PROFILE.maxFiles) {
-      files = files.slice(0, RELIABLE_LOCAL_PROFILE.maxFiles);
-      appendTrace('routing', `Local coding context bounded to ${RELIABLE_LOCAL_PROFILE.maxFiles} files for responsive CPU inference.`);
-    }
     const detachedPlanner = routeUsesDetachedPlannerLaunch(route);
-    if (detachedPlanner && !localCoder && files.length > RELIABLE_PLANNER_PROFILE.maxFiles) {
-      files = files.slice(0, RELIABLE_PLANNER_PROFILE.maxFiles);
-      appendTrace('routing', `Planner-backed context bounded to ${RELIABLE_PLANNER_PROFILE.maxFiles} files to keep workspace ingestion responsive.`);
+    if (!detachedPlanner && localCoder && files.length > RELIABLE_LOCAL_PROFILE.maxFiles) {
+      files = files.slice(0, RELIABLE_LOCAL_PROFILE.maxFiles);
+      appendTrace('routing', `Legacy local coding context bounded to ${RELIABLE_LOCAL_PROFILE.maxFiles} files for responsive CPU inference.`);
     }
-    const retryDirective=options.focused?'\n\nRecovery mode: make one exact, reviewable edit in the single attached file. Do not inspect or propose changes outside it; return valid Action IR JSON before output ends.':(options.actionIrRecovery?'\n\nRecovery mode: your previous response looked like an edit packet but failed BEAST SourcePlan compilation. Return one valid BEAST Action IR JSON object only. Include complete exact replacements, at most one source-edit action per file, and no markdown or prose. If you cannot make a safe exact edit, emit ask_for_context instead of advisory prose.':'');
-    const runPrompt = `${instructionFor(mode, clean, files, selection, localCoder)}${retryDirective}`;
+    if (detachedPlanner && files.length > RELIABLE_PLANNER_PROFILE.maxFiles) {
+      files = files.slice(0, RELIABLE_PLANNER_PROFILE.maxFiles);
+    }
+    if (detachedPlanner) {
+      appendTrace('context', `Forwarding ${files.length} repository file hint(s) to the durable planner; backend repository tools remain authoritative for discovery.`);
+    }
+    const retryDirective = detachedPlanner
+      ? (options.focused ? '\n\nRecovery mode: keep the next PlannerDecision bounded to the focused target and preserve the typed tool protocol.' : '')
+      : options.focused
+        ? '\n\nRecovery mode: make one exact, reviewable edit in the single attached file. Do not inspect or propose changes outside it; return valid Action IR JSON before output ends.'
+        : (options.actionIrRecovery ? '\n\nRecovery mode: your previous response looked like an edit packet but failed BEAST SourcePlan compilation. Return one valid BEAST Action IR JSON object only. Include complete exact replacements, at most one source-edit action per file, and no markdown or prose. If you cannot make a safe exact edit, emit ask_for_context instead of advisory prose.' : '');
+    const runPrompt = `${instructionFor(mode, clean, files, selection, localCoder, detachedPlanner)}${retryDirective}`;
     const agentProfile = agentTurnProfile(clean, mode, analysisRun, files);
     addMessage('user', clean, { mode, files, selection:selection ? { path:selection.path, range:selection.range } : null });
     const assistantId = addMessage('assistant', '', {
@@ -558,12 +564,12 @@
     let lastDraftProgressAt = 0;
     try {
       if (!sessionId) sessionId = await createSession(clean, files, route.model, route.provider, analysisRun ? 'analysis' : mode);
-      const maxOutputTokens = Number(options.maxTokens || (localCoder ? (mode === 'ask' ? RELIABLE_LOCAL_PROFILE.askTokens : RELIABLE_LOCAL_PROFILE.editTokens) : detachedPlanner ? (mode === 'ask' ? RELIABLE_PLANNER_PROFILE.askTokens : RELIABLE_PLANNER_PROFILE.editTokens) : (mode === 'ask' ? 6000 : 16000)));
-      const maxContextChars = Number(options.contextMaxCharsEach || (localCoder ? RELIABLE_LOCAL_PROFILE.contextChars : detachedPlanner ? RELIABLE_PLANNER_PROFILE.contextChars : 50000));
+      const maxOutputTokens = Number(options.maxTokens || (detachedPlanner ? (mode === 'ask' ? RELIABLE_PLANNER_PROFILE.askTokens : RELIABLE_PLANNER_PROFILE.editTokens) : localCoder ? (mode === 'ask' ? RELIABLE_LOCAL_PROFILE.askTokens : RELIABLE_LOCAL_PROFILE.editTokens) : (mode === 'ask' ? 6000 : 16000)));
+      const maxContextChars = Number(options.contextMaxCharsEach || (detachedPlanner ? RELIABLE_PLANNER_PROFILE.contextChars : localCoder ? RELIABLE_LOCAL_PROFILE.contextChars : 50000));
       const created = await createDurableAgentRun(agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch:true }), {
         localCoder,
         detachedPlannerLaunch: detachedPlanner,
-        maxTurns:Number(options.maxTurns || (localCoder ? 5 : 8))
+        maxTurns:Number(options.maxTurns || (detachedPlanner ? RELIABLE_PLANNER_PROFILE.plannerTurns : 8))
       });
       const durableRunId = String(created?.run?.run_id || '');
       if (!created?.ok || !durableRunId) throw new Error(created?.error || 'BEAST could not create the durable coding run.');
