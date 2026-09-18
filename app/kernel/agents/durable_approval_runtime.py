@@ -139,6 +139,11 @@ class DurableAgentApprovalRuntime:
         resources = _affected_resources(arguments)
         mode = _permission_mode(run)
         generation = _policy_generation(root)
+        self.revocations.assert_active({
+            "run_id": str(run.get("run_id") or ""),
+            "tool_id": spec.tool_id,
+            "policy_generation": generation,
+        })
         action = {
             "tool_id": spec.tool_id,
             "tool_version": spec.version,
