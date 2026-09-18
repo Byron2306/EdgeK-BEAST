@@ -23,6 +23,11 @@ def junit(path: Path, *, min_tests: int = 1) -> dict:
             return max(declared, sum(values))
         return sum(values)
 
+    case_names = sorted({
+        str(case.attrib.get("name") or "").strip()
+        for case in root.findall(".//testcase")
+        if str(case.attrib.get("name") or "").strip()
+    })
     result = {
         "path": path.name,
         "digest": digest(path),
@@ -30,6 +35,7 @@ def junit(path: Path, *, min_tests: int = 1) -> dict:
         "failures": total("failures"),
         "errors": total("errors"),
         "skipped": total("skipped"),
+        "test_cases": case_names,
     }
     result["passed"] = (
         result["tests"] >= min_tests
@@ -51,9 +57,25 @@ def main() -> int:
     parser.add_argument("--md-out", type=Path, required=True)
     args = parser.parse_args()
 
+    live_gate = junit(args.live_approval_junit, min_tests=6)
+    required_live_tests = {
+        "test_live_planner_uses_one_use_phase4_capability",
+        "test_review_mode_lifts_read_only_tool_into_durable_approval",
+        "test_restart_paused_approval_consumes_exact_capability",
+        "test_request_replan_continues_same_run_with_governance_observation",
+        "test_permanent_deny_persists_tool_revocation_across_runs",
+        "test_restart_approval_route_executes_exact_step_before_worker_relaunch",
+    }
+    observed_live_tests = set(live_gate.get("test_cases") or [])
+    missing_live_tests = sorted(required_live_tests - observed_live_tests)
+    live_gate["required_tests"] = sorted(required_live_tests)
+    live_gate["missing_required_tests"] = missing_live_tests
+    live_gate["required_tests_present"] = not missing_live_tests
+    live_gate["passed"] = bool(live_gate.get("passed")) and not missing_live_tests
+
     gates = {
         "canonical_phase4_subsystem": junit(args.canonical_junit, min_tests=20),
-        "live_durable_approval_and_restart": junit(args.live_approval_junit, min_tests=2),
+        "live_durable_approval_and_restart": live_gate,
         "permission_modes_and_bounded_autonomy": junit(args.modes_junit, min_tests=5),
         "sensitive_and_external_content_controls": junit(args.sensitive_external_junit, min_tests=3),
         "phase3_behavior_preserved": junit(args.phase3_regression_junit, min_tests=20),
@@ -69,6 +91,9 @@ def main() -> int:
         "exit_gate": {
             "approval_survives_restart": True if phase4_exit_met else False,
             "exact_paused_step_resumed": True if phase4_exit_met else False,
+            "restart_route_executes_exact_step_before_replanning": True if phase4_exit_met else False,
+            "request_replan_continues_same_run": True if phase4_exit_met else False,
+            "permanent_deny_persists_tool_revocation": True if phase4_exit_met else False,
             "request_bound_capability": True if phase4_exit_met else False,
             "single_use_capability": True if phase4_exit_met else False,
             "future_authority_widened": False,
