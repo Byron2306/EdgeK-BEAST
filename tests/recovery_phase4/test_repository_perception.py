@@ -186,8 +186,8 @@ def test_cross_file_agent_repairs_two_files_without_manual_context_attachments(t
     observations = final["checkpoint"]["planner"]["observations"]
     assert observations[0]["tool_id"] == "workspace.discover_context"
     discovery = observations[0]["result"]
-    assert "pricing.py" in discovery["candidate_paths"]
-    assert "checkout.py" in discovery["candidate_paths"]
+    assert "pricing.py" in discovery["candidate_paths"], discovery
+    assert "checkout.py" in discovery["candidate_paths"], discovery
 
     reads = [
         item["result"]["path"]
