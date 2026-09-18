@@ -227,8 +227,11 @@ class ExactStepResumeRuntime:
         run = self.engine.store.get_run(str(capability["run_id"]))
         if not run:
             raise KeyError(f"unknown agent run: {capability['run_id']}")
-        if normalize_state(str(run.get("state") or "")) != AgentRunState.WAITING_FOR_APPROVAL:
-            raise ValueError("agent run is not waiting for approval")
+        run_state = normalize_state(str(run.get("state") or ""))
+        if run_state not in {AgentRunState.WAITING_FOR_APPROVAL, AgentRunState.PAUSED}:
+            raise ValueError("agent run is not waiting for approval or restart-paused")
+        if run_state is AgentRunState.PAUSED and "runtime_restarted" not in str(run.get("error") or ""):
+            raise ValueError("paused AgentRun is not an approval wait recovered from restart")
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         suspended = checkpoint.get("suspended_step") if isinstance(checkpoint.get("suspended_step"), dict) else {}
         suspended_step_id = str(suspended.get("step_id") or checkpoint.get("suspended_step_id") or capability["step_id"])
@@ -267,6 +270,9 @@ class ExactStepResumeRuntime:
                         "tool_id": str(capability["tool_id"]),
                         "tool_version": str(capability["tool_version"]),
                         "request_digest": str(capability["request_digest"]),
+                        "call_identity_digest": str(capability["call_identity_digest"]),
+                        "execution_target": str(capability["execution_target"]),
+                        "workspace_id": str(capability["workspace_id"]),
                         "consumed_at": _iso(now),
                         "status": "READY_FOR_EXACT_TOOL_EXECUTION",
                     }
