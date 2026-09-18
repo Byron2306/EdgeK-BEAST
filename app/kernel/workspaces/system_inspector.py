@@ -589,7 +589,7 @@ def find_port_owners(port: int) -> Dict[str, Any]:
 # Environment
 # --------------------------------------------------------------------------------------
 
-def environment_report(root: Optional[Path] = None) -> Dict[str, Any]:
+def environment_report(root: Optional[Path] = None, *, probe_tools: bool = True) -> Dict[str, Any]:
     import platform
 
     in_venv = bool(getattr(sys, "base_prefix", sys.prefix) != sys.prefix or os.environ.get("VIRTUAL_ENV"))
@@ -615,7 +615,7 @@ def environment_report(root: Optional[Path] = None) -> Dict[str, Any]:
         command_version("docker", ["--version"]),
         command_version("rustc", ["--version"]),
         command_version("go", ["version"]),
-    ]
+    ] if probe_tools else []
     env_vars: List[Dict[str, Any]] = []
     for name in sorted(os.environ):
         value = os.environ.get(name, "")
@@ -1018,12 +1018,12 @@ def _resource_telemetry() -> Dict[str, Any]:
         resources["network"] = {"percent": None, "health_percent": None, "available": False, "measurement": "unavailable", "source": "unavailable", "interfaces": []}
     return resources
 
-def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30, process_query: str = "") -> Dict[str, Any]:
+def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30, process_query: str = "", quick: bool = False) -> Dict[str, Any]:
     ports = list_listening_ports(limit=port_limit)
     processes = list_processes(query=process_query, limit=process_limit)
-    environment = environment_report(root)
-    packages = package_report(root)
-    extensions = extensions_report(root)
+    environment = environment_report(root, probe_tools=not quick)
+    packages = package_report(root) if not quick else {"python": {"declared_count": 0}, "node": {"manifests": []}, "deferred": True}
+    extensions = extensions_report(root) if not quick else {"vscode_extension": {"command_count": 0}, "deferred": True}
     resources = _resource_telemetry()
     return {
         "ok": True,
@@ -1032,6 +1032,7 @@ def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30
         "workspace_root": str(root),
         "platform_mode": "termux_android" if os.environ.get("PREFIX", "").startswith("/data/data/com.termux/") else sys.platform,
         "psutil_available": psutil is not None,
+        "quick": bool(quick),
         "capabilities": {
             "ports": True,
             "processes": True,
