@@ -1,0 +1,108 @@
+name: BEAST Phase 2 Completion Gate
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase2-runtime-trace
+  pull_request:
+    paths:
+      - 'app/kernel/agents/**'
+      - 'app/kernel/sensorium/**'
+      - 'app/routes/ide.py'
+      - 'app/routes/ide_routes/**'
+      - 'desktop-ide/renderer/js/ai/**'
+      - 'scripts/beast_coding_agent_phase2_trace.py'
+      - 'scripts/beast_coding_agent_phase2_closure.py'
+      - 'scripts/run_beast_coding_agent_census_journeys.py'
+      - 'tests/phase2/**'
+      - 'tests/test_agent_planner_runtime.py'
+      - 'tests/test_beast_coding_agent_phase2_trace.py'
+      - 'tests/test_beast_coding_agent_census_journeys.py'
+      - '.github/workflows/beast-phase2-completion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase2-completion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      BEAST_LIVE_OLLAMA_ACCEPTANCE: '1'
+      BEAST_LIVE_OLLAMA_MODEL: 'qwen2.5:0.5b'
+      BEAST_LIVE_OLLAMA_CTX: '2048'
+      BEAST_LIVE_OLLAMA_PREDICT: '128'
+      BEAST_LIVE_DOCKER_ACCEPTANCE: '1'
+      BEAST_LIVE_SSH_DOCKER_ACCEPTANCE: '1'
+      BEAST_LIVE_DOCKER_IMAGE: 'beast-disposable-sshd:live'
+      BEAST_PHASE2_DESKTOP_RECEIPT: /tmp/BEAST_PHASE2_DESKTOP_INGRESS.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install BEAST Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Prove backend request path and cross-file objective
+        run: |
+          python -m pytest -q --noconftest             tests/test_beast_coding_agent_phase2_trace.py             tests/test_beast_coding_agent_census_journeys.py             --junitxml=/tmp/beast-phase2-backend.xml
+          python scripts/beast_coding_agent_phase2_trace.py             --json-out /tmp/BEAST_PHASE2_REQUEST_TRACE.json             --md-out /tmp/BEAST_PHASE2_REQUEST_TRACE.md
+
+      - name: Prove independent Sensorium admission
+        run: |
+          python -m pytest -q --noconftest             tests/phase2/test_sensorium_agent_run_receipt.py             --junitxml=/tmp/beast-phase2-sensorium.xml
+
+      - name: Prove real desktop renderer ingress
+        run: |
+          python -m pytest -q --noconftest             tests/phase2/test_live_desktop_agent_ingress.py             --junitxml=/tmp/beast-phase2-desktop.xml
+
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          ollama pull "$BEAST_LIVE_OLLAMA_MODEL"
+
+      - name: Prove native real-model provider exchange
+        run: |
+          python -m pytest -q --noconftest             tests/phase2/test_live_ollama_provider_acceptance.py             --junitxml=/tmp/beast-phase2-ollama.xml
+
+      - name: Prove disposable Docker and strict-host-key SSH return path
+        run: |
+          docker version
+          ssh -V
+          docker build -t "$BEAST_LIVE_DOCKER_IMAGE" tests/fixtures/disposable-sshd
+          python -m pytest -q --noconftest             tests/phase2/test_live_remote_promotion_acceptance.py             --junitxml=/tmp/beast-phase2-remote.xml
+
+      - name: Prove planner endurance and provider telemetry
+        run: |
+          python -m pytest -q --noconftest tests/test_agent_planner_runtime.py             -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"             --junitxml=/tmp/beast-phase2-endurance.xml
+
+      - name: Compile Phase 2 closure receipt
+        run: |
+          python scripts/beast_coding_agent_phase2_closure.py             --backend-trace /tmp/BEAST_PHASE2_REQUEST_TRACE.json             --desktop-receipt /tmp/BEAST_PHASE2_DESKTOP_INGRESS.json             --sensorium-junit /tmp/beast-phase2-sensorium.xml             --ollama-junit /tmp/beast-phase2-ollama.xml             --remote-junit /tmp/beast-phase2-remote.xml             --endurance-junit /tmp/beast-phase2-endurance.xml             --json-out /tmp/BEAST_PHASE2_COMPLETION.json             --md-out /tmp/BEAST_PHASE2_COMPLETION.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase2-completion-receipt
+          path: |
+            /tmp/BEAST_PHASE2_REQUEST_TRACE.json
+            /tmp/BEAST_PHASE2_REQUEST_TRACE.md
+            /tmp/BEAST_PHASE2_DESKTOP_INGRESS.json
+            /tmp/BEAST_PHASE2_COMPLETION.json
+            /tmp/BEAST_PHASE2_COMPLETION.md
+            /tmp/beast-phase2-backend.xml
+            /tmp/beast-phase2-sensorium.xml
+            /tmp/beast-phase2-desktop.xml
+            /tmp/beast-phase2-ollama.xml
+            /tmp/beast-phase2-remote.xml
+            /tmp/beast-phase2-endurance.xml
