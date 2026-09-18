@@ -19,7 +19,14 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Python test dependencies
-        run: python -m pip install -r requirements.txt
+        run: |
+          python -m pip install -r requirements.txt
+          # The planner test module crosses approval/crypto and compute modules
+          # that are optional in the minimal gateway requirements. Install the
+          # actual import surface so CI cannot fail before planner tests start.
+          python -m pip install "cryptography>=43,<48" "numpy>=2,<3"
+      - name: Prove planner test module imports
+        run: python -c "import tests.test_agent_planner_runtime as m; print(m.__name__)"
       - name: Run focused agentic loop contracts
         run: python -m pytest --noconftest tests/test_agent_planner_runtime.py -q -k "provider_quality_ledger or large_real_repo_endurance or capability_scored_provider"
 
