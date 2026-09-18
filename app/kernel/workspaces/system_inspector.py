@@ -335,6 +335,11 @@ def list_processes(query: str = "", limit: int = 120, sort: str = "memory") -> D
     else:
         source = "ps"
         rows = _processes_via_ps(needle)
+    if not rows:
+        fallback = _processes_via_ps(needle)
+        if fallback:
+            rows = fallback
+            source = "ps"
     if sort == "cpu":
         rows.sort(key=lambda item: float(item.get("cpu_percent") or 0.0), reverse=True)
     else:
@@ -961,7 +966,12 @@ def _resource_telemetry() -> Dict[str, Any]:
 
     try:
         if psutil is not None:
-            resources["cpu"] = {"percent": round(float(psutil.cpu_percent(interval=0.05)), 1), "available": True, "source": "psutil"}
+            try:
+                resources["cpu"] = {"percent": round(float(psutil.cpu_percent(interval=0.05)), 1), "available": True, "source": "psutil"}
+            except Exception:
+                load = float(os.getloadavg()[0]) if hasattr(os, "getloadavg") else 0.0
+                count = max(1, int(os.cpu_count() or 1))
+                resources["cpu"] = {"percent": round(min(100.0, load / count * 100.0), 1), "available": True, "source": "/proc/loadavg"}
         else:
             load = float(os.getloadavg()[0]) if hasattr(os, "getloadavg") else 0.0
             count = max(1, int(os.cpu_count() or 1))
@@ -1020,6 +1030,7 @@ def system_snapshot(root: Path, *, port_limit: int = 60, process_limit: int = 30
         "beast_object_type": "beast_ide_system_snapshot",
         "version": "1.0",
         "workspace_root": str(root),
+        "platform_mode": "termux_android" if os.environ.get("PREFIX", "").startswith("/data/data/com.termux/") else sys.platform,
         "psutil_available": psutil is not None,
         "capabilities": {
             "ports": True,
