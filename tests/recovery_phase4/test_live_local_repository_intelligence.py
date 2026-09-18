@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -100,7 +101,40 @@ def test_real_local_model_consumes_discovered_cross_file_evidence_without_manual
         ).run(run_id)
     )
 
-    assert final["state"] == "completed", final
+    if final["state"] != "completed":
+        events = engine.store.events(run_id, limit=1200)
+        checkpoint = final.get("checkpoint") if isinstance(final.get("checkpoint"), dict) else {}
+        planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
+        diagnostics = {
+            "state": final.get("state"),
+            "error": final.get("error"),
+            "cancel_reason": final.get("cancel_reason"),
+            "last_decision": planner.get("last_decision"),
+            "planner_status": planner.get("status"),
+            "planner_blocker": planner.get("blocker"),
+            "repair_cycles": planner.get("repair_cycles"),
+            "repository_discovery": checkpoint.get("repository_discovery"),
+            "worktree_root": checkpoint.get("worktree_root"),
+            "sourceplan": checkpoint.get("sourceplan"),
+            "last_observations": [
+                {
+                    "tool_id": item.get("tool_id"),
+                    "status": item.get("status"),
+                    "path": (item.get("result") or {}).get("path") if isinstance(item.get("result"), dict) else "",
+                    "error": item.get("error"),
+                }
+                for item in (planner.get("observations") or [])[-16:]
+                if isinstance(item, dict)
+            ],
+            "last_events": [
+                {
+                    "event_type": event.get("event_type"),
+                    "payload": event.get("payload"),
+                }
+                for event in events[-24:]
+            ],
+        }
+        pytest.fail("Recovery Phase 4 live run did not complete:\n" + json.dumps(diagnostics, indent=2, sort_keys=True, default=str))
     checkpoint = final["checkpoint"]
     discovery = checkpoint["repository_discovery"]
     assert discovery["canonical_owner"] == "code_cortex"
