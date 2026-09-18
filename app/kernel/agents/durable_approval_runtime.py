@@ -13,6 +13,7 @@ from typing import Any, Mapping
 
 from app.kernel.agents.tool_models import ToolEffect, ToolSpec
 from app.kernel.approvals.digests import canonicalize
+from app.kernel.approvals.sensitive_data import SensitiveDataController, policy_from_sensitive_payload
 from app.kernel.approvals.capability_runtime import CapabilityConsumptionStore, ExactStepResumeRuntime
 from app.kernel.approvals import (
     ApprovalContractFactory,
@@ -164,6 +165,18 @@ class DurableAgentApprovalRuntime:
         )
         classification = self.classifier.classify(action, policy=policy)
         mode_decision = self.modes.evaluate(action, policy=policy)
+        sensitive_policy = policy_from_sensitive_payload({"generation": generation})
+        sensitive_classification = SensitiveDataController().classify(
+            {
+                "affected_resources": resources,
+                "arguments": dict(arguments),
+                "provider": str(run.get("provider") or ""),
+                "provider_is_local": str(run.get("provider") or "").strip().lower() in {
+                    "ollama", "local_ollama", "simulated", "scripted"
+                },
+            },
+            policy=sensitive_policy,
+        )
 
         reasons = list(mode_decision.get("reasons") or [])
         runtime_constraints: list[str] = []
@@ -185,6 +198,8 @@ class DurableAgentApprovalRuntime:
             "action": action,
             "policy": policy,
             "classification": classification,
+            "sensitive_policy": sensitive_policy,
+            "sensitive_classification": sensitive_classification,
             "mode_profile": self.modes.profile(mode),
             "mode_decision": mode_decision,
             "runtime_constraints": runtime_constraints,
@@ -249,7 +264,15 @@ class DurableAgentApprovalRuntime:
             "risk_class": classification["risk_class"],
             "reason": f"AgentRun requires {spec.tool_id} to advance the current objective.",
             "budget_impact": dict(budget_impact or {"tool_calls": 1}),
-            "evidence_policy": {"level": str(spec.evidence_level or "summary")},
+            "evidence_policy": {
+                "level": str(spec.evidence_level or "summary"),
+                "sensitive_classification_digest": str(
+                    (evaluation.get("sensitive_classification") or {}).get("classification_digest") or ""
+                ),
+                "raw_sensitive_persistence_allowed": False
+                if bool((evaluation.get("sensitive_classification") or {}).get("sensitive"))
+                else True,
+            },
             "requested_scope": "ONCE",
             "permission_mode": mode,
             "policy_generation": generation,
@@ -270,6 +293,7 @@ class DurableAgentApprovalRuntime:
         return {
             "request": canonical_request,
             "classification": classification,
+            "sensitive_classification": evaluation["sensitive_classification"],
             "mode_profile": evaluation["mode_profile"],
             "mode_decision": mode_decision,
             "envelope": envelope,
