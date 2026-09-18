@@ -151,3 +151,35 @@ def test_required_phase_does_not_expand_creation_scope_for_ordinary_run(tmp_path
     assert required is not None
     assert required.tool_id == "workspace.read_range"
     assert required.arguments["path"] == "packages/seed.py"
+
+
+def test_required_phase_advances_to_verify_after_successful_creation_without_source_read(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    created = engine.create_run(
+        session_id="phase2-created-file-verify-guard",
+        objective="Create and verify a new module",
+        mode="agent",
+        provider="simulated",
+        model="phase2-scripted",
+        request={"context_files": ["packages/new.py"], "monorepo": True},
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    state = runtime._load_state(created["run_id"])
+    state.observations = [
+        {"tool_id": "workspace.index", "status": "completed", "result": {"ok": True}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"worktree_root": str(tmp_path / "wt")}},
+        {
+            "tool_id": "worktree.write_file",
+            "status": "completed",
+            "result": {"path": "packages/new.py", "created": True, "mutation_epoch": 1},
+        },
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.verify",
+        "arguments": {"command": ["python", "-m", "py_compile", "packages/new.py"]},
+    })
+    required = runtime._required_phase_decision(engine.store.get_run(created["run_id"]), state, decision)
+    assert required is not None
+    assert required.tool_id == "worktree.verify"
+    assert required.tool_id != "workspace.read_range"
