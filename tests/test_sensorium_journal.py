@@ -57,3 +57,32 @@ def test_socket_retirement_updates_payload_free_topology(tmp_path):
     assert runtime.state()["socket_topology"]
     assert runtime.retire_socket(reconciled.identity.identity, reason="lease_released", workspace_id="workspace-journal")
     assert runtime.state()["socket_topology"] == ()
+
+
+def test_sensorium_journal_shared_runtimes_allocate_contiguous_offsets(tmp_path):
+    path = tmp_path / "shared-sensorium.sqlite3"
+    first = SensoriumRuntime(capacity=16, journal_path=path, boot_id="boot-shared")
+    second = SensoriumRuntime(capacity=16, journal_path=path, boot_id="boot-shared")
+
+    one = first.observe_owned(
+        event_type="agent.run.observed",
+        source="agent-one",
+        payload_schema="beast.sensor.agent_run_event.v1",
+        payload={"run_id": "one", "source_event_type": "agent.repository.discovery"},
+        mission_id="run-one",
+        workspace_id="workspace:sha256:" + "1" * 64,
+    )
+    two = second.observe_owned(
+        event_type="agent.run.observed",
+        source="agent-two",
+        payload_schema="beast.sensor.agent_run_event.v1",
+        payload={"run_id": "two", "source_event_type": "agent.repository.discovery"},
+        mission_id="run-two",
+        workspace_id="workspace:sha256:" + "2" * 64,
+    )
+
+    assert one.admitted.offset == 1
+    assert two.admitted.offset == 2
+    replay = SensoriumJournal(path).replay()
+    assert [entry.offset for entry in replay] == [1, 2]
+    assert SensoriumJournal(path).metrics()["integrity_ok"] is True
