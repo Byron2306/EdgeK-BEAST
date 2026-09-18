@@ -982,19 +982,25 @@ class AgentPlannerRuntime:
             }
             decision_path = ""
             scoped_creation = False
+            broad_creation = False
             if (
                 isinstance(decision, PlannerDecision)
                 and decision.decision_type is PlannerDecisionType.TOOL
                 and decision.tool_id == "worktree.write_file"
             ):
                 decision_path = str(decision.arguments.get("path") or "").strip()
-                scoped_creation = bool(
-                    decision_path
-                    and decision_path in context_files
-                    and not cls._invalid_mutation_reason(decision)
+                valid_creation = bool(decision_path and not cls._invalid_mutation_reason(decision))
+                scoped_creation = bool(valid_creation and decision_path in context_files)
+                objective = str(run.get("objective") or "").casefold()
+                broad_wave = bool(
+                    request.get("long_horizon")
+                    or request.get("monorepo")
+                    or request.get("architecture_planning")
+                    or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files"))
                 )
+                broad_creation = bool(valid_creation and broad_wave)
             targeted_path = cls._targeted_read_path(run)
-            if targeted_path and not scoped_creation:
+            if targeted_path and not (scoped_creation or broad_creation):
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
                     tool_id="workspace.read_range",
