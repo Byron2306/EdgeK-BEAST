@@ -39,6 +39,10 @@ def _workspace_id(root: str | Path) -> str:
 
 
 def _tool_class(spec: ToolSpec) -> str:
+    # worktree.bind creates the isolation boundary itself. Treating it as an
+    # already-isolated mutation would make the prerequisite circular.
+    if spec.tool_id == "worktree.bind":
+        return "CONSEQUENTIAL_EXECUTION"
     if spec.effect is ToolEffect.READ:
         return "SENSITIVE_READ" if spec.requires_approval else "READ_ONLY"
     if spec.effect is ToolEffect.ISOLATED_MUTATION:
