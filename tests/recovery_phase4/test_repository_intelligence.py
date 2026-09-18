@@ -318,3 +318,60 @@ def test_cross_file_direct_dependency_must_be_exact_read_before_verification(tmp
     assert required.tool_id == "workspace.read_range"
     assert required.arguments["path"] == "consumer.py"
     assert "exact inspection" in required.rationale
+
+
+def test_retry_recovery_allows_scoped_unread_path_then_forces_exact_read(tmp_path):
+    root = _repo(tmp_path)
+    engine = AgentRunEngine(root)
+    run_id = engine.create_run(
+        session_id="recovery-phase4-retry-scope",
+        objective="Cross-file task: update producer and its dependent consumer.",
+        mode="agent",
+        provider="ollama",
+        model="qwen2.5:0.5b",
+        request={
+            "context_files": ["producer.py"],
+            "semantic_context": {"active_file": "producer.py"},
+        },
+    )["run_id"]
+    runtime = AgentPlannerRuntime(
+        engine,
+        ScriptedPlannerProvider([]),
+        context_packet_builder=_builder(),
+    )
+    run = engine.store.get_run(run_id) or {}
+    state = runtime._admit_repository_discovery(run, runtime._load_state(run_id))
+    state.observations.extend([
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"worktree_root": str(root / ".beast-worktree")},
+        },
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "consumer.py",
+                "content": "from producer import VALUE\nRESULT = VALUE + 0\n",
+            },
+        },
+    ])
+
+    from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType
+
+    repaired = PlannerDecision(
+        decision_type=PlannerDecisionType.TOOL,
+        tool_id="worktree.replace_exact",
+        arguments={
+            "path": "producer.py",
+            "old_text": "VALUE = 1",
+            "new_text": "VALUE = 2",
+        },
+    )
+    assert AgentPlannerRuntime._invalid_retry_recovery_reason(repaired, state, run) == ""
+
+    required = AgentPlannerRuntime._required_phase_decision(run, state, repaired)
+    assert required is not None
+    assert required.tool_id == "workspace.read_range"
+    assert required.arguments["path"] == "producer.py"
+    assert "exact source bytes" in required.rationale
