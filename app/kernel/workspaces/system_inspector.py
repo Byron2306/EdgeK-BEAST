@@ -280,6 +280,26 @@ def list_listening_ports(limit: int = 300) -> Dict[str, Any]:
     limit = max(1, min(int(limit), 1000))
     rows = _ports_via_psutil(limit) if psutil is not None else []
     source = "psutil"
+    if rows and any(not row.get("pid") for row in rows):
+        # Android/Termux commonly allows psutil to enumerate sockets while
+        # withholding owner PIDs.  Procfs can still resolve sockets owned by the
+        # current Termux UID, so enrich rather than discarding the psutil rows.
+        proc_rows = _ports_via_proc(max(limit, len(rows) * 2))
+        by_socket = {}
+        for row in proc_rows:
+            if not row.get("pid"):
+                continue
+            by_socket.setdefault((row.get("proto"), int(row.get("port") or 0)), row)
+        enriched = []
+        for row in rows:
+            if row.get("pid"):
+                enriched.append(row)
+                continue
+            owner = by_socket.get((row.get("proto"), int(row.get("port") or 0)))
+            enriched.append({**row, **({key: owner.get(key) for key in ("pid", "process", "cmdline", "user") if owner.get(key) not in (None, "")} if owner else {})})
+        rows = enriched
+        if any(row.get("pid") for row in rows):
+            source = "psutil+procfs"
     if not rows:
         rows = _ports_via_ss(limit)
         source = "ss"
