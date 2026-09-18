@@ -19,7 +19,8 @@ def test_observed_backend_trace_keeps_unproven_edges_explicit(tmp_path):
     assert report["edges"]["backend_planner_and_tools"]["state"] == "observed_scripted_provider"
     for edge in ("desktop_ingress", "real_model_provider", "sensorium_delivery", "remote_dispatch_return"):
         assert report["edges"][edge]["state"] == "unverified"
-    assert report["journeys"][1]["objective_assessment"]["unresolved_paths"] == ["consumer.py"]
+    assert report["journeys"][1]["objective_assessment"]["satisfied"] is True
+    assert report["journeys"][1]["objective_assessment"]["unresolved_paths"] == []
 
 
 def test_missing_chain_proof_or_unsupported_provider_claim_fails_closed(tmp_path):
