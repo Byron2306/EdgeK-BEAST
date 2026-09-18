@@ -24,7 +24,6 @@ from app.kernel.agents.tool_models import (
 from app.kernel.agents.tool_registry import AgentToolRegistry
 from app.kernel.agents.least_authority import authorize_agent_tool
 from app.kernel.agents.run_budget import RunBudgetExceeded, tool_budget_receipt
-from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
 
 
 class ToolExecutionFailed(RuntimeError):
@@ -796,6 +795,8 @@ class AgentToolRuntime:
             raise PermissionError(f"tool {spec.tool_id} requires an isolated worktree")
 
         phase4_binding: dict[str, Any] = {}
+        if spec.requires_approval:
+            from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime, durable_approvals_enabled
         if spec.requires_approval and durable_approvals_enabled(run):
             try:
                 phase4_binding = DurableAgentApprovalRuntime(
