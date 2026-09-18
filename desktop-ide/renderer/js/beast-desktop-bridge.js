@@ -38,6 +38,10 @@
       });
       if (!workspaceRoot() && result?.repoRoot) setRoot(result.repoRoot,{folders:result.workspaceFolders||[]});
       else if(Array.isArray(result?.workspaceFolders)&&result.workspaceFolders.length)setWorkspaceFolders(result.workspaceFolders);
+      else if (!workspaceRoot()) {
+        const persistedRoot = localStorage.getItem('beast.v2.workspace.root') || '';
+        if (persistedRoot) setRoot(persistedRoot);
+      }
       window.gatewayUrl = gateway;
       return result;
     } catch (error) {
@@ -70,11 +74,27 @@
     return value;
   }
 
+  async function validateBrowserWorkspace(root) {
+    const value = String(root || '').trim();
+    if (!value) return '';
+    const payload = await fetchJson(`/edgek/workspace/files?${new URLSearchParams({ root_path: value, limit: '1' })}`, { timeoutMs: 8000 });
+    if (!payload || payload.beast_object_type !== 'workspace_files') throw new Error('BEAST gateway did not confirm that workspace.');
+    return String(payload.root_path || value);
+  }
+
   async function chooseWorkspace() {
     if (demoMode) return setRoot('/demo/BEAST');
     const api = desktop();
-    if (!api?.chooseWorkspace) throw new Error('Workspace chooser is available only inside the BEAST desktop shell.');
-    const selected = await BeastRuntime.desktopCall('chooseWorkspace',[],{required:true});
+    let selected;
+    if (api?.chooseWorkspace) {
+      selected = await BeastRuntime.desktopCall('chooseWorkspace',[],{required:true});
+    } else {
+      const suggested = workspaceRoot() || localStorage.getItem('beast.v2.workspace.root') || '/data/data/com.termux/files/home/EdgeK-BEAST';
+      const entered = window.prompt('BEAST workspace path', suggested);
+      if (entered === null) return '';
+      const root = await validateBrowserWorkspace(entered);
+      selected = { root, folders: [{ id:'browser-workspace', name:root.split('/').filter(Boolean).pop() || 'workspace', path:root, primary:true }] };
+    }
     const root=typeof selected==='string'?selected:selected?.root;
     if (root) {
       setRoot(root,{folders:selected?.folders||[]});
@@ -83,9 +103,43 @@
     }
     return root||'';
   }
-  async function refreshWorkspaceFolders(){const result=await BeastRuntime.desktopCall('workspaceFolders',[],{required:true});if(result?.root)setRoot(result.root,{folders:result.folders||[]});return result||{root:workspaceRoot(),folders:BeastStore.get().workspace.roots||[]};}
-  async function addWorkspaceFolder(){const result=await BeastRuntime.desktopCall('addWorkspaceFolder',[],{required:true});if(result?.root)setRoot(result.root,{folders:result.folders||[]});return result;}
-  async function removeWorkspaceFolder(id){const result=await BeastRuntime.desktopCall('removeWorkspaceFolder',[id],{required:true});if(result?.ok&&result.root)setRoot(result.root,{folders:result.folders||[]});return result;}
+
+  async function refreshWorkspaceFolders(){
+    const api=desktop();
+    if(!api?.workspaceFolders)return {root:workspaceRoot(),folders:BeastStore.get().workspace.roots||[]};
+    const result=await BeastRuntime.desktopCall('workspaceFolders',[],{required:true});
+    if(result?.root)setRoot(result.root,{folders:result.folders||[]});
+    return result||{root:workspaceRoot(),folders:BeastStore.get().workspace.roots||[]};
+  }
+
+  async function addWorkspaceFolder(){
+    const api=desktop();
+    if(api?.addWorkspaceFolder){
+      const result=await BeastRuntime.desktopCall('addWorkspaceFolder',[],{required:true});
+      if(result?.root)setRoot(result.root,{folders:result.folders||[]});
+      return result;
+    }
+    const entered=window.prompt('Add BEAST workspace folder path','');
+    if(!entered)return {root:workspaceRoot(),folders:BeastStore.get().workspace.roots||[]};
+    const root=await validateBrowserWorkspace(entered);
+    const existing=BeastStore.get().workspace.roots||[];
+    const id=`browser-${root}`;
+    const folders=[...existing.filter(item=>item.path!==root),{id,name:root.split('/').filter(Boolean).pop()||'workspace',path:root,primary:false}];
+    setWorkspaceFolders(folders);
+    return {root:workspaceRoot(),folders};
+  }
+
+  async function removeWorkspaceFolder(id){
+    const api=desktop();
+    if(api?.removeWorkspaceFolder){
+      const result=await BeastRuntime.desktopCall('removeWorkspaceFolder',[id],{required:true});
+      if(result?.ok&&result.root)setRoot(result.root,{folders:result.folders||[]});
+      return result;
+    }
+    const folders=(BeastStore.get().workspace.roots||[]).filter(item=>item.id!==id);
+    setWorkspaceFolders(folders);
+    return {ok:true,root:workspaceRoot(),folders};
+  }
 
   function normalizeFiles(payload) {
     const rows = Array.isArray(payload) ? payload : payload?.files || payload?.items || payload?.entries || [];
