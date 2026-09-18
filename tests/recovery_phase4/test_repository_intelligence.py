@@ -78,11 +78,15 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
                 "risk": "high",
             },
         },
+        # Recovery Phase 4 guard consumes this turn by forcing the
+        # discovered direct dependent to be read first.
         {
             "decision_type": "tool",
             "tool_id": "workspace.read_range",
             "arguments": {"path": "producer.py", "start_line": 1, "line_count": 40},
         },
+        # This first producer mutation proposal is consumed by the exact-source
+        # guard, which reads producer.py before permitting mutation.
         {
             "decision_type": "tool",
             "tool_id": "worktree.replace_exact",
@@ -93,10 +97,16 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
                 "new_text": "VALUE = 2",
             },
         },
+        # Now the same bounded producer mutation can execute.
         {
             "decision_type": "tool",
-            "tool_id": "workspace.read_range",
-            "arguments": {"path": "consumer.py", "start_line": 1, "line_count": 40},
+            "tool_id": "worktree.replace_exact",
+            "approval_id": approval_id,
+            "arguments": {
+                "path": "producer.py",
+                "old_text": "VALUE = 1",
+                "new_text": "VALUE = 2",
+            },
         },
         {
             "decision_type": "tool",
@@ -159,12 +169,19 @@ def test_code_cortex_discovers_dependent_without_manual_attachment(tmp_path):
         if item["tool_id"] == "workspace.read_range"
         and item.get("result", {}).get("path") == "consumer.py"
     )
+    producer_read = next(
+        item for item in observations
+        if item["tool_id"] == "workspace.read_range"
+        and item.get("result", {}).get("path") == "producer.py"
+    )
     consumer_mutation = next(
         item for item in observations
         if item["tool_id"] == "worktree.replace_exact"
         and item.get("result", {}).get("path") == "consumer.py"
     )
-    assert observations.index(discovery_observation) < observations.index(consumer_read) < observations.index(consumer_mutation)
+    assert observations.index(discovery_observation) < observations.index(consumer_read)
+    assert observations.index(consumer_read) < observations.index(producer_read)
+    assert observations.index(producer_read) < observations.index(consumer_mutation)
 
     worktree = Path(checkpoint["worktree_root"])
     assert (root / "producer.py").read_text(encoding="utf-8") == "VALUE = 1\n"
