@@ -84,6 +84,32 @@ def _commands(arguments: Mapping[str, Any]) -> list[str]:
     return []
 
 
+def _allowed_files(run: Mapping[str, Any]) -> list[str]:
+    request = run.get("request") if isinstance(run.get("request"), Mapping) else {}
+    values = request.get("allowed_files")
+    if not isinstance(values, list):
+        values = request.get("context_files") if isinstance(request.get("context_files"), list) else []
+    return list(dict.fromkeys(str(item).strip() for item in values if str(item).strip()))
+
+
+def _allowed_commands(run: Mapping[str, Any], spec: ToolSpec) -> list[str]:
+    request = run.get("request") if isinstance(run.get("request"), Mapping) else {}
+    values = request.get("allowed_commands") if isinstance(request.get("allowed_commands"), list) else []
+    commands = list(dict.fromkeys(str(item).strip() for item in values if str(item).strip()))
+    if spec.tool_id == "worktree.bind" and "worktree.bind" not in commands:
+        commands.append("worktree.bind")
+    return commands
+
+
+def _command_identity(arguments: Mapping[str, Any]) -> str:
+    command = arguments.get("command")
+    if isinstance(command, list) and command and all(isinstance(item, str) for item in command):
+        return " ".join(command)
+    if isinstance(command, str):
+        return command.strip()
+    return ""
+
+
 class DurableAgentApprovalRuntime:
     """Create and resolve Phase 4 authority for one live AgentRun tool step."""
 
@@ -99,17 +125,14 @@ class DurableAgentApprovalRuntime:
         self.modes = PermissionModeEngine()
         self.revocations = RevocationPolicyStore(self.root)
 
-    def create_for_tool(
+    def evaluate_for_tool(
         self,
         *,
         run: Mapping[str, Any],
-        step_id: str,
-        approval_id: str,
         spec: ToolSpec,
         arguments: Mapping[str, Any],
         execution_target: str,
         worktree_bound: bool,
-        budget_impact: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         root = Path(str(run.get("root_path") or self.root)).expanduser().resolve()
         resources = _affected_resources(arguments)
@@ -128,6 +151,12 @@ class DurableAgentApprovalRuntime:
             "affected_resources": resources,
             "data_egress": [],
             "network_domains": [],
+            "allowed_files": _allowed_files(run),
+            "allowed_commands": _allowed_commands(run, spec),
+            "budget": dict(run.get("budget") or {}),
+            "evidence_required": True,
+            "promotion_without_approval": False,
+            "unrestricted_network": False,
         }
         policy = ApprovalRiskPolicy(
             generation=generation,
@@ -135,16 +164,71 @@ class DurableAgentApprovalRuntime:
         )
         classification = self.classifier.classify(action, policy=policy)
         mode_decision = self.modes.evaluate(action, policy=policy)
-        if bool(mode_decision.get("denied")):
+
+        reasons = list(mode_decision.get("reasons") or [])
+        denied = bool(mode_decision.get("denied"))
+        if mode == "BOUNDED_AUTONOMY" and bool(mode_decision.get("auto_authorized")):
+            if spec.effect is ToolEffect.ISOLATED_MUTATION and spec.tool_id != "worktree.bind":
+                allowed = set(_allowed_files(run))
+                if not resources or any(path not in allowed for path in resources):
+                    denied = True
+                    reasons.append("bounded autonomy mutation path is outside the explicit file allowlist")
+            if spec.effect is ToolEffect.EXECUTION:
+                identity = _command_identity(arguments)
+                allowed_commands = set(_allowed_commands(run, spec))
+                if not identity or identity not in allowed_commands:
+                    denied = True
+                    reasons.append("bounded autonomy command is outside the explicit command allowlist")
+        return {
+            "action": action,
+            "policy": policy,
+            "classification": classification,
+            "mode_profile": self.modes.profile(mode),
+            "mode_decision": {
+                **mode_decision,
+                "denied": denied,
+                "auto_authorized": bool(mode_decision.get("auto_authorized")) and not denied,
+                "reasons": list(dict.fromkeys(reasons)),
+            },
+            "requires_approval": bool(mode_decision.get("may_create_approval")) and not denied,
+            "auto_authorized": bool(mode_decision.get("auto_authorized")) and not denied,
+            "denied": denied,
+        }
+
+    def create_for_tool(
+        self,
+        *,
+        run: Mapping[str, Any],
+        step_id: str,
+        approval_id: str,
+        spec: ToolSpec,
+        arguments: Mapping[str, Any],
+        execution_target: str,
+        worktree_bound: bool,
+        budget_impact: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        evaluation = self.evaluate_for_tool(
+            run=run,
+            spec=spec,
+            arguments=arguments,
+            execution_target=execution_target,
+            worktree_bound=worktree_bound,
+        )
+        if evaluation["denied"]:
             raise PermissionError(
-                "; ".join(str(item) for item in mode_decision.get("reasons") or [])
+                "; ".join(str(item) for item in evaluation["mode_decision"].get("reasons") or [])
                 or f"{spec.tool_id} denied by Phase 4 permission mode"
             )
-        if not bool(mode_decision.get("may_create_approval")):
+        if not evaluation["requires_approval"]:
             raise PermissionError(
-                f"{spec.tool_id} does not require a durable approval under mode {mode}"
+                f"{spec.tool_id} does not require a durable approval under mode {_permission_mode(run)}"
             )
-
+        root = Path(str(run.get("root_path") or self.root)).expanduser().resolve()
+        resources = _affected_resources(arguments)
+        mode = _permission_mode(run)
+        generation = str(evaluation["classification"]["policy_generation"])
+        classification = evaluation["classification"]
+        mode_decision = evaluation["mode_decision"]
         request_payload = run.get("request") if isinstance(run.get("request"), Mapping) else {}
         request = {
             "approval_id": approval_id,
@@ -187,7 +271,7 @@ class DurableAgentApprovalRuntime:
         return {
             "request": canonical_request,
             "classification": classification,
-            "mode_profile": self.modes.profile(mode),
+            "mode_profile": evaluation["mode_profile"],
             "mode_decision": mode_decision,
             "envelope": envelope,
             "durable_approval": durable,
