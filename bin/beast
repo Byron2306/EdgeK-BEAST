@@ -80,7 +80,15 @@ _bootstrap_tui_runtime()
 # commands that need it, but let server processes initialise once in-app.
 _command_name = sys.argv[1] if len(sys.argv) > 1 else ""
 _lightweight_verify = _command_name == "verify" and len(sys.argv) > 2 and sys.argv[2] == "release-contract"
-if _command_name not in {"crystal-proof", "gateway", "commons-gateway", "mcp-http"} and not _lightweight_verify:
+if _command_name not in {
+    "crystal-proof",
+    "gateway",
+    "commons-gateway",
+    "mcp-http",
+    "termux-up",
+    "termux-status",
+    "termux-down",
+} and not _lightweight_verify:
     with contextlib.redirect_stdout(sys.stderr):
         from app.kernel.compute.factory import ServiceFactory
         ServiceFactory.initialize()
