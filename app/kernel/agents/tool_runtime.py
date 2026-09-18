@@ -792,10 +792,10 @@ class AgentToolRuntime:
                 "auto_authorized": bool(phase4_evaluation.get("auto_authorized")),
                 "requires_approval": bool(phase4_evaluation.get("requires_approval")),
                 "denied": bool(phase4_evaluation.get("denied")),
-                "reasons": list((phase4_evaluation.get("mode_decision") or {}).get("reasons") or []),
+                "reasons": list(phase4_evaluation.get("reasons") or []),
             })
             if phase4_evaluation.get("denied"):
-                reason = "; ".join(str(item) for item in (phase4_evaluation.get("mode_decision") or {}).get("reasons") or [])
+                reason = "; ".join(str(item) for item in phase4_evaluation.get("reasons") or [])
                 raise PermissionError(reason or f"tool {spec.tool_id} denied by Phase 4 permission mode")
 
         authority = authorize_agent_tool(
