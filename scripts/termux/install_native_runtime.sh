@@ -11,7 +11,7 @@ fi
 
 echo "[BEAST] Installing native Termux runtime prerequisites..."
 pkg update -y
-pkg install -y git python nodejs-lts curl openssh clang make cmake pkg-config rust libc++ termux-api
+pkg install -y git python nodejs-lts curl openssh clang make cmake pkg-config rust libc++ openssl libffi termux-api
 
 if [[ "$(uname -m)" == "aarch64" ]]; then
   pkg install -y rust-std-aarch64-linux-android || true
