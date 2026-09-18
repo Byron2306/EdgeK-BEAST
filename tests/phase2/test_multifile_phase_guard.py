@@ -100,3 +100,54 @@ def test_required_phase_keeps_preread_for_existing_file_style_replacement(tmp_pa
     assert required is not None
     assert required.tool_id == "workspace.read_range"
     assert required.arguments["path"] == "existing.py"
+
+
+def test_required_phase_allows_creation_outside_compact_context_in_explicit_broad_wave(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    created = engine.create_run(
+        session_id="phase2-broad-new-file-guard",
+        objective="Large monorepo creation wave",
+        mode="agent",
+        provider="simulated",
+        model="phase2-scripted",
+        request={"context_files": ["packages/seed.py"], "monorepo": True, "long_horizon": True},
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    state = runtime._load_state(created["run_id"])
+    state.observations = [
+        {"tool_id": "workspace.index", "status": "completed", "result": {"ok": True}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"worktree_root": str(tmp_path / "wt")}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.write_file",
+        "arguments": {"path": "packages/generated/module_9.py", "content": "VALUE = 9\\n"},
+    })
+    assert runtime._required_phase_decision(engine.store.get_run(created["run_id"]), state, decision) is None
+
+
+def test_required_phase_does_not_expand_creation_scope_for_ordinary_run(tmp_path):
+    engine = AgentRunEngine(tmp_path)
+    created = engine.create_run(
+        session_id="phase2-narrow-new-file-guard",
+        objective="Create one scoped module",
+        mode="agent",
+        provider="simulated",
+        model="phase2-scripted",
+        request={"context_files": ["packages/seed.py"]},
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    state = runtime._load_state(created["run_id"])
+    state.observations = [
+        {"tool_id": "workspace.index", "status": "completed", "result": {"ok": True}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"worktree_root": str(tmp_path / "wt")}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.write_file",
+        "arguments": {"path": "packages/unscoped.py", "content": "VALUE = 1\\n"},
+    })
+    required = runtime._required_phase_decision(engine.store.get_run(created["run_id"]), state, decision)
+    assert required is not None
+    assert required.tool_id == "workspace.read_range"
+    assert required.arguments["path"] == "packages/seed.py"
