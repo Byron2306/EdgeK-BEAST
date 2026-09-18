@@ -9,11 +9,14 @@ on:
       - 'app/kernel/agents/repository_intelligence.py'
       - 'app/kernel/agents/planner_runtime.py'
       - 'app/kernel/agents/run_engine.py'
+      - 'app/kernel/sensorium/journal.py'
+      - 'app/kernel/sensorium/event_sequencer.py'
       - 'app/kernel/data_processing/context_packet.py'
       - 'app/kernel/data_processing/code_cortex.py'
       - 'tests/recovery_phase4/**'
       - 'tests/test_context_packet.py'
       - 'tests/test_agent_planner_runtime.py'
+      - 'tests/test_sensorium_journal.py'
       - '.github/workflows/beast-recovery-phase4-perception.yml'
   workflow_dispatch:
 
@@ -38,6 +41,12 @@ jobs:
       - name: Prove Code Cortex and Context Packet contracts
         run: |
           python -m pytest -q --noconftest             tests/test_context_packet.py             tests/recovery_phase4/test_repository_intelligence.py
+
+      - name: Prove durable Sensorium world-state admission
+        run: |
+          python -m pytest -q --noconftest \
+            tests/test_sensorium_journal.py \
+            -k "shared_runtimes_allocate_contiguous_offsets"
 
       - name: Preserve Recovery Phase 3 planner core
         run: |
