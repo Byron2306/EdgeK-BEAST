@@ -1347,6 +1347,12 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
             current = engine.store.get_run(run_id) or run
             checkpoint = current.get("checkpoint") if isinstance(current.get("checkpoint"), dict) else {}
             prior_phase4 = checkpoint.get("phase4_approval") if isinstance(checkpoint.get("phase4_approval"), dict) else {}
+            decision_name = str((phase4.get("decision") or {}).get("decision") or "")
+            negative_status = {
+                "REJECT": "REJECTED",
+                "REQUEST_REPLAN": "REQUEST_REPLAN",
+                "PERMANENTLY_DENY": "PERMANENTLY_DENIED",
+            }.get(decision_name, "REJECTED")
             phase4_checkpoint = {
                 **prior_phase4,
                 "approval_id": approval_id,
@@ -1354,7 +1360,7 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 "card_digest": str((phase4.get("card") or {}).get("card_digest") or ""),
                 "durable_state": str((phase4.get("durable_approval") or {}).get("state") or ""),
                 "approved": approved,
-                "status": "APPROVED_CAPABILITY_PENDING_CONSUMPTION" if approved else "REJECTED",
+                "status": "APPROVED_CAPABILITY_PENDING_CONSUMPTION" if approved else negative_status,
             }
             if approved:
                 phase4_checkpoint.update({
@@ -1364,6 +1370,25 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                     "capability_id": str((phase4.get("capability") or {}).get("capability_id") or ""),
                     "capability_digest": str((phase4.get("capability") or {}).get("capability_digest") or ""),
                 })
+            revocation: dict[str, Any] = {}
+            if decision_name == "PERMANENTLY_DENY":
+                request_contract = phase4.get("request") if isinstance(phase4.get("request"), dict) else {}
+                decision_contract = phase4.get("decision") if isinstance(phase4.get("decision"), dict) else {}
+                revocation = RevocationPolicyStore(root).revoke({
+                    "target_type": "TOOL",
+                    "target_id": str(request_contract.get("tool_id") or ""),
+                    "reason": str(decision_contract.get("reason") or ""),
+                    "operator_id": str(decision_contract.get("operator_id") or "operator:beast-ide"),
+                    "policy_generation": str(decision_contract.get("policy_generation") or request_contract.get("policy_generation") or ""),
+                    "metadata": {
+                        "run_id": run_id,
+                        "approval_id": approval_id,
+                        "workspace_id": str(request_contract.get("workspace_id") or ""),
+                        "decision_digest": str(decision_contract.get("decision_digest") or ""),
+                    },
+                })
+                phase4_checkpoint["revocation"] = revocation
+                phase4_checkpoint["revocation_digest"] = str(revocation.get("revocation_digest") or "")
             engine.merge_checkpoint(run_id, {"phase4_approval": phase4_checkpoint})
 
             consumption: dict[str, Any] = {}
@@ -1402,6 +1427,7 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 "capability_id": str((phase4.get("capability") or {}).get("capability_id") or ""),
                 "capability_digest": str((phase4.get("capability") or {}).get("capability_digest") or ""),
                 "consumption_receipt_digest": str(consumption.get("receipt_digest") or ""),
+                "revocation_digest": str(revocation.get("revocation_digest") or ""),
                 "phase4_durable": True,
             })
             return {
@@ -1409,6 +1435,7 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
                 "approval": approval,
                 "phase4": phase4,
                 "consumption_receipt": consumption,
+                "revocation": revocation,
                 "event": event,
                 "run": engine.store.get_run(run_id),
             }
