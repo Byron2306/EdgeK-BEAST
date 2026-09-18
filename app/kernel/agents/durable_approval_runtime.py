@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from app.kernel.agents.tool_models import ToolEffect, ToolSpec
+from app.kernel.approvals.digests import canonicalize
+from app.kernel.approvals.capability_runtime import CapabilityConsumptionStore, ExactStepResumeRuntime
 from app.kernel.approvals import (
     ApprovalContractFactory,
     ApprovalRiskClassifier,
@@ -19,7 +21,6 @@ from app.kernel.approvals import (
     ApprovalScopeEngine,
     DurableApprovalCardStore,
     DurableApprovalStore,
-    ExactStepResumeRuntime,
     PermissionModeEngine,
     RequestBoundCapabilityIssuer,
     RevocationPolicyStore,
@@ -275,6 +276,61 @@ class DurableAgentApprovalRuntime:
             "capability": capability,
         })
         return result
+
+
+    def validate_consumed_call(
+        self,
+        *,
+        run: Mapping[str, Any],
+        approval_id: str,
+        spec: ToolSpec,
+        arguments: Mapping[str, Any],
+        execution_target: str,
+    ) -> dict[str, Any]:
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), Mapping) else {}
+        resume = checkpoint.get("approval_resume") if isinstance(checkpoint.get("approval_resume"), Mapping) else {}
+        if str(resume.get("status") or "") != "READY_FOR_EXACT_TOOL_EXECUTION":
+            raise PermissionError("Phase 4 capability is not ready for exact tool execution")
+        checks = {
+            "approval_id": (resume.get("approval_id"), approval_id),
+            "tool_id": (resume.get("tool_id"), spec.tool_id),
+            "tool_version": (resume.get("tool_version"), spec.version),
+            "execution_target": (resume.get("execution_target"), str(execution_target or "local")),
+        }
+        for field, (left, right) in checks.items():
+            if str(left or "") != str(right or ""):
+                raise PermissionError(f"Phase 4 consumed capability {field} mismatch")
+
+        card = self.cards.get(approval_id)
+        envelope = card.get("envelope") if isinstance(card.get("envelope"), Mapping) else {}
+        request = envelope.get("approval_request") if isinstance(envelope.get("approval_request"), Mapping) else {}
+        decision = card.get("decision") if isinstance(card.get("decision"), Mapping) else {}
+        expected_arguments = request.get("arguments") if isinstance(request.get("arguments"), Mapping) else {}
+        if str(decision.get("decision") or "") == "EDIT_AND_APPROVE":
+            expected_arguments = decision.get("edited_arguments") if isinstance(decision.get("edited_arguments"), Mapping) else {}
+        if canonicalize(dict(arguments)) != canonicalize(dict(expected_arguments)):
+            raise PermissionError("Phase 4 consumed capability arguments do not match the approved call")
+
+        capability_id = str(resume.get("capability_id") or "")
+        if not capability_id:
+            raise PermissionError("Phase 4 consumed capability id is missing")
+        consumption = CapabilityConsumptionStore(self.root).get(capability_id)
+        if not consumption or str(consumption.get("status") or "") != "RESUMED":
+            raise PermissionError("Phase 4 capability has no durable RESUMED consumption receipt")
+        receipt = consumption.get("receipt") if isinstance(consumption.get("receipt"), Mapping) else {}
+        if not ExactStepResumeRuntime.verify_receipt(receipt):
+            raise PermissionError("Phase 4 capability consumption receipt is invalid or tampered")
+        if str(receipt.get("approval_id") or "") != approval_id:
+            raise PermissionError("Phase 4 consumption receipt approval binding mismatch")
+        if str(receipt.get("request_digest") or "") != str(request.get("request_digest") or ""):
+            raise PermissionError("Phase 4 consumption receipt request binding mismatch")
+        return {
+            "card": card,
+            "request": request,
+            "decision": decision,
+            "consumption": consumption,
+            "receipt": receipt,
+        }
 
     def consume_and_resume(self, *, capability: Mapping[str, Any], request: Mapping[str, Any]) -> dict[str, Any]:
         return ExactStepResumeRuntime(self.root).consume_and_resume(
