@@ -973,7 +973,8 @@ class AgentPlannerRuntime:
                 rationale="Mutating agent runs require an isolated worktree before any file mutation.",
             )
         inspected_paths = cls._inspected_paths(state)
-        if not inspected_paths:
+        mutation_paths = cls._latest_mutation_paths(state)
+        if not inspected_paths and not mutation_paths:
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             context_files = {
                 str(path).strip()
@@ -1005,9 +1006,8 @@ class AgentPlannerRuntime:
                     decision_type=PlannerDecisionType.TOOL,
                     tool_id="workspace.read_range",
                     arguments={"path": targeted_path, "start_line": 1, "line_count": 220},
-                    rationale="A bounded file read is required after bind when no exact file contents have been inspected yet.",
+                    rationale="A bounded file read is required after bind before the first mutation when no exact file contents have been inspected yet.",
                 )
-        mutation_paths = cls._latest_mutation_paths(state)
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
