@@ -166,30 +166,29 @@ class DurableAgentApprovalRuntime:
         mode_decision = self.modes.evaluate(action, policy=policy)
 
         reasons = list(mode_decision.get("reasons") or [])
+        runtime_constraints: list[str] = []
         denied = bool(mode_decision.get("denied"))
         if mode == "BOUNDED_AUTONOMY" and bool(mode_decision.get("auto_authorized")):
             if spec.effect is ToolEffect.ISOLATED_MUTATION and spec.tool_id != "worktree.bind":
                 allowed = set(_allowed_files(run))
                 if not resources or any(path not in allowed for path in resources):
                     denied = True
-                    reasons.append("bounded autonomy mutation path is outside the explicit file allowlist")
+                    runtime_constraints.append("bounded autonomy mutation path is outside the explicit file allowlist")
             if spec.effect is ToolEffect.EXECUTION:
                 identity = _command_identity(arguments)
                 allowed_commands = set(_allowed_commands(run, spec))
                 if not identity or identity not in allowed_commands:
                     denied = True
-                    reasons.append("bounded autonomy command is outside the explicit command allowlist")
+                    runtime_constraints.append("bounded autonomy command is outside the explicit command allowlist")
+        reasons = list(dict.fromkeys([*reasons, *runtime_constraints]))
         return {
             "action": action,
             "policy": policy,
             "classification": classification,
             "mode_profile": self.modes.profile(mode),
-            "mode_decision": {
-                **mode_decision,
-                "denied": denied,
-                "auto_authorized": bool(mode_decision.get("auto_authorized")) and not denied,
-                "reasons": list(dict.fromkeys(reasons)),
-            },
+            "mode_decision": mode_decision,
+            "runtime_constraints": runtime_constraints,
+            "reasons": reasons,
             "requires_approval": bool(mode_decision.get("may_create_approval")) and not denied,
             "auto_authorized": bool(mode_decision.get("auto_authorized")) and not denied,
             "denied": denied,
