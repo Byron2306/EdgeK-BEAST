@@ -14,6 +14,7 @@ from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
+from app.kernel.agents.run_budget import RunBudgetExceeded, budget_snapshot, normalized_model_usage, planner_turn_limit, planner_turn_receipt, post_model_usage_receipt
 from app.kernel.agents.semantic_context import semantic_context_contract
 from app.kernel.agents.tool_runtime import ToolExecutionFailed
 from app.kernel.agents.verification_planner import plan_verification
@@ -1149,8 +1150,16 @@ class AgentPlannerRuntime:
             return run
         self.engine.attach_current_task(run_id)
         state = self._load_state(run_id)
-        state.max_turns = self.max_turns
+        state.max_turns = planner_turn_limit(run, self.max_turns)
         state.max_repair_cycles = self.max_repair_cycles
+        initial_budget = budget_snapshot(run, self.engine.store.events(run_id, limit=100000))
+        self.engine.emit(run_id, "agent.budget.profile", {"budget_receipt": initial_budget})
+        self.engine.merge_checkpoint(run_id, {
+            "budget_profile": initial_budget["profile"],
+            "budget_limits": initial_budget["limits"],
+            "last_budget_receipt_id": initial_budget["receipt_id"],
+            "last_budget_receipt_hash": initial_budget["receipt_hash"],
+        })
         state.status = "running"
         self._save_state(state)
         try:
@@ -1175,6 +1184,29 @@ class AgentPlannerRuntime:
 
         while state.turn < state.max_turns:
             self.engine.raise_if_cancelled(run_id)
+            run = self.engine.store.get_run(run_id) or run
+            turn_budget = planner_turn_receipt(run, self.engine.store.events(run_id, limit=100000))
+            self.engine.emit(
+                run_id,
+                "agent.budget.authorized" if turn_budget["allowed"] else "agent.budget.exhausted",
+                {"budget_receipt": turn_budget},
+            )
+            self.engine.merge_checkpoint(run_id, {
+                "last_budget_receipt_id": turn_budget["receipt_id"],
+                "last_budget_receipt_hash": turn_budget["receipt_hash"],
+                "last_budget_allowed": turn_budget["allowed"],
+                "last_budget_action": turn_budget["action"],
+            })
+            if not turn_budget["allowed"]:
+                state.status = "budget_exhausted"
+                state.blocker = "; ".join(
+                    str(item.get("reason") or "")
+                    for item in turn_budget.get("violations", [])
+                    if isinstance(item, dict)
+                ) or "AgentRun budget exhausted"
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=state.blocker)
+                return self.engine.store.get_run(run_id) or {}
             self.engine.store.transition(run_id, AgentRunState.PLANNING)
             run = self.engine.store.get_run(run_id) or run
             prompt = self._prompt(run, state)
@@ -1337,6 +1369,7 @@ class AgentPlannerRuntime:
             usage = getattr(self.provider, "last_usage", None)
             if isinstance(usage, dict) and usage:
                 # Keep latency and token evidence next to the decision.
+                normalized_usage = normalized_model_usage(usage)
                 self.engine.emit(run_id, "agent.model.usage", {
                     "turn": state.turn + 1,
                     "engine": usage.get("engine"),
@@ -1345,6 +1378,9 @@ class AgentPlannerRuntime:
                     "completion_chars": usage.get("completion_chars", 0),
                     "latency_ms": usage.get("latency_ms"),
                     "usage": usage.get("usage") if isinstance(usage.get("usage"), dict) else {},
+                    "input_tokens": normalized_usage["input_tokens"],
+                    "output_tokens": normalized_usage["output_tokens"],
+                    "cloud_cost": normalized_usage["cloud_cost"],
                     "finish_reason": usage.get("finish_reason"),
                 })
                 try:
@@ -1361,6 +1397,26 @@ class AgentPlannerRuntime:
                         "reason": f"{type(exc).__name__}: {exc}",
                         "event_type": "agent.model.usage",
                     })
+            budget_after_model = post_model_usage_receipt(
+                self.engine.store.get_run(run_id) or run,
+                self.engine.store.events(run_id, limit=100000),
+            )
+            self.engine.emit(
+                run_id,
+                "agent.budget.observed" if budget_after_model["allowed"] else "agent.budget.exhausted",
+                {"budget_receipt": budget_after_model},
+            )
+            if not budget_after_model["allowed"]:
+                state.status = "budget_exhausted"
+                state.blocker = "; ".join(
+                    str(item.get("reason") or "")
+                    for item in budget_after_model.get("violations", [])
+                    if isinstance(item, dict)
+                ) or "AgentRun model budget exhausted"
+                self._save_state(state)
+                self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=state.blocker)
+                return self.engine.store.get_run(run_id) or {}
+
             provider_partial = self._provider_partial_text(self.provider)
             delta_partial = self._recent_model_delta_text(run_id)
             salvaged_decision = self._salvage_partial_decision_from_provider(
@@ -1657,6 +1713,11 @@ class AgentPlannerRuntime:
                     execution_target_payload=self._execution_target_payload(run, decision.execution_target),
                     approval_id=decision.approval_id,
                 )
+            except RunBudgetExceeded as exc:
+                state.status = "budget_exhausted"
+                state.blocker = str(exc)
+                self._save_state(state)
+                return self.engine.store.get_run(run_id) or {}
             except ToolExecutionFailed as exc:
                 observation = exc.observation.as_dict()
             except Exception as exc:
