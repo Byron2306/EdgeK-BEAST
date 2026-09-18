@@ -13,6 +13,7 @@ from app.kernel.agents.failure_analyst import analyze_failure
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
+from app.kernel.agents.repository_intelligence import build_repository_discovery, discovery_observation
 from app.kernel.agents.run_state import AgentRunState, TERMINAL_STATES, normalize_state
 from app.kernel.agents.semantic_context import semantic_context_contract
 from app.kernel.agents.tool_runtime import ToolExecutionFailed
@@ -267,18 +268,23 @@ class AgentPlannerRuntime:
         return paths
 
     @classmethod
-    def _invalid_retry_recovery_reason(cls, decision: PlannerDecision, state: PlannerState) -> str:
+    def _invalid_retry_recovery_reason(cls, decision: PlannerDecision, state: PlannerState, run: dict[str, Any] | None = None) -> str:
         if decision.decision_type is not PlannerDecisionType.TOOL:
             return ""
         inspected_paths = cls._inspected_paths(state)
+        scope_paths = set(cls._scope_paths(run or {}, state)) if isinstance(run, dict) else set(inspected_paths)
+
+        def outside_scope(path: str) -> bool:
+            return bool(path and scope_paths and path not in scope_paths)
+
         if decision.tool_id == "workspace.read_range":
             path = str(decision.arguments.get("path") or "").strip()
             start_line = decision.arguments.get("start_line")
             line_count = decision.arguments.get("line_count")
             if not path:
                 return "workspace.read_range retry recovery requires an exact target path."
-            if inspected_paths and path not in inspected_paths:
-                return "workspace.read_range retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "workspace.read_range retry recovery must stay within the governed repository scope."
             try:
                 start = int(start_line)
                 count = int(line_count)
@@ -290,15 +296,15 @@ class AgentPlannerRuntime:
         if decision.tool_id == "worktree.replace_exact":
             path = str(decision.arguments.get("path") or "").strip()
             old_text = str(decision.arguments.get("old_text") or "")
-            if inspected_paths and path not in inspected_paths:
-                return "worktree.replace_exact retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "worktree.replace_exact retry recovery must stay within the governed repository scope."
             if old_text == "":
                 return "worktree.replace_exact retry recovery requires non-empty old_text for existing files."
             return cls._invalid_mutation_reason(decision)
         if decision.tool_id == "worktree.write_file":
             path = str(decision.arguments.get("path") or "").strip()
-            if inspected_paths and path and path not in inspected_paths:
-                return "worktree.write_file retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "worktree.write_file retry recovery must stay within the governed repository scope."
         return cls._invalid_mutation_reason(decision)
 
     @staticmethod
@@ -822,38 +828,93 @@ class AgentPlannerRuntime:
         return replace(decision, approval_id=approval_id)
 
     def _context_contract(self, run: dict[str, Any]) -> str:
-        """Attach one bounded Code Cortex/context packet to the planner.
+        """Project the already-admitted repository discovery into the planner prompt."""
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        discovery = checkpoint.get("repository_discovery") if isinstance(checkpoint.get("repository_discovery"), dict) else {}
+        if discovery:
+            compact = {
+                "canonical_owner": discovery.get("canonical_owner"),
+                "authority": discovery.get("authority"),
+                "hint_paths": list(discovery.get("hint_paths") or [])[:8],
+                "discovered_paths": list(discovery.get("discovered_paths") or [])[:16],
+                "required_evidence_paths": list(discovery.get("required_evidence_paths") or [])[:16],
+                "required_evidence_policy": discovery.get("required_evidence_policy") if isinstance(discovery.get("required_evidence_policy"), dict) else {},
+                "path_reasons": {
+                    path: reasons
+                    for path, reasons in list((discovery.get("path_reasons") or {}).items())[:20]
+                },
+                "code_cortex": discovery.get("code_cortex") if isinstance(discovery.get("code_cortex"), dict) else {},
+                "workspace_graph": discovery.get("workspace_graph") if isinstance(discovery.get("workspace_graph"), dict) else {},
+                "sensorium_world_state": discovery.get("sensorium_world_state") if isinstance(discovery.get("sensorium_world_state"), dict) else {},
+                "exact_source_read_required_before_mutation": True,
+                "discovery_digest": discovery.get("discovery_digest"),
+            }
+            encoded = json.dumps(compact, sort_keys=True, default=str, separators=(",", ":"))
+            return f"\nREPOSITORY DISCOVERY: {encoded[:1800]}"
+        return ""
 
-        The packet is deliberately built once per run. Rebuilding semantic
-        context every turn would spend CPU to save no model tokens.
-        """
+    def _admit_repository_discovery(self, run: dict[str, Any], state: PlannerState) -> PlannerState:
         if self.context_packet_builder is None:
-            return ""
-        if self._is_compact_planner_provider(run):
-            checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
-            planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
-            observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
-            if observations:
-                return ""
-        key = str(run.get("run_id") or run.get("objective") or "context")
-        if key not in self._context_cache:
-            try:
-                packet = self.context_packet_builder.build(
-                    {
-                        "objective": str(run.get("objective") or ""),
-                        "prompt": str(run.get("objective") or ""),
-                        "context_budget": {"max_files": 2, "max_tokens": 500, "allow_full_files": False},
-                    },
-                    workspace_root=str(run.get("root_path") or run.get("workspace_root") or "."),
-                    semantic_limit=4,
-                    include_content=False,
-                    max_files=4,
-                )
-                encoded = json.dumps(packet, sort_keys=True, default=str, separators=(",", ":"))
-                self._context_cache[key] = encoded[:1200]
-            except Exception as exc:
-                self._context_cache[key] = json.dumps({"status": "unavailable", "reason": type(exc).__name__})
-        return f"\nCTX:{self._context_cache[key]}"
+            return state
+        if self._latest_completed_observation(state, "code_cortex.discover") is not None:
+            return state
+        run_id = str(run.get("run_id") or state.run_id)
+        try:
+            discovery = build_repository_discovery(
+                context_packet_builder=self.context_packet_builder,
+                run=run,
+                workspace_root=self.engine.workspace_root,
+                semantic_limit=12,
+                max_files=24,
+            )
+            mirrored = self.engine.emit_with_sensorium(
+                run_id,
+                "agent.repository.discovery",
+                {
+                    "canonical_owner": discovery.get("canonical_owner"),
+                    "authority": discovery.get("authority"),
+                    "hint_paths": discovery.get("hint_paths"),
+                    "candidate_paths": discovery.get("candidate_paths"),
+                    "discovered_paths": discovery.get("discovered_paths"),
+                    "required_evidence_paths": discovery.get("required_evidence_paths"),
+                    "required_evidence_policy": discovery.get("required_evidence_policy"),
+                    "path_reasons": discovery.get("path_reasons"),
+                    "context_packet_id": discovery.get("context_packet_id"),
+                    "context_packet_hash": discovery.get("context_packet_hash"),
+                    "code_cortex": discovery.get("code_cortex"),
+                    "workspace_graph": discovery.get("workspace_graph"),
+                    "discovery_digest": discovery.get("discovery_digest"),
+                    "mutation_authority": False,
+                    "exact_source_read_required_before_mutation": True,
+                },
+            )
+            observation = discovery_observation(
+                run_id=run_id,
+                discovery=discovery,
+                sensorium=mirrored.get("sensorium") if isinstance(mirrored, dict) else None,
+            )
+            state.observations.append(observation)
+            state.observations = state.observations[-self.observation_limit:]
+            self.engine.merge_checkpoint(run_id, {
+                "repository_discovery": observation["result"],
+            })
+            self.engine.emit(run_id, "agent.planner.observation.accepted", {
+                "turn": state.turn,
+                "observation_id": observation["observation_id"],
+                "tool_id": observation["tool_id"],
+                "status": observation["status"],
+                "evidence_digest": observation["evidence_digest"],
+                "authority": "advisory_discovery_only",
+            })
+            self._save_state(state)
+        except Exception as exc:
+            self.engine.emit(run_id, "agent.repository.discovery.unavailable", {
+                "reason": type(exc).__name__,
+                "authority": "observation_only",
+                "fallback": "workspace.index",
+            })
+        return state
+
 
     @staticmethod
     def _is_mutating_mode(run: dict[str, Any]) -> bool:
@@ -914,25 +975,58 @@ class AgentPlannerRuntime:
                 paths.append(path)
         return paths
 
-    @staticmethod
-    def _targeted_read_path(run: dict[str, Any]) -> str:
+    @classmethod
+    def _discovered_paths(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "code_cortex.discover")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        return [
+            str(path).strip()
+            for path in (result.get("discovered_paths") or [])
+            if str(path).strip()
+        ]
+
+    @classmethod
+    def _required_discovery_evidence_paths(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "code_cortex.discover")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        return [
+            str(path).strip()
+            for path in (result.get("required_evidence_paths") or [])
+            if str(path).strip()
+        ]
+
+    @classmethod
+    def _scope_paths(cls, run: dict[str, Any], state: PlannerState) -> list[str]:
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         semantic = request.get("semantic_context") if isinstance(request.get("semantic_context"), dict) else {}
+        values: list[str] = []
         for key in ("active_file", "selected_file", "target_file"):
             value = str(semantic.get(key) or "").strip()
             if value:
-                return value
-        context_files = request.get("context_files") if isinstance(request.get("context_files"), list) else []
-        for item in context_files:
+                values.append(value)
+        for item in request.get("context_files") if isinstance(request.get("context_files"), list) else []:
             value = str(item or "").strip()
             if value:
-                return value
-        files = run.get("files") if isinstance(run.get("files"), list) else []
-        for item in files:
-            value = str(item or "").strip()
-            if value:
-                return value
+                values.append(value)
+        values.extend(cls._discovered_paths(state))
+        output: list[str] = []
+        for value in values:
+            if value and value not in output:
+                output.append(value)
+        return output
+
+    @classmethod
+    def _next_exact_read_path(cls, run: dict[str, Any], state: PlannerState) -> str:
+        inspected = cls._inspected_paths(state)
+        for path in cls._scope_paths(run, state):
+            if path not in inspected:
+                return path
         return ""
+
 
     @classmethod
     def _default_verification_command(cls, state: PlannerState) -> list[str]:
@@ -972,7 +1066,7 @@ class AgentPlannerRuntime:
         observed = cls._observed_tool_ids(state)
         if not observed:
             return None
-        inspected = any(tool in observed for tool in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
+        inspected = any(tool in observed for tool in {"code_cortex.discover", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
         if not inspected and "worktree.bind" not in observed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
@@ -993,6 +1087,21 @@ class AgentPlannerRuntime:
             )
         inspected_paths = cls._inspected_paths(state)
         mutation_paths = cls._latest_mutation_paths(state)
+
+        # Recovery Phase 4: Code Cortex may identify direct dependents that a
+        # cross-file objective explicitly requires the planner to consider.
+        # Discovery still grants no mutation authority. Force an exact source
+        # read before verification or handoff can skip that evidence.
+        required_evidence_paths = cls._required_discovery_evidence_paths(state)
+        unread_required = [path for path in required_evidence_paths if path not in inspected_paths]
+        if unread_required:
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="workspace.read_range",
+                arguments={"path": unread_required[0], "start_line": 1, "line_count": 220},
+                rationale="Recovery Phase 4 requires exact inspection of a Code Cortex direct dependency before cross-file verification.",
+            )
+
         if not inspected_paths and not mutation_paths:
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             context_files = {
@@ -1019,7 +1128,7 @@ class AgentPlannerRuntime:
                     or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files"))
                 )
                 broad_creation = bool(valid_creation and broad_wave)
-            targeted_path = cls._targeted_read_path(run)
+            targeted_path = cls._next_exact_read_path(run, state)
             if targeted_path and not (scoped_creation or broad_creation):
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
@@ -1027,28 +1136,53 @@ class AgentPlannerRuntime:
                     arguments={"path": targeted_path, "start_line": 1, "line_count": 220},
                     rationale="A bounded file read is required after bind before the first mutation when no exact file contents have been inspected yet.",
                 )
+        scope_paths = set(cls._scope_paths(run, state))
+        decision_path = ""
+        decision_tool = ""
+        if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+            decision_tool = str(decision.tool_id or "")
+            decision_path = str(decision.arguments.get("path") or "").strip()
+        if (
+            decision_tool == "worktree.replace_exact"
+            and decision_path
+            and decision_path in scope_paths
+            and decision_path not in inspected_paths
+        ):
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="workspace.read_range",
+                arguments={"path": decision_path, "start_line": 1, "line_count": 220},
+                rationale="Code Cortex discovery is advisory; exact source bytes must be read before mutating a discovered file.",
+            )
+
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
         if mutation_paths and (latest_verify_index < 0 or latest_mutation_index > latest_verify_index):
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             objective = str(run.get("objective") or "").casefold()
-            context_files = {
-                str(path).strip()
-                for path in (request.get("context_files") or [])
-                if str(path).strip()
-            }
+            scope_files = set(cls._scope_paths(run, state))
             decision_path = ""
+            decision_tool = ""
             if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+                decision_tool = str(decision.tool_id or "")
                 decision_path = str(decision.arguments.get("path") or "").strip()
             broad_wave = bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning") or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
-            bounded_multi_file_wave = bool(
-                len(context_files) > 1
+            pending_discovered_read = bool(
+                decision_tool == "workspace.read_range"
                 and decision_path
-                and decision_path in context_files
+                and decision_path in scope_files
+                and decision_path not in inspected_paths
+            )
+            bounded_multi_file_wave = bool(
+                len(scope_files) > 1
+                and decision_path
+                and decision_path in scope_files
                 and decision_path in inspected_paths
                 and decision_path not in set(mutation_paths)
             )
+            if pending_discovered_read:
+                return None
             if (
                 (broad_wave or bounded_multi_file_wave)
                 and isinstance(decision, PlannerDecision)
@@ -1186,6 +1320,8 @@ class AgentPlannerRuntime:
                 "integration_id": "phase5_resume_continuity",
                 "reason": f"{type(exc).__name__}: {exc}",
             })
+        state = self._admit_repository_discovery(run, state)
+        run = self.engine.store.get_run(run_id) or run
         self.engine.emit(run_id, "agent.planner.started", {
             "turn": state.turn,
             "max_turns": state.max_turns,
@@ -1528,9 +1664,26 @@ class AgentPlannerRuntime:
                         "error": f"{type(exc).__name__}: {exc}",
                     })
                 else:
-                    retried_reason = self._invalid_retry_recovery_reason(retried, state)
+                    retried_reason = self._invalid_retry_recovery_reason(retried, state, run)
                     if not retried_reason:
-                        decision = retried
+                        recovered_required = self._required_phase_decision(run, state, retried)
+                        if (
+                            recovered_required is not None
+                            and (
+                                retried.decision_type is not PlannerDecisionType.TOOL
+                                or retried.tool_id != recovered_required.tool_id
+                                or retried.arguments != recovered_required.arguments
+                            )
+                        ):
+                            decision = recovered_required
+                            self.engine.emit(run_id, "agent.planner.phase_enforced_after_retry", {
+                                "turn": state.turn + 1,
+                                "required_tool_id": recovered_required.tool_id,
+                                "replaced_decision": retried.as_dict(),
+                                "reason": recovered_required.rationale,
+                            })
+                        else:
+                            decision = retried
                         self.engine.emit(run_id, "agent.provider.invalid_mutation_recovered", {
                             "turn": state.turn + 1,
                             "provider": str(run.get("provider") or ""),

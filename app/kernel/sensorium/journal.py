@@ -106,7 +106,13 @@ class SensoriumJournal:
         if event_type not in VALID_EVENT_VOCABULARY:
             raise ValueError(f"Invalid event type: {event_type}")
 
-    def append(self, entry: SequencedEvent) -> str:
+    def append(self, entry: SequencedEvent) -> SequencedEvent:
+        """Append with a journal-owned durable offset.
+
+        Multiple SensoriumRuntime instances may share one journal. Process-local
+        sequencer offsets are therefore advisory only; the next durable offset
+        must be selected while holding the journal lock.
+        """
         self._validate_vocabulary(entry.event.event_type)
         if not self.integrity_ok:
             raise RuntimeError("refusing Sensorium append after journal integrity fracture")
@@ -118,21 +124,33 @@ class SensoriumJournal:
             connection.execute("BEGIN IMMEDIATE")
             row = connection.execute("SELECT offset,record_hash FROM sensor_events ORDER BY offset DESC LIMIT 1").fetchone()
             previous_offset, previous_hash = (int(row[0]), str(row[1])) if row else (0, "")
-            if entry.offset != previous_offset + 1:
-                raise ValueError("Sensorium journal offset is not contiguous")
-            body = {"offset": entry.offset, "event_id": entry.event.event_id,
-                    "admitted_at": entry.admitted_at, "event": json.loads(event_json)}
+            canonical_entry = SequencedEvent(
+                offset=previous_offset + 1,
+                event=entry.event,
+                admitted_at=entry.admitted_at,
+            )
+            body = {
+                "offset": canonical_entry.offset,
+                "event_id": canonical_entry.event.event_id,
+                "admitted_at": canonical_entry.admitted_at,
+                "event": json.loads(event_json),
+            }
             record_hash = "sha256:" + hashlib.sha256(previous_hash.encode() + _canonical(body)).hexdigest()
             connection.execute(
                 "INSERT INTO sensor_events(offset,event_id,admitted_at,event_json,previous_hash,record_hash) VALUES(?,?,?,?,?,?)",
-                (entry.offset, entry.event.event_id, entry.admitted_at, event_json, previous_hash, record_hash),
+                (
+                    canonical_entry.offset,
+                    canonical_entry.event.event_id,
+                    canonical_entry.admitted_at,
+                    event_json,
+                    previous_hash,
+                    record_hash,
+                ),
             )
             connection.execute("COMMIT")
-            # WAL checkpoints cannot run inside the write transaction.  Commit
-            # first, keep the process lock, then force the durable checkpoint.
             self._fsync(connection)
             self.digest_path.write_text(record_hash)
-            return record_hash
+            return canonical_entry
         except Exception:
             if connection.in_transaction:
                 connection.execute("ROLLBACK")

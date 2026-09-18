@@ -128,14 +128,13 @@ class SensoriumEventSequencer:
             }
 
     def _append(self, event: SensorEvent) -> SequencedEvent:
-        self._offset += 1
-        entry = SequencedEvent(
-            offset=self._offset,
+        proposed = SequencedEvent(
+            offset=self._offset + 1,
             event=event,
             admitted_at=datetime.now(timezone.utc).isoformat(),
         )
-        if self.journal is not None:
-            self.journal.append(entry)
+        entry = self.journal.append(proposed) if self.journal is not None else proposed
+        self._offset = int(entry.offset)
         self._entries.append(entry)
         return entry
 
