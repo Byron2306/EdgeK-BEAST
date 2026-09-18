@@ -32,7 +32,8 @@ jobs:
       - name: Prove Phase 3 authority classes and runtime receipts
         run: |
           python -m pytest -q --noconftest \
-            tests/phase3/test_least_authority_runtime.py
+            tests/phase3/test_least_authority_runtime.py \
+            tests/routes/test_agent_tool_runtime.py
       - name: Preserve Phase 2 multi-file and Sensorium behavior
         run: |
           python -m pytest -q --noconftest \
