@@ -38,8 +38,9 @@ def _mutation_spec() -> ToolSpec:
 
 
 def test_balanced_profile_matches_phase3_master_plan():
-    policy = resolve_budget_policy({"budget": {}})
+    policy = resolve_budget_policy({"budget": {"profile": "balanced"}})
     assert policy["profile"] == "balanced"
+    assert policy["enabled"] is True
     assert policy["limits"] == PROFILE_LIMITS["balanced"]
     assert policy["limits"]["max_model_turns"] == 24
     assert policy["limits"]["max_tool_calls"] == 60
@@ -52,6 +53,24 @@ def test_balanced_profile_matches_phase3_master_plan():
     assert policy["limits"]["max_output_tokens"] == 40000
     assert policy["limits"]["max_cloud_cost"] == 5.0
     assert policy["limits"]["max_parallel_subagents"] == 3
+
+
+def test_legacy_run_does_not_inherit_phase3_mutation_caps():
+    policy = resolve_budget_policy({"budget": {}})
+    assert policy["profile"] == "legacy_compat"
+    assert policy["enabled"] is False
+    assert policy["compatibility_mode"] is True
+    assert policy["limits"]["max_mutating_tool_calls"] == 200
+    assert policy["limits"]["max_files_changed"] == 500
+
+
+def test_legacy_max_turns_alias_does_not_activate_balanced_tool_limits():
+    policy = resolve_budget_policy({"budget": {"max_turns": 32}})
+    assert policy["profile"] == "legacy_compat"
+    assert policy["enabled"] is False
+    assert policy["limits"]["max_model_turns"] == 32
+    assert policy["limits"]["max_mutating_tool_calls"] == 200
+    assert policy["limits"]["max_tool_calls"] == 500
 
 
 def test_explicit_budget_override_is_bounded_and_alias_compatible():
