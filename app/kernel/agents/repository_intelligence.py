@@ -166,6 +166,23 @@ def build_repository_discovery(
     ordered = _dedupe([*hints, *sorted(path for path in reasons if path not in hint_set)])
     ordered = ordered[:_MAX_DISCOVERY_PATHS]
     discovered = [path for path in ordered if path not in hint_set]
+
+    objective_lower = objective.casefold()
+    cross_file_required = any(
+        marker in objective_lower
+        for marker in (
+            "cross-file", "cross file", "dependent", "dependents",
+            "caller", "callers", "consumer", "consumers",
+            "downstream", "across files", "both files",
+        )
+    )
+    required_evidence_paths = [
+        path
+        for path in discovered
+        if cross_file_required
+        and any(str(reason).startswith("dependent_of:") for reason in reasons.get(path, []))
+    ]
+
     workspace = packet.get("workspace_context") if isinstance(packet.get("workspace_context"), dict) else {}
     code_context = workspace.get("code_cortex") if isinstance(workspace.get("code_cortex"), dict) else {}
 
@@ -181,6 +198,13 @@ def build_repository_discovery(
         "hint_paths": hints,
         "candidate_paths": ordered,
         "discovered_paths": discovered,
+        "required_evidence_paths": required_evidence_paths,
+        "required_evidence_policy": {
+            "enabled": bool(cross_file_required),
+            "reason": "cross_file_objective_direct_dependents",
+            "authority": "inspection_required_only",
+            "mutation_authority": False,
+        },
         "path_reasons": {path: reasons.get(path, []) for path in ordered},
         "context_packet_id": str(packet.get("packet_id") or ""),
         "context_packet_hash": str(packet.get("handoff_hash") or ""),
