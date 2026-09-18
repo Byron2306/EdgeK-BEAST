@@ -1,0 +1,40 @@
+name: BEAST Phase 2 Desktop Ingress Acceptance
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase2-runtime-trace
+  pull_request:
+    paths:
+      - 'desktop-ide/renderer/js/ai/agent-client.js'
+      - 'app/routes/ide.py'
+      - 'app/routes/ide_routes/**'
+      - 'tests/phase2/desktop_agent_ingress_harness.js'
+      - 'tests/phase2/test_live_desktop_agent_ingress.py'
+      - '.github/workflows/beast-phase2-desktop-ingress.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  desktop-ingress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install -r requirements.txt
+      - name: Exercise actual desktop renderer through production IDE router
+        env:
+          BEAST_PHASE2_DESKTOP_RECEIPT: /tmp/BEAST_PHASE2_DESKTOP_INGRESS.json
+        run: |
+          python -m pytest -q --noconftest tests/phase2/test_live_desktop_agent_ingress.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beast-phase2-desktop-ingress
+          path: /tmp/BEAST_PHASE2_DESKTOP_INGRESS.json
