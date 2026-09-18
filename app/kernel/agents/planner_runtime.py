@@ -268,18 +268,23 @@ class AgentPlannerRuntime:
         return paths
 
     @classmethod
-    def _invalid_retry_recovery_reason(cls, decision: PlannerDecision, state: PlannerState) -> str:
+    def _invalid_retry_recovery_reason(cls, decision: PlannerDecision, state: PlannerState, run: dict[str, Any] | None = None) -> str:
         if decision.decision_type is not PlannerDecisionType.TOOL:
             return ""
         inspected_paths = cls._inspected_paths(state)
+        scope_paths = set(cls._scope_paths(run or {}, state)) if isinstance(run, dict) else set(inspected_paths)
+
+        def outside_scope(path: str) -> bool:
+            return bool(path and scope_paths and path not in scope_paths)
+
         if decision.tool_id == "workspace.read_range":
             path = str(decision.arguments.get("path") or "").strip()
             start_line = decision.arguments.get("start_line")
             line_count = decision.arguments.get("line_count")
             if not path:
                 return "workspace.read_range retry recovery requires an exact target path."
-            if inspected_paths and path not in inspected_paths:
-                return "workspace.read_range retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "workspace.read_range retry recovery must stay within the governed repository scope."
             try:
                 start = int(start_line)
                 count = int(line_count)
@@ -291,15 +296,15 @@ class AgentPlannerRuntime:
         if decision.tool_id == "worktree.replace_exact":
             path = str(decision.arguments.get("path") or "").strip()
             old_text = str(decision.arguments.get("old_text") or "")
-            if inspected_paths and path not in inspected_paths:
-                return "worktree.replace_exact retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "worktree.replace_exact retry recovery must stay within the governed repository scope."
             if old_text == "":
                 return "worktree.replace_exact retry recovery requires non-empty old_text for existing files."
             return cls._invalid_mutation_reason(decision)
         if decision.tool_id == "worktree.write_file":
             path = str(decision.arguments.get("path") or "").strip()
-            if inspected_paths and path and path not in inspected_paths:
-                return "worktree.write_file retry recovery must stay within the already inspected target file set."
+            if outside_scope(path):
+                return "worktree.write_file retry recovery must stay within the governed repository scope."
         return cls._invalid_mutation_reason(decision)
 
     @staticmethod
@@ -1659,9 +1664,26 @@ class AgentPlannerRuntime:
                         "error": f"{type(exc).__name__}: {exc}",
                     })
                 else:
-                    retried_reason = self._invalid_retry_recovery_reason(retried, state)
+                    retried_reason = self._invalid_retry_recovery_reason(retried, state, run)
                     if not retried_reason:
-                        decision = retried
+                        recovered_required = self._required_phase_decision(run, state, retried)
+                        if (
+                            recovered_required is not None
+                            and (
+                                retried.decision_type is not PlannerDecisionType.TOOL
+                                or retried.tool_id != recovered_required.tool_id
+                                or retried.arguments != recovered_required.arguments
+                            )
+                        ):
+                            decision = recovered_required
+                            self.engine.emit(run_id, "agent.planner.phase_enforced_after_retry", {
+                                "turn": state.turn + 1,
+                                "required_tool_id": recovered_required.tool_id,
+                                "replaced_decision": retried.as_dict(),
+                                "reason": recovered_required.rationale,
+                            })
+                        else:
+                            decision = retried
                         self.engine.emit(run_id, "agent.provider.invalid_mutation_recovered", {
                             "turn": state.turn + 1,
                             "provider": str(run.get("provider") or ""),
