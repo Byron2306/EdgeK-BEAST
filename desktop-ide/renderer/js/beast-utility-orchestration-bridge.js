@@ -338,12 +338,16 @@
       const snapshot = platformPayload || {};
       const systemPayload = snapshot.snapshots?.system || snapshot.system || {};
       const systemInventory = systemTelemetryPayload || {};
-      const systemTelemetry = systemTelemetryPayload?.summary || {};
-      const resourcePayload = systemPayload?.resources || systemTelemetry?.resources || {};
+      const systemTelemetry = systemInventory?.summary || {};
+      const resourcePayload = systemTelemetry?.resources || systemPayload?.summary?.resources || systemPayload?.resources || {};
       const runtimePayload = runtimeStatePayload || snapshot.snapshots?.runtime || snapshot.runtime || {};
       const precPayload = snapshot.snapshots?.prec || snapshot.prec || {};
-      const ports = list(systemPayload,'ports','listening_ports').map((row,index)=>({port:row.port||row.local_port||index,service:row.service||row.process||row.name||'unknown',status:row.status||'listening',pid:row.pid,address:row.address||row.host||'127.0.0.1'}));
-      const processes = list(systemPayload,'processes','process_list').map(row=>({pid:row.pid,name:row.name||row.command||'process',cpu:numeric(row.cpu||row.cpu_percent),memory:row.memory||row.rss||'n/a',status:row.status||'running'}));
+      const platformPorts = Array.isArray(systemPayload?.ports) ? systemPayload.ports : (systemPayload?.ports?.ports || systemPayload?.listening_ports || []);
+      const inventoryPorts = systemInventory?.ports?.ports || systemInventory?.listening_ports || [];
+      const platformProcesses = Array.isArray(systemPayload?.processes) ? systemPayload.processes : (systemPayload?.processes?.processes || systemPayload?.process_list || []);
+      const inventoryProcesses = systemInventory?.processes?.processes || systemInventory?.process_list || [];
+      const ports = (platformPorts.length ? platformPorts : inventoryPorts).map((row,index)=>({port:row.port||row.local_port||index,service:row.service||row.process||row.name||'unknown',status:row.status||'listening',pid:row.pid,address:row.address||row.host||'127.0.0.1'}));
+      const processes = (platformProcesses.length ? platformProcesses : inventoryProcesses).map(row=>({pid:row.pid,name:row.name||row.command||'process',cpu:numeric(row.cpu||row.cpu_percent),memory:row.memory||row.rss_mb||row.rss||'n/a',status:row.status||'running'}));
       const cpuValue=systemPayload?.cpu?.percent ?? systemPayload?.cpu_percent ?? resourcePayload?.cpu?.percent ?? resourcePayload?.cpu;
       const memoryValue=systemPayload?.memory?.percent ?? systemPayload?.memory_percent ?? resourcePayload?.memory?.percent ?? resourcePayload?.memory;
       const diskValue=systemPayload?.disk?.percent ?? systemPayload?.disk_percent ?? resourcePayload?.disk?.percent ?? resourcePayload?.disk;
@@ -402,7 +406,7 @@
       if (evidence.economy) BeastStore.patch('economy',{...(currentState.economy || {}),...evidence.economy});
       const network=numeric(systemPayload?.network?.percent ?? resourcePayload?.network?.percent,0);
       const openCircuits=Object.values(runtimePayload?.circuits||runtimePayload?.circuit_breakers||{}).filter(item=>String(item?.state||'').toLowerCase()==='open').length;
-      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):(evidenceSystem.pressure?'Evidence available':'Unreported'),cpu,memory,disk,network,ports:ports.length?ports:list(systemInventory,'ports','listening_ports').map((row,index)=>({port:row.port||row.local_port||index,service:row.service||row.process||row.name||'unknown',status:row.status||'listening',pid:row.pid,address:row.address||row.host||'127.0.0.1'})),processes:processes.length?processes:list(systemInventory,'processes','process_list').map(row=>({pid:row.pid,name:row.name||row.command||'process',cpu:numeric(row.cpu||row.cpu_percent),memory:row.memory||row.rss||'n/a',status:row.status||'running'})),environment:Object.entries(rootPayload||{}).slice(0,10),hostEnforcement:enforcementPayload,telemetry:resourcePayload,prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'healthy',circuits:openCircuits},pressure:evidenceSystem.pressure || currentState.system?.pressure,updatedAt:now()});
+      BeastStore.patch('system',{loading:false,score,status:hasResourceTelemetry?(score>85?'Nominal':score>65?'Degraded':'Critical'):(evidenceSystem.pressure?'Evidence available':'Unreported'),cpu,memory,disk,network,ports,processes,environment:Object.entries(rootPayload||{}).slice(0,10),hostEnforcement:enforcementPayload,telemetry:resourcePayload,prec:{stage:precStage,health:precHealth,traces:numeric(precPayload?.traces||precPayload?.trace_count,precTraceCount)},runtime:{status:runtimePayload?.status||'healthy',circuits:openCircuits},pressure:evidenceSystem.pressure || currentState.system?.pressure,updatedAt:now()});
       return snapshot;
     } catch(error){
       BeastStore.patch('platform',{loading:false,error:String(error.message||error),status:'offline',health:0,sections:[],summary:{},snapshots:{},raw:null,updatedAt:now()});
