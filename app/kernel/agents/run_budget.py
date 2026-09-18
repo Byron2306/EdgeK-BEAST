@@ -27,6 +27,22 @@ class RunBudgetExceeded(RuntimeError):
 
 
 PROFILE_LIMITS: dict[str, dict[str, float]] = {
+    # Compatibility profile for AgentRuns created before Phase 3 policy
+    # profiles existed. These are hard runtime ceilings, not a new
+    # operational budget, so legacy Phase 2 semantics remain unchanged.
+    "legacy_compat": {
+        "max_model_turns": 64,
+        "max_tool_calls": 500,
+        "max_mutating_tool_calls": 200,
+        "max_verification_cycles": 32,
+        "max_files_changed": 500,
+        "max_lines_changed": 100000,
+        "max_wall_seconds": 86400,
+        "max_input_tokens": 5000000,
+        "max_output_tokens": 1000000,
+        "max_cloud_cost": 10000.0,
+        "max_parallel_subagents": 32,
+    },
     "compact": {
         "max_model_turns": 8,
         "max_tool_calls": 24,
@@ -96,10 +112,29 @@ def _bounded_limit(name: str, value: Any, fallback: float) -> float:
 
 def resolve_budget_policy(run: dict[str, Any]) -> dict[str, Any]:
     raw = run.get("budget") if isinstance(run.get("budget"), dict) else {}
-    requested_profile = str(raw.get("policy_profile") or raw.get("profile") or "balanced").strip().lower()
-    profile = requested_profile if requested_profile in PROFILE_LIMITS else "balanced"
-    limits = dict(PROFILE_LIMITS[profile])
     nested = raw.get("limits") if isinstance(raw.get("limits"), dict) else {}
+
+    explicit_profile = str(raw.get("policy_profile") or raw.get("profile") or "").strip().lower()
+    phase3_specific_keys = set(_LIMIT_BOUNDS) - {"max_model_turns"}
+    phase3_requested = bool(
+        explicit_profile
+        or nested
+        or any(key in raw for key in phase3_specific_keys)
+        or "max_model_turns" in raw
+    )
+
+    # max_turns predates Phase 3. Alone, it remains a planner-turn cap and
+    # must not silently activate balanced mutation or tool budgets.
+    if not phase3_requested:
+        requested_profile = "legacy_compat"
+        profile = "legacy_compat"
+        enabled = False
+    else:
+        requested_profile = explicit_profile or "balanced"
+        profile = requested_profile if requested_profile in {"compact", "balanced", "extended"} else "balanced"
+        enabled = True
+
+    limits = dict(PROFILE_LIMITS[profile])
     overrides = {**nested}
     for key in _LIMIT_BOUNDS:
         if key in raw:
@@ -118,6 +153,8 @@ def resolve_budget_policy(run: dict[str, Any]) -> dict[str, Any]:
         "version": "1.0",
         "profile": profile,
         "requested_profile": requested_profile,
+        "enabled": enabled,
+        "compatibility_mode": not enabled,
         "limits": limits,
     }
 
@@ -275,6 +312,8 @@ def _receipt(
         "run_id": str(run.get("run_id") or ""),
         "action": action,
         "profile": policy["profile"],
+        "policy_enabled": bool(policy.get("enabled")),
+        "compatibility_mode": bool(policy.get("compatibility_mode")),
         "limits": limits,
         "usage": usage,
         "prospective": prospective,
