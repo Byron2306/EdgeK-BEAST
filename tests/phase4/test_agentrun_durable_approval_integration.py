@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from app.kernel.agents.durable_approval_runtime import DurableAgentApprovalRuntime
 from app.kernel.agents.run_engine import AgentRunEngine
-from app.kernel.approvals import DurableApprovalCardStore, DurableApprovalStore
+from app.kernel.approvals import DurableApprovalCardStore, DurableApprovalStore, RevocationPolicyStore
 from app.routes.ide import build_ide_router
 
 
@@ -75,6 +75,30 @@ async def _wait_async(client: httpx.AsyncClient, root: Path, run_id: str, states
             return last
         await asyncio.sleep(0.05)
     raise AssertionError(f"run did not reach {states}; last={last}")
+
+
+async def _wait_for_pending_approval(
+    client: httpx.AsyncClient,
+    root: Path,
+    run_id: str,
+    *,
+    exclude: set[str] | None = None,
+    timeout: float = 10.0,
+) -> dict:
+    exclude = exclude or set()
+    deadline = time.monotonic() + timeout
+    last = []
+    while time.monotonic() < deadline:
+        response = await client.get(
+            f"/edgek/agent-runs/{run_id}/approvals",
+            params={"root_path": str(root)},
+        )
+        last = response.json()["approvals"]
+        for item in reversed(last):
+            if item.get("status") == "pending" and str(item.get("approval_id") or "") not in exclude:
+                return item
+        await asyncio.sleep(0.05)
+    raise AssertionError(f"no new pending approval; last={last}")
 
 
 def _session(client: TestClient, root: Path) -> dict:
@@ -378,3 +402,284 @@ def test_restart_paused_approval_consumes_exact_capability(tmp_path):
     ))
     assert observation["status"] == "completed"
     assert (engine.store.get_run(run_id) or {})["checkpoint"]["approval_resume"]["status"] == "CONSUMED_COMPLETED"
+
+
+@pytest.mark.asyncio
+async def test_request_replan_continues_same_run_with_governance_observation(tmp_path):
+    root = _repo(tmp_path)
+    app = _app(root)
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        session = (await client.post("/edgek/ide/agent-sessions/create", json={
+            "workspace_root": str(root),
+            "task": "Inspect the workspace under operator review.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+        })).json()["session"]
+        created = await client.post("/edgek/agent-runs", json={
+            "workspace_root": str(root),
+            "session_id": session["session_id"],
+            "task": "Inspect the workspace under operator review.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+            "launch": False,
+            "request": {
+                "prompt": "Inspect the workspace under operator review.",
+                "durable_approvals": True,
+                "permission_mode": "REVIEW",
+                "approval_timeout_seconds": 30,
+            },
+            "budget": {"profile": "balanced"},
+        })
+        run_id = created.json()["run"]["run_id"]
+
+        launched = await client.post(f"/edgek/agent-runs/{run_id}/planner/execute", json={
+            "workspace_root": str(root),
+            "max_turns": 5,
+            "simulate_decisions": [
+                {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+                {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 100, "include_symbols": True}},
+                {"decision_type": "blocked", "blocker": "replan proof complete"},
+            ],
+        })
+        assert launched.status_code == 200
+
+        first = await _wait_for_pending_approval(client, root, run_id)
+        replanned = await client.post(
+            f"/edgek/agent-runs/{run_id}/approvals/{first['approval_id']}",
+            json={
+                "root_path": str(root),
+                "approved": False,
+                "decision": "REQUEST_REPLAN",
+                "reason": "Use the indexed workspace view instead of a raw listing.",
+                "operator_id": "operator:replan-test",
+            },
+        )
+        assert replanned.status_code == 200, replanned.text
+        assert replanned.json()["phase4"]["decision"]["decision"] == "REQUEST_REPLAN"
+
+        second = await _wait_for_pending_approval(
+            client,
+            root,
+            run_id,
+            exclude={str(first["approval_id"])},
+        )
+        assert second["request"]["tool_id"] == "workspace.index"
+        approved = await client.post(
+            f"/edgek/agent-runs/{run_id}/approvals/{second['approval_id']}",
+            json={
+                "root_path": str(root),
+                "approved": True,
+                "decision": "APPROVE",
+                "scope": "ONCE",
+                "operator_id": "operator:replan-test",
+            },
+        )
+        assert approved.status_code == 200, approved.text
+        final = await _wait_async(client, root, run_id, {"policy_blocked"})
+        assert final["run_id"] == run_id
+
+    planner = (final.get("checkpoint") or {}).get("planner") or {}
+    observations = planner.get("observations") or []
+    governance = [
+        item for item in observations
+        if item.get("tool_id") == "governance.approval_replan"
+    ]
+    assert governance
+    assert governance[-1]["result"]["required_action"] == "replan"
+    assert governance[-1]["result"]["denied_tool_id"] == "workspace.list"
+    assert governance[-1]["result"]["repeat_same_call_authorized"] is False
+
+    events = AgentRunEngine(root).store.events(run_id, limit=500)
+    assert any(event["event_type"] == "agent.approval.replan_requested" for event in events)
+    assert any(
+        event["event_type"] == "agent.tool.completed"
+        and (event.get("payload") or {}).get("observation", {}).get("tool_id") == "workspace.index"
+        for event in events
+    )
+
+
+@pytest.mark.asyncio
+async def test_permanent_deny_persists_tool_revocation_across_runs(tmp_path):
+    root = _repo(tmp_path)
+    app = _app(root)
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        session = (await client.post("/edgek/ide/agent-sessions/create", json={
+            "workspace_root": str(root),
+            "task": "List workspace under review.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+        })).json()["session"]
+        created = await client.post("/edgek/agent-runs", json={
+            "workspace_root": str(root),
+            "session_id": session["session_id"],
+            "task": "List workspace under review.",
+            "mode": "analysis",
+            "provider": "ollama",
+            "model": "phase4-scripted",
+            "launch": False,
+            "request": {
+                "prompt": "List workspace under review.",
+                "durable_approvals": True,
+                "permission_mode": "REVIEW",
+                "approval_timeout_seconds": 30,
+            },
+            "budget": {"profile": "balanced"},
+        })
+        run_id = created.json()["run"]["run_id"]
+        await client.post(f"/edgek/agent-runs/{run_id}/planner/execute", json={
+            "workspace_root": str(root),
+            "max_turns": 3,
+            "simulate_decisions": [
+                {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+            ],
+        })
+        pending = await _wait_for_pending_approval(client, root, run_id)
+        denied = await client.post(
+            f"/edgek/agent-runs/{run_id}/approvals/{pending['approval_id']}",
+            json={
+                "root_path": str(root),
+                "approved": False,
+                "decision": "PERMANENTLY_DENY",
+                "reason": "Workspace listing is permanently disabled for this workspace.",
+                "operator_id": "operator:permanent-deny-test",
+            },
+        )
+        assert denied.status_code == 200, denied.text
+        body = denied.json()
+        assert body["phase4"]["decision"]["decision"] == "PERMANENTLY_DENY"
+        assert body["revocation"]["target_type"] == "TOOL"
+        assert body["revocation"]["target_id"] == "workspace.list"
+        assert body["revocation"]["grants_authority"] is False
+        await _wait_async(client, root, run_id, {"policy_blocked"})
+
+    revocations = RevocationPolicyStore(root)
+    assert revocations.is_revoked("TOOL", "workspace.list") is True
+
+    engine = AgentRunEngine(root)
+    second_run = engine.create_run(
+        session_id="phase4-revocation-second-run",
+        objective="Attempt revoked workspace listing",
+        mode="analysis",
+        provider="simulated",
+        model="phase4-test",
+        request={
+            "durable_approvals": True,
+            "permission_mode": "GUIDED",
+        },
+        budget={"profile": "balanced"},
+    )["run_id"]
+    with pytest.raises(ValueError, match="tool is revoked: workspace.list"):
+        await engine.execute_tool(second_run, "workspace.list", {})
+
+
+@pytest.mark.asyncio
+async def test_restart_approval_route_executes_exact_step_before_worker_relaunch(tmp_path):
+    root = _repo(tmp_path)
+    engine = AgentRunEngine(root)
+    run_id = engine.create_run(
+        session_id="phase4-route-restart",
+        objective="Resume exact worktree bind after backend restart",
+        mode="agent",
+        provider="ollama",
+        model="phase4-missing-local-model",
+        request={
+            "prompt": "Resume exact worktree bind after backend restart",
+            "durable_approvals": True,
+            "permission_mode": "GUIDED",
+            "approval_timeout_seconds": 600,
+            "decision_timeout_ms": 1000,
+        },
+        budget={"profile": "balanced"},
+    )["run_id"]
+    spec = engine.tool_registry.get("worktree.bind")
+    approval_id = "approval-phase4-route-restart"
+    step_id = "step-phase4-route-restart"
+    arguments = {"objective": "restart exact route step", "risk": "high"}
+    runtime = DurableAgentApprovalRuntime(root)
+    artifacts = runtime.create_for_tool(
+        run=engine.store.get_run(run_id) or {},
+        step_id=step_id,
+        approval_id=approval_id,
+        spec=spec,
+        arguments=arguments,
+        execution_target="local",
+        worktree_bound=False,
+    )
+    engine.store.create_approval(run_id, {
+        "request_id": approval_id,
+        "run_id": run_id,
+        "step_id": step_id,
+        "tool_id": spec.tool_id,
+        "tool_version": spec.version,
+        "phase4_durable": True,
+    })
+    engine.merge_checkpoint(run_id, {
+        "suspended_step": {
+            "step_id": step_id,
+            "approval_id": approval_id,
+            "tool_id": spec.tool_id,
+            "tool_version": spec.version,
+            "arguments": arguments,
+            "execution_target": "local",
+            "execution_target_payload": {},
+            "phase4_durable": True,
+            "request_digest": artifacts["request"]["request_digest"],
+        },
+        "suspended_step_id": step_id,
+        "suspended_approval_id": approval_id,
+        "phase4_approval": {
+            "approval_id": approval_id,
+            "step_id": step_id,
+            "tool_id": spec.tool_id,
+            "status": "PENDING",
+        },
+    })
+    engine.store.transition(run_id, "waiting_for_approval")
+    engine.store.transition(run_id, "paused", error="runtime_restarted; resume required")
+
+    app = _app(root)
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        approved = await client.post(
+            f"/edgek/agent-runs/{run_id}/approvals/{approval_id}",
+            json={
+                "root_path": str(root),
+                "approved": True,
+                "decision": "APPROVE",
+                "scope": "ONCE",
+                "operator_id": "operator:restart-route-test",
+            },
+        )
+        assert approved.status_code == 200, approved.text
+        body = approved.json()
+        restart_observation = body["restart_exact_step_observation"]
+        assert restart_observation["tool_id"] == "worktree.bind"
+        assert restart_observation["status"] == "completed"
+        assert body["event"]["payload"]["restart_worker_relaunched"] is True
+
+        latest = (await client.get(
+            f"/edgek/agent-runs/{run_id}",
+            params={"root_path": str(root)},
+        )).json()["run"]
+        checkpoint = latest["checkpoint"]
+        assert checkpoint["approval_resume"]["status"] == "CONSUMED_COMPLETED"
+        assert checkpoint["approval_resume"]["approval_id"] == approval_id
+        assert checkpoint["worktree_root"]
+        assert Path(checkpoint["worktree_root"]).resolve() != root.resolve()
+
+        cancelled = await client.post(
+            f"/edgek/agent-runs/{run_id}/cancel",
+            json={"root_path": str(root), "reason": "restart route proof complete"},
+        )
+        assert cancelled.status_code == 200
+
+    events = AgentRunEngine(root).store.events(run_id, limit=500)
+    event_types = [event["event_type"] for event in events]
+    assert "agent.approval.restart_exact_step.started" in event_types
+    assert "agent.approval.restart_exact_step.executed" in event_types
+    assert "agent.approval.restart_worker_relaunched" in event_types
