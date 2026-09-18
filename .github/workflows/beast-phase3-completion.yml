@@ -1,0 +1,90 @@
+name: BEAST Phase 3 Completion Gate
+
+on:
+  push:
+    branches:
+      - agent/beast-coding-agent-phase3-least-authority
+  pull_request:
+    paths:
+      - 'app/kernel/agents/**'
+      - 'tests/phase3/**'
+      - 'tests/phase2/**'
+      - 'tests/test_beast_coding_agent_census_journeys.py'
+      - 'scripts/beast_coding_agent_phase3_closure.py'
+      - '.github/workflows/beast-phase3-completion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase3-completion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BEAST_PHASE3_LIVE_OLLAMA: '1'
+      BEAST_PHASE3_LIVE_OLLAMA_MODEL: qwen2.5:0.5b
+      BEAST_OLLAMA_NUM_CTX: '2048'
+      BEAST_OLLAMA_NUM_PREDICT: '128'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install BEAST dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Prove least-authority tool plane
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_least_authority_runtime.py             --junitxml=/tmp/phase3-authority.xml
+
+      - name: Prove policy-profile budgets
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_run_budget_policy.py             --junitxml=/tmp/phase3-budget.xml
+
+      - name: Prove stagnation and oscillation control
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_planner_stagnation.py             --junitxml=/tmp/phase3-stagnation.xml
+
+      - name: Prove verification ladder and mutation freshness
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_verification_ladder.py             --junitxml=/tmp/phase3-verification.xml
+
+      - name: Prove seeded multi-file failure repair and SourcePlan handoff
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_phase3_seeded_defect_gauntlet.py             --junitxml=/tmp/phase3-gauntlet.xml
+
+      - name: Preserve Phase 2 behavior
+        run: |
+          python -m pytest -q --noconftest             tests/phase2/test_multifile_phase_guard.py             tests/phase2/test_sensorium_agent_run_receipt.py             tests/test_beast_coding_agent_census_journeys.py             --junitxml=/tmp/phase3-phase2-regression.xml
+
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Start Ollama and pull bounded model
+        run: |
+          ollama serve >/tmp/beast-phase3-completion-ollama.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          ollama pull "$BEAST_PHASE3_LIVE_OLLAMA_MODEL"
+
+      - name: Prove real model-directed tool use
+        run: |
+          python -m pytest -q --noconftest             tests/phase3/test_live_ollama_least_authority.py             --junitxml=/tmp/phase3-live-model.xml
+
+      - name: Compile Phase 3 closure receipt
+        run: |
+          python scripts/beast_coding_agent_phase3_closure.py             --authority-junit /tmp/phase3-authority.xml             --budget-junit /tmp/phase3-budget.xml             --stagnation-junit /tmp/phase3-stagnation.xml             --verification-junit /tmp/phase3-verification.xml             --gauntlet-junit /tmp/phase3-gauntlet.xml             --live-model-junit /tmp/phase3-live-model.xml             --phase2-regression-junit /tmp/phase3-phase2-regression.xml             --json-out /tmp/BEAST_PHASE3_COMPLETION.json             --md-out /tmp/BEAST_PHASE3_COMPLETION.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: beast-phase3-completion-receipt
+          path: |
+            /tmp/BEAST_PHASE3_COMPLETION.json
+            /tmp/BEAST_PHASE3_COMPLETION.md
+            /tmp/phase3-*.xml
+            /tmp/beast-phase3-completion-ollama.log
