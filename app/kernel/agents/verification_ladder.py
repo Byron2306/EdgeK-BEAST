@@ -104,6 +104,7 @@ def _completed_commands(run: dict[str, Any]) -> set[tuple[str, ...]]:
     checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
     planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
     observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
+    current_epoch = max(0, int(checkpoint.get("worktree_mutation_epoch") or 0))
     completed: set[tuple[str, ...]] = set()
     for item in observations:
         if not isinstance(item, dict):
@@ -113,6 +114,12 @@ def _completed_commands(run: dict[str, Any]) -> set[tuple[str, ...]]:
         if str(item.get("status") or "") != "completed":
             continue
         result = item.get("result") if isinstance(item.get("result"), dict) else {}
+        try:
+            verification_epoch = int(result.get("mutation_epoch"))
+        except (TypeError, ValueError):
+            continue
+        if verification_epoch != current_epoch:
+            continue
         arguments = item.get("arguments") if isinstance(item.get("arguments"), dict) else {}
         command = result.get("command") if isinstance(result.get("command"), list) else arguments.get("command")
         if isinstance(command, list) and command and all(isinstance(part, str) for part in command):
