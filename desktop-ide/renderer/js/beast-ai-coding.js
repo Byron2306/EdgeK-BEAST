@@ -11,7 +11,7 @@
     streamState: { stream:null, watchdog:null, lastEventAt:0, runId:'', sequence:0, lastCursorPersistAt:0 },
     constants: {
       MAX_CONTEXT_FILES:48,
-      RELIABLE_LOCAL_CODER:'qwen2.5:3b',
+      RELIABLE_LOCAL_CODER:'qwen2.5-coder:1.5b',
       RELIABLE_LOCAL_PROFILE:Object.freeze({ maxFiles:3, contextChars:2400, askTokens:768, editTokens:1024 }),
       RELIABLE_PLANNER_PROFILE:Object.freeze({ maxFiles:3, contextChars:3200, askTokens:1024, editTokens:1536 })
     },
