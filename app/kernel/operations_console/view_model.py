@@ -12,7 +12,7 @@ from app.kernel.operations_console.event_projection import DurableConsoleEventPr
 from app.kernel.operations_console.objective_plan import ObjectivePlanWorkspace
 from app.kernel.operations_console.context_manifest import ContextManifestStore
 
-VERSION = "5.1"
+VERSION = "11.0"
 OBJECT_TYPE = "beast_agent_operations_console_snapshot"
 
 
@@ -78,6 +78,7 @@ class AgentOperationsConsoleViewModel:
         sourceplan = self._sourceplan(payloads, checkpoint)
         recovery = self._recovery(run, checkpoint)
         route = self._provider_route(payloads, run)
+        operator_state = self._operator_state(run, checkpoint, events, approvals, worktree, verification, sourceplan, route)
 
         snapshot = {
             "version": VERSION,
@@ -118,6 +119,7 @@ class AgentOperationsConsoleViewModel:
             "provider_route": route,
             "sourceplan": sourceplan,
             "recovery": recovery,
+            "operator_state": operator_state,
             "authority": "console_projection_read_only",
             "grants_execution_authority": False,
             "grants_workspace_mutation": False,
@@ -248,6 +250,104 @@ class AgentOperationsConsoleViewModel:
             "digest": str(value.get("digest") or value.get("sourceplan_digest") or ""),
             "promotion_ready": bool(value.get("promotion_ready")),
             "promotion_authorized": bool(value.get("promotion_authorized")),
+        }
+
+    @staticmethod
+    def _operator_state(
+        run: dict[str, Any],
+        checkpoint: dict[str, Any],
+        events: list[dict[str, Any]],
+        approvals: list[dict[str, Any]],
+        worktree: dict[str, Any],
+        verification: dict[str, Any],
+        sourceplan: dict[str, Any],
+        route: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Phase 11 read-only truth projection for the operator surface."""
+        planner = _dict(checkpoint.get("planner"))
+        current_verification = _dict(checkpoint.get("verification"))
+        execution_target = str(
+            current_verification.get("execution_target")
+            or _dict(run.get("request")).get("execution_target")
+            or "local"
+        )
+        target_execution = str(
+            current_verification.get("target_execution")
+            or ("local" if execution_target == "local" else f"remote_{execution_target}")
+        )
+        latest_gate: dict[str, Any] = {}
+        latest_repair: dict[str, Any] = {}
+        latest_memory: dict[str, Any] = {}
+        latest_reuse: dict[str, Any] = {}
+        for event in events:
+            event_type = str(event.get("event_type") or "")
+            payload = _dict(event.get("payload"))
+            if event_type == "agent.execution.gate":
+                latest_gate = payload
+            if "repair" in event_type or event_type == "agent.verification.failed":
+                latest_repair = payload
+            if "memory" in event_type:
+                latest_memory = payload
+            if "crystal" in event_type or "reuse" in event_type:
+                latest_reuse = payload
+        mutation_epoch = int(checkpoint.get("worktree_mutation_epoch") or 0)
+        verification_epoch = int(current_verification.get("mutation_epoch") or -1)
+        verification_current = bool(current_verification.get("ok")) and verification_epoch == mutation_epoch
+        pending_approvals = [
+            str(item.get("request_id") or item.get("approval_id") or "")
+            for item in approvals
+            if str(item.get("status") or "") == "pending"
+        ]
+        promotion_ready = bool(sourceplan.get("promotion_ready")) and verification_current
+        return {
+            "planner": {
+                "phase": str(planner.get("phase") or planner.get("state") or run.get("state") or "unknown"),
+                "turn": int(planner.get("turn") or planner.get("turn_index") or 0),
+                "repair_cycles": int(planner.get("repair_cycles") or 0),
+                "blocked": str(run.get("state") or "") in {"blocked", "awaiting_approval"},
+            },
+            "execution": {
+                "target": execution_target,
+                "target_execution": target_execution,
+                "transport": str(current_verification.get("transport") or execution_target),
+                "gate": latest_gate,
+            },
+            "worktree": {
+                "status": str(worktree.get("status") or "unknown"),
+                "path": str(worktree.get("path") or ""),
+                "mutation_epoch": mutation_epoch,
+                "dirty": bool(worktree.get("dirty")),
+            },
+            "verification": {
+                "status": str(verification.get("status") or "not_started"),
+                "current": verification_current,
+                "mutation_epoch": verification_epoch,
+                "evidence_digest": str(current_verification.get("evidence_digest") or current_verification.get("receipt_digest") or ""),
+            },
+            "repair": {
+                "cycles": int(planner.get("repair_cycles") or 0),
+                "latest": latest_repair,
+            },
+            "evidence": {
+                "timeline_head": str(run.get("event_head_hash") or run.get("head_hash") or ""),
+                "latest_memory": latest_memory,
+                "latest_reuse": latest_reuse,
+            },
+            "approvals": {
+                "pending": pending_approvals,
+                "pending_count": len(pending_approvals),
+            },
+            "promotion": {
+                "sourceplan_status": str(sourceplan.get("status") or "not_created"),
+                "ready": promotion_ready,
+                "authorized": bool(sourceplan.get("promotion_authorized")),
+                "blocked_reason": "" if promotion_ready else "fresh current-epoch verification and promotion-ready SourcePlan required",
+            },
+            "route": route,
+            "authority": "read_only_operator_projection",
+            "grants_execution_authority": False,
+            "grants_workspace_mutation": False,
+            "grants_promotion_authority": False,
         }
 
     @staticmethod
