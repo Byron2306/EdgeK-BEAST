@@ -10,6 +10,7 @@ from dataclasses import replace
 from typing import Any
 
 from app.kernel.agents.failure_analyst import analyze_failure
+from app.kernel.agents.context_architecture import canonical_context_contract
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
@@ -594,7 +595,7 @@ class AgentPlannerRuntime:
                 "then run worktree.verify again. Treat the verifier diagnostic as authoritative. "
                 f"LATEST FAILURE: {json.dumps(compact_failure, sort_keys=True, default=str, separators=(',', ':'))}"
             )
-        context_contract = self._context_contract(run)
+        context_contract = self._context_contract(run, state, char_limit=1200 if late_compact_turn else 1800 if compact_provider else 3200)
         semantic_contract = semantic_context_contract(run, state, char_limit=500 if late_compact_turn else 900 if compact_provider else 1600)
         plan_brief = {}
         try:
@@ -827,31 +828,13 @@ class AgentPlannerRuntime:
             })
         return replace(decision, approval_id=approval_id)
 
-    def _context_contract(self, run: dict[str, Any]) -> str:
-        """Project the already-admitted repository discovery into the planner prompt."""
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
-        discovery = checkpoint.get("repository_discovery") if isinstance(checkpoint.get("repository_discovery"), dict) else {}
-        if discovery:
-            compact = {
-                "canonical_owner": discovery.get("canonical_owner"),
-                "authority": discovery.get("authority"),
-                "hint_paths": list(discovery.get("hint_paths") or [])[:8],
-                "discovered_paths": list(discovery.get("discovered_paths") or [])[:16],
-                "required_evidence_paths": list(discovery.get("required_evidence_paths") or [])[:16],
-                "required_evidence_policy": discovery.get("required_evidence_policy") if isinstance(discovery.get("required_evidence_policy"), dict) else {},
-                "path_reasons": {
-                    path: reasons
-                    for path, reasons in list((discovery.get("path_reasons") or {}).items())[:20]
-                },
-                "code_cortex": discovery.get("code_cortex") if isinstance(discovery.get("code_cortex"), dict) else {},
-                "workspace_graph": discovery.get("workspace_graph") if isinstance(discovery.get("workspace_graph"), dict) else {},
-                "sensorium_world_state": discovery.get("sensorium_world_state") if isinstance(discovery.get("sensorium_world_state"), dict) else {},
-                "exact_source_read_required_before_mutation": True,
-                "discovery_digest": discovery.get("discovery_digest"),
-            }
-            encoded = json.dumps(compact, sort_keys=True, default=str, separators=(",", ":"))
-            return f"\nREPOSITORY DISCOVERY: {encoded[:1800]}"
-        return ""
+    def _context_contract(self, run: dict[str, Any], state: PlannerState | None = None, *, char_limit: int = 1800) -> str:
+        """Render the single canonical Phase 5 context contract.
+
+        Discovery and compressed material remain advisory. Exact editable bytes
+        only come from completed workspace.read_range observations.
+        """
+        return canonical_context_contract(run, state, char_limit=char_limit)
 
     def _admit_repository_discovery(self, run: dict[str, Any], state: PlannerState) -> PlannerState:
         if self.context_packet_builder is None:
