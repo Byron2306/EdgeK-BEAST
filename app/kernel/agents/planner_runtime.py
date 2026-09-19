@@ -51,6 +51,17 @@ class AgentPlannerRuntime:
         return provider in {"ollama", "local_ollama", "nvidia_nim", "nim", "local_nim"}
 
     @staticmethod
+    def _failure_display_class(value: str) -> str:
+        canonical = str(value or "unknown").strip().lower() or "unknown"
+        return {
+            "bad_patch": "syntax",
+            "dependency_missing": "dependency",
+            "environment_issue": "environment",
+            "flaky_test": "flaky",
+            "logic_regression": "logic",
+        }.get(canonical, canonical)
+
+    @staticmethod
     def _scripted_provider_mode(provider: Any) -> bool:
         """Return True only for explicit deterministic test/script providers.
 
@@ -641,6 +652,7 @@ class AgentPlannerRuntime:
                 next_phase = "NEXT REQUIRED: inspect/index evidence is present; choose worktree.bind before any mutation."
             elif latest_failure is not None:
                 failure_class = str(latest_failure.get("analysis", {}).get("failure_class") or "unknown")
+                failure_display = self._failure_display_class(failure_class)
                 retryable = bool(latest_failure.get("analysis", {}).get("retryable_without_code_change"))
                 target_paths = latest_failure.get("target_paths") if isinstance(latest_failure.get("target_paths"), list) else []
                 failure_execution = str(latest_failure.get("target_execution") or latest_failure.get("execution_target") or "").strip()
@@ -649,12 +661,12 @@ class AgentPlannerRuntime:
                 if retryable:
                     next_phase = (
                         "NEXT REQUIRED: latest verifier failure appears retryable/environmental; rerun worktree.verify once "
-                        f"or inspect the environment before editing code{transport_clause}. Failure class: {failure_class}."
+                        f"or inspect the environment before editing code{transport_clause}. Failure class: {failure_display}."
                     )
                 else:
                     next_phase = (
                         "NEXT REQUIRED: repair the latest verifier failure with one bounded edit"
-                        f"{target_clause}, then rerun worktree.verify{transport_clause}. Failure class: {failure_class}."
+                        f"{target_clause}, then rerun worktree.verify{transport_clause}. Failure class: {failure_display}."
                     )
             elif not any(tool in observed_tools for tool in {"worktree.replace_exact", "worktree.write_file"}):
                 next_phase = "NEXT REQUIRED: choose one bounded worktree.replace_exact edit. Never rewrite a whole file."
