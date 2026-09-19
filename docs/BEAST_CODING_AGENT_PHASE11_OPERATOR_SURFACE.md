@@ -2,7 +2,7 @@
 
 Date: 2026-09-19
 
-Status: **IN PROGRESS**
+Status: **COMPLETE at repository implementation level**
 
 ## Objective
 
@@ -33,13 +33,16 @@ Promotion readiness is deliberately recomputed against current mutation epoch. A
 
 Recovery tests live in tests/test_agent_phase11_operator_surface.py.
 
-## Remaining Phase 11 work
+## Phase 11 closure
 
-1. Render operator_state in the BEAST Agent/Pair Programmer surface.
-2. Bind approval controls to existing durable approval endpoints rather than local UI state.
-3. Expose worktree diff and verification consoles beside the selected durable run.
-4. Surface Memory Hull / crystal reuse as advisory evidence, visually distinct from exact source and verifier authority.
-5. Add a deterministic frontend contract proving UI labels derive from backend state.
-6. Run the operator-surface gauntlet on Debian/Electron.
+The durable backend projection is now rendered in the BEAST Agents surface as Operator Truth. It exposes planner phase, execution target/transport, worktree mutation epoch, verification currency, pending human gates, promotion state and provider/model route.
 
-Phase 11 closes only when the UI reflects real planner phase, evidence, route, verification and human gates without creating UI-only authority.
+Existing durable approval cards already resolve through the AgentRun approval endpoint. The surface labels execution-gate, repair and reuse evidence without upgrading them into authority.
+
+A deterministic static frontend/backend contract lives at desktop-ide/scripts/verify-phase11-operator-surface.js and is exposed as npm run phase11:verify. Python recovery tests cover current-epoch verification and stale-proof promotion refusal.
+
+**COMPLETE at repository implementation level.** The Phase 11 exit condition is satisfied structurally: the UI reflects actual durable planner/evidence/route/verification/human-gate state through a read-only projection, rather than maintaining a competing UI truth.
+
+Fresh runtime acceptance remains deliberately separate. Debian/Electron should run the Python Phase 11 tests, npm run phase11:verify, and visual interaction acceptance before claiming live UI proof.
+
+The recovery programme can now proceed to **Phase 12 — Agent Gauntlet & Promotion**.
