@@ -458,17 +458,6 @@ def test_phase5_planning_integration_records_resume_continuity(tmp_path):
     resumed = asyncio.run(runtime.run(run_id))
     current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
     bind = next(step for step in current["plan"]["steps"] if step["step_id"] == "bind")
-    if "continuity" not in bind.get("telemetry", {}):
-        failures = [
-            event for event in engine.store.events(run_id, limit=300)
-            if event["event_type"] == "agent.plan.integration.failed"
-            and (event.get("payload") or {}).get("integration_id") == "phase5_resume_continuity"
-        ]
-        raise AssertionError(
-            f"phase5 continuity missing; current={current!r}; "
-            f"checkpoint={(engine.store.get_run(run_id) or {}).get('checkpoint')!r}; "
-            f"phase5_failures={failures!r}"
-        )
     continuity = bind["telemetry"]["continuity"]
     assert resumed["checkpoint"]["planner"]["turn"] >= 1
     assert continuity["resume_sequence"] >= 1
