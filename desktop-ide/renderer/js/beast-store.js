@@ -1,7 +1,10 @@
 (() => {
+  const bootParams = new URLSearchParams(location.search);
+  const browserWorkspace = String(bootParams.get('workspace') || bootParams.get('root') || '').trim();
+  const browserRoute = String(bootParams.get('route') || '').trim();
   const initialState = {
     booted: false,
-    route: 'mission',
+    route: browserRoute || 'mission',
     runtime: { mode:'offline', gatewayUrl:'http://127.0.0.1:8101', desktopCapabilities:{}, inFlight:0, errors:[], lastProbeAt:0, visible:true },
     connection: {
       status: 'checking',
@@ -13,7 +16,7 @@
       error: ''
     },
     workspace: {
-      root: localStorage.getItem('beast.v2.workspace.root') || '',
+      root: browserWorkspace || localStorage.getItem('beast.v2.workspace.root') || '',
       executionTarget: (() => { try { const value=JSON.parse(localStorage.getItem('beast.v2.workspace.execution-target')||'{"kind":"local"}');return ['local','ssh','container'].includes(value?.kind)?value:{kind:'local'}; } catch (_) { return {kind:'local'}; } })(),
       roots: (() => { try { const rows=JSON.parse(localStorage.getItem('beast.v2.workspace.folders')||'[]'); return Array.isArray(rows)?rows:[]; } catch (_) { return []; } })(),
       files: [],
