@@ -1143,16 +1143,33 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
         ):
             actions.append(kill_listeners_on_port(service, listen_host, port, dry_run=dry_run))
 
+    with_litellm = bool_value(getattr(args, "with_litellm", "false"))
+    with_nginx = bool_value(getattr(args, "with_nginx", "false"))
+
     def start_everything() -> None:
+        required = ("ollama", "gateway", "mcp_http")
+        optional = tuple(
+            service
+            for service, enabled in (("litellm", with_litellm), ("nginx", with_nginx))
+            if enabled
+        )
         if dry_run:
-            for service in ("ollama", "litellm", "gateway", "mcp_http", "nginx"):
+            for service in (*required, *optional):
                 actions.append({"service": service, "status": "would_restart"})
             return
         actions.append(start_ollama_daemon(ollama_host))
-        actions.append(start_litellm_daemon(litellm_port))
         actions.append(start_gateway_daemon(host, gateway_port))
         actions.append(start_mcp_http_daemon(host, mcp_port))
-        actions.append(ensure_nginx(nginx_port, apply=True))
+        if with_litellm:
+            try:
+                actions.append(start_litellm_daemon(litellm_port))
+            except Exception as exc:
+                actions.append({"service": "litellm", "status": "unavailable", "optional": True, "error": f"{type(exc).__name__}: {exc}"})
+        if with_nginx:
+            try:
+                actions.append(ensure_nginx(nginx_port, apply=True))
+            except Exception as exc:
+                actions.append({"service": "nginx", "status": "unavailable", "optional": True, "error": f"{type(exc).__name__}: {exc}"})
 
     if restart_all:
         stop_known_managed()
@@ -1160,7 +1177,8 @@ def command_heal(args: argparse.Namespace) -> Dict[str, Any]:
             kill_known_addresses()
         start_everything()
         after = before if dry_run else stack_checks(host, gateway_port, mcp_port, litellm_port, nginx_port, ollama_host)
-        ready = all(item.get("ok") for item in after.values())
+        required_checks = ("gateway", "proxy", "mcp_gateway", "mcp_http", "ollama")
+        ready = all(bool((after.get(name) or {}).get("ok")) for name in required_checks)
         payload = {
             "command": "heal",
             "mode": "full_restart",
@@ -2543,6 +2561,8 @@ def build_parser() -> argparse.ArgumentParser:
     heal_parser.add_argument("--dry-run", default="false", help="true/false; report recovery actions without changing processes")
     heal_parser.add_argument("--restart-all", default="true", help="true/false; restart the whole stack instead of only unhealthy services")
     heal_parser.add_argument("--kill-address-pids", default="true", help="true/false; kill any process listening on configured service ports before restart")
+    heal_parser.add_argument("--with-litellm", default="false", help="true/false; restart optional LiteLLM sidecar")
+    heal_parser.add_argument("--with-nginx", default="false", help="true/false; restart optional nginx sidecar")
 
     start_parser = subparsers.add_parser("start", help="One-command BEAST startup: configure intelligence, refresh clients/plugins, and start services")
     start_parser.set_defaults(handler=command_start)
