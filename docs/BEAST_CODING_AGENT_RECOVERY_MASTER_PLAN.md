@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 7 IN PROGRESS — reuse authority plane wired**
+Status: **Phase 7 COMPLETE — Phase 8 ready**
 Working branch: `agent/beast-coding-agent-phase7-compute-reuse-crystallisation`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -151,6 +151,17 @@ Implemented:
 - Exact planner-response crystal replay can still produce zero-inference turns, but cached worktree decisions have any prior `approval_id` stripped before returning to the live loop. Prior authorization is therefore not replayable.
 - Recovery tests cover strong reuse, blocked/unverified reuse, compaction authority preservation, and stale mutation-approval stripping.
 
-### Phase 7 remaining work
+### Phase 7 closure
 
-Connect compute-route telemetry and verified post-run crystallisation into one closed feedback loop: successful fresh verification should be eligible to strengthen reuse evidence; failed/stale/incompatible reuse must decay or quarantine rather than accumulate authority. Then prove that reuse measurably avoids planner inference without bypassing source, mutation or verification gates.
+Repository implementation is complete.
+
+- Fresh successful `worktree.verify` observations now feed a verified outcome back into the Mission Crystal Lattice.
+- Failed verification emits crystal feedback but writes no promoted lattice cell.
+- Existing Crystal Runtime staleness/proof-local gates and Crystal Credit Quarantine remain the canonical mechanism for stale or incompatible inference credits.
+- Exact verified planner-response reuse can produce a zero-inference planner turn, with avoided-token telemetry, while historical mutation approval is stripped.
+- Strategy/lattice reuse remains advisory and cannot skip a current exact source read, current verifier receipt, governed mutation tool or promotion gate.
+- Recovery tests cover fresh-verification strengthening and failed-verification non-promotion in addition to the reuse authority membrane.
+
+Phase 7 is closed at repository implementation level. Fresh runtime/CI execution is still required before claiming measured live token savings or gauntlet proof.
+
+Phase 8 can now move the coding agent onto governed execution: bind execution intent, worktree authority, interception, input/output governance and execution evidence into one coherent path.
