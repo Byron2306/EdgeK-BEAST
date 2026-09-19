@@ -1,7 +1,8 @@
 """Bounded, observable execution runtime for typed BEAST agent tools."""
 
-from app.kernel.agents.execution_architecture import execution_gate
 from __future__ import annotations
+
+from app.kernel.agents.execution_architecture import execution_gate
 
 import asyncio
 import hashlib
