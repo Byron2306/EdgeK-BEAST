@@ -61,6 +61,11 @@
         <header class="beast-panel-head"><div><h3>Visible Golden Path</h3><span data-golden-path-status>Operator-triggered invoice closure</span></div><span class="beast-pill" data-golden-path-pill>NOT RUN</span></header>
         <div class="golden-path-timeline" data-golden-path-timeline><div class="cortex-empty-list">Run Golden Path to expose the real execution spine.</div></div>
       </section>
+      <section class="beast-card wide phase11-operator-truth" data-phase11-operator-truth>
+        <header class="beast-panel-head"><div><h3>Operator Truth</h3><span data-operator-truth-status>Select a durable AgentRun</span></div><span class="beast-pill" data-operator-truth-pill>READ ONLY</span></header>
+        <div class="agent-summary-grid swarm-proof-grid" data-operator-truth-grid></div>
+        <div class="phase5-timeline-list" data-operator-truth-detail><div class="cortex-empty-list">Planner, target, worktree, verification, approvals and promotion state will appear here.</div></div>
+      </section>
       <section class="beast-card wide phase5-durable-timeline" data-phase5-timeline>
         <header class="beast-panel-head"><div><h3>Durable AgentRun Timeline</h3><span data-phase5-timeline-status>Select a durable run</span></div><button class="beast-button secondary" data-agent-action="timeline-refresh">Refresh timeline</button></header>
         <div class="phase5-timeline-list" data-phase5-timeline-list><div class="cortex-empty-list">No durable AgentRun selected.</div></div>
@@ -77,6 +82,7 @@
     let timelineKey = '';
     let proofKey = '';
     let goldenPathKey = '';
+    let operatorTruthKey = '';
     let timelineTimer = null;
     const disposeCanvas = BeastVisualCanvas.auto(root);
 
@@ -139,6 +145,51 @@
       events.innerHTML = (proof.events || []).map(item => `<article class="phase5-timeline-card info"><time>${esc(item.time)}</time><span class="beast-pill">${esc(item.role)}</span><div><b>${esc(item.decision)}</b><small>${esc(item.state)}</small></div></article>`).join('') || '<div class="cortex-empty-list">Run Swarm to expose role receipts.</div>';
     }
 
+    async function refreshOperatorTruth(force = false) {
+      const runId = window.BeastOperationsConsole?.activeRunId?.() || '';
+      if (!runId || disposed) return;
+      try {
+        if (force) BeastOperationsConsole.invalidate(runId);
+        const payload = await BeastOperationsConsole.load(runId, { force });
+        const snapshot = payload?.snapshot || {};
+        const truth = snapshot.operator_state || {};
+        const key = JSON.stringify([runId, truth, snapshot.snapshot_digest]);
+        if (!force && key === operatorTruthKey) return;
+        operatorTruthKey = key;
+        const planner = truth.planner || {};
+        const execution = truth.execution || {};
+        const worktree = truth.worktree || {};
+        const verification = truth.verification || {};
+        const approvals = truth.approvals || {};
+        const promotion = truth.promotion || {};
+        const route = truth.route || {};
+        root.querySelector('[data-operator-truth-status]').textContent = runId + ' · durable backend projection';
+        root.querySelector('[data-operator-truth-pill]').textContent = verification.current ? 'CURRENT PROOF' : 'READ ONLY';
+        root.querySelector('[data-operator-truth-pill]').classList.toggle('live', Boolean(verification.current));
+        const metrics = [
+          ['Planner', planner.phase || 'unknown', 'turn ' + (planner.turn ?? 0) + ' · repairs ' + (planner.repair_cycles ?? 0)],
+          ['Target', execution.target || 'local', execution.target_execution || execution.transport || 'local'],
+          ['Worktree', worktree.status || 'unknown', 'epoch ' + (worktree.mutation_epoch ?? 0) + (worktree.dirty ? ' · dirty' : '')],
+          ['Verification', verification.current ? 'CURRENT' : (verification.status || 'not started'), verification.evidence_digest || 'No current receipt'],
+          ['Human Gate', approvals.pending_count ? approvals.pending_count + ' pending' : 'clear', (approvals.pending || []).join(', ') || 'No pending approval'],
+          ['Promotion', promotion.authorized ? 'AUTHORIZED' : promotion.ready ? 'READY' : 'BLOCKED', promotion.blocked_reason || promotion.sourceplan_status || 'not reported'],
+          ['Route', route.provider || 'not reported', route.model || route.reason || 'No route reported']
+        ];
+        root.querySelector('[data-operator-truth-grid]').innerHTML = metrics.map(item => '<article class="beast-card compact swarm-proof-card"><h3>'+esc(item[0])+'</h3><strong class="swarm-proof-value">'+esc(item[1])+'</strong><span class="swarm-proof-detail">'+esc(item[2])+'</span></article>').join('');
+        const gate = execution.gate || {};
+        const repair = truth.repair?.latest || {};
+        const reuse = truth.evidence?.latest_reuse || {};
+        root.querySelector('[data-operator-truth-detail]').innerHTML =
+          '<article class="phase5-timeline-card info"><span class="beast-pill">AUTHORITY</span><div><b>UI projection cannot grant authority</b><small>execution: false · mutation: false · promotion: false</small></div></article>' +
+          '<article class="phase5-timeline-card info"><span class="beast-pill">EXECUTION GATE</span><div><b>'+esc(gate.decision || gate.status || 'not reported')+'</b><small>'+esc(gate.tool_id || gate.reason || 'No execution gate receipt')+'</small></div></article>' +
+          '<article class="phase5-timeline-card info"><span class="beast-pill">REPAIR</span><div><b>'+esc(repair.classification || repair.action || 'no active repair')+'</b><small>'+esc(repair.reason || 'Durable repair evidence only')+'</small></div></article>' +
+          '<article class="phase5-timeline-card info"><span class="beast-pill">REUSE</span><div><b>'+esc(reuse.assistance_mode || reuse.status || 'no reuse evidence')+'</b><small>advisory only · never source or mutation authority</small></div></article>';
+      } catch (error) {
+        root.querySelector('[data-operator-truth-status]').textContent = 'Operator truth unavailable';
+        root.querySelector('[data-operator-truth-detail]').innerHTML = '<div class="cortex-empty-list">'+esc(error.message || error)+'</div>';
+      }
+    }
+
     function renderGoldenPath(state) {
       const golden = state.agents.goldenPath || {};
       const key = JSON.stringify([golden.status, golden.timeline, golden.updatedAt]);
@@ -168,7 +219,7 @@
       root.querySelector('[data-session-count]').textContent = `${agents.sessions.length} reported`;
       const isSwarmLane = String(selected?.id || '').startsWith('swarm-role:');
       root.querySelector('[data-agent-detail]').innerHTML = selected ? `<header class="beast-panel-head"><div><h3>${isSwarmLane ? 'Swarm Role Lane' : 'Selected Agent'}</h3><span>${esc(selected.role)}</span></div><span class="beast-pill ${/active|working|running/i.test(selected.status) ? 'live' : ''}">${esc(selected.status)}</span></header><div class="agent-detail-hero"><img src="${BeastAssets.icon('agents')}" alt=""><div><strong>${esc(selected.label)}</strong><span>${esc(selected.provider)} · ${esc(selected.model)}</span></div></div><p class="agent-task-copy">${esc(selected.task)}</p><div class="beast-rail-facts"><div><span>Confidence</span><b>${safe(selected.confidence)}%</b></div><div><span>Context files</span><b>${esc(selected.files)}</b></div><div><span>Budget</span><b>${esc(selected.budget)}</b></div><div><span>Updated</span><b>${esc(selected.updatedAt || 'live')}</b></div></div><div class="agent-detail-tools">${selected.tools.map(tool => `<span>${esc(tool)}</span>`).join('')}</div>${isSwarmLane ? '<p class="agent-task-copy">Role lanes are declarative. Use Run Swarm to create a governed run.</p>' : '<div class="agent-control-row"><button class="beast-button secondary" data-agent-action="pause"><img src="'+BeastAssets.icon('policies')+'" alt="">Pause</button><button class="beast-button" data-agent-action="resume"><img src="'+BeastAssets.icon('agents')+'" alt="">Resume</button><button class="beast-button danger-button" data-agent-action="cancel"><img src="'+BeastAssets.icon('alerts')+'" alt="">Cancel</button></div>'}` : `<h3>Selected Agent</h3><p>No session selected. Assign an agent to begin.</p><button class="beast-button amber" data-agent-action="swarm"><img src="${BeastAssets.icon('orchestrator')}" alt="">Run Swarm</button>`;
-      renderNodes(state); renderList(state); renderLower(state); renderSwarmProof(state); renderGoldenPath(state); refreshTimeline();
+      renderNodes(state); renderList(state); renderLower(state); renderSwarmProof(state); renderGoldenPath(state); refreshOperatorTruth(); refreshTimeline();
     }
 
     const unsubscribe = BeastStore.subscribe(patch);
@@ -178,7 +229,7 @@
       const action = event.target.closest('[data-agent-action]')?.dataset.agentAction;
       if (!action) return;
       try {
-        if (action === 'timeline-refresh') { await refreshTimeline(true); BeastFX.trigger('ring',event.target,{size:180}); }
+        if (action === 'timeline-refresh') { await Promise.all([refreshTimeline(true), refreshOperatorTruth(true)]); BeastFX.trigger('ring',event.target,{size:180}); }
         if (action === 'refresh') { await BeastModelAgentBridge.refreshAgents({signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Swarm synchronized · ${BeastStore.get().agents.sessions.length} session(s) reported`,tone:'ok'}})); BeastFX.trigger('burst',event.target,{size:210}); }
         if (action === 'swarm') { const objective = window.prompt('Swarm objective', BeastStore.get().mission.title || 'BEAST mission support'); if (!objective) return; const result=await BeastModelAgentBridge.runSwarm(objective,{signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Swarm run started · ${result?.run_id||objective}`,tone:'ok'}})); BeastFX.trigger('success',event.target,{size:280}); }
         if (action === 'golden-path') { const result=await BeastModelAgentBridge.runGoldenPath({signal}); document.dispatchEvent(new CustomEvent('beast:operation',{detail:{message:`Golden path ${result?.status || 'reported'} · invoice closure`,tone:result?.status === 'passed' ? 'ok' : 'error'}})); BeastFX.trigger(result?.status === 'passed' ? 'success' : 'warning',event.target,{size:280}); }
