@@ -1,5 +1,6 @@
 """Bounded, observable execution runtime for typed BEAST agent tools."""
 
+from app.kernel.agents.execution_architecture import execution_gate
 from __future__ import annotations
 
 import asyncio
@@ -783,6 +784,10 @@ class AgentToolRuntime:
             approval_id=request.approval_id,
             engine=self.engine,
         )
+        gate = execution_gate(request, context)
+        self.engine.emit(run_id, "agent.execution.gate", gate)
+        if not gate["allowed"]:
+            raise PermissionError(gate["reason"])
         started = time.time()
         self.engine.emit(run_id, "agent.tool.started", {
             "tool_id": spec.tool_id,
