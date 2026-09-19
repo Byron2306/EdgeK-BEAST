@@ -156,6 +156,8 @@ class PlanningIntegrationRuntime:
         )
         if latest_integration and int(latest_integration.get("sequence") or 0) > int(latest_resume.get("sequence") or 0):
             return None
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
         active_step_id = str(plan.get("active_step_id") or "")
         if not active_step_id:
             active_step_id = next((str(step.get("step_id") or "") for step in steps if step.get("status") == "active"), "")
@@ -175,8 +177,6 @@ class PlanningIntegrationRuntime:
         }.get(resume_tool, "")
         if tool_step and any(str(step.get("step_id") or "") == tool_step for step in steps):
             active_step_id = tool_step
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
-        planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
         latest_failure = None
         failures = planner.get("verification_failures") if isinstance(planner.get("verification_failures"), list) else []
         if failures:
