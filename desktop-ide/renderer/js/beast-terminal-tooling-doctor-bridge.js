@@ -635,7 +635,10 @@
       };
       const results={};
       await Promise.all(Object.entries(endpoints).map(async ([key,path]) => {
-        const t=performance.now(); results[key]=await safeGet(path,6500); results[key].latency=`${Math.round(performance.now()-t)}ms`;
+        const t=performance.now();
+        const timeout = key === 'system' ? 15000 : 8000;
+        results[key]=await safeGet(path,timeout);
+        results[key].latency=`${Math.round(performance.now()-t)}ms`;
       }));
       let localSystem=null;
       if (!results.system.ok && BeastRuntime.hasDesktop('systemSnapshot')) {
