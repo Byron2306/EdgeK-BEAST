@@ -113,7 +113,7 @@ STUDIO_URL="$(
   LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c '
 import sys, urllib.parse
 fixture, gateway, port = sys.argv[1], sys.argv[2], sys.argv[3]
-query = urllib.parse.urlencode({"workspace": fixture, "route": "agents", "gateway": gateway})
+query = urllib.parse.urlencode({"workspace": fixture, "page": "agents", "gateway": gateway})
 print(f"http://127.0.0.1:{port}/index.html?{query}")
 ' "$FIXTURE" "$GATEWAY" "$STUDIO_PORT"
 )"
