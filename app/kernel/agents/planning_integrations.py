@@ -143,11 +143,19 @@ class PlanningIntegrationRuntime:
         steps = [dict(step) for step in (plan.get("steps") if isinstance(plan.get("steps"), list) else [])]
         if not steps:
             return None
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        persisted_resume = checkpoint.get("resume_continuity") if isinstance(checkpoint.get("resume_continuity"), dict) else {}
         events = self.objective_plan.engine.store.events(run_id, after=0, limit=512)
         latest_resume = next(
             (event for event in reversed(events) if str(event.get("event_type") or "") == "agent.run.resumed"),
             None,
         )
+        if persisted_resume:
+            latest_resume = {
+                "sequence": int(persisted_resume.get("sequence") or 0),
+                "created_at": float(persisted_resume.get("created_at") or 0.0),
+                "payload": {"from_state": str(persisted_resume.get("from_state") or "")},
+            }
         if latest_resume is None:
             return None
         latest_integration = next(
@@ -156,7 +164,6 @@ class PlanningIntegrationRuntime:
         )
         if latest_integration and int(latest_integration.get("sequence") or 0) > int(latest_resume.get("sequence") or 0):
             return None
-        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
         active_step_id = str(plan.get("active_step_id") or "")
         if not active_step_id:
