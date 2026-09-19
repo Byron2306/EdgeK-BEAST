@@ -15,15 +15,30 @@ if [[ ! -x "$PYTHON_BIN" ]]; then
   exit 2
 fi
 
-export LD_PRELOAD="${LD_PRELOAD:-$PREFIX/lib/libpython3.14.so}"
+LIBPYTHON="$PREFIX/lib/libpython3.14.so"
+if [[ ! -f "$LIBPYTHON" ]]; then
+  echo "BEAST Studio interview launcher: missing $LIBPYTHON" >&2
+  exit 4
+fi
+
+# Force libpython into every Python child. Do not trust an inherited
+# LD_PRELOAD because Termux sessions frequently retain unrelated preload state.
+export LD_PRELOAD="$LIBPYTHON"
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$ROOT"
 
 TERMUX_TMP="${TMPDIR:-$PREFIX/tmp}"
 mkdir -p "$TERMUX_TMP"
 
+echo "[BEAST] Verifying Termux Python/Rust cryptography ABI..."
+if ! LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c "from cryptography.hazmat.bindings._rust import Encoding; print('cryptography-rust: ready')" >/dev/null; then
+  echo "BEAST Studio interview launcher: cryptography Rust binding still cannot load under libpython preload." >&2
+  echo "Try: LD_PRELOAD=\"$LIBPYTHON\" $PYTHON_BIN -c 'from cryptography.hazmat.bindings._rust import Encoding; print(Encoding)'" >&2
+  exit 5
+fi
+
 echo "[BEAST] Reclaiming the local interview runtime from this checkout..."
-./bin/beast heal \
+LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" ./bin/beast heal \
   --restart-all true \
   --kill-address-pids true \
   --with-litellm false \
