@@ -1319,6 +1319,22 @@ class AgentPlannerRuntime:
                 rationale="Code Cortex discovery is advisory; exact source bytes must be read before mutating a discovered file.",
             )
 
+        # Once a post-mutation verifier has failed, the repair loop owns the
+        # next decision. Do not advance directly to handoff or treat the failed
+        # verifier as satisfying the verification phase.
+        latest_failure = cls._latest_failure_contract(state)
+        if latest_failure and str(latest_failure.get("verification_phase") or "") == "post_mutation":
+            failure_paths = [str(path) for path in (latest_failure.get("target_paths") or []) if str(path)]
+            unread_failure = [path for path in failure_paths if path not in inspected_paths]
+            if unread_failure:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="workspace.read_range",
+                    arguments={"path": unread_failure[0], "start_line": 1, "line_count": 220},
+                    rationale="A failed post-mutation verifier requires exact source evidence for the bounded repair target before another edit.",
+                )
+            return None
+
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
@@ -1367,6 +1383,7 @@ class AgentPlannerRuntime:
             and str(latest_verify.get("status") or "") == "completed"
             and latest_verify_index >= 0
             and latest_sourceplan_index < latest_verify_index
+            and not cls._latest_failure_contract(state)
         ):
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
