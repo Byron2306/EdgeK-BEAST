@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 8 IN PROGRESS — governed execution spine active**
+Status: **Phase 8 COMPLETE — Phase 9 ready**
 Working branch: `agent/beast-coding-agent-phase8-governed-execution`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -179,4 +179,13 @@ The coding-agent execution path now has an explicit machine-readable authority c
 - Promotion tools remain non-agent-executable in `AgentToolRuntime`.
 - Phase 8 recovery tests prove intent/authority separation and the live-worktree mutation/verification boundary.
 
-Remaining Phase 8 work: bind the existing provider Output Governor/interception semantics to the coding-agent boundary where applicable, then prove current-epoch verification/evidence closure and ensure no duplicate execution authority plane is introduced.
+Phase 8 closure:
+- Provider output governance remains at the provider/Action-IR boundary; coding-agent tool JSON is governed by the Agent Tool Registry and execution gate rather than being incorrectly routed through the source-patch Output Governor.
+- The live tool runtime is the single coding-agent execution authority plane; no duplicate executor was introduced.
+- Worktree verification now emits a `beast_agent_current_epoch_receipt` after checkpoint settlement. The receipt proves whether verification is current for the latest mutation epoch and explicitly carries evidence-only, no-future-mutation authority.
+- Existing PromotionEngine independently enforces the same current-verification epoch equality plus valid hash chain, worktree, SourcePlan and evidence policies.
+- Phase 8 recovery tests cover intent/authority separation, live-worktree enforcement, and stale/prior verification rejection.
+
+Repository implementation is complete. Fresh runtime/CI execution remains required before claiming live gauntlet proof.
+
+Phase 9 can now focus on Verification, Repair & Learning: make verifier failure classification, bounded repair selection, Quality Cascade, failure memory and post-repair learning one coherent loop without allowing learning evidence to mutate production authority.
