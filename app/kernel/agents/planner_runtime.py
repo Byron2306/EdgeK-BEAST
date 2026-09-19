@@ -1927,14 +1927,19 @@ class AgentPlannerRuntime:
                     )
                     if part
                 ))
-                target_paths = self._latest_mutation_paths(state)[:4]
+                mutation_paths = self._latest_mutation_paths(state)
+                baseline_failure = not mutation_paths
+                target_paths = (mutation_paths or self._index_reasoning_paths(state))[:4]
                 result["analysis"] = analysis
                 result["target_paths"] = target_paths
+                result["verification_phase"] = "baseline" if baseline_failure else "post_mutation"
                 observation["result"] = result
-                state.repair_cycles += 1
+                if not baseline_failure:
+                    state.repair_cycles += 1
                 failure = {
                     "turn": state.turn,
                     "repair_cycle": state.repair_cycles,
+                    "verification_phase": "baseline" if baseline_failure else "post_mutation",
                     "observation_id": observation.get("observation_id", ""),
                     "error": observation.get("error", ""),
                     "result": result,
@@ -1950,7 +1955,7 @@ class AgentPlannerRuntime:
                 }
                 state.verification_failures.append(failure)
                 state.verification_failures = state.verification_failures[-self.max_repair_cycles or 1:]
-                self.engine.emit(run_id, "agent.verification.failed", failure)
+                self.engine.emit(run_id, "agent.verification.baseline_failed" if baseline_failure else "agent.verification.failed", failure)
                 repair_projection_packet = repair_projection(
                     observation,
                     repair_cycle=state.repair_cycles,
@@ -1969,7 +1974,7 @@ class AgentPlannerRuntime:
                     self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
                 except Exception as exc:
                     self.engine.emit(run_id, "agent.crystal.feedback_failed", {"reason": f"{type(exc).__name__}: {exc}"})
-                if state.repair_cycles > state.max_repair_cycles:
+                if not baseline_failure and state.repair_cycles > state.max_repair_cycles:
                     state.status = "repair_exhausted"
                     state.blocker = f"verification repair budget exhausted after {state.max_repair_cycles} cycle(s)"
                     self.engine.emit(run_id, "agent.repair.budget_exhausted", {
