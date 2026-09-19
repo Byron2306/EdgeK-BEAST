@@ -73,7 +73,17 @@
   async function chooseWorkspace() {
     if (demoMode) return setRoot('/demo/BEAST');
     const api = desktop();
-    if (!api?.chooseWorkspace) throw new Error('Workspace chooser is available only inside the BEAST desktop shell.');
+    if (!api?.chooseWorkspace) {
+      const root = workspaceRoot();
+      if (!root) {
+        throw new Error('Browser Studio requires a workspace in the launch URL (?workspace=/absolute/path).');
+      }
+      setRoot(root);
+      await listFiles({ cacheTtl: 0 });
+      listeners.workspace.forEach(listener => listener(root));
+      BeastStore.addLedger(`Browser workspace activated: ${root}`);
+      return root;
+    }
     const selected = await BeastRuntime.desktopCall('chooseWorkspace',[],{required:true});
     const root=typeof selected==='string'?selected:selected?.root;
     if (root) {
