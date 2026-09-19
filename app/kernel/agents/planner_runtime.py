@@ -1914,14 +1914,18 @@ class AgentPlannerRuntime:
             if not self._scripted_provider_mode(self.provider):
                 required = self._required_phase_decision(run, state, decision)
             if required is not None:
-                if decision.decision_type is not PlannerDecisionType.TOOL or decision.tool_id != required.tool_id:
-                    if provider_decision:
-                        self.engine.emit(run_id, "agent.planner.phase_enforced", {
-                            "turn": state.turn + 1,
-                            "required_tool_id": required.tool_id,
-                            "replaced_decision": decision.as_dict(),
-                            "reason": required.rationale,
-                        })
+                same_required_tool = (
+                    decision.decision_type is PlannerDecisionType.TOOL
+                    and decision.tool_id == required.tool_id
+                )
+                if provider_decision and (not same_required_tool or bootstrapped is not None):
+                    self.engine.emit(run_id, "agent.planner.phase_enforced", {
+                        "turn": state.turn + 1,
+                        "required_tool_id": required.tool_id,
+                        "replaced_decision": decision.as_dict(),
+                        "reason": required.rationale,
+                    })
+                if not same_required_tool:
                     decision = required
             if self._post_bind_duplicate_read(decision, state) and self._strong_reentry_allowed(run, state):
                 duplicate_path = str(decision.arguments.get("path") or "").strip()
