@@ -857,8 +857,8 @@ def test_local_ollama_repair_prompt_elides_older_observations(tmp_path):
         "result": {"matches": [{"path": "answer.py"}]},
     })
     prompt = runtime._prompt(run, runtime._load_state(run_id))
-    assert "LATEST FAILURE:" in prompt
-    assert '"tool_id":"worktree.replace_exact"' in prompt
+    assert "repair the latest verifier failure with one bounded edit in answer.py" in prompt
+    assert '"verification_phase":"post_mutation"' in prompt
     assert '"tool_id":"workspace.search_text"' not in prompt
 
 
@@ -880,8 +880,8 @@ def test_nim_repair_prompt_elides_older_observations(tmp_path):
         "result": {"matches": [{"path": "answer.py"}]},
     })
     prompt = runtime._prompt(run, runtime._load_state(run_id))
-    assert "LATEST FAILURE:" in prompt
-    assert '"tool_id":"worktree.replace_exact"' in prompt
+    assert "repair the latest verifier failure with one bounded edit in answer.py" in prompt
+    assert '"verification_phase":"post_mutation"' in prompt
     assert '"tool_id":"workspace.search_text"' not in prompt
 
 
@@ -1837,10 +1837,7 @@ def test_edit_prompt_exposes_required_phase_transition(tmp_path):
 
 def test_agent_phase_enforcement_inserts_worktree_bind_after_initial_inspection(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path)
-    provider = ScriptedPlannerProvider([
-        {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
-        {"decision_type": "complete", "summary": "done too early"},
-    ])
+    provider = HeuristicPlannerProvider()
     final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=2).run(run_id))
     planner = final["checkpoint"]["planner"]
     assert final["state"] == "budget_exhausted"
@@ -1858,8 +1855,8 @@ def test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutati
         {"decision_type": "tool", "tool_id": "workspace.index", "arguments": {"limit": 1200, "include_symbols": True}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
-        {"decision_type": "complete", "summary": "completed before verify"},
-        {"decision_type": "complete", "summary": "completed before sourceplan"},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "arguments": {}},
         {"decision_type": "complete", "summary": "VALUE repaired and verified."},
     ])
     final = asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
