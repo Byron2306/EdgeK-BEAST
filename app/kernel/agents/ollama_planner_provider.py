@@ -512,6 +512,21 @@ class OllamaPlannerProvider:
             self.last_usage = {"crystal_reuse": {"action": decision.action, "source": decision.source, "decision_id": decision.decision_id}}
             return None
         parsed = parse_planner_decision(str(raw))
+        # A cached planner decision may save inference, but a prior mutation
+        # authorization is never replayable into a new turn/run.
+        if parsed.decision_type is PlannerDecisionType.TOOL and parsed.tool_id in {
+            "worktree.bind", "worktree.write_file", "worktree.replace_exact", "worktree.verify"
+        }:
+            parsed = PlannerDecision(
+                decision_type=parsed.decision_type,
+                rationale=parsed.rationale,
+                tool_id=parsed.tool_id,
+                arguments=parsed.arguments,
+                execution_target=parsed.execution_target,
+                approval_id="",
+                summary=parsed.summary,
+                blocker=parsed.blocker,
+            )
         self.last_usage = {
             "crystal_reuse": {"action": decision.action, "source": decision.source, "decision_id": decision.decision_id, "avoided_tokens": decision.avoided_tokens_estimate},
             "pressure": {"profile": "crystal", "zero_inference": True, "num_thread": 0, "num_batch": 0},
