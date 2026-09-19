@@ -1,8 +1,8 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 8 COMPLETE — Phase 9 ready**
-Working branch: `agent/beast-coding-agent-phase8-governed-execution`
+Status: **Phase 9 IN PROGRESS — verifier repair/learning loop wired**
+Working branch: `agent/beast-coding-agent-phase9-verification-repair-learning`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
 ## Programme objective
@@ -189,3 +189,18 @@ Phase 8 closure:
 Repository implementation is complete. Fresh runtime/CI execution remains required before claiming live gauntlet proof.
 
 Phase 9 can now focus on Verification, Repair & Learning: make verifier failure classification, bounded repair selection, Quality Cascade, failure memory and post-repair learning one coherent loop without allowing learning evidence to mutate production authority.
+
+
+## Phase 9 implementation checkpoint
+
+The existing verifier, deterministic Failure Analyst, bounded VerificationRepairLoop and Phase-E Scribe are now composed into the coding-agent runtime rather than treated as disconnected organs.
+
+- A failed `worktree.verify` produces a deterministic `beast_agent_repair_projection`.
+- Environment/flaky failures are distinguished from likely code failures so BEAST can retry verification without reflexively mutating source.
+- Code-repair projections explicitly require a fresh exact source boundary before mutation and fresh verification afterwards.
+- Verification outcomes also emit Phase-E learning episodes.
+- Learning episodes remain evidence only: they cannot authorize mutation or promotion.
+- Quality Cascade is retained as deterministic diagnostic evidence. It is not a competing verifier and does not gain mutation authority.
+- Recovery tests cover environment retry, source-grounded logic repair, and the learning authority membrane.
+
+Remaining Phase 9 work: connect bounded Quality Cascade diagnostics to failed verification when useful, persist negative/repair episodes through the existing memory/evidence architecture, and prove repair selection remains within the configured repair budget and current source boundary.
