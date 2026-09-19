@@ -419,7 +419,7 @@ class AgentPlannerRuntime:
         if not self._can_attempt_first_mutation_reentry(run, state):
             return None
         target_provider = self._primary_retry_provider(provider)
-        retry_timeout = max(2.0, min(10.0, self._decision_timeout_seconds(run) * 0.45))
+        retry_timeout = max(4.0, min(18.0, self._decision_timeout_seconds(run) * 0.6))
         retry_prompt = self._first_mutation_retry_prompt(prompt, state)
         latest = self._latest_completed_read(state)
         latest_result = latest.get("result") if isinstance(latest, dict) and isinstance(latest.get("result"), dict) else {}
@@ -476,7 +476,7 @@ class AgentPlannerRuntime:
         if not self._strong_reentry_allowed(run, state):
             return None
         target_provider = self._primary_retry_provider(provider)
-        retry_timeout = max(2.0, min(12.0, self._decision_timeout_seconds(run) * 0.5))
+        retry_timeout = max(4.0, min(20.0, self._decision_timeout_seconds(run) * 0.65))
         retry_prompt = self._compact_retry_prompt(prompt)
         self.engine.emit(run.get("run_id") or "", "agent.provider.strong_retry", {
             "turn": turn,
