@@ -77,3 +77,22 @@ def test_compacted_memory_context_preserves_authority_boundary():
     assert "MEMORY_CONTEXT:" in rendered
     assert "promotion_boundary" in rendered
     assert "memory_contract_digest" in rendered
+
+
+def test_evidence_pointer_resolution_checks_real_artifact_and_hash(tmp_path):
+    artifact = tmp_path / "proof.json"
+    artifact.write_text('{"ok":true}', encoding="utf-8")
+    import hashlib
+    digest = "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest()
+    item = runtime()
+    item.workspace_root = tmp_path
+
+    resolved = item.resolve_evidence_reference({"artifact_path": "proof.json", "artifact_hash": digest})
+    assert resolved["resolved"] is True
+    assert resolved["authority"] == "resolved_evidence_reference"
+    assert resolved["grants_mutation_authority"] is False
+    assert resolved["grants_exact_source_authority"] is False
+
+    mismatch = item.resolve_evidence_reference({"artifact_path": "proof.json", "artifact_hash": "sha256:wrong"})
+    assert mismatch["resolved"] is False
+    assert mismatch["reason"] == "artifact_hash_mismatch"
