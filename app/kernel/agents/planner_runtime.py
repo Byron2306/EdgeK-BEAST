@@ -995,6 +995,46 @@ class AgentPlannerRuntime:
         ]
 
     @classmethod
+    def _index_reasoning_paths(cls, state: PlannerState) -> list[str]:
+        """Derive bounded exact-read candidates from repository evidence.
+
+        This is navigation, not mutation authority. It lets BEAST prepare the
+        cockpit so the model receives exact relevant bytes instead of having to
+        orchestrate repository traversal itself.
+        """
+        observation = cls._latest_completed_observation(state, "workspace.index")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        files = [item for item in (result.get("files") or []) if isinstance(item, dict)]
+        imports = [item for item in (result.get("imports") or []) if isinstance(item, dict)]
+        tests = [str(path) for path in (result.get("tests") or []) if str(path)]
+        file_paths = [str(item.get("path") or "") for item in files if str(item.get("path") or "")]
+        module_to_path: dict[str, str] = {}
+        for path in file_paths:
+            if path.endswith(".py"):
+                module = path[:-3].replace("/", ".")
+                module_to_path[module] = path
+                module_to_path.setdefault(module.rsplit(".", 1)[-1], path)
+        ordered: list[str] = []
+        queue = list(tests[:8])
+        seen: set[str] = set()
+        while queue and len(ordered) < 16:
+            path = queue.pop(0)
+            if path in seen or path not in file_paths:
+                continue
+            seen.add(path)
+            ordered.append(path)
+            for edge in imports:
+                if str(edge.get("path") or "") != path:
+                    continue
+                target = str(edge.get("target") or "").strip()
+                candidate = module_to_path.get(target) or module_to_path.get(target.rsplit(".", 1)[-1])
+                if candidate and candidate not in seen:
+                    queue.append(candidate)
+        return ordered
+
+    @classmethod
     def _scope_paths(cls, run: dict[str, Any], state: PlannerState) -> list[str]:
         request = run.get("request") if isinstance(run.get("request"), dict) else {}
         semantic = request.get("semantic_context") if isinstance(request.get("semantic_context"), dict) else {}
@@ -1008,6 +1048,7 @@ class AgentPlannerRuntime:
             if value:
                 values.append(value)
         values.extend(cls._discovered_paths(state))
+        values.extend(cls._index_reasoning_paths(state))
         output: list[str] = []
         for value in values:
             if value and value not in output:
