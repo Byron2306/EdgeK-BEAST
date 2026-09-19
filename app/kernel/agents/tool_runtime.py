@@ -223,7 +223,7 @@ def _extract_workspace_symbols(relative: str, language: str, text: str) -> tuple
                 add_symbol(match, kind)
         for match in re.finditer(r"^\s*from\s+([A-Za-z0-9_.]+)\s+import\b", source, flags=re.MULTILINE):
             add_import(match.group(1))
-        for match in re.finditer(r"^\s*import\s+([A-Za-z0-9_.,\s]+)", source, flags=re.MULTILINE):
+        for match in re.finditer(r"^\s*import[ \t]+([A-Za-z0-9_., \t]+)$", source, flags=re.MULTILINE):
             for item in match.group(1).split(","):
                 add_import(item)
     elif language == "nim":
@@ -550,7 +550,7 @@ for current, dirs, names in os.walk(root):
         language = language_for(rel)
         files.append({"path": rel, "language": language, "size": stat.st_size, "mtime_ms": int(stat.st_mtime * 1000)})
         languages[language] = languages.get(language, 0) + 1
-        if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", rel, flags=re.I):
+        if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(?:test_.*|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", rel, flags=re.I):
             tests.append(rel)
         if include_symbols and language != "text" and stat.st_size <= 1024 * 1024:
             try:
@@ -640,7 +640,7 @@ print(json.dumps({
             symbols.append(item)
             symbol_kinds[item["kind"]] = symbol_kinds.get(item["kind"], 0) + 1
         imports.extend(file_imports)
-    tests = [item["path"] for item in files if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", item["path"], flags=re.IGNORECASE)]
+    tests = [item["path"] for item in files if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(?:test_.*|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", item["path"], flags=re.IGNORECASE)]
     digest = hashlib.sha256(json.dumps({"files": files, "symbols": symbols[:500], "tests": tests[:200]}, sort_keys=True).encode("utf-8")).hexdigest()
     return {
         "beast_object_type": "beast_workspace_index_snapshot",
