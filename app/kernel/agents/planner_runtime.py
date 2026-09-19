@@ -1892,9 +1892,13 @@ class AgentPlannerRuntime:
                     max_repair_cycles=state.max_repair_cycles,
                 )
                 self.engine.emit(run_id, "agent.repair.projection", repair_projection_packet)
-                self.engine.emit(run_id, "agent.learning.episode", learning_episode(
-                    run=run, state=state, observation=observation, passed=False,
-                ))
+                learning = learning_episode(run=run, state=state, observation=observation, passed=False)
+                self.engine.emit(run_id, "agent.learning.episode", learning)
+                try:
+                    memory_receipt = self.memory_runtime.record_learning_episode(run, learning)
+                    self.engine.emit(run_id, "agent.learning.memory_recorded", memory_receipt)
+                except Exception as exc:
+                    self.engine.emit(run_id, "agent.learning.memory_failed", {"reason": f"{type(exc).__name__}: {exc}"})
                 try:
                     reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
                     self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
@@ -1925,9 +1929,13 @@ class AgentPlannerRuntime:
                     "observation_id": observation.get("observation_id", ""),
                     "evidence_digest": observation.get("evidence_digest", ""),
                 })
-                self.engine.emit(run_id, "agent.learning.episode", learning_episode(
-                    run=run, state=state, observation=observation, passed=True,
-                ))
+                learning = learning_episode(run=run, state=state, observation=observation, passed=True)
+                self.engine.emit(run_id, "agent.learning.episode", learning)
+                try:
+                    memory_receipt = self.memory_runtime.record_learning_episode(run, learning)
+                    self.engine.emit(run_id, "agent.learning.memory_recorded", memory_receipt)
+                except Exception as exc:
+                    self.engine.emit(run_id, "agent.learning.memory_failed", {"reason": f"{type(exc).__name__}: {exc}"})
                 try:
                     reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
                     self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
