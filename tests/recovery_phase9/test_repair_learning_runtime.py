@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from app.kernel.agents.repair_learning_runtime import learning_episode, repair_projection
+from app.kernel.agents.repair_learning_runtime import learning_episode, repair_budget_gate, repair_projection
 
 
 def test_environment_failure_retries_without_code_mutation():
@@ -37,3 +37,14 @@ def test_learning_episode_never_authorizes_mutation_or_promotion():
     assert episode["episode_status"] == "verified"
     assert episode["promotion_authorized"] is False
     assert episode["authority"] == "learning_evidence_never_mutation_authority"
+
+
+def test_repair_budget_gate_requires_budget_and_current_source():
+    assert repair_budget_gate(repair_cycle=2, max_repair_cycles=3, source_current=True)["allowed"] is True
+    exhausted = repair_budget_gate(repair_cycle=4, max_repair_cycles=3, source_current=True)
+    assert exhausted["allowed"] is False
+    assert exhausted["reason"] == "repair_budget_exhausted"
+    stale = repair_budget_gate(repair_cycle=2, max_repair_cycles=3, source_current=False)
+    assert stale["allowed"] is False
+    assert stale["reason"] == "fresh_exact_source_required"
+    assert stale["mutation_authority"] == "none"
