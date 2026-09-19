@@ -353,8 +353,8 @@ def test_phase1_planning_integration_progresses_with_observations(tmp_path):
         {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
-        {"decision_type": "complete", "summary": "completed before verify"},
-        {"decision_type": "complete", "summary": "completed before sourceplan"},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "arguments": {}},
         {"decision_type": "complete", "summary": "VALUE repaired and verified."},
     ])
     asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
@@ -401,8 +401,8 @@ def test_phase3_planning_integration_records_latency_on_plan_steps(tmp_path):
         {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
-        {"decision_type": "complete", "summary": "completed before verify"},
-        {"decision_type": "complete", "summary": "completed before sourceplan"},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "arguments": {}},
         {"decision_type": "complete", "summary": "VALUE repaired and verified."},
     ])
     asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
@@ -595,8 +595,8 @@ def test_phase7_planning_integration_records_sourceplan_handoff_ready(tmp_path):
         {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
-        {"decision_type": "complete", "summary": "completed before verify"},
-        {"decision_type": "complete", "summary": "completed before sourceplan"},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "arguments": {}},
         {"decision_type": "complete", "summary": "VALUE repaired and verified."},
     ])
     asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
@@ -617,8 +617,8 @@ def test_phase7_planning_integration_records_promotion_eligibility_and_commit(tm
         {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
         {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
         {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
-        {"decision_type": "complete", "summary": "completed before verify"},
-        {"decision_type": "complete", "summary": "completed before sourceplan"},
+        {"decision_type": "tool", "tool_id": "worktree.verify", "approval_id": approval_id, "arguments": {"command": ["python", "-m", "py_compile", "answer.py"]}},
+        {"decision_type": "tool", "tool_id": "worktree.sourceplan_draft", "arguments": {}},
         {"decision_type": "complete", "summary": "VALUE repaired and verified."},
     ])
     asyncio.run(AgentPlannerRuntime(engine, provider, max_turns=6).run(run_id))
@@ -734,6 +734,8 @@ def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
 
         def _request_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
             self._seen_timeout = timeout
+            if path == "/api/tags":
+                return {"models": [{"name": self.model}]}
             return {"response": "{\"decision_type\":\"complete\",\"summary\":\"done\"}", "total_duration": 5_000_000}
 
     provider = StubOllama(model="qwen2.5:0.5b", timeout_seconds=30, max_retries=0)
@@ -1575,7 +1577,7 @@ def test_verification_planner_prefers_focused_pytest_for_changed_tests():
         },
     }
     plan = plan_verification(run)
-    assert plan["command"] == ["python", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
+    assert plan["command"] == ["python3", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
     assert plan["reason"] == "focused_pytest_for_changed_test_files"
     assert plan["execution_target"]["kind"] == "container"
     assert plan["catalog_matches"] == ["python:pytest"]
@@ -1813,7 +1815,7 @@ def test_edit_prompt_includes_target_aware_verification_hint(tmp_path):
     prompt = runtime._prompt(run, runtime._load_state(run_id))
     assert "EXECUTION TARGET: ssh" in prompt
     assert "VERIFICATION HINT:" in prompt
-    assert '"command":["python","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
+    assert '"command":["python3","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
     assert '"kind":"ssh"' in prompt
 
 
