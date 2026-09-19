@@ -228,6 +228,7 @@ class OllamaPlannerProvider:
                 # decision is still parsed and validated as one typed packet;
                 # streaming only improves visibility and cancellation.
                 "stream": True,
+                "format": "json",
                 "options": {
                     "temperature": self.temperature,
                     "seed": self.seed + int(turn),
@@ -235,8 +236,8 @@ class OllamaPlannerProvider:
                     # code-generation window.  Oversizing this on a local CPU
                     # makes an IDE appear hung before it can issue its first
                     # tool call.
-                    "num_ctx": self._num_ctx(),
-                    "num_predict": self._num_predict(),
+                    "num_ctx": self._decision_num_ctx(run),
+                    "num_predict": self._decision_num_predict(run),
                     "num_thread": self._num_thread(),
                     "num_batch": self._num_batch(),
                 },
@@ -445,6 +446,32 @@ class OllamaPlannerProvider:
     def _num_predict(self) -> int:
         return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
 
+    @classmethod
+    def _mutation_packet_required(cls, run: dict[str, Any]) -> bool:
+        planner = cls._planner_state(run)
+        observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
+        tool_ids = [
+            str(item.get("tool_id") or "")
+            for item in observations
+            if isinstance(item, dict) and str(item.get("status") or "") == "completed"
+        ]
+        bound = "worktree.bind" in tool_ids
+        inspected = "workspace.read_range" in tool_ids
+        mutated = any(tool in {"worktree.replace_exact", "worktree.write_file"} for tool in tool_ids)
+        return bound and inspected and not mutated
+
+    def _decision_num_predict(self, run: dict[str, Any]) -> int:
+        base = self._num_predict()
+        if self._mutation_packet_required(run) or self._is_repair_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_MUTATION_NUM_PREDICT", "256")))
+        return base
+
+    def _decision_num_ctx(self, run: dict[str, Any]) -> int:
+        base = self._num_ctx()
+        if self._mutation_packet_required(run) or self._is_repair_turn(run):
+            return max(base, int(os.environ.get("BEAST_OLLAMA_MUTATION_NUM_CTX", "1536")))
+        return base
+
     def _request_options(self) -> dict[str, int]:
         if self._pressure_decision is not None:
             return {
@@ -611,8 +638,8 @@ class OllamaPlannerProvider:
         result = self.forge_kv_manager.generate_with_context(
             block,
             suffix,
-            48,
-            options={"temperature": self.temperature, "seed": self.seed + int(turn), "num_ctx": self._num_ctx(), "num_thread": self._num_thread(), "num_batch": self._num_batch()},
+            self._decision_num_predict(run),
+            options={"temperature": self.temperature, "seed": self.seed + int(turn), "num_ctx": self._decision_num_ctx(run), "num_thread": self._num_thread(), "num_batch": self._num_batch()},
             keep_alive=os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
         )
         return block, result
