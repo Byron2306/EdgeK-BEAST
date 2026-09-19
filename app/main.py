@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from collections import Counter, deque
 from fastapi import FastAPI, Request
 from fastapi import HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
@@ -694,6 +694,25 @@ app.include_router(build_ide_router(
 ))
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+
+# Browser-native BEAST Studio. The renderer already has a gateway-only runtime
+# fallback when Electron preload APIs are absent, so serving it from the same
+# FastAPI origin gives Android/Termux the full visual IDE without Electron or
+# cross-origin plumbing. Keep this local gateway surface coupled to the exact
+# backend checkout that owns AgentRun execution.
+desktop_ide_dir = Path(__file__).resolve().parents[1] / "desktop-ide"
+desktop_renderer_index = desktop_ide_dir / "renderer" / "index.html"
+if desktop_ide_dir.exists() and desktop_renderer_index.exists():
+    @app.get("/beast-studio", include_in_schema=False)
+    async def beast_studio_browser_entry():
+        return RedirectResponse(url="/beast-studio/renderer/index.html")
+
+    app.mount(
+        "/beast-studio",
+        StaticFiles(directory=str(desktop_ide_dir), html=True),
+        name="beast-studio",
+    )
+
 cli_assets_dir = Path(__file__).parent / "cli" / "assets"
 if cli_assets_dir.exists():
     app.mount("/beast-assets", StaticFiles(directory=str(cli_assets_dir)), name="beast-assets")
