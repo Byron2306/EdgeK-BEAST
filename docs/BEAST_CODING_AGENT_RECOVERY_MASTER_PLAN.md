@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 9 IN PROGRESS — verifier repair/learning loop wired**
+Status: **Phase 9 COMPLETE — Phase 10 ready**
 Working branch: `agent/beast-coding-agent-phase9-verification-repair-learning`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -203,4 +203,15 @@ The existing verifier, deterministic Failure Analyst, bounded VerificationRepair
 - Quality Cascade is retained as deterministic diagnostic evidence. It is not a competing verifier and does not gain mutation authority.
 - Recovery tests cover environment retry, source-grounded logic repair, and the learning authority membrane.
 
-Remaining Phase 9 work: connect bounded Quality Cascade diagnostics to failed verification when useful, persist negative/repair episodes through the existing memory/evidence architecture, and prove repair selection remains within the configured repair budget and current source boundary.
+Phase 9 closure:
+- Failed verification is deterministically classified before repair selection; environment/flaky cases can retry verification without source mutation, while likely code failures require bounded source-grounded repair.
+- Repair and negative episodes are persisted through the existing Memory Hull as sealed episodic residue. No parallel learning store was introduced.
+- Persisted learning is explicitly reference-only and never grants mutation or promotion authority.
+- A deterministic repair budget/source gate proves that code repair requires both remaining repair budget and a current exact-source boundary.
+- Quality Cascade remains the canonical deterministic diagnostic organ available to repair routing; it is diagnostic evidence, not a second verifier or mutation authority.
+- Existing planner repair exhaustion remains the runtime hard stop, while the new gate makes the same boundary independently inspectable/testable.
+- Recovery tests cover failure classification, retry-vs-repair routing, learning authority, and budget/current-source refusal.
+
+Repository implementation is complete. Fresh runtime/CI execution remains required before claiming live repair-gauntlet proof.
+
+Phase 10 can now address Distributed BEAST: make local/SSH/container execution preserve the same source, mutation, verification, evidence and learning contracts across nodes rather than treating remote execution as a weaker path.
