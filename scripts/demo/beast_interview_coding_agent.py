@@ -14,12 +14,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
 import time
-import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -66,19 +64,19 @@ def make_fixture(target: Path | None = None) -> Path:
     root.mkdir(parents=True, exist_ok=True)
 
     (root / "pricing.py").write_text(
-        """def percentage_discount(amount: float, percent: float) -> float:\n"
+        "def percentage_discount(amount: float, percent: float) -> float:\n"
         "    return amount * (percent / 100.0)\n",
         encoding="utf-8",
     )
     (root / "calculator.py").write_text(
-        """from pricing import percentage_discount\n\n"
+        "from pricing import percentage_discount\n\n"
         "def invoice_total(amount: float, discount_percent: float) -> float:\n"
         "    # BUG: discount_percent is a percentage, not a currency amount.\n"
         "    return amount - discount_percent\n",
         encoding="utf-8",
     )
     (root / "test_invoice.py").write_text(
-        """from calculator import invoice_total\n\n"
+        "from calculator import invoice_total\n\n"
         "def test_percentage_discount():\n"
         "    assert invoice_total(200.0, 15.0) == 170.0\n\n"
         "def test_zero_discount():\n"
