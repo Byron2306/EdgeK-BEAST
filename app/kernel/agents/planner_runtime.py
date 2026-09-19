@@ -14,6 +14,7 @@ from app.kernel.agents.context_architecture import canonical_context_contract
 from app.kernel.agents.memory_runtime import AgentMemoryRuntime, render_memory_context
 from app.kernel.agents.reuse_runtime import AgentReuseRuntime, render_reuse_proposal
 from app.kernel.agents.execution_architecture import execution_authority_contract
+from app.kernel.agents.repair_learning_runtime import learning_episode, repair_projection
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
@@ -1885,6 +1886,15 @@ class AgentPlannerRuntime:
                 state.verification_failures.append(failure)
                 state.verification_failures = state.verification_failures[-self.max_repair_cycles or 1:]
                 self.engine.emit(run_id, "agent.verification.failed", failure)
+                repair_projection_packet = repair_projection(
+                    observation,
+                    repair_cycle=state.repair_cycles,
+                    max_repair_cycles=state.max_repair_cycles,
+                )
+                self.engine.emit(run_id, "agent.repair.projection", repair_projection_packet)
+                self.engine.emit(run_id, "agent.learning.episode", learning_episode(
+                    run=run, state=state, observation=observation, passed=False,
+                ))
                 try:
                     reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
                     self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
@@ -1915,6 +1925,9 @@ class AgentPlannerRuntime:
                     "observation_id": observation.get("observation_id", ""),
                     "evidence_digest": observation.get("evidence_digest", ""),
                 })
+                self.engine.emit(run_id, "agent.learning.episode", learning_episode(
+                    run=run, state=state, observation=observation, passed=True,
+                ))
                 try:
                     reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
                     self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
