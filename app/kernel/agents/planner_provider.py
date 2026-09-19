@@ -423,6 +423,29 @@ class HeuristicPlannerProvider:
         command = plan_verification(run).get("command")
         return command if isinstance(command, list) and command else None
 
+    @classmethod
+    def _baseline_verify_command(cls, run: dict[str, Any]) -> list[str] | None:
+        """Choose a bounded pre-mutation verifier from BEAST discovery evidence.
+
+        Lifecycle orchestration belongs to BEAST. The model should reason about
+        verifier evidence, not remember that a baseline verifier must run.
+        """
+        checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
+        planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
+        observations = planner.get("observations") if isinstance(planner.get("observations"), list) else []
+        for item in reversed(observations):
+            if not isinstance(item, dict) or str(item.get("status") or "") != "completed":
+                continue
+            if str(item.get("tool_id") or "") != "workspace.index":
+                continue
+            result = item.get("result") if isinstance(item.get("result"), dict) else {}
+            tests = [str(path) for path in (result.get("tests") or []) if str(path)]
+            python_tests = [path for path in tests if path.endswith(".py")]
+            if python_tests:
+                return ["python", "-m", "pytest", "-q", *python_tests[:8]]
+            break
+        return None
+
     async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
         mode = str(run.get("mode") or "").strip().lower()
         if mode not in {"agent", "edit", "implementer"}:
@@ -443,6 +466,15 @@ class HeuristicPlannerProvider:
                 arguments={"objective": str(run.get("objective") or "Bounded agent implementation"), "provider": str(run.get("provider") or ""), "risk": "high"},
                 rationale="Fast-path isolated worktree bind before mutation.",
             )
+        if "worktree.bind" in observed and not any(tool in observed for tool in self._MUTATION_TOOLS) and "worktree.verify" not in observed:
+            baseline = self._baseline_verify_command(run)
+            if baseline:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.verify",
+                    arguments={"command": baseline},
+                    rationale="BEAST owns lifecycle orchestration: establish the discovered test baseline before asking the model for semantic repair reasoning.",
+                )
         if any(tool in observed for tool in self._MUTATION_TOOLS):
             verify_status = self._latest_status(run, "worktree.verify")
             if verify_status != "completed":
