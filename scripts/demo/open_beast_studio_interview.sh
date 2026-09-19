@@ -109,6 +109,34 @@ LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" scripts/demo/beast_interview_coding_agent.
   --fixture "$FIXTURE" \
   --prepare-only
 
+STUDIO_ORIGIN="http://127.0.0.1:$STUDIO_PORT"
+echo "[BEAST] Verifying browser-to-gateway CORS contract..."
+CORS_HEADERS="$(curl -sS -D - -o /dev/null -H "Origin: $STUDIO_ORIGIN" "$GATEWAY/edgek/root-info")"
+if ! printf '%s\n' "$CORS_HEADERS" | tr -d '\r' | grep -Fqi "access-control-allow-origin: $STUDIO_ORIGIN"; then
+  echo "BEAST Studio interview launcher: gateway did not authorize Studio origin $STUDIO_ORIGIN" >&2
+  printf '%s\n' "$CORS_HEADERS" >&2
+  exit 8
+fi
+
+ENCODED_FIXTURE="$(
+  LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$FIXTURE"
+)"
+FILES_JSON="$(curl -fsS -H "Origin: $STUDIO_ORIGIN" "$GATEWAY/edgek/workspace/files?root_path=$ENCODED_FIXTURE&limit=50")"
+FILE_COUNT="$(
+  printf '%s' "$FILES_JSON" | LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c '
+import json,sys
+payload=json.load(sys.stdin)
+rows=payload if isinstance(payload,list) else payload.get("files") or payload.get("items") or payload.get("entries") or []
+print(len(rows))
+'
+)"
+if [[ "$FILE_COUNT" -lt 3 ]]; then
+  echo "BEAST Studio interview launcher: gateway sees only $FILE_COUNT fixture files; refusing dead-shell launch." >&2
+  printf '%s\n' "$FILES_JSON" >&2
+  exit 9
+fi
+echo "[BEAST] Browser live bridge ready · $FILE_COUNT workspace entries visible."
+
 STUDIO_URL="$(
   LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c '
 import sys, urllib.parse
