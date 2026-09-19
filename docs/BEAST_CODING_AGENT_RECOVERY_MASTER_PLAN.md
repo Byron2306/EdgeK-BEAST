@@ -1,8 +1,8 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 0 IN PROGRESS**
-Working branch: `agent/beast-coding-agent-phase0-census`
+Status: **Phase 5 COMPLETE — Phase 6 ready**
+Working branch: `agent/beast-coding-agent-phase5-context-architecture`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
 ## Programme objective
@@ -78,3 +78,23 @@ The scanner is only the first static pass. Phase 0 remains open until the real r
 ## Phase 0 exit gate
 
 Phase 0 closes only when every coding-agent-relevant component has an explicit disposition; static and runtime truth are separate; observed request paths can be reconstructed end to end; duplicate responsibility claims are explicit; proof-only/offline systems cannot be mistaken for enforcement; and Phase 1 receives a finite list of ownership conflicts instead of architectural guesswork.
+
+## Phase 5 completion checkpoint
+
+Phase 5 establishes one canonical planner context contract and closes the authority gap between repository discovery, compressed/model-visible context, and editable source evidence.
+
+Implemented:
+
+- `app/kernel/agents/context_architecture.py` defines the canonical `beast_agent_context_packet`.
+- Repository discovery is explicitly advisory and cannot grant mutation authority.
+- Only completed `workspace.read_range` observations may enter the exact-source authority lane.
+- Deterministic compaction sheds advisory detail before exact-source evidence and preserves hashes/authority labels when source text must be omitted for budget.
+- The planner runtime now renders this canonical packet directly instead of maintaining a second repository-discovery prompt projection.
+- Compact planner bounding preserves both the contract head and late authority/repair evidence rather than prefix-truncating the newest evidence.
+- Recovery tests cover exact-source admission, evidence-preserving compaction and deterministic packet digests.
+
+### Phase 5 exit gate
+
+**COMPLETE in repository implementation.** The architecture now has a single context authority contract: context may be compressed for relevance and local-model pressure, but compression never upgrades authority, and editable anchors remain rooted in exact `workspace.read_range` evidence.
+
+The next programme phase is **Phase 6 — Memory Architecture**. It must preserve this boundary: working, episodic, durable, evidence and forensic memory may inform planning, but memory content cannot silently become exact-source or mutation authority.
