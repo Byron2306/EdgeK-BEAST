@@ -32,7 +32,8 @@
     "phase2:verify": "python3 ../scripts/phase2/verify_agent_run_foundation.py && python3 ../scripts/phase2/verify_agent_run_execution.py",
     "parity:vscode:scoped": "node scripts/verify-scoped-100-parity.js",
     "parity:vscode:report": "node scripts/report-vscode-parity-matrix.js",
-    "parity:vscode": "npm run parity:vscode:scoped && npm run parity:vscode:report"
+    "parity:vscode": "npm run parity:vscode:scoped && npm run parity:vscode:report",
+    "parity:vscode:termux": "node scripts/verify-termux-vscode-parity.js"
   },
   "devDependencies": {
     "electron": "^43.1.0",
