@@ -6,7 +6,7 @@ cd "$ROOT"
 
 GATEWAY="${BEAST_GATEWAY_URL:-http://127.0.0.1:8101}"
 FIXTURE="${BEAST_INTERVIEW_FIXTURE:-$HOME/beast-interview-invoice-demo}"
-STUDIO_PORT="${BEAST_STUDIO_PORT:-8111}"
+STUDIO_PORT="${BEAST_STUDIO_PORT:-}"
 PYTHON_BIN="${BEAST_DEMO_PYTHON:-$HOME/EdgeK-BEAST/.venv/bin/python}"
 if [[ ! -x "$PYTHON_BIN" ]]; then
   PYTHON_BIN="$ROOT/.venv/bin/python"
@@ -42,9 +42,28 @@ LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" ./bin/beast heal \
   --with-litellm false \
   --with-nginx false >"$TERMUX_TMP/beast-interview-heal.json"
 
+STUDIO_ROOT="$ROOT/desktop-ide/renderer"
+STUDIO_INDEX="$STUDIO_ROOT/index.html"
+if [[ ! -f "$STUDIO_INDEX" ]]; then
+  echo "BEAST Studio interview launcher: missing renderer index: $STUDIO_INDEX" >&2
+  exit 6
+fi
+
+if [[ -z "$STUDIO_PORT" ]]; then
+  STUDIO_PORT="$(
+    LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -c '
+import socket
+with socket.socket() as s:
+    s.bind(("127.0.0.1", 0))
+    print(s.getsockname()[1])
+'
+  )"
+fi
+
 echo "[BEAST] Starting browser Studio renderer on 127.0.0.1:$STUDIO_PORT..."
 STUDIO_PID_FILE="$TERMUX_TMP/beast-studio-preview.pid"
 STUDIO_LOG="$TERMUX_TMP/beast-studio-preview.log"
+
 if [[ -f "$STUDIO_PID_FILE" ]]; then
   OLD_PID="$(cat "$STUDIO_PID_FILE" 2>/dev/null || true)"
   if [[ -n "$OLD_PID" ]]; then
@@ -53,19 +72,35 @@ if [[ -f "$STUDIO_PID_FILE" ]]; then
   rm -f "$STUDIO_PID_FILE"
 fi
 
+: >"$STUDIO_LOG"
 LD_PRELOAD="$LIBPYTHON" "$PYTHON_BIN" -m http.server "$STUDIO_PORT" \
   --bind 127.0.0.1 \
-  --directory "$ROOT/desktop-ide/renderer" >"$STUDIO_LOG" 2>&1 &
+  --directory "$STUDIO_ROOT" >"$STUDIO_LOG" 2>&1 &
 STUDIO_PID=$!
 echo "$STUDIO_PID" >"$STUDIO_PID_FILE"
 
-for _ in 1 2 3 4 5 6 7 8 9 10; do
-  if curl -fsS "http://127.0.0.1:$STUDIO_PORT/index.html" >/dev/null 2>&1; then
+STUDIO_READY=false
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  if ! kill -0 "$STUDIO_PID" >/dev/null 2>&1; then
     break
   fi
-  sleep 0.3
+  if curl -fsS "http://127.0.0.1:$STUDIO_PORT/index.html" >/dev/null 2>&1; then
+    STUDIO_READY=true
+    break
+  fi
+  sleep 0.25
 done
-curl -fsS "http://127.0.0.1:$STUDIO_PORT/index.html" >/dev/null
+
+if [[ "$STUDIO_READY" != "true" ]]; then
+  echo "BEAST Studio interview launcher: renderer did not become ready." >&2
+  echo "Renderer root: $STUDIO_ROOT" >&2
+  echo "Renderer port: $STUDIO_PORT" >&2
+  echo "Server log:" >&2
+  tail -40 "$STUDIO_LOG" >&2 || true
+  exit 7
+fi
+
+echo "[BEAST] Browser Studio renderer ready."
 
 echo "[BEAST] Preparing fresh interview fixture..."
 rm -rf "$FIXTURE"
