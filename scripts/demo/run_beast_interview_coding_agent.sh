@@ -20,7 +20,7 @@ export BEAST_GATEWAY_URL="${BEAST_GATEWAY_URL:-http://127.0.0.1:8101}"
 export BEAST_OLLAMA_BASE_URL="${BEAST_OLLAMA_BASE_URL:-http://127.0.0.1:11434}"
 export BEAST_OLLAMA_MODEL="${BEAST_OLLAMA_MODEL:-qwen2.5-coder:1.5b}"
 
-PROOF="${BEAST_DEMO_PROOF:-/tmp/beast-interview-proof.json}"
+PROOF="${BEAST_DEMO_PROOF:-${TMPDIR:-$PREFIX/tmp}/beast-interview-proof.json}"
 
 exec "$PYTHON_BIN" scripts/demo/beast_interview_coding_agent.py \
   --json-out "$PROOF" \
