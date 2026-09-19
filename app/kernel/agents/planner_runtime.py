@@ -13,6 +13,7 @@ from app.kernel.agents.failure_analyst import analyze_failure
 from app.kernel.agents.context_architecture import canonical_context_contract
 from app.kernel.agents.memory_runtime import AgentMemoryRuntime, render_memory_context
 from app.kernel.agents.reuse_runtime import AgentReuseRuntime, render_reuse_proposal
+from app.kernel.agents.execution_architecture import execution_authority_contract
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
@@ -606,6 +607,7 @@ class AgentPlannerRuntime:
         memory_contract = render_memory_context(memory_packet, char_limit=700 if late_compact_turn else 1100 if compact_provider else 1800)
         reuse_packet = self.reuse_runtime.propose(run, state, limit=2 if compact_provider else 3)
         reuse_contract = render_reuse_proposal(reuse_packet, char_limit=700 if late_compact_turn else 950 if compact_provider else 1400)
+        execution_contract = "\nEXECUTION_AUTHORITY:" + json.dumps(execution_authority_contract(), sort_keys=True, separators=(",", ":"))
         plan_brief = {}
         try:
             plan_brief = self.planning_integrations.current_plan_brief(str(run.get("run_id") or state.run_id))
@@ -701,7 +703,7 @@ class AgentPlannerRuntime:
             f"ALLOWED TOOLS:\n{tool_contract}\n"
             f"OBSERVATIONS: {json.dumps(observations, sort_keys=True, default=str, separators=(',', ':'))}"
             f"{authority_contract}"
-            f"{context_contract}{semantic_contract}{memory_contract}{reuse_contract}{plan_contract}{repair_contract}"
+            f"{context_contract}{semantic_contract}{memory_contract}{reuse_contract}{execution_contract}{plan_contract}{repair_contract}"
         )
         if compact_provider:
             return self._bounded_planner_prompt(prompt, 3600 if late_compact_turn else 4800)
