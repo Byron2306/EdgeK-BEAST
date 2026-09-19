@@ -67,3 +67,23 @@ def learning_episode(*, run: dict[str, Any], state: Any, observation: dict[str, 
     episode["authority"] = "learning_evidence_never_mutation_authority"
     episode["episode_digest"] = _digest(episode)
     return episode
+
+
+def repair_budget_gate(*, repair_cycle: int, max_repair_cycles: int, source_current: bool) -> dict[str, Any]:
+    cycle = max(0, int(repair_cycle))
+    maximum = max(0, int(max_repair_cycles))
+    within_budget = cycle <= maximum
+    allowed = within_budget and bool(source_current)
+    receipt = {
+        "beast_object_type": "beast_agent_repair_budget_gate",
+        "version": "1.0",
+        "allowed": allowed,
+        "repair_cycle": cycle,
+        "max_repair_cycles": maximum,
+        "within_budget": within_budget,
+        "source_current": bool(source_current),
+        "reason": "repair_allowed" if allowed else ("repair_budget_exhausted" if not within_budget else "fresh_exact_source_required"),
+        "mutation_authority": "none",
+    }
+    receipt["gate_digest"] = _digest(receipt)
+    return receipt
