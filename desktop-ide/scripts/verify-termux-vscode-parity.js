@@ -33,6 +33,13 @@ function run([id, script, artifact, required]) {
     failed: Array.isArray(parsed?.failed) ? parsed.failed : [],
     skipped: Array.isArray(parsed?.skipped) ? parsed.skipped : [],
     environment_limited: result.status !== 0 && !required,
+    diagnostics: parsed ? {
+      handshakes: parsed.handshakes || null,
+      semantic: parsed.semantic || null,
+      recovery: parsed.recovery || null,
+      bounded_contract: parsed.boundedContract || null,
+      allowed_skipped: parsed.allowedSkipped || null,
+    } : null,
   };
 }
 
