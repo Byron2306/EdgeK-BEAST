@@ -1,6 +1,8 @@
 (() => {
   'use strict';
-  const DEFAULT_GATEWAY = 'http://127.0.0.1:8101';
+  const DEFAULT_GATEWAY = /^https?:$/.test(window.location.protocol)
+    ? window.location.origin
+    : 'http://127.0.0.1:8101';
   const EXPECTED_DESKTOP = [
     'status','chooseWorkspace','listFiles','readFile','fileOperation','toolingSnapshot','systemSnapshot',
     'releaseReadiness','restartGateway','resetRuntimeStack','openWorkspaceWindow','openGateway','gatewayRequest',
