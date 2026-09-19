@@ -2280,7 +2280,14 @@ class AgentPlannerRuntime:
                     if part
                 ))
                 mutation_paths = self._latest_mutation_paths(state)
-                baseline_failure = not mutation_paths
+                # A verifier failure is baseline-only when the verifier was
+                # injected before any mutation. If a model-selected verifier
+                # follows a mutation in the same turn sequence, it is a repair
+                # failure even if the current state snapshot has not yet been
+                # extended with that mutation observation.
+                latest_mutation_index = self._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
+                latest_verify_before = self._latest_index(state, {"worktree.verify"})
+                baseline_failure = not mutation_paths and latest_mutation_index < 0 and latest_verify_before < 0
                 target_paths = (mutation_paths or self._index_reasoning_paths(state))[:4]
                 result["analysis"] = analysis
                 result["target_paths"] = target_paths
