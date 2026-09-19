@@ -13,6 +13,7 @@ from typing import Any
 from app.kernel.agents.tool_models import ToolEffect, ToolExecutionContext, ToolRisk, ToolSpec
 from app.kernel.agents.tool_registry import AgentToolRegistry
 from app.kernel.agents.tool_runtime import _remote_target_descriptor, _run_target_shell, _safe_remote_relative, _shell_quote
+from app.kernel.agents.execution_architecture import current_epoch_receipt
 from app.kernel.workspaces.worktree_forge import WorktreeForge
 
 
@@ -438,6 +439,10 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
                     "target_execution": f"remote_{descriptor['kind']}",
                 }
             })
+            refreshed = context.engine.store.get_run(context.run_id) or {}
+            epoch_receipt = current_epoch_receipt(refreshed.get("checkpoint") if isinstance(refreshed.get("checkpoint"), dict) else {})
+            result["current_epoch_receipt"] = epoch_receipt
+            context.engine.emit(context.run_id, "agent.execution.epoch_receipt", epoch_receipt)
             context.engine.emit(
                 context.run_id,
                 "agent.verification.passed" if result["ok"] else "agent.verification.failed",
@@ -515,6 +520,10 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
                 "execution_target_payload": dict(context.execution_target_payload or {}),
             }
         })
+        refreshed = context.engine.store.get_run(context.run_id) or {}
+        epoch_receipt = current_epoch_receipt(refreshed.get("checkpoint") if isinstance(refreshed.get("checkpoint"), dict) else {})
+        result["current_epoch_receipt"] = epoch_receipt
+        context.engine.emit(context.run_id, "agent.execution.epoch_receipt", epoch_receipt)
         context.engine.emit(
             context.run_id,
             "agent.verification.passed" if result["ok"] else "agent.verification.failed",
