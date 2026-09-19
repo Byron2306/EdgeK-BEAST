@@ -1065,6 +1065,18 @@ class AgentPlannerRuntime:
 
 
     @classmethod
+    def _baseline_verification_command(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "workspace.index")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        tests = [str(path) for path in (result.get("tests") or []) if str(path)]
+        python_tests = [path for path in tests if path.endswith(".py")]
+        if python_tests:
+            return ["python", "-m", "pytest", "-q", *python_tests[:8]]
+        return []
+
+    @classmethod
     def _default_verification_command(cls, state: PlannerState) -> list[str]:
         changed = cls._latest_mutation_paths(state)
         python_files = [path for path in changed if path.endswith(".py")]
@@ -1123,6 +1135,18 @@ class AgentPlannerRuntime:
             )
         inspected_paths = cls._inspected_paths(state)
         mutation_paths = cls._latest_mutation_paths(state)
+
+        # The cockpit owns the mechanical lifecycle. Establish discovered test
+        # truth before asking the model to reason about a repair.
+        if not mutation_paths and cls._latest_index(state, {"worktree.verify"}) < 0:
+            baseline_command = cls._baseline_verification_command(state)
+            if baseline_command:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.verify",
+                    arguments={"command": baseline_command},
+                    rationale="BEAST lifecycle controller requires a pre-mutation baseline verifier before semantic repair reasoning.",
+                )
 
         # Recovery Phase 4: Code Cortex may identify direct dependents that a
         # cross-file objective explicitly requires the planner to consider.
