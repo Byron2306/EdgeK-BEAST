@@ -80,3 +80,23 @@ def execution_gate(decision: Any, context: Any) -> dict[str, Any]:
         result["reason"] = "fresh_worktree_verification"
     result["gate_digest"] = _digest(result)
     return result
+
+
+def current_epoch_receipt(checkpoint: dict[str, Any]) -> dict[str, Any]:
+    verification = checkpoint.get("verification") if isinstance(checkpoint.get("verification"), dict) else {}
+    mutation_epoch = max(0, int(checkpoint.get("worktree_mutation_epoch") or 0))
+    verification_epoch = int(verification.get("mutation_epoch") if verification.get("mutation_epoch") is not None else -1)
+    current = bool(verification.get("ok")) and not bool(verification.get("stale")) and verification_epoch == mutation_epoch
+    receipt = {
+        "beast_object_type": "beast_agent_current_epoch_receipt",
+        "version": "1.0",
+        "current": current,
+        "mutation_epoch": mutation_epoch,
+        "verification_epoch": verification_epoch,
+        "verification_ok": bool(verification.get("ok")),
+        "verification_stale": bool(verification.get("stale")),
+        "execution_target": str(verification.get("execution_target") or ""),
+        "authority": "evidence_only_no_future_mutation_authority",
+    }
+    receipt["receipt_digest"] = _digest(receipt)
+    return receipt
