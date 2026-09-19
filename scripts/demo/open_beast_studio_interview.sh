@@ -19,8 +19,15 @@ export LD_PRELOAD="${LD_PRELOAD:-$PREFIX/lib/libpython3.14.so}"
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$ROOT"
 
+TERMUX_TMP="${TMPDIR:-$PREFIX/tmp}"
+mkdir -p "$TERMUX_TMP"
+
 echo "[BEAST] Reclaiming the local interview runtime from this checkout..."
-./bin/beast heal   --restart-all true   --kill-address-pids true   --with-litellm false   --with-nginx false >/tmp/beast-interview-heal.json
+./bin/beast heal \
+  --restart-all true \
+  --kill-address-pids true \
+  --with-litellm false \
+  --with-nginx false >"$TERMUX_TMP/beast-interview-heal.json"
 
 echo "[BEAST] Verifying browser Studio route..."
 curl -fsS "$GATEWAY/beast-studio/renderer/index.html" >/dev/null
