@@ -563,7 +563,7 @@
       const created = await createDurableAgentRun(agentRunCreatePayload({ sessionId, runPrompt, mode, analysisRun, route, files, semanticContext, semanticRisk, selection, options, maxOutputTokens, maxContextChars, launch:true }), {
         localCoder,
         detachedPlannerLaunch: detachedPlanner,
-        maxTurns:Number(options.maxTurns || (localCoder ? 5 : 8))
+        maxTurns:Number(options.maxTurns || (localCoder ? 8 : 10))
       });
       const durableRunId = String(created?.run?.run_id || '');
       if (!created?.ok || !durableRunId) throw new Error(created?.error || 'BEAST could not create the durable coding run.');
