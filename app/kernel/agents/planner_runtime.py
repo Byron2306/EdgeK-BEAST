@@ -1883,6 +1883,11 @@ class AgentPlannerRuntime:
                 state.verification_failures.append(failure)
                 state.verification_failures = state.verification_failures[-self.max_repair_cycles or 1:]
                 self.engine.emit(run_id, "agent.verification.failed", failure)
+                try:
+                    reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
+                    self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
+                except Exception as exc:
+                    self.engine.emit(run_id, "agent.crystal.feedback_failed", {"reason": f"{type(exc).__name__}: {exc}"})
                 if state.repair_cycles > state.max_repair_cycles:
                     state.status = "repair_exhausted"
                     state.blocker = f"verification repair budget exhausted after {state.max_repair_cycles} cycle(s)"
@@ -1908,6 +1913,11 @@ class AgentPlannerRuntime:
                     "observation_id": observation.get("observation_id", ""),
                     "evidence_digest": observation.get("evidence_digest", ""),
                 })
+                try:
+                    reuse_feedback = self.reuse_runtime.feedback(run, state, observation)
+                    self.engine.emit(run_id, "agent.crystal.feedback", reuse_feedback)
+                except Exception as exc:
+                    self.engine.emit(run_id, "agent.crystal.feedback_failed", {"reason": f"{type(exc).__name__}: {exc}"})
             state.observations.append(observation)
             state.observations = state.observations[-self.observation_limit:]
             self.engine.store.transition(run_id, AgentRunState.UPDATING_PLAN)
