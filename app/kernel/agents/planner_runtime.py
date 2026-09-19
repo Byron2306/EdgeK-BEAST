@@ -1640,6 +1640,7 @@ class AgentPlannerRuntime:
                 "reason": f"{type(exc).__name__}: {exc}",
             })
         try:
+            run = self.engine.store.get_run(run_id) or run
             self.planning_integrations.sync_phase5_resume(run_id, run)
         except Exception as exc:
             self.engine.emit(run_id, "agent.plan.integration.failed", {
