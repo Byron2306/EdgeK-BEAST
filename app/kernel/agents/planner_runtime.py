@@ -1075,6 +1075,12 @@ class AgentPlannerRuntime:
         return ""
 
     @classmethod
+    @classmethod
+    @classmethod
+    @classmethod
+    @classmethod
+    @classmethod
+    @classmethod
     def _default_verification_command(cls, state: PlannerState) -> list[str]:
         changed = cls._latest_mutation_paths(state)
         python_files = [path for path in changed if path.endswith(".py")]
