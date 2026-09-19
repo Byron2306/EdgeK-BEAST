@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 6 IN PROGRESS — canonical memory ownership established**
+Status: **Phase 6 COMPLETE — Phase 7 ready**
 Working branch: `agent/beast-coding-agent-phase6-memory-architecture`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -122,6 +122,17 @@ Implemented in `app/kernel/agents/memory_architecture.py`:
 - deterministic digests for the contract and projected memory context;
 - Phase 6 tests proving ownership, boundedness and non-escalation of authority.
 
-### Phase 6 remaining work
+### Phase 6 closure
 
-The contract is now explicit, but Phase 6 is not closed yet. The next slice must wire the existing Memory Hull/Chronicle, Workspace Graph/Skill Tree, Evidence Bus and L4 forensic retrieval paths into this single projection, then prove resume continuity and source-resolution behavior end to end. No new competing memory store should be introduced.
+Repository implementation is complete.
+
+- `AgentMemoryRuntime` now reads the existing Memory Hull, Workspace Graph, Skill Tree, Evidence Bus and L4 Forensic Memory and projects them through one bounded Phase 6 context.
+- The planner consumes that projection on every turn alongside the Phase 5 Context Packet.
+- Working memory is rebuilt from durable planner observations on resume rather than copied into a competing store.
+- Evidence Bus pointers can be resolved to a workspace-contained artifact and checked against their recorded SHA-256 before being treated as resolved evidence references.
+- Memory compaction preserves the promotion/authority boundary even when retrieval detail is removed.
+- Recovery tests cover organ projection, resume continuity, evidence reference/hash resolution, boundedness and non-escalation of memory authority.
+
+The Phase 6 exit condition is therefore satisfied at repository implementation level: one documented promotion/read path exists and the coding agent has no new peer authoritative memory store. A fresh runtime/CI execution is still required before claiming live gauntlet proof.
+
+Phase 7 must build compute, reuse and crystallisation on top of this boundary: crystals and learned reuse may propose or accelerate work, but they must not bypass exact-source, verification, promotion or mutation authority.
