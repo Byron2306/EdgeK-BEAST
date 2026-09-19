@@ -1,8 +1,8 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 5 COMPLETE — Phase 6 ready**
-Working branch: `agent/beast-coding-agent-phase5-context-architecture`
+Status: **Phase 6 IN PROGRESS — canonical memory ownership established**
+Working branch: `agent/beast-coding-agent-phase6-memory-architecture`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
 ## Programme objective
@@ -98,3 +98,30 @@ Implemented:
 **COMPLETE in repository implementation.** The architecture now has a single context authority contract: context may be compressed for relevance and local-model pressure, but compression never upgrades authority, and editable anchors remain rooted in exact `workspace.read_range` evidence.
 
 The next programme phase is **Phase 6 — Memory Architecture**. It must preserve this boundary: working, episodic, durable, evidence and forensic memory may inform planning, but memory content cannot silently become exact-source or mutation authority.
+
+
+## Phase 6 implementation checkpoint
+
+Phase 6 starts by making the coding agent's memory families explicit instead of allowing every persistent store to behave like an interchangeable source of truth.
+
+Canonical roles:
+
+| Memory role | Canonical owner | Coding-agent purpose | Authority |
+|---|---|---|---|
+| Working | AgentRun state/checkpoint | Current plan, recent observations and repair continuity | advisory continuity only |
+| Episodic | Memory Hull / Chronicle | Prior task decisions, outcomes, route cards and residue | advisory prior experience only |
+| Durable | Workspace Graph / Skill Tree | Rebuildable project knowledge and explicitly promoted reusable patterns | advisory retrieval only |
+| Evidence | Evidence Bus | Pointers/receipts that resolve to authoritative evidence | reference only |
+| Forensic | L4 Forensic Archive | Append-only attempts, failures, checks and interception history | audit only |
+
+Implemented in `app/kernel/agents/memory_architecture.py`:
+
+- one machine-readable ownership and authority contract for all five memory families;
+- bounded per-role retrieval projection for planner use;
+- explicit prohibition on memory silently becoming exact-source, mutation, verification or promotion authority;
+- deterministic digests for the contract and projected memory context;
+- Phase 6 tests proving ownership, boundedness and non-escalation of authority.
+
+### Phase 6 remaining work
+
+The contract is now explicit, but Phase 6 is not closed yet. The next slice must wire the existing Memory Hull/Chronicle, Workspace Graph/Skill Tree, Evidence Bus and L4 forensic retrieval paths into this single projection, then prove resume continuity and source-resolution behavior end to end. No new competing memory store should be introduced.
