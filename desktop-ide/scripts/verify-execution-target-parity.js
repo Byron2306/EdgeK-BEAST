@@ -20,11 +20,18 @@ function check(name, condition, detail = '') {
 }
 
 function run(command, args, options = {}) {
+  const env = { ...process.env, ...(options.env || {}) };
+  if ((command === 'python' || command === 'python3') && !Object.prototype.hasOwnProperty.call(options.env || {}, 'PYTHONNOUSERSITE')) {
+    // BEAST's contract probes must exercise the checked-out repository, not an
+    // unrelated user-site installation that happens to share the app package.
+    env.PYTHONNOUSERSITE = '1';
+  }
   const result = spawnSync(command, args, {
     cwd: options.cwd || repo,
     encoding: 'utf8',
     timeout: options.timeout || 20000,
     maxBuffer: 1024 * 1024,
+    env,
   });
   return {
     ok: result.status === 0,
