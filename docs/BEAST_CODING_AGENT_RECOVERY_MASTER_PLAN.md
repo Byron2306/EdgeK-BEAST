@@ -1,8 +1,8 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 7 COMPLETE — Phase 8 ready**
-Working branch: `agent/beast-coding-agent-phase7-compute-reuse-crystallisation`
+Status: **Phase 8 IN PROGRESS — governed execution spine active**
+Working branch: `agent/beast-coding-agent-phase8-governed-execution`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
 ## Programme objective
@@ -165,3 +165,18 @@ Repository implementation is complete.
 Phase 7 is closed at repository implementation level. Fresh runtime/CI execution is still required before claiming measured live token savings or gauntlet proof.
 
 Phase 8 can now move the coding agent onto governed execution: bind execution intent, worktree authority, interception, input/output governance and execution evidence into one coherent path.
+
+
+## Phase 8 implementation checkpoint
+
+The coding-agent execution path now has an explicit machine-readable authority contract and a live runtime gate.
+
+- Planner/provider/crystal outputs are typed as intent or advisory compute, never mutation authority.
+- Exact source authority remains `workspace.read_range`.
+- Mutation authority remains the registered worktree tools in an isolated bound worktree.
+- `AgentToolRuntime` emits an `agent.execution.gate` receipt immediately before handler execution and refuses a mutation/verification operation without a live bound worktree.
+- Existing Worktree Forge mutation epochs remain authoritative: each mutation advances the epoch and marks previous verification stale.
+- Promotion tools remain non-agent-executable in `AgentToolRuntime`.
+- Phase 8 recovery tests prove intent/authority separation and the live-worktree mutation/verification boundary.
+
+Remaining Phase 8 work: bind the existing provider Output Governor/interception semantics to the coding-agent boundary where applicable, then prove current-epoch verification/evidence closure and ensure no duplicate execution authority plane is introduced.
