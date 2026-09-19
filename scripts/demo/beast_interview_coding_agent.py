@@ -83,6 +83,10 @@ def make_fixture(target: Path | None = None) -> Path:
         "    assert invoice_total(80.0, 0.0) == 80.0\n",
         encoding="utf-8",
     )
+    # BEAST's durable run/worktree receipts live under .beast. Keep those
+    # runtime artifacts out of git status so "operator workspace clean" means
+    # source bytes are untouched, not that BEAST created no evidence.
+    (root / ".gitignore").write_text(".beast/\n", encoding="utf-8")
 
     git(root, "init")
     git(root, "config", "user.name", "BEAST Interview Demo")
