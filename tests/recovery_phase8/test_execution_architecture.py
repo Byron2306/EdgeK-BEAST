@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from app.kernel.agents.execution_architecture import execution_authority_contract, execution_gate
+from app.kernel.agents.execution_architecture import current_epoch_receipt, execution_authority_contract, execution_gate
 
 
 def test_execution_contract_keeps_intent_and_authority_separate():
@@ -28,3 +28,17 @@ def test_verification_requires_same_live_worktree_boundary():
     gate = execution_gate(decision, SimpleNamespace(worktree_root="/tmp/wt"))
     assert gate["allowed"] is True
     assert gate["reason"] == "fresh_worktree_verification"
+
+
+def test_current_epoch_receipt_rejects_stale_or_prior_verification():
+    stale = current_epoch_receipt({
+        "worktree_mutation_epoch": 3,
+        "verification": {"ok": True, "stale": False, "mutation_epoch": 2},
+    })
+    assert stale["current"] is False
+    current = current_epoch_receipt({
+        "worktree_mutation_epoch": 3,
+        "verification": {"ok": True, "stale": False, "mutation_epoch": 3, "execution_target": "local"},
+    })
+    assert current["current"] is True
+    assert current["authority"] == "evidence_only_no_future_mutation_authority"
