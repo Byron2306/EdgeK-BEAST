@@ -1081,6 +1081,112 @@ class AgentPlannerRuntime:
     @classmethod
     @classmethod
     @classmethod
+    def _discovered_paths(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "code_cortex.discover")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        return [
+            str(path).strip()
+            for path in (result.get("discovered_paths") or [])
+            if str(path).strip()
+        ]
+
+    @classmethod
+    def _required_discovery_evidence_paths(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "code_cortex.discover")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        return [
+            str(path).strip()
+            for path in (result.get("required_evidence_paths") or [])
+            if str(path).strip()
+        ]
+
+    @classmethod
+    def _index_reasoning_paths(cls, state: PlannerState) -> list[str]:
+        """Derive bounded exact-read candidates from repository evidence.
+
+        This is navigation, not mutation authority. It lets BEAST prepare the
+        cockpit so the model receives exact relevant bytes instead of having to
+        orchestrate repository traversal itself.
+        """
+        observation = cls._latest_completed_observation(state, "workspace.index")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        files = [item for item in (result.get("files") or []) if isinstance(item, dict)]
+        imports = [item for item in (result.get("imports") or []) if isinstance(item, dict)]
+        tests = [str(path) for path in (result.get("tests") or []) if str(path)]
+        file_paths = [str(item.get("path") or "") for item in files if str(item.get("path") or "")]
+        module_to_path: dict[str, str] = {}
+        for path in file_paths:
+            if path.endswith(".py"):
+                module = path[:-3].replace("/", ".")
+                module_to_path[module] = path
+                module_to_path.setdefault(module.rsplit(".", 1)[-1], path)
+        ordered: list[str] = []
+        queue = list(tests[:8])
+        seen: set[str] = set()
+        while queue and len(ordered) < 16:
+            path = queue.pop(0)
+            if path in seen or path not in file_paths:
+                continue
+            seen.add(path)
+            ordered.append(path)
+            for edge in imports:
+                if str(edge.get("path") or "") != path:
+                    continue
+                target = str(edge.get("target") or "").strip()
+                candidate = module_to_path.get(target) or module_to_path.get(target.rsplit(".", 1)[-1])
+                if candidate and candidate not in seen:
+                    queue.append(candidate)
+        return ordered
+
+    @classmethod
+    def _scope_paths(cls, run: dict[str, Any], state: PlannerState) -> list[str]:
+        request = run.get("request") if isinstance(run.get("request"), dict) else {}
+        semantic = request.get("semantic_context") if isinstance(request.get("semantic_context"), dict) else {}
+        values: list[str] = []
+        for key in ("active_file", "selected_file", "target_file"):
+            value = str(semantic.get(key) or "").strip()
+            if value:
+                values.append(value)
+        for item in request.get("context_files") if isinstance(request.get("context_files"), list) else []:
+            value = str(item or "").strip()
+            if value:
+                values.append(value)
+        values.extend(cls._discovered_paths(state))
+        values.extend(cls._index_reasoning_paths(state))
+        output: list[str] = []
+        for value in values:
+            if value and value not in output:
+                output.append(value)
+        return output
+
+    @classmethod
+    def _next_exact_read_path(cls, run: dict[str, Any], state: PlannerState) -> str:
+        inspected = cls._inspected_paths(state)
+        for path in cls._scope_paths(run, state):
+            if path not in inspected:
+                return path
+        return ""
+
+
+    @classmethod
+    def _baseline_verification_command(cls, state: PlannerState) -> list[str]:
+        observation = cls._latest_completed_observation(state, "workspace.index")
+        if not isinstance(observation, dict):
+            return []
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        tests = [str(path) for path in (result.get("tests") or []) if str(path)]
+        python_tests = [path for path in tests if path.endswith(".py")]
+        if python_tests:
+            return ["python", "-m", "pytest", "-q", *python_tests[:8]]
+        return []
+
+    @classmethod
     def _default_verification_command(cls, state: PlannerState) -> list[str]:
         changed = cls._latest_mutation_paths(state)
         python_files = [path for path in changed if path.endswith(".py")]
@@ -1118,7 +1224,7 @@ class AgentPlannerRuntime:
         observed = cls._observed_tool_ids(state)
         if not observed:
             return None
-        inspected = any(tool in observed for tool in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
+        inspected = any(tool in observed for tool in {"code_cortex.discover", "workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"})
         if not inspected and "worktree.bind" not in observed:
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
@@ -1139,6 +1245,33 @@ class AgentPlannerRuntime:
             )
         inspected_paths = cls._inspected_paths(state)
         mutation_paths = cls._latest_mutation_paths(state)
+
+        # The cockpit owns the mechanical lifecycle. Establish discovered test
+        # truth before asking the model to reason about a repair.
+        if not mutation_paths and cls._latest_index(state, {"worktree.verify"}) < 0:
+            baseline_command = cls._baseline_verification_command(state)
+            if baseline_command:
+                return PlannerDecision(
+                    decision_type=PlannerDecisionType.TOOL,
+                    tool_id="worktree.verify",
+                    arguments={"command": baseline_command},
+                    rationale="BEAST lifecycle controller requires a pre-mutation baseline verifier before semantic repair reasoning.",
+                )
+
+        # Recovery Phase 4: Code Cortex may identify direct dependents that a
+        # cross-file objective explicitly requires the planner to consider.
+        # Discovery still grants no mutation authority. Force an exact source
+        # read before verification or handoff can skip that evidence.
+        required_evidence_paths = cls._required_discovery_evidence_paths(state)
+        unread_required = [path for path in required_evidence_paths if path not in inspected_paths]
+        if unread_required:
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="workspace.read_range",
+                arguments={"path": unread_required[0], "start_line": 1, "line_count": 220},
+                rationale="Recovery Phase 4 requires exact inspection of a Code Cortex direct dependency before cross-file verification.",
+            )
+
         if not inspected_paths and not mutation_paths:
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             context_files = {
@@ -1165,7 +1298,7 @@ class AgentPlannerRuntime:
                     or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files"))
                 )
                 broad_creation = bool(valid_creation and broad_wave)
-            targeted_path = cls._targeted_read_path(run)
+            targeted_path = cls._next_exact_read_path(run, state)
             if targeted_path and not (scoped_creation or broad_creation):
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
@@ -1173,28 +1306,53 @@ class AgentPlannerRuntime:
                     arguments={"path": targeted_path, "start_line": 1, "line_count": 220},
                     rationale="A bounded file read is required after bind before the first mutation when no exact file contents have been inspected yet.",
                 )
+        scope_paths = set(cls._scope_paths(run, state))
+        decision_path = ""
+        decision_tool = ""
+        if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+            decision_tool = str(decision.tool_id or "")
+            decision_path = str(decision.arguments.get("path") or "").strip()
+        if (
+            decision_tool == "worktree.replace_exact"
+            and decision_path
+            and decision_path in scope_paths
+            and decision_path not in inspected_paths
+        ):
+            return PlannerDecision(
+                decision_type=PlannerDecisionType.TOOL,
+                tool_id="workspace.read_range",
+                arguments={"path": decision_path, "start_line": 1, "line_count": 220},
+                rationale="Code Cortex discovery is advisory; exact source bytes must be read before mutating a discovered file.",
+            )
+
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
         latest_verify = cls._latest_observation(state, "worktree.verify")
         if mutation_paths and (latest_verify_index < 0 or latest_mutation_index > latest_verify_index):
             request = run.get("request") if isinstance(run.get("request"), dict) else {}
             objective = str(run.get("objective") or "").casefold()
-            context_files = {
-                str(path).strip()
-                for path in (request.get("context_files") or [])
-                if str(path).strip()
-            }
+            scope_files = set(cls._scope_paths(run, state))
             decision_path = ""
+            decision_tool = ""
             if isinstance(decision, PlannerDecision) and decision.decision_type is PlannerDecisionType.TOOL:
+                decision_tool = str(decision.tool_id or "")
                 decision_path = str(decision.arguments.get("path") or "").strip()
             broad_wave = bool(request.get("long_horizon") or request.get("monorepo") or request.get("architecture_planning") or any(term in objective for term in ("large", "monorepo", "cross-cutting", "many files")))
-            bounded_multi_file_wave = bool(
-                len(context_files) > 1
+            pending_discovered_read = bool(
+                decision_tool == "workspace.read_range"
                 and decision_path
-                and decision_path in context_files
+                and decision_path in scope_files
+                and decision_path not in inspected_paths
+            )
+            bounded_multi_file_wave = bool(
+                len(scope_files) > 1
+                and decision_path
+                and decision_path in scope_files
                 and decision_path in inspected_paths
                 and decision_path not in set(mutation_paths)
             )
+            if pending_discovered_read:
+                return None
             if (
                 (broad_wave or bounded_multi_file_wave)
                 and isinstance(decision, PlannerDecision)
@@ -1203,43 +1361,12 @@ class AgentPlannerRuntime:
                 and len(set(mutation_paths)) < 32
             ):
                 return None
-            verify_command = cls._default_verification_command(state)
-            if verification_ladder_enabled(run):
-                ladder_run = dict(run)
-                checkpoint = dict(ladder_run.get("checkpoint") or {})
-                checkpoint["planner"] = state.as_dict()
-                ladder_run["checkpoint"] = checkpoint
-                stage = next_verification_stage(ladder_run)
-                if isinstance(stage, dict) and isinstance(stage.get("command"), list):
-                    verify_command = list(stage["command"])
             return PlannerDecision(
                 decision_type=PlannerDecisionType.TOOL,
                 tool_id="worktree.verify",
-                arguments={"command": verify_command},
+                arguments={"command": cls._default_verification_command(state)},
                 rationale="A bounded verifier must run after the latest mutation before BEAST can prepare SourcePlan evidence.",
             )
-
-        if (
-            mutation_paths
-            and verification_ladder_enabled(run)
-            and isinstance(latest_verify, dict)
-            and str(latest_verify.get("status") or "") == "completed"
-        ):
-            ladder_run = dict(run)
-            checkpoint = dict(ladder_run.get("checkpoint") or {})
-            checkpoint["planner"] = state.as_dict()
-            ladder_run["checkpoint"] = checkpoint
-            ladder = verification_ladder_receipt(ladder_run)
-            if not ladder["complete"]:
-                stage = next_verification_stage(ladder_run)
-                if isinstance(stage, dict) and isinstance(stage.get("command"), list):
-                    return PlannerDecision(
-                        decision_type=PlannerDecisionType.TOOL,
-                        tool_id="worktree.verify",
-                        arguments={"command": list(stage["command"])},
-                        rationale=f"Phase 3 verification ladder requires {stage.get('stage')} before SourcePlan synthesis.",
-                    )
-
         latest_sourceplan_index = cls._latest_index(state, {"worktree.sourceplan_draft"}, completed_only=True)
         if (
             isinstance(latest_verify, dict)
