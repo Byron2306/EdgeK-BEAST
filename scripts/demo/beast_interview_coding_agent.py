@@ -349,6 +349,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=float, default=240.0)
     parser.add_argument("--fixture", default="")
     parser.add_argument("--json-out", default="")
+    parser.add_argument("--prepare-only", action="store_true")
     args = parser.parse_args()
 
     print("\nBEAST CODING AGENT // INTERVIEW GAUNTLET", flush=True)
@@ -360,6 +361,14 @@ def main() -> int:
     preflight_gateway(args.gateway)
     preflight_ollama(args.model, args.ollama)
     root = make_fixture(Path(args.fixture) if args.fixture else None)
+
+    if args.prepare_only:
+        query = urllib.parse.urlencode({"workspace": str(root), "route": "agents"})
+        studio = f"{args.gateway.rstrip('/')}/beast-studio/renderer/index.html?{query}"
+        print(f"Fixture : {root}")
+        print(f"Studio  : {studio}")
+        print("Open the Studio URL in the Android browser, then run the coding task from the Agent surface.")
+        return 0
 
     objective = (
         "Repair the invoice percentage-discount bug. The tests are authoritative. "
@@ -401,8 +410,10 @@ def main() -> int:
     print("Note  : demo intentionally stops before promotion/final apply.")
 
     if args.json_out:
-        Path(args.json_out).expanduser().write_text(json.dumps(receipt, indent=2), encoding="utf-8")
-        print(f"Proof : {Path(args.json_out).expanduser().resolve()}")
+        proof_path = Path(args.json_out).expanduser()
+        proof_path.parent.mkdir(parents=True, exist_ok=True)
+        proof_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+        print(f"Proof : {proof_path.resolve()}")
 
     return 0 if receipt["ok"] else 2
 
