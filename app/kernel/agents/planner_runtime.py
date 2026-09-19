@@ -1078,9 +1078,6 @@ class AgentPlannerRuntime:
     @classmethod
     @classmethod
     @classmethod
-    @classmethod
-    @classmethod
-    @classmethod
     def _discovered_paths(cls, state: PlannerState) -> list[str]:
         observation = cls._latest_completed_observation(state, "code_cortex.discover")
         if not isinstance(observation, dict):
