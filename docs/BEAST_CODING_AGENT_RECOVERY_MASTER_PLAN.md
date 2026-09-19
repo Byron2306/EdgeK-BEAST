@@ -1,8 +1,8 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 6 COMPLETE — Phase 7 ready**
-Working branch: `agent/beast-coding-agent-phase6-memory-architecture`
+Status: **Phase 7 IN PROGRESS — reuse authority plane wired**
+Working branch: `agent/beast-coding-agent-phase7-compute-reuse-crystallisation`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
 ## Programme objective
@@ -136,3 +136,21 @@ Repository implementation is complete.
 The Phase 6 exit condition is therefore satisfied at repository implementation level: one documented promotion/read path exists and the coding agent has no new peer authoritative memory store. A fresh runtime/CI execution is still required before claiming live gauntlet proof.
 
 Phase 7 must build compute, reuse and crystallisation on top of this boundary: crystals and learned reuse may propose or accelerate work, but they must not bypass exact-source, verification, promotion or mutation authority.
+
+
+## Phase 7 implementation checkpoint
+
+The coding-agent path now consumes BEAST's existing Mission Crystal Lattice through a dedicated reuse authority plane rather than treating crystals as memory or source truth.
+
+Implemented:
+
+- `AgentReuseRuntime` converts lattice matches into bounded planner proposals with explicit compute-savings claims and authority limits.
+- Strong, previously verified lattice matches may become strategy/replay candidates; weaker matches degrade to strategy scaffold or context hint.
+- Every proposal states that fresh source reads and fresh verification remain mandatory.
+- Planner context now includes the Phase 7 reuse proposal alongside canonical context and memory packets.
+- Exact planner-response crystal replay can still produce zero-inference turns, but cached worktree decisions have any prior `approval_id` stripped before returning to the live loop. Prior authorization is therefore not replayable.
+- Recovery tests cover strong reuse, blocked/unverified reuse, compaction authority preservation, and stale mutation-approval stripping.
+
+### Phase 7 remaining work
+
+Connect compute-route telemetry and verified post-run crystallisation into one closed feedback loop: successful fresh verification should be eligible to strengthen reuse evidence; failed/stale/incompatible reuse must decay or quarantine rather than accumulate authority. Then prove that reuse measurably avoids planner inference without bypassing source, mutation or verification gates.
