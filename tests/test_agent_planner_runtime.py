@@ -1971,6 +1971,80 @@ def test_mutating_heuristic_block_after_bind_retries_strong_provider(tmp_path):
     ]
 
 
+
+def test_residual_first_mutation_recovery_uses_failure_target_not_test_file(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+
+    class _ResidualProvider:
+        async def next_decision(self, prompt, *, run, turn):
+            return parse_planner_decision({
+                "decision_type": "blocked",
+                "blocker": "planner packet incomplete",
+            })
+
+        async def solve_residual(self, payload, *, run):
+            assert payload["target"]["path"] == "calculator.py"
+            assert "return amount - discount_percent" in payload["current_body"]
+            return {
+                "status": "residual_generated",
+                "fields": {
+                    "new": (
+                        "from pricing import percentage_discount\n\n"
+                        "def invoice_total(amount: float, discount_percent: float) -> float:\n"
+                        "    return amount - percentage_discount(amount, discount_percent)\n"
+                    )
+                },
+            }
+
+    runtime = AgentPlannerRuntime(engine, _ResidualProvider(), max_turns=8)
+    state = runtime._load_state(run_id)
+    state.turn = 4
+    state.observations = [
+        {
+            "observation_id": "obs-bind",
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"worktree_root": str(tmp_path / "repo")},
+        },
+        {
+            "observation_id": "obs-source",
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "calculator.py",
+                "content": (
+                    "from pricing import percentage_discount\n\n"
+                    "def invoice_total(amount: float, discount_percent: float) -> float:\n"
+                    "    return amount - discount_percent\n"
+                ),
+            },
+        },
+        {
+            "observation_id": "obs-test",
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "test_invoice.py",
+                "content": "def test_percentage_discount():\n    assert invoice_total(200.0, 15.0) == 170.0\n",
+            },
+        },
+    ]
+    state.verification_failures = [{
+        "error": "assert 185.0 == 170.0",
+        "target_paths": ["calculator.py"],
+    }]
+    decision = asyncio.run(runtime._residual_first_mutation_decision(
+        runtime.provider,
+        engine.store.get_run(run_id),
+        state,
+        turn=5,
+        reason="planner packet incomplete",
+    ))
+    assert decision is not None
+    assert decision.tool_id == "worktree.replace_exact"
+    assert decision.arguments["path"] == "calculator.py"
+    assert "percentage_discount(amount, discount_percent)" in decision.arguments["new_text"]
+
 def test_first_mutation_retry_prompt_includes_exact_file_context(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct")
     runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=6)
