@@ -1918,12 +1918,13 @@ class AgentPlannerRuntime:
                     decision.decision_type is PlannerDecisionType.TOOL
                     and decision.tool_id == required.tool_id
                 )
-                if provider_decision and (not same_required_tool or bootstrapped is not None):
+                if provider_decision:
                     self.engine.emit(run_id, "agent.planner.phase_enforced", {
                         "turn": state.turn + 1,
                         "required_tool_id": required.tool_id,
                         "replaced_decision": decision.as_dict(),
                         "reason": required.rationale,
+                        "decision_already_satisfied": bool(same_required_tool),
                     })
                 if not same_required_tool:
                     decision = required
