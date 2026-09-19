@@ -33,7 +33,8 @@
     "parity:vscode:scoped": "node scripts/verify-scoped-100-parity.js",
     "parity:vscode:report": "node scripts/report-vscode-parity-matrix.js",
     "parity:vscode": "npm run parity:vscode:scoped && npm run parity:vscode:report",
-    "parity:vscode:termux": "node scripts/verify-termux-vscode-parity.js"
+    "parity:vscode:termux": "node scripts/verify-termux-vscode-parity.js",
+    "phase11:verify": "node scripts/verify-phase11-operator-surface.js"
   },
   "devDependencies": {
     "electron": "^43.1.0",
