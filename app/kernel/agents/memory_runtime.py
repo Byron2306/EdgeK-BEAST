@@ -118,6 +118,35 @@ class AgentMemoryRuntime:
             per_role_limit=limit,
         )
 
+    def record_learning_episode(self, run: dict[str, Any], episode: dict[str, Any]) -> dict[str, Any]:
+        """Persist repair/negative learning into the existing Memory Hull only."""
+        run_id = str(run.get("run_id") or episode.get("run_id") or "")
+        objective = str(run.get("objective") or "coding-agent repair")
+        classifications = [str(item) for item in (episode.get("classifications") or [])]
+        receipt = self.memory_hull.write_residue(
+            task=objective,
+            provider=str(run.get("provider") or ""),
+            decision=str(episode.get("episode_status") or "unverified"),
+            evidence={
+                "episode_digest": str(episode.get("episode_digest") or ""),
+                "classifications": classifications,
+                "promotion_authorized": False,
+                "authority": "episodic_reference_only",
+            },
+            section="tasks",
+            policy_tags=["coding_agent", "repair_learning", *classifications[:4]],
+            caller="spiffe://beast.local/coding-agent",
+            correlation_id=run_id,
+        )
+        return {
+            "beast_object_type": "beast_agent_learning_memory_receipt",
+            "version": "1.0",
+            "run_id": run_id,
+            "memory_hull": receipt,
+            "authority": "episodic_reference_only",
+            "promotion_authorized": False,
+        }
+
 
 def render_memory_context(packet: dict[str, Any], *, char_limit: int = 1800) -> str:
     import json
