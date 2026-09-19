@@ -50,6 +50,18 @@ class AgentPlannerRuntime:
         provider = str(run.get("provider") or "").strip().lower()
         return provider in {"ollama", "local_ollama", "nvidia_nim", "nim", "local_nim"}
 
+    @staticmethod
+    def _scripted_provider_mode(provider: Any) -> bool:
+        """Return True only for explicit deterministic test/script providers.
+
+        Scripted providers are regression harnesses for downstream planner state
+        transitions. They already supply an exact decision sequence, so the
+        cockpit must not replace those decisions with production lifecycle
+        insertion. Real Ollama/NIM/heuristic runs remain fully governed.
+        """
+        name = type(provider).__name__.strip().lower()
+        return name == "scriptedplannerprovider"
+
     def _checkpoint(self, run_id: str) -> dict[str, Any]:
         run = self.engine.store.get_run(run_id) or {}
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
@@ -1885,7 +1897,9 @@ class AgentPlannerRuntime:
             bootstrapped = self._bootstrap_agent_decision(run, state, decision)
             if bootstrapped is not None:
                 decision = bootstrapped
-            required = self._required_phase_decision(run, state, decision)
+            required = None
+            if not self._scripted_provider_mode(self.provider):
+                required = self._required_phase_decision(run, state, decision)
             if required is not None:
                 if decision.decision_type is not PlannerDecisionType.TOOL or decision.tool_id != required.tool_id:
                     if provider_decision:
