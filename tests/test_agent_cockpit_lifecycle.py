@@ -36,11 +36,11 @@ def _run_with_index():
 
 def test_python_import_extraction_is_line_bounded():
     source = (
-        "import pytest\\n\\n"
-        "from calculator import invoice_total\\n"
-        "from validation import validate_discount\\n\\n"
-        "def test_percentage_discount():\\n"
-        "    assert invoice_total(200.0, 15.0) == 170.0\\n"
+        "import pytest\n\n"
+        "from calculator import invoice_total\n"
+        "from validation import validate_discount\n\n"
+        "def test_percentage_discount():\n"
+        "    assert invoice_total(200.0, 15.0) == 170.0\n"
     )
     _symbols, imports = _extract_workspace_symbols("test_invoice.py", "python", source)
     assert imports == [
