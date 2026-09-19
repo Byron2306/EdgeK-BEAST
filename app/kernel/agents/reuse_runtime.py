@@ -84,6 +84,47 @@ class AgentReuseRuntime:
         packet["proposal_digest"] = _digest(packet)
         return packet
 
+    def record_verified_outcome(self, run: dict[str, Any], state: Any, observation: dict[str, Any]) -> dict[str, Any]:
+        """Promote only a freshly verified coding mission into the lattice."""
+        evidence_hash = str(observation.get("evidence_digest") or "")
+        packet = {
+            "plan_id": str(run.get("run_id") or getattr(state, "run_id", "") or ""),
+            "objective": str(run.get("objective") or ""),
+            "provider": str(run.get("provider") or ""),
+            "operations": [],
+            "applied_files": [],
+            "evidence_hash": evidence_hash,
+            "verification": {"ok": True, "fresh": True, "evidence_digest": evidence_hash},
+            "promotion_candidate": bool(evidence_hash),
+        }
+        return self.lattice.record_from_packet(packet)
+
+    def feedback(self, run: dict[str, Any], state: Any, observation: dict[str, Any]) -> dict[str, Any]:
+        """Close the reuse loop without allowing failure history to become authority."""
+        status = str(observation.get("status") or "")
+        result = observation.get("result") if isinstance(observation.get("result"), dict) else {}
+        returncode = result.get("returncode")
+        passed = status == "completed" and returncode in (None, 0)
+        if passed:
+            recorded = self.record_verified_outcome(run, state, observation)
+            return {
+                "beast_object_type": "beast_agent_reuse_feedback",
+                "version": "1.0",
+                "outcome": "fresh_verification_strengthened_lattice",
+                "recorded": recorded,
+                "authority_escalated": False,
+            }
+        proposal = self.propose(run, state, limit=3)
+        return {
+            "beast_object_type": "beast_agent_reuse_feedback",
+            "version": "1.0",
+            "outcome": "verification_failure_blocks_promotion",
+            "proposal_digest": proposal.get("proposal_digest"),
+            "blockers": ["fresh_verification_failed"],
+            "authority_escalated": False,
+            "promotion_written": False,
+        }
+
 
 def render_reuse_proposal(packet: dict[str, Any], *, char_limit: int = 1400) -> str:
     compact = json.dumps(packet, sort_keys=True, default=str, separators=(",", ":"))
