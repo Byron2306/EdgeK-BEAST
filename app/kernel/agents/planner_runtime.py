@@ -1985,13 +1985,22 @@ class AgentPlannerRuntime:
                     self._save_state(state)
                     self.engine.store.transition(run_id, AgentRunState.BUDGET_EXHAUSTED, error=state.blocker)
                     return self.engine.store.get_run(run_id) or {}
-                self.engine.emit(run_id, "agent.repair.required", {
-                    "repair_cycle": state.repair_cycles,
-                    "remaining_repairs": max(0, state.max_repair_cycles - state.repair_cycles),
-                    "verification_observation": failure,
-                    "failure_analysis": analysis,
-                    "target_paths": failure["target_paths"],
-                })
+                if baseline_failure:
+                    self.engine.emit(run_id, "agent.reasoning.required", {
+                        "reason": "pre_mutation_baseline_failed",
+                        "verification_observation": failure,
+                        "failure_analysis": analysis,
+                        "target_paths": failure["target_paths"],
+                        "authority": "reasoning_only",
+                    })
+                else:
+                    self.engine.emit(run_id, "agent.repair.required", {
+                        "repair_cycle": state.repair_cycles,
+                        "remaining_repairs": max(0, state.max_repair_cycles - state.repair_cycles),
+                        "verification_observation": failure,
+                        "failure_analysis": analysis,
+                        "target_paths": failure["target_paths"],
+                    })
             elif decision.tool_id == "worktree.verify" and observation.get("status") == "completed":
                 self.engine.emit(run_id, "agent.verification.passed", {
                     "turn": state.turn,
