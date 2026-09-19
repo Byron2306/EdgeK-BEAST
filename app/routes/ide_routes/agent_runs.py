@@ -1310,13 +1310,15 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         return {"ok": True, "run_id": run_id, "count": len(approvals), "approvals": approvals}
 
     @router.post("/edgek/agent-runs/{run_id}/approvals/{approval_id}")
-    async def edgek_agent_run_approval_resolve(request: Request, run_id: str, approval_id: str, payload: dict[str, Any] = None):
+    async def edgek_agent_run_approval_resolve(request: Request, run_id: str, approval_id: str, payload: dict[str, Any] = None, root_path: str = None):
         payload = payload or {}
-        root = _root(payload.get("root_path"))
-        engine = AgentRunEngine(root)
-        run = engine.store.get_run(run_id)
-        if not run:
-            raise HTTPException(status_code=404, detail=f"unknown agent run: {run_id}")
+        engine, run = _resolve_run_engine(
+            run_id,
+            root_path,
+            payload.get("root_path"),
+            payload.get("workspace_root"),
+        )
+        root = Path(str(run.get("root_path") or engine.workspace_root)).expanduser().resolve()
         pre_resolution_state = normalize_state(str(run.get("state") or "created"))
         restart_recovered_pause = (
             pre_resolution_state.value == "paused"
