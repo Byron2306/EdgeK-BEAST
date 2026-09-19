@@ -442,9 +442,16 @@ class PlanningIntegrationRuntime:
             analysis = result.get("analysis") if isinstance(result.get("analysis"), dict) else {}
             target_paths = result.get("target_paths") if isinstance(result.get("target_paths"), list) else []
             failure_class = str(analysis.get("failure_class") or "unknown")
+            display_class = {
+                "bad_patch": "syntax",
+                "dependency_missing": "dependency",
+                "environment_issue": "environment",
+                "flaky_test": "flaky",
+                "logic_regression": "logic",
+            }.get(failure_class, failure_class)
             missing_symbol = str(analysis.get("missing_symbol") or "").strip()
             target_summary = ", ".join(str(path) for path in target_paths[:2]) if target_paths else "latest mutation scope"
-            mutate_title = f"Repair {failure_class} failure in {target_summary}"
+            mutate_title = f"Repair {display_class} failure in {target_summary}"
             if missing_symbol:
                 mutate_title += f" for {missing_symbol}"
             for step in steps:
