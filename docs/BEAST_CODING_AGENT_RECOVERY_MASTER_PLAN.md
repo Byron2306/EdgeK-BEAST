@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 9 COMPLETE — Phase 10 ready**
+Status: **Phase 10 COMPLETE in repository implementation — Phase 11 ready**
 Working branch: `agent/beast-coding-agent-phase9-verification-repair-learning`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -215,3 +215,20 @@ Phase 9 closure:
 Repository implementation is complete. Fresh runtime/CI execution remains required before claiming live repair-gauntlet proof.
 
 Phase 10 can now address Distributed BEAST: make local/SSH/container execution preserve the same source, mutation, verification, evidence and learning contracts across nodes rather than treating remote execution as a weaker path.
+
+
+## Phase 10 implementation checkpoint
+
+Distributed BEAST now preserves the same coding-agent authority model across local, SSH, container and Dev Container targets. Remote execution changes placement, not authority.
+
+- Target-native verification carries execution-target identity and transport evidence through the immediate tool result, checkpoint verification receipt and verification event.
+- Retryable remote verifier failures retry the same target verifier once before degrading to a bounded target-native fallback.
+- Remote verification and repair remain bound to the current mutation epoch; SourcePlan still requires fresh passing verification.
+- Route escalation after hard remote repair failure remains a compute-selection signal only and cannot grant source, mutation, verification or promotion authority.
+- Recovery coverage is recorded in `tests/test_agent_phase10_distributed_beast.py` and the detailed closure contract is in `docs/BEAST_CODING_AGENT_PHASE10_DISTRIBUTED_BEAST.md`.
+
+### Phase 10 closure
+
+**COMPLETE at repository implementation level.** The Phase 10 exit condition is satisfied structurally: local and remote coding requests share one semantic and authority model. Fresh runtime/CI execution is still required before claiming a live distributed gauntlet pass, and SSH/container/Compose handshakes remain environment-dependent.
+
+Phase 11 can now unify planner phase, target identity, evidence, verification, repair state and human gates in the operator surface.
