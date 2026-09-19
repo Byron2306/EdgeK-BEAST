@@ -189,6 +189,14 @@ class AgentRunEngine:
         self.store.clear_cancel(run_id)
         self.store.transition(run_id, AgentRunState.SCOPING)
         event = self.store.append_event(run_id, "agent.run.resumed", {"from_state": state.value})
+        current = self.store.get_run(run_id) or {}
+        checkpoint = dict(current.get("checkpoint") or {})
+        checkpoint["resume_continuity"] = {
+            "sequence": int(event.get("sequence") or 0),
+            "created_at": float(event.get("created_at") or 0.0),
+            "from_state": state.value,
+        }
+        self.store.checkpoint(run_id, checkpoint)
         self._mirror_event(event)
         AGENT_RUN_CANCELLATIONS.register(run_id)
         return self.store.get_run(run_id) or {}
