@@ -603,6 +603,8 @@ _default_cors_origins = [
     "http://localhost:8002",
     "http://127.0.0.1:8101",
     "http://localhost:8101",
+    "http://127.0.0.1:8111",
+    "http://localhost:8111",
 ]
 _cors_origins = [
     item.strip()
