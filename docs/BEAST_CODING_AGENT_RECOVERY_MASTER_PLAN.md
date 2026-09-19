@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 10 COMPLETE in repository implementation — Phase 11 ready**
+Status: **Phase 11 COMPLETE in repository implementation — Phase 12 ready**
 Working branch: `agent/beast-coding-agent-phase9-verification-repair-learning`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -232,3 +232,21 @@ Distributed BEAST now preserves the same coding-agent authority model across loc
 **COMPLETE at repository implementation level.** The Phase 10 exit condition is satisfied structurally: local and remote coding requests share one semantic and authority model. Fresh runtime/CI execution is still required before claiming a live distributed gauntlet pass, and SSH/container/Compose handshakes remain environment-dependent.
 
 Phase 11 can now unify planner phase, target identity, evidence, verification, repair state and human gates in the operator surface.
+
+
+## Phase 11 implementation checkpoint
+
+Operator Surface Unification is complete at repository implementation level.
+
+- The canonical Operations Console snapshot now includes a read-only operator_state projection.
+- Planner phase, execution target/transport, worktree mutation epoch, verification currency, repair evidence, pending approvals, provider/model route and SourcePlan promotion state share one durable backend truth.
+- Verification currency is explicitly mutation-epoch bound; stale proof cannot appear promotion-ready.
+- The BEAST Agents surface renders that projection as Operator Truth rather than deriving authority from local UI state.
+- Durable approval decisions continue through the existing AgentRun approval endpoint.
+- Memory/crystal reuse remains visibly advisory and cannot become source, mutation, verification or promotion authority.
+- tests/test_agent_phase11_operator_surface.py covers the backend authority membrane.
+- desktop-ide/scripts/verify-phase11-operator-surface.js checks the backend/frontend contract and is exposed as npm run phase11:verify.
+
+**Phase 11 COMPLETE in repository implementation.** Fresh Debian/Electron runtime and visual acceptance remain required before claiming live UI proof.
+
+Phase 12 can now execute the integrated Agent Gauntlet & Promotion across simple mutation, cross-file reasoning, repair, large-repository navigation and remote-target work, comparing BEAST against the programme baseline with evidence-backed promotion criteria.
