@@ -1,7 +1,7 @@
 # BEAST Coding Agent Recovery Master Plan
 
 Date: 2026-09-17
-Status: **Phase 11 COMPLETE in repository implementation — Phase 12 ready**
+Status: **Phase 12 IMPLEMENTATION COMPLETE — live Agent Gauntlet promotion pending**
 Working branch: `agent/beast-coding-agent-phase9-verification-repair-learning`
 Base: `agent/dai-diode-final-publication-closure` @ `97867af340dc847ef9556ec3995b0e1ad20a0392`
 
@@ -250,3 +250,20 @@ Operator Surface Unification is complete at repository implementation level.
 **Phase 11 COMPLETE in repository implementation.** Fresh Debian/Electron runtime and visual acceptance remain required before claiming live UI proof.
 
 Phase 12 can now execute the integrated Agent Gauntlet & Promotion across simple mutation, cross-file reasoning, repair, large-repository navigation and remote-target work, comparing BEAST against the programme baseline with evidence-backed promotion criteria.
+
+
+## Phase 12 implementation checkpoint
+
+The final Agent Gauntlet & Promotion gate is implemented.
+
+- Five case families are mandatory: simple mutation, cross-file reasoning, verifier-driven repair, large-repository navigation and remote-target work.
+- Every case must prove exact-source grounding, governed mutation, fresh verification, valid event-chain custody and no unsupported completion claim.
+- Repair must be observed and bounded.
+- Large-repository navigation must demonstrate repository discovery rather than manual attachment dependence.
+- Remote-target work must preserve target evidence and the same authority model as local work.
+- app/kernel/agents/phase12_gauntlet.py emits a deterministic PROMOTE/REFUSE evidence decision.
+- tests/test_agent_phase12_gauntlet.py proves missing/stale/unbounded/weakened cases refuse promotion.
+- scripts/proof/evaluate_phase12_agent_gauntlet.py assembles live case receipts into the final proof artifact.
+- docs/BEAST_CODING_AGENT_PHASE12_GAUNTLET.md records the closure contract and deliberately separates architectural baseline claims from unmeasured performance claims.
+
+**Phase 12 implementation is COMPLETE.** The recovery programme remains runtime-unpromoted until fresh live receipts cover all five required case families. Debian is the preferred closure environment because it can also resolve the deferred live SSH/container acceptance from Phase 10 and Electron/operator-surface acceptance from Phase 11.
