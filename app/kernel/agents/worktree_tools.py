@@ -437,6 +437,7 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
                     "execution_target": str(context.execution_target or "local"),
                     "execution_target_payload": dict(context.execution_target_payload or {}),
                     "target_execution": f"remote_{descriptor['kind']}",
+                    "transport": str(result.get("transport") or descriptor["kind"]),
                 }
             })
             refreshed = context.engine.store.get_run(context.run_id) or {}
@@ -454,6 +455,7 @@ async def _worktree_run_verification(arguments: dict[str, Any], context: ToolExe
                     "execution_target": str(context.execution_target or "local"),
                     "execution_target_payload": dict(context.execution_target_payload or {}),
                     "target_execution": f"remote_{descriptor['kind']}",
+                    "transport": str(result.get("transport") or descriptor["kind"]),
                 },
             )
         if not result["ok"]:
