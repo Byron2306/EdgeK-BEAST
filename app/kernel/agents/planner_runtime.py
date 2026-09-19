@@ -11,6 +11,7 @@ from typing import Any
 
 from app.kernel.agents.failure_analyst import analyze_failure
 from app.kernel.agents.context_architecture import canonical_context_contract
+from app.kernel.agents.memory_runtime import AgentMemoryRuntime, render_memory_context
 from app.kernel.agents.planning_integrations import PlanningIntegrationRuntime
 from app.kernel.agents.planner_models import PlannerDecision, PlannerDecisionType, PlannerState
 from app.kernel.agents.planner_provider import HeuristicPlannerProvider, PlannerDecisionError, PlannerProvider, parse_planner_decision
@@ -37,6 +38,8 @@ class AgentPlannerRuntime:
         self.compute_governor = compute_governor
         self._context_cache: dict[str, Any] = {}
         self.planning_integrations = PlanningIntegrationRuntime(str(engine.workspace_root))
+        workspace_graph = getattr(context_packet_builder, "workspace_graph", None) if context_packet_builder is not None else None
+        self.memory_runtime = AgentMemoryRuntime(engine.workspace_root, workspace_graph=workspace_graph)
 
     @staticmethod
     def _is_local_ollama_provider(run: dict[str, Any]) -> bool:
@@ -597,6 +600,8 @@ class AgentPlannerRuntime:
             )
         context_contract = self._context_contract(run, state, char_limit=1200 if late_compact_turn else 1800 if compact_provider else 3200)
         semantic_contract = semantic_context_contract(run, state, char_limit=500 if late_compact_turn else 900 if compact_provider else 1600)
+        memory_packet = self.memory_runtime.project(run, state, limit=2 if compact_provider else 4)
+        memory_contract = render_memory_context(memory_packet, char_limit=700 if late_compact_turn else 1100 if compact_provider else 1800)
         plan_brief = {}
         try:
             plan_brief = self.planning_integrations.current_plan_brief(str(run.get("run_id") or state.run_id))
@@ -692,7 +697,7 @@ class AgentPlannerRuntime:
             f"ALLOWED TOOLS:\n{tool_contract}\n"
             f"OBSERVATIONS: {json.dumps(observations, sort_keys=True, default=str, separators=(',', ':'))}"
             f"{authority_contract}"
-            f"{context_contract}{semantic_contract}{plan_contract}{repair_contract}"
+            f"{context_contract}{semantic_contract}{memory_contract}{plan_contract}{repair_contract}"
         )
         if compact_provider:
             return self._bounded_planner_prompt(prompt, 3600 if late_compact_turn else 4800)
