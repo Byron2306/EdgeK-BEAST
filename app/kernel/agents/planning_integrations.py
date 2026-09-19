@@ -161,6 +161,20 @@ class PlanningIntegrationRuntime:
             active_step_id = next((str(step.get("step_id") or "") for step in steps if step.get("status") == "active"), "")
         if not active_step_id:
             return None
+        # Resume continuity belongs to the next executable step implied by the
+        # planner checkpoint, not blindly to the stale plan pointer. This keeps
+        # continuity attached to bind/mutate when a pause occurs between phases.
+        last_decision = planner.get("last_decision") if isinstance(planner.get("last_decision"), dict) else {}
+        resume_tool = str(last_decision.get("tool_id") or "")
+        tool_step = {
+            "worktree.bind": "bind",
+            "worktree.replace_exact": "mutate",
+            "worktree.write_file": "mutate",
+            "worktree.verify": "verify",
+            "worktree.sourceplan_draft": "handoff",
+        }.get(resume_tool, "")
+        if tool_step and any(str(step.get("step_id") or "") == tool_step for step in steps):
+            active_step_id = tool_step
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
         latest_failure = None
