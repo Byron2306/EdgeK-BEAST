@@ -61,3 +61,41 @@ def test_compaction_preserves_reuse_authority_membrane():
     assert "CRYSTAL_REUSE:" in rendered
     assert "grants_mutation_authority" in rendered
     assert "may_skip_fresh_source_read" in rendered
+
+
+class FeedbackLattice(Lattice):
+    def __init__(self):
+        super().__init__({"match_strength": 0.0, "best_match": {}, "blockers": [], "advisory_only": True})
+        self.recorded = []
+
+    def record_from_packet(self, packet):
+        self.recorded.append(packet)
+        return {"cell_id": "fresh-cell", "verification_ok": packet["verification"]["ok"]}
+
+
+def test_fresh_verification_strengthens_lattice_only_with_fresh_evidence():
+    item = AgentReuseRuntime.__new__(AgentReuseRuntime)
+    item.lattice = FeedbackLattice()
+    state = SimpleNamespace(run_id="r4")
+    feedback = item.feedback(
+        {"run_id": "r4", "objective": "repair", "provider": "ollama"},
+        state,
+        {"status": "completed", "evidence_digest": "sha256:fresh", "result": {"returncode": 0}},
+    )
+    assert feedback["outcome"] == "fresh_verification_strengthened_lattice"
+    assert item.lattice.recorded[0]["verification"]["fresh"] is True
+    assert item.lattice.recorded[0]["evidence_hash"] == "sha256:fresh"
+    assert feedback["authority_escalated"] is False
+
+
+def test_failed_verification_never_promotes_crystal():
+    item = AgentReuseRuntime.__new__(AgentReuseRuntime)
+    item.lattice = FeedbackLattice()
+    feedback = item.feedback(
+        {"run_id": "r5", "objective": "repair"},
+        SimpleNamespace(run_id="r5"),
+        {"status": "failed", "evidence_digest": "sha256:bad", "result": {"returncode": 1}},
+    )
+    assert feedback["outcome"] == "verification_failure_blocks_promotion"
+    assert feedback["promotion_written"] is False
+    assert item.lattice.recorded == []
