@@ -6,6 +6,7 @@ and hands bounded advisory records to memory_architecture.build_memory_context.
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,32 @@ class AgentMemoryRuntime:
             return callable_()
         except Exception:
             return fallback
+
+    def resolve_evidence_reference(self, receipt: dict[str, Any]) -> dict[str, Any]:
+        """Resolve an Evidence Bus pointer without promoting its summary to proof."""
+        raw_path = str(receipt.get("artifact_path") or "").strip()
+        if not raw_path:
+            return {"resolved": False, "reason": "missing_artifact_path", "authority": "reference_only"}
+        candidate = (self.workspace_root / raw_path).resolve()
+        try:
+            candidate.relative_to(self.workspace_root)
+        except ValueError:
+            return {"resolved": False, "reason": "path_outside_workspace", "authority": "reference_only"}
+        if not candidate.is_file():
+            return {"resolved": False, "reason": "artifact_missing", "path": str(candidate), "authority": "reference_only"}
+        digest = "sha256:" + hashlib.sha256(candidate.read_bytes()).hexdigest()
+        expected = str(receipt.get("artifact_hash") or "").strip()
+        hash_matches = not expected or expected == digest
+        return {
+            "resolved": bool(hash_matches),
+            "reason": "ok" if hash_matches else "artifact_hash_mismatch",
+            "path": str(candidate),
+            "artifact_sha256": digest,
+            "expected_hash": expected,
+            "authority": "resolved_evidence_reference",
+            "grants_mutation_authority": False,
+            "grants_exact_source_authority": False,
+        }
 
     def project(self, run: dict[str, Any], state: Any, *, limit: int = 4) -> dict[str, Any]:
         objective = self._objective(run)
