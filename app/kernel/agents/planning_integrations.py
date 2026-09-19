@@ -183,13 +183,18 @@ class PlanningIntegrationRuntime:
             "worktree.verify": "verify",
             "worktree.sourceplan_draft": "handoff",
         }.get(resume_tool, "")
-        if tool_step and any(str(step.get("step_id") or "") == tool_step for step in steps):
-            active_step_id = tool_step
         latest_failure = None
         failures = planner.get("verification_failures") if isinstance(planner.get("verification_failures"), list) else []
         if failures:
             tail = failures[-1]
             latest_failure = tail if isinstance(tail, dict) else None
+        # A failed verifier means the next executable lifecycle step is repair,
+        # not another verify. Repair context therefore outranks the historical
+        # last_decision when reconstructing resume continuity.
+        if latest_failure and any(str(step.get("step_id") or "") == "mutate" for step in steps):
+            active_step_id = "mutate"
+        elif tool_step and any(str(step.get("step_id") or "") == tool_step for step in steps):
+            active_step_id = tool_step
         approval_resume = checkpoint.get("approval_resume") if isinstance(checkpoint.get("approval_resume"), dict) else {}
         updated = False
         for step in steps:
