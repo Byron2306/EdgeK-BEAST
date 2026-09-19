@@ -375,6 +375,134 @@ class AgentPlannerRuntime:
         return None
 
     @classmethod
+    def _preferred_mutation_read(cls, state: PlannerState) -> dict[str, Any] | None:
+        reads = [
+            item for item in state.observations
+            if isinstance(item, dict)
+            and str(item.get("tool_id") or "") == "workspace.read_range"
+            and str(item.get("status") or "") == "completed"
+            and isinstance(item.get("result"), dict)
+            and str((item.get("result") or {}).get("path") or "").strip()
+            and str((item.get("result") or {}).get("content") or "")
+        ]
+        if not reads:
+            return None
+        target_paths: list[str] = []
+        if state.verification_failures:
+            latest = state.verification_failures[-1] if isinstance(state.verification_failures[-1], dict) else {}
+            target_paths = [str(path).strip() for path in (latest.get("target_paths") or []) if str(path).strip()]
+        for target in target_paths:
+            for item in reversed(reads):
+                result = item.get("result") or {}
+                if str(result.get("path") or "").strip() == target:
+                    return item
+        def is_test_path(path: str) -> bool:
+            normalized = path.replace("\\", "/").casefold()
+            name = normalized.rsplit("/", 1)[-1]
+            return "/tests/" in f"/{normalized}" or name.startswith("test_") or name.endswith("_test.py")
+        for item in reversed(reads):
+            path = str((item.get("result") or {}).get("path") or "")
+            if not is_test_path(path):
+                return item
+        return reads[-1]
+
+    async def _residual_first_mutation_decision(
+        self,
+        provider: Any,
+        run: dict[str, Any],
+        state: PlannerState,
+        *,
+        turn: int,
+        reason: str,
+    ) -> PlannerDecision | None:
+        target_provider = self._primary_retry_provider(provider)
+        solver = getattr(target_provider, "solve_residual", None)
+        if not callable(solver):
+            return None
+        latest = self._preferred_mutation_read(state)
+        if not latest:
+            return None
+        result = latest.get("result") if isinstance(latest.get("result"), dict) else {}
+        path = str(result.get("path") or "").strip()
+        content = str(result.get("content") or "")
+        if not path or not content or len(content) > 4200:
+            return None
+        failure = state.verification_failures[-1] if state.verification_failures and isinstance(state.verification_failures[-1], dict) else {}
+        failure_summary = str(
+            failure.get("error")
+            or failure.get("stderr")
+            or failure.get("stdout")
+            or failure.get("summary")
+            or reason
+        )[-1800:]
+        payload = {
+            "task": str(run.get("objective") or "Repair the observed verifier failure."),
+            "objective": str(run.get("objective") or "Repair the observed verifier failure."),
+            "target": {"path": path},
+            "current_code": content,
+            "current_body": content,
+            "failure_summary": failure_summary,
+            "unresolved_fields": ["new"],
+            "allowed_output": {
+                "new": {
+                    "type": "string",
+                    "max_chars": max(800, min(8000, len(content) * 3)),
+                }
+            },
+            "residual_contract": {
+                "field": "new",
+                "scope": "exact_file_snapshot",
+                "old": content,
+                "value_schema": {"type": "nonempty_source_fragment"},
+            },
+            "constraints": [
+                "preserve unrelated code",
+                "repair the observed verifier failure",
+                "return the complete replacement for this exact compact file snapshot",
+                "do not choose another file or tool",
+            ],
+        }
+        timeout = max(6.0, min(24.0, self._decision_timeout_seconds(run) * 0.75))
+        self.engine.emit(run.get("run_id") or "", "agent.provider.residual_mutation_retry", {
+            "turn": turn,
+            "provider": str(run.get("provider") or ""),
+            "model": str(run.get("model") or ""),
+            "path": path,
+            "reason": reason,
+            "timeout_ms": int(timeout * 1000),
+        })
+        try:
+            solved = await asyncio.wait_for(
+                solver(payload, run={"run_id": str(run.get("run_id") or ""), "task_class": "code_change"}),
+                timeout=timeout,
+            )
+        except Exception as exc:
+            self.engine.emit(run.get("run_id") or "", "agent.provider.residual_mutation_retry_failed", {
+                "turn": turn,
+                "path": path,
+                "reason": f"{type(exc).__name__}: {exc}",
+            })
+            return None
+        fields = solved.get("fields") if isinstance(solved, dict) and isinstance(solved.get("fields"), dict) else {}
+        replacement = str(fields.get("new") or "")
+        if not replacement.strip() or replacement == content:
+            return None
+        if len(replacement) > max(8000, len(content) * 4):
+            return None
+        self.engine.emit(run.get("run_id") or "", "agent.provider.residual_mutation_recovered", {
+            "turn": turn,
+            "path": path,
+            "old_chars": len(content),
+            "new_chars": len(replacement),
+        })
+        return PlannerDecision(
+            decision_type=PlannerDecisionType.TOOL,
+            tool_id="worktree.replace_exact",
+            arguments={"path": path, "old_text": content, "new_text": replacement},
+            rationale="BEAST fixed the file/tool/scope from exact source authority and used the local model only to fill the bounded semantic replacement.",
+        )
+
+    @classmethod
     def _can_attempt_first_mutation_reentry(cls, run: dict[str, Any], state: PlannerState) -> bool:
         if not cls._strong_reentry_allowed(run, state):
             return False
@@ -432,7 +560,7 @@ class AgentPlannerRuntime:
             "timeout_ms": int(retry_timeout * 1000),
         })
         try:
-            return await asyncio.wait_for(
+            decision = await asyncio.wait_for(
                 target_provider.next_decision(retry_prompt, run=run, turn=turn),
                 timeout=retry_timeout,
             )
@@ -443,7 +571,19 @@ class AgentPlannerRuntime:
                 "model": str(run.get("model") or ""),
                 "reason": f"{type(exc).__name__}: {exc}",
             })
-            return None
+            return await self._residual_first_mutation_decision(
+                provider, run, state, turn=turn, reason=f"{type(exc).__name__}: {exc}"
+            )
+        if (
+            decision.decision_type is PlannerDecisionType.BLOCKED
+            or self._invalid_mutation_reason(decision)
+        ):
+            residual = await self._residual_first_mutation_decision(
+                provider, run, state, turn=turn, reason=reason
+            )
+            if residual is not None:
+                return residual
+        return decision
 
     @classmethod
     def _preferred_tool_ids(cls, state: PlannerState) -> list[str]:
