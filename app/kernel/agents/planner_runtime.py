@@ -1,12 +1,14 @@
 """Durable bounded model -> tool -> observation loop for BEAST AgentRuns."""
 
 from __future__ import annotations
+import re
 
 import asyncio
 import json
 import os
 import uuid
 from dataclasses import replace
+from pathlib import Path
 from typing import Any
 
 from app.kernel.agents.failure_analyst import analyze_failure
@@ -556,7 +558,7 @@ class AgentPlannerRuntime:
             if latest_mutation is not None:
                 compact_seed.append(latest_mutation)
             compact_seed.append(latest_failure)
-            observations = [self._compact_observation(item) for item in compact_seed if isinstance(item, dict)]
+            observations = [self._compact_repair_observation(item) for item in compact_seed if isinstance(item, dict)]
         else:
             visible_observations = 2 if late_compact_turn else 4 if compact_provider else min(self.observation_limit, 6)
             observations = [self._compact_observation(item) for item in state.observations[-visible_observations:]]
@@ -662,11 +664,11 @@ class AgentPlannerRuntime:
             f"{target_hint}\n"
             f"OBJECTIVE: {objective}\n"
             f"TURN: {state.turn + 1}/{state.max_turns}; REPAIRS: {state.repair_cycles}/{state.max_repair_cycles}\n"
-            f"{next_phase}{verification_hint}\n"
+            f"{next_phase}{repair_contract}{verification_hint}\n"
             f"ALLOWED TOOLS:\n{tool_contract}\n"
             f"OBSERVATIONS: {json.dumps(observations, sort_keys=True, default=str, separators=(',', ':'))}"
             f"{authority_contract}"
-            f"{context_contract}{semantic_contract}{plan_contract}{repair_contract}"
+            f"{context_contract}{semantic_contract}{plan_contract}"
         )
         if compact_provider:
             return prompt[:(3600 if late_compact_turn else 4800)]
@@ -947,6 +949,77 @@ class AgentPlannerRuntime:
         return contract
 
     @classmethod
+    def _target_discovery_query(cls, run: dict[str, Any]) -> str:
+        """Choose a conservative literal identifier for bounded target discovery."""
+        request = run.get("request") if isinstance(run.get("request"), dict) else {}
+
+        for key in ("symbol", "target_symbol", "query"):
+            value = str(request.get(key) or "").strip()
+            if value:
+                return value
+
+        objective = str(run.get("objective") or request.get("prompt") or "")
+        identifiers = re.findall(
+            r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]+\b",
+            objective,
+        )
+        if identifiers:
+            return identifiers[0]
+
+        code_identifiers = re.findall(
+            r"`([A-Za-z_][A-Za-z0-9_.]*)`",
+            objective,
+        )
+        if code_identifiers:
+            return code_identifiers[0]
+
+        return ""
+
+    @classmethod
+    def _indexed_symbol_path(
+        cls,
+        run: dict[str, Any],
+        state: PlannerState,
+    ) -> str:
+        """Resolve an objective symbol to its indexed definition path."""
+        query = cls._target_discovery_query(run)
+        if not query:
+            return ""
+
+        latest_index = cls._latest_observation(state, "workspace.index")
+        if not isinstance(latest_index, dict):
+            return ""
+        if str(latest_index.get("status") or "") != "completed":
+            return ""
+
+        result = latest_index.get("result")
+        result = result if isinstance(result, dict) else {}
+        symbols = result.get("symbols")
+        symbols = symbols if isinstance(symbols, list) else []
+
+        exact = []
+        for symbol in symbols:
+            if not isinstance(symbol, dict):
+                continue
+            name = str(symbol.get("name") or "").strip()
+            path = str(symbol.get("path") or "").strip()
+            if name == query and path:
+                exact.append(path)
+
+        if not exact:
+            return ""
+
+        # Prefer implementation paths over test references/definitions.
+        exact.sort(
+            key=lambda path: (
+                Path(path).name.startswith("test_")
+                or "/tests/" in f"/{path}",
+                path,
+            )
+        )
+        return exact[0]
+
+    @classmethod
     def _required_phase_decision(cls, run: dict[str, Any], state: PlannerState, decision: PlannerDecision | None = None) -> PlannerDecision | None:
         if not cls._is_mutating_mode(run):
             return None
@@ -973,8 +1046,48 @@ class AgentPlannerRuntime:
                 rationale="Mutating agent runs require an isolated worktree before any file mutation.",
             )
         inspected_paths = cls._inspected_paths(state)
-        if not inspected_paths:
-            targeted_path = cls._targeted_read_path(run)
+        mutation_already_completed = cls._latest_index(
+            state,
+            {"worktree.write_file", "worktree.replace_exact"},
+            completed_only=True,
+        ) >= 0
+
+        if not inspected_paths and not mutation_already_completed:
+            concrete_mutation = (
+                isinstance(decision, PlannerDecision)
+                and decision.decision_type is PlannerDecisionType.TOOL
+                and decision.tool_id in {
+                    "worktree.replace_exact",
+                    "worktree.write_file",
+                }
+                and bool(str(decision.arguments.get("path") or "").strip())
+            )
+            if concrete_mutation:
+                return None
+
+            targeted_path = (
+                cls._targeted_read_path(run)
+                or cls._indexed_symbol_path(run, state)
+            )
+
+            if not targeted_path:
+                latest_search = cls._latest_observation(state, "workspace.search_text")
+                if (
+                    isinstance(latest_search, dict)
+                    and str(latest_search.get("status") or "") == "completed"
+                ):
+                    result = latest_search.get("result")
+                    result = result if isinstance(result, dict) else {}
+                    matches = result.get("matches")
+                    matches = matches if isinstance(matches, list) else []
+                    for match in matches:
+                        if not isinstance(match, dict):
+                            continue
+                        candidate = str(match.get("path") or "").strip()
+                        if candidate:
+                            targeted_path = candidate
+                            break
+
             if targeted_path:
                 return PlannerDecision(
                     decision_type=PlannerDecisionType.TOOL,
@@ -982,6 +1095,23 @@ class AgentPlannerRuntime:
                     arguments={"path": targeted_path, "start_line": 1, "line_count": 220},
                     rationale="A bounded file read is required after bind when no exact file contents have been inspected yet.",
                 )
+
+            if cls._latest_index(
+                state, {"workspace.search_text"}, completed_only=True
+            ) < 0:
+                query = cls._target_discovery_query(run)
+                if query:
+                    return PlannerDecision(
+                        decision_type=PlannerDecisionType.TOOL,
+                        tool_id="workspace.search_text",
+                        arguments={
+                            "query": query,
+                            "path": ".",
+                            "limit": 50,
+                            "case_sensitive": False,
+                        },
+                        rationale="No explicit target file is available; bounded target discovery is required before source inspection.",
+                    )
         mutation_paths = cls._latest_mutation_paths(state)
         latest_mutation_index = cls._latest_index(state, {"worktree.write_file", "worktree.replace_exact"}, completed_only=True)
         latest_verify_index = cls._latest_index(state, {"worktree.verify"})
@@ -1098,6 +1228,65 @@ class AgentPlannerRuntime:
         encoded = json.dumps(projected, sort_keys=True, default=str, separators=(",", ":"))
         if len(encoded) > 3000:
             projected["result"] = {"summary": encoded[:2800] + "[truncated]", "truncated": True}
+        return projected
+
+    @staticmethod
+    def _compact_repair_observation(observation: Any) -> dict[str, Any]:
+        """Preserve the repair causal chain within compact planner budgets."""
+        if not isinstance(observation, dict):
+            return {"status": "unknown"}
+
+        projected: dict[str, Any] = {}
+
+        for key in ("observation_id", "tool_id", "status"):
+            value = observation.get(key)
+            if value not in {None, ""}:
+                projected[key] = value
+
+        error = str(observation.get("error") or "").strip()
+        if error:
+            projected["error"] = error[:600]
+
+        arguments = (
+            observation.get("arguments")
+            if isinstance(observation.get("arguments"), dict)
+            else {}
+        )
+        if arguments:
+            compact_arguments: dict[str, Any] = {}
+            for key in ("path", "command"):
+                if key in arguments:
+                    compact_arguments[key] = arguments[key]
+            if compact_arguments:
+                projected["arguments"] = compact_arguments
+
+        result = (
+            observation.get("result")
+            if isinstance(observation.get("result"), dict)
+            else {}
+        )
+        if result:
+            compact_result: dict[str, Any] = {}
+            for key in (
+                "path",
+                "status",
+                "returncode",
+                "exit_code",
+                "target_execution",
+                "execution_target",
+            ):
+                value = result.get(key)
+                if value not in {None, ""}:
+                    compact_result[key] = value
+
+            for key in ("stdout", "stderr", "message"):
+                value = str(result.get(key) or "").strip()
+                if value:
+                    compact_result[key] = value[:600]
+
+            if compact_result:
+                projected["result"] = compact_result
+
         return projected
 
     async def run(self, run_id: str) -> dict[str, Any]:

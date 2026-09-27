@@ -159,15 +159,17 @@ class PlanningIntegrationRuntime:
         active_step_id = str(plan.get("active_step_id") or "")
         if not active_step_id:
             active_step_id = next((str(step.get("step_id") or "") for step in steps if step.get("status") == "active"), "")
-        if not active_step_id:
-            return None
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         planner = checkpoint.get("planner") if isinstance(checkpoint.get("planner"), dict) else {}
+
+        if not active_step_id:
+            return None
         latest_failure = None
         failures = planner.get("verification_failures") if isinstance(planner.get("verification_failures"), list) else []
         if failures:
             tail = failures[-1]
             latest_failure = tail if isinstance(tail, dict) else None
+        failure_record = latest_failure if isinstance(latest_failure, dict) else {}
         approval_resume = checkpoint.get("approval_resume") if isinstance(checkpoint.get("approval_resume"), dict) else {}
         updated = False
         for step in steps:
@@ -175,8 +177,8 @@ class PlanningIntegrationRuntime:
                 continue
             telemetry = dict(step.get("telemetry") or {})
             continuity = dict(telemetry.get("continuity") or {})
-            failure_analysis = latest_failure.get("analysis") if isinstance(latest_failure, dict) and isinstance(latest_failure.get("analysis"), dict) else {}
-            target_paths = latest_failure.get("target_paths") if isinstance(latest_failure, dict) and isinstance(latest_failure.get("target_paths"), list) else []
+            failure_analysis = failure_record.get("analysis") if isinstance(failure_record.get("analysis"), dict) else {}
+            target_paths = failure_record.get("target_paths") if isinstance(failure_record.get("target_paths"), list) else []
             continuity.update({
                 "resume_sequence": int(latest_resume.get("sequence") or 0),
                 "resumed_at": float(latest_resume.get("created_at") or 0.0),
@@ -184,14 +186,14 @@ class PlanningIntegrationRuntime:
                 "resumed_turn": int(planner.get("turn") or 0),
                 "resume_observation_count": len(planner.get("observations") if isinstance(planner.get("observations"), list) else []),
                 "resume_repair_cycles": int(planner.get("repair_cycles") or 0),
-                "resume_pending_repair": bool(latest_failure),
+                "resume_pending_repair": bool(failure_record),
                 "resume_failure_class": str(failure_analysis.get("failure_class") or ""),
                 "resume_missing_symbol": str(failure_analysis.get("missing_symbol") or ""),
                 "resume_target_paths": [str(path) for path in target_paths[:4]],
-                "resume_execution_target": str(latest_failure.get("execution_target") or ""),
-                "resume_target_execution": str(latest_failure.get("target_execution") or ""),
-                "resume_transport": str(latest_failure.get("transport") or ""),
-                "resume_verifier_command": [str(item) for item in (latest_failure.get("command") or [])[:12]],
+                "resume_execution_target": str(failure_record.get("execution_target") or ""),
+                "resume_target_execution": str(failure_record.get("target_execution") or ""),
+                "resume_transport": str(failure_record.get("transport") or ""),
+                "resume_verifier_command": [str(item) for item in (failure_record.get("command") or [])[:12]],
                 "resume_step_id": str(approval_resume.get("step_id") or active_step_id),
                 "resume_state": str(approval_resume.get("resume_state") or ""),
             })

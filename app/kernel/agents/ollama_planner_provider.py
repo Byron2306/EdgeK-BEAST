@@ -243,8 +243,15 @@ class OllamaPlannerProvider:
                 "keep_alive": os.environ.get("BEAST_OLLAMA_KEEP_ALIVE", "5m"),
             }
             try:
-                request_method = self._request_stream_json if callable(self.on_token) else self._request_json
-                body = await asyncio.to_thread(request_method, "/api/generate", payload, request_timeout)
+                # The payload always requests Ollama streaming, so the
+                # response is NDJSON regardless of whether a token callback
+                # is installed. Always consume it with the streaming parser.
+                body = await asyncio.to_thread(
+                    self._request_stream_json,
+                    "/api/generate",
+                    payload,
+                    request_timeout,
+                )
                 self.last_usage = {
                     "prompt_chars": len(request_prompt),
                     "prompt_bytes": len(request_prompt.encode("utf-8")),

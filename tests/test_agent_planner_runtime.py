@@ -388,7 +388,7 @@ def test_phase2_planning_integration_marks_repair_scope_after_failed_verify(tmp_
     verify = next(step for step in current["plan"]["steps"] if step["step_id"] == "verify")
     assert current["plan"]["active_step_id"] == "mutate"
     assert mutate["status"] == "active"
-    assert "syntax failure" in mutate["title"]
+    assert "bad_patch failure" in mutate["title"]
     assert "answer.py" in mutate["title"]
     assert any("verifier-declared residual" in item for item in mutate["success_criteria"])
     assert verify["status"] == "blocked"
@@ -732,8 +732,15 @@ def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
         def _apply_pressure_budget(self, *, reuse_mode: str = "cold") -> None:
             self._pressure_decision = None
 
-        def _request_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
+        def _request_json(self, path: str, payload: dict[str, Any] | None, timeout: float) -> dict[str, Any]:
+            if path == "/api/tags":
+                return {"models": [{"name": self.model}]}
+            raise AssertionError(f"unexpected non-stream request: {path}")
+
+        def _request_stream_json(self, path: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
             self._seen_timeout = timeout
+            assert path == "/api/generate"
+            assert payload["stream"] is True
             return {"response": "{\"decision_type\":\"complete\",\"summary\":\"done\"}", "total_duration": 5_000_000}
 
     provider = StubOllama(model="qwen2.5:0.5b", timeout_seconds=30, max_retries=0)
@@ -1554,7 +1561,7 @@ def test_verification_planner_prefers_focused_pytest_for_changed_tests():
         },
     }
     plan = plan_verification(run)
-    assert plan["command"] == ["python", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
+    assert plan["command"] == ["python3", "-m", "pytest", "-q", "tests/test_agent_loop.py"]
     assert plan["reason"] == "focused_pytest_for_changed_test_files"
     assert plan["execution_target"]["kind"] == "container"
     assert plan["catalog_matches"] == ["python:pytest"]
@@ -1792,7 +1799,7 @@ def test_edit_prompt_includes_target_aware_verification_hint(tmp_path):
     prompt = runtime._prompt(run, runtime._load_state(run_id))
     assert "EXECUTION TARGET: ssh" in prompt
     assert "VERIFICATION HINT:" in prompt
-    assert '"command":["python","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
+    assert '"command":["python3","-m","pytest","-q","tests/test_agent_loop.py"]' in prompt
     assert '"kind":"ssh"' in prompt
 
 
@@ -1892,7 +1899,7 @@ def test_prompt_surfaces_structured_repair_contract_after_failed_verify(tmp_path
     state = runtime._load_state(run_id)
     prompt = runtime._prompt(engine.store.get_run(run_id), state)
     assert "repair the latest verifier failure with one bounded edit in answer.py" in prompt
-    assert "Failure class: syntax." in prompt
+    assert "Failure class: bad_patch." in prompt
 
 
 def test_mutating_heuristic_block_after_bind_retries_strong_provider(tmp_path):
@@ -2307,3 +2314,167 @@ def test_planner_prompt_keeps_workspace_inventory_narrow(tmp_path):
     prompt = runtime._prompt(engine.store.get_run(run_id), runtime._load_state(run_id))
     assert "Return ONE JSON object" in prompt
     assert "Never emit whole-file source" in prompt
+
+
+def test_required_phase_discovers_symbol_after_bind_when_no_explicit_target(tmp_path):
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="nvidia_nim",
+        model="meta/llama-3.1-70b-instruct",
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    run = engine.store.get_run(run_id)
+
+    run["objective"] = (
+        "Fix safe_average so an empty iterable returns 0.0 while preserving "
+        "correct behavior for lists and generators."
+    )
+    run["request"] = {
+        "prompt": run["objective"],
+        "workspace_root": str(tmp_path / "repo"),
+    }
+
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {
+            "observation_id": "obs-index",
+            "tool_id": "workspace.index",
+            "status": "completed",
+            "result": {"ok": True},
+        },
+        {
+            "observation_id": "obs-bind",
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "task_id": "wt-1",
+                "worktree_root": str(tmp_path / "repo"),
+            },
+        },
+    ]
+
+    decision = runtime._required_phase_decision(run, state)
+
+    assert decision is not None
+    assert decision.tool_id == "workspace.search_text"
+    assert decision.arguments == {
+        "query": "safe_average",
+        "path": ".",
+        "limit": 50,
+        "case_sensitive": False,
+    }
+
+
+def test_required_phase_reads_first_search_match_after_target_discovery(tmp_path):
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="nvidia_nim",
+        model="meta/llama-3.1-70b-instruct",
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    run = engine.store.get_run(run_id)
+
+    run["objective"] = (
+        "Fix safe_average so an empty iterable returns 0.0 while preserving "
+        "correct behavior for lists and generators."
+    )
+    run["request"] = {
+        "prompt": run["objective"],
+        "workspace_root": str(tmp_path / "repo"),
+    }
+
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {
+            "observation_id": "obs-index",
+            "tool_id": "workspace.index",
+            "status": "completed",
+            "result": {"ok": True},
+        },
+        {
+            "observation_id": "obs-bind",
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "task_id": "wt-1",
+                "worktree_root": str(tmp_path / "repo"),
+            },
+        },
+        {
+            "observation_id": "obs-search",
+            "tool_id": "workspace.search_text",
+            "status": "completed",
+            "result": {
+                "query": "safe_average",
+                "matches": [
+                    {
+                        "path": "calculator.py",
+                        "line": 1,
+                        "preview": "def safe_average(values):",
+                    }
+                ],
+                "count": 1,
+                "truncated": False,
+            },
+        },
+    ]
+
+    decision = runtime._required_phase_decision(run, state)
+
+    assert decision is not None
+    assert decision.tool_id == "workspace.read_range"
+    assert decision.arguments == {
+        "path": "calculator.py",
+        "start_line": 1,
+        "line_count": 220,
+    }
+
+
+def test_required_phase_does_not_repeat_completed_empty_target_search(tmp_path):
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="nvidia_nim",
+        model="meta/llama-3.1-70b-instruct",
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+    run = engine.store.get_run(run_id)
+
+    run["objective"] = "Fix safe_average without weakening tests."
+    run["request"] = {
+        "prompt": run["objective"],
+        "workspace_root": str(tmp_path / "repo"),
+    }
+
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {
+            "observation_id": "obs-index",
+            "tool_id": "workspace.index",
+            "status": "completed",
+            "result": {"ok": True},
+        },
+        {
+            "observation_id": "obs-bind",
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "task_id": "wt-1",
+                "worktree_root": str(tmp_path / "repo"),
+            },
+        },
+        {
+            "observation_id": "obs-search",
+            "tool_id": "workspace.search_text",
+            "status": "completed",
+            "result": {
+                "query": "safe_average",
+                "matches": [],
+                "count": 0,
+                "truncated": False,
+            },
+        },
+    ]
+
+    decision = runtime._required_phase_decision(run, state)
+
+    assert decision is None or decision.tool_id != "workspace.search_text"
