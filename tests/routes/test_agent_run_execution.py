@@ -280,3 +280,54 @@ def test_verification_console_auto_recovers_runtime_restarted_pause(tmp_path):
         params={"workspace_root": str(tmp_path)},
     ).json()["events"]
     assert any(event["event_type"] == "agent.run.resumed" for event in events)
+
+def test_huggingface_planner_does_not_route_through_ollama(tmp_path, monkeypatch):
+    import app.routes.ide_routes.agent_runs as agent_runs
+
+    captured = {}
+
+    class FakeBeastApiClient:
+        def __init__(self, base_url, workspace):
+            captured["base_url"] = base_url
+            captured["workspace"] = workspace
+
+        async def stream_live_turn(self, *args, **kwargs):
+            raise RuntimeError("stop_after_client_construction")
+            yield
+
+    monkeypatch.setattr(agent_runs, "BeastApiClient", FakeBeastApiClient)
+
+    client = TestClient(app_for(tmp_path))
+
+    session = client.post("/edgek/ide/agent-sessions/create", json={
+        "root_path": str(tmp_path),
+        "objective": "HF planner routing regression",
+        "mode": "architect",
+        "provider": "huggingface",
+        "model": "openai/gpt-oss-120b:fastest",
+    }).json()["session"]
+
+    created = client.post("/edgek/agent-runs", json={
+        "root_path": str(tmp_path),
+        "session_id": session["session_id"],
+        "objective": "HF planner routing regression",
+        "mode": "agent",
+        "provider": "huggingface",
+        "model": "openai/gpt-oss-120b:fastest",
+        "launch": False,
+    }).json()
+
+    run_id = created["run"]["run_id"]
+
+    client.post(
+        f"/edgek/agent-runs/{run_id}/planner/execute",
+        json={"root_path": str(tmp_path), "max_turns": 1},
+    )
+
+    deadline = time.monotonic() + 3
+    while "base_url" not in captured and time.monotonic() < deadline:
+        time.sleep(0.05)
+
+    assert "base_url" in captured
+    assert captured["base_url"] != "http://127.0.0.1:11434"
+    assert "/proxy/huggingface" not in captured["base_url"]

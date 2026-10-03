@@ -80,6 +80,7 @@ def attest(root: Path, *, lattice_root: Path, ttl_seconds: int) -> dict:
             "capabilities": [
                 "bucket_registry", "immutable_blobs", "signed_revisions", "replay_resistant_requests",
             ],
+            "ml_kem_public_key_digest": "",
             "maximum_authority": "verify_only",
         }
         evidence = issuer.issue(

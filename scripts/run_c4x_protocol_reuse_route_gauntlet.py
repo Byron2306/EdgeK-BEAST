@@ -47,7 +47,7 @@ from app.kernel.compute.crystal_bus import (  # noqa: E402
 from app.kernel.compute.deterministic_intelligence import sha256_bytes, sha256_digest, utc_now_iso  # noqa: E402
 from app.kernel.compute.sealed_capsule import CrystalCapsule  # noqa: E402
 from scripts.harden_c4x_physical_truth_sidecar import harden_sidecar  # noqa: E402
-from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate  # noqa: E402
+from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate, scoped_gate_summary, write_scoped_sidecar  # noqa: E402
 
 
 DEFAULT_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
@@ -100,22 +100,29 @@ def main() -> int:
     sidecar["route_receipt"] = route_receipt
     sidecar_path.write_text(json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     harden_sidecar(sidecar_path)
+    hardened_sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    scoped_sidecar = write_scoped_sidecar(
+        source_payload=hardened_sidecar,
+        destination=run_root / "protocol_reuse_route_scoped_sidecar.json",
+        run_id=args.run_id,
+        claimed_receipts=("crystal_bus_receipt", "reuse_receipt", "route_receipt"),
+        source_sidecar=sidecar_path,
+    )
+    harden_sidecar(scoped_sidecar)
 
     certificate = run_physical_truth_certificate(
-        sidecar=sidecar_path,
+        sidecar=scoped_sidecar,
         run_id=args.run_id,
         evidence_root=evidence_root,
     )
     summary = {
         "run_id": args.run_id,
         "receipt": str(run_root / "protocol_reuse_route_gauntlet.json"),
+        "shared_sidecar": str(sidecar_path),
+        "scoped_sidecar": str(scoped_sidecar),
         "receipt_digest": receipt["receipt_digest"],
         "certificate_digest": certificate["receipt_digest"],
-        "green_gates": [k for k, v in certificate["certificate_gates"].items() if v],
-        "red_gates": [k for k, v in certificate["certificate_gates"].items() if not v],
-        "protocol_integrity_green": certificate["certificate_gates"].get("protocol_integrity") is True,
-        "reuse_green": certificate["certificate_gates"].get("reuse") is True,
-        "route_resilience_green": certificate["certificate_gates"].get("route_resilience") is True,
+        **scoped_gate_summary(certificate, claimed_gates=("protocol_integrity", "reuse", "route_resilience")),
     }
     (run_root / "protocol_reuse_route_summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n",

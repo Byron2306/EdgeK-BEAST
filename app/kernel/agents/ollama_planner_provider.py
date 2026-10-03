@@ -174,28 +174,131 @@ class OllamaPlannerProvider:
             )
         self._preflight_ok = True
 
+    @staticmethod
+    def _salvage_first_mutation_residual(
+        raw: str,
+        prompt: str,
+    ) -> PlannerDecision | None:
+        """Recover only new_text from malformed triple-quoted mutation JSON.
+
+        This is intentionally scoped to the first-mutation/revision boundary.
+        The recovered source is still materialized and validated by the
+        planner runtime before it can reach approval or execution.
+        """
+        if "FIRST MUTATION REQUIRED" not in str(prompt or ""):
+            return None
+
+        text = str(raw or "")
+        marker = '"new_text"'
+        marker_at = text.find(marker)
+        if marker_at < 0:
+            return None
+
+        assignment = text.find(":", marker_at + len(marker))
+        if assignment < 0:
+            return None
+
+        opening = text.find('"""', assignment + 1)
+        if opening < 0:
+            return None
+
+        closing = text.rfind('"""')
+        if closing <= opening:
+            return None
+
+        new_text = text[opening + 3:closing]
+
+        # The malformed pseudo-JSON emitted by small local models can carry
+        # one JSON string-escape layer inside the triple-quoted residual.
+        # Decode only the ordinary JSON escapes we can identify safely.
+        # Unknown escapes are preserved verbatim rather than interpreted.
+        decoded: list[str] = []
+        i = 0
+        escape_map = {
+            '"': '"',
+            "\\": "\\",
+            "/": "/",
+            "b": "\b",
+            "f": "\f",
+            "n": "\n",
+            "r": "\r",
+            "t": "\t",
+        }
+        while i < len(new_text):
+            char = new_text[i]
+            if char == "\\" and i + 1 < len(new_text):
+                escaped = new_text[i + 1]
+                replacement = escape_map.get(escaped)
+                if replacement is not None:
+                    decoded.append(replacement)
+                    i += 2
+                    continue
+            decoded.append(char)
+            i += 1
+        new_text = "".join(decoded)
+
+        if new_text.startswith("\n"):
+            new_text = new_text[1:]
+        if new_text.endswith("\n"):
+            new_text = new_text[:-1]
+
+        if not new_text.strip():
+            return None
+
+        return parse_planner_decision({
+            "decision_type": "tool",
+            "tool_id": "worktree.replace_exact",
+            "arguments": {
+                "new_text": new_text,
+            },
+        })
+
     async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int) -> PlannerDecision:
         self.last_partial_text = ""
-        if self.route_dampener is not None and self.route_dampener.suppressed(self.route_id):
-            self.last_route = {"provider": "ollama", "engine": self.engine or "ollama", "route_kind": "dampened", "reason": "persistent_bad_route_memory"}
-            self.last_usage = {"route": self._route_event("timeout"), "timeout_seconds": self._request_timeout(prompt, run=run, turn=turn)}
+        recovery_timeout = float(run.get("_beast_recovery_timeout_seconds") or 0.0)
+        recovery_mode = recovery_timeout > 0
+
+        if (
+            not recovery_mode
+            and self.route_dampener is not None
+            and self.route_dampener.suppressed(self.route_id)
+        ):
+            self.last_route = {
+                "provider": "ollama",
+                "engine": self.engine or "ollama",
+                "route_kind": "dampened",
+                "reason": "persistent_bad_route_memory",
+            }
+            score = self.route_dampener.score(self.route_id)
+            self.last_usage = {
+                "route": {
+                    "route_id": self.route_id,
+                    "event": "suppressed",
+                    "penalty": round(score.penalty, 3),
+                    "suppressed": True,
+                },
+                "timeout_seconds": self._request_timeout(prompt, run=run, turn=turn),
+            }
             raise PlannerDecisionError("Ollama route dampened after repeated slow or failed planner turns")
         await self._preflight()
         self._prepare_sensorium(run)
-        reused = self._try_crystal_reuse(prompt, run=run, turn=turn)
-        if reused is not None:
-            self.last_route = {"provider": "ollama", "engine": "crystal_reuse", "route_kind": "crystal_reuse", "reason": "verified_replay"}
-            self._finish_sensorium()
-            return reused
+
+        if not recovery_mode:
+            reused = self._try_crystal_reuse(prompt, run=run, turn=turn)
+            if reused is not None:
+                self.last_route = {"provider": "ollama", "engine": "crystal_reuse", "route_kind": "crystal_reuse", "reason": "verified_replay"}
+                self._finish_sensorium()
+                return reused
+
         self._govern_request(prompt, run=run, turn=turn)
         self._apply_pressure_budget(reuse_mode="cold")
         request_timeout = self._request_timeout(prompt, run=run, turn=turn)
-        if self.engine in {"llama.cpp", "llama_cpp", "llamacpp"}:
+        if not recovery_mode and self.engine in {"llama.cpp", "llama_cpp", "llamacpp"}:
             result = await self._next_decision_with_llama_cpp(prompt, run=run, turn=turn, timeout_seconds=request_timeout)
             self.last_route = {"provider": "ollama", "engine": "llama.cpp", "route_kind": "llama_cpp", "reason": "explicit_engine"}
             self._finish_sensorium()
             return result
-        if self.forge_kv_manager is not None:
+        if not recovery_mode and self.forge_kv_manager is not None:
             try:
                 result = await self._next_decision_with_native_context(prompt, run=run, turn=turn)
                 self.last_route = {"provider": "ollama", "engine": "ollama", "route_kind": "native_context", "reason": "suffix_only_context_reuse"}
@@ -203,7 +306,7 @@ class OllamaPlannerProvider:
                 return result
             except Exception as exc:
                 self.last_usage = {"forge_kv": {"mode": "cold_ollama_fallback", "reason": f"{type(exc).__name__}: {exc}"}}
-        if self.execution_gateway is not None:
+        if not recovery_mode and self.execution_gateway is not None:
             try:
                 result = await self._next_decision_via_execution_gateway(prompt, run=run, turn=turn)
                 self.last_route = {"provider": "ollama", "engine": str(self.last_usage.get("engine") or "execution_gateway"), "route_kind": "execution_gateway", "reason": "shared_local_execution"}
@@ -213,7 +316,10 @@ class OllamaPlannerProvider:
                 self.last_usage = {"execution_gateway": {"mode": "direct_provider_fallback", "reason": f"{type(exc).__name__}: {exc}"}}
         repair_hint = ""
         last_error = ""
-        for attempt in range(self.max_retries + 1):
+        recovery_timeout = float(run.get("_beast_recovery_timeout_seconds") or 0.0)
+        attempt_count = 1 if recovery_timeout > 0 else self.max_retries + 1
+
+        for attempt in range(attempt_count):
             request_prompt = prompt + repair_hint + (
                 "\n\nIMPORTANT: Return exactly one JSON object. Do not use markdown fences. "
                 "For worktree.bind, worktree.replace_exact, worktree.write_file, and worktree.verify, "
@@ -279,7 +385,17 @@ class OllamaPlannerProvider:
                             summary=raw.strip(),
                             rationale="Recovered a non-JSON conversational completion from Ollama for a non-mutating run.",
                         )
-                decision = parse_planner_decision(raw)
+                try:
+                    decision = parse_planner_decision(raw)
+                except PlannerDecisionError:
+                    decision = self._salvage_first_mutation_residual(raw, prompt)
+                    if decision is None:
+                        raise
+                    self.last_usage["residual_salvage"] = {
+                        "kind": "triple_quoted_new_text",
+                        "scope": "first_mutation",
+                        "chars": len(str(decision.arguments.get("new_text") or "")),
+                    }
                 if (
                     decision.decision_type is PlannerDecisionType.TOOL
                     and self.default_approval_id
@@ -305,8 +421,26 @@ class OllamaPlannerProvider:
                 last_error = str(exc)
                 if self.route_dampener is not None:
                     lowered = last_error.casefold()
-                    event = "schema" if isinstance(exc, (ValueError, PlannerDecisionError, json.JSONDecodeError)) else "timeout" if "timeout" in lowered or "timed out" in lowered else "incorrect"
-                    self.last_usage["route"] = self._route_event(event)
+                    # A typed planner/schema rejection means Ollama answered.
+                    # It is a model-output quality failure, not route-health
+                    # evidence, so do not poison transport damping state.
+                    if isinstance(exc, PlannerDecisionError):
+                        score = self.route_dampener.score(self.route_id)
+                        self.last_usage["route"] = {
+                            "route_id": self.route_id,
+                            "event": "planner_schema",
+                            "penalty": round(score.penalty, 3),
+                            "suppressed": score.penalty >= self.route_dampener.suppress_at,
+                        }
+                    else:
+                        event = (
+                            "timeout"
+                            if "timeout" in lowered or "timed out" in lowered
+                            else "schema"
+                            if isinstance(exc, (ValueError, json.JSONDecodeError))
+                            else "incorrect"
+                        )
+                        self.last_usage["route"] = self._route_event(event)
                 repair_hint = (
                     "\n\nYOUR PREVIOUS DECISION WAS INVALID. Correct only the JSON contract. "
                     f"ERROR: {last_error}"
@@ -332,6 +466,11 @@ class OllamaPlannerProvider:
     @classmethod
     def _request_timeout(cls, prompt: str, *, run: dict[str, Any], turn: int) -> float:
         del prompt, turn
+
+        recovery_timeout = float(run.get("_beast_recovery_timeout_seconds") or 0.0)
+        if recovery_timeout > 0:
+            return max(5.0, recovery_timeout)
+
         base = max(5.0, float(os.environ.get("BEAST_OLLAMA_PLANNER_TIMEOUT", "30")))
         if cls._is_repair_turn(run):
             return max(6.0, min(base, float(os.environ.get("BEAST_OLLAMA_REPAIR_TIMEOUT", "12"))))
@@ -434,7 +573,7 @@ class OllamaPlannerProvider:
         self._pressure_decision = None
         if self.pressure_controller is None:
             return
-        requested_predict = int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
+        requested_predict = int(os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "512"))
         decision = self.pressure_controller.decide(
             num_ctx=int(os.environ.get("BEAST_OLLAMA_NUM_CTX", "768")),
             num_predict=requested_predict,
@@ -450,7 +589,7 @@ class OllamaPlannerProvider:
         return int(self._pressure_decision.num_ctx if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_CTX", "768"))
 
     def _num_predict(self) -> int:
-        return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "96"))
+        return int(self._pressure_decision.num_predict if self._pressure_decision else os.environ.get("BEAST_OLLAMA_NUM_PREDICT", "512"))
 
     def _request_options(self) -> dict[str, int]:
         if self._pressure_decision is not None:

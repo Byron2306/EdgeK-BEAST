@@ -434,6 +434,26 @@ class AgentRunStore:
             )
         return self.get_approval(run_id, approval_id) or {}
 
+    def consume_approval(self, run_id: str, approval_id: str) -> dict[str, Any]:
+        current = self.get_approval(run_id, approval_id)
+        if not current or current.get("run_id") != run_id:
+            raise KeyError(f"unknown approval for run: {approval_id}")
+        if current.get("status") != "approved":
+            raise ValueError(f"approval is not approved and available for consumption: {approval_id}")
+        resolution = current.get("resolution") if isinstance(current.get("resolution"), dict) else {}
+        resolution = {**resolution, "consumed": True, "consumed_at": _now()}
+        with self._lock, self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            cursor = connection.execute(
+                "UPDATE agent_run_approvals SET status='consumed',resolution_json=?,resolved_at=? WHERE approval_id=? AND run_id=? AND status='approved'",
+                (json.dumps(resolution, sort_keys=True, default=str), _now(), approval_id, run_id),
+            )
+            if int(cursor.rowcount or 0) != 1:
+                connection.execute("ROLLBACK")
+                raise ValueError(f"approval is not approved and available for consumption: {approval_id}")
+            connection.execute("COMMIT")
+        return self.get_approval(run_id, approval_id) or {}
+
     def recover_interrupted_runs(self) -> int:
         active = tuple(state.value for state in AgentRunState if state not in TERMINAL_STATES and state not in {AgentRunState.CREATED, AgentRunState.PAUSED})
         placeholders = ",".join("?" for _ in active)

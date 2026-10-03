@@ -7488,7 +7488,7 @@ class BeastApiClient:
                     # routing instruction instead of an assistant response.
                     native_huggingface = normalized_provider in {"huggingface", "hf"}
                     stream_url = (
-                        f"{self.base_url}/proxy/huggingface/v1/chat/completions"
+                        f"{self.base_url}/proxy/huggingface/hf/v1/chat/completions"
                         if native_huggingface
                         else f"{self.base_url}/proxy/v1/chat/completions"
                     )
@@ -8357,7 +8357,7 @@ class BeastApiClient:
         try:
             native_huggingface = normalized_provider in {"huggingface", "hf"}
             chat_url = (
-                f"{self.base_url}/proxy/huggingface/v1/chat/completions"
+                f"{self.base_url}/proxy/huggingface/hf/v1/chat/completions"
                 if native_huggingface
                 else f"{self.base_url}/proxy/v1/chat/completions"
             )

@@ -246,10 +246,19 @@ class RemoteCommonsGateway:
             raise PermissionError("remote Commons node identity pin mismatch")
         if sha256_bytes(encoded_descriptor) != value.get("descriptor_digest"):
             raise PermissionError("remote Commons descriptor digest mismatch")
-        subject = {
-            key: descriptor.get(key)
-            for key in ("node_id", "workload_digest", "node_public_key", "protocol", "capabilities", "maximum_authority")
-        }
+        subject_keys = [
+            "node_id",
+            "workload_digest",
+            "node_public_key",
+            "protocol",
+            "capabilities",
+            "maximum_authority",
+        ]
+        # Newer Commons descriptors bind the ML-KEM key digest into the
+        # attestation subject. Preserve compatibility with legacy descriptors.
+        if "ml_kem_public_key_digest" in descriptor:
+            subject_keys.append("ml_kem_public_key_digest")
+        subject = {key: descriptor.get(key) for key in subject_keys}
         subject_digest = sha256_bytes(canonical_json(subject))
         if descriptor.get("attestation_subject_digest") != subject_digest:
             raise PermissionError("remote Commons attestation subject binding mismatch")

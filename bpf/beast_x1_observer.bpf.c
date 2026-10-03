@@ -54,6 +54,9 @@ SEC("tracepoint/sched/sched_process_exit") int on_exit(void *ctx){ return submit
  * attachable tcp_v4_connect/__sys_bind kprobe symbols. */
 SEC("tracepoint/syscalls/sys_enter_connect") int on_tcp_connect(void *ctx){ return submit(BEAST_TCP_CONNECT,0,0); }
 SEC("tracepoint/syscalls/sys_enter_bind") int on_bind(void *ctx){ return submit(BEAST_SOCKET_BIND,0,0); }
+SEC("kprobe/__x64_sys_bind") int on_bind_kprobe(void *ctx){ return submit(BEAST_SOCKET_BIND,0,0); }
+SEC("cgroup/bind4") int on_cgroup_bind4(struct bpf_sock_addr *ctx){ submit(BEAST_SOCKET_BIND, ctx->user_port, ctx->user_ip4); return 1; }
+SEC("cgroup/bind6") int on_cgroup_bind6(struct bpf_sock_addr *ctx){ submit(BEAST_SOCKET_BIND, ctx->user_port, 6); return 1; }
 SEC("kprobe/vfs_write") int on_write(void *ctx){ if (bpf_get_prandom_u32() & WRITE_SAMPLE_MASK) return 0; return submit(BEAST_FILE_MUTATION,0,0); }
 SEC("kprobe/vfs_pwrite") int on_pwrite(void *ctx){ if (bpf_get_prandom_u32() & WRITE_SAMPLE_MASK) return 0; return submit(BEAST_FILE_MUTATION,0,1); }
 SEC("tracepoint/sched/sched_wakeup") int on_wakeup(void *ctx){ if (is_observer_process() || (bpf_get_prandom_u32() & SCHED_SAMPLE_MASK)) return 0; __u32 pid=(__u32)bpf_get_current_pid_tgid(); __u64 now=bpf_ktime_get_ns(); bpf_map_update_elem(&wakeups,&pid,&now,BPF_ANY); return 0; }

@@ -23,7 +23,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from app.kernel.compute.deterministic_intelligence import sha256_digest, utc_now_iso  # noqa: E402
 from scripts.harden_c4x_physical_truth_sidecar import harden_sidecar  # noqa: E402
-from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate  # noqa: E402
+from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate, scoped_gate_summary, write_scoped_sidecar  # noqa: E402
 
 
 DEFAULT_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
@@ -62,15 +62,25 @@ def main() -> int:
     sidecar["xdp_receipt"] = receipt
     sidecar_path.write_text(json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     harden_sidecar(sidecar_path)
-    certificate = run_physical_truth_certificate(sidecar=sidecar_path, run_id=args.run_id, evidence_root=evidence_root)
+    hardened_sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    scoped_sidecar = write_scoped_sidecar(
+        source_payload=hardened_sidecar,
+        destination=run_root / "xdp_scope_scoped_sidecar.json",
+        run_id=args.run_id,
+        claimed_receipts=("xdp_receipt",),
+        dependency_receipts=("bpf_receipt", "guardian_receipt"),
+        source_sidecar=sidecar_path,
+    )
+    harden_sidecar(scoped_sidecar)
+    certificate = run_physical_truth_certificate(sidecar=scoped_sidecar, run_id=args.run_id, evidence_root=evidence_root)
     summary = {
         "run_id": args.run_id,
         "receipt": str(run_root / "xdp_scope_gauntlet.json"),
+        "shared_sidecar": str(sidecar_path),
+        "scoped_sidecar": str(scoped_sidecar),
         "receipt_digest": report["receipt_digest"],
         "certificate_digest": certificate["receipt_digest"],
-        "xdp_scope_green": certificate["certificate_gates"].get("xdp_scope") is True,
-        "green_gates": [k for k, v in certificate["certificate_gates"].items() if v],
-        "red_gates": [k for k, v in certificate["certificate_gates"].items() if not v],
+        **scoped_gate_summary(certificate, claimed_gates=("xdp_scope",), dependency_gates=("bpf_witness", "guardian_custody")),
     }
     (run_root / "xdp_scope_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, sort_keys=True))

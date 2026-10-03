@@ -32,7 +32,7 @@ from app.kernel.compute.deterministic_intelligence import sha256_digest, utc_now
 from app.kernel.sensorium.contracts_hash import content_hash  # noqa: E402
 from app.kernel.sensorium.runtime import SensoriumRuntime  # noqa: E402
 from scripts.harden_c4x_physical_truth_sidecar import harden_sidecar  # noqa: E402
-from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate  # noqa: E402
+from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate, scoped_gate_summary, write_scoped_sidecar  # noqa: E402
 
 
 DEFAULT_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
@@ -280,16 +280,24 @@ def run_zero_provider_episode(
     sidecar_payload["bpf_receipt"] = bpf_receipt
     sidecar.write_text(json.dumps(sidecar_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     harden_sidecar(sidecar)
-    certificate = run_physical_truth_certificate(sidecar=sidecar, run_id=run_id, evidence_root=DEFAULT_ROOT)
+    hardened_sidecar = json.loads(sidecar.read_text(encoding="utf-8"))
+    scoped_sidecar = write_scoped_sidecar(
+        source_payload=hardened_sidecar,
+        destination=run_root / "sensorium_bpf_scoped_sidecar.json",
+        run_id=run_id,
+        claimed_receipts=("sensorium_receipt", "bpf_receipt"),
+        source_sidecar=sidecar,
+    )
+    harden_sidecar(scoped_sidecar)
+    certificate = run_physical_truth_certificate(sidecar=scoped_sidecar, run_id=run_id, evidence_root=DEFAULT_ROOT)
     summary = {
         "run_id": run_id,
         "receipt": str(receipt_path),
+        "shared_sidecar": str(sidecar),
+        "scoped_sidecar": str(scoped_sidecar),
         "receipt_digest": receipt["receipt_digest"],
         "certificate_digest": certificate["receipt_digest"],
-        "green_gates": [key for key, value in certificate["certificate_gates"].items() if value],
-        "red_gates": [key for key, value in certificate["certificate_gates"].items() if not value],
-        "sensorium_green": certificate["certificate_gates"].get("sensorium_observation") is True,
-        "bpf_witness_green": certificate["certificate_gates"].get("bpf_witness") is True,
+        **scoped_gate_summary(certificate, claimed_gates=("sensorium_observation", "bpf_witness")),
         "mission_network_witness": mission_witness.to_dict(),
         "comparator_network_witness": comparator.to_dict(),
         "comparator_error": comparator_error,

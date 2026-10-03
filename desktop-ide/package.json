@@ -29,7 +29,8 @@
     "package:linux": "electron-builder --linux AppImage deb",
     "package:dir": "electron-builder --dir",
     "phase1:verify": "python3 ../scripts/phase1/verify_backend_decomposition.py && node scripts/verify-phase1-module-boundaries.js && node scripts/verify-phase1-renderer-boundaries.js && npm run smoke:parity:foundation && npm run smoke:targets",
-    "phase2:verify": "python3 ../scripts/phase2/verify_agent_run_foundation.py && python3 ../scripts/phase2/verify_agent_run_execution.py"
+    "phase2:verify": "python3 ../scripts/phase2/verify_agent_run_foundation.py && python3 ../scripts/phase2/verify_agent_run_execution.py",
+    "ui:915": "bash scripts/start-phase915-ui.sh"
   },
   "devDependencies": {
     "electron": "^43.1.0",

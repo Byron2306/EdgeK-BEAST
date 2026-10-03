@@ -9,7 +9,12 @@ from app.kernel.compute.c4x_physical_truth_certificate import (
     empty_pending_sidecar,
 )
 from app.kernel.compute.deterministic_intelligence import sha256_digest
-from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate
+from scripts.run_c4x_physical_truth_certificate import (
+    initialize_run_sidecar,
+    run_physical_truth_certificate,
+    scoped_gate_summary,
+    write_scoped_sidecar,
+)
 
 
 def test_empty_physical_truth_certificate_refuses_all_public_credit():
@@ -135,6 +140,80 @@ def test_physical_truth_script_accepts_complete_sidecar(tmp_path: Path):
 
     assert receipt["public_credit_allowed"] is True
     assert json.loads((tmp_path / "pytest-complete-script" / "physical_truth_certificate.json").read_text())["receipt_digest"] == receipt["receipt_digest"]
+
+
+def test_scoped_gate_summary_reports_only_claimed_and_dependency_gates():
+    certificate = build_c4x_physical_truth_certificate(run_id="pytest-scoped-summary", **_complete_sidecar())
+
+    summary = scoped_gate_summary(
+        certificate,
+        claimed_gates=("commons_replication",),
+        dependency_gates=("pq_transport",),
+    )
+
+    assert summary["certificate_gate_scope"] == "component_scoped"
+    assert summary["claimed_gates"] == ["commons_replication"]
+    assert summary["dependency_gates"] == ["pq_transport"]
+    assert set(summary["gate_results"]) == {"commons_replication", "pq_transport"}
+    assert "green_gates" not in summary
+    assert "red_gates" not in summary
+    assert summary["claimed_gates_green"] is True
+    assert summary["dependency_gates_green"] is True
+
+
+def test_component_scoped_sidecar_excludes_unclaimed_stale_gates(tmp_path: Path):
+    shared = tmp_path / "shared-sidecar.json"
+    shared_payload = _complete_sidecar()
+    shared.write_text(json.dumps(shared_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    scoped = write_scoped_sidecar(
+        source_payload=shared_payload,
+        destination=tmp_path / "sensorium-scoped.json",
+        run_id="pytest-scoped-freshness",
+        claimed_receipts=("sensorium_receipt", "bpf_receipt"),
+        source_sidecar=shared,
+    )
+    payload = json.loads(scoped.read_text(encoding="utf-8"))
+
+    assert payload["sensorium_receipt"]
+    assert payload["bpf_receipt"]
+    assert payload["c4x_receipt"] == {}
+    assert payload["commons_receipt"] == {}
+    assert "c4x_receipt" in payload["_sidecar_provenance"]["excluded_receipts"]
+
+    receipt = run_physical_truth_certificate(sidecar=scoped, evidence_root=tmp_path, run_id="pytest-scoped-freshness")
+    assert receipt["certificate_gates"]["sensorium_observation"] is True
+    assert receipt["certificate_gates"]["bpf_witness"] is True
+    assert receipt["certificate_gates"]["c4x_truth"] is False
+    assert receipt["certificate_gates"]["commons_replication"] is False
+    assert receipt["public_credit_allowed"] is False
+
+
+def test_run_local_sidecar_starts_pending_unless_inheritance_is_explicit(tmp_path: Path):
+    shared = tmp_path / "shared-sidecar.json"
+    shared_payload = _complete_sidecar()
+    shared.write_text(json.dumps(shared_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    fresh = initialize_run_sidecar(
+        destination=tmp_path / "run-local-fresh.json",
+        run_id="pytest-run-local-fresh",
+        source_sidecar=shared,
+    )
+    fresh_payload = json.loads(fresh.read_text(encoding="utf-8"))
+    assert all(fresh_payload[key] == {} for key in _complete_sidecar())
+    assert fresh_payload["_sidecar_provenance"]["inherited_receipts"] == []
+
+    inherited = initialize_run_sidecar(
+        destination=tmp_path / "run-local-inherited.json",
+        run_id="pytest-run-local-inherited",
+        source_sidecar=shared,
+        inherited_receipts=("memfd_receipt", "guardian_receipt"),
+    )
+    inherited_payload = json.loads(inherited.read_text(encoding="utf-8"))
+    assert inherited_payload["memfd_receipt"]
+    assert inherited_payload["guardian_receipt"]
+    assert inherited_payload["bpf_receipt"] == {}
+    assert inherited_payload["_sidecar_provenance"]["inherited_receipts"] == ["memfd_receipt", "guardian_receipt"]
 
 
 def _complete_sidecar():

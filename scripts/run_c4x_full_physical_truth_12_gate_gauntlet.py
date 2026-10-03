@@ -5,9 +5,10 @@ This is the operator-friendly orchestration layer.  It runs the proven
 component gauntlets, rebuilds the final physical-truth certificate, writes an
 umbrella receipt, and exits non-zero unless all 12 certificate gates are green.
 
-By default it reuses the current privileged sidecar evidence for memfd,
-Guardian, and BPF substrate authority.  Add ``--include-sudo-harvest`` when
-running from a real terminal if you want to refresh privileged evidence too.
+By default it starts from a run-local pending sidecar so stale gates cannot leak
+in from a previous physical_truth_sidecar_harvested.json run.  Add
+``--include-sudo-harvest`` when running from a real terminal if you want to
+refresh privileged evidence into that run-local sidecar too.
 """
 from __future__ import annotations
 
@@ -21,6 +22,11 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.run_c4x_physical_truth_certificate import initialize_run_sidecar  # noqa: E402
+
 DEFAULT_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
 DEFAULT_SIDECAR = DEFAULT_ROOT / "physical_truth_sidecar_harvested.json"
 
@@ -35,12 +41,28 @@ def main() -> int:
     parser.add_argument("--skip-commons-up", action="store_true")
     parser.add_argument("--include-sudo-harvest", action="store_true")
     parser.add_argument("--skip-sudo", action="store_true", help="Pass --skip-sudo to the sudo harvester after you manually run sudo -v.")
+    parser.add_argument(
+        "--allow-inherited-privileged-evidence",
+        action="store_true",
+        help="Explicitly seed run-local sidecar with privileged receipts from --sidecar. Off by default to prevent stale gate inheritance.",
+    )
     parser.add_argument("--skip-tests", action="store_true")
     args = parser.parse_args()
 
     run_root = Path(args.evidence_root) / args.run_id
     run_root.mkdir(parents=True, exist_ok=True)
-    sidecar = _resolve(args.sidecar)
+    source_sidecar = _resolve(args.sidecar)
+    inherited = (
+        ("bpf_receipt", "memfd_receipt", "guardian_receipt", "xdp_receipt")
+        if args.allow_inherited_privileged_evidence and not args.include_sudo_harvest
+        else ()
+    )
+    sidecar = initialize_run_sidecar(
+        destination=run_root / "physical_truth_sidecar_run.json",
+        run_id=args.run_id,
+        source_sidecar=source_sidecar,
+        inherited_receipts=inherited,
+    )
     python = str(REPO_ROOT / ".venv" / "bin" / "python")
     if not Path(python).exists():
         python = sys.executable
@@ -53,6 +75,7 @@ def main() -> int:
         ))
     if args.include_sudo_harvest:
         command = [python, "scripts/run_c4x_sudo_physical_harvest.py", "--run-id", args.run_id + "-sudo-harvest"]
+        command.extend(["--sidecar", str(sidecar)])
         if args.skip_sudo:
             command.append("--skip-sudo")
         steps.append(("sudo_physical_harvest", command))

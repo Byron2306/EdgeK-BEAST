@@ -2758,3 +2758,323 @@ Goal:
    - Authority boundary:
      provider calls during deterministic solve: `0`; production authority:
      `false`; execution authority: `false`.
+
+2. ~~Add the real Sophia-to-BEAST deterministic transfer arena.~~
+   - Module:
+     `app/kernel/dai/phase6_sophia_transfer_arena.py`.
+   - Runner:
+     `scripts/run_dai_phase6_sophia_transfer_arena.py`.
+   - Tests:
+     `tests/test_dai_phase6_sophia_transfer_arena.py`.
+   - Evidence:
+     `evidence/dai-diode/phase6-sophia-transfer-arena/dai_phase6_sophia_transfer_arena_receipt.json`.
+   - Sophia source artifact:
+     `/home/byron/Integritas-Mechanicus/evidence/sophia_writing_desk_phase3_export_semantic_latest.json`.
+   - Sophia export digest:
+     `sha256:5fa74d666de74bbd1de9b41d5652cd6f16ee39d8985ab4de3ca6ef758fa6d3a2`.
+   - Receipt digest:
+     `sha256:b820ca6f62a10c0477740325500f08365a6b7c98ac3ee819c902456b004b87ae`.
+   - Result:
+     real Sophia semantic export accepted by the BEAST bridge with `40`
+     support rows and `20` contradiction rows; candidate predicate family
+     promoted as bounded test-only source-support material; `12/12`
+     post-freeze randomized source/claim cases semantically correct; `12/12`
+     text+visual joined verification green; `6` ordinary support answers; `6`
+     contradiction / missing-visible-span refusal cases; `0` provider calls
+     after promotion.
+   - Capability law:
+     visible source span + supported source-support predicate + supported edge
+     can produce a bounded source-support answer. Contradiction, missing visible
+     span, residual evidence or unsupported edge produces a dedicated refusal
+     artifact only.
+   - Plot correction:
+     this is the intelligence spine the attestation work exists to protect:
+     Sophia acquires meaning; BEAST validates and stores the predicate family;
+     held-out answers and visuals are compiled from the canonical meaning graph
+     without calling a model/provider again.
+   - Baseline boundary:
+     exact-cache, template-only and model-only baselines are locally bounded
+     references in this slice; live RAG/KG/model competitors remain a later
+     external Truth Arena task.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_sophia_bridge.py tests/test_dai_phase3_expression.py -q`
+     returned `18 passed`.
+   - Authority boundary:
+     provider calls during post-promotion deterministic solve: `0`; production
+     authority: `false`; execution authority: `false`.
+
+3. ~~Add the mixed-capability Truth Arena and capability ledger.~~
+   - Ledger module:
+     `app/kernel/dai/capability_ledger.py`.
+   - Arena module:
+     `app/kernel/dai/phase6_truth_arena.py`.
+   - Runner:
+     `scripts/run_dai_phase6_truth_arena.py`.
+   - Tests:
+     `tests/test_dai_phase6_truth_arena.py`.
+   - Evidence:
+     `evidence/dai-diode/phase6-truth-arena/dai_phase6_truth_arena_receipt.json`.
+   - Ledger evidence:
+     `evidence/dai-diode/phase6-truth-arena/dai_capability_ledger.json`.
+   - Ledger digest:
+     `sha256:a1df0125911697249d754a7052573bbc197432e5cd02f4178f3d9e6a78f0e5de`.
+   - Receipt digest:
+     `sha256:6b311269f33e381edf3b7536cddb4132506740624d7ca1fbe49c5c4df5221f8a`.
+   - Result:
+     `9/9` mixed-capability held-out cases semantically correct; `9/9`
+     text+visual joined verification green; `9/9` visual proposition coverage;
+     `6` ordinary answers; `3` refusal cases; `0` provider calls after ledger
+     lookup.
+   - Capability ledger law:
+     the ledger accepts only green, digest-bound, zero-provider-after-promotion
+     source receipts and records them as test-only non-executable crystals.
+     Phase 6.2 currently records:
+     `restart_risk_composition` from Phase 6.0 and
+     `sophia_source_support` from Phase 6.1.
+   - Mixed-composition law:
+     answerable cases require both stored crystals plus fresh supported source
+     span, source-support predicate, topology, health, ordered restart policy
+     and current evidence. Missing ledger family, missing visible span,
+     unsupported topology or contradiction leaves ordinary answer unavailable
+     and emits a dedicated refusal artifact only.
+   - Visual proposition law:
+     visual credit now requires the SVG text layer to expose every speakable
+     proposition’s subject, predicate and value, not merely node presence.
+   - Baseline boundary:
+     local exact-cache, template and rule-only baselines are scored. The RDS
+     RAG adapter is wired as an optional baseline runner but was not enabled in
+     the first fossil receipt (`rds_rag_enabled=false`); enable it with
+     `scripts/run_dai_phase6_truth_arena.py --include-rds-rag` after loading
+     `.beast/vector.env`.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `17 passed`.
+   - Authority boundary:
+     provider calls after ledger lookup: `0`; production authority: `false`;
+     execution authority: `false`.
+
+4. ~~Bundle Phase 6.2 as a self-contained archaeological artifact.~~
+   - Release identity:
+     `DAI-Diode-Phase-6.2__Mixed-Capability-Truth-Arena__2026-08-04`.
+   - Bundle directory:
+     `artifacts/DAI-Diode-Phase-6.2__Mixed-Capability-Truth-Arena__2026-08-04`.
+   - ZIP:
+     `artifacts/DAI-Diode-Phase-6.2__Mixed-Capability-Truth-Arena__2026-08-04.zip`.
+   - ZIP digest:
+     `sha256:804932fef383d9a7f01682d7c393bfb53602ef91afe604f54cb9895492575dd3`.
+   - File manifest digest:
+     `sha256:2b3343d4333f3b73232f063fcd6c0ebbe30e223ae190d3e52655ec54aa315a20`.
+   - Release manifest digest:
+     `sha256:3d47df833adee4558376a0cbc09ed5a45ab699c5267f24e029b0fc1b7261904b`.
+   - Included:
+     source overlay, tests, dependencies, Phase 6.0 / Phase 6.1 / Phase 6.2
+     evidence receipts, Phase 6.2 capability ledger, copied Sophia export from
+     Integritas, SHA-256 manifest, release manifest, claims/nonclaims,
+     authority map, clean-environment reproduction guide and one-command bundle
+     verifier.
+   - Verification:
+     `python3 verify_phase6_2_bundle.py` returned
+     `{"entry_count": 37, "truth_receipt_digest": "sha256:6b311269f33e381edf3b7536cddb4132506740624d7ca1fbe49c5c4df5221f8a", "verified": true}`.
+   - Preservation rule:
+     do not silently replace this ZIP. Any correction becomes Phase 6.2.1 or a
+     new release identity.
+
+5. ~~Add the signed Sophia/Integritas unified lineage certificate.~~
+   - Module:
+     `app/kernel/dai/phase6_sophia_integritas_lineage.py`.
+   - Runner:
+     `scripts/run_dai_phase6_sophia_integritas_lineage.py`.
+   - Tests:
+     `tests/test_dai_phase6_sophia_integritas_lineage.py`.
+   - Signature packet:
+     `evidence/dai-diode/phase6-sophia-integritas-lineage/sophia_integritas_lineage_signature.json`.
+   - Unified certificate:
+     `evidence/dai-diode/phase6-sophia-integritas-lineage/sophia_integritas_unified_lineage_certificate.json`.
+   - Verification receipt:
+     `evidence/dai-diode/phase6-sophia-integritas-lineage/sophia_integritas_unified_lineage_verification.json`.
+   - Signed Sophia export digest:
+     `sha256:5fa74d666de74bbd1de9b41d5652cd6f16ee39d8985ab4de3ca6ef758fa6d3a2`.
+   - Signature packet digest:
+     `sha256:93fba49f4164dd86d2066c8f6da32e68e1b85e13959bc00695fbdfde6343b18c`.
+   - Certificate digest:
+     `sha256:30caf2b353d25997eda1dc3a546db0e9637ce93ed4cb8e8a6be46428ee7a4332`.
+   - Verification digest:
+     `sha256:5f20cc02088de814295787b1da0df5df9d1e3ea8e4983f04bb41c08c134ee92d`.
+   - Result:
+     green certificate with no red gates. The exact signed Sophia export digest
+     matches the Phase-1 Sophia artifact, the Phase-6.1 Sophia transfer receipt
+     and the Phase-6.2 mixed-capability truth arena ledger. The certificate also
+     binds Phase-1 Seraph challenge receipts, Commons admission, Commons quorum,
+     capability promotion, neural mesh activation and Arda bounded replay.
+   - Authority boundary:
+     the signature is a local lineage Ed25519 key, not yet a public
+     institution/person identity-pinned Sophia key. Arda lineage is bounded
+     replay evidence and keeps production/execution authority unavailable.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase6_sophia_integritas_lineage.py tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `20 passed`.
+
+6. ~~Cross the Sophia/Integritas lineage key identity boundary with a
+   project-pinned key policy.~~
+   - Human-readable key pins:
+     `RELEASE_KEYS.md` and `SECURITY.md`.
+   - Machine-readable key policy:
+     `release-keys/sophia_integritas_lineage_key_policy.json`.
+   - Policy verifier:
+     `scripts/verify_dai_phase6_sophia_integritas_lineage_policy.py`.
+   - Policy verification receipt:
+     `evidence/dai-diode/phase6-sophia-integritas-lineage/sophia_integritas_project_key_policy_verification.json`.
+   - Public-key fingerprint:
+     `sha256:bcfad7dbb07bff2858b7fc2172a5f40e1684012fe9764897e8d77a7a010028cc`.
+   - Policy digest:
+     `sha256:34fe8e196c2218661585abe6ed6d850efa44d972f086fad81161214bc4c26e6f`.
+   - Policy verification digest:
+     `sha256:1028b8c5c45c6af0a670588710143701aa06cdea765ebaf7c4e98294ff5f314d`.
+   - Result:
+     policy verification `verified=true` with no red gates. The verifier
+     recomputes the policy digest, verifies the lineage certificate, and checks
+     that the embedded Sophia signature key, public-key fingerprint, signed
+     export digest, signature-packet digest and certificate digest match the
+     project-pinned policy.
+   - Boundary:
+     crossed from local-only key to BEAST project-pinned lineage key. This still
+     does not claim institutional/NWU/employer endorsement or public Sigstore
+     OIDC identity. Those remain publication hardening tasks.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase6_sophia_integritas_lineage.py tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `22 passed`.
+
+7. ~~Build DIO Constitutional Extensions as a bounded law layer above the
+   frozen core.~~
+   - Module:
+     `app/kernel/dai/constitutional_extensions.py`.
+   - Runner:
+     `scripts/run_dai_phase6_constitutional_extensions.py`.
+   - Tests:
+     `tests/test_dai_constitutional_extensions.py`.
+   - Evidence receipt:
+     `evidence/dai-diode/phase6-constitutional-extensions/dai_phase6_constitutional_extensions_receipt.json`.
+   - Receipt digest:
+     `sha256:74c6da031ac8d9d4630008f816871c9832fcc47735376b754154f0e138e5a4cb`.
+   - Implemented first-pass constitutional gates:
+     mechanically checked effect containment, evidence-strength lattice,
+     cadence/trusted-time applicability, authority-pollution detection,
+     dependency-aware revocation, counterfactual/minimal-proof receipts and
+     lawful re-entry receipts.
+   - Hostile controls caught:
+     write/network/model-call escape, mapping-only evidence laundered as direct
+     observation, missed cadence/stale applicability, rhetoric/source/normative
+     authority laundering, and world-fact revocation propagating into claim,
+     expression, quorum and lease invalidation.
+   - Deferred and not claimed green:
+     full bounded SMT model checking, hybrid Ed25519 + ML-DSA-65 runtime
+     signatures, formal Commons Byzantine safety/liveness model, and
+     production Sensorium cadence bound to an external trusted timestamp.
+   - Authority boundary:
+     DIO Core remains frozen; this extension does not grant provider,
+     production or execution authority.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_constitutional_extensions.py tests/test_dai_phase6_sophia_integritas_lineage.py tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `29 passed`.
+
+8. ~~Promote the deferred SMT, ML-DSA and Byzantine Commons seams into a
+   bounded formal-hardening slice.~~
+   - Module:
+     `app/kernel/dai/constitutional_formal_hardening.py`.
+   - Runner:
+     `scripts/run_dai_phase6_formal_hardening.py`.
+   - Tests:
+     `tests/test_dai_constitutional_formal_hardening.py`.
+   - Evidence receipt:
+     `evidence/dai-diode/phase6-formal-hardening/dai_phase6_formal_hardening_receipt.json`.
+   - Receipt digest:
+     `sha256:d7003ea3aa33692da824d0efd3f5d25efd9553a7d07bd28419b7e90dae907214`.
+   - Implemented gates:
+     real Z3 bounded SMT effect-containment model, real hybrid
+     Ed25519 + ML-DSA-65 signing over the same canonical bytes with downgrade
+     forbidden, and finite Byzantine Commons safety/liveness checking for a
+     single-proposition certificate.
+   - Hostile controls caught:
+     SMT write/network/model/data escape admission, SMT provider/authority
+     escape admission, signature tamper, ML-DSA downgrade, Commons
+     equivocation/forking, and weak quorum intersection.
+   - Runtime dependencies added:
+     `z3-solver>=5.0,<6.0` and `pqcrypto==0.4.0`.
+   - Authority boundary:
+     the Commons formal model certifies single propositions; it does not claim
+     Byzantine agreement over a persistent shared state machine. The SMT model
+     is a finite abstraction of the effect lattice, not proof of arbitrary
+     Python behavior. Production and execution authority remain false.
+
+9. ~~Add the Phase-7 Constitutional Runtime Router so BEAST can be spoken to
+   and asked to draw through admitted crystals.~~
+   - Module:
+     `app/kernel/dai/constitutional_runtime_router.py`.
+   - CLI:
+     `scripts/beast_runtime.py`.
+   - Tests:
+     `tests/test_dai_phase7_constitutional_runtime_router.py`.
+   - Runtime evidence:
+     `evidence/dai-diode/phase7-runtime/ari_bex_speak_receipt.json`,
+     `evidence/dai-diode/phase7-runtime/ari_bex_draw_receipt.json`, and
+     `evidence/dai-diode/phase7-runtime/ari_bex_runtime.svg`.
+   - Shared semantic digest for speak/draw:
+     `sha256:33f276e0a3543addcaa38ea0a2eb19c41764714f70203fc009ad136471c737d1`.
+   - Speak runtime receipt digest:
+     `sha256:99b20a80a4f6d735257fd01dec284b5e00dd8ef4cfbfd23380730683e185abde`.
+   - Draw runtime receipt digest:
+     `sha256:cc9acfffca024a8e0ee1c5b829cb7a5cea6e8b38508e47a11f0dbb9f539ad334`.
+   - Implemented behavior:
+     live requests now pass through the Phase-6.2 capability ledger, Phase-6.4
+     constitutional checks, Phase-6.5 Z3/formal receipt boundary,
+     deterministic Phase-3 text/SVG compilers, independent entailment
+     verifiers and hybrid Ed25519 + ML-DSA-65 signing.
+   - Demonstrated:
+     `speak` and `draw` over the same Ari-api -> Bex-core restart-risk meaning
+     graph produce the same semantic digest. The draw artifact is SVG compiled
+     from the meaning graph, not from the text answer.
+   - Runtime boundary:
+     Phase 7 currently supports the admitted restart-risk + Sophia
+     source-support family. Unsupported requests produce lawful re-entry
+     refusal instead of provider escalation. Provider calls remain zero;
+     production and execution authority remain false.
+   - Verification:
+     `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_phase7_constitutional_runtime_router.py tests/test_dai_constitutional_formal_hardening.py tests/test_dai_constitutional_extensions.py tests/test_dai_phase6_sophia_integritas_lineage.py tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+     returned `37 passed`.
+
+10. ~~Teach BEAST deterministic visual style capsules from reference images.~~
+    - Module:
+      `app/kernel/dai/visual_style_capsule.py`.
+    - CLI:
+      `scripts/teach_beast_visual_style.py`.
+    - Runtime integration:
+      `scripts/beast_runtime.py --style-capsule`.
+    - Tests:
+      `tests/test_dai_visual_style_capsule.py`.
+    - Demonstration reference:
+      `evidence/dai-diode/phase7-runtime/reference_neon_cards.png`.
+    - Learned style capsule:
+      `evidence/dai-diode/phase7-runtime/neon_cards_style_capsule.json`.
+    - Styled draw receipt:
+      `evidence/dai-diode/phase7-runtime/ari_bex_draw_neon_receipt.json`.
+    - Styled SVG:
+      `evidence/dai-diode/phase7-runtime/ari_bex_neon_runtime.svg`.
+    - Reference image digest:
+      `sha256:075e99c1bc5b6f597394896e6010536de5f74084014f6edc3a4b7b1955859c48`.
+    - Style capsule digest:
+      `sha256:6460e92d313ad7dc1266d72b165612789cd8d59995a2e0ae2ec8838e3837511d`.
+    - Styled runtime receipt digest:
+      `sha256:dd5656cdebc148ce7fd176eb708ffa804294ffd757641f4bec09fdb4075e7019`.
+    - Preserved semantic digest:
+      `sha256:33f276e0a3543addcaa38ea0a2eb19c41764714f70203fc009ad136471c737d1`.
+    - Implemented behavior:
+      a reference image now teaches a bounded palette/style grammar. BEAST can
+      apply that style to deterministic semantic SVG while preserving semantic
+      digest, fact ids, edge ids and labels.
+    - Boundary:
+      this is not neural image training, object recognition or pixel
+      reconstruction. It teaches diagram style, not image content. The visual
+      remains compiled from the meaning graph, not from the text answer.
+    - Verification:
+      `PYTHONNOUSERSITE=1 .venv/bin/python -m pytest tests/test_dai_visual_style_capsule.py tests/test_dai_phase7_constitutional_runtime_router.py tests/test_dai_constitutional_formal_hardening.py tests/test_dai_constitutional_extensions.py tests/test_dai_phase6_sophia_integritas_lineage.py tests/test_dai_phase6_truth_arena.py tests/test_dai_phase6_sophia_transfer_arena.py tests/test_dai_phase6_deterministic_arena.py tests/test_dai_phase3_expression.py -q`
+      returned `40 passed`.

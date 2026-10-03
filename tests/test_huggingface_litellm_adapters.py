@@ -207,3 +207,100 @@ def test_litellm_config_includes_hf_tgi_and_google():
     assert models["huggingface"]["model"] == "huggingface/openai/gpt-oss-120b"
     assert models["tgi-llamacpp"]["api_base"] == "http://127.0.0.1:3000"
     assert "callbacks" not in config["litellm_settings"]
+
+@pytest.mark.asyncio
+async def test_beast_api_client_uses_native_huggingface_routes(monkeypatch, tmp_path):
+    from app.cli.api import BeastApiClient
+
+    seen = {"stream": None, "post": None}
+
+    class FakeStreamResponse:
+        status_code = 200
+        headers = {"content-type": "text/event-stream"}
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def aiter_lines(self):
+            yield 'data: {"choices":[{"delta":{"content":"OK"},"finish_reason":"stop"}]}'
+            yield "data: [DONE]"
+
+    class FakeResponse:
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {
+                "choices": [
+                    {
+                        "message": {"content": "OK"},
+                        "finish_reason": "stop",
+                    }
+                ]
+            }
+
+    class FakeAsyncClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        def stream(self, method, url, **kwargs):
+            seen["stream"] = url
+            return FakeStreamResponse()
+
+        async def post(self, url, **kwargs):
+            seen["post"] = url
+            return FakeResponse()
+
+    monkeypatch.setattr("app.cli.api.httpx.AsyncClient", FakeAsyncClient)
+
+    client = BeastApiClient("http://gateway", workspace=tmp_path)
+
+    events = [
+        event
+        async for event in client.stream_chat_completion(
+            "huggingface",
+            [{"role": "user", "content": "Reply only with OK"}],
+            model="openai/gpt-oss-120b:fastest",
+            max_continuations=0,
+        )
+    ]
+
+    result = await client.chat_completion(
+        "huggingface",
+        [{"role": "user", "content": "Reply only with OK"}],
+        model="openai/gpt-oss-120b:fastest",
+    )
+
+    expected = "http://gateway/proxy/huggingface/hf/v1/chat/completions"
+
+    assert seen["stream"] == expected
+    assert seen["post"] == expected
+
+@pytest.mark.asyncio
+async def test_native_huggingface_proxy_surface_is_mounted(monkeypatch):
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/proxy/huggingface/hf/v1/chat/completions",
+            json={
+                "model": "openai/gpt-oss-120b:fastest",
+                "messages": [{"role": "user", "content": "Say BEAST."}],
+                "max_tokens": 8,
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json()["edgek_provider"] == "huggingface"

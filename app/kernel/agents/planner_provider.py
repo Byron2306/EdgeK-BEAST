@@ -27,13 +27,79 @@ def parse_planner_decision(value: Any) -> PlannerDecision:
     payload = value
     if isinstance(value, str):
         text = value.strip()
-        match = re.search(r"\{.*\}", text, flags=re.DOTALL)
-        if not match:
+        decoder = json.JSONDecoder()
+        objects: list[dict[str, Any]] = []
+        position = 0
+
+        while True:
+            start = text.find("{", position)
+            if start < 0:
+                break
+            try:
+                candidate, consumed = decoder.raw_decode(text[start:])
+            except json.JSONDecodeError:
+                position = start + 1
+                continue
+            position = start + consumed
+            if isinstance(candidate, dict):
+                objects.append(candidate)
+
+        if not objects:
             raise PlannerDecisionError("planner response did not contain a JSON object")
-        try:
-            payload = json.loads(match.group(0))
-        except json.JSONDecodeError as exc:
-            raise PlannerDecisionError(f"invalid planner JSON: {exc}") from exc
+
+        decisions: list[PlannerDecision] = []
+        for candidate in objects:
+            try:
+                decisions.append(parse_planner_decision(candidate))
+            except PlannerDecisionError:
+                continue
+
+        if not decisions:
+            payload = objects[0]
+        elif len(decisions) == 1:
+            return decisions[0]
+        else:
+            first = decisions[0]
+            if first.decision_type is PlannerDecisionType.TOOL:
+                first_signature = (
+                    first.decision_type,
+                    first.tool_id,
+                    first.arguments,
+                    first.execution_target,
+                    first.approval_id,
+                )
+            else:
+                first_signature = (
+                    first.decision_type,
+                    first.tool_id,
+                    first.arguments,
+                    first.execution_target,
+                    first.approval_id,
+                    first.summary,
+                    first.blocker,
+                )
+            for decision in decisions[1:]:
+                if decision.decision_type is PlannerDecisionType.TOOL:
+                    signature = (
+                        decision.decision_type,
+                        decision.tool_id,
+                        decision.arguments,
+                        decision.execution_target,
+                        decision.approval_id,
+                    )
+                else:
+                    signature = (
+                        decision.decision_type,
+                        decision.tool_id,
+                        decision.arguments,
+                        decision.execution_target,
+                        decision.approval_id,
+                        decision.summary,
+                        decision.blocker,
+                    )
+                if signature != first_signature:
+                    raise PlannerDecisionError("multiple planner JSON objects")
+            return first
     if not isinstance(payload, dict):
         raise PlannerDecisionError("planner decision must be an object")
     action_payload = payload.get("action") if isinstance(payload.get("action"), dict) else {}
@@ -91,6 +157,7 @@ def parse_planner_decision(value: Any) -> PlannerDecision:
             else:
                 if end >= start:
                     arguments["line_count"] = (end - start) + 1
+        arguments.pop("end_line", None)
     if decision_type is PlannerDecisionType.TOOL and not tool_id:
         raise PlannerDecisionError("tool decisions require tool_id")
     if decision_type is not PlannerDecisionType.TOOL and tool_id:

@@ -3,6 +3,7 @@
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +17,7 @@ struct beast_event { uint8_t bytes[BEAST_EVENT_SIZE]; };
 struct queued_event { struct beast_event event; struct queued_event *next; };
 struct beast_x2_handle {
     struct bpf_object *object;
-    struct bpf_link *links[8];
+    struct bpf_link *links[16];
     size_t link_count;
     unsigned int attached_mask;
     struct ring_buffer *ring;
@@ -34,6 +35,10 @@ static const struct attachment_spec ATTACHMENTS[] = {
     {"on_switch", "tracepoint", "sched/sched_switch", 1},
     {"on_tcp_connect", "tracepoint", "syscalls/sys_enter_connect", 0},
     {"on_bind", "tracepoint", "syscalls/sys_enter_bind", 0},
+    {"on_bind_kprobe", "kprobe", "__x64_sys_bind", 0},
+    {"on_bind_kprobe", "kprobe", "__sys_bind", 0},
+    {"on_cgroup_bind4", "cgroup", "/sys/fs/cgroup", 0},
+    {"on_cgroup_bind6", "cgroup", "/sys/fs/cgroup", 0},
     {"on_write", "kprobe", "vfs_write", 0},
     {"on_pwrite", "kprobe", "vfs_pwrite", 0},
 };
@@ -85,13 +90,16 @@ static char *manifest_object_path(const char *json) {
 
 static int validate_manifest(const char *json) {
     if (!json || !manifest_has(json, "ring_map", "events") || !manifest_has(json, "loss_map", "loss_counters")) return -EINVAL;
-    if (manifest_key_count(json, "program") != 8 || manifest_key_count(json, "kind") != 8 || manifest_key_count(json, "target") != 8) return -EINVAL;
+    size_t program_count = manifest_key_count(json, "program");
+    if (program_count == 0 || program_count > sizeof(ATTACHMENTS) / sizeof(ATTACHMENTS[0])) return -EINVAL;
+    if (manifest_key_count(json, "kind") != program_count || manifest_key_count(json, "target") != program_count) return -EINVAL;
+    size_t matched = 0;
     for (size_t i = 0; i < sizeof(ATTACHMENTS) / sizeof(ATTACHMENTS[0]); ++i) {
-        if (!manifest_has(json, "program", ATTACHMENTS[i].program) ||
-            !manifest_has(json, "kind", ATTACHMENTS[i].kind) ||
-            !manifest_has(json, "target", ATTACHMENTS[i].target)) return -EINVAL;
+        if (manifest_has(json, "program", ATTACHMENTS[i].program) &&
+            manifest_has(json, "kind", ATTACHMENTS[i].kind) &&
+            manifest_has(json, "target", ATTACHMENTS[i].target)) ++matched;
     }
-    return 0;
+    return matched == program_count ? 0 : -EINVAL;
 }
 
 static int enqueue_event(void *ctx, void *data, size_t size) {
@@ -120,6 +128,13 @@ static struct bpf_link *attach_spec(struct bpf_program *program, const struct at
     }
     if (strcmp(spec->kind, "kprobe") == 0) return bpf_program__attach_kprobe(program, false, spec->target);
     if (strcmp(spec->kind, "kretprobe") == 0) return bpf_program__attach_kprobe(program, true, spec->target);
+    if (strcmp(spec->kind, "cgroup") == 0) {
+        int fd = open(spec->target, O_RDONLY | O_CLOEXEC);
+        if (fd < 0) return NULL;
+        struct bpf_link *link = bpf_program__attach_cgroup(program, fd);
+        close(fd);
+        return link;
+    }
     return NULL;
 }
 
@@ -139,13 +154,18 @@ void *beast_x2_open(const char *manifest_json, size_t manifest_len) {
     if (!observer_tgid) goto fail;
     uint32_t observer_key = 0, observer_pid = (uint32_t)getpid();
     if (bpf_map_update_elem(bpf_map__fd(observer_tgid), &observer_key, &observer_pid, BPF_ANY) != 0) goto fail;
+    size_t requested_index = 0;
     for (size_t i = 0; i < sizeof(ATTACHMENTS) / sizeof(ATTACHMENTS[0]); ++i) {
+        if (!manifest_has(manifest_json, "program", ATTACHMENTS[i].program) ||
+            !manifest_has(manifest_json, "kind", ATTACHMENTS[i].kind) ||
+            !manifest_has(manifest_json, "target", ATTACHMENTS[i].target)) continue;
         struct bpf_program *program = bpf_object__find_program_by_name(handle->object, ATTACHMENTS[i].program);
-        if (!program) { if (ATTACHMENTS[i].required) goto fail; else continue; }
+        if (!program) { requested_index++; if (ATTACHMENTS[i].required) goto fail; else continue; }
         struct bpf_link *link = attach_spec(program, &ATTACHMENTS[i]);
-        if (!link || libbpf_get_error(link)) { if (ATTACHMENTS[i].required) goto fail; else continue; }
+        if (!link || libbpf_get_error(link)) { requested_index++; if (ATTACHMENTS[i].required) goto fail; else continue; }
         handle->links[handle->link_count++] = link;
-        handle->attached_mask |= 1U << i;
+        handle->attached_mask |= 1U << requested_index;
+        requested_index++;
     }
     struct bpf_map *events = bpf_object__find_map_by_name(handle->object, "events");
     struct bpf_map *losses = bpf_object__find_map_by_name(handle->object, "loss_counters");

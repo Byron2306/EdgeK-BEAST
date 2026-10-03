@@ -32,7 +32,18 @@ class ToolExecutionFailed(RuntimeError):
         self.observation = observation
 
 
-_EXCLUDED_DIRS = {".git", ".beast", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+_EXCLUDED_DIRS = {".git", ".beast", ".pytest_cache", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
+
+def approval_authority_digest(*, tool_id: str, execution_target: str, arguments: dict[str, Any], affected_paths: list[str] | None = None) -> str:
+    payload = {
+        "tool_id": str(tool_id or ""),
+        "execution_target": str(execution_target or "local"),
+        "arguments": dict(arguments or {}),
+        "affected_paths": sorted({str(path) for path in (affected_paths or []) if str(path)}),
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
+    return "sha256:" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
 
 _LANGUAGE_BY_SUFFIX = {
     ".py": "python",
@@ -333,8 +344,9 @@ async def _workspace_read_range(arguments: dict[str, Any], context: ToolExecutio
         start = max(1, int(arguments.get("start_line") or 1))
         count = max(1, min(int(arguments.get("line_count") or 200), 1000))
         end = start + count - 1
+        read_base = str(context.worktree_root or "").strip() or descriptor["base"]
         script = (
-            f"cd {_shell_quote(descriptor['base'])} && "
+            f"cd {_shell_quote(read_base)} && "
             f"test -f {_shell_quote(relative)} && "
             f"printf 'BEAST_META\\n' && wc -l < {_shell_quote(relative)} && "
             f"sha256sum -- {_shell_quote(relative)} | awk '{{print $1}}' && "
@@ -360,10 +372,10 @@ async def _workspace_read_range(arguments: dict[str, Any], context: ToolExecutio
             "target_execution": f"remote_{descriptor['kind']}",
             "execution_target": context.execution_target,
             "execution_target_payload": dict(context.execution_target_payload or {}),
-            "remote_root": descriptor["base"],
+            "remote_root": read_base,
             "transport": descriptor["kind"],
         }
-    root = Path(context.workspace_root).resolve()
+    root = Path(context.worktree_root or context.workspace_root).resolve()
     path = _safe_path(root, str(arguments.get("path") or ""))
     if not path.is_file():
         raise FileNotFoundError(str(path))
@@ -548,7 +560,7 @@ for current, dirs, names in os.walk(root):
         language = language_for(rel)
         files.append({"path": rel, "language": language, "size": stat.st_size, "mtime_ms": int(stat.st_mtime * 1000)})
         languages[language] = languages.get(language, 0) + 1
-        if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", rel, flags=re.I):
+        if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_[^/]+|[^/]+_test|[^/]+\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", rel, flags=re.I):
             tests.append(rel)
         if include_symbols and language != "text" and stat.st_size <= 1024 * 1024:
             try:
@@ -638,7 +650,7 @@ print(json.dumps({
             symbols.append(item)
             symbol_kinds[item["kind"]] = symbol_kinds.get(item["kind"], 0) + 1
         imports.extend(file_imports)
-    tests = [item["path"] for item in files if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_|.*_test|.*\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", item["path"], flags=re.IGNORECASE)]
+    tests = [item["path"] for item in files if re.search(r"(^|/)(tests?|spec|__tests__)/|(^|/)(test_[^/]+|[^/]+_test|[^/]+\.(?:spec|test))\.(?:py|js|jsx|ts|tsx)$", item["path"], flags=re.IGNORECASE)]
     digest = hashlib.sha256(json.dumps({"files": files, "symbols": symbols[:500], "tests": tests[:200]}, sort_keys=True).encode("utf-8")).hexdigest()
     return {
         "beast_object_type": "beast_workspace_index_snapshot",
@@ -770,6 +782,23 @@ class AgentToolRuntime:
             approval = self.engine.store.get_approval(run_id, request.approval_id) if request.approval_id else None
             if not approval or approval.get("status") != "approved":
                 raise PermissionError(f"tool {spec.tool_id} requires an approved capability")
+            approval_request = approval.get("request") if isinstance(approval.get("request"), dict) else {}
+            expected_digest = str(approval_request.get("authority_digest") or "")
+            if expected_digest:
+                affected_paths = [
+                    str(arguments.get(key))
+                    for key in ("path", "target_path")
+                    if arguments.get(key)
+                ]
+                actual_digest = approval_authority_digest(
+                    tool_id=spec.tool_id,
+                    execution_target=target,
+                    arguments=arguments,
+                    affected_paths=affected_paths,
+                )
+                if actual_digest != expected_digest:
+                    raise PermissionError(f"tool {spec.tool_id} approval arguments do not match approved authority")
+                self.engine.store.consume_approval(run_id, request.approval_id)
         checkpoint = run.get("checkpoint") if isinstance(run.get("checkpoint"), dict) else {}
         worktree_root = str(checkpoint.get("worktree_root") or "")
         if spec.requires_worktree and not worktree_root:

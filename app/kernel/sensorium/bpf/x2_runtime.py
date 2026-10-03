@@ -33,7 +33,7 @@ class AttachPoint:
     required: bool = True
 
     def __post_init__(self) -> None:
-        if self.kind not in {"tracepoint", "kprobe", "kretprobe", "fentry", "fexit"}:
+        if self.kind not in {"tracepoint", "kprobe", "kretprobe", "fentry", "fexit", "cgroup"}:
             raise ValueError(f"unsupported attach kind: {self.kind}")
         if not self.program or not self.target:
             raise ValueError("program and target are required")

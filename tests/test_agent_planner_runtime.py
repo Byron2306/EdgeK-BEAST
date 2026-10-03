@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import pytest
 from typing import Any
 
 from app.kernel.agents.planner_provider import CallbackPlannerProvider, CapabilityScoredPlannerProvider, FallbackPlannerProvider, HeuristicPlannerProvider, ScriptedPlannerProvider, StickyFallbackPlannerProvider, parse_planner_decision
@@ -8,6 +9,7 @@ from app.kernel.agents.planner_runtime import AgentPlannerRuntime
 from app.kernel.agents.provider_quality import ProviderQualityLedger
 from app.kernel.agents.run_engine import AgentRunEngine
 from app.kernel.agents.ollama_planner_provider import OllamaPlannerProvider
+from app.kernel.agents.planner_provider import PlannerDecisionError
 from app.kernel.agents.nim_planner_provider import NIMPlannerProvider
 from app.kernel.agents.verification_planner import plan_verification
 from app.kernel.commons.route_damping import RouteFlapDampener
@@ -31,7 +33,14 @@ def make_run(tmp_path):
     return engine, run["run_id"]
 
 
-def _repo_run(tmp_path, *, provider="simulated", model="planner-test"):
+def _repo_run(
+    tmp_path,
+    *,
+    provider="simulated",
+    model="planner-test",
+    objective="Change VALUE to 2 and verify it",
+    source="VALUE = 1\n",
+):
     import subprocess
 
     root = tmp_path / "repo"
@@ -39,13 +48,13 @@ def _repo_run(tmp_path, *, provider="simulated", model="planner-test"):
     subprocess.run(["git", "init", "-q"], cwd=root, check=True)
     subprocess.run(["git", "config", "user.email", "beast@example.test"], cwd=root, check=True)
     subprocess.run(["git", "config", "user.name", "BEAST Test"], cwd=root, check=True)
-    (root / "answer.py").write_text("VALUE = 1\n", encoding="utf-8")
+    (root / "answer.py").write_text(source, encoding="utf-8")
     subprocess.run(["git", "add", "."], cwd=root, check=True)
     subprocess.run(["git", "commit", "-qm", "initial"], cwd=root, check=True)
     engine = AgentRunEngine(root)
     run_id = engine.create_run(
         session_id="session-agent-runtime",
-        objective="Change VALUE to 2 and verify it",
+        objective=objective,
         mode="agent",
         provider=provider,
         model=model,
@@ -241,6 +250,7 @@ def test_decision_contract_normalizes_params_and_end_line_for_read_range():
     assert decision.arguments["path"] == "sample.py"
     assert decision.arguments["start_line"] == 3
     assert decision.arguments["line_count"] == 5
+    assert "end_line" not in decision.arguments
 
 
 def test_decision_contract_normalizes_descriptive_action_enum():
@@ -345,6 +355,29 @@ def test_phase1_planning_integration_seeds_durable_objective_plan(tmp_path):
     assert [step["step_id"] for step in history[0]["plan"]["steps"]] == ["inspect", "bind", "mutate", "verify", "handoff"]
     event_types = [e["event_type"] for e in engine.store.events(run_id, limit=100)]
     assert "agent.plan.integration.seeded" in event_types
+
+
+def test_legacy_run_scope_approval_remains_reusable_for_forced_verify(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+    provider = ScriptedPlannerProvider([
+        {"decision_type": "tool", "tool_id": "workspace.list", "arguments": {}},
+        {"decision_type": "tool", "tool_id": "worktree.bind", "approval_id": approval_id, "arguments": {"objective": "repair VALUE"}},
+        {"decision_type": "tool", "tool_id": "worktree.replace_exact", "approval_id": approval_id, "arguments": {"path": "answer.py", "old_text": "VALUE = 1", "new_text": "VALUE = 2"}},
+        {"decision_type": "complete", "summary": "completed before verify"},
+    ])
+
+    result = asyncio.run(asyncio.wait_for(
+        AgentPlannerRuntime(engine, provider, max_turns=4).run(run_id),
+        timeout=2.0,
+    ))
+
+    approvals = engine.store.approvals(run_id)
+    assert not any(
+        item.get("status") == "pending"
+        and (item.get("request") or {}).get("tool_id") == "worktree.verify"
+        for item in approvals
+    )
+    assert result["state"] != "waiting_for_approval"
 
 
 def test_phase1_planning_integration_progresses_with_observations(tmp_path):
@@ -750,6 +783,164 @@ def test_ollama_provider_exposes_route_and_timeout_usage_on_success():
     assert provider._seen_timeout == 14.0
     assert provider.last_usage["timeout_seconds"] == 14.0
     assert provider.last_route["route_kind"] == "direct_generate"
+
+
+
+def test_ollama_planner_schema_failure_does_not_penalize_route(tmp_path):
+    dampener = RouteFlapDampener(
+        path=tmp_path / "schema-damping.json",
+        suppress_at=400,
+        half_life_seconds=3600,
+    )
+
+    class StubOllama(OllamaPlannerProvider):
+        async def _preflight(self):
+            self._preflight_ok = True
+
+        def _prepare_sensorium(self, run):
+            return None
+
+        def _finish_sensorium(self):
+            return None
+
+        def _govern_request(self, prompt, *, run, turn):
+            return None
+
+        def _apply_pressure_budget(self, *, reuse_mode="cold"):
+            self._pressure_decision = None
+
+        def _request_stream_json(self, path, payload, timeout):
+            assert path == "/api/generate"
+            return {
+                "response": "not-json-at-all",
+                "prompt_eval_count": 1,
+                "eval_count": 1,
+                "total_duration": 1_000_000,
+            }
+
+    provider = StubOllama(
+        model="test-model",
+        timeout_seconds=30,
+        max_retries=0,
+        route_dampener=dampener,
+        route_id="ollama:test-model",
+    )
+
+    assert dampener.score("ollama:test-model").penalty == 0.0
+
+    with pytest.raises(PlannerDecisionError):
+        asyncio.run(
+            provider.next_decision(
+                "return a planner decision",
+                run={
+                    "mode": "agent",
+                    "_beast_recovery_timeout_seconds": 8.0,
+                },
+                turn=1,
+            )
+        )
+
+    assert dampener.score("ollama:test-model").penalty == 0.0
+    assert provider.last_usage["route"]["event"] == "planner_schema"
+
+
+def test_ollama_explicit_recovery_bypasses_suppressed_route(tmp_path):
+    dampener = RouteFlapDampener(
+        path=tmp_path / "recovery-damping.json",
+        suppress_at=100,
+        half_life_seconds=3600,
+    )
+    dampener.record("ollama:test-model", "timeout")
+
+    class StubOllama(OllamaPlannerProvider):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.generate_calls = 0
+
+        async def _preflight(self):
+            self._preflight_ok = True
+
+        def _prepare_sensorium(self, run):
+            return None
+
+        def _finish_sensorium(self):
+            return None
+
+        def _govern_request(self, prompt, *, run, turn):
+            return None
+
+        def _apply_pressure_budget(self, *, reuse_mode="cold"):
+            self._pressure_decision = None
+
+        def _request_stream_json(self, path, payload, timeout):
+            self.generate_calls += 1
+            assert path == "/api/generate"
+            return {
+                "response": '{"decision_type":"tool","tool_id":"workspace.index","arguments":{}}',
+                "prompt_eval_count": 1,
+                "eval_count": 1,
+                "total_duration": 1_000_000,
+            }
+
+    provider = StubOllama(
+        model="test-model",
+        timeout_seconds=30,
+        max_retries=0,
+        route_dampener=dampener,
+        route_id="ollama:test-model",
+    )
+
+    assert dampener.suppressed("ollama:test-model") is True
+
+    decision = asyncio.run(
+        provider.next_decision(
+            "return a planner decision",
+            run={
+                "mode": "agent",
+                "_beast_recovery_timeout_seconds": 8.0,
+            },
+            turn=1,
+        )
+    )
+
+    assert provider.generate_calls == 1
+    assert decision.tool_id == "workspace.index"
+
+
+def test_ollama_suppressed_route_rejection_does_not_add_timeout_penalty(tmp_path):
+    dampener = RouteFlapDampener(
+        path=tmp_path / "suppressed-damping.json",
+        suppress_at=100,
+        half_life_seconds=3600,
+    )
+    dampener.record("ollama:test-model", "timeout")
+
+    provider = OllamaPlannerProvider(
+        model="test-model",
+        timeout_seconds=30,
+        max_retries=0,
+        route_dampener=dampener,
+        route_id="ollama:test-model",
+    )
+
+    before = dampener.score("ollama:test-model").penalty
+    assert before >= 100
+
+    with pytest.raises(PlannerDecisionError, match="route dampened"):
+        asyncio.run(
+            provider.next_decision(
+                "return a planner decision",
+                run={"mode": "agent"},
+                turn=1,
+            )
+        )
+
+    after = dampener.score("ollama:test-model").penalty
+
+    # Natural decay may make the score fractionally smaller, but rejecting
+    # an already-suppressed route must never add another synthetic timeout.
+    assert after <= before
+    assert provider.last_usage["route"]["event"] == "suppressed"
 
 
 def test_ollama_provider_honors_persistent_bad_route_memory(tmp_path):
@@ -1176,8 +1367,8 @@ def test_invalid_placeholder_mutation_retries_before_tool_execution(tmp_path):
     observations = planner.get("observations", [])
     assert any(item.get("tool_id") == "worktree.replace_exact" and item.get("status") == "completed" for item in observations if isinstance(item, dict))
     events = engine.store.events(run_id, limit=200)
-    assert any(event["event_type"] == "agent.provider.invalid_mutation_retry" for event in events)
-    assert any(event["event_type"] == "agent.provider.invalid_mutation_recovered" for event in events)
+    assert any(event["event_type"] == "agent.mutation.revision_requested" for event in events)
+    assert any(event["event_type"] == "agent.mutation.revision_accepted" for event in events)
 
 
 def test_invalid_placeholder_mutation_blocks_if_retry_stays_invalid(tmp_path):
@@ -1217,8 +1408,8 @@ def test_invalid_placeholder_mutation_blocks_if_retry_stays_invalid(tmp_path):
     assert final["state"] == "policy_blocked"
     assert "non-empty old_text" in str(final.get("error") or "")
     events = engine.store.events(run_id, limit=200)
-    assert any(event["event_type"] == "agent.provider.invalid_mutation_retry" for event in events)
-    assert any(event["event_type"] == "agent.provider.invalid_mutation_retry_failed" for event in events)
+    assert any(event["event_type"] == "agent.mutation.revision_requested" for event in events)
+    assert any(event["event_type"] == "agent.mutation.revision_rejected" for event in events)
 
 
 def test_invalid_placeholder_retry_rejects_malformed_read_recovery(tmp_path):
@@ -1864,6 +2055,69 @@ def test_agent_phase_enforcement_runs_default_verify_and_sourceplan_after_mutati
     assert planner["final_summary"] == "VALUE repaired and verified."
 
 
+
+def test_durable_workflow_evidence_survives_small_observation_prompt_budget(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path)
+
+    provider = ScriptedPlannerProvider([
+        {
+            "decision_type": "tool",
+            "tool_id": "workspace.index",
+            "arguments": {"limit": 1200, "include_symbols": True},
+        },
+        {
+            "decision_type": "tool",
+            "tool_id": "worktree.bind",
+            "approval_id": approval_id,
+            "arguments": {"objective": "repair VALUE"},
+        },
+        {
+            "decision_type": "tool",
+            "tool_id": "worktree.replace_exact",
+            "approval_id": approval_id,
+            "arguments": {
+                "path": "answer.py",
+                "old_text": "VALUE = 1",
+                "new_text": "VALUE = 2",
+            },
+        },
+        {
+            "decision_type": "complete",
+            "summary": "completed before verify",
+        },
+        {
+            "decision_type": "complete",
+            "summary": "completed before sourceplan",
+        },
+        {
+            "decision_type": "complete",
+            "summary": "VALUE repaired and verified.",
+        },
+    ])
+
+    final = asyncio.run(
+        AgentPlannerRuntime(
+            engine,
+            provider,
+            max_turns=6,
+            observation_limit=2,
+        ).run(run_id)
+    )
+
+    planner = final["checkpoint"]["planner"]
+    tool_ids = [item["tool_id"] for item in planner["observations"]]
+
+    assert final["state"] == "completed"
+    assert tool_ids == [
+        "workspace.index",
+        "worktree.bind",
+        "worktree.replace_exact",
+        "worktree.verify",
+        "worktree.sourceplan_draft",
+    ]
+
+
+
 def test_failed_verification_records_analysis_and_target_paths(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path)
     provider = ScriptedPlannerProvider([
@@ -1958,6 +2212,224 @@ def test_mutating_heuristic_block_after_bind_retries_strong_provider(tmp_path):
     ]
 
 
+
+def test_generic_strong_retry_cannot_regress_to_read_after_first_mutation_retry_fails(tmp_path):
+    engine, run_id, approval_id = _repo_run(
+        tmp_path,
+        provider="nvidia_nim",
+        model="planner-test",
+    )
+
+    class _BlockedThenBadRecovery:
+        def __init__(self):
+            self.calls = 0
+            self.last_route = {}
+            self.last_usage = {}
+            self.prompts = []
+
+        async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            self.calls += 1
+            self.prompts.append(prompt)
+
+            if self.calls == 1:
+                self.last_route = {
+                    "provider": "heuristic",
+                    "engine": "deterministic",
+                    "route_kind": "heuristic",
+                    "reason": "deterministic_fast_path",
+                }
+                return parse_planner_decision({
+                    "decision_type": "blocked",
+                    "blocker": (
+                        "Heuristic fallback found no further deterministic step; "
+                        "stronger planner route required."
+                    ),
+                })
+
+            if "FIRST MUTATION REQUIRED" in prompt:
+                raise TimeoutError("simulated first mutation retry failure")
+
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "workspace.read_range",
+                "arguments": {
+                    "path": "answer.py",
+                    "start_line": 1,
+                    "line_count": 20,
+                },
+            })
+
+    provider = _BlockedThenBadRecovery()
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=3)
+
+    bind_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "worktree.bind",
+            {"objective": "repair VALUE"},
+            approval_id=approval_id,
+        )
+    )
+    read_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "workspace.read_range",
+            {"path": "answer.py", "start_line": 1, "line_count": 40},
+        )
+    )
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.observations = [read_obs, bind_obs]
+    runtime._save_state(state)
+
+    final = asyncio.run(runtime.run(run_id))
+    planner = final["checkpoint"]["planner"]
+
+    reads = [
+        item
+        for item in planner.get("observations", [])
+        if item.get("tool_id") == "workspace.read_range"
+    ]
+
+    # The already-completed inspection is the only read allowed.
+    assert len(reads) == 1
+
+    # A generic strong retry must not be accepted as successful recovery
+    # when it regresses from mutate back into inspection.
+    recovery = [
+        event
+        for event in engine.store.events(run_id, limit=300)
+        if event["event_type"] == "agent.provider.strong_retry_recovered"
+    ]
+    assert not any(
+        event.get("payload", {}).get("decision_type") == "tool"
+        for event in recovery
+    )
+
+    # Once bind + inspection are complete and no mutation exists yet,
+    # every strong recovery must preserve the first-mutation contract.
+    assert len(provider.prompts) >= 3
+    assert "FIRST MUTATION REQUIRED" in provider.prompts[-1]
+    assert "TARGET FILE: answer.py" in provider.prompts[-1]
+    assert "CURRENT CONTENT" in provider.prompts[-1]
+
+
+
+
+    assert "BEAST owns the target path and exact old_text anchor" in provider.prompts[1]
+    assert "You own ONLY new_text" in provider.prompts[1]
+    assert "Identity/no-op replacements are invalid" in provider.prompts[1]
+
+def test_first_mutation_retry_prompt_json_escapes_multiline_python(tmp_path):
+    engine, run_id, approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+    )
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=6)
+
+    bind_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "worktree.bind",
+            {"objective": "repair VALUE"},
+            approval_id=approval_id,
+        )
+    )
+    read_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "workspace.read_range",
+            {"path": "answer.py", "start_line": 1, "line_count": 40},
+        )
+    )
+
+    read_obs["result"]["content"] = (
+        'def safe_average(values):\n'
+        '    """Return the arithmetic mean."""\n'
+        '    return 1\n'
+    )
+
+    state = runtime._load_state(run_id)
+    state.observations = [read_obs, bind_obs]
+
+    prompt = runtime._first_mutation_retry_prompt("base prompt", state)
+
+    assert "CURRENT CONTENT JSON STRING" in prompt
+    assert r'\n' in prompt
+    assert r'\"\"\"Return the arithmetic mean.\"\"\"' in prompt
+
+
+
+def test_first_mutation_generic_strong_retry_preserves_configured_timeout_budget(tmp_path):
+    engine, run_id, approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+    )
+
+    class _ImmediateMutation:
+        async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "path": "answer.py",
+                    "old_text": "VALUE = 1",
+                    "new_text": "VALUE = 2",
+                },
+            })
+
+    runtime = AgentPlannerRuntime(engine, _ImmediateMutation(), max_turns=4)
+
+    bind_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "worktree.bind",
+            {"objective": "repair VALUE"},
+            approval_id=approval_id,
+        )
+    )
+    read_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "workspace.read_range",
+            {"path": "answer.py", "start_line": 1, "line_count": 40},
+        )
+    )
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.observations = [read_obs, bind_obs]
+
+    run = engine.store.get_run(run_id) or {}
+    run["request"] = dict(run.get("request") or {})
+    run["request"]["decision_timeout_ms"] = 80000
+
+    result = asyncio.run(
+        runtime._retry_primary_after_heuristic_block(
+            runtime.provider,
+            "prompt",
+            run,
+            state,
+            turn=4,
+            reason="test",
+        )
+    )
+
+    assert result is not None
+    assert result.tool_id == "worktree.replace_exact"
+
+    event = next(
+        e for e in engine.store.events(run_id, limit=200)
+        if e["event_type"] == "agent.provider.strong_retry"
+    )
+
+    # 75% of configured 80s planner budget = 60s.
+    assert event["payload"]["timeout_ms"] == 60000
+
+
 def test_first_mutation_retry_prompt_includes_exact_file_context(tmp_path):
     engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="meta/llama-3.1-70b-instruct")
     runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=6)
@@ -1970,6 +2442,8 @@ def test_first_mutation_retry_prompt_includes_exact_file_context(tmp_path):
     assert "TARGET FILE: answer.py" in prompt
     assert "CURRENT CONTENT" in prompt
     assert "VALUE = 1" in prompt
+    assert "CURRENT CONTENT JSON STRING" in prompt
+    assert '"VALUE = 1"' in prompt
 
 
 def test_first_mutation_retry_unwraps_sticky_provider_primary(tmp_path):
@@ -2110,6 +2584,100 @@ def test_blocked_fallback_salvages_partial_decision_from_recent_model_delta(tmp_
     assert final["state"] != "policy_blocked"
     planner = final["checkpoint"]["planner"]
     assert any(item.get("tool_id") == "worktree.replace_exact" for item in planner.get("observations", []))
+
+
+
+def test_post_bind_missing_path_read_retries_strong_provider_before_execution(tmp_path):
+    engine, run_id, approval_id = _repo_run(
+        tmp_path,
+        provider="nvidia_nim",
+        model="meta/llama-3.1-70b-instruct",
+    )
+
+    class _MissingPathReadThenStrong:
+        def __init__(self):
+            self.last_route = {}
+            self.last_usage = {}
+            self.calls = 0
+
+        async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            self.calls += 1
+
+            if self.calls == 1:
+                return parse_planner_decision({
+                    "decision_type": "tool",
+                    "tool_id": "workspace.read_range",
+                    "arguments": {
+                        "start_line": 1,
+                        "line_count": 4,
+                    },
+                })
+
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "approval_id": approval_id,
+                "arguments": {
+                    "path": "answer.py",
+                    "old_text": "VALUE = 1",
+                    "new_text": "VALUE = 2",
+                },
+            })
+
+    provider = _MissingPathReadThenStrong()
+    runtime = AgentPlannerRuntime(
+        engine,
+        provider,
+        max_turns=3,
+    )
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.observations = [
+        {
+            "observation_id": "obs-read",
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": "VALUE = 1\n",
+            },
+        },
+        {
+            "observation_id": "obs-bind",
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "task_id": "wt-1",
+                "worktree_root": str(tmp_path / "repo"),
+            },
+        },
+    ]
+    runtime._save_state(state)
+
+    engine.merge_checkpoint(run_id, {
+        "worktree_task_id": "wt-1",
+        "worktree_root": str(tmp_path / "repo"),
+        "worktree_branch": "beast/test",
+        "worktree_base_commit": "HEAD",
+    })
+
+    final = asyncio.run(runtime.run(run_id))
+    planner = final["checkpoint"]["planner"]
+
+    assert provider.calls >= 2
+
+    assert any(
+        item.get("tool_id") == "worktree.replace_exact"
+        and item.get("status") == "completed"
+        for item in planner.get("observations", [])
+    )
+
+    assert not any(
+        item.get("tool_id") == "workspace.read_range"
+        and item.get("status") == "failed"
+        for item in planner.get("observations", [])
+    )
 
 
 def test_post_bind_duplicate_read_retries_strong_provider(tmp_path):
@@ -2478,3 +3046,1190 @@ def test_required_phase_does_not_repeat_completed_empty_target_search(tmp_path):
     decision = runtime._required_phase_decision(run, state)
 
     assert decision is None or decision.tool_id != "workspace.search_text"
+
+def test_phase1_post_bind_read_does_not_regress_mutate_to_bind(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path)
+    runtime = AgentPlannerRuntime(
+        engine,
+        ScriptedPlannerProvider([]),
+        max_turns=1,
+    )
+
+    runtime.planning_integrations.ensure_phase1_plan(
+        run_id,
+        engine.store.get_run(run_id),
+    )
+
+    runtime.planning_integrations.sync_phase1_progress(
+        run_id,
+        {
+            "tool_id": "workspace.list",
+            "status": "completed",
+            "result": {},
+        },
+    )
+
+    runtime.planning_integrations.sync_phase1_progress(
+        run_id,
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "worktree_root": str(tmp_path / "worktree"),
+            },
+        },
+    )
+
+    before = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+    assert before["plan"]["active_step_id"] == "mutate"
+
+    result = runtime.planning_integrations.sync_phase1_progress(
+        run_id,
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": "VALUE = 1\n",
+            },
+        },
+    )
+
+    assert result is None
+
+    current = ObjectivePlanWorkspace(engine.workspace_root).current(run_id)
+    statuses = {
+        step["step_id"]: step["status"]
+        for step in current["plan"]["steps"]
+    }
+
+    assert current["plan"]["active_step_id"] == "mutate"
+    assert statuses["inspect"] == "completed"
+    assert statuses["bind"] == "completed"
+    assert statuses["mutate"] == "active"
+    assert statuses["verify"] == "pending"
+    assert statuses["handoff"] == "pending"
+
+
+
+def test_primary_retry_provider_skips_heuristic_and_resolves_model():
+    from app.kernel.agents.planner_runtime import AgentPlannerRuntime
+    from app.kernel.agents.planner_provider import (
+        FallbackPlannerProvider,
+        HeuristicPlannerProvider,
+        ScriptedPlannerProvider,
+        StickyFallbackPlannerProvider,
+    )
+
+    model = ScriptedPlannerProvider([])
+    sticky = StickyFallbackPlannerProvider(
+        model,
+        HeuristicPlannerProvider(),
+    )
+    outer = FallbackPlannerProvider(
+        HeuristicPlannerProvider(),
+        sticky,
+    )
+
+    resolved = AgentPlannerRuntime._primary_retry_provider(outer)
+
+    assert resolved is model
+
+
+def test_first_mutation_recovery_rejects_noop_replace_exact(tmp_path):
+    engine, run_id, approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+    )
+    runtime = AgentPlannerRuntime(
+        engine,
+        ScriptedPlannerProvider([]),
+        max_turns=6,
+    )
+
+    bind_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "worktree.bind",
+            {"objective": "repair VALUE"},
+            approval_id=approval_id,
+        )
+    )
+    read_obs = asyncio.run(
+        engine.execute_tool(
+            run_id,
+            "workspace.read_range",
+            {
+                "path": "answer.py",
+                "start_line": 1,
+                "line_count": 40,
+            },
+        )
+    )
+
+    state = runtime._load_state(run_id)
+    state.observations = [bind_obs, read_obs]
+
+    noop = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {
+            "path": "answer.py",
+            "old_text": "VALUE = 1",
+            "new_text": "VALUE = 1",
+        },
+    })
+
+    real_edit = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {
+            "path": "answer.py",
+            "old_text": "VALUE = 1",
+            "new_text": "VALUE = 2",
+        },
+    })
+
+    assert runtime._valid_first_mutation_recovery(noop, state) is False
+    assert runtime._valid_first_mutation_recovery(real_edit, state) is True
+
+def test_fresh_agent_prompt_does_not_seed_unobserved_concrete_path(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path)
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]))
+
+    run = engine.store.get_run(run_id)
+    state = runtime._load_state(run_id)
+
+    prompt = runtime._prompt(run, state)
+
+    assert "app/main.py" not in prompt
+    assert '"tool_id":"workspace.index"' in prompt
+
+def test_decision_contract_accepts_one_json_object_with_trailing_prose():
+    decision = parse_planner_decision(
+        '{"decision_type":"tool","tool_id":"workspace.list","arguments":{},"summary":""}\nDone.'
+    )
+    assert decision.decision_type.value == "tool"
+    assert decision.tool_id == "workspace.list"
+
+
+def test_decision_contract_rejects_multiple_top_level_json_objects():
+    value = (
+        '{"decision_type":"tool","tool_id":"workspace.list","arguments":{},"summary":""}'
+        '{"decision_type":"tool","tool_id":"worktree.bind","arguments":{},"summary":""}'
+    )
+    with pytest.raises(PlannerDecisionError, match="multiple planner JSON objects"):
+        parse_planner_decision(value)
+
+def test_decision_contract_accepts_repeated_equivalent_planner_decisions():
+    raw = '''We need to read file.We need to use tool workspace.read_range.{"path":"calculator.py","start_line":1,"end_line":200}We need to actually call the tool.{"tool":"workspace.read_range","arguments":{"path":"calculator.py","start_line":1,"end_line":200}}...{"decision_type":"tool","tool_id":"workspace.read_range","arguments":{"path":"calculator.py","start_line":1,"end_line":200},"summary":""}'''
+
+    decision = parse_planner_decision(raw)
+
+    assert decision.decision_type.value == "tool"
+    assert decision.tool_id == "workspace.read_range"
+    assert decision.arguments["path"] == "calculator.py"
+    assert decision.arguments["start_line"] == 1
+    assert decision.arguments["line_count"] == 200
+
+
+def test_preapproval_residual_critic_rejects_malformed_python_candidate(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n",
+            },
+        },
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "approval_id": approval_id,
+        "arguments": {
+            "path": "answer.py",
+            "old_text": "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)",
+            "new_text": "def safe_average(values):\n    \"\"\"broken docstring\n    return 0.0",
+        },
+    })
+
+    reason = runtime._invalid_mutation_reason(decision, state)
+
+    assert "residual critic before approval" in reason
+    assert "syntax:" in reason
+
+
+def test_preapproval_residual_critic_rejects_anchor_not_in_inspected_source(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": "VALUE = 1\n"}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "approval_id": approval_id,
+        "arguments": {"path": "answer.py", "old_text": "VALUE = 999", "new_text": "VALUE = 2"},
+    })
+
+    reason = runtime._invalid_mutation_reason(decision, state)
+
+    assert "residual critic before approval" in reason
+    assert "exact_anchor_not_unique" in reason
+
+
+def test_preapproval_residual_critic_accepts_valid_bounded_python_candidate(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="nvidia_nim", model="planner-test")
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n",
+            },
+        },
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "approval_id": approval_id,
+        "arguments": {
+            "path": "answer.py",
+            "old_text": "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)",
+            "new_text": "def safe_average(values):\n    values = list(values)\n    if not values:\n        return 0.0\n    return sum(values) / len(values)",
+        },
+    })
+
+    assert runtime._invalid_mutation_reason(decision, state) == ""
+
+
+def test_preapproval_residual_critic_blocks_before_creating_approval(tmp_path):
+    import subprocess
+
+    root = tmp_path / "repo-preapproval"
+    root.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+    subprocess.run(["git", "config", "user.email", "beast@example.test"], cwd=root, check=True)
+    subprocess.run(["git", "config", "user.name", "BEAST Test"], cwd=root, check=True)
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+    (root / "answer.py").write_text(source, encoding="utf-8")
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+    subprocess.run(["git", "commit", "-qm", "initial"], cwd=root, check=True)
+
+    engine = AgentRunEngine(root)
+    run_id = engine.create_run(
+        session_id="session-preapproval-critic",
+        objective="Make safe_average return 0.0 for an empty iterable",
+        mode="agent",
+        provider="simulated",
+        model="planner-test",
+    )["run_id"]
+    provider = ScriptedPlannerProvider([{
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {
+            "path": "answer.py",
+            "old_text": source.rstrip("\n"),
+            "new_text": "def safe_average(values):\n    \"\"\"broken docstring\n    return 0.0",
+        },
+    }])
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=4)
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1", "worktree_root": str(root)}},
+    ]
+    runtime._save_state(state)
+
+    final = asyncio.run(runtime.run(run_id))
+
+    assert final["state"] == "policy_blocked"
+    assert "residual critic before approval" in str(final.get("error") or "")
+    assert engine.store.approvals(run_id) == []
+    events = engine.store.events(run_id, limit=100)
+    assert any(event["event_type"] == "agent.mutation.preapproval_rejected" for event in events)
+
+
+def test_first_mutation_residual_materialization_owns_path_and_anchor(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n\n"
+        "OTHER = 1\n"
+    )
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {
+            "path": "provider-picked.py",
+            "old_text": "provider-picked anchor",
+            "new_text": (
+                "def safe_average(values):\n"
+                "    values = list(values)\n"
+                "    if not values:\n"
+                "        return 0.0\n"
+                "    return sum(values) / len(values)"
+            ),
+        },
+    })
+
+    compiled = runtime._materialize_first_mutation_residual(run, state, decision)
+
+    assert compiled.arguments["path"] == "answer.py"
+    assert compiled.arguments["old_text"] == (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+    assert compiled.arguments["new_text"] == decision.arguments["new_text"]
+
+
+def test_first_mutation_residual_only_decision_becomes_valid_exact_mutation(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {
+            "new_text": (
+                "def safe_average(values):\n"
+                "    values = list(values)\n"
+                "    if not values:\n"
+                "        return 0.0\n"
+                "    return sum(values) / len(values)"
+            ),
+        },
+    })
+
+    compiled = runtime._materialize_first_mutation_residual(run, state, decision)
+
+    assert runtime._invalid_mutation_reason(compiled, state) == ""
+    assert runtime._valid_first_mutation_recovery(compiled, state) is True
+
+
+def test_first_mutation_residual_prompt_gives_model_only_new_text_authority(tmp_path):
+    engine, run_id, approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    bind_obs = asyncio.run(engine.execute_tool(run_id, "worktree.bind", {"objective": "repair safe_average"}, approval_id=approval_id))
+    (tmp_path / "answer.py").write_text(
+        "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n",
+        encoding="utf-8",
+    )
+    read_obs = asyncio.run(engine.execute_tool(run_id, "workspace.read_range", {"path": "answer.py", "start_line": 1, "line_count": 40}))
+    state = runtime._load_state(run_id)
+    state.observations = [read_obs, bind_obs]
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+
+    prompt = runtime._first_mutation_retry_prompt("base prompt", state, run)
+
+    assert "You own ONLY new_text" in prompt
+    assert '"arguments":{"new_text":"<replacement source for the target symbol only>"}' in prompt
+    assert '"old_text":"<exact text copied from CURRENT CONTENT>"' not in prompt
+    assert "TARGET SYMBOL: safe_average" in prompt
+
+
+def test_malformed_residual_only_candidate_is_rejected_before_approval(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    decision = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": "def safe_average(values):\n    \\\"\\\"\\\"broken"},
+    })
+
+    compiled = runtime._materialize_first_mutation_residual(run, state, decision)
+    reason = runtime._invalid_mutation_reason(compiled, state)
+
+    assert "residual critic before approval" in reason
+    assert "syntax:" in reason
+
+
+def test_mutation_revision_prompt_preserves_residual_only_authority_and_critic_reason(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    runtime = AgentPlannerRuntime(engine, ScriptedPlannerProvider([]), max_turns=4)
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+    state = runtime._load_state(run_id)
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+
+    prompt = runtime._mutation_revision_prompt(
+        "planner prompt",
+        run,
+        state,
+        "replace_exact candidate rejected by residual critic before approval: syntax_error",
+        attempt=2,
+        budget=3,
+    )
+
+    assert "CRITIC REVISION REQUIRED" in prompt
+    assert "syntax_error" in prompt
+    assert "Revision attempt 2/3" in prompt
+    assert "BEAST owns the target path and exact old_text anchor" in prompt
+    assert "You own ONLY new_text" in prompt
+    assert '"arguments":{"new_text":"<replacement source for the target symbol only>"}' in prompt
+
+
+def test_invalid_first_mutation_revises_until_critic_accepts_without_creating_approval(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+
+    class _RevisionProvider:
+        def __init__(self):
+            self.calls = 0
+            self.prompts = []
+            self.last_route = {}
+            self.last_usage = {}
+
+        async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            self.calls += 1
+            self.prompts.append(prompt)
+            if self.calls == 1:
+                return parse_planner_decision({
+                    "decision_type": "tool",
+                    "tool_id": "worktree.replace_exact",
+                    "arguments": {"new_text": "def safe_average(values):\n    \\\"\\\"\\\"broken"},
+                })
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {"new_text": (
+                    "def safe_average(values):\n"
+                    "    values = list(values)\n"
+                    "    if not values:\n"
+                    "        return 0.0\n"
+                    "    return sum(values) / len(values)\n"
+                )},
+            })
+
+    provider = _RevisionProvider()
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=3)
+    state = runtime._load_state(run_id)
+    state.max_repair_cycles = 3
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    bad = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": "def safe_average(values):\n    \\\"\\\"\\\"broken"},
+    })
+    bad = runtime._materialize_first_mutation_residual(run, state, bad)
+    reason = runtime._invalid_mutation_reason(bad, state)
+    assert reason
+
+    revised = asyncio.run(runtime._revise_invalid_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        bad,
+        reason,
+        turn=3,
+    ))
+
+    assert revised.decision_type.value == "tool"
+    assert revised.tool_id == "worktree.replace_exact"
+    assert revised.arguments["path"] == "answer.py"
+    assert revised.arguments["old_text"] == source
+    assert "if not values" in revised.arguments["new_text"]
+    assert runtime._invalid_mutation_reason(revised, state) == ""
+    assert engine.store.approvals(run_id)[0]["status"] == "approved"
+    events = engine.store.events(run_id, limit=200)
+    assert len([e for e in events if e["event_type"] == "agent.mutation.revision_requested"]) == 2
+    assert any(e["event_type"] == "agent.mutation.revision_rejected" for e in events)
+    assert any(e["event_type"] == "agent.mutation.revision_accepted" for e in events)
+
+
+def test_mutation_revision_budget_exhaustion_blocks_without_new_approval(tmp_path):
+    engine, run_id, _approval_id = _repo_run(tmp_path, provider="ollama", model="qwen2.5-coder:1.5b")
+    run = engine.store.get_run(run_id) or {}
+    run["objective"] = "Fix safe_average so an empty iterable returns 0.0"
+    source = "def safe_average(values):\n    values = list(values)\n    return sum(values) / len(values)\n"
+
+    class _AlwaysBadRevisionProvider:
+        def __init__(self):
+            self.calls = 0
+            self.last_route = {}
+            self.last_usage = {}
+
+        async def next_decision(self, prompt: str, *, run: dict[str, Any], turn: int):
+            self.calls += 1
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {"new_text": "def safe_average(values):\n    \\\"\\\"\\\"still broken"},
+            })
+
+    provider = _AlwaysBadRevisionProvider()
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2)
+    state = runtime._load_state(run_id)
+    state.max_repair_cycles = 2
+    state.observations = [
+        {"tool_id": "workspace.read_range", "status": "completed", "result": {"path": "answer.py", "content": source}},
+        {"tool_id": "worktree.bind", "status": "completed", "result": {"task_id": "wt-1"}},
+    ]
+    bad = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": "def safe_average(values):\n    \\\"\\\"\\\"broken"},
+    })
+    bad = runtime._materialize_first_mutation_residual(run, state, bad)
+    reason = runtime._invalid_mutation_reason(bad, state)
+
+    blocked = asyncio.run(runtime._revise_invalid_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        bad,
+        reason,
+        turn=3,
+    ))
+
+    assert blocked.decision_type.value == "blocked"
+    assert "budget exhausted after 2 attempt(s)" in blocked.blocker
+    assert provider.calls == 2
+    events = engine.store.events(run_id, limit=200)
+    assert len([e for e in events if e["event_type"] == "agent.mutation.revision_requested"]) == 2
+    assert len([e for e in events if e["event_type"] == "agent.mutation.revision_rejected"]) == 2
+    assert len(engine.store.approvals(run_id)) == 1
+
+
+def test_noop_salvaged_first_mutation_is_revised_instead_of_discarded(tmp_path):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective="Fix safe_average so an empty iterable returns 0.0",
+        source=source,
+    )
+    run = engine.store.get_run(run_id) or {}
+
+    class _NoopThenGood:
+        def __init__(self):
+            self.calls = 0
+            self.last_route = {}
+            self.last_usage = {}
+
+        async def next_decision(self, prompt, *, run, turn):
+            self.calls += 1
+            if self.calls == 1:
+                return parse_planner_decision({
+                    "decision_type": "tool",
+                    "tool_id": "worktree.replace_exact",
+                    "arguments": {"new_text": source},
+                })
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    )
+                },
+            })
+
+    provider = _NoopThenGood()
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2)
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.max_repair_cycles = 2
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {"path": "answer.py", "content": source},
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"task_id": "wt-1"},
+        },
+    ]
+    runtime._save_state(state)
+
+    candidate = asyncio.run(runtime._retry_primary_for_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        turn=3,
+        reason="heuristic blocked",
+    ))
+
+    candidate = runtime._materialize_first_mutation_residual(run, state, candidate)
+
+    assert candidate.arguments["old_text"] == source
+    assert candidate.arguments["new_text"] == source
+    assert runtime._valid_first_mutation_recovery(candidate, state) is False
+
+    revised = asyncio.run(runtime._revise_invalid_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        candidate,
+        "replace_exact candidate is an identity/no-op replacement",
+        turn=3,
+    ))
+
+    assert revised.tool_id == "worktree.replace_exact"
+    assert revised.arguments["old_text"] == source
+    assert "if not values:" in revised.arguments["new_text"]
+    assert runtime._valid_first_mutation_recovery(revised, state) is True
+
+
+def test_noop_salvaged_first_mutation_is_revised_instead_of_discarded(tmp_path):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective="Fix safe_average so an empty iterable returns 0.0",
+        source=source,
+    )
+    run = engine.store.get_run(run_id) or {}
+
+    class _NoopThenGood:
+        def __init__(self):
+            self.calls = 0
+            self.last_route = {}
+            self.last_usage = {}
+
+        async def next_decision(self, prompt, *, run, turn):
+            self.calls += 1
+            if self.calls == 1:
+                return parse_planner_decision({
+                    "decision_type": "tool",
+                    "tool_id": "worktree.replace_exact",
+                    "arguments": {"new_text": source},
+                })
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    )
+                },
+            })
+
+    provider = _NoopThenGood()
+    runtime = AgentPlannerRuntime(engine, provider, max_turns=4, max_repair_cycles=2)
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.max_repair_cycles = 2
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {"path": "answer.py", "content": source},
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"task_id": "wt-1"},
+        },
+    ]
+    runtime._save_state(state)
+
+    candidate = asyncio.run(runtime._retry_primary_for_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        turn=3,
+        reason="heuristic blocked",
+    ))
+
+    candidate = runtime._materialize_first_mutation_residual(run, state, candidate)
+
+    assert candidate.arguments["old_text"] == source
+    assert candidate.arguments["new_text"] == source
+    assert runtime._valid_first_mutation_recovery(candidate, state) is False
+
+    revised = asyncio.run(runtime._revise_invalid_first_mutation(
+        provider,
+        "planner prompt",
+        run,
+        state,
+        candidate,
+        "replace_exact candidate is an identity/no-op replacement",
+        turn=3,
+    ))
+
+    assert revised.tool_id == "worktree.replace_exact"
+    assert revised.arguments["old_text"] == source
+    assert "if not values:" in revised.arguments["new_text"]
+    assert runtime._valid_first_mutation_recovery(revised, state) is True
+
+
+def test_noop_strong_recovery_flows_into_critic_revision(tmp_path):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective=(
+            "Fix safe_average so an empty iterable returns 0.0 "
+            "while preserving lists and generators"
+        ),
+        source=source,
+    )
+
+    run = engine.store.get_run(run_id) or {}
+
+    class _HeuristicNoopThenRevision:
+        def __init__(self):
+            self.calls = 0
+            self.last_route = {}
+            self.last_usage = {}
+            self.prompts = []
+
+        async def next_decision(self, prompt, *, run, turn):
+            self.calls += 1
+            self.prompts.append(prompt)
+
+            if self.calls == 1:
+                self.last_route = {
+                    "provider": "heuristic",
+                    "engine": "deterministic",
+                    "route_kind": "heuristic",
+                    "reason": "deterministic_fast_path",
+                }
+                return parse_planner_decision({
+                    "decision_type": "blocked",
+                    "blocker": (
+                        "Heuristic fallback found no further deterministic step; "
+                        "stronger planner route required."
+                    ),
+                })
+
+            # Both ordinary strong-recovery attempts return the same no-op.
+            if "CRITIC REVISION REQUIRED" not in prompt:
+                return parse_planner_decision({
+                    "decision_type": "tool",
+                    "tool_id": "worktree.replace_exact",
+                    "arguments": {
+                        "new_text": source,
+                    },
+                })
+
+            # Only the critic-driven revision produces the real repair.
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    ),
+                },
+            })
+
+    provider = _HeuristicNoopThenRevision()
+    runtime = AgentPlannerRuntime(
+        engine,
+        provider,
+        max_turns=4,
+        max_repair_cycles=2,
+    )
+
+    state = runtime._load_state(run_id)
+    state.turn = 2
+    state.max_repair_cycles = 2
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": source,
+            },
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {
+                "task_id": "wt-1",
+            },
+        },
+    ]
+    runtime._save_state(state)
+
+    final = asyncio.run(runtime.run(run_id))
+
+    events = engine.store.events(run_id, limit=300)
+
+    assert any(
+        e["event_type"] == "agent.mutation.revision_requested"
+        for e in events
+    )
+    assert any(
+        e["event_type"] == "agent.mutation.revision_accepted"
+        for e in events
+    )
+
+    planner = final["checkpoint"]["planner"]
+    decision = planner["last_decision"]
+
+    assert decision["tool_id"] == "worktree.replace_exact"
+    assert decision["arguments"]["path"] == "answer.py"
+    assert decision["arguments"]["old_text"] == source
+    assert "if not values:" in decision["arguments"]["new_text"]
+
+
+def test_mutation_revision_uses_recovery_scale_timeout(tmp_path, monkeypatch):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective="Fix safe_average so an empty iterable returns 0.0",
+        source=source,
+    )
+
+    run = engine.store.get_run(run_id) or {}
+
+    class _Provider:
+        last_route = {}
+        last_usage = {}
+
+        async def next_decision(self, prompt, *, run, turn):
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    ),
+                },
+            })
+
+    runtime = AgentPlannerRuntime(
+        engine,
+        _Provider(),
+        max_turns=4,
+        max_repair_cycles=1,
+    )
+
+    state = runtime._load_state(run_id)
+    state.max_repair_cycles = 1
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": source,
+            },
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"task_id": "wt-1"},
+        },
+    ]
+
+    seen = {}
+    real_wait_for = asyncio.wait_for
+
+    async def capture_wait_for(awaitable, *, timeout):
+        seen["timeout"] = timeout
+        return await real_wait_for(awaitable, timeout=timeout)
+
+    monkeypatch.setattr(asyncio, "wait_for", capture_wait_for)
+
+    bad = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": source},
+    })
+    bad = runtime._materialize_first_mutation_residual(run, state, bad)
+
+    revised = asyncio.run(runtime._revise_invalid_first_mutation(
+        _Provider(),
+        "planner prompt",
+        run,
+        state,
+        bad,
+        "identity/no-op",
+        turn=3,
+    ))
+
+    assert seen["timeout"] >= 10.0
+    assert seen["timeout"] > 12.0
+    assert "if not values:" in revised.arguments["new_text"]
+
+
+def test_mutation_revision_preserves_provider_recovery_mode(tmp_path):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective="Fix safe_average so an empty iterable returns 0.0",
+        source=source,
+    )
+
+    run = engine.store.get_run(run_id) or {}
+
+    class _RecoveryOnlyProvider:
+        last_route = {}
+        last_usage = {}
+
+        async def next_decision(self, prompt, *, run, turn):
+            assert float(
+                run.get("_beast_recovery_timeout_seconds") or 0.0
+            ) > 0.0
+
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    ),
+                },
+            })
+
+    provider = _RecoveryOnlyProvider()
+
+    runtime = AgentPlannerRuntime(
+        engine,
+        provider,
+        max_turns=4,
+        max_repair_cycles=1,
+    )
+
+    state = runtime._load_state(run_id)
+    state.max_repair_cycles = 1
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": source,
+            },
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"task_id": "wt-1"},
+        },
+    ]
+
+    bad = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": source},
+    })
+
+    bad = runtime._materialize_first_mutation_residual(
+        run,
+        state,
+        bad,
+    )
+
+    revised = asyncio.run(
+        runtime._revise_invalid_first_mutation(
+            provider,
+            "planner prompt",
+            run,
+            state,
+            bad,
+            "identity/no-op",
+            turn=3,
+        )
+    )
+
+    assert "if not values:" in revised.arguments["new_text"]
+
+
+def test_mutation_revision_preserves_provider_recovery_mode(tmp_path):
+    source = (
+        "def safe_average(values):\n"
+        "    values = list(values)\n"
+        "    return sum(values) / len(values)\n"
+    )
+
+    engine, run_id, _approval_id = _repo_run(
+        tmp_path,
+        provider="ollama",
+        model="qwen2.5-coder:1.5b",
+        objective="Fix safe_average so an empty iterable returns 0.0",
+        source=source,
+    )
+
+    run = engine.store.get_run(run_id) or {}
+
+    class _RecoveryOnlyProvider:
+        last_route = {}
+        last_usage = {}
+
+        async def next_decision(self, prompt, *, run, turn):
+            assert float(
+                run.get("_beast_recovery_timeout_seconds") or 0.0
+            ) > 0.0
+
+            return parse_planner_decision({
+                "decision_type": "tool",
+                "tool_id": "worktree.replace_exact",
+                "arguments": {
+                    "new_text": (
+                        "def safe_average(values):\n"
+                        "    values = list(values)\n"
+                        "    if not values:\n"
+                        "        return 0.0\n"
+                        "    return sum(values) / len(values)\n"
+                    ),
+                },
+            })
+
+    provider = _RecoveryOnlyProvider()
+
+    runtime = AgentPlannerRuntime(
+        engine,
+        provider,
+        max_turns=4,
+        max_repair_cycles=1,
+    )
+
+    state = runtime._load_state(run_id)
+    state.max_repair_cycles = 1
+    state.observations = [
+        {
+            "tool_id": "workspace.read_range",
+            "status": "completed",
+            "result": {
+                "path": "answer.py",
+                "content": source,
+            },
+        },
+        {
+            "tool_id": "worktree.bind",
+            "status": "completed",
+            "result": {"task_id": "wt-1"},
+        },
+    ]
+
+    bad = parse_planner_decision({
+        "decision_type": "tool",
+        "tool_id": "worktree.replace_exact",
+        "arguments": {"new_text": source},
+    })
+
+    bad = runtime._materialize_first_mutation_residual(
+        run,
+        state,
+        bad,
+    )
+
+    revised = asyncio.run(
+        runtime._revise_invalid_first_mutation(
+            provider,
+            "planner prompt",
+            run,
+            state,
+            bad,
+            "identity/no-op",
+            turn=3,
+        )
+    )
+
+    assert "if not values:" in revised.arguments["new_text"]

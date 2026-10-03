@@ -143,12 +143,15 @@ def harden_sidecar(path: str | Path = DEFAULT_SIDECAR) -> dict[str, Any]:
         "changes": changes,
         "postflight_certificate_digest": hardened_certificate["receipt_digest"],
         "postflight_public_credit_allowed": hardened_certificate["public_credit_allowed"],
-        "postflight_green_gates": [key for key, value in hardened_certificate["certificate_gates"].items() if value],
-        "postflight_red_gates": [key for key, value in hardened_certificate["certificate_gates"].items() if not value],
+        "postflight_gate_count": len(hardened_certificate["certificate_gates"]),
+        "postflight_green_count": sum(1 for value in hardened_certificate["certificate_gates"].values() if value),
+        "postflight_failed_count": sum(1 for value in hardened_certificate["certificate_gates"].values() if not value),
         "claim_boundary": (
             "Sidecar hardening receipt. This binds existing receipts to the stricter "
             "certificate contract; it does not alter required truth fields or grant "
-            "physical facts that the underlying receipt did not already claim."
+            "physical facts that the underlying receipt did not already claim. It "
+            "intentionally emits aggregate postflight counts, not a full gate list; "
+            "the full twelve-gate verdict belongs only to the certificate."
         ),
     }
     receipt["receipt_digest"] = sha256_digest(receipt)
@@ -260,8 +263,9 @@ def main() -> int:
         "sidecar": receipt["sidecar"],
         "receipt_digest": receipt["receipt_digest"],
         "postflight_public_credit_allowed": receipt["postflight_public_credit_allowed"],
-        "postflight_green_gates": receipt["postflight_green_gates"],
-        "postflight_red_gates": receipt["postflight_red_gates"],
+        "postflight_gate_count": receipt["postflight_gate_count"],
+        "postflight_green_count": receipt["postflight_green_count"],
+        "postflight_failed_count": receipt["postflight_failed_count"],
     }, indent=2, sort_keys=True))
     return 0 if receipt["postflight_public_credit_allowed"] else 1
 

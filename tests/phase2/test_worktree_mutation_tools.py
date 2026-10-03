@@ -213,3 +213,51 @@ def test_remote_worktree_mutation_and_verification_execute_on_target(tmp_path, m
         assert any("cd '/repo/.beast/agent-worktrees/run-remote'" in call["script"] for call in calls)
 
     asyncio.run(scenario())
+
+
+def test_replace_exact_rejects_noop_without_advancing_mutation_epoch(tmp_path):
+    async def scenario():
+        root = _repo(tmp_path)
+        engine = AgentRunEngine(root)
+        run_id = engine.create_run(
+            session_id="session",
+            objective="reject noop mutation",
+        )["run_id"]
+
+        approval = _approved(engine, run_id)
+
+        await engine.execute_tool(
+            run_id,
+            "worktree.bind",
+            {"objective": "reject noop mutation"},
+            approval_id=approval,
+        )
+
+        before = engine.store.get_run(run_id)["checkpoint"]
+        before_epoch = int(before.get("worktree_mutation_epoch") or 0)
+        worktree_root = Path(before["worktree_root"])
+
+        try:
+            await engine.execute_tool(
+                run_id,
+                "worktree.replace_exact",
+                {
+                    "path": "hello.txt",
+                    "old_text": "hello",
+                    "new_text": "hello",
+                },
+                approval_id=approval,
+            )
+        except RuntimeError as exc:
+            assert "new_text to differ from old_text" in str(exc)
+        else:
+            raise AssertionError("replace_exact accepted a no-op mutation")
+
+        after = engine.store.get_run(run_id)["checkpoint"]
+
+        assert int(after.get("worktree_mutation_epoch") or 0) == before_epoch
+        assert (worktree_root / "hello.txt").read_text(
+            encoding="utf-8"
+        ) == "hello\n"
+
+    asyncio.run(scenario())

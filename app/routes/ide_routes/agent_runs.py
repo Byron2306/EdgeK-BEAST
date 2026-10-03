@@ -378,7 +378,17 @@ async def _execute_planner_run(
                     parts.append(str(event.get("text") or ""))
                 elif str(event.get("type") or "") == "error":
                     raise RuntimeError(str(event.get("error") or "planner provider failed"))
-            return "".join(parts)
+            raw_response = "".join(parts)
+            engine.emit(
+                run_id,
+                "agent.planner.raw_response",
+                {
+                    "turn": turn,
+                    "text": raw_response[:4000],
+                    "length": len(raw_response),
+                },
+            )
+            return raw_response
 
         provider = CallbackPlannerProvider(_next)
     runtime = AgentPlannerRuntime(
@@ -926,7 +936,11 @@ def register_agent_runs_routes(router: APIRouter, ctx: IdeRouteContext) -> dict[
         if scripted is not None and not isinstance(scripted, list):
             raise HTTPException(status_code=400, detail="simulate_decisions must be a list")
         max_turns = max(1, min(int(payload.get("max_turns") or 8), 64))
-        base_url = _ollama_base_url(run)
+        base_url = (
+            _ollama_base_url(run)
+            if _prefer_direct_ollama_planner(run)
+            else _request_base_url(request)
+        )
         execution = _launch_planner(
             root, run_id, base_url=base_url, scripted_decisions=scripted, max_turns=max_turns, crystal_gateway=ctx.crystal_gateway, context_packet_builder=ctx.context_packet_builder, execution_gateway=ctx.execution_gateway, compute_governor=ctx.compute_governor, pressure_controller=ctx.pressure_controller
         )

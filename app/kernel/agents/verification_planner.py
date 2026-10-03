@@ -517,8 +517,9 @@ def plan_verification(run: dict[str, Any]) -> dict[str, Any]:
             },
         })
         return plan
-    if python_files and _catalog_has_pytest(catalog):
-        related_pytest = related_pytest_files_from_index(run, python_files)
+    related_pytest = related_pytest_files_from_index(run, python_files) if python_files else []
+    indexed_pytest = any(_is_pytest_file(path) for path in _index_paths(run)) if python_files else False
+    if python_files and (_catalog_has_pytest(catalog) or related_pytest or indexed_pytest):
         if related_pytest:
             plan.update({
                 "command": [*_target_runner_for(run, "python"), "pytest", "-q", *related_pytest],

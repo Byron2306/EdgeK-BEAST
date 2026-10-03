@@ -32,6 +32,24 @@ the repository, release notes, and preregistration publish the same fingerprint.
 It does not by itself prove institutional identity, employment, or NWU
 endorsement.
 
+The Sophia/Integritas DAI lineage key is also pinned in
+[RELEASE_KEYS.md](RELEASE_KEYS.md) and in the machine-readable policy:
+
+```text
+release-keys/sophia_integritas_lineage_key_policy.json
+sha256:34fe8e196c2218661585abe6ed6d850efa44d972f086fad81161214bc4c26e6f
+```
+
+Sophia/Integritas lineage public-key fingerprint:
+
+```text
+sha256:bcfad7dbb07bff2858b7fc2172a5f40e1684012fe9764897e8d77a7a010028cc
+```
+
+This key verifies the Phase 6.3 local project lineage certificate for the exact
+Sophia academic-integrity export digest. It is a project-pinned lineage key, not
+an institutional endorsement.
+
 For final public release provenance, prefer Sigstore Fulcio/OIDC keyless
 signing from a declared GitHub workflow, plus RFC 3161 or Sigstore timestamp
 evidence for independently trusted time.

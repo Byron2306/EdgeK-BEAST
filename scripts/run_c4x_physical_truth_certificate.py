@@ -10,7 +10,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -24,6 +24,119 @@ from app.kernel.compute.deterministic_intelligence import sha256_digest, utc_now
 
 
 DEFAULT_EVIDENCE_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
+SIDECAR_RECEIPT_KEYS = tuple(empty_pending_sidecar().keys())
+
+
+def scoped_gate_summary(
+    certificate: Mapping[str, Any],
+    *,
+    claimed_gates: Iterable[str],
+    dependency_gates: Iterable[str] = (),
+) -> dict[str, Any]:
+    """Return a component-scoped gate summary.
+
+    Component runners must not echo the certificate's full expected-green list.
+    They may report only the gate(s) they directly claim and the explicit gates
+    they depend on.  The full twelve-gate view belongs to the final certificate
+    or one-shot umbrella, not to individual gate receipts.
+    """
+    gates = certificate.get("certificate_gates")
+    if not isinstance(gates, Mapping):
+        gates = {}
+    claimed = tuple(dict.fromkeys(str(item) for item in claimed_gates))
+    deps = tuple(dict.fromkeys(str(item) for item in dependency_gates if str(item) not in claimed))
+    scope = claimed + deps
+    return {
+        "certificate_gate_scope": "component_scoped",
+        "claimed_gates": list(claimed),
+        "dependency_gates": list(deps),
+        "gate_results": {key: gates.get(key) is True for key in scope},
+        "claimed_gates_green": all(gates.get(key) is True for key in claimed),
+        "dependency_gates_green": all(gates.get(key) is True for key in deps),
+    }
+
+
+def write_scoped_sidecar(
+    *,
+    source_payload: Mapping[str, Any],
+    destination: str | Path,
+    run_id: str,
+    claimed_receipts: Iterable[str],
+    dependency_receipts: Iterable[str] = (),
+    source_sidecar: str | Path | None = None,
+) -> Path:
+    """Write a per-run sidecar containing only claimed/dependency receipts.
+
+    This prevents component smoke runs from inheriting unrelated green gates
+    from the shared physical_truth_sidecar_harvested.json file.
+    """
+    claimed = _unique_receipts(claimed_receipts)
+    deps = tuple(key for key in _unique_receipts(dependency_receipts) if key not in claimed)
+    scoped = empty_pending_sidecar()
+    for key in claimed + deps:
+        value = source_payload.get(key)
+        if isinstance(value, Mapping) and value:
+            scoped[key] = dict(value)
+    excluded = [key for key in SIDECAR_RECEIPT_KEYS if key not in set(claimed + deps)]
+    provenance = {
+        "beast_object_type": "c4x_component_scoped_sidecar_provenance",
+        "version": "1.0",
+        "run_id": run_id,
+        "created_at": utc_now_iso(),
+        "source_sidecar": str(_resolve_sidecar(source_sidecar)) if source_sidecar else "",
+        "source_sidecar_digest": _file_sha256(_resolve_sidecar(source_sidecar)) if source_sidecar else "",
+        "claimed_receipts": list(claimed),
+        "dependency_receipts": list(deps),
+        "excluded_receipts": excluded,
+        "freshness_contract": (
+            "Only claimed receipts and explicit dependencies are present. "
+            "Unrelated receipts from the shared sidecar are reset to pending "
+            "for this component certificate run."
+        ),
+    }
+    provenance["provenance_digest"] = sha256_digest(provenance)
+    scoped["_sidecar_provenance"] = provenance
+    out = _resolve_sidecar(destination)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(scoped, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return out
+
+
+def initialize_run_sidecar(
+    *,
+    destination: str | Path,
+    run_id: str,
+    source_sidecar: str | Path | None = None,
+    inherited_receipts: Iterable[str] = (),
+) -> Path:
+    """Create a run-local sidecar, optionally inheriting explicit receipts only."""
+    inherited = _unique_receipts(inherited_receipts)
+    source_payload = _load_sidecar(source_sidecar) if source_sidecar else {}
+    sidecar = empty_pending_sidecar()
+    for key in inherited:
+        value = source_payload.get(key)
+        if isinstance(value, Mapping) and value:
+            sidecar[key] = dict(value)
+    provenance = {
+        "beast_object_type": "c4x_run_local_sidecar_provenance",
+        "version": "1.0",
+        "run_id": run_id,
+        "created_at": utc_now_iso(),
+        "source_sidecar": str(_resolve_sidecar(source_sidecar)) if source_sidecar else "",
+        "source_sidecar_digest": _file_sha256(_resolve_sidecar(source_sidecar)) if source_sidecar else "",
+        "inherited_receipts": list(inherited),
+        "freshness_contract": (
+            "This full-gauntlet sidecar starts from pending receipts unless an "
+            "operator explicitly names receipts to inherit. Component runners "
+            "then update this run-local sidecar for the final certificate."
+        ),
+    }
+    provenance["provenance_digest"] = sha256_digest(provenance)
+    sidecar["_sidecar_provenance"] = provenance
+    out = _resolve_sidecar(destination)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return out
 
 
 def run_physical_truth_certificate(
@@ -77,18 +190,35 @@ def _load_sidecar(path: str | Path | None) -> Mapping[str, Any]:
     return value
 
 
+def _unique_receipts(keys: Iterable[str]) -> tuple[str, ...]:
+    unique = tuple(dict.fromkeys(str(key) for key in keys))
+    unknown = [key for key in unique if key not in SIDECAR_RECEIPT_KEYS]
+    if unknown:
+        raise ValueError(f"unknown sidecar receipt key(s): {unknown}")
+    return unique
+
+
+def _resolve_sidecar(path: str | Path | None) -> Path:
+    if path is None:
+        raise ValueError("sidecar path is required")
+    sidecar = Path(path)
+    return sidecar if sidecar.is_absolute() else REPO_ROOT / sidecar
+
+
+def _file_sha256(path: Path) -> str:
+    import hashlib
+
+    if not path.is_file():
+        return ""
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _write_checksums(root: Path) -> None:
     rows = []
     for path in sorted(root.rglob("*")):
         if path.is_file() and path.name != "SHA256SUMS.txt":
             rows.append(f"{_file_sha256(path).removeprefix('sha256:')}  {path.relative_to(root)}")
     (root / "SHA256SUMS.txt").write_text("\n".join(rows) + "\n", encoding="utf-8")
-
-
-def _file_sha256(path: Path) -> str:
-    import hashlib
-
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _markdown(receipt: Mapping[str, Any]) -> str:

@@ -1,7 +1,7 @@
-# DIO Azure/GCP cloud TEE witness plan
+# DIO Azure/GCP/AWS cloud TEE witness plan
 
-This is the Phase-2.1C path: turn Azure or Google Cloud into a hardware-rooted
-DIO witness.
+This is the Phase-2.1C path: turn Azure, Google Cloud or AWS into a
+hardware-rooted DIO witness.
 
 The account alone gives no authority. A cloud witness is admitted only when a
 provider-verified attestation is normalized into `DIOCloudTeeEvidence` and
@@ -29,6 +29,11 @@ Pinned fields BEAST requires:
 - raw attestation digest
 - Azure verification digest
 
+Setup helper:
+
+- `scripts/setup_dio_azure_confidential_vm.sh`
+- `deploy/dio-cloud-witness/azure-confidential-vm-witness.md`
+
 ## Google Cloud target
 
 Honest claim:
@@ -49,6 +54,35 @@ Pinned fields BEAST requires:
 - governance epoch
 - raw attestation digest
 - Google verification digest
+
+Live notes:
+
+- `deploy/dio-cloud-witness/gcp-confidential-space-witness.md`
+
+## AWS target
+
+Honest claim:
+
+- AWS NitroTPM or Nitro Enclave witness
+- provider verification through AWS Nitro attestation material
+- hardware-rooted remote witness only after measurement, nonce and key bind
+
+Pinned fields BEAST requires:
+
+- `provider = aws`
+- `tee_type = aws_nitro_tpm` or `aws_nitro_enclave`
+- `service_verifier = aws_nitro_attestation`
+- DIO witness public-key fingerprint
+- verifier source/build digest
+- EC2/enclave measurement digest
+- challenge nonce
+- governance epoch
+- raw Nitro attestation document digest
+- AWS Nitro verification digest
+
+Live notes:
+
+- `deploy/dio-cloud-witness/aws-nitro-witness.md`
 
 ## Refusal cases
 
@@ -72,6 +106,7 @@ Add vendor harvesters:
 
 - `scripts/harvest_dio_azure_tee_attestation.py`
 - `scripts/harvest_dio_gcp_tee_attestation.py`
+- `scripts/harvest_dio_aws_tee_attestation.py`
 
 Those scripts should perform the cloud-specific token/report request and write
 normalized `DIOCloudTeeEvidence`. The BEAST admission law is already provider

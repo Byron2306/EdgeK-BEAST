@@ -1,3 +1,13 @@
+---
+title: DIO Phase 2 Semantic Witness
+emoji: \"🧭\"
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # DIO Hugging Face remote witness
 
 This is the Phase-2.1A remote signed software witness scaffold.

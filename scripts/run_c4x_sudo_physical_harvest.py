@@ -49,7 +49,7 @@ from app.kernel.execution.socket_guardian import (  # noqa: E402
 from app.kernel.integration.one_use_capability import OneUseCapability, OneUseCapabilityLedger  # noqa: E402
 from scripts.harvest_c4x_physical_truth_sidecar import harvest_physical_truth_sidecar  # noqa: E402
 from scripts.harden_c4x_physical_truth_sidecar import harden_sidecar  # noqa: E402
-from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate  # noqa: E402
+from scripts.run_c4x_physical_truth_certificate import run_physical_truth_certificate, scoped_gate_summary, write_scoped_sidecar  # noqa: E402
 
 
 DEFAULT_ROOT = REPO_ROOT / "evidence" / "c4x-physical-truth-certificate"
@@ -70,10 +70,14 @@ def main() -> int:
         action="store_true",
         help="Do not run the ARDA status harvester even if an ARDA checkout is present.",
     )
+    parser.add_argument("--sidecar", default=str(DEFAULT_ROOT / "physical_truth_sidecar_harvested.json"))
     args = parser.parse_args()
 
     run_root = DEFAULT_ROOT / args.run_id
     run_root.mkdir(parents=True, exist_ok=True)
+    sidecar_target = Path(args.sidecar)
+    if not sidecar_target.is_absolute():
+        sidecar_target = REPO_ROOT / sidecar_target
 
     if not args.skip_sudo:
         print("Priming sudo. Type your sudo password in this terminal if prompted.", flush=True)
@@ -86,7 +90,7 @@ def main() -> int:
     custody_receipt = {} if args.skip_custody else run_local_custody_attack_suite(run_root)
 
     harvest = harvest_physical_truth_sidecar(
-        output=DEFAULT_ROOT / "physical_truth_sidecar_harvested.json",
+        output=sidecar_target,
         bpf_prereq=run_root / "bpf_xdp_live_receipt.json",
     )
     sidecar_path = Path(harvest["output"])
@@ -101,8 +105,18 @@ def main() -> int:
 
     sidecar_path.write_text(json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     harden_sidecar(sidecar_path)
+    hardened_sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    scoped_sidecar = write_scoped_sidecar(
+        source_payload=hardened_sidecar,
+        destination=run_root / "sudo_physical_harvest_scoped_sidecar.json",
+        run_id=args.run_id,
+        claimed_receipts=("bpf_receipt", "memfd_receipt", "guardian_receipt", "xdp_receipt"),
+        dependency_receipts=("sensorium_receipt",),
+        source_sidecar=sidecar_path,
+    )
+    harden_sidecar(scoped_sidecar)
     certificate = run_physical_truth_certificate(
-        sidecar=sidecar_path,
+        sidecar=scoped_sidecar,
         run_id=args.run_id,
         evidence_root=DEFAULT_ROOT,
     )
@@ -110,11 +124,15 @@ def main() -> int:
     summary = {
         "run_id": args.run_id,
         "evidence_root": certificate["evidence_root"],
-        "sidecar": str(sidecar_path),
+        "shared_sidecar": str(sidecar_path),
+        "scoped_sidecar": str(scoped_sidecar),
         "certificate_digest": certificate["receipt_digest"],
         "public_credit_allowed": certificate["public_credit_allowed"],
-        "green_gates": [k for k, v in certificate["certificate_gates"].items() if v],
-        "red_gates": [k for k, v in certificate["certificate_gates"].items() if not v],
+        **scoped_gate_summary(
+            certificate,
+            claimed_gates=("bpf_witness", "memfd_custody", "guardian_custody", "xdp_scope"),
+            dependency_gates=("sensorium_observation",),
+        ),
         "bpf_authority_present": bool((bpf_receipt.get("bpf_receipt") or {}).get("bpf_authority_present")),
         "bpf_loaded_program_count": int((bpf_receipt.get("bpf_receipt") or {}).get("loaded_bpf_program_count") or 0),
         "arda_bpf_authoritative": bool((bpf_receipt.get("bpf_receipt") or {}).get("arda_bpf_authoritative")),

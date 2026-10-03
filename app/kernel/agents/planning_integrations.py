@@ -404,6 +404,9 @@ class PlanningIntegrationRuntime:
         status = str(observation.get("status") or "")
         transition: tuple[str, str, str] | None = None
         if tool_id in {"workspace.index", "workspace.list", "workspace.search_text", "workspace.read_range"} and status == "completed":
+            active_step_id = str(plan.get("active_step_id") or "")
+            if active_step_id not in {"", "inspect", "bind"}:
+                return None
             transition = ("inspect", "bind", "phase1_progress_workspace_inspected")
         elif tool_id == "worktree.bind" and status == "completed":
             transition = ("bind", "mutate", "phase1_progress_worktree_bound")

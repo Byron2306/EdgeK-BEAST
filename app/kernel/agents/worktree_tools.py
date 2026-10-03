@@ -323,15 +323,18 @@ async def _worktree_write_file(arguments: dict[str, Any], context: ToolExecution
 
 
 async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecutionContext) -> dict[str, Any]:
+    old_text = str(arguments.get("old_text") or "")
+    new_text = str(arguments.get("new_text") or "")
+    if not old_text:
+        raise ValueError("old_text is required")
+    if old_text == new_text:
+        raise ValueError("replace_exact requires new_text to differ from old_text")
+
     if _is_remote_target(context):
         descriptor = _remote_target_descriptor(context)
         root = _remote_worktree_root(context)
         relative = _safe_remote_relative(arguments.get("path") or "")
-        old_text = str(arguments.get("old_text") or "")
-        new_text = str(arguments.get("new_text") or "")
         expected = max(1, min(int(arguments.get("expected_occurrences") or 1), 100))
-        if not old_text:
-            raise ValueError("old_text is required")
         payload = base64.b64encode(f"{old_text}\0{new_text}".encode("utf-8")).decode("ascii")
         script = (
             f"cd {_shell_quote(root)} && "
@@ -370,8 +373,6 @@ async def _worktree_replace_exact(arguments: dict[str, Any], context: ToolExecut
         raise FileNotFoundError(str(path))
     if path.stat().st_size > 4 * 1024 * 1024:
         raise ValueError("file exceeds 4 MiB mutation boundary")
-    old_text = str(arguments.get("old_text") or "")
-    new_text = str(arguments.get("new_text") or "")
     expected = max(1, min(int(arguments.get("expected_occurrences") or 1), 100))
     text = path.read_text(encoding="utf-8", errors="strict")
     found = text.count(old_text)

@@ -6,9 +6,9 @@ ENV BEAST_DIO_WITNESS_ENABLE_DOCS=0
 
 WORKDIR /app
 
-COPY requirements.commons-node.txt /app/requirements.commons-node.txt
+COPY requirements.dio-hf-witness.txt /app/requirements.dio-hf-witness.txt
 RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir -r /app/requirements.commons-node.txt uvicorn
+    && python -m pip install --no-cache-dir -r /app/requirements.dio-hf-witness.txt
 
 COPY app /app/app
 
